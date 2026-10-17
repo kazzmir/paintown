@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -99,6 +99,11 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
         settings = re.sub(r'(?im)^GameWidth\s*=.*$', 'GameWidth = ' + str(game_width), settings)
     if game_height is not None:
         settings = re.sub(r'(?im)^GameHeight\s*=.*$', 'GameHeight = ' + str(game_height), settings)
+    for key, value in (video or {}).items():
+        settings, count = re.subn(r'(?im)^\s*;?\s*' + re.escape(key) + r'\s*=.*$',
+                                  lambda match: key + ' = ' + str(value), settings)
+        if count != 1:
+            raise RuntimeError('Expected one disposable video setting: ' + key)
     config.write_text(settings)
     return source
 
@@ -237,6 +242,8 @@ def main():
     parser.add_argument('--p2-localcoord', help='Use a separate probe opponent with this localcoord')
     parser.add_argument('--game-width', type=int, help='Override common game-space width for coordinate probes')
     parser.add_argument('--game-height', type=int, help='Override configured game-space height for coordinate probes')
+    parser.add_argument('--video', action='append', default=[], help='Disposable video override: StageFit/SystemFit/KeepAspect=0|1 or Width/Height=N')
+    parser.add_argument('--hud-marker', action='store_true', help='Use the fixture-owned probe.sff for calibrated Face background markers in disposable fight files')
     parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
     parser.add_argument('--stage-version',choices=['1.0','1.1'],help='Override only the copied stage version for compatibility probes')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
@@ -266,6 +273,8 @@ def main():
         args.game_height = case_expected.get('game_height')
         args.stage = case_expected.get('stage','kfm')
         args.stage_version = case_expected.get('stage_version')
+        args.video = [key+'='+str(value) for key,value in case_expected.get('video',{}).items()]
+        args.hud_marker = case_expected.get('hud_marker',False)
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
@@ -283,6 +292,15 @@ def main():
                                     any(float(value) > 2147483647 for value in profile.split(','))):
             parser.error('Localcoord requires positive numeric width,height')
     reference = args.reference.resolve()
+    video = {}
+    for item in args.video:
+        key, separator, value = item.partition('=')
+        if not separator or key not in ['StageFit','SystemFit','KeepAspect','Width','Height'] or not value.isdigit():
+            parser.error('Unsupported video override')
+        value = int(value)
+        if key in video or (value not in [0,1] if key in ['StageFit','SystemFit','KeepAspect'] else not 64<=value<=4096):
+            parser.error('Duplicate or out-of-range video override')
+        video[key] = value
     files = {}
     for item in args.file:
         key, separator, value = item.partition('=')
@@ -300,7 +318,21 @@ def main():
         parser.error('State-file order must contain unique st/stN keys')
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video)
+    hud_hashes = {}
+    if args.hud_marker:
+        marker = fixture.with_suffix('.extra')/'probe.sff'
+        for relative in ['data/fight.def','data/mugen1/fight.def']:
+            fight = run/relative
+            shutil.copyfile(marker,fight.parent/'probe-hud.sff')
+            source = fight.read_text(encoding='utf-8-sig')
+            source = re.sub(r'(?im)^sff\s*=.*$','sff = probe-hud.sff',source)
+            sections = re.split(r'(?im)(^\s*\[[^\r\n]+\]\s*$)',source)
+            for index in range(1,len(sections),2):
+                if sections[index].strip().lower()!='[face]':continue
+                sections[index+1]='\np1.pos=128,64\np1.bg0.spr=0,4\np1.bg0.scale=4,4\np1.bg1.anim=-1\np1.face.spr=-1,0\np2.pos=1152,64\np2.bg0.spr=0,4\np2.bg0.scale=4,4\np2.bg1.anim=-1\np2.face.spr=-1,0\n'
+            fight.write_text(''.join(sections))
+            hud_hashes[relative]=digest(fight)
     stage_hash=None
     if args.stage_version:
         stage_path=Path(args.stage)
@@ -343,6 +375,10 @@ def main():
         evidence['game_width'] = args.game_width
     if args.game_height is not None:
         evidence['game_height'] = args.game_height
+    if video:
+        evidence['video'], evidence['config_sha256'] = video, digest(run/'data/mugen.cfg')
+    if args.hud_marker:
+        evidence['hud_marker'],evidence['hud_fight_sha256']=True,hud_hashes
     if args.stage!='kfm':
         evidence['stage']=args.stage
     if args.stage_version:
@@ -369,6 +405,10 @@ def main():
             raise RuntimeError('Configured height/stage differs from pinned fixture')
         if expected.get('stage_version')!=args.stage_version:
             raise RuntimeError('Stage version differs from pinned fixture')
+        if expected.get('video',{})!=video:
+            raise RuntimeError('Video overrides differ from pinned fixture')
+        if expected.get('hud_marker',False)!=args.hud_marker:
+            raise RuntimeError('HUD marker mode differs from pinned fixture')
         if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
         if expected.get('clipboard_delay',30)!=args.clipboard_delay:

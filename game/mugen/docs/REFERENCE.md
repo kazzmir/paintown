@@ -604,3 +604,20 @@ next. Early overlapping clock windows/audio drafts are diagnostic only; final
 measurements use serial owned captures and isolated private audio. AGENTS.md
 records the ordering rule. The optional --clipboard-delay is retained in recipe
 metadata for frozen P1 observations, with existing default 30 unchanged.
+
+
+## Video projection and stage crop (M4w)
+
+video-fit.json pins ten cases/240 numeric observations and twenty original RGB
+marker cores. The HUD marker replaces only disposable fight SFF references and
+Face settings; both fight-file hashes and original marker hash are recorded.
+Optional --video flags change only allowed CFG settings in the disposable copy;
+--hud-marker and case replay retain recipe/config hashes. No reference art is
+committed. video_render_probe.py compares native HUD/world cores and hashes.
+
+Fresh crop765/window-stretch replays match; Character tests assert all packets,
+and pure coordinate tests compare projected boundaries within one pixel for
+native fractional filtering. Full races pass. Owned Go default/crop/stretch
+windows have identical HUD cores and matching world centers; their smaller
+world solid cores remain an acknowledged filtering issue. See COORDINATES.md
+for crop truncation, exact cases, diagnostic-only oversized capture and limits.

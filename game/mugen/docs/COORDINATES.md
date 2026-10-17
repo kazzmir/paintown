@@ -79,13 +79,11 @@ retains character language version and compiles nonempty states before gameplay;
 typed parameters, entry expressions and cached triggers enforce those three
 measured gates. Other version rules and legacy parameter handlers remain open.
 
-The production world and HUD fit independently inside the physical window. A
-320x240 stage at 1280x720 occupies X=160..1120, while the 1280x720 HUD fills the
-window. **M4v identifies that independent HUD fit as still incorrect:** native
-portraits begin near X=172/Y=14 versus Go X=16/Y=16 in the same scene. Compare
-StageFit/SystemFit/KeepAspect before claiming native HUD framing. World margins
-remain supported by the numeric/marker probes. Actors/effects draw at common game resolution, avoiding an intermediate
-320-wide actor raster. Backgrounds still use the stage raster. The owned-window
+M4q introduced separate world/HUD fits. M4v identified that the HUD fit remained
+incorrect; M4w below replaces it with the measured shared viewport transform.
+A 320x240 stage at 1280x720 occupies X=160..1120. Actors/effects draw at common
+game resolution, avoiding an intermediate 320-wide actor raster. Backgrounds
+still use the stage raster. The owned-window
 capture temp/app-runs/viewport-spark-hd/ was inspected at the actual requested
 1280x720 size; metadata pins the binary/capture. It confirms corrected framing,
 but spark filter-edge pixels differ from native. The earlier attempt at
@@ -96,3 +94,51 @@ dimensions and rejects mismatching capture sizes.
 All native viewport scenes have zero camera displacement and zoom one. Moving
 camera/zoom timing, full screen bounds, stage raster/filter fidelity and complete
 framebuffer comparisons are not established by this checkpoint.
+
+## M4w fight viewport fitting and crop allocation
+
+Ten native cases pin 240 numeric values and twenty original RGB marker cores,
+one each for HUD and world per case. StageFit=1 keeps the stage-aspect game
+height. StageFit=0 uses configured GameWidth/Height: the stock 320x240 stage
+with 1280x720 configuration reports local GameHeight/ScreenHeight=180 and
+CameraPos Y=35. ScreenPos Y becomes 165 while Pos Y stays zero. SystemFit=0
+leaves both script coordinates and fight marker projection unchanged in these
+scenes; menu/system fitting is a separate remaining obligation.
+
+The top cut is truncated in stage units, then converted by width ratio. Within
+cuthigh+cutlow, it divides the crop by that ratio. Beyond the guidelines the
+low cut stays fixed and the excess is removed from the top. KFM's 35/25 guides
+produce top cuts 8, 23, 28, 35, 55, 65 at local viewport heights 225, 200,
+191.25, 180, 160, 150. The crop contributes to script CameraPos and is applied
+uniformly to the stage raster, separately from background delta movement.
+Match retains it through normal camera updates and round resets.
+
+Fight HUD coordinates use motif-width conversion followed by the game viewport's
+physical transform, with the same top origin. They do not independently center
+the motif rectangle. The authored HUD marker at (1152,64) appears at (1024,48)
+with StageFit=1, and (1152,64) with StageFit=0 at 1280x720. KeepAspect=1 fits the
+effective viewport directly into the actual window; KeepAspect=0 stretches X/Y
+independently. At a 960x600 window these give HUD positions (800,40) versus
+(864,40), while script coordinates remain unchanged. Fight Layout now uses the
+actual window size instead of first imposing motif aspect.
+
+Video flags load from CFG, with presence-aware stage_fit/system_fit/keep_aspect
+YAML overrides. Absent fullscreen/vsync YAML flags now also preserve CFG values.
+The launcher's default window dimensions follow configured game resolution.
+RenderMode is retained; System/DirectX renderer differences, forced fit behavior,
+omitted/invalid native defaults, menu/SystemFit projection, tall overdraw,
+different cut guidelines, moving cameras/zoom and full raster/filter parity
+remain open. These ten cases do not establish all video/stage schemas.
+
+Full scoped races and pure coordinate races pass. Fresh crop765/window-stretch
+native replays reproduce packets and marker hashes. Actual Go captures at
+temp/app-runs/video-default-go, video-crop-go and video-stretch-go have identical
+HUD cores and matching world centers. The Go world core is smaller by filtered
+edge pixels: e.g. native [505,450,529,462] versus Go [507,452,527,460]. This is a
+remaining renderer issue, not a reason to change the established projection.
+Inspection hashes/measurements are in temp/app-runs/video-inspection.json.
+The actual mixed KFM/KFM720 stock fight at video-stock-hud-go/ was also inspected;
+portraits now share the stage margins and measured native HUD scale.
+The initial 1280x960 physical-window experiment could not read its clipboard
+completely on the isolated display and is diagnostic only; promoted windows
+fit inside it. Original reference assets and desktop settings remain unchanged.

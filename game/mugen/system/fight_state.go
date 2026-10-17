@@ -25,7 +25,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 		return nil, err
 	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
-		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, MaxEffects: engine.cfg.Config.SysExplodMax, SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul})
+		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, MaxEffects: engine.cfg.Config.SysExplodMax, SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul, StageCrop: !engine.cfg.Video.StageFit})
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	}
 	toStage, _ := gameSpace.ScaleTo(stageSpace)
 	stageToGame, _ := stageSpace.ScaleTo(gameSpace)
-	cameraX, cameraY := m.CameraX*toStage, m.CameraY*toStage
+	cameraX, cameraY := m.CameraX*toStage, (m.CameraY-m.Viewport.CropY)*toStage
 	s.stageCanvas.Fill(color.Black)
 	m.Stage.Draw(s.stageCanvas, cameraX, cameraY)
 	s.gameCanvas.Fill(color.Black)
@@ -87,6 +87,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	tint := m.Timeline.SceneTint()
 	backgroundOptions.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
+	backgroundOptions.GeoM.Translate(0, -m.Viewport.CropY)
 	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
@@ -103,8 +104,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	s.hud.Draw(s.hudCanvas)
 	screen.Fill(color.Black)
 	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
-	drawFitted := func(surface *ebiten.Image, space coord.Space) {
-		scale, x, y, err := coord.Fit(space, target)
+	drawFitted := func(surface *ebiten.Image, transform coord.Transform, err error) {
 		if err != nil {
 			return
 		}
@@ -112,10 +112,12 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		if surface == s.hudCanvas {
 			options.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 		}
-		options.GeoM.Scale(scale, scale)
-		options.GeoM.Translate(x, y)
+		options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
+		options.GeoM.Translate(transform.X, transform.Y)
 		screen.DrawImage(surface, options)
 	}
-	drawFitted(s.gameCanvas, gameSpace)
-	drawFitted(s.hudCanvas, motifSpace)
+	world, err := coord.Project(gameSpace, target, s.engine.cfg.Video.KeepAspect)
+	drawFitted(s.gameCanvas, world, err)
+	hud, err := coord.HUDProject(gameSpace, motifSpace, target, s.engine.cfg.Video.KeepAspect)
+	drawFitted(s.hudCanvas, hud, err)
 }

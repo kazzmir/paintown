@@ -19,10 +19,13 @@ type ExtendedConfig struct {
 		P2 PlayerConfig `yaml:"p2"`
 	} `yaml:"input"`
 	Video struct {
-		Width      int  `yaml:"width"`
-		Height     int  `yaml:"height"`
-		FullScreen bool `yaml:"fullscreen"`
-		VSync      bool `yaml:"vsync"`
+		Width      int   `yaml:"width"`
+		Height     int   `yaml:"height"`
+		FullScreen *bool `yaml:"fullscreen"`
+		VSync      *bool `yaml:"vsync"`
+		StageFit   *bool `yaml:"stage_fit"`
+		SystemFit  *bool `yaml:"system_fit"`
+		KeepAspect *bool `yaml:"keep_aspect"`
 	} `yaml:"video"`
 	Sound struct {
 		Enabled      *bool `yaml:"enabled"`

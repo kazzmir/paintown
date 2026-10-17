@@ -57,6 +57,12 @@ camera/zoom and full-frame image parity remain open. M4v exposes an independent
 HUD fit mismatch; StageFit/SystemFit/KeepAspect still need native comparison.
 See COORDINATES.md.
 
+M4w now uses the measured shared game viewport for fight HUD/world projection,
+and implements StageFit=0 crop allocation and KeepAspect fitting/stretching.
+Twenty native marker cores and actual Go windows pin the stated projection.
+Go world cores remain smaller at filtered edges despite matching centers; exact
+effect/background filtering is still open. See COORDINATES.md for measurements.
+
 M4v adds SuperPause effects to the same scene. They retain their birth position,
 use common/own resources and animate through both pauses even with a frozen
 caller. Finite actions retire after one pass; explicit -1 survives pause end and

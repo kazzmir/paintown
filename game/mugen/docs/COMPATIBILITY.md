@@ -268,6 +268,14 @@ argument schemas, world/Target IDs, input and combat/effect interactions remain
 open; see SUPERPAUSE.md. Captures also identify an unresolved HUD/configuration
 framing difference, so M4q is not full framebuffer parity.
 
+M4w replaces independent HUD fitting with the shared fight viewport transform.
+Ten native cases pin 240 numbers/twenty marker cores for stage fit/crop, window
+aspect and HUD projection. Native crop truncation/guideline allocation now feeds
+CameraPos/ScreenPos, drawing and round camera resets. Full/pure races, fresh
+native replays and actual Go HUD/world inspections pass. Filtered world edges
+still differ; menus/SystemFit, other renderers, overdraw and complete camera/
+zoom/configuration semantics remain open. See COORDINATES.md.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

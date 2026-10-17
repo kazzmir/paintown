@@ -78,6 +78,29 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 	}
 }
 
+func TestStockStageCropSurvivesCameraUpdatesAndRoundReset(t *testing.T) {
+	base := stockMatch(t, 99)
+	options := base.Options
+	options.StageCrop, options.GameSpace = true, coord.Space{Width: 1280, Height: 720}
+	m, err := New(base.Request, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	check := func() {
+		t.Helper()
+		if m.Options.GameSpace != (coord.Space{1280, 720}) || m.CameraY != 140 || m.Viewport.CropY != 140 || m.Viewport.CameraY != 140 {
+			t.Fatal("native StageFit=0 crop lost", m.Options.GameSpace, m.CameraY, m.Viewport)
+		}
+	}
+	check()
+	advanceUntil(t, m, Active, 600)
+	check()
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	check()
+}
+
 func TestStockMatchTimeOverUsesLifeFraction(t *testing.T) {
 	m := stockMatch(t, 1)
 	advanceUntil(t, m, Active, 600)

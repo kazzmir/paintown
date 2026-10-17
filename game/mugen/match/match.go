@@ -41,6 +41,7 @@ type Options struct {
 	MotifSpace                   coord.Space
 	MaxEffects                   int
 	SuperTargetDefenceMul        float64
+	StageCrop                    bool // false preserves the default StageFit=1
 }
 
 type Phase int
@@ -99,13 +100,14 @@ func New(request Request, options Options) (*Match, error) {
 	if err != nil {
 		return nil, fmt.Errorf("match stage: %w", err)
 	}
-	options.GameSpace, err = coord.GameSpaceForStage(options.GameSpace.Width, m.Stage.StageInfo.LocalCoord)
+	m.Viewport, err = coord.StageViewport(options.GameSpace, m.Stage.StageInfo.LocalCoord, !options.StageCrop, m.Stage.Camera.CutHigh, m.Stage.Camera.CutLow)
 	if err != nil {
 		return nil, err
 	}
+	options.GameSpace = m.Viewport.Space
 	m.Options = options
 	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(options.GameSpace)
-	m.Viewport = &coord.Viewport{Space: options.GameSpace, GroundY: m.Stage.StageInfo.ZOffset * stageToGame, Zoom: 1}
+	m.Viewport.GroundY = m.Stage.StageInfo.ZOffset * stageToGame
 	m.Fight, err = fight.Load(options.FightPath, options.RootDir)
 	if err != nil {
 		return nil, fmt.Errorf("match fight screen: %w", err)
@@ -154,7 +156,7 @@ func (m *Match) resetRound() error {
 	m.TimeLeft = m.Options.RoundTime
 	s := m.Stage
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
-	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale
+	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	for slot, p := range m.Players {
 		previous := p.Character
@@ -365,6 +367,6 @@ func (m *Match) updateCamera() {
 	}
 	m.CameraX = math.Max(m.Stage.Camera.BoundLeft*scale, math.Min(m.Stage.Camera.BoundRight*scale, x))
 	y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
-	m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y))
+	m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y)) + m.Viewport.CropY
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 }

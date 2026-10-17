@@ -56,6 +56,9 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
+	if _, fight := e.currentState.(*FightState); fight {
+		return max(1, outsideWidth), max(1, outsideHeight)
+	}
 	return e.logicalWidth, e.logicalHeight
 }
 
@@ -83,10 +86,10 @@ func main() {
 	width := cfg.Video.Width
 	height := cfg.Video.Height
 	if width == 0 {
-		width = 320
+		width = cfg.Config.GameWidth
 	}
 	if height == 0 {
-		height = 240
+		height = cfg.Config.GameHeight
 	}
 
 	// Initialize Input Manager

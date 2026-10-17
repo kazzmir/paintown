@@ -69,14 +69,16 @@ type MugenConfig struct {
 		StartStage     string
 	}
 	Video struct {
-		Width      int
-		Height     int
-		Depth      int
-		Stretch    bool
-		DoubleRes  int
-		VRetrace   bool
-		FullScreen bool
-		BlitMode   string
+		Width                           int
+		Height                          int
+		Depth                           int
+		Stretch                         bool
+		DoubleRes                       int
+		VRetrace                        bool
+		FullScreen                      bool
+		BlitMode                        string
+		RenderMode                      string
+		StageFit, SystemFit, KeepAspect bool
 	}
 	Sound  SoundConfig
 	Arcade struct {
@@ -140,6 +142,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	cfg := &MugenConfig{}
 	cfg.Sound = DefaultSoundConfig()
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
+	cfg.Video.StageFit, cfg.Video.SystemFit, cfg.Video.KeepAspect = true, true, true
 	// Set some defaults
 	cfg.Config.GameSpeed = 60
 	cfg.Config.DrawShadows = true
@@ -256,6 +259,14 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					cfg.Video.FullScreen = getBool(attr.Value)
 				case "blitmode":
 					cfg.Video.BlitMode = getString(attr.Value)
+				case "rendermode":
+					cfg.Video.RenderMode = getString(attr.Value)
+				case "stagefit":
+					cfg.Video.StageFit = getBool(attr.Value)
+				case "systemfit":
+					cfg.Video.SystemFit = getBool(attr.Value)
+				case "keepaspect":
+					cfg.Video.KeepAspect = getBool(attr.Value)
 				}
 			}
 		case strings.HasPrefix(name, "sound"):
@@ -425,8 +436,14 @@ func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
 	if ext.Video.Height > 0 {
 		cfg.Video.Height = ext.Video.Height
 	}
-	cfg.Video.FullScreen = ext.Video.FullScreen
-	cfg.Video.VRetrace = ext.Video.VSync
+	for _, flag := range []struct{ target, source *bool }{
+		{&cfg.Video.FullScreen, ext.Video.FullScreen}, {&cfg.Video.VRetrace, ext.Video.VSync},
+		{&cfg.Video.StageFit, ext.Video.StageFit}, {&cfg.Video.SystemFit, ext.Video.SystemFit}, {&cfg.Video.KeepAspect, ext.Video.KeepAspect},
+	} {
+		if flag.source != nil {
+			*flag.target = *flag.source
+		}
+	}
 
 	// Merge Keys
 	applyKeys := func(target *Keys, source map[string]string) {

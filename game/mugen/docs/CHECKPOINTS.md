@@ -4,6 +4,28 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4w — Shared fight HUD projection and native stage cropping
+
+Ten native cases pin 240 numeric values and twenty original marker cores.
+StageFit=0 changes script-visible game/screen height and the stage's top cut,
+with native integer stage-unit truncation and high/low guideline allocation.
+Fight HUD uses motif-width conversion and the world's physical transform/top
+origin. SystemFit does not change these fight scenes; KeepAspect fits or
+stretches the effective viewport into the actual window. See COORDINATES.md.
+
+Match camera updates/reset preserve the crop. CFG/YAML flags load without
+discarding explicit false or resetting absent video values. Window defaults
+follow configured game dimensions; Fight Layout uses actual window dimensions.
+The prior independent-HUD fit assertion is superseded. Full scoped/pure coord
+races and fresh fractional-crop/stretch native replays pass. Three actual Go
+windows show exact HUD marker cores and matching world marker centers. Filtered
+world edges still differ and remain documented; no framebuffer parity is claimed.
+
+M4v's reversal point is `4c1391e5`. The original distribution/root module/desktop
+are preserved. Menu/SystemFit behavior, System/DirectX fallbacks, tall overdraw,
+additional cut/zoom/camera schemas and raster fidelity remain open. Continue
+world/entity/target identity and runtime redirection before full combat ownership.
+
 ## M4v — SuperPause, frozen contacts and presentation ownership
 
 Thirty-eight native programs pin 600 numeric observations, ten static render

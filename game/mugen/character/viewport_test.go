@@ -17,14 +17,15 @@ import (
 )
 
 type viewportReference struct {
-	CNSHash   string `json:"cns_sha256"`
-	AIRHash   string `json:"air_sha256"`
-	Local     string `json:"localcoord"`
-	Width     int    `json:"game_width"`
-	Height    int    `json:"game_height"`
-	Stage     string `json:"stage"`
-	Version   string `json:"mugenversion"`
-	LoadError string `json:"load_error"`
+	CNSHash   string         `json:"cns_sha256"`
+	AIRHash   string         `json:"air_sha256"`
+	Local     string         `json:"localcoord"`
+	Width     int            `json:"game_width"`
+	Height    int            `json:"game_height"`
+	Stage     string         `json:"stage"`
+	Version   string         `json:"mugenversion"`
+	LoadError string         `json:"load_error"`
+	Video     map[string]int `json:"video"`
 	Captures  []struct{ Variables map[string]float64 }
 }
 
@@ -78,12 +79,21 @@ func runViewportReference(t *testing.T, stem string, reference viewportReference
 	if width == 0 {
 		width = 1280
 	}
-	space, err := coord.GameSpaceForStage(width, background.StageInfo.LocalCoord)
+	height := reference.Height
+	if height == 0 {
+		height = 720
+	}
+	fit := true
+	if value, present := reference.Video["StageFit"]; present {
+		fit = value != 0
+	}
+	view, err := coord.StageViewport(coord.Space{Width: width, Height: height}, background.StageInfo.LocalCoord, fit, background.Camera.CutHigh, background.Camera.CutLow)
 	if err != nil {
 		t.Fatal(err)
 	}
+	space := view.Space
 	stageScale, _ := background.StageInfo.LocalCoord.ScaleTo(space)
-	view := &coord.Viewport{Space: space, CameraX: background.Camera.StartX * stageScale, CameraY: background.Camera.StartY * stageScale, GroundY: background.StageInfo.ZOffset * stageScale, Zoom: 1}
+	view.CameraX, view.CameraY, view.GroundY = background.Camera.StartX*stageScale, background.Camera.StartY*stageScale+view.CropY, background.StageInfo.ZOffset*stageScale
 	local, err := coord.Parse(reference.Local)
 	if err != nil {
 		t.Fatal(err)
@@ -120,6 +130,21 @@ func runViewportReference(t *testing.T, stem string, reference viewportReference
 				t.Errorf("fvar(%d)=%v native=%v", index, got, want)
 			}
 		}
+	}
+}
+
+func TestNativeVideoFitCoordinates(t *testing.T) {
+	stem := "../tests/testdata/reference/video-fit"
+	data, err := os.ReadFile(stem + ".json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var catalogue struct{ Cases map[string]viewportReference }
+	if err := json.Unmarshal(data, &catalogue); err != nil {
+		t.Fatal(err)
+	}
+	for name, reference := range catalogue.Cases {
+		t.Run(name, func(t *testing.T) { runViewportReference(t, stem, reference) })
 	}
 }
 

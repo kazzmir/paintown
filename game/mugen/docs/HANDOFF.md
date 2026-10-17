@@ -420,11 +420,28 @@ captures, Go window captures and audio probes sequentially on :97/private Pulse;
 the final serial paths/hashes are recorded in SUPERPAUSE.md. Pure tests with no
 DISPLAY can run alongside; full Ebiten tests must also wait for captures.
 
-Next compare StageFit/SystemFit/KeepAspect and HUD projection: native loads
+M4v identified StageFit/SystemFit/KeepAspect and HUD projection for comparison: native loads
 data/mugen1/fight.def and places portraits near X=172/Y=14, while Go's independent
 HUD fit puts them near X=16/Y=16. World margins/marker coordinates are correct,
 but M4q did not establish native HUD/full framebuffer parity. Then continue
 world/entity/target ownership, complete HitDef/input/effect/audio/mode gates.
+
+M4v is commit `4c1391e5`. M4w fixes fight HUD projection and StageFit=0 cropping.
+Ten native cases pin 240 numbers/twenty marker cores. Top cuts truncate in stage
+units, honor high/low guidelines, and feed CameraPos/ScreenPos and rendering.
+HUD uses motif-width conversion and the world's physical transform/top origin.
+KeepAspect fits or stretches the effective viewport into the real window;
+SystemFit=0 leaves these fight scenes unchanged. See COORDINATES.md.
+
+Full races and pure coordinate races pass; fresh crop765/window-stretch native
+replays reproduce packets/core hashes. Actual Go windows have exact HUD cores
+and matching world centers, but filtered world edges remain smaller. Do not
+claim framebuffer parity. Video flags and presence-aware YAML overrides are
+retained, and default window size follows game configuration. Menus/SystemFit,
+other renderers/forced-fit fallbacks, tall overdraw, other guidelines, camera/
+zoom and full raster parity remain open. Next separate world/entity/input IDs,
+opponents/acquired targets and runtime redirection before complete combat
+ownership. Keep native/Go captures and Ebiten tests sequential on :97.
 
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;

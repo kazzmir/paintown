@@ -273,3 +273,14 @@ and static colors. The continuously frozen other-pause fixture records
 in metadata. Audio fixtures use sound_probe.py and require the private null-sink
 monitor. Run native/Go captures, audio and full Ebiten tests sequentially on the
 private display; overlapping windows/audio invalidate capture provenance.
+
+
+Fight viewport cases run with reference_probe.py --fixture video-fit --case
+CASE --name UNIQUE, or video_render_probe.py --case CASE --name UNIQUE for both
+numeric replay and original HUD/world marker comparison. Cases retain --video
+StageFit/SystemFit/KeepAspect/Width/Height and --hud-marker recipes. The latter
+patches only disposable fight definitions to use the original authored ramp.
+All ten packets run through Character, and pure coord tests compare native
+projection boundaries with a one-pixel fractional core tolerance. Actual Go
+window inspections distinguish projection from the still-different filtered
+world edges; see COORDINATES.md. No full framebuffer claim follows from them.
