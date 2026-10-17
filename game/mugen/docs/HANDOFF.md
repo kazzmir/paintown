@@ -4,15 +4,35 @@ Updated: 2026-10-16. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+Latest M4ab work: typed TargetBind, 53 native programs/840 values/ten load
+rejections; full scoped races and seven fresh representative native replays
+pass. Constraints apply before the target's negative pass, convert mixed
+coordinates, inherit world velocity, and release on expiry/cancel/drop/new hit/
+recovery while H-to-H changes retain them. Own CNS writes and shared late body
+push remain effective. Literal float Time/ID rejects at load but float-valued
+expressions coerce; tuple/bottom cases are pinned. Turn preserves world velocity.
+See BINDING.md. The initial H-only push inference was confounded by missing
+Clsn2 and is disproved: both H/I push with hurtboxes; missing Clsn2 excludes push.
+The final code uses hurtbox gating. No complete TargetBind/world parity claim.
+The real with-box Go match runs through seven-second 1280x720 captures at
+temp/app-runs/targetbind-with-box-go/. Sustained movement reaches an edge;
+camera/body-edge/framebuffer parity remains open. Root module hashes match.
+
+Next integrate HitDef p1stateno/p2stateno/p2getp1state to reach stock throws using
+the measured state/animation/binding paths. Then complete BindToTarget/Parent/
+Root and helper negative/keyctrl/world phases; compare pause/foreign/multi-target/
+retirement binding edges, remaining hit schemas and all input/render/audio/mode/
+asset gates. Native bottom-power instability and camera/filtering gaps remain.
+
 M4aa follows M4z: three native root-phase programs/48 values prove each ordered
 root completes CNS, pending damage, physics and clocks before the next root's
 CNS. Body push remains a shared late phase. The first per-root-push draft
 failed old native push/guard/viewport cases; separating late push restores the
 full scoped race suite. See WORLD.md. Two-sided trade life observations
 supersede the old all-roots-post-CNS damage interpretation. TargetBind probes
-exposed this gap; the binding controllers themselves are still in progress.
+exposed this gap; M4ab subsequently implements the measured root TargetBind path.
 
-Latest work is M4z: eleven native ownership programs, 200 distinct per-program
+The prior M4z checkpoint adds eleven native ownership programs, 200 distinct per-program
 observations (216 capture entries), compared through the production Character
 scheduler. TargetState selects borrowed definitions with deferred entry after
 negative states; ChangeState retains them and SelfState restores own definitions.

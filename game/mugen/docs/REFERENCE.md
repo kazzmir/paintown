@@ -686,3 +686,20 @@ life while its own life is pending. The old single-sided trade evidence remains
 valid but could not distinguish this from one shared post-CNS damage phase.
 Shared late push is retained by the earlier push/guard/viewport packets. See
 WORLD.md for the order, failed-draft evidence and remaining entity/world limits.
+
+## TargetBind, literal typing and independent hurtbox controls (M4ab)
+
+Fifty-three original programs pin 840 numeric values and ten expected load
+rejections. Changing anchor velocities distinguish real duration/release from
+an expired target continuing at inherited velocity. Mixed profiles, facing,
+ID/no target, defaults, renewal/cancel/drop, new hit/recovery/H-to-H retention,
+negative timing and competing CNS writes are compared. Literal integer fields
+reject float literals while float-valued expressions coerce; tuple/bottom and
+comma-expression cases are pinned. Independent H/I and hurtbox-present/absent
+controls disprove an initial H-only push inference. See BINDING.md.
+
+Full scoped races pass. Seven representative fresh native replays reproduce
+packets/rejections. A 1280x720 Go with-box match runs through seven-second window
+captures; actors reach an edge under sustained scripted motion, so this does
+not establish camera/body-edge/framebuffer parity. All original reference
+assets, root module hashes and desktop settings remain unchanged.

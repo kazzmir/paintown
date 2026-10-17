@@ -7,6 +7,14 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ab adds typed TargetBind and 53 native programs: 840 numbers/ten load rejections.
+Measured duration, units, facing, queue timing, ownership cleanup, CNS writes,
+literal/expression typing and tuple/bottom behavior match. Independent controls
+require current hurtboxes for push, including H actors; late push can move bound
+actors. Turn preserves world momentum. Full scoped races and representative
+fresh replays pass. Other bind controllers, complete throws/HitDef fields,
+pause/entity/foreign-state interactions remain open; see BINDING.md.
+
 M4aa adds three native root-phase programs/48 numbers. Each ordered root now
 completes CNS, pending damage, physics and clocks before the next root's CNS.
 The second side of a trade sees already-reduced opponent life. Body push stays
@@ -396,7 +404,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | SndPan | Stub | 0 | Registered handler has no effective implementation. |
 | StopSnd | Stub | 0 | Registered handler has no effective implementation. |
 | SuperPause | Stub | 4 | Registered handler has no effective implementation. |
-| TargetBind | Stub | 18 | Registered handler has no effective implementation. |
+| TargetBind | Partial | 18 | Typed acquired-target constraint, native duration/geometry/lifecycle/grammar/root phases; full pause/entity/foreign cases remain open. |
 | TargetDrop | Stub | 0 | Registered handler has no effective implementation. |
 | TargetFacing | Stub | 2 | Registered handler has no effective implementation. |
 | TargetLifeAdd | Stub | 2 | Registered handler has no effective implementation. |
@@ -405,7 +413,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | TargetVelAdd | Stub | 0 | Registered handler has no effective implementation. |
 | TargetVelSet | Stub | 0 | Registered handler has no effective implementation. |
 | Trans | Stub | 0 | Registered handler has no effective implementation. |
-| Turn | Present | 10 | Flips facing; local momentum/drawing interactions need reference tests. |
+| Turn | Partial | 10 | Preserves world momentum when facing flips; native binding trace compared, full entity/render edges open. |
 | VarAdd | Present | 1 | Literal index/value only; alternate var/fvar forms and expressions missing. |
 | VarRandom | Stub | 0 | Registered handler has no effective implementation. |
 | VarRangeSet | Present | 2 | Uses range instead of complete first/last/value/fvalue schema. |

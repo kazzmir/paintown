@@ -1,0 +1,109 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+movetype=A
+physics=N
+anim=9990
+ctrl=0
+[State 700, hold round]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State 700, moving anchor]
+type=VelSet
+trigger1=Time=1
+x=2
+y=0
+
+[State 700, approach hit victim]
+type=PosSet
+trigger1=Time=2
+x=40
+
+[State 700, record 0]
+type=VarSet
+trigger1=Time=2
+fv=0
+value=Pos X
+
+[State 700, record 1]
+type=VarSet
+trigger1=Time=2
+fv=1
+value=Enemy,Pos X
+
+[State 700, record 2]
+type=VarSet
+trigger1=Time=2
+fv=2
+value=Enemy,Pos X
+
+[State 700, record 3]
+type=VarSet
+trigger1=Time=2
+fv=3
+value=Enemy,Pos Y
+
+[State 700, record 4]
+type=VarSet
+trigger1=Time=2
+fv=4
+value=Enemy,Vel X
+
+[State 700, record 5]
+type=VarSet
+trigger1=Time=3
+fv=5
+value=Pos X
+
+[State 700, record 6]
+type=VarSet
+trigger1=Time=3
+fv=6
+value=Enemy,Pos X
+
+[State 700, record 7]
+type=VarSet
+trigger1=Time=3
+fv=7
+value=Enemy,Pos Y
+
+[State 700, record 8]
+type=VarSet
+trigger1=Time=3
+fv=8
+value=Enemy,Vel X
+
+[State 700, record 9]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=Enemy,FVar(0)
+
+[State 700, record 10]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=Enemy,FVar(1)
+
+[State 700, record 11]
+type=VarSet
+trigger1=Time=4
+fv=11
+value=Enemy,Pos X

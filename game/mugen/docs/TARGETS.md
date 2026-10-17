@@ -109,9 +109,9 @@ replacement, super-scaled life, mixed velocity, lazy coordinate scope, negative
 phases and a required-value rejection. Source/CMD/AIR/executable hashes are pinned.
 The original distribution, root modules and desktop settings remain unchanged.
 
-M4z adds the measured TargetState/ChangeAnim2/SelfState ownership path. Next:
-TargetBind and BindToTarget/Parent/Root clocks and geometry, HitDef state fields;
-then complete helper typed
+M4z adds the measured TargetState/ChangeAnim2/SelfState ownership path, and M4ab
+implements the root TargetBind path; see BINDING.md. Next: HitDef state fields
+and BindToTarget/Parent/Root clocks/geometry, then complete helper typed
 parameters/negative eligibility, multi-target/neutral/team rules and projectile
 world phases. The unresolved bottom-power native defect from BOTTOM.md remains
 open. These tests do not promote any whole controller/trigger to Verified.

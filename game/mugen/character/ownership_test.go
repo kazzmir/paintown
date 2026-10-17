@@ -22,6 +22,10 @@ func TestNativeRootUpdatePhases(t *testing.T) {
 	replayNativeWorldPrograms(t, "phase-*.json", 3)
 }
 
+func TestNativeTargetBindings(t *testing.T) {
+	replayNativeWorldPrograms(t, "binding-*.json", 53)
+}
+
 func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	stock, err := os.ReadFile("../temp/mugen-1.1b1/chars/kfm/kfm.cns")
@@ -49,6 +53,7 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 				P2Fixture string            `json:"p2_fixture"`
 				P2Hash    map[string]string `json:"p2_sha256"`
 				P2Local   string            `json:"p2_localcoord"`
+				Error     string            `json:"expected_load_error"`
 				Captures  []struct{ Variables map[string]float64 }
 			}
 			if err := json.Unmarshal(data, &reference); err != nil {
@@ -82,6 +87,13 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 			players := []*Character{
 				load(strings.TrimSuffix(path, ".json"), map[string]string{"cns": reference.CNSHash, "air": reference.AIRHash, "cmd": reference.CMDHash}),
 				load(filepath.Join(filepath.Dir(path), reference.P2Fixture), reference.P2Hash),
+			}
+			if reference.Error != "" {
+				err := players[0].SM.CompileState(players[0].StateFile.States[700])
+				if err == nil || !strings.Contains(err.Error(), "state 700 controller") || !strings.Contains(err.Error(), filepath.Base(strings.TrimSuffix(path, ".json"))+".cns") {
+					t.Fatal("native malformed binding was not rejected with source context", err)
+				}
+				return
 			}
 			world := NewWorld(56)
 			if err := world.AddRoots(players...); err != nil {

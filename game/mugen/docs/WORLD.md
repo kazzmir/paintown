@@ -77,3 +77,9 @@ Continue binding and HitDef custom-state parameters, then helper keyctrl/
 negative eligibility, helper creation/deletion/global phases and projectiles.
 Nested legacy helper Update still owns an incomplete timeline/phase adapter.
 Full state-machine/engine compatibility remains unfinished.
+
+M4ab now implements measured TargetBind and adds hurtbox gating to this late
+body-push phase. Independent controls show H and I both push when both actors
+have Clsn2; absent Clsn2 excludes push. CNS widths provide horizontal extents,
+and bound actors can still be displaced by shared late push. See BINDING.md;
+full vertical/frame/helper/width/pause eligibility remains open.

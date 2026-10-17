@@ -51,6 +51,8 @@ type Character struct {
 	stateOwner        *Character
 	pendingStateEntry *cns.StateDef
 	allowMissingState bool
+	binding           *actorBinding
+	boundThisTick     bool
 	LocalCoord        coord.Space
 	GameCoord         coord.Space
 	Viewport          *coord.Viewport
@@ -310,6 +312,7 @@ func (c *Character) Update() {
 }
 
 func (c *Character) startTick() bool {
+	c.boundThisTick = false
 	if c.Viewport != nil && c.Viewport.Space.Width > 0 {
 		scale := float64(c.LocalCoordinateWidth()) / float64(c.Viewport.Space.Width)
 		c.CameraX = c.Viewport.CameraX * scale
@@ -348,6 +351,7 @@ func (c *Character) runStateTick() bool {
 		c.bufferPausedCommands()
 		return true
 	}
+	c.prepareBinding()
 	c.pausedThisTick = c.HitPauseTime > 0
 	isPaused := c.IsPaused()
 	// Clear frame-local specials
@@ -416,7 +420,7 @@ func (c *Character) finishTick() {
 	// 5. Physics and Time update
 	if !isPaused && !c.worldFrozen {
 		for {
-			if !c.PosFrozen {
+			if !c.PosFrozen && !c.boundThisTick {
 				// VelX is in CHARACTER-LOCAL space (positive = toward opponent).
 				// Multiply by Facing to get world-space displacement.
 				c.X += c.VelX * float64(c.Facing)
@@ -494,6 +498,7 @@ func (c *Character) finishTick() {
 			c.MoveGuarded++
 		}
 		c.UpdateAnimation()
+		c.ageBinding()
 	}
 
 	// 6. Update Helpers, Projectiles, Explods
@@ -644,6 +649,7 @@ func (c *Character) GetVel() (float64, float64) {
 
 func (c *Character) Turn() {
 	c.Facing = -c.Facing
+	c.VelX = -c.VelX
 }
 
 func (c *Character) SetCtrl(ctrl bool) {
@@ -964,7 +970,22 @@ func (c *Character) BindToTarget(params map[string]string) {
 }
 
 func (c *Character) TargetBind(params map[string]string) {
-	// Logic: set target position relative to self axis
+	p := engine.TargetBindParameters{Time: 1, ID: -1}
+	if value, present := params["time"]; present {
+		p.Time, _ = strconv.Atoi(value)
+	}
+	if value, present := params["id"]; present {
+		p.ID, _ = strconv.Atoi(value)
+	}
+	if pos := cns.ParseFloatList(params["pos"]); len(pos) > 0 {
+		p.X = pos[0]
+		if len(pos) > 1 {
+			p.Y = pos[1]
+		}
+	}
+	if err := c.BindTargets(p); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) TargetDrop(id int) {
@@ -1612,17 +1633,18 @@ func (c *Character) ApplyFriction() {
 }
 
 func (c *Character) ResolvePushCollision() {
-	if c.StateFile == nil || c.PushDisabled {
+	if c.StateFile == nil || c.PushDisabled || !c.hasPushBox() {
 		return
 	}
-	// Only push if on ground and not in hit state
+	// Native body push needs hurtboxes on both actors, including hit states;
+	// its horizontal extents still come from CNS size rather than Clsn2 width.
 	st := strings.ToUpper(c.StateType)
 	if st != "S" && st != "C" {
 		return
 	}
 
 	for _, other := range c.Opponents {
-		if other.PushDisabled {
+		if other.PushDisabled || !other.hasPushBox() {
 			continue
 		}
 		othSt := strings.ToUpper(other.StateType)
@@ -1935,6 +1957,7 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 }
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
+	c.binding = nil
 	if err := c.contactEffect(attacker, hit, guarded); err != nil {
 		c.RuntimeError = fmt.Errorf("player %d contact effect: %w", c.InputSlot, err)
 		return 0

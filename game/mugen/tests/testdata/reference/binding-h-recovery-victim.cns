@@ -1,0 +1,70 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 701, velocity]
+type=VelSet
+trigger1=Time=0
+x=3
+y=0
+
+[State 701, wait]
+type=Null
+trigger1=1
+[State 701, reset counts]
+type=VarRangeSet
+trigger1=Time=0
+first=30
+last=32
+value=0
+[State 701, recover]
+type=SelfState
+trigger1=Time=2
+value=702
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, velocity]
+type=VelSet
+trigger1=Time=0
+x=3
+y=0
+
+[State 5000, record 0]
+type=VarSet
+trigger1=Time=1
+fv=0
+value=Pos X
+
+[State 5000, record 1]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=Pos Y
+[Statedef 702]
+movetype=I
+physics=N
+[State 702, stay]
+type=Null
+trigger1=1

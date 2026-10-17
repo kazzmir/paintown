@@ -13,6 +13,11 @@ func (c *Character) PositionOf(other *Character) (float64, float64) {
 	return other.X * scale, other.Y * scale
 }
 
+func (c *Character) hasPushBox() bool {
+	element := c.CurrentElement()
+	return element != nil && len(element.Clsn2) > 0
+}
+
 func (c *Character) bodyWidths() (front, back float64) {
 	if c.StateFile == nil {
 		return 0, 0

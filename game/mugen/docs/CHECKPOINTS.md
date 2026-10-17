@@ -4,6 +4,36 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ab — Target binding, literal grammar and native hurtbox push gating
+
+Fifty-three original native programs pin 840 numeric observations and ten load
+rejections. Typed TargetBind queues actor constraints with duration/default/
+negative rules, anchor-relative offsets, mixed units and inherited world velocity.
+Binding applies before the target's negative pass; own CNS writes and shared
+late push can change its position. Expiry keeps velocity; renewal/cancel,
+TargetDrop, new hits, recovery and H-to-H retention are distinguished. See
+BINDING.md for the exact scope and remaining controller/entity/pause cases.
+
+Literal float integer parameters are rejected at load, including grouped/signed
+literals; float-valued expressions are coerced at runtime. Tuple omission/arity,
+redirect/function commas and bottom-zero boundaries have native packets and
+contextual Go validation. Turn now preserves world momentum.
+
+Independent H/I and hurtbox-present/absent controls disproved the first H-only
+push inference: both move types push with hurtboxes, while missing Clsn2 excludes
+push. The provisional H exclusion was removed. Horizontal extents still use CNS
+widths; bound actors can be moved by the shared late push phase.
+
+Full scoped races pass with every packet. Seven representative fresh native
+replays match numeric/default/mixed/lifecycle and load-rejection observations.
+The real 1280x720 Go with-box match runs through seven-second captures without
+runtime errors; actors reach an edge under sustained scripted movement. Camera/
+body-edge/framebuffer parity is not claimed. Root module hashes remain unchanged.
+Full throws still
+need HitDef state fields; other binding controllers, complete Pause/SuperPause,
+foreign/helper/team/retirement and rendering/input/mode gates remain open.
+M4aa's reversal point is `9b07b9af`. No whole controller is promoted to Verified.
+
 ## M4aa — Per-root CNS/damage/physics clocks and shared late push
 
 Three independent native programs pin 48 numbers. A later root sees the earlier

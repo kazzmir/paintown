@@ -327,3 +327,16 @@ The first two use --pages 0; the trade uses --pages 0 12. TestNativeRootUpdatePh
 compares all 48 numbers. These packets distinguish per-root movement/clocks/
 damage from shared late body push; see WORLD.md. The initial intro-Time draft
 and per-root-push implementation are diagnostic only, not passing evidence.
+
+
+Binding cases use the independent-opponent recipe, for example --fixture
+binding-target-2 --p2-fixture binding-victim --pages 0 12 --mugenversion 1.1
+--clipboard-in-cmd --bank fvar --seconds 7 --name UNIQUE. The mixed fixture adds
+--p2-localcoord 1280,960. Each packet records its own opponent fixture; use that
+name for the recovery/mutation/negative/push controls. Grammar rejection packets
+have expected_load_error and no numeric captures; replay with --pages 0.
+TestNativeTargetBindings compares 53 programs/840 numbers/ten contextual load
+failures. Early constant-speed duration runs could not distinguish release
+from continued matching velocity; current packets use a changing anchor.
+Independent hurtbox controls replace the disproved H-only push inference.
+See BINDING.md for scope, exact defaults and remaining pause/entity/throw work.

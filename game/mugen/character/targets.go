@@ -7,6 +7,7 @@ import (
 )
 
 func (c *Character) DropTargets(p engine.TargetDropParameters) error {
+	previous := append([]*Character(nil), c.targetOrder...)
 	keep := c.acquiredTargets(p.ExcludeID, true)
 	if p.ExcludeID < 0 {
 		keep = nil
@@ -20,6 +21,11 @@ func (c *Character) DropTargets(p engine.TargetDropParameters) error {
 	kept := make(map[*Character]hitTarget, len(keep))
 	for _, target := range keep {
 		kept[target] = c.hitTargets[target]
+	}
+	for _, target := range previous {
+		if _, retained := kept[target]; !retained && target.binding != nil && target.binding.anchor == c {
+			target.binding = nil
+		}
 	}
 	c.hitTargets, c.targetOrder = kept, keep
 	return nil
