@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/air"
@@ -149,6 +150,11 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		return nil, err
 	}
 	merge(common)
+	version := strings.TrimSpace(def.Info["mugenversion"])
+	if version == "" {
+		version = "legacy"
+	}
+	master.SetLanguageVersion(version)
 	p := &Player{Dir: baseDir, DefPath: defPath, Definition: def, CMD: commandData,
 		LocalCoord: local,
 		Commands:   NewCommandBuffer(120), PlayerID: 1}
@@ -197,6 +203,21 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	p.Character.LocalCoord = local
 	p.Character.Palettes = palette.New(p.SFF)
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR
+	ids := make([]int, 0, len(master.States))
+	for id := range master.States {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+	for _, id := range ids {
+		// Resource files can declare empty states. Their runtime behavior is
+		// still a separate audit; validate every executable program on load.
+		if len(master.States[id].Controllers) == 0 {
+			continue
+		}
+		if err := p.Character.SM.CompileState(master.States[id]); err != nil {
+			return nil, fmt.Errorf("%s state program: %w", defPath, err)
+		}
+	}
 	return p, nil
 }
 

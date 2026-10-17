@@ -41,6 +41,7 @@ type Character struct {
 	StateFile  *cns.CNS
 	LocalCoord coord.Space
 	GameCoord  coord.Space
+	Viewport   *coord.Viewport
 	Palettes   *palette.State
 
 	// AIR data containing animation definitions
@@ -281,6 +282,11 @@ func (c *Character) Update() {
 }
 
 func (c *Character) startTick() bool {
+	if c.Viewport != nil && c.Viewport.Space.Width > 0 {
+		scale := float64(c.LocalCoordinateWidth()) / float64(c.Viewport.Space.Width)
+		c.CameraX = c.Viewport.CameraX * scale
+		c.ScreenWidth = c.LocalCoordinateWidth()
+	}
 	if c.RuntimeError != nil {
 		return false
 	}
@@ -771,6 +777,7 @@ func (c *Character) Helper(params map[string]string) {
 	h.BindEffects(c.EffectQueue, c.CommonEffects)
 	h.LocalCoord = c.LocalCoord
 	h.GameCoord = c.GameCoord
+	h.Viewport = c.Viewport
 	h.Palettes = c.Palettes
 	if c.Palettes != nil && params["ownpal"] == "1" {
 		h.Palettes = c.Palettes.Clone()
@@ -813,6 +820,7 @@ func (c *Character) Projectile(params map[string]string) {
 	p.BindEffects(c.EffectQueue, c.CommonEffects)
 	p.LocalCoord = c.LocalCoord
 	p.GameCoord = c.GameCoord
+	p.Viewport = c.Viewport
 	p.Palettes = c.Palettes
 	if c.Palettes != nil && params["ownpal"] == "1" {
 		p.Palettes = c.Palettes.Clone()

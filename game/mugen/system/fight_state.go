@@ -2,7 +2,6 @@ package main
 
 import (
 	"image/color"
-	"math"
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -71,49 +70,47 @@ func (s *FightState) Update() (State, error) {
 
 func (s *FightState) Draw(screen *ebiten.Image) {
 	m := s.match
-	stageSpace := m.Stage.StageInfo.LocalCoord
-	gameSpace := m.Options.GameSpace
+	stageSpace, gameSpace := m.Stage.StageInfo.LocalCoord, m.Options.GameSpace
+	motifSpace := s.engine.motif.Info.LocalCoord
 	if s.stageCanvas == nil {
 		s.stageCanvas = ebiten.NewImage(stageSpace.Width, stageSpace.Height)
 		s.gameCanvas = ebiten.NewImage(gameSpace.Width, gameSpace.Height)
-		s.hudCanvas = ebiten.NewImage(s.engine.motif.Info.LocalCoord.Width, s.engine.motif.Info.LocalCoord.Height)
+		s.hudCanvas = ebiten.NewImage(motifSpace.Width, motifSpace.Height)
 	}
-	s.stageCanvas.Fill(color.Black)
 	toStage, _ := gameSpace.ScaleTo(stageSpace)
+	stageToGame, _ := stageSpace.ScaleTo(gameSpace)
 	cameraX, cameraY := m.CameraX*toStage, m.CameraY*toStage
+	s.stageCanvas.Fill(color.Black)
 	m.Stage.Draw(s.stageCanvas, cameraX, cameraY)
-	for _, p := range m.Players {
-		scale, _ := p.LocalCoord.ScaleTo(stageSpace)
-		c := p.Character
-		p.DrawScaled(s.stageCanvas, float64(stageSpace.Width)/2+c.X*scale-cameraX, m.Stage.StageInfo.ZOffset+c.Y*scale-cameraY, scale, scale)
-	}
-	s.drawEffects(s.stageCanvas)
-	m.Stage.DrawForeground(s.stageCanvas, cameraX, cameraY)
 	s.gameCanvas.Fill(color.Black)
-	scale, _ := stageSpace.ScaleTo(gameSpace)
-	// Cut suggestions distribute the aspect-ratio difference. Stock KFM's
-	// 35/25 split maps its floor to y=660 in the supplied 1280x720 profile.
-	difference := float64(stageSpace.Height) - float64(gameSpace.Height)/scale
-	top := difference / 2
-	if difference > 0 && m.Stage.Camera.CutHigh+m.Stage.Camera.CutLow > 0 {
-		top = difference * m.Stage.Camera.CutHigh / (m.Stage.Camera.CutHigh + m.Stage.Camera.CutLow)
-	} else if difference < 0 && m.Stage.Camera.OverdrawHigh+m.Stage.Camera.OverdrawLow > 0 {
-		top = difference * m.Stage.Camera.OverdrawHigh / (m.Stage.Camera.OverdrawHigh + m.Stage.Camera.OverdrawLow)
+	backgroundOptions := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
+	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
+	// Render actors/effects in the common game surface so HD sprites are not
+	// reduced to a low-resolution stage raster before the final viewport fit.
+	for _, p := range m.Players {
+		scale, _ := p.LocalCoord.ScaleTo(gameSpace)
+		c := p.Character
+		p.DrawScaled(s.gameCanvas, float64(gameSpace.Width)/2+c.X*scale-m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame+c.Y*scale-m.CameraY, scale, scale)
 	}
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(scale, scale)
-	op.GeoM.Translate(0, -top*scale)
-	s.gameCanvas.DrawImage(s.stageCanvas, op)
+	s.drawEffects(s.gameCanvas)
+	s.stageCanvas.Clear()
+	m.Stage.DrawForeground(s.stageCanvas, cameraX, cameraY)
+	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
 	s.hudCanvas.Clear()
 	s.hud.Draw(s.hudCanvas)
-	hudScale := float64(gameSpace.Width) / float64(s.hudCanvas.Bounds().Dx())
-	op = &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(hudScale, hudScale)
-	s.gameCanvas.DrawImage(s.hudCanvas, op)
 	screen.Fill(color.Black)
-	fit := math.Min(float64(screen.Bounds().Dx())/float64(gameSpace.Width), float64(screen.Bounds().Dy())/float64(gameSpace.Height))
-	op = &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(fit, fit)
-	op.GeoM.Translate((float64(screen.Bounds().Dx())-float64(gameSpace.Width)*fit)/2, (float64(screen.Bounds().Dy())-float64(gameSpace.Height)*fit)/2)
-	screen.DrawImage(s.gameCanvas, op)
+	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
+	drawFitted := func(surface *ebiten.Image, space coord.Space) {
+		scale, x, y, err := coord.Fit(space, target)
+		if err != nil {
+			return
+		}
+		options := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+		options.GeoM.Scale(scale, scale)
+		options.GeoM.Translate(x, y)
+		screen.DrawImage(surface, options)
+	}
+	drawFitted(s.gameCanvas, gameSpace)
+	drawFitted(s.hudCanvas, motifSpace)
 }

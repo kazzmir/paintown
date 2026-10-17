@@ -36,7 +36,7 @@ func compileSound(ctrl *cns.StateController, name string) (ControllerFunc, bool,
 				raw = raw[1:]
 			}
 		}
-		tuple, err := evaluator.ParseReferenceTuple(raw, 2)
+		tuple, err := evaluator.ParseReferenceTupleForVersion(raw, 2, ctrl.LanguageVersion)
 		if err != nil {
 			return nil, true, fmt.Errorf("value: %w", err)
 		}

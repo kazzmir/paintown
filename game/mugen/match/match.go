@@ -69,6 +69,7 @@ type Match struct {
 	CameraX, CameraY       float64 // common game-space units
 	SoundQueue             *sound.Queue
 	Effects                *effect.Scene
+	Viewport               *coord.Viewport
 	commonEffects          effect.Source
 	timeTicks              int
 	matchDone              bool
@@ -91,6 +92,13 @@ func New(request Request, options Options) (*Match, error) {
 	if err != nil {
 		return nil, fmt.Errorf("match stage: %w", err)
 	}
+	options.GameSpace, err = coord.GameSpaceForStage(options.GameSpace.Width, m.Stage.StageInfo.LocalCoord)
+	if err != nil {
+		return nil, err
+	}
+	m.Options = options
+	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(options.GameSpace)
+	m.Viewport = &coord.Viewport{Space: options.GameSpace, GroundY: m.Stage.StageInfo.ZOffset * stageToGame, Zoom: 1}
 	m.Fight, err = fight.Load(options.FightPath, options.RootDir)
 	if err != nil {
 		return nil, fmt.Errorf("match fight screen: %w", err)
@@ -139,12 +147,14 @@ func (m *Match) resetRound() error {
 	s := m.Stage
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale
+	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	for slot, p := range m.Players {
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
 		c.BindSound(m.SoundQueue, p.SND, m.Fight.CommonSounds)
 		c.LocalCoord = p.LocalCoord
 		c.GameCoord = m.Options.GameSpace
+		c.Viewport = m.Viewport
 		c.Palettes = palette.New(p.SFF)
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.PlayerID, p.PlayerID = slot+1, slot+1
@@ -340,4 +350,5 @@ func (m *Match) updateCamera() {
 	m.CameraX = math.Max(m.Stage.Camera.BoundLeft*scale, math.Min(m.Stage.Camera.BoundRight*scale, x))
 	y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
 	m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y))
+	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 }

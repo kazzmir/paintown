@@ -34,7 +34,7 @@ func (s *FightState) drawEffects(screen *ebiten.Image) {
 	}
 	used := map[effectImageKey]bool{}
 	m := s.match
-	toStage, _ := m.Options.GameSpace.ScaleTo(m.Stage.StageInfo.LocalCoord)
+	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	for _, instance := range m.Effects.Active {
 		el := instance.Clock.CurrentElement()
 		if el == nil || el.Group < 0 {
@@ -84,8 +84,8 @@ func (s *FightState) drawEffects(screen *ebiten.Image) {
 		op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 		op.GeoM.Scale(sx, sy)
 		op.GeoM.Translate(float64(el.XOffset*instance.Facing), float64(el.YOffset))
-		op.GeoM.Scale(source.Scale*toStage, source.Scale*toStage)
-		op.GeoM.Translate(float64(m.Stage.StageInfo.LocalCoord.Width)/2+(instance.X-m.CameraX)*toStage, m.Stage.StageInfo.ZOffset+(instance.Y-m.CameraY)*toStage)
+		op.GeoM.Scale(source.Scale, source.Scale)
+		op.GeoM.Translate(float64(m.Options.GameSpace.Width)/2+instance.X-m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame+instance.Y-m.CameraY)
 		switch el.Blend {
 		case "alpha":
 			src, dst := float32(max(0, min(256, el.AlphaSrc)))/256, float32(max(0, min(256, el.AlphaDst)))/256

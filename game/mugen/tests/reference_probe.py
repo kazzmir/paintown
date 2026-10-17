@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -97,6 +97,8 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
     settings = re.sub(r'(?im)^Debug\s*=\s*0\s*$', 'Debug = 1', config.read_text())
     if game_width is not None:
         settings = re.sub(r'(?im)^GameWidth\s*=.*$', 'GameWidth = ' + str(game_width), settings)
+    if game_height is not None:
+        settings = re.sub(r'(?im)^GameHeight\s*=.*$', 'GameHeight = ' + str(game_height), settings)
     config.write_text(settings)
     return source
 
@@ -113,7 +115,7 @@ def page_source(base, page, bank='var'):
     return base
 
 
-def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False):
+def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False, stage='kfm'):
     if clipboard_in_cmd:
         commands = run / 'chars/kfm/probe.cmd'
         base = re.split(r'(?im)\n\[State -?\d+, dump\]', commands.read_text())[0]
@@ -128,7 +130,7 @@ def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=Fal
     env.update(WINEARCH='win32', WINEPREFIX=str(prefix), WINEDEBUG='-all')
     output = run.parent / ('animation-page' + str(page) + '.png')
     with (run.parent / 'animation-probe.log').open('w') as log:
-        process = subprocess.Popen(['wine', 'mugen.exe', 'kfm', 'probeopponent' if opponent.exists() else 'kfm', '-s', 'kfm', '-nojoy'],
+        process = subprocess.Popen(['wine', 'mugen.exe', 'kfm', 'probeopponent' if opponent.exists() else 'kfm', '-s', stage, '-nojoy'],
                                    cwd=run, env=env, stdout=log, stderr=log)
         try:
             time.sleep(seconds)
@@ -234,6 +236,9 @@ def main():
     parser.add_argument('--localcoord', help='Override character localcoord: width,height')
     parser.add_argument('--p2-localcoord', help='Use a separate probe opponent with this localcoord')
     parser.add_argument('--game-width', type=int, help='Override common game-space width for coordinate probes')
+    parser.add_argument('--game-height', type=int, help='Override configured game-space height for coordinate probes')
+    parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
+    parser.add_argument('--stage-version',choices=['1.0','1.1'],help='Override only the copied stage version for compatibility probes')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     args = parser.parse_args()
     case_expected = None
@@ -256,12 +261,19 @@ def main():
         args.localcoord = case_expected.get('localcoord')
         args.p2_localcoord = case_expected.get('p2_localcoord')
         args.game_width = case_expected.get('game_width')
+        args.game_height = case_expected.get('game_height')
+        args.stage = case_expected.get('stage','kfm')
+        args.stage_version = case_expected.get('stage_version')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
         parser.error('Page exceeds the variable bank')
     if args.game_width is not None and not 1 <= args.game_width <= 8192:
         parser.error('Game width must be 1 through 8192 for bounded reference probes')
+    if args.game_height is not None and not 1 <= args.game_height <= 8192:
+        parser.error('Game height must be 1 through 8192 for bounded reference probes')
+    if not re.fullmatch('[a-zA-Z0-9_./-]+',args.stage) or args.stage.startswith('/') or '..' in Path(args.stage).parts:
+        parser.error('Stage must be a relative name/path in the disposable distribution')
     for profile in (args.localcoord, args.p2_localcoord):
         if profile is not None and (not re.fullmatch(r'[1-9][0-9]*(?:\.[0-9]+)?,[1-9][0-9]*(?:\.[0-9]+)?', profile) or
                                     any(float(value) > 2147483647 for value in profile.split(','))):
@@ -284,11 +296,22 @@ def main():
         parser.error('State-file order must contain unique st/stN keys')
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height)
+    stage_hash=None
+    if args.stage_version:
+        stage_path=Path(args.stage)
+        if stage_path.suffix.lower()!='.def':stage_path=stage_path.with_suffix('.def')
+        if stage_path.parts[0]!='stages':stage_path=Path('stages')/stage_path
+        stage_path=run/stage_path
+        stage_source=stage_path.read_text(encoding='utf-8-sig')
+        stage_source,count=re.subn(r'(?im)^\s*mugenversion\s*=.*$','mugenversion = '+args.stage_version,stage_source)
+        if not count:raise RuntimeError('Version probe stage lacks a declared Info mugenversion')
+        stage_path.write_text(stage_source)
+        stage_hash=digest(stage_path)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
-                'invocation': 'wine mugen.exe kfm ' + ('probeopponent' if args.p2_localcoord else 'kfm') + ' -s kfm -nojoy', 'captures': [],
+                'invocation': 'wine mugen.exe kfm ' + ('probeopponent' if args.p2_localcoord else 'kfm') + ' -s '+args.stage+' -nojoy', 'captures': [],
                 'bank': args.bank, 'bare_constants': args.bare_constants}
     if files:
         evidence['files'] = files
@@ -312,6 +335,12 @@ def main():
         evidence['p2_localcoord'] = args.p2_localcoord
     if args.game_width is not None:
         evidence['game_width'] = args.game_width
+    if args.game_height is not None:
+        evidence['game_height'] = args.game_height
+    if args.stage!='kfm':
+        evidence['stage']=args.stage
+    if args.stage_version:
+        evidence['stage_version'],evidence['stage_sha256']=args.stage_version,stage_hash
     if fixture.with_suffix('.cmd').exists():
         evidence['cmd_sha256'] = digest(fixture.with_suffix('.cmd'))
     expected_variables = {}
@@ -330,6 +359,10 @@ def main():
             raise RuntimeError('Opponent localcoord differs from pinned fixture')
         if expected.get('game_width') != args.game_width:
             raise RuntimeError('Common game-space width differs from pinned fixture')
+        if expected.get('game_height') != args.game_height or expected.get('stage','kfm')!=args.stage:
+            raise RuntimeError('Configured height/stage differs from pinned fixture')
+        if expected.get('stage_version')!=args.stage_version:
+            raise RuntimeError('Stage version differs from pinned fixture')
         if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
         if expected.get('omitted_files', []) != args.omit_file:
@@ -343,7 +376,7 @@ def main():
                               for index, value in capture['variables'].items()}
     for page in args.pages:
         try:
-            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd)
+            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd,args.stage)
         except ReferenceRejected as error:
             evidence['load_error'] = error.text
             (work / 'evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')

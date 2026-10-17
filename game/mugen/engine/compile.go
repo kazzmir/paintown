@@ -53,7 +53,11 @@ func (sm *StateMachine) compileState(state *cns.StateDef) (*stateProgram, error)
 		return program, program.err
 	}
 	for i := range state.Controllers {
-		ctrl := &state.Controllers[i]
+		source := state.Controllers[i]
+		if state.LanguageVersion != "" {
+			source.LanguageVersion = state.LanguageVersion
+		}
+		ctrl := &source
 		handler, ok := sm.controllers[strings.ToLower(ctrl.Type)]
 		var triggers triggerProgram
 		var err error
@@ -139,6 +143,10 @@ func (sm *StateMachine) compileTriggers(ctrl *cns.StateController) (triggerProgr
 				return program, fmt.Errorf("%s = %s: %w", key, raw, err)
 			}
 			sm.cache[raw] = expr
+		}
+		// Validation must run even when syntax was cached for a newer owner.
+		if err := evaluator.ValidateVersion(expr, ctrl.LanguageVersion); err != nil {
+			return program, fmt.Errorf("%s = %s: %w", key, raw, err)
 		}
 		if index < 0 {
 			program.all = append(program.all, expr)

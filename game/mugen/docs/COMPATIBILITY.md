@@ -217,7 +217,16 @@ production rendering, with typed resource/position parameters and retained AIR
 blend metadata. Eight native programs, full races, fresh marker replays and Go
 GPU inspection support the stated geometry/resource/lifetime scope. Full AIR/
 Explod/pause/palette/ownership parity remains open. EFFECTS.md records the measured
-M4d viewport discrepancy; world/HUD framing is the next correction.
+M4d viewport discrepancy, whose framing is corrected by M4q below.
+
+M4q binds the shared viewport, applies measured stage-aspect match dimensions,
+fits world/HUD independently and draws actors/effects at common game resolution.
+Twelve native cases include seven profile variants, immediate ScreenPos updates,
+legacy accepted queries and three version rejections. Character loading now
+compiles nonempty states and enforces those measured 1.1 gates. Full races,
+stage-version/rejection replays and an actual 1280x720 owned window pass. Camera/
+zoom, remaining version schemas, filter-edge/full-frame parity and empty-state
+execution are still open; see COORDINATES.md.
 
 ## Evidence and status definitions
 

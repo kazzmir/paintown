@@ -20,7 +20,7 @@ func compileRemapPal(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			return nil, true, fmt.Errorf("%s requires group,item expressions", key)
 		}
 		for index, part := range parts {
-			expr, err := evaluator.ParseReference(part)
+			expr, err := evaluator.ParseReferenceForVersion(part, ctrl.LanguageVersion)
 			if err != nil {
 				return nil, true, fmt.Errorf("%s component %d: %w", key, index+1, err)
 			}

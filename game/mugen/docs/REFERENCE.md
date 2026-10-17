@@ -7,6 +7,24 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4q viewport evidence
+
+The viewport catalogue has eight cases: seven accepted profile combinations
+and one 1.0 ScreenWidth rejection. Four additional programs cover same-pass
+PosSet/ScreenPos, accepted legacy game/camera/position queries, and rejected
+legacy ScreenHeight/CameraZoom. Together they pin 204 accepted float observations
+plus three load errors. Fixture source/executable/AIR hashes and query packets
+are checked; stage11 also pins the disposable stage-version edit. Fresh stage11
+and legacy ScreenWidth replays match.
+
+The observed stage-aspect match dimensions and independent world/HUD fit are
+recorded in COORDINATES.md. Owned Go capture viewport-spark-hd/ is actually
+1280x720, with binary/capture hashes and inspected margins. Filter edges remain
+different from native. Earlier viewport-spark-production/ was inadvertently
+320x240 due commented window config; the harness now supplies explicit dimensions
+and rejects a capture-size mismatch. Camera displacement/zoom and whole-frame
+image equivalence remain unverified.
+
 ## Wine startup, 2026-10-16
 
 Environment: Wine 9.0, a private Win32 prefix at `temp/wine-reference`, and a

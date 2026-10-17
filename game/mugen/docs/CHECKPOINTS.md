@@ -4,6 +4,36 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4q — Native viewport profiles, framing and version gates
+
+Twelve native cases cover seven accepted stage/game/local profiles, same-pass
+ScreenPos after PosSet, legacy GameWidth/Height/ScreenPos/CameraPos acceptance,
+and legacy ScreenWidth/ScreenHeight/CameraZoom rejection. The profile matrix pins
+168 float32 observations; all accepted packets match production Character ticks.
+Stage aspect determines match height in these scenes, even with a declared 1.1
+stage or a differing configured height. The shared viewport supplies contextual
+coordinates and propagates through match resets/entity creation. Zoom-one/zero-
+camera observations do not establish full camera behavior.
+
+The renderer fits world/HUD separately and draws actors/effects at common game
+resolution. The actual 1280x720 owned capture viewport-spark-hd/ confirms the
+previously missing world margins. Filter edges still differ from native. The
+first capture remained 320x240 because the source config comments its window
+settings; the harness now supplies explicit YAML dimensions and validates them.
+See COORDINATES.md for provenance and remaining rendering limits.
+
+Character loading retains language version and compiles nonempty states before
+gameplay. Three measured 1.1 trigger gates apply to typed parameters, entry and
+triggers, including shared AST cache hits; controller source remains immutable.
+Empty states are still deliberately skipped pending their runtime comparison.
+Other language-version/legacy-handler schemas remain incomplete.
+
+Full scoped races pass, including all stock resource/state loads, viewport
+packets and loader/cache version regressions. Fresh stage11 and legacy rejection
+replays pass. Root module hashes are unchanged. M4p's reversal point is commit
+`253649ce`. Continue native empty-state execution/entry and complete combat/entity
+semantics; this checkpoint does not finish M4 or full compatibility.
+
 ## M4p — Native spark geometry and production contact effects
 
 Added a shared CPU effect queue/scene with independent AIR clocks, finite

@@ -49,11 +49,11 @@ leaves a 23x12 solid RGB core, whose orientation confirms the facing flip. Go
 Character/scene tests compare the measured frame anchors and resource owner;
 they do not assert identical framebuffer framing/filtering.
 
-The native controlled scene also exposes a viewport difference: its stage fits
-height at scale three with horizontal margins, while the provisional M4d Go path
-uses width/cut suggestions. Correct native world versus HUD framing and screen/
-game dimensions next. Prior M4d camera/cropping was provisional, not native proof.
-Keep this discrepancy explicit until the rendering checkpoint is verified.
+M4q corrects the measured M4d framing discrepancy: world and HUD fit separately,
+and stage-aspect game dimensions come from native numeric probes. The actual
+1280x720 Go capture temp/app-runs/viewport-spark-hd/ shows the expected margins
+and marker projection. Filter-edge pixels still differ; background rasterization,
+camera/zoom and full-frame image parity remain open. See COORDINATES.md.
 
 ## Validation and limits
 

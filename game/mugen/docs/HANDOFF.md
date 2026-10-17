@@ -349,13 +349,25 @@ is now measured: native 1280x720 stage fits at scale three with horizontal margi
 while Go's provisional width/cut path differs. Investigate world/HUD framing and
 screen/game coordinate bindings next. Full effect/AIR/pause/ownership is open.
 
+M4p is commit `253649ce`. M4q binds viewport queries, stage-aspect match height,
+independent world/HUD fits and common-resolution actors/effects. Twelve native
+cases pin 204 accepted float observations plus three legacy rejections. Full
+races and fresh stage11/rejection replays pass. The actual 1280x720 owned capture
+viewport-spark-hd/ shows corrected margins; filter edges still differ. Earlier
+viewport-spark-production/ stayed 320x240 and is diagnostic only. The smoke
+harness now validates actual dimensions. The loader retains source language
+version, compiles nonempty states and applies the three measured 1.1 viewport
+gates through typed arguments/entry/triggers, including AST cache hits. Other
+version rules/legacy handlers remain open. See COORDINATES.md.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next fix the measured world/HUD viewport and coordinate-binding discrepancy,
-then continue complete HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
+Next compare native empty-state execution/entry (loading already accepts empty
+declarations; the runtime still rejects them), then continue complete
+HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

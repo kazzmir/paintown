@@ -38,10 +38,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		if key == "sparkno" || key == "guard.sparkno" {
 			count = 1
 		}
-		expressions, err := evaluator.ParseReferenceTuple(raw, count)
+		expressions, err := evaluator.ParseReferenceTupleForVersion(raw, count, ctrl.LanguageVersion)
 		if err != nil && count == 2 {
 			// The beta accepts a group alone and supplies item zero.
-			if single, singleErr := evaluator.ParseReferenceTuple(raw, 1); singleErr == nil {
+			if single, singleErr := evaluator.ParseReferenceTupleForVersion(raw, 1, ctrl.LanguageVersion); singleErr == nil {
 				expressions, err = append(single, &evaluator.Number{Value: 0}), nil
 			}
 		}

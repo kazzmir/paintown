@@ -31,7 +31,11 @@ def main():
     parser.add_argument('--match', nargs=2, help='Quick-match character DEF paths in the disposable distribution')
     parser.add_argument('--stage', default='stages/kfm.def')
     parser.add_argument('--audio', action='store_true', help='Also record the task-owned private null sink, using a private ALSA configuration')
+    parser.add_argument('--width',type=int,default=320)
+    parser.add_argument('--height',type=int,default=240)
     args = parser.parse_args()
+    if not 64<=args.width<=4096 or not 64<=args.height<=4096:
+        parser.error('Smoke window dimensions must be in 64..4096')
     if args.audio:
         server = os.environ.get('PULSE_SERVER', '')
         alsa = os.environ.get('ALSA_CONFIG_PATH', '')
@@ -55,11 +59,11 @@ def main():
         parser.error('Requested motif is absent from the supplied distribution')
     config = stock / 'data/mugen.cfg'
     source = config.read_text()
-    for key, value in [('motif', args.motif), ('width', '320'), ('height', '240')]:
+    for key, value in [('motif', args.motif), ('width', str(args.width)), ('height', str(args.height))]:
         source = re.sub(r'(?im)^\s*' + key + r'\s*=.*$', lambda match: key + ' = ' + value, source)
     config.write_text(source)
     # First readable override wins: exclude ambient user/executable settings.
-    (stock / 'mugen.yaml').write_text('{}\n')
+    (stock / 'mugen.yaml').write_text(json.dumps({'video': {'width': args.width, 'height': args.height}}) + '\n')
     env = os.environ.copy()
     for key, suffix in [('GOCACHE', 'go-build'), ('GOTMPDIR', 'tmp'), ('TMPDIR', 'tmp')]:
         path = project / 'temp' / suffix
@@ -72,7 +76,7 @@ def main():
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=project, text=True).strip()
     dirty = bool(subprocess.check_output(['git', 'status', '--porcelain', '--', 'game/mugen'], cwd=project.parents[1], text=True).strip())
     metadata = {'commit': commit, 'dirty': dirty, 'binary_sha256': digest(binary), 'config_sha256': digest(config),
-                'motif': args.motif, 'captures': []}
+                'motif': args.motif, 'window':[args.width,args.height], 'captures': []}
     if args.match:
         metadata.update(players=args.match, stage=args.stage)
     with (work / 'run.log').open('w') as log:
@@ -100,7 +104,10 @@ def main():
                     raise RuntimeError('Expected exactly one visible window belonging to the spawned application')
                 output = work / ('at-' + str(seconds) + 's.png')
                 subprocess.run(['import', '-window', windows[0], str(output)], check=True, timeout=5, stdout=log, stderr=log)
-                metadata['captures'].append({'seconds': seconds, 'path': output.name, 'sha256': digest(output)})
+                dimensions = [int(n) for n in subprocess.check_output(['identify', '-format', '%w %h', str(output)], text=True).split()]
+                metadata['captures'].append({'seconds': seconds, 'path': output.name, 'sha256': digest(output), 'dimensions': dimensions})
+                if dimensions != [args.width, args.height]:
+                    raise RuntimeError('Captured window dimensions differ from requested size: ' + str(dimensions))
                 print('Captured', output, flush=True)
         except Exception as error:
             metadata['error'] = str(error)

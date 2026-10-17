@@ -34,7 +34,7 @@ func compileArguments(ctrl *cns.StateController, specs []argumentSpec) ([]argume
 			}
 			continue
 		}
-		expr, err := evaluator.ParseReference(raw)
+		expr, err := evaluator.ParseReferenceForVersion(raw, ctrl.LanguageVersion)
 		if err != nil {
 			return nil, fmt.Errorf("%s = %s: %w", spec.name, raw, err)
 		}
@@ -322,11 +322,11 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 	if parent && strings.HasPrefix(kind, "sys") {
 		return nil, true, fmt.Errorf("parent variable controllers cannot set system variables")
 	}
-	index, err := evaluator.ParseReference(indexText)
+	index, err := evaluator.ParseReferenceForVersion(indexText, ctrl.LanguageVersion)
 	if err != nil {
 		return nil, true, fmt.Errorf("variable index %s: %w", indexText, err)
 	}
-	value, err := evaluator.ParseReference(valueText)
+	value, err := evaluator.ParseReferenceForVersion(valueText, ctrl.LanguageVersion)
 	if err != nil {
 		return nil, true, fmt.Errorf("variable value %s: %w", valueText, err)
 	}

@@ -66,6 +66,7 @@ type Movement struct {
 }
 
 type StateController struct {
+	LanguageVersion      string
 	Line                 int
 	Name                 string
 	Type                 string
@@ -131,8 +132,9 @@ type HitDef struct {
 }
 
 type StateDef struct {
-	Source string
-	Line   int
+	LanguageVersion string
+	Source          string
+	Line            int
 	// Parameters retains entry expressions; numeric fields are legacy accessors.
 	Parameters  map[string]string
 	ID          int
@@ -165,6 +167,14 @@ type CNS struct {
 
 func NewStateDef(id int) *StateDef {
 	return &StateDef{ID: id, Type: "S", MoveType: "I", Physics: "N", Anim: -1, Ctrl: -1, SprPriority: -255, Parameters: make(map[string]string)}
+}
+
+// SetLanguageVersion binds character-owned definitions before compilation.
+// An empty version is reserved for unbound pure-engine programs (target 1.1).
+func (c *CNS) SetLanguageVersion(version string) {
+	for _, state := range c.States {
+		state.LanguageVersion = version
+	}
 }
 
 func Parse(r io.Reader) (*CNS, error) {
