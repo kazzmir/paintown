@@ -182,7 +182,8 @@ type Character struct {
 	Opponents []*Character
 
 	// Stats
-	HitCount int
+	HitCount     int
+	UniqHitCount int
 	// ComboCount is the displayed combo counter, distinct from the current
 	// attack's HitCount. Match combat owns its reset/credit rules.
 	ComboCount int
@@ -1739,6 +1740,7 @@ func (c *Character) BeginStateEntry(hitdefPersist, movehitPersist, hitcountPersi
 	}
 	if !hitcountPersist {
 		c.HitCount = 0
+		c.UniqHitCount = 0
 	}
 }
 
@@ -1916,6 +1918,12 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
 	c.binding = nil
+	if !guarded {
+		if err := c.interruptTargets(); err != nil {
+			c.RuntimeError = err
+			return 0
+		}
+	}
 	for _, e := range c.Explods {
 		if e.RemoveOnGetHit && e.Visual != nil {
 			e.Visual.Active = false

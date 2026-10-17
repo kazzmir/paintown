@@ -9,6 +9,24 @@ type actorBinding struct {
 	generation uint64
 }
 
+// Losing an anchor through retirement or an incoming hit releases a valid
+// bound victim into its own falling state. Explicit TargetDrop/TargetBind
+// cancellation has a different lifecycle and does not use this transition.
+func (c *Character) releaseHitBinding() {
+	if c.binding == nil {
+		return
+	}
+	valid := c.binding.generation == c.hitGeneration
+	c.binding = nil
+	if !c.destroyed && valid && c.MoveType == "H" {
+		if !c.updateActive {
+			c.bindingReported = false
+		}
+		c.stateOwner = nil
+		c.changeStateWithEntry(5050, engine.EntryOverrides{}, true)
+	}
+}
+
 func (c *Character) BindTargets(p engine.TargetBindParameters) error {
 	if p.Time < -1 {
 		p.Time = 1

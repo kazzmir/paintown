@@ -7,6 +7,20 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ar adds typed HitDef priority/numhits, reciprocal Hit/Miss/Dodge arbitration,
+HitCount/UniqHitCount credit and incoming-hit target release. Sixty-three native
+programs compare 996 numbers, five load rejections and 252 authored input hashes.
+Higher integer priority wins; equal no-hit ties remain armed. Helpers trade with
+root receivers before helper receivers, independent of team. Guard/manual H
+changes preserve targets; unguarded hits/overrides release them, sending valid
+bound H victims to their own state 5050. Full scoped races pass in
+temp/m4ar-full-race.log (Match 231.848 seconds), as do all focused/pure races
+and six fresh native replays. Sixteen actual app captures pass provenance,
+dimension and runtime/resource checks. Three stable white masks match exactly;
+the bound-release overlap differs at 6,099 pixels and is the next drawing-
+priority investigation. See COMBAT-PRIORITY.md. Full hitflags/protection/projectile/
+pause/team combinations and remaining engine/asset/mode gates stay open.
+
 M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.
 Twenty-eight native programs compare 336 numbers, 140 input hashes and 28
 original-marker rasters across 320/640/1280 render widths, combined/cancelled

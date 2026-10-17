@@ -575,3 +575,25 @@ precision allowance still rejects the known half-pixel position failure.
 Go verification cannot record or overwrite native goldens. Native
 --adopt-run/--record retain the input/executable/config/video/capture checks.
 SPRITE-ALIGNMENT.md records the measured rule, validation and remaining scope.
+
+## M4ar HitDef clashes, counters and interrupted targets
+
+`TestNativeHitClashes` compares 63 original `hitclash-*` programs: 996 numbers,
+five native load rejections and 252 CNS/AIR/CMD/stage hashes. The corpus covers
+the Hit/Miss/Dodge tie table, higher priorities, defaults and numeric/parser
+boundaries, one-sided attacks, no-hit reactivation, helper/reverse-team trades,
+hitonce selection, simultaneous/staggered hit counters, signed numhits and
+counter persistence. Hit/guard/manual-H/override controls distinguish target
+release; bound interruption selects the victim's own state 5050.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture hitclash-helper-trade-reverse --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 --seconds 7
+```
+
+Use each JSON's pages; rejected programs use page 0. Helper snapshots publish
+from positive states because normal helpers do not execute root-only state -3.
+The initial all-zero helper diagnostic is excluded from final evidence. Native
+and Go clients run sequentially on the private display/audio servers. See
+[COMBAT-PRIORITY.md](../docs/COMBAT-PRIORITY.md) for contact phases, limits and
+validation. Complete hitflags/protection/projectile/pause/team combinations
+remain outside this checkpoint's claim.

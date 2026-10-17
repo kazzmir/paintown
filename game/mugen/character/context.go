@@ -23,6 +23,10 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "hitcount":
+		return evaluator.Int(int32(c.HitCount)), true
+	case "uniqhitcount":
+		return evaluator.Int(int32(c.UniqHitCount)), true
 	case "name", "p1name":
 		return evaluator.Text(c.Name), true
 	case "authorname":

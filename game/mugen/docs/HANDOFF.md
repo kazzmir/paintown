@@ -4,6 +4,28 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4ar validation is complete; reversal is committed 6f90691f. All 63
+native hitclash programs are recorded: 996 numbers, five load rejections and
+252 authored hashes. Typed priority/numhits, reciprocal Hit/Miss/Dodge clash
+resolution, HitCount/UniqHitCount credit/bindings and incoming-hit target release
+are implemented. Negative priority clamps zero; zero is retained and 8/9 are
+not upper-clamped. Signed numhits is retained. Guard and self H changes do not
+release targets; real hits and HitOverride do. Bound H victims select own5050.
+
+The first52 races pass. The expanded pre-order test exposes three target-list
+failures; both helper trade directions pin root receivers before helpers.
+That correction passes all 63 in m4ar-ordered-clashes.log. The full scoped race
+suite passes in m4ar-full-race.log (Match 231.848 seconds). Pure CNS/engine/
+evaluator races and six independent native replays pass. Sixteen actual app
+captures pass provenance/dimensions/runtime checks; stock recovery has two
+fighters. Three white sprite masks match exactly. Bound release differs at
+6,099 pixels with a different foreground facing; HitDef drawing priorities are
+unimplemented and are the next marker investigation. Data: m4ar-app-checks.json.
+Finish docs and commit M4ar, then continue immediately.
+See COMBAT-PRIORITY.md. Disposable next-checkpoint author-hit-flags.py is written
+but not run; it would create49 initial hitflag controls. Do not mix it into the
+M4ar commit before its validation is complete. No push is authorized.
+
 M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.
 Twenty-eight native programs compare 336 numbers, 140 input hashes and 28
 original-marker rasters across 320/640/1280 render widths, combined/cancelled
@@ -24,11 +46,11 @@ without dust clones. Results: temp/m4aq-axis-raster-summary.json and
 m4aq-final-app-checks.json. Background/debug/HUD, four tiny corner-precision
 exceptions and broader render/asset/combat/mode gates remain open.
 
-Next M4ar: measure HitDef priority and Hit/Miss/Dodge clash behavior. The ignored
-script temp/author-hit-clash.py is prepared but UNEXECUTED; no hitclash fixture
-sources/goldens exist yet. Inspect the author first, record native controls,
-capture pre-fix mismatches, implement measured semantics, run appropriate checks
-and document/commit the checkpoint. Continue autonomously; all changes stay in
+After M4ar, isolate HitDef p1sprpriority/p2sprpriority with original markers and
+resolve the bound-release foreground difference. Then continue hitflag eligibility; collision currently ignores
+the stored HitFlag. Its initial author script is prepared under temp. Measure
+standing/crouching/air/down/falling and +/- MoveType conditions, parser edges,
+reciprocal eligibility and helper contacts. Continue autonomously; all changes stay in
 game/mugen, local commits are authorized and no push is authorized. Full 1.1 beta
 compatibility remains unfinished. Priority/hitflags/reversal/projectiles/teams,
 remaining typed parameters, camera/zoom and complete assets/modes still need work.
@@ -858,11 +880,13 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Complete opposing-helper contacts, then remaining BindTo* controllers and
-paused/foreign/multi-target binding. Calibrate the helper fall's late mirrored
-right-edge raster difference with independent position/flip controls. Continue
-helper sound capacity/round/pause/foreign ownership alongside remaining entity work. Continue positive input, helper palettes/foreign/paused creation,
-remaining facing/priority/hit flags and attacker-hit interrupted binding controls.
+Finish M4ar commit, then native HitDef drawing priority and hitflag eligibility. Opposing
+helper contacts, actor priority/raster alignment and the measured incoming-hit
+bound-target release are implemented in their checkpoints; do not repeat those
+as unstarted work. Continue remaining BindTo* controllers, paused/foreign/
+multi-target binding, helper sound capacity/round/pause/foreign ownership,
+positive input and helper palettes/foreign/paused creation. Full HitDef flags,
+remaining schema, reversal, projectiles and team modes remain open.
 Continue
 remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and
 engine/asset gates. The selection-to-fight path runs, but the complete M4 and

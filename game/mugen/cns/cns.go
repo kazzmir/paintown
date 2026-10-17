@@ -82,9 +82,13 @@ type StateController struct {
 }
 
 type HitDef struct {
-	ID         int
-	HitOnce    bool
-	AffectTeam string
+	ID            int
+	HitOnce       bool
+	AffectTeam    string
+	Priority      int
+	PriorityClass string
+	// Nil preserves the ordinary one-hit multiplicity for programmatic definitions.
+	NumHits *int
 	// Nil means no custom transition. Keep explicit values separate so a
 	// zero-valued, programmatic HitDef does not change either actor's state.
 	P1StateNo        *int
@@ -591,6 +595,8 @@ func ParseFloatList(s string) []float64 {
 func ParseHitDef(params map[string]string) HitDef {
 	hd := HitDef{
 		ID:             0,
+		Priority:       4,
+		PriorityClass:  "Hit",
 		FallRecover:    true,
 		FallXUnchanged: true,
 		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
@@ -625,6 +631,23 @@ func ParseHitDef(params map[string]string) HitDef {
 	hd.AffectTeam = "E"
 	if raw := strings.ToUpper(strings.TrimSpace(params["affectteam"])); raw != "" {
 		hd.AffectTeam = raw[:1]
+	}
+	if raw, present := params["priority"]; present {
+		parts := strings.SplitN(raw, ",", 2)
+		hd.Priority, _ = strconv.Atoi(strings.TrimSpace(parts[0]))
+		hd.Priority = max(0, hd.Priority)
+		if len(parts) == 2 {
+			kind := strings.ToUpper(strings.TrimSpace(parts[1]))
+			if strings.HasPrefix(kind, "D") {
+				hd.PriorityClass = "Dodge"
+			} else if strings.HasPrefix(kind, "M") {
+				hd.PriorityClass = "Miss"
+			}
+		}
+	}
+	if raw, present := params["numhits"]; present {
+		value, _ := strconv.Atoi(raw)
+		hd.NumHits = &value
 	}
 	if v, ok := params["hitflag"]; ok {
 		hd.HitFlag = v

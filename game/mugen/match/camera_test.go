@@ -59,6 +59,10 @@ func TestNativeSpriteFramePrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "flipmark-*.json", 28)
 }
 
+func TestNativeHitClashes(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitclash-*.json", 63)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

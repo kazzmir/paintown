@@ -13,6 +13,7 @@ type contact struct {
 	hit                cns.HitDef
 	guard              map[int]bool
 	guarded            bool
+	projectile         bool
 }
 
 // TickCharacters advances roots and helpers through shared state and physics
@@ -82,7 +83,7 @@ func TickCharacters(players []*Character) error {
 			return c.RuntimeError
 		}
 	}
-	var contacts []contact
+	var rawContacts []contact
 	projectileHits := map[*Character]bool{}
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
@@ -107,26 +108,43 @@ func TickCharacters(players []*Character) error {
 				if tickCollision(attacker, defender) {
 					hit := attacker.CurrentHitDef
 					hit.Attr = attacker.attributesForHit(hit)
-					contacts = append(contacts, contact{attacker, defender, hit, attacker.HitGuard, defender.guardsHit(hit)})
+					rawContacts = append(rawContacts, contact{attacker, defender, hit, attacker.HitGuard, defender.guardsHit(hit), attacker != c})
 					if attacker != c {
-						projectileHits[attacker] = true
-						break
-					}
-					if hit.HitOnce {
 						break
 					}
 				}
 			}
 		}
 	}
+	contacts := resolveClashes(rawContacts)
+	// Root receivers take contact before helper receivers, independent of
+	// which root owns the helper. Reciprocal helper trades therefore leave
+	// the root's newly acquired helper target after its own interruption.
+	sort.SliceStable(contacts, func(i, j int) bool {
+		return contacts[i].defender.Parent == nil && contacts[j].defender.Parent != nil
+	})
 	// Snapshot all eligible contacts before any get-hit transition can disable
 	// the other player's active attack. Equal-priority normal attacks can trade.
+	counted := map[*Character]bool{}
 	for _, event := range contacts {
+		if event.projectile {
+			projectileHits[event.attacker] = true
+		}
 		event.guard[int(event.defender.EntityID)] = true
 		c := event.attacker
 		c.MoveHit, c.MoveContact, c.MoveGuarded = 1, 1, 0
 		if event.guarded {
 			c.MoveHit, c.MoveGuarded = 0, 1
+		} else {
+			number := 1
+			if event.hit.NumHits != nil {
+				number = *event.hit.NumHits
+			}
+			if !counted[c] {
+				c.HitCount += number
+				counted[c] = true
+			}
+			c.UniqHitCount += number
 		}
 		pause := event.hit.PauseTime
 		if event.guarded {

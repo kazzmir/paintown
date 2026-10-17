@@ -4,6 +4,33 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ar — HitDef clash priority, hit counters and interrupted targets
+
+M4ar adds typed HitDef priority/numhits, reciprocal Hit/Miss/Dodge arbitration,
+HitCount/UniqHitCount credit and incoming-hit target release. Sixty-three native
+programs compare 996 numbers, five load rejections and 252 authored input hashes.
+Higher integer priority wins; equal no-hit ties remain armed. Helpers trade with
+root receivers before helper receivers, independent of team. Guard/manual H
+changes preserve targets; unguarded hits/overrides release them, sending valid
+bound H victims to their own state 5050. Full scoped races pass in
+temp/m4ar-full-race.log (Match 231.848 seconds), as do all focused/pure races
+and six fresh native replays. Sixteen actual app captures pass provenance,
+dimension and runtime/resource checks. Three stable white masks match exactly;
+the bound-release overlap differs at 6,099 pixels and is the next drawing-
+priority investigation. See COMBAT-PRIORITY.md. Full hitflags/protection/projectile/
+pause/team combinations and remaining engine/asset/mode gates stay open.
+
+Initial pre-fix comparison fails all 25 original controls, including unresolved
+HitCount. The first 52 then pass; nine helper/multi-target controls and two counter
+persistence controls expose three target-list failures. Reversed helper teams
+pin receiver class independently of root order. Root-before-helper contact
+mutation fixes them without changing clash winners, damage or hitonce selection.
+The initial helper snapshot incorrectly used root-only state -3 and produced an
+all-zero helper page; final native evidence publishes from positive states.
+All final 63 pass. Source authors/catalogues and rejected intermediate runs remain
+under ignored temp/. No reference executable or stock art is committed.
+Reversal point: 6f90691f (M4aq). Root module hashes remain unchanged.
+
 ## M4aq — Actor flip/offset coordinates and native raster alignment
 
 M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.

@@ -17,12 +17,35 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		args []argument
 	}
 	var cues []cue
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce"} {
+	priorityClass := "Hit"
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
 		}
 		raw = strings.TrimSpace(raw)
+		if key == "priority" {
+			// Try the complete scalar first: a redirect can itself contain a
+			// comma. Only the final enum separator belongs to priority.
+			if _, err := evaluator.ParseReferenceTupleForVersion(raw, 1, ctrl.LanguageVersion); err != nil {
+				separator := strings.LastIndex(raw, ",")
+				if separator < 0 {
+					return nil, true, fmt.Errorf("priority: %w", err)
+				}
+				kind := strings.ToUpper(strings.TrimSpace(raw[separator+1:]))
+				switch {
+				case strings.HasPrefix(kind, "H"):
+					priorityClass = "Hit"
+				case strings.HasPrefix(kind, "M"):
+					priorityClass = "Miss"
+				case strings.HasPrefix(kind, "D"):
+					priorityClass = "Dodge"
+				default:
+					return nil, true, fmt.Errorf("priority: invalid class %q", raw[separator+1:])
+				}
+				raw = strings.TrimSpace(raw[:separator])
+			}
+		}
 		own := false
 		resource := key == "hitsound" || key == "guardsound" || key == "sparkno" || key == "guard.sparkno"
 		if resource && len(raw) > 0 {
@@ -50,7 +73,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		entry := cue{key: key, own: own}
 		for i, expr := range expressions {
-			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state" || key == "p2facing" || key == "hitonce") && integerFieldFloatLiteral(expr) {
+			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state" || key == "p2facing" || key == "hitonce" || key == "priority" || key == "numhits") && integerFieldFloatLiteral(expr) {
 				return nil, true, fmt.Errorf("%s: expected int value and read float", key)
 			}
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
@@ -72,7 +95,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			params[key] = value
 		}
 		for _, cue := range cues {
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce")
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits")
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}
@@ -83,6 +106,9 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			params[cue.key] = fmt.Sprintf("%s%d", prefix, int(values["0"].Number()))
 			if len(cue.args) == 2 {
 				params[cue.key] += fmt.Sprintf(",%d", int(values["1"].Number()))
+			}
+			if cue.key == "priority" {
+				params[cue.key] += "," + priorityClass
 			}
 		}
 		env.HitDef(params)

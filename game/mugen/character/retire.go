@@ -44,17 +44,9 @@ func (c *Character) DestroyHelper(p engine.DestroySelfParameters) error {
 	actors = append(actors, c.World.orphanEffectOwners...)
 	for _, actor := range actors {
 		if actor.binding != nil && retired[actor.binding.anchor] {
-			valid := actor.binding.generation == actor.hitGeneration
-			actor.binding = nil
-			if !actor.destroyed && valid && actor.MoveType == "H" {
-				if !actor.updateActive {
-					actor.bindingReported = false
-				}
-				actor.stateOwner = nil
-				actor.changeStateWithEntry(5050, engine.EntryOverrides{}, true)
-				if actor.RuntimeError != nil {
-					return actor.RuntimeError
-				}
+			actor.releaseHitBinding()
+			if actor.RuntimeError != nil {
+				return actor.RuntimeError
 			}
 		}
 		for _, e := range actor.Explods {

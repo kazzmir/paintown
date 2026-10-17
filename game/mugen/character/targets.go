@@ -6,6 +6,19 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 )
 
+func (c *Character) interruptTargets() error {
+	for _, target := range c.targetOrder {
+		if target.binding != nil && target.binding.anchor == c {
+			target.releaseHitBinding()
+			if target.RuntimeError != nil {
+				return target.RuntimeError
+			}
+		}
+	}
+	c.hitTargets, c.targetOrder = nil, nil
+	return nil
+}
+
 func (c *Character) DropTargets(p engine.TargetDropParameters) error {
 	previous := append([]*Character(nil), c.targetOrder...)
 	keep := c.acquiredTargets(p.ExcludeID, true)
