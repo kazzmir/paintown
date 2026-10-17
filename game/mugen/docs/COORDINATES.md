@@ -150,3 +150,9 @@ preserved, while raw scalar variables/IDs stay unscaled. Mixed Target velocity
 controllers convert caller widths into victim widths. See TARGETS.md for the
 48 scope values and controller traces; fractional profiles and complete camera/
 zoom/constant metadata remain open.
+
+M4z adds native custom-state coordinates: positive states and the continuing
+own -2 state use the borrowed state owner's width; constants still belong to
+the actor and convert into that width. PosSet/Add and VelSet/Add preserve
+physical motion across SelfState. Character storage remains in its own profile.
+See OWNERSHIP.md for exact numbers and remaining controller/borrowed-AIR geometry.

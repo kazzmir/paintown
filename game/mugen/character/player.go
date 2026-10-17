@@ -91,7 +91,11 @@ func (p *Player) DrawScaled(screen *ebiten.Image, screenX, screenY, scaleX, scal
 
 func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy float64) {
 	animNo := ent.GetAnim()
-	animData, ok := p.AIR.Actions[animNo]
+	frames := ent.AnimationFile()
+	if frames == nil {
+		return
+	}
+	animData, ok := frames.Actions[animNo]
 	if !ok {
 		return
 	}

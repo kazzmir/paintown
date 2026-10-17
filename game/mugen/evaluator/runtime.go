@@ -501,6 +501,11 @@ func callWithArguments(e *Call, env, argumentsEnv EvaluatorEnvironment) Value {
 					return Float(float32(env.GetSysFVar(idx)))
 				}
 			case "animexist", "selfanimexist":
+				if name == "selfanimexist" {
+					if who, ok := env.(interface{ HasSelfAnim(int) bool }); ok {
+						return Bool(who.HasSelfAnim(idx))
+					}
+				}
 				if who, ok := env.(CharacterEnvironment); ok {
 					return Bool(who.HasAnim(idx))
 				}

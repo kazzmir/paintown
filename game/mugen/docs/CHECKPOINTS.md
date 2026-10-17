@@ -4,6 +4,38 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4z — Borrowed states, animation sources and external entry timing
+
+Eleven native programs pin 200 distinct per-program numeric observations (216
+capture entries with overlapping pages). Independent opponent CNS/AIR/CMD files
+make state, animation and constant ownership distinguishable. TargetState now
+selects borrowed definitions; ChangeState retains them and SelfState restores
+the actor's own definitions. The executor resolves definitions/contexts after
+each transition. See OWNERSHIP.md for the measured boundaries.
+
+External TargetState changes number/time immediately but defers entry attributes
+until after the victim's negative pass. Own -2 continues in borrowed units;
+-3/-1 are excluded. Pos/Vel and constants use the current state owner's width
+while victim storage stays in its own width. Negative TargetState clamps to
+zero; undefined positive destinations advance with a warning and no body.
+Ordinary missing-state fallback rules remain unmeasured and retain errors.
+
+ChangeAnim2 has typed value/elem selection and an independent AIR source.
+ChangeAnim and entry anim use the actor's own AIR. AnimExist follows the current
+action source; SelfAnimExist always queries own AIR. SelfState and a new hit
+can retain a borrowed action if no animation change replaces it. A repeat hit
+restores own state definitions. Collision/drawing resolve the active AIR.
+
+Full scoped and pure engine/evaluator races pass. Fresh native replays for
+entry phase, retained animation after rehit, missing state and elem selection
+match. A real 1280x720 Go window draws the borrowed action and restores states
+without runtime errors; filtering/full framebuffer parity is not claimed. See
+temp/m4z-full-final-race.log, temp/m4z-core-final-race.log and
+temp/app-runs/ownership-borrowed-air-go/. Root module hashes are unchanged. Full throws
+still require HitDef custom-state fields, binding, all controller geometry
+boundaries, borrowed AIR offset/box scaling and complete helper/world ownership.
+M4y's reversal point is `fb84babc`; no complete compatibility claim is made.
+
 ## M4y — Target retention, effects and redirected scope/units
 
 Forty-nine original native programs pin 744 numbers and three required-value

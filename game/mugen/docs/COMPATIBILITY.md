@@ -7,6 +7,15 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4z separates state/animation ownership with eleven native programs and 200
+distinct per-program numeric observations. TargetState/ChangeState/SelfState,
+deferred external entry, foreign -2 versus excluded -3/-1, mixed-unit position/
+velocity/constants, ChangeAnim2 elem and AnimExist/SelfAnimExist are compared.
+Repeat hits restore own states while omitted animation can retain borrowed AIR.
+Undefined external destinations and negative clamps are measured. Binding,
+HitDef state fields, all geometry boundaries and full helper/world ownership
+remain open; see OWNERSHIP.md. No whole controller/trigger is promoted to Verified.
+
 M4k binds attacker-owned directional guard range, retained overrides and typed
 AttackDist/PlayerPush. Twenty-three programs cover 26 native cases for range,
 attack-first state passes, custom facing, push spacing and mixed coordinates.
@@ -326,7 +335,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | BindToRoot | Stub | 0 | Registered handler has no effective implementation. |
 | BindToTarget | Stub | 0 | Registered handler has no effective implementation. |
 | ChangeAnim | Present | 68 | Expression value supported; element parameter and animation-owner semantics incomplete. |
-| ChangeAnim2 | Stub | 6 | Registered handler has no effective implementation. |
+| ChangeAnim2 | Partial | 6 | Typed action/elem and state-owner AIR selection; native ownership/clock probes, full render geometry open. |
 | ChangeState | Present | 246 | Basic transition; entry override ordering, ownership, defaults and expressions incomplete. |
 | ClearClipboard | Present | 0 | Clears local text; debug display integration unverified. |
 | CtrlSet | Present | 21 | Literal-only value parsing. |
@@ -374,7 +383,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | RemoveExplod | Present | 0 | Filters matching IDs; default ID -1 does not remove all. |
 | ReversalDef | Present | 12 | Stores raw parameters; collision does not enforce reversal. |
 | ScreenBound | Stub | 4 | Registered handler has no effective implementation. |
-| SelfState | Present | 11 | Aliases ChangeState; cannot restore own states/animations after custom-state ownership. |
+| SelfState | Partial | 11 | Restores own state definitions/units; continuing animation source remains independent, native chain compared. |
 | SprPriority | Present | 2 | Stores literal value; full renderer ordering missing. |
 | StateTypeSet | Present | 21 | Basic enum setters; unchanged/default and version semantics need tests. |
 | SndPan | Stub | 0 | Registered handler has no effective implementation. |
@@ -385,7 +394,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | TargetFacing | Stub | 2 | Registered handler has no effective implementation. |
 | TargetLifeAdd | Stub | 2 | Registered handler has no effective implementation. |
 | TargetPowerAdd | Stub | 0 | Registered handler has no effective implementation. |
-| TargetState | Stub | 2 | Registered handler has no effective implementation. |
+| TargetState | Partial | 2 | Acquired-target state owner, delayed entry, negative clamp and missing destination compared; binding/full world cases open. |
 | TargetVelAdd | Stub | 0 | Registered handler has no effective implementation. |
 | TargetVelSet | Stub | 0 | Registered handler has no effective implementation. |
 | Trans | Stub | 0 | Registered handler has no effective implementation. |
@@ -418,7 +427,7 @@ The reference documents 127 trigger entries, including math functions. Base name
 | AnimElem | Present | Compares current element index; start-time/old condition syntax not implemented correctly. |
 | AnimElemNo | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | AnimElemTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| AnimExist | Present | Queries own AIR only; custom-state ownership unverified. |
+| AnimExist | Partial | Queries active action's AIR source; native borrowed/own transitions compared. |
 | AnimTime | Present | Computes remaining element durations; exact tick and loop semantics unverified. |
 | Asin | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | Atan | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
@@ -519,7 +528,7 @@ The reference documents 127 trigger entries, including math functions. Base name
 | ScreenPos | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | ScreenHeight | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | ScreenWidth | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| SelfAnimExist | Present | Shares AnimExist path; ownership distinction not implemented. |
+| SelfAnimExist | Partial | Always queries own AIR, distinct from borrowed action source; native cases compared. |
 | Sin | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | StateNo | Present | Reads current state number. |
 | StateType | Present | Implemented through process-global custom evaluation hook. |

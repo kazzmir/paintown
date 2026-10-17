@@ -664,3 +664,15 @@ coordinate draft exercised camera easing; only the stable zero-camera source
 is promoted. See TARGETS.md for exact fields, calibration and remaining
 TargetState/binding/multi-entity/complete-damage/schema obligations. No original
 assets/binaries or root module/desktop changes are made.
+
+## Independent custom state and animation ownership (M4z)
+
+Eleven original two-character programs pin 200 distinct per-program numeric
+observations (216 capture entries with overlapping pages). --p2-fixture chooses
+independent opponent CNS/AIR/CMD files and records their hashes separately.
+TargetState external-entry timing, negative exclusion/units, positive ownership
+chains, mixed position/velocity/constants, animation-source predicates and elem
+clocks, missing/negative destinations, preserved control and repeat hits are
+compared. See OWNERSHIP.md for precise observations and remaining throw/HitDef/
+binding/rendering obligations. Early four-second drafts retained stale intro
+clipboard output and are diagnostic only; promoted captures use seven seconds.

@@ -80,5 +80,7 @@ No whole controller or trigger is promoted to Verified by this checkpoint.
 M4y now compares acquired labels/retention/recovery/guards and implements typed
 drop/facing/life/power/velocity effects with 49 native programs. It also pins
 redirection argument scope and caller/destination coordinate distinctions.
-See TARGETS.md. Complete custom-state/animation ownership, binding, multiple-
-entity contacts, helper schemas and projectile phases remain open.
+See TARGETS.md. M4z adds independent state/animation ownership and native
+TargetState/ChangeState/SelfState, negative eligibility, mixed-unit and repeat-hit
+traces; see OWNERSHIP.md. Binding, HitDef state fields, all geometry boundaries,
+multiple-entity contacts, helper schemas and projectile phases remain open.

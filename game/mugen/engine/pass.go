@@ -18,7 +18,8 @@ type StatePassBudget struct{ transitions int }
 // RunStatePass runs negative states in order, then the active positive-state
 // chain. A transition aborts its controller block; later negative levels still
 // execute before the positive chain. The caller owns pause/physics/time phases.
-// State ownership/helper eligibility remains work for the world adapter.
+// A world adapter may resolve each level independently, including the script
+// context after a transition changes state ownership.
 func (sm *StateMachine) RunStatePass(states map[int]*cns.StateDef, env Environment) error {
 	return sm.RunStatePassWithBudget(states, env, &StatePassBudget{})
 }
@@ -37,8 +38,9 @@ func (sm *StateMachine) RunStatePassWithBudget(states map[int]*cns.StateDef, env
 		if host, ok := env.(interface{ StateExecutionStopped() bool }); ok && host.StateExecutionStopped() {
 			return nil
 		}
-		if state := states[level]; state != nil {
-			if _, err := sm.ExecuteState(state, env); err != nil {
+		state, context := resolvePassState(states, env, level)
+		if state != nil {
+			if _, err := sm.ExecuteState(state, context); err != nil {
 				return err
 			}
 			if err := failure(); err != nil {
@@ -63,11 +65,19 @@ func (sm *StateMachine) RunPositivePassWithBudget(states map[int]*cns.StateDef, 
 		if host, ok := env.(interface{ StateExecutionStopped() bool }); ok && host.StateExecutionStopped() {
 			return nil
 		}
-		state := states[env.GetStateNo()]
+		if host, ok := env.(interface{ PreparePositiveState() error }); ok {
+			if err := host.PreparePositiveState(); err != nil {
+				return err
+			}
+		}
+		state, context := resolvePassState(states, env, env.GetStateNo())
 		if state == nil {
+			if host, ok := env.(interface{ MissingStateAllowed(int) bool }); ok && host.MissingStateAllowed(env.GetStateNo()) {
+				return nil
+			}
 			return fmt.Errorf("active state %d is missing", env.GetStateNo())
 		}
-		changed, err := sm.ExecuteState(state, env)
+		changed, err := sm.ExecuteState(state, context)
 		if err != nil {
 			return err
 		}
@@ -85,8 +95,17 @@ func (sm *StateMachine) RunPositivePassWithBudget(states map[int]*cns.StateDef, 
 		}
 	}
 	err := fmt.Errorf("State machine stuck in loop (stopped after %d loops): %d", StateLoopLimit, env.GetStateNo())
-	if state := states[env.GetStateNo()]; state != nil {
+	if state, _ := resolvePassState(states, env, env.GetStateNo()); state != nil {
 		return stateError(state, err)
 	}
 	return err
+}
+
+func resolvePassState(states map[int]*cns.StateDef, env Environment, number int) (*cns.StateDef, Environment) {
+	if resolver, ok := env.(interface {
+		ResolveState(int) (*cns.StateDef, Environment)
+	}); ok {
+		return resolver.ResolveState(number)
+	}
+	return states[number], env
 }

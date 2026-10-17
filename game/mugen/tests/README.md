@@ -306,3 +306,16 @@ caller-unit direct geometry. target-negative-phase also pins its CMD source.
 Required-value grammar rejections are expected. All 49 programs are compared
 by TestNativeTargetsAndRedirectedCoordinates; pure scope replay has no DISPLAY
 dependency. Full custom-state/binding and multi-entity cases remain open.
+
+
+Ownership programs use --p2-fixture NAME for an independently authored opponent;
+its CNS/AIR/optional CMD/extras hashes are pinned separately and capture never
+overwrites its CNS. For example, --fixture ownership-entry-phase
+--p2-fixture ownership-entry-phase-victim --pages 0 12 --p2-localcoord 1280,960
+--mugenversion 1.1 --clipboard-in-cmd --bank fvar --seconds 7 --name UNIQUE.
+Eleven ownership-* packets replay in TestNativeCustomStateOwnership, covering
+200 distinct per-program observations, including positive/negative state and
+animation ownership, external-entry timing, units, control, missing destinations
+and repeat hits. Four-second draft captures sometimes retained intro clipboards
+and are diagnostic only. See OWNERSHIP.md for limits; complete throws/binding,
+borrowed AIR geometry and multi-entity behavior remain open.

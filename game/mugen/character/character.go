@@ -47,16 +47,20 @@ type Character struct {
 	warningSeen           map[string]bool
 
 	// CNS data containing states and physics globals
-	StateFile  *cns.CNS
-	LocalCoord coord.Space
-	GameCoord  coord.Space
-	Viewport   *coord.Viewport
-	Timeline   *engine.Timeline
-	Palettes   *palette.State
+	StateFile         *cns.CNS
+	stateOwner        *Character
+	pendingStateEntry *cns.StateDef
+	allowMissingState bool
+	LocalCoord        coord.Space
+	GameCoord         coord.Space
+	Viewport          *coord.Viewport
+	Timeline          *engine.Timeline
+	Palettes          *palette.State
 
 	// AIR data containing animation definitions
-	AirFile   *air.Data
-	animation *air.Player
+	AirFile       *air.Data
+	animationFile *air.Data
+	animation     *air.Player
 	// CMD data containing command definitions
 	CmdFile *cmd.Data
 
@@ -618,10 +622,11 @@ func (c *Character) SetPosition(x, y float64) {
 // CurrentElement returns the current AIR animation element for this character.
 // Used by collision detection to read Clsn1 (hitboxes) and Clsn2 (hurtboxes).
 func (c *Character) CurrentElement() *air.Element {
-	if c.AirFile == nil {
+	frames := c.AnimationFile()
+	if frames == nil {
 		return nil
 	}
-	anim, ok := c.AirFile.Actions[c.Anim]
+	anim, ok := frames.Actions[c.Anim]
 	if !ok || len(anim.Elements) == 0 {
 		return nil
 	}
@@ -1000,7 +1005,14 @@ func (c *Character) TargetPowerAdd(id, val int) {
 }
 
 func (c *Character) TargetState(id, state int) {
-	// Logic: change target state
+	for _, target := range c.acquiredTargets(id, true) {
+		target.stateOwner = c.currentStateOwner()
+		target.changeStateWithEntry(max(0, state), engine.EntryOverrides{}, true)
+		if target.RuntimeError != nil {
+			c.RuntimeError = target.RuntimeError
+			return
+		}
+	}
 }
 
 func (c *Character) TargetVelAdd(x, y float64, id int) {
@@ -1030,11 +1042,13 @@ func (c *Character) HitAdd(val int) {
 }
 
 func (c *Character) ChangeAnim2(animNo int) {
-	// Logic: use P1's AIR file for P2
+	if err := c.ChangeAnimation2(animNo, 1); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) SelfState(stateNo int, ctrl, anim int) {
-	// Logic: change back to own state file
+	c.stateOwner = nil
 	c.ChangeState(stateNo, ctrl, anim)
 }
 
@@ -1245,6 +1259,15 @@ func (c *Character) GetCNSMovement() *cns.Movement {
 }
 
 func (c *Character) HasAnim(animNo int) bool {
+	frames := c.AnimationFile()
+	if frames == nil {
+		return false
+	}
+	_, exists := frames.Actions[animNo]
+	return exists
+}
+
+func (c *Character) HasSelfAnim(animNo int) bool {
 	if c.AirFile == nil {
 		return false
 	}
@@ -1650,9 +1673,11 @@ func (c *Character) ChangeState(stateNo int, ctrl int, anim int) {
 }
 
 // Transition preserves explicit negative ctrl/anim values without conflating
-// them with the legacy ChangeState -1 omission sentinel. State-owner restoration
-// for SelfState is completed with the custom-state ownership work.
+// them with the legacy ChangeState -1 omission sentinel.
 func (c *Character) Transition(stateNo int, overrides engine.EntryOverrides, self bool) error {
+	if self {
+		c.stateOwner = nil
+	}
 	c.changeState(stateNo, overrides)
 	return c.RuntimeError
 }
@@ -1673,39 +1698,56 @@ func (c *Character) GetDefenceMultiplier() float64 {
 }
 
 func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {
+	c.changeStateWithEntry(stateNo, overrides, false)
+}
+
+func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOverrides, external bool) {
 	if c.RuntimeError != nil {
 		return
 	}
-	if c.StateFile == nil {
+	owner := c.currentStateOwner()
+	if owner.StateFile == nil {
 		c.RuntimeError = fmt.Errorf("state %d: no state file", stateNo)
 		return
 	}
-	next, found := c.StateFile.States[stateNo]
-	if !found || stateNo < 0 {
+	next, found := owner.StateFile.States[stateNo]
+	if (!found && !external) || stateNo < 0 {
 		c.RuntimeError = fmt.Errorf("state %d is not defined for player %d", stateNo, c.InputSlot)
 		return
 	}
-	if err := c.SM.CompileState(next); err != nil {
-		c.RuntimeError = err
-		return
+	name := "undefined"
+	if next != nil {
+		name = next.Name
+		if err := c.SM.CompileState(next); err != nil {
+			c.RuntimeError = err
+			return
+		}
+	} else {
+		c.EvaluationWarning(fmt.Sprintf("TargetState: state %d is missing from the state owner", stateNo))
 	}
-	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, next.Name)
+	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, name)
 	c.PrevStateNo = c.StateNo
 	c.StateNo = stateNo
 	c.stateSerial++
 	c.Time = 0
 	c.HitFallVelActive = false
 	c.PosFrozen = false
+	c.pendingStateEntry = nil
+	c.allowMissingState = !found
 	for key := range c.PersistenceCounters {
 		if strings.HasPrefix(key, "pos") {
 			delete(c.PersistenceCounters, key)
 		}
 	}
-	if err := c.SM.EnterState(next, c, overrides); err != nil {
+	c.stateInitialized = true
+	if external {
+		c.pendingStateEntry = next
+		return
+	}
+	if err := c.SM.EnterState(next, c.stateEnvironment(), overrides); err != nil {
 		c.RuntimeError = err
 		return
 	}
-	c.stateInitialized = true
 }
 
 func (c *Character) BeginStateEntry(hitdefPersist, movehitPersist, hitcountPersist bool) {
@@ -1984,6 +2026,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	}
 
 	// Guarding vs Normal Hit
+	// A fresh contact restores the receiver's own state definitions, including
+	// contacts received while executing another player's custom state.
+	c.stateOwner = nil
 	if hasOverride {
 		standard := 5000
 		if c.StateType == "C" {

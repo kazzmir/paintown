@@ -3,8 +3,9 @@
 M4y adds 49 original native programs: 744 recorded numeric values and three
 required-parameter load rejections. Production Character reproduces every
 packet/rejection. Typed TargetDrop, TargetFacing, TargetLifeAdd, TargetPowerAdd,
-TargetVelSet and TargetVelAdd now operate on acquired targets. TargetState only
-has its required-argument schema here; state ownership and binding remain next.
+TargetVelSet and TargetVelAdd now operate on acquired targets. M4z subsequently
+implements TargetState's measured state ownership and entry timing; see
+OWNERSHIP.md. Binding and complete throw integration remain open.
 No full Target/helper/projectile/controller gate is declared complete.
 
 ## Acquisition, labels and release
@@ -108,8 +109,9 @@ replacement, super-scaled life, mixed velocity, lazy coordinate scope, negative
 phases and a required-value rejection. Source/CMD/AIR/executable hashes are pinned.
 The original distribution, root modules and desktop settings remain unchanged.
 
-Next: actual TargetState/ChangeAnim2/SelfState state/animation ownership, TargetBind
-and BindToTarget/Parent/Root clocks and geometry; then complete helper typed
+M4z adds the measured TargetState/ChangeAnim2/SelfState ownership path. Next:
+TargetBind and BindToTarget/Parent/Root clocks and geometry, HitDef state fields;
+then complete helper typed
 parameters/negative eligibility, multi-target/neutral/team rules and projectile
 world phases. The unresolved bottom-power native defect from BOTTOM.md remains
 open. These tests do not promote any whole controller/trigger to Verified.

@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None, p2_fixture=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -83,16 +83,29 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
     if fixture_constants:
         constants = ''
     source = constants + '\n' + fixture.with_suffix('.cns').read_text()
-    if p2_localcoord is not None:
+    if p2_localcoord is not None or p2_fixture is not None:
         opponent = destination / 'chars/probeopponent'
         shutil.copytree(char, opponent)
-        opponent_definition, count = re.subn(r'(?im)^\s*localcoord\s*=.*$',
-                                             'localcoord = ' + p2_localcoord, definition)
-        if not count:
-            opponent_definition = re.sub(r'(?im)^(\s*\[info\]\s*)$',
-                                          lambda match: match.group(1) + '\nlocalcoord = ' + p2_localcoord,
-                                          opponent_definition)
+        opponent_definition = definition
+        if p2_localcoord is not None:
+            opponent_definition, count = re.subn(r'(?im)^\s*localcoord\s*=.*$',
+                                                 'localcoord = ' + p2_localcoord, definition)
+            if not count:
+                opponent_definition = re.sub(r'(?im)^(\s*\[info\]\s*)$',
+                                              lambda match: match.group(1) + '\nlocalcoord = ' + p2_localcoord,
+                                              opponent_definition)
         (opponent / 'probeopponent.def').write_text(opponent_definition)
+        if p2_fixture is not None:
+            (opponent / 'probe.cns').write_text(constants + '\n' + p2_fixture.with_suffix('.cns').read_text())
+            shutil.copyfile(p2_fixture.with_suffix('.air'), opponent / 'probe.air')
+            p2_commands = re.split(r'(?im)^\s*\[statedef', (char / 'kfm.cmd').read_text())[0]
+            p2_command_fixture = p2_fixture.with_suffix('.cmd')
+            p2_commands += ('\n' + p2_command_fixture.read_text() if p2_command_fixture.exists() else
+                            '\n[Statedef -1]\n[State -1, no input]\ntype=Null\ntrigger1=1\n')
+            (opponent / 'probe.cmd').write_text(p2_commands)
+            p2_extras = p2_fixture.with_suffix('.extra')
+            if p2_extras.exists():
+                shutil.copytree(p2_extras, opponent, dirs_exist_ok=True)
     config = destination / 'data/mugen.cfg'
     settings = re.sub(r'(?im)^Debug\s*=\s*0\s*$', 'Debug = 1', config.read_text())
     if game_width is not None:
@@ -122,7 +135,7 @@ def page_source(base, page, bank='var', clipboard_delay=30):
     return base
 
 
-def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False, stage='kfm', clipboard_delay=30):
+def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False, stage='kfm', clipboard_delay=30, independent_opponent=False):
     if clipboard_in_cmd:
         commands = run / 'chars/kfm/probe.cmd'
         base = re.split(r'(?im)\n\[State -?\d+, dump\]', commands.read_text())[0]
@@ -131,7 +144,7 @@ def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=Fal
     else:
         (run / 'chars/kfm/probe.cns').write_text(page_source(source, page, bank, clipboard_delay))
     opponent = run / 'chars/probeopponent'
-    if opponent.exists():
+    if opponent.exists() and not independent_opponent:
         (opponent / 'probe.cns').write_text(source)
     env = os.environ.copy()
     env.update(WINEARCH='win32', WINEPREFIX=str(prefix), WINEDEBUG='-all')
@@ -242,6 +255,7 @@ def main():
     parser.add_argument('--state-file-order', nargs='+')
     parser.add_argument('--localcoord', help='Override character localcoord: width,height')
     parser.add_argument('--p2-localcoord', help='Use a separate probe opponent with this localcoord')
+    parser.add_argument('--p2-fixture', help='Use independently authored opponent CNS/AIR/CMD files')
     parser.add_argument('--game-width', type=int, help='Override common game-space width for coordinate probes')
     parser.add_argument('--game-height', type=int, help='Override configured game-space height for coordinate probes')
     parser.add_argument('--video', action='append', default=[], help='Disposable video override: StageFit/SystemFit/KeepAspect=0|1 or Width/Height=N')
@@ -272,6 +286,7 @@ def main():
         args.state_file_order = case_expected.get('state_file_order')
         args.localcoord = case_expected.get('localcoord')
         args.p2_localcoord = case_expected.get('p2_localcoord')
+        args.p2_fixture = case_expected.get('p2_fixture')
         args.game_width = case_expected.get('game_width')
         args.game_height = case_expected.get('game_height')
         args.stage = case_expected.get('stage','kfm')
@@ -281,6 +296,8 @@ def main():
         args.helper_max = case_expected.get('helper_max')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
+    if args.p2_fixture is not None and not re.fullmatch('[a-z0-9_-]+', args.p2_fixture):
+        parser.error('Use a simple opponent fixture name')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
         parser.error('Page exceeds the variable bank')
     if not 0<=args.clipboard_delay<=600:
@@ -319,12 +336,13 @@ def main():
     work.mkdir(parents=True, exist_ok=False)
     run = work / 'stock'
     fixture = project / 'tests/testdata/reference' / args.fixture
+    p2_fixture = project / 'tests/testdata/reference' / args.p2_fixture if args.p2_fixture else None
     if args.state_file_order and (len(set(args.state_file_order)) != len(args.state_file_order) or
                                  any(not re.fullmatch('st[0-9]*', key) for key in args.state_file_order)):
         parser.error('State-file order must contain unique st/stN keys')
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max,p2_fixture)
     hud_hashes = {}
     if args.hud_marker:
         marker = fixture.with_suffix('.extra')/'probe.sff'
@@ -353,7 +371,7 @@ def main():
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
-                'invocation': 'wine mugen.exe kfm ' + ('probeopponent' if args.p2_localcoord else 'kfm') + ' -s '+args.stage+' -nojoy', 'captures': [],
+                'invocation': 'wine mugen.exe kfm ' + ('probeopponent' if args.p2_localcoord or args.p2_fixture else 'kfm') + ' -s '+args.stage+' -nojoy', 'captures': [],
                 'bank': args.bank, 'bare_constants': args.bare_constants}
     if files:
         evidence['files'] = files
@@ -377,6 +395,12 @@ def main():
         evidence['localcoord'] = args.localcoord
     if args.p2_localcoord is not None:
         evidence['p2_localcoord'] = args.p2_localcoord
+    if p2_fixture is not None:
+        evidence['p2_fixture'] = args.p2_fixture
+        evidence['p2_sha256'] = {suffix[1:]: digest(p2_fixture.with_suffix(suffix)) for suffix in ['.cns','.air','.cmd'] if p2_fixture.with_suffix(suffix).exists()}
+        p2_extras = p2_fixture.with_suffix('.extra')
+        if p2_extras.exists():
+            evidence['p2_extra_sha256'] = {str(path.relative_to(p2_extras)): digest(path) for path in sorted(p2_extras.rglob('*')) if path.is_file()}
     if args.game_width is not None:
         evidence['game_width'] = args.game_width
     if args.game_height is not None:
@@ -407,6 +431,8 @@ def main():
             raise RuntimeError('Character localcoord differs from pinned fixture')
         if expected.get('p2_localcoord') != args.p2_localcoord:
             raise RuntimeError('Opponent localcoord differs from pinned fixture')
+        if expected.get('p2_fixture') != args.p2_fixture:
+            raise RuntimeError('Opponent fixture differs from pinned fixture')
         if expected.get('game_width') != args.game_width:
             raise RuntimeError('Common game-space width differs from pinned fixture')
         if expected.get('game_height') != args.game_height or expected.get('stage','kfm')!=args.stage:
@@ -434,7 +460,7 @@ def main():
                               for index, value in capture['variables'].items()}
     for page in args.pages:
         try:
-            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd,args.stage,args.clipboard_delay)
+            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd,args.stage,args.clipboard_delay,args.p2_fixture is not None)
         except ReferenceRejected as error:
             evidence['load_error'] = error.text
             (work / 'evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')

@@ -4,6 +4,35 @@ Updated: 2026-10-16. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+Latest work is M4z: eleven native ownership programs, 200 distinct per-program
+observations (216 capture entries), compared through the production Character
+scheduler. TargetState selects borrowed definitions with deferred entry after
+negative states; ChangeState retains them and SelfState restores own definitions.
+Own -2 runs in borrowed units, -3/-1 are excluded; position/velocity/constants
+convert without rescaling victim storage. Negative destinations clamp to zero;
+undefined external destinations advance with a contextual warning. Animation
+source stays independent: ChangeAnim2 selects state-owner AIR, ChangeAnim selects
+own AIR, AnimExist follows the action and SelfAnimExist always queries own AIR.
+SelfState and normal hits can retain a continuing borrowed action. New contacts
+restore own state definitions. See OWNERSHIP.md for exact coverage and limits.
+
+Full scoped and pure engine/evaluator races pass; fresh entry/rehit/missing/elem
+native replays match. Validation and local checkpoint are recorded in
+CHECKPOINTS.md. A real 1280x720 Go game smoke draws both actors,
+including the victim's borrowed action, without errors. This is a window smoke,
+not a framebuffer-parity claim. Keep all native/app/Ebiten/audio clients serial
+on private :97 and the private Pulse server. Early four-second ownership captures
+included stale intro clipboard contents and are diagnostic only; promoted
+packets use seven seconds and pinned independent opponent hashes.
+
+Next complete TargetBind/BindToTarget/Parent/Root clocks/geometry and HitDef
+p1stateno/p2stateno/p2getp1state integration. Then finish helper typed parameters/
+negative eligibility, owner retirement, all controller coordinate boundaries,
+projectile/global phases and the remaining input/render/audio/mode/asset gates.
+Borrowed AIR offsets/boxes and native camera easing remain unverified/different.
+M4x's two unstable bottom-power programs remain unresolved outside stable goldens.
+Do not mark full compatibility, M1 or the complete M4 acceptance gate finished.
+
 ## Current authorization
 
 The user approved the assessment/plan, authorized implementation, and explicitly
