@@ -26,5 +26,8 @@ func (c *Character) hitInLocalSpace(attacker *Character, hit cns.HitDef) cns.Hit
 	hit.GuardDist = float64(float32(hit.GuardDist) * scale)
 	hit.GroundCornerPush = float64(float32(hit.GroundCornerPush) * scale)
 	hit.AirCornerPush = float64(float32(hit.AirCornerPush) * scale)
+	hit.DownCornerPush = float64(float32(hit.DownCornerPush) * scale)
+	hit.GuardCornerPush = float64(float32(hit.GuardCornerPush) * scale)
+	hit.AirGuardCornerPush = float64(float32(hit.AirGuardCornerPush) * scale)
 	return hit
 }

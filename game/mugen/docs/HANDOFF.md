@@ -4,6 +4,46 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4aw is VERIFIED and ready for its local commit. All63 integrated cases pass
+in m4aw-offset-velocity.log: 1,020 numbers, zero rejections, 252 authored hashes.
+Initial36 fails22 in m4aw-before-velocity.log. Pure races pass in
+m4aw-final-pure-race.log; full scoped races pass in m4aw-full-race.log (Match
+395.933 seconds). Six fresh native replays pass in m4aw-replays.log. Ten real
+app captures pass provenance/runtime checks for both independently profiled
+players. Five stable white masks match exactly:11181,14991,8379/8379/8379.
+Mixed moving window is inspected without an unstable mask claim; stock recovery
+retains two fighters without persistent dust. Results:m4aw-app-checks.json/log.
+No GUI/audio client remains. Reversal is31795b0c; no M4aw commit hash yet.
+
+See HIT-VELOCITY.md for measured vector/default/offset semantics. New shared
+engine/hit_vectors.go retains AST defaults and ten-field evaluation order,
+including five cornerpush fields whose PHYSICAL MOVEMENT remains unimplemented.
+Native tags prove inherited expression re-evaluation; scalar/omitted components
+are preserved. Down-contact getters retain their original context. Fixed down
+Y offset is15 at320/60 at1280, independent of trip7/back8 constants; it is float,
+applies after CNS before movement and is consumed to zero. Character stores only
+the pending offset; evaluator/redirect bind and scale it. Full raw offset fields
+and paused/frozen/bind/foreign/helper/projectile combinations remain open.
+
+Native logs: m4aw-native-first, phase-native, final-native, constants-native and
+offset-native. Final constant captures are named native-velocity-section after
+repairing an author omission of required [Velocity]; both old diagnostic
+rejections remain under temp and are NOT in final JSON expectations. Fixtures
+use original minimal numeric prefixes; shared adapter honors fixture_constants.
+Initial airguard-attacker1280 uses both1280; true mixed case is separate.
+
+Commit the M4aw source/docs/corpus locally with explicit authored paths, then
+continue to M4ax physical cornerpush. temp/author-corner-push.py is PREPARED but
+NOT RUN. It would author22 programs, sampling world frames0/1/2/3/4/5/6/8/10/
+15/25/40 after Time4 contact eligibility (including misses), receiver positions/
+velocities, own velocities and damage. Covers five hit/guard contexts, explicit/
+default/zero/sign, interior/corner, mirror, air attr, miss/hitpause and later
+state/target/turn/own-motion changes. Packet controllers explicitly ignore
+hitpause to retain actual world-frame observations. Generate only after M4aw is
+committed, record native, preserve pre-fix mismatches and implement measured
+physics. Continue uninterrupted; never overlap native/full/app graphics/audio
+clients or push without instruction.
+
 M4av contact facing is verified: 48 original programs, 552 numeric observations,
 two load rejections and 192 CNS/AIR/CMD/stage hashes. All corrected programs
 pass in m4av-entry-facing.log; pure races pass in m4av-entry-pure-race.log.
@@ -11,11 +51,8 @@ Full scoped races pass in m4av-full-race.log (Match 349.165 seconds). Six fresh
 native replays pass in m4av-replays.log. Ten actual app captures pass provenance/
 runtime checks; six sprite masks match exactly (four16563, guard14991,
 override11181), stock recovery retains two fighters without persistent dust.
-See CONTACT-FACING.md and HITDEF-SCHEMA.md. Final source is ready for the
-local M4av commit; reversal is dc90bb1e. Next: run temp/author-hit-velocity.py
-and author-hitvelocity-extensions.py, then record/compare the 36 new programs
-for air/guard/airguard/down vectors, order, redirects and mixed profiles. Their
-authors are prepared but have NOT been run. Continue autonomously. No native/
+See CONTACT-FACING.md and HITDEF-SCHEMA.md. Committed locally as31795b0c; reversal is dc90bb1e. The next velocity checkpoint
+is active above. Continue autonomously. No native/
 full/app graphics or audio clients may overlap. Never push without instruction.
 
 M4au forced standing/get-hit velocity: all 38 native forcestand programs are

@@ -59,6 +59,7 @@ type Character struct {
 	tickMoveType        string
 	pendingHitFacing    int
 	getHitFacing        int // selected hit heading, independent of deferred physical turns
+	pendingHitYOffset   float64
 	LocalCoord          coord.Space
 	GameCoord           coord.Space
 	Viewport            *coord.Viewport
@@ -219,6 +220,7 @@ type Character struct {
 	GetHit           cns.HitDef
 	HitTime          int
 	HitFall          bool
+	GetHitDown       bool
 	GetHitAir        bool
 	GetHitGuarded    bool
 	GetHitDamage     int
@@ -463,6 +465,10 @@ func (c *Character) finishTick() {
 
 	// 5. Physics and Time update
 	if !isPaused && !c.worldFrozen {
+		// The down-hit snap survives authored CNS position writes, then is
+		// consumed before the first movement step. GetHitVar observes zero next tick.
+		c.Y += c.pendingHitYOffset
+		c.pendingHitYOffset = 0
 		for {
 			if !c.PosFrozen && !c.boundThisTick {
 				// VelX is in CHARACTER-LOCAL space (positive = toward opponent).
@@ -1296,6 +1302,10 @@ func (c *Character) GetHitVar(name string) float64 {
 			if len(c.GetHit.AirGuardVel) > 0 {
 				val = c.GetHit.AirGuardVel[0]
 			}
+		} else if c.GetHitDown {
+			if len(c.GetHit.DownVel) > 0 {
+				val = c.GetHit.DownVel[0]
+			}
 		} else if c.GetHitAir {
 			if len(c.GetHit.AirVel) > 0 {
 				val = c.GetHit.AirVel[0]
@@ -1308,16 +1318,20 @@ func (c *Character) GetHitVar(name string) float64 {
 			// its direction independent of subsequent turns/owner retirement.
 			val *= float64(-c.getHitFacing)
 		}
+	case "yoff":
+		val = c.pendingHitYOffset
 	case "yvel":
 		if c.GetHitGuarded {
 			if c.GetHitAir && len(c.GetHit.AirGuardVel) > 1 {
 				val = c.GetHit.AirGuardVel[1]
 			}
+		} else if c.GetHitDown {
+			if len(c.GetHit.DownVel) > 1 {
+				val = c.GetHit.DownVel[1]
+			}
 		} else if c.GetHitAir {
 			if len(c.GetHit.AirVel) > 1 {
 				val = c.GetHit.AirVel[1]
-			} else if len(c.GetHit.GroundVel) > 1 {
-				val = c.GetHit.GroundVel[1]
 			}
 		} else if len(c.GetHit.GroundVel) > 1 {
 			val = c.GetHit.GroundVel[1]
@@ -1978,11 +1992,18 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	if !guarded && c.StateType == "C" && forceStand {
 		c.SetStateType("S")
 	}
+	c.GetHitDown = c.StateType == "L" && !airHit
 	c.GetHitAir = airHit
 	c.GetHitGuarded = guarded
 	hit = c.hitInLocalSpace(attacker, hit)
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
+	c.pendingHitYOffset = 0
+	if c.GetHitDown && len(hit.DownVel) > 1 && hit.DownVel[1] != 0 {
+		// Beta uses a fixed 240p offset, independently of character trip/width
+		// constants, converted into this receiver's local coordinate profile.
+		c.pendingHitYOffset = float64(float32(15) * float32(c.LocalCoordinateWidth()) / 320)
+	}
 	if !guarded && (hit.P2Facing == 1 || hit.P2Facing == -1) {
 		c.pendingHitFacing = -hit.P2Facing * hitFacing
 	}

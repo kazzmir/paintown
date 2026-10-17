@@ -7,6 +7,20 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4aw adds typed hit vectors and inherited corner-push expressions, separate
+component defaults, stored down-contact selection and consumed float Y offsets.
+Sixty-three original programs compare 1,020 numbers and 252 authored hashes with
+no final rejected programs. Tagged assignments establish the native ten-field
+order and repeated expression defaults; mixed profiles distinguish variable
+storage from caller units. Down Y offsets are fixed/scaled and consumed after
+CNS, before motion. All 63 integrated comparisons and pure races pass. Full scoped races pass in
+temp/m4aw-full-race.log (Match 395.933 seconds). Six fresh native replays and
+ten actual app captures pass; five stable sprite masks match exactly. Stock
+recovery retains two fighters. See HIT-VELOCITY.md.
+Physical corner-push movement remains missing; its evaluated/stored parameters
+do not close that runtime gate. Full HitDef/combat/engine/asset/mode gates remain
+open in HITDEF-SCHEMA.md and the compatibility inventory.
+
 M4av adds typed P1Facing/P1GetP2Facing, contact-selected hit direction and
 end-of-actor facing publication. Forty-eight original programs compare 552
 numbers, two load rejections and 192 authored hashes. Miss/guard/override,

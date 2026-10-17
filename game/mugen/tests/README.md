@@ -679,3 +679,23 @@ Every program uses page 0, including float rejections. Native source hashes must
 match before replay; Go observations cannot overwrite the native expectations.
 See [CONTACT-FACING.md](../docs/CONTACT-FACING.md) for timing, prototype failures,
 verification and remaining contact/entry/velocity gates.
+
+## M4aw hit velocity defaults and down-hit offsets
+
+`TestNativeHitVelocity` compares 63 original `hitvelocity-*` programs: 1,020
+numbers and 252 authored CNS/AIR/CMD/stage hashes, with no final load rejections.
+The corpus covers air/guard/air-guard/down omission, literal/computed/single/
+bottom/zero/redirect values; per-component inheritance; native evaluation order
+and source-expression re-evaluation; corner-default suppression/replacement;
+receiver snapshots, mixed profiles and down-hit Y-offset type/consumption.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture hitvelocity-down-offset-type1280 --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --p2-localcoord 1280,720 --pages 0 12 --seconds 7
+```
+
+Honor each JSON's page list, localcoord/p2_localcoord and fixture_constants flag.
+The trip7/back8 fixtures contain original numeric constant sections and require
+`--fixture-constants`. Their early missing-Velocity diagnostic rejections are
+not final expectations. Both-player1280 and true mixed1280/320 cases are
+separate. See [HIT-VELOCITY.md](../docs/HIT-VELOCITY.md) for exact values and
+remaining physical corner-push, pause/bind/foreign/down/HitDef gates.

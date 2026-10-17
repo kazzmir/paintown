@@ -1,18 +1,18 @@
 # HitDef parameter completion audit
 
 The bundled 1.1 beta manual contains 81 HitDef parameter entries. A source audit
-at M4av finds 20 keys routed through compiled expression cues in
-`engine/hitdef.go`. This count measures source routing, not complete behavioral
+at M4av found 20 compiled keys. M4aw extends that to 29 keys across
+`engine/hitdef.go` and `engine/hit_vectors.go`. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
 The remaining literal-parser fields must also receive typed parameter schemas.
 
-The next bounded group is air.velocity, guard.velocity, airguard.velocity and
-down.velocity, including omitted/inherited values, components, expressions,
-bottom, receiver posture, actual HitVelSet motion and mixed coordinate profiles.
-Ground.velocity is already compiled and covered by M4au; that does not establish
-the other vectors. The current down-vector storage alone does not prove it is
-selected by GetHitVar or the state machine.
+M4aw's [velocity/default controls](HIT-VELOCITY.md) cover the measured air,
+guard, air-guard and down vectors, component inheritance, repeated default
+expressions, profile conversion and down-hit Y offsets. Five corner-push fields
+now compile/store their expressions, but their physical movement is still
+missing and is the next runtime gate. These controls do not establish arbitrary
+blank/malformed tuple grammar or all paused/foreign/helper/contact combinations.
 
 These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
@@ -21,13 +21,12 @@ claim that the other keys are complete:
 - Reaction: fall.animtype, air.type, fall.recovertime, down.bounce.
 - Combat: air.juggle, chainID, nochainID, kill, guard.kill, fall.kill.
 - Constraints: mindist, maxdist, snap.
-- Push: down.cornerpush.veloff, guard.cornerpush.veloff, airguard.cornerpush.veloff.
 - Palette: palfx.time, palfx.mul, palfx.add.
 - Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
 
 Literal-only damage, pause, timing, power, fall and remaining physical fields
-need dynamic expression/coercion/order coverage. Stored values such as power,
-corner push and down time require a separate runtime-consumer audit. Existing
+need dynamic expression/coercion/order coverage. Power,
+corner push and down time still lack complete runtime consumers. Existing
 normal/guard/override/common-state fixtures are bounded evidence; they do not
 close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
 projectile/reversal/team interactions and whole-engine/asset/mode gates remain

@@ -79,6 +79,10 @@ func TestNativeContactFacing(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitfacing-*.json", 48)
 }
 
+func TestNativeHitVelocity(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitvelocity-*.json", 63)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
@@ -92,18 +96,19 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				CNSHash     string            `json:"cns_sha256"`
-				AIRHash     string            `json:"air_sha256"`
-				StageHash   string            `json:"stage_fixture_sha256"`
-				CMDHash     string            `json:"cmd_sha256"`
-				Local       string            `json:"localcoord"`
-				P2Local     string            `json:"p2_localcoord"`
-				StageError  string            `json:"expected_stage_error"`
-				LoadError   string            `json:"expected_load_error"`
-				ErrorState  int               `json:"expected_compile_state"`
-				GameWidth   int               `json:"game_width"`
-				ExtraHashes map[string]string `json:"extra_sha256"`
-				ActorRender *struct {
+				FixtureConstants bool              `json:"fixture_constants"`
+				CNSHash          string            `json:"cns_sha256"`
+				AIRHash          string            `json:"air_sha256"`
+				StageHash        string            `json:"stage_fixture_sha256"`
+				CMDHash          string            `json:"cmd_sha256"`
+				Local            string            `json:"localcoord"`
+				P2Local          string            `json:"p2_localcoord"`
+				StageError       string            `json:"expected_stage_error"`
+				LoadError        string            `json:"expected_load_error"`
+				ErrorState       int               `json:"expected_compile_state"`
+				GameWidth        int               `json:"game_width"`
+				ExtraHashes      map[string]string `json:"extra_sha256"`
+				ActorRender      *struct {
 					FrontID int `json:"front_entity_id"`
 				} `json:"actor_render"`
 				Captures []struct{ Variables map[string]float64 }
@@ -179,7 +184,9 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			}
 			m := stockMatch(t, 99)
 			constants := m.Players[0].Character.StateFile
-			file.Data, file.Size, file.Velocity, file.Movement, file.ConstantFields = constants.Data, constants.Size, constants.Velocity, constants.Movement, constants.ConstantFields
+			if !reference.FixtureConstants {
+				file.Data, file.Size, file.Velocity, file.Movement, file.ConstantFields = constants.Data, constants.Size, constants.Velocity, constants.Movement, constants.ConstantFields
+			}
 			m.Stage = background
 			if reference.GameWidth > 0 {
 				configured := m.Options.GameSpace

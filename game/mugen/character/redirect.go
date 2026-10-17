@@ -44,7 +44,7 @@ func (r *redirectEnvironment) GetOpponentBodyDistance() (float64, float64) {
 func (r *redirectEnvironment) GetHitVar(name string) float64 {
 	value := r.Character.GetHitVar(name)
 	switch name {
-	case "xvel", "yvel", "yaccel", "fall.xvel", "fall.yvel":
+	case "xvel", "yvel", "yoff", "yaccel", "fall.xvel", "fall.yvel":
 		return float64(float32(value) * r.scale())
 	}
 	return value

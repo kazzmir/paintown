@@ -94,62 +94,65 @@ type HitDef struct {
 	P2SprPriority *int
 	// Nil means no custom transition. Keep explicit values separate so a
 	// zero-valued, programmatic HitDef does not change either actor's state.
-	P1StateNo        *int
-	P2StateNo        *int
-	P2GetP1State     bool
-	P2Facing         int
-	P1Facing         int
-	P1GetP2Facing    int
-	Attr             string
-	HitFlag          string
-	HitFlagSpecified bool
-	GuardFlag        string
-	AnimType         string
-	AirAnimType      string
-	Damage           []int // [hit, guard]
-	PauseTime        []int // [hit, guard]
-	GuardPauseTime   []int // [attacker pause, defender shake]
-	ShakeTime        int
-	SparkNo          int
-	GuardSparkNo     int
-	SparkOwn         bool
-	GuardSparkOwn    bool
-	SparkXY          []int
-	HitSound         []int
-	GuardSound       []int
-	HitSoundOwn      bool
-	GuardSoundOwn    bool
-	GroundType       string
-	GroundSlide      int
-	GroundHitTime    int
-	GuardSlide       int
-	GuardHitTime     int
-	GuardCtrlTime    int
-	AirGuardCtrlTime int
-	GuardVel         float64
-	GuardDist        float64
-	AirHitTime       int
-	GroundVel        []float64
-	AirVel           []float64
-	AirGuardVel      []float64
-	GroundCornerPush float64
-	AirCornerPush    float64
-	DownVel          []float64
-	DownHitTime      int
-	GetPower         []int
-	GivePower        []int
-	Palfrm_Time      int
-	Palfrm_Mul       []float64
-	Palfrm_Add       []int
-	Fall             int
-	AirFall          int
-	ForceNoFall      bool
-	ForceStand       *bool // nil: derive from the unscaled ground Y velocity
-	FallDamage       int
-	FallVel          []float64
-	FallXUnchanged   bool
-	FallRecover      bool
-	YAccel           float64
+	P1StateNo          *int
+	P2StateNo          *int
+	P2GetP1State       bool
+	P2Facing           int
+	P1Facing           int
+	P1GetP2Facing      int
+	Attr               string
+	HitFlag            string
+	HitFlagSpecified   bool
+	GuardFlag          string
+	AnimType           string
+	AirAnimType        string
+	Damage             []int // [hit, guard]
+	PauseTime          []int // [hit, guard]
+	GuardPauseTime     []int // [attacker pause, defender shake]
+	ShakeTime          int
+	SparkNo            int
+	GuardSparkNo       int
+	SparkOwn           bool
+	GuardSparkOwn      bool
+	SparkXY            []int
+	HitSound           []int
+	GuardSound         []int
+	HitSoundOwn        bool
+	GuardSoundOwn      bool
+	GroundType         string
+	GroundSlide        int
+	GroundHitTime      int
+	GuardSlide         int
+	GuardHitTime       int
+	GuardCtrlTime      int
+	AirGuardCtrlTime   int
+	GuardVel           float64
+	GuardDist          float64
+	AirHitTime         int
+	GroundVel          []float64
+	AirVel             []float64
+	AirGuardVel        []float64
+	GroundCornerPush   float64
+	AirCornerPush      float64
+	DownCornerPush     float64
+	GuardCornerPush    float64
+	AirGuardCornerPush float64
+	DownVel            []float64
+	DownHitTime        int
+	GetPower           []int
+	GivePower          []int
+	Palfrm_Time        int
+	Palfrm_Mul         []float64
+	Palfrm_Add         []int
+	Fall               int
+	AirFall            int
+	ForceNoFall        bool
+	ForceStand         *bool // nil: derive from the unscaled ground Y velocity
+	FallDamage         int
+	FallVel            []float64
+	FallXUnchanged     bool
+	FallRecover        bool
+	YAccel             float64
 }
 
 type StateDef struct {
@@ -743,6 +746,15 @@ func ParseHitDef(params map[string]string) HitDef {
 	if v, ok := params["air.cornerpush.veloff"]; ok {
 		hd.AirCornerPush, _ = strconv.ParseFloat(v, 64)
 	}
+	for key, value := range map[string]*float64{
+		"down.cornerpush.veloff":     &hd.DownCornerPush,
+		"guard.cornerpush.veloff":    &hd.GuardCornerPush,
+		"airguard.cornerpush.veloff": &hd.AirGuardCornerPush,
+	} {
+		if raw, present := params[key]; present {
+			*value, _ = strconv.ParseFloat(raw, 64)
+		}
+	}
 	if v, ok := params["down.velocity"]; ok {
 		hd.DownVel = ParseFloatList(v)
 	}
@@ -826,14 +838,36 @@ func ParseHitDef(params map[string]string) HitDef {
 	if value, ok := params["guard.dist"]; ok {
 		hd.GuardDist, _ = strconv.ParseFloat(value, 64)
 	}
-	if _, ok := params["airguard.velocity"]; !ok {
-		hd.AirGuardVel = []float64{0, 0}
+	// Each omitted air-guard component inherits separately; an explicit
+	// single X must not replace the inherited Y with an artificial zero.
+	if len(hd.AirGuardVel) == 0 {
+		x := 0.0
 		if len(hd.AirVel) > 0 {
-			hd.AirGuardVel[0] = hd.AirVel[0] * 1.5
+			x = hd.AirVel[0] * 1.5
 		}
+		hd.AirGuardVel = []float64{x}
+	}
+	if len(hd.AirGuardVel) == 1 {
+		y := 0.0
 		if len(hd.AirVel) > 1 {
-			hd.AirGuardVel[1] = hd.AirVel[1] / 2
+			y = hd.AirVel[1] / 2
 		}
+		hd.AirGuardVel = append(hd.AirGuardVel, y)
+	}
+	// Downed-hit components inherit unscaled air velocity independently.
+	if len(hd.DownVel) == 0 {
+		x := 0.0
+		if len(hd.AirVel) > 0 {
+			x = hd.AirVel[0]
+		}
+		hd.DownVel = []float64{x}
+	}
+	if len(hd.DownVel) == 1 {
+		y := 0.0
+		if len(hd.AirVel) > 1 {
+			y = hd.AirVel[1]
+		}
+		hd.DownVel = append(hd.DownVel, y)
 	}
 	if _, ok := params["air.animtype"]; !ok {
 		hd.AirAnimType = hd.AnimType

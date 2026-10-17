@@ -1,0 +1,493 @@
+[Data]
+life=1000
+power=3000
+attack=100
+defence=100
+fall.defence_up=50
+liedown.time=60
+airjuggle=15
+sparkno=2
+guard.sparkno=40
+KO.echo=0
+IntPersistIndex=60
+FloatPersistIndex=40
+[Size]
+xscale=1
+yscale=1
+ground.back=15
+ground.front=16
+air.back=12
+air.front=12
+height=60
+attack.dist=160
+proj.attack.dist=90
+proj.doscale=0
+head.pos=-5,-70
+mid.pos=-5,-40
+shadowoffset=0
+draw.offset=0,0
+[Velocity]
+walk.fwd=2.4
+walk.back=-2.2
+[Movement]
+airjump.num=1
+airjump.height=35
+yaccel=.44
+stand.friction=.85
+crouch.friction=.82
+air.gethit.trip.groundlevel=7
+
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=D
+guardflag=
+damage=10,3
+pausetime=0,0
+ground.type=High
+ground.hittime=300
+air.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=7
+ground.velocity=2,-1
+air.velocity=3,-2
+down.hittime=300
+guard.hittime=300
+airguard.ctrltime=300
+down.velocity=1.25,-0.5
+[Statedef 701]
+type=L
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5000, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5000, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5000, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 5010]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5010, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5010, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5010, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5020, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5020, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5020, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, before authored position]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Pos Y
+[State 5080, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5080, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5080, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5080, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=Pos Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Vel Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=1
+fv=15
+value=Pos Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=2
+fv=16
+value=Pos Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=3
+fv=17
+value=Pos Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=5
+fv=18
+value=Pos Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=10
+fv=19
+value=Pos Y
+[State 5080, phase]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=GetHitVar(yoff)
+[State 5080, phase]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=Const(movement.air.gethit.trip.groundlevel)
+[State 5080, phase]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=StateType=L
+[State 5080, phase]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=HitFall
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 150, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 150, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 150, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 152]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 152, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 152, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 152, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 152, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 152, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 154]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 154, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 154, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 154, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 154, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 154, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef -3]
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=0
+value=Enemy,StateNo
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=1
+value=Enemy,Life
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=2
+value=Enemy,GetHitVar(xvel)
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=3
+value=Enemy,GetHitVar(yvel)
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=4
+value=Enemy,FVar(28)
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=5
+value=Enemy,FVar(29)
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=6
+value=Enemy,Vel X
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=7
+value=Enemy,Vel Y
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=8
+value=Enemy,Pos X
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=9
+value=Enemy,Pos Y
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=10
+value=Enemy,StateType=A
+[State -3, velocity snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=11
+value=MoveGuarded
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=12
+value=Enemy,FVar(12)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=13
+value=Enemy,FVar(13)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=14
+value=Enemy,FVar(14)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=15
+value=Enemy,FVar(15)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=16
+value=Enemy,FVar(16)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=17
+value=Enemy,FVar(17)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=18
+value=Enemy,FVar(18)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=19
+value=Enemy,FVar(19)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=20
+value=Enemy,FVar(20)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=21
+value=Enemy,FVar(21)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=22
+value=Enemy,FVar(22)
+[State -3, down phase snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=23
+value=Enemy,FVar(23)

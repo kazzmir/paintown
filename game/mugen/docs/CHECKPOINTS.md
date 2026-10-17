@@ -4,6 +4,30 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4aw — Hit velocity defaults and down-hit offsets
+
+M4aw adds typed hit vectors and inherited corner-push expressions, separate
+component defaults, stored down-contact selection and consumed float Y offsets.
+Sixty-three original programs compare 1,020 numbers and 252 authored hashes with
+no final rejected programs. Tagged assignments establish the native ten-field
+order and repeated expression defaults; mixed profiles distinguish variable
+storage from caller units. Down Y offsets are fixed/scaled and consumed after
+CNS, before motion. All 63 integrated comparisons and pure races pass. Full scoped races pass in
+temp/m4aw-full-race.log (Match 395.933 seconds). Six fresh native replays and
+ten actual app captures pass; five stable sprite masks match exactly. Stock
+recovery retains two fighters. See HIT-VELOCITY.md.
+Physical corner-push movement remains missing; its evaluated/stored parameters
+do not close that runtime gate. Full HitDef/combat/engine/asset/mode gates remain
+open in HITDEF-SCHEMA.md and the compatibility inventory.
+
+The initial36 comparison fails22. Additional assignment tags distinguish
+re-evaluated source defaults from cached numeric values, including explicit
+corner replacements and omitted vector components. Down phase/type/constant/
+profile controls pin the offset without guessing a trip-constant relationship.
+Two invalid constant authors were repaired before final expectations; their
+missing-Velocity rejections remain diagnostic temp copies only. Reversal:
+31795b0c. Final broad/reference/app verification passes for this checkpoint.
+
 ## M4av — Contact facing and shared entry phases
 
 M4av adds typed P1Facing/P1GetP2Facing, contact-selected hit direction and

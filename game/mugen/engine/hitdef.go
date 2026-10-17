@@ -9,18 +9,18 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
+type hitDefCue struct {
+	key           string
+	own, floating bool
+	args          []argument
+}
+
 // Sound, spark, custom-state and selection parameters compile here while the
 // remaining legacy schema is replaced. Never mutate the shared source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
-	type cue struct {
-		key      string
-		own      bool
-		floating bool
-		args     []argument
-	}
-	var cues []cue
+	var cues []hitDefCue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "ground.velocity"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -60,7 +60,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 		count := 2
-		if key != "hitsound" && key != "guardsound" && key != "sparkxy" && key != "ground.velocity" {
+		if key != "hitsound" && key != "guardsound" && key != "sparkxy" {
 			count = 1
 		}
 		expressions, err := evaluator.ParseReferenceTupleForVersion(raw, count, ctrl.LanguageVersion)
@@ -73,7 +73,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		if err != nil {
 			return nil, true, fmt.Errorf("%s: %w", key, err)
 		}
-		entry := cue{key: key, own: own, floating: key == "ground.velocity"}
+		entry := hitDefCue{key: key, own: own}
 		strictInteger := false
 		switch key {
 		case "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand":
@@ -90,6 +90,11 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		cues = append(cues, entry)
 	}
+	vectors, err := compileHitVectors(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
+	cues = append(cues, vectors...)
 	if raw, present := ctrl.Params["affectteam"]; present {
 		team := strings.ToUpper(strings.TrimSpace(raw))
 		if team == "" || !strings.ContainsAny(team[:1], "EFB") {

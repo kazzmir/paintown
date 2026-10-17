@@ -68,5 +68,7 @@ and the handoff for current progress; the assessment describes the original base
 
 35. [HitDef completion audit](HITDEF-SCHEMA.md): remaining typed parameter groups and ignored runtime fields.
 
+36. [Hit velocity defaults](HIT-VELOCITY.md): repeated inherited expressions, profile-aware vectors and consumed down-hit Y offsets.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.
