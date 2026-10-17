@@ -108,3 +108,12 @@ incoming-interruption combinations, moving-camera/zoom and all width/stage
 combinations remain open. Full HitDef, juggle/recovery/power/KO, assets, renderer
 and game modes are still tracked in the compatibility inventory. Reversal:
 7af38317 (M4aw). This checkpoint does not declare the port complete.
+
+
+## Renderer follow-up
+
+M4ay closes the four fractional-position clothing-mask failures recorded above.
+Its final six masks, including irregular400, match native exactly; physical
+corner-push code is unchanged. See [SPRITE-SAMPLING.md](SPRITE-SAMPLING.md) for
+the new original fine-pattern controls, exact RGB/indexed samplers and verified
+scope. The separate pre-existing RGB HUD/effect ramp gap remains open for M4az.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"path/filepath"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/render"
 )
 
 type FightState struct {
@@ -18,6 +20,8 @@ type FightState struct {
 	stageCanvas, gameCanvas, hudCanvas *ebiten.Image
 	effectImages                       map[effectImageKey]effectImage
 	effectWarnings                     map[string]bool
+	linearSampler                      render.Linear
+	renderError                        error
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
@@ -47,6 +51,9 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 }
 
 func (s *FightState) Update() (State, error) {
+	if s.renderError != nil {
+		return s, s.renderError
+	}
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		if err := s.match.ClearSounds(); err != nil {
 			return s, err
@@ -106,13 +113,15 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		if err != nil {
 			return
 		}
-		options := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+		options := &ebiten.DrawImageOptions{}
 		if surface == s.hudCanvas {
 			options.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 		}
 		options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
 		options.GeoM.Translate(transform.X, transform.Y)
-		screen.DrawImage(surface, options)
+		if err := s.linearSampler.Draw(screen, surface, options.GeoM, options.ColorScale); err != nil {
+			s.renderError = fmt.Errorf("fight viewport sampler: %w", err)
+		}
 	}
 	world, err := coord.Project(gameSpace, target, s.engine.cfg.Video.KeepAspect)
 	drawFitted(s.gameCanvas, world, err)

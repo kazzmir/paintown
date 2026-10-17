@@ -4,6 +4,11 @@ M4aq compares 28 native programs: 336 numeric observations, 140 authored input
 hashes and 28 original red-marker raster crops. These controls separate game
 coordinates, local/size scaling and the final viewport fit.
 
+M4ay corrects the earlier sampling interpretation and now matches all 28 crops
+byte-for-byte, including the four former one-channel edge differences. See
+[SPRITE-SAMPLING.md](SPRITE-SAMPLING.md) for the added patterned controls,
+integer indexed pixel centers, fractional RGB quads and native filtering.
+
 ## Native projection rules
 
 AIR X offset multiplies character Facing, including when AIR H cancels the
@@ -17,12 +22,14 @@ pixels at game width 320, 1.5 at 640 and .75 at 1280. Cancelled flips have no
 shift. Nonuniform 2.5/.5 helper sizing keeps the same game-pixel correction;
 left/HV exact-red counts are 11,472/11,233.
 
-Projected game draw axes floor before combination with fractional image axes,
-scales and AIR offsets. CNS positions remain fractional. Negative offscreen
-axes at -.5 floor to -1, distinguished from truncation by the clipped width.
-A 1.1-scaled helper retains fractional extents; AIR X=1 gives 5,040 exact-red
-pixels and locates flooring before the frame offset. Separate X/Y=.125 cases
-confirm both axes. Quarter-local-unit X gives one full pixel at game width 1280.
+These RGB integer/half-pixel markers originally suggested floored draw axes.
+M4ay's additional fractional and patterned controls reject that generalization:
+RGB quads retain fractional geometry, while indexed sampling uses integer game
+pixel centers. The earlier renderer's explicit flooring concealed Ebiten's
+rectangle vertex snapping and did not establish a native flooring rule. The
+original positions, clipped widths, 1.1 helper extents and AIR offset goldens
+remain unchanged and pass with the corrected sampler. Quarter-local-unit X
+gives one full game pixel at game width 1280.
 
 The first width controls also resized the physical window because native video
 width defaults to GameWidth. Those unintended raster runs are diagnostic only.

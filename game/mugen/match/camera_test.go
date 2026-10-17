@@ -87,6 +87,10 @@ func TestNativeCornerPush(t *testing.T) {
 	replayNativeGeometryPrograms(t, "cornerpush-*.json", 51)
 }
 
+func TestNativeSpriteRasterPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "raster-*.json", 37)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

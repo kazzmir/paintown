@@ -4,6 +4,26 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ay — Fractional sprite sampling
+
+M4ay matches fractional actor rendering with separate indexed/RGB samplers,
+unsnapped quads, local UV precision, mirrored texel selection, measured boundary
+bias and transparent edge coverage. Thirty-seven native programs compare 444
+numbers and180 source hashes; all integrated comparisons pass. All 32 original
+crops (2,176,000 RGB pixels) and28 legacy flipmark crops are byte-identical.
+Six strict real-art masks match, closing the four M4ax failures and adding the
+irregular400 control. Sixty-seven app runs/70 captures pass provenance/runtime
+checks from one binary; stock throw recovery shows two fighters without lingering
+effects. Six fresh native replays pass. Full scoped races pass in
+m4ay-full-race.log (Match 461.719s, Character 10.938s). See SPRITE-SAMPLING.md.
+
+The additional default HUD/effect ramp gate still fails color hashes:256 of288
+pixels differ in each core, max channel 22, despite correct bounds. A pre-M4ay
+binary produces exactly the same SHA as the final actor binary. Those consumer
+files remain on nearest first-stage RGB filtering. This known pre-existing gap
+is the immediate M4az task; its hashes must not be waived. Full RGBA/effects/
+foreign/angle/zoom/background/driver/mode gates remain open. Reversal:931467ac.
+
 ## M4ax — Physical corner push
 
 M4ax adds the separate physical corner-push impulse and its common-space
@@ -12,7 +32,7 @@ coefficient. Fifty-one original programs compare 1,224 numbers and 204 authored
 hashes. Direction/sign, zero/default/explicit, five hit/guard contexts, interior/
 edge proximity, resolution, irregular precision, pause/freeze, state/target/turn
 lifetime and deferred hit-facing match native. All 51 integrated comparisons
-pass. Full scoped races pass in temp/m4ax-full-race.log (Match439.097 seconds);
+pass. Full scoped races pass in temp/m4ax-full-race.log (Match 439.097 seconds);
 six fresh native replays pass. Ten actual app captures pass provenance/runtime
 checks. Four fractional-position white masks differ by567/471/933/567 pixels;
 the stationary control matches. This render gap is the immediate next task.

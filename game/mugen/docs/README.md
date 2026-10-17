@@ -72,5 +72,7 @@ and the handoff for current progress; the assessment describes the original base
 
 37. [Physical corner push](CORNER-PUSH.md): common-pixel proximity, independent world impulses, precision and lifetime.
 
+38. [Fractional sprite sampling](SPRITE-SAMPLING.md): original RGB/indexed patterns, pixel centers, clamped filtering and exact raster controls.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

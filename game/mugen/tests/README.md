@@ -712,8 +712,35 @@ state/target/turn lifetime, deferred hit-facing, PosFreeze and ScreenBound.
 python3 game/mugen/tests/reference_probe.py --fixture cornerpush-ground-unit-game640 --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --game-width 640 --video Width=1280 --video Height=720 --pages 0 12 --seconds 7
 ```
 
-All cases use pages 0/12. Honor localcoord/game_width/video metadata; the width400
+All cases use pages 0/12. Honor localcoord/game_width/video metadata; the width 400
 case is a deliberate precision discriminator. The first pre-round-clock captures
 are diagnostic copies only; final expectations use native-controlled, native-math
 and native-integration runs. See [CORNER-PUSH.md](../docs/CORNER-PUSH.md) for exact
 rules, validated scope and remaining projectile/helper/foreign/bind/world gates.
+
+
+## M4ay fractional sprite sampling
+
+`TestNativeSpriteRasterPrograms` compares 37 original `raster-*` programs:
+444 numbers, 180 authored CNS/AIR/CMD/stage/bank hashes and no load rejections.
+Thirty-two original solid/patterned sprite crops separately test pixel centers,
+RGB/indexed filtering, mirrored texel boundaries, fine masks, flips, offsets,
+helper scale, character width 400, game width 640 and transparent guard coverage. Generate the
+original RGB24/RLE8/LZ5 banks with `generate_raster_markers.py`; no external sprite
+compiler or stock artwork is needed. Five real-art numeric controls separate
+stationary positions from corner-push movement; their artwork is never recorded
+as a committed raster golden.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture raster-pattern-indexed-helper --name UNIQUE_NATIVE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --file sprite=probe.sff --pages 0 --seconds 7
+python3 game/mugen/tests/raster_render_probe.py --fixture raster-pattern-indexed-helper --name UNIQUE_CHECK --native-run UNIQUE_NATIVE
+python3 game/mugen/tests/raster_render_probe.py --fixture raster-pattern-indexed-helper --name UNIQUE_GO_CHECK --go-run APP_SMOKE_RUN
+```
+
+Honor each JSON's game_width/video metadata. The game640 case pins Video Width
+1280/Height720. `raster_render_probe.py` accepts only the exact original generated
+banks, validates input/config/binary/capture provenance and compares every crop
+byte. Go output cannot record a native golden. The old `sprite_render_probe.py`
+remains the independent 28-case flipmark geometry/edge gate. See
+[SPRITE-SAMPLING.md](../docs/SPRITE-SAMPLING.md) for measured rules, candidate
+failures and current validation status.

@@ -1,0 +1,58 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "9b981b567022e5fd40cd5ec6f5342f58b08be5e6d928f44e53c317f6285fc49f",
+  "air_sha256": "fa7ff15be30938f1eae123273d0afe79a3e5ed437bb94f220e1c2e198a418ebb",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "24adea840cbe74113e3fe671f0dea1fcd07214eec190ec5b0f1f72b18d277327",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 700,
+        "7": 701,
+        "8": 0,
+        "9": 0,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+  },
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b9583a5079f5e637fa4484fcf321fa0018464ac52ecac0d5b78dbb5b4f0fb4f2",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "pattern_native_config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+  "pattern_render": {
+    "region": [
+      400,
+      450,
+      800,
+      620
+    ],
+    "sha256": "f203a954c5e4144969c518895d7b3ae54c7164570f0bdc9186faacdd758cdc4f"
+  },
+  "pattern_crop_rgb_zlib": "eNrt1KENACAMRcFugEGjma4TM0xJ0PiKu/wJmuZFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADSSY5617bd7H08CeqVXgF7pFeiVXgF6pVeAXukV6JVeAXqlV4Be6RXolV4BeqVXgF7pFeiVXgF6pVegV6KkV6BXegXolV6BXplegV7pFaBXegV6ZXoFeqVXgF7pFeiVXgF6pVeAXukV6JVeAXqlV4Be6RXolV4BeqVXgF7pFeiVXgF6pVeAXukV6JVeAXqlV6BXplegV3oF6JVegV6ZXoFe6RWgV3oFeqVXngT0Sq8AvdIr0Cu9AvRKrwC90ivQK70C9EqvAL3SK9ArvQL0Sq8AvdIr0Cu9AvRKr0CvREmvQK/0CtArvQK9Mr0CvdIrQK/0CvTK9Ar0Sq8AvdIr0Cu9AvRKrwC90ivQK70C9EqvAL3SK9ArvQL0Sq8AvdIr0Cu9AvRKrwC90ivQK70C9EqvQK9Mr0Cv9ArQK70CvTK9Ar3SK0Cv9Ar0Sq88CeiVXgF6pVegV3oF6JVeAXqlV6BXegXolV4BeqVXoFd6BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8Bbgrylk="
+}

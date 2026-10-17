@@ -2,7 +2,7 @@ package character
 
 import (
 	"fmt"
-	"math"
+	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
@@ -10,6 +10,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
 )
@@ -29,7 +30,9 @@ type Player struct {
 	Dir string
 
 	// Sprite cache for Ebiten
-	spriteCache map[paletteCacheKey]cachedSprite
+	spriteCache  map[paletteCacheKey]cachedSprite
+	rgbSampler   render.Linear
+	indexSampler render.Nearest
 
 	// Command buffering
 	Commands *CommandBuffer
@@ -143,11 +146,23 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 	if elementFlipY {
 		opts.GeoM.Translate(0, 1)
 	}
-	// Native floors the game-space draw axis while preserving CNS positions
-	// and fractional sprite scaling. Negative clipped axes floor as well.
-	opts.GeoM.Translate(math.Floor(x), math.Floor(y))
+	// Indexed sampling uses integer game pixel centers. RGB textures use the
+	// usual half-pixel centers and retain fractional axes.
+	_, indexed := sprite.Image.(*image.Paletted)
+	if indexed {
+		x, y = x+0.5, y+0.5
+	}
+	opts.GeoM.Translate(x, y)
 
-	screen.DrawImage(ebitenSprite, opts)
+	var err error
+	if indexed {
+		err = p.indexSampler.Draw(screen, ebitenSprite, opts.GeoM, opts.ColorScale)
+	} else {
+		err = p.rgbSampler.Draw(screen, ebitenSprite, opts.GeoM, opts.ColorScale)
+	}
+	if err != nil {
+		ent.RuntimeError = fmt.Errorf("%s sprite %d,%d shader: %w", p.DefPath, currentElement.Group, currentElement.Image, err)
+	}
 }
 
 func (p *Player) drawExplod(screen *ebiten.Image, ex *ExplodData, x, y, sx, sy float64) {
