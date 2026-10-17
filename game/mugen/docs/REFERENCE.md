@@ -644,3 +644,23 @@ layouts. Their explicit status excludes them from stable Go goldens; do not
 claim parity or hardcode those observations. Native memory-level cause and
 applicability remain open. Root round continuity and complete target/helper/
 projectile/state ownership are separate remaining comparisons.
+
+
+## Targets, defence and redirection scope (M4y)
+
+Forty-nine original programs record 744 values and three required-value load
+rejections. Target acquisition/labels/recovery/guard/override, immediate life/
+power, facing momentum and velocity omission/mixed units are compared in
+Character. Typed controller defaults and valid required fields are distinguished
+from accepted omitted TargetFacing. Negative-state source/CMD hashes establish
+contact before -3/-2/-1/positive passes, with pending damage before life changes.
+Runtime defence and new get-hit-sequence behavior correct prior assumptions.
+
+Three scope programs distinguish direct caller-unit results, eager origin
+argument evaluation and delayed Cond destination variables/units. A pure
+evaluator test replays the twelve distinct-variable assignment/index values.
+Full/pure races and representative fresh native replays pass. The first upward
+coordinate draft exercised camera easing; only the stable zero-camera source
+is promoted. See TARGETS.md for exact fields, calibration and remaining
+TargetState/binding/multi-entity/complete-damage/schema obligations. No original
+assets/binaries or root module/desktop changes are made.

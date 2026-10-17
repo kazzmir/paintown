@@ -15,6 +15,9 @@ type FunctionEnvironment interface {
 type RedirectEnvironment interface {
 	Redirect(string, Value, bool) EvaluatorEnvironment
 }
+type RedirectArgumentEnvironment interface {
+	RedirectArgumentContext() EvaluatorEnvironment
+}
 type LegacyEnvironment interface {
 	LookupLegacy(string, string, []Value, string) (Value, bool)
 }
@@ -125,6 +128,12 @@ func EvaluateValue(expr Expression, env EvaluatorEnvironment) Value {
 		dest := resolver.Redirect(name, id, hasID)
 		if dest == nil {
 			return failure(env, "redirection destination not found: %s", e.Selector.String())
+		}
+		switch trigger := e.Trigger.(type) {
+		case *Call:
+			return callWithArguments(trigger, dest, env)
+		case *Legacy:
+			return legacyWithArguments(trigger, dest, env)
 		}
 		return EvaluateValue(e.Trigger, dest)
 	case *Legacy:
@@ -363,12 +372,26 @@ func assignment(e *Binary, env EvaluatorEnvironment) Value {
 }
 
 func call(e *Call, env EvaluatorEnvironment) Value {
+	return callWithArguments(e, env, env)
+}
+
+// Redirection changes the outer trigger's host; its argument expressions stay
+// in the originating player context, including lazy/eager special forms.
+func callWithArguments(e *Call, env, argumentsEnv EvaluatorEnvironment) Value {
 	name := normalizeIdentifier(e.Name)
+	// Cond's delayed condition/branch bytecode executes after redirection;
+	// ordinary eager function arguments were evaluated before it.
+	if name == "cond" {
+		argumentsEnv = env
+		if redirected, ok := env.(RedirectArgumentEnvironment); ok {
+			argumentsEnv = redirected.RedirectArgumentContext()
+		}
+	}
 	if name == "ifelse" || name == "cond" {
 		if len(e.Arguments) != 3 {
 			return failure(env, "%s expects three arguments", name)
 		}
-		condition := EvaluateValue(e.Arguments[0], env)
+		condition := EvaluateValue(e.Arguments[0], argumentsEnv)
 		if condition.RuntimeError() != nil {
 			return condition
 		}
@@ -377,15 +400,15 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 				return Value{}
 			}
 			if condition.Bool() {
-				return EvaluateValue(e.Arguments[1], env)
+				return EvaluateValue(e.Arguments[1], argumentsEnv)
 			}
-			return EvaluateValue(e.Arguments[2], env)
+			return EvaluateValue(e.Arguments[2], argumentsEnv)
 		}
-		yes := EvaluateValue(e.Arguments[1], env)
+		yes := EvaluateValue(e.Arguments[1], argumentsEnv)
 		if yes.RuntimeError() != nil {
 			return yes
 		}
-		no := EvaluateValue(e.Arguments[2], env)
+		no := EvaluateValue(e.Arguments[2], argumentsEnv)
 		if no.RuntimeError() != nil {
 			return no
 		}
@@ -406,7 +429,7 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 				continue
 			}
 		}
-		args[i] = EvaluateValue(expr, env)
+		args[i] = EvaluateValue(expr, argumentsEnv)
 		if args[i].RuntimeError() != nil {
 			return args[i]
 		}
@@ -586,9 +609,13 @@ func constant(e *Call, args []Value, env EvaluatorEnvironment) Value {
 }
 
 func legacy(e *Legacy, env EvaluatorEnvironment) Value {
+	return legacyWithArguments(e, env, env)
+}
+
+func legacyWithArguments(e *Legacy, env, argumentsEnv EvaluatorEnvironment) Value {
 	args := make([]Value, len(e.Arguments))
 	for i, arg := range e.Arguments {
-		args[i] = EvaluateValue(arg, env)
+		args[i] = EvaluateValue(arg, argumentsEnv)
 	}
 	if context, ok := env.(LegacyEnvironment); ok {
 		if v, found := context.LookupLegacy(strings.ToLower(e.Name), e.Operator, args, e.ExtraOperator); found {

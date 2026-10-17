@@ -3,6 +3,7 @@ package character
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"sort"
 
 	"github.com/kazzmir/paintown/game/mugen/engine"
@@ -17,11 +18,12 @@ type World struct {
 	Roots     []*Character
 	Helpers   []*Character
 	HelperMax int
+	random    *rand.Rand
 }
 
 func NewWorld(helperMax int) *World {
 	helperMax = max(4, min(56, helperMax))
-	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax}
+	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, random: rand.New(rand.NewSource(1))}
 }
 
 func (w *World) ResetRoots(players ...*Character) error {
@@ -258,11 +260,11 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 	switch name {
 	case "parent":
 		if c.Parent != nil && !c.Parent.destroyed {
-			return c.Parent
+			return c.redirectEnvironment(c.Parent)
 		}
 	case "root":
 		if c.Parent != nil && !c.rootPlayer().destroyed {
-			return c.rootPlayer()
+			return c.redirectEnvironment(c.rootPlayer())
 		}
 	case "helper":
 		candidates = c.helperFamily(n, hasID)
@@ -274,22 +276,22 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 			n = 0
 		}
 		if n < len(candidates) {
-			return candidates[n]
+			return c.redirectEnvironment(candidates[n])
 		}
 		return nil
 	case "partner":
 		for _, root := range c.World.Roots {
 			if root != c.rootPlayer() && root.TeamSide == c.TeamSide {
-				return root
+				return c.redirectEnvironment(root)
 			}
 		}
 	case "playerid":
 		if who, ok := c.World.Registry.Lookup(int32(n)); ok && !who.destroyed {
-			return who
+			return c.redirectEnvironment(who)
 		}
 	}
 	if len(candidates) > 0 {
-		return candidates[0]
+		return c.redirectEnvironment(candidates[0])
 	}
 	return nil
 }

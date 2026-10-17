@@ -966,19 +966,37 @@ func (c *Character) TargetBind(params map[string]string) {
 }
 
 func (c *Character) TargetDrop(id int) {
-	// Logic: remove target from list
+	if err := c.DropTargets(engine.TargetDropParameters{ExcludeID: id, KeepOne: true}); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) TargetFacing(id, facing int) {
-	// Logic: set target facing
+	if facing == 0 {
+		return
+	}
+	direction := c.Facing
+	if facing < 0 {
+		direction = -direction
+	}
+	for _, target := range c.acquiredTargets(id, true) {
+		if target.Facing != direction {
+			target.Facing = direction
+			target.VelX = -target.VelX
+		}
+	}
 }
 
 func (c *Character) TargetLifeAdd(id, val int, kill bool) {
-	// Logic: add life to target
+	if err := c.AddTargetLife(engine.TargetLifeParameters{ID: id, Value: val, Kill: kill}); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) TargetPowerAdd(id, val int) {
-	// Logic: add power to target
+	for _, target := range c.acquiredTargets(id, true) {
+		target.AddPower(val)
+	}
 }
 
 func (c *Character) TargetState(id, state int) {
@@ -986,11 +1004,15 @@ func (c *Character) TargetState(id, state int) {
 }
 
 func (c *Character) TargetVelAdd(x, y float64, id int) {
-	// Logic: add velocity to target
+	if err := c.SetTargetVelocity(engine.TargetVelocityParameters{ID: id, X: x, Y: y, HasX: true, HasY: true, Add: true}); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) TargetVelSet(x, y float64, id int) {
-	// Logic: set velocity for target
+	if err := c.SetTargetVelocity(engine.TargetVelocityParameters{ID: id, X: x, Y: y, HasX: true, HasY: true}); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) ReversalDef(params map[string]string) {
@@ -1903,11 +1925,16 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		}
 	}
 	// Apply attack/defence multipliers
+	// A new get-hit sequence clears the prior idle-state defence adjustment.
+	// Later H-to-H contacts retain a multiplier established while being hit.
+	if c.MoveType != "H" {
+		c.DefenceMul = 1
+	}
 	superDefence := c.superDefenceMul
 	if superDefence <= 0 {
 		superDefence = 1
 	}
-	finalDamage := int(math.Round(float64(damage) * attacker.AttackMul / (c.DefenceMul * superDefence)))
+	finalDamage := int(math.Round(float64(damage) * attacker.AttackMul * c.DefenceMul / superDefence))
 	c.GetHitDamage = finalDamage
 	if c.hasPendingHitDamage {
 		c.GetHitDamage += c.pendingHitDamage

@@ -143,3 +143,10 @@ portraits now share the stage margins and measured native HUD scale.
 The initial 1280x960 physical-window experiment could not read its clipboard
 completely on the isolated display and is diagnostic only; promoted windows
 fit inside it. Original reference assets and desktop settings remain unchanged.
+
+M4y now compares direct redirected geometry in caller units, eager origin
+arguments and delayed Cond destination units. Geometric Const kinds are
+preserved, while raw scalar variables/IDs stay unscaled. Mixed Target velocity
+controllers convert caller widths into victim widths. See TARGETS.md for the
+48 scope values and controller traces; fractional profiles and complete camera/
+zoom/constant metadata remain open.

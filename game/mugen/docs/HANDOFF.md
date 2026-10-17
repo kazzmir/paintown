@@ -467,6 +467,31 @@ ID continuity across rounds still needs a trace. Complete menu/SystemFit, raster
 filtering, input, BGM and mode/asset/state gates remain open. No full compatibility
 or complete state machine claim is made.
 
+M4x is commit `9c8c29b6`. M4y adds 49 native programs/744 numeric values/three
+load rejections for target retention/labels/recovery/guards, typed drop/facing/
+life/power/velocity effects and redirection scope/units. Full scoped/pure races
+pass, with representative native replays. See TARGETS.md for exact measured
+boundaries and remaining schemas. HitDef ID defaults/clamps to zero. Direct
+geometric redirects use caller units; eager call arguments use the origin,
+while delayed Cond uses destination variables and units. Scalar variables and
+declared constant kinds stay distinct.
+
+Native target life changes are immediate; negative values use receiver defence/
+super factors, healing is unscaled and caller AttackMul is ignored. The normal
+damage kernel multiplies runtime DefenceMul, clearing an idle adjustment for
+a new get-hit sequence. A -3/-2/-1/positive trace confirms all four see pending
+damage before Life changes. The initial upward coordinate draft moved the native
+camera; the promoted fixture isolates camera at zero. Native camera easing is
+still different from Go and remains open.
+
+Next implement actual TargetState/ChangeAnim2/SelfState state/animation ownership
+and TargetBind/BindTo* geometry/clocks, then complete helper typed parameters,
+negative eligibility and multi-target/projectile/world phases. TargetState only
+has required-argument validation in M4y. Native multi-target keepone/RNG, base
+stats/rounding/kill and full configuration/modes/assets/input/audio/render gates
+remain open. The two M4x bottom-power cases remain unresolved, outside stable
+conformance goldens. Keep captures and Ebiten tests sequential on :97.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with

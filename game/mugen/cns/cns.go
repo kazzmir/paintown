@@ -582,13 +582,14 @@ func ParseFloatList(s string) []float64 {
 
 func ParseHitDef(params map[string]string) HitDef {
 	hd := HitDef{
-		ID:             -1,
+		ID:             0,
 		FallRecover:    true,
 		FallXUnchanged: true,
 		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
 	}
 	if v, ok := params["id"]; ok {
 		hd.ID, _ = strconv.Atoi(v)
+		hd.ID = max(0, hd.ID)
 	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v

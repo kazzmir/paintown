@@ -101,6 +101,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileSuperPause(ctrl)
 	case "hitdef":
 		return compileHitDef(ctrl)
+	case "targetdrop", "targetfacing", "targetlifeadd", "targetpoweradd", "targetvelset", "targetveladd", "targetstate":
+		return compileTarget(ctrl, name)
 	case "playsnd", "sndpan", "stopsnd":
 		return compileSound(ctrl, name)
 	case "playerpush":

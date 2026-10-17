@@ -285,6 +285,14 @@ assumptions; two layout-dependent power cases remain unresolved. Full/pure
 races and fresh replays pass. Complete target ownership, helper/projectile
 schemas and global phases remain open. See ENTITIES.md and BOTTOM.md.
 
+M4y adds typed target drop/facing/life/power/velocity effects and native target
+label/retention/release behavior. Forty-nine programs cover 744 values and three
+load rejections. Redirection now handles eager origin arguments, delayed Cond
+destination context and direct caller-unit geometry. Runtime defence, negative
+phase and mixed-coordinate observations match; full/pure races and fresh replays
+pass. TargetState ownership/binding, multi-entity/RNG, complete damage and schema
+coverage remain open. See TARGETS.md; no whole-controller promotion follows.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

@@ -76,3 +76,9 @@ fixtures. Names and state/animation ownership are separate remaining bindings.
 Full scoped races and pure engine/evaluator races pass. Fresh limit32, nested,
 operator and malformed-expression replays match their native packets/rejection.
 No whole controller or trigger is promoted to Verified by this checkpoint.
+
+M4y now compares acquired labels/retention/recovery/guards and implements typed
+drop/facing/life/power/velocity effects with 49 native programs. It also pins
+redirection argument scope and caller/destination coordinate distinctions.
+See TARGETS.md. Complete custom-state/animation ownership, binding, multiple-
+entity contacts, helper schemas and projectile phases remain open.

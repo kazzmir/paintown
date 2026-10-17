@@ -295,3 +295,14 @@ replay. identity-bottom-bitnot is an expected runtime rejection. Full Character
 identity regressions and pure evaluator operator replay consume the stable
 source/hash packets. See ENTITIES.md and BOTTOM.md. The two identity-bottom-power
 programs are explicitly unresolved native behavior, not passing Go goldens.
+
+
+Target/scope programs and bounds are detailed in TARGETS.md. For example,
+--fixture targets-relabel --pages 0 12, target-life-super --pages 0, and
+target-vel-add-mixed --p2-localcoord 1280,720 --pages 0 use the usual
+--mugenversion 1.1 --clipboard-in-cmd --bank fvar recipe. The three redirect-*
+programs separate eager origin arguments, delayed destination Cond, and
+caller-unit direct geometry. target-negative-phase also pins its CMD source.
+Required-value grammar rejections are expected. All 49 programs are compared
+by TestNativeTargetsAndRedirectedCoordinates; pure scope replay has no DISPLAY
+dependency. Full custom-state/binding and multi-entity cases remain open.

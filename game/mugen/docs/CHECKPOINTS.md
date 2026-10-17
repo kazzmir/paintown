@@ -4,6 +4,34 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4y — Target retention, effects and redirected scope/units
+
+Forty-nine original native programs pin 744 numbers and three required-value
+load rejections. Typed drop/facing/life/power/velocity controllers act on the
+acquired ledger. HitDef IDs default/clamp to zero, survive attacker transitions,
+relabel on later contact and release on receiver recovery. Guard acquires a
+target; an I override does not. See TARGETS.md for the measured parameters.
+
+Target life changes immediately; negative adjustments scale by receiver defence
+and super factors, healing does not, and caller AttackMul is ignored. Facing
+preserves world velocity, and velocity omission/mixed units are measured. The
+damage kernel now multiplies runtime DefenceMul and clears idle adjustment on
+new get-hit sequences. A contact trace confirms -3/-2/-1/positive passes all see
+state 5000/damage 100/life 1000/time 0 before damage applies.
+
+Redirection now separates ordinary eager origin arguments from the destination
+outer trigger. Cond executes lazily in destination context/units. Direct geometry
+returns caller units while scalar variables and declared constant kinds remain
+distinct. Forty-eight scope values, plus mixed-controller traces, exercise the
+conversion and assignment ownership. An upward draft revealed native camera
+easing; the stable fixture isolates it instead of claiming camera parity.
+
+Full scoped/pure core races and representative native replays pass. TargetState
+only gains required-argument validation; actual custom ownership/binding and
+full multiple-entity scheduling remain open. Native multi-target keepone/RNG,
+base-stat/kill/rounding and complete schemas still need comparison. M4x's
+reversal point is `9c8c29b6`. No root module/reference/desktop changes were made.
+
 ## M4x — Entity IDs, helper families and native bottom boundaries
 
 Nine stable native programs cover thirteen cases: 240 numeric values and one
