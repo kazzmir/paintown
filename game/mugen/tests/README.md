@@ -352,3 +352,12 @@ nonfinal -1 program also compares native frame selection and element clocks.
 See ../docs/CUSTOMHIT.md for exact scope, diagnostic exclusions and remaining
 stock throw/world obligations. All display/audio clients run serially on the
 task-owned private servers; pure tests without DISPLAY can run alongside probes.
+
+
+M4ad adds four throw-stock-* and four contactframe-* packets (228 observations).
+Stock wrappers use --file st0=kfm.cns --file stcommon=common1.cns --file anim=kfm.air
+and --p2-fixture throw-stock-victim. Resolved original file hashes are pinned in
+file_sha256 and verified on native/Go replay. TestNativeStockThrows runs 240 ticks;
+TestNativeContactFrames compares one-tick attack and hurtbox windows. Keep the
+GameTime start stamp: throw-relative positions alone initially hid a 22-tick
+Go grab versus native one tick. See ../docs/THROWS.md for limits and exact recipes.

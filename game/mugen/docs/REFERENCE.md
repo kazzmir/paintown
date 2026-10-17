@@ -736,3 +736,43 @@ framebuffer/stock-throw parity claim follows. Full world/engine gates remain ope
 The stock KFM/KFM720 regression window also runs at 1280x720 through seven
 seconds at temp/app-runs/customhit-stock-regression-go/, with both full-sized
 actors and no runtime errors. This remains a smoke check, not pixel parity.
+
+
+## M4ad stock throw and contact-pose evidence
+
+Four original wrappers load the unchanged stock kfm.cns, common1.cns and kfm.air
+through Files overrides. file_sha256 pins resolved copied paths and their input
+hashes; fresh replay checks them, and Go reads those exact original inputs.
+The stock bodies, sprites and sounds are not copied into tracked fixtures.
+Normal/forward/drop/recovery observations contribute 132 numbers, including an
+independent GameTime start stamp. Four minimal one-tick attack/hurtbox window
+programs contribute 96 more. See THROWS.md.
+
+An early throw-relative trace passed while Go grabbed 21 ticks late. The start
+stamp measured one native tick versus Go 22 and must remain in regression
+coverage. Saving pre-advance contact poses corrects the start and both minimal
+window directions. TargetDrop also exposed omitted fall-X sentinel assignment;
+the controller now preserves X, matching native's stationary escape at X=42.
+The initial base draft observed get-up through 701, but its authored Ctrl=0
+state stops at 0; final complete packets observe 0/previous 5120 explicitly.
+
+All eight packets and prior scoped race regressions pass in
+temp/m4ad-full-first-race.log. Full controller/world/engine parity remains open;
+four fresh start/drop/first/second-window replays match, including the original
+Files hashes. Production-window evidence accompanies the checkpoint.
+
+
+The normal, forward and TargetDrop variants also run through real 1280x720 Go
+windows at temp/app-runs/stock-throw-{base,forward,drop}-go/. Captures at 2/3/4/7
+seconds show the stock lift in both directions, released fall and final recovery.
+Original sprite and sound banks load; no runtime errors appear. These are owned
+window/asset smoke checks, not framebuffer or complete audio parity.
+
+
+The final normal/forward captures expose a remaining visual bug: common landing
+Explods using anim=F(expression) fall through the legacy literal parser to own
+action 0 and infinite lifetime. They leave extra standing KFM sprites after
+recovery. State/health/target observations pass, but a clean visual throw is not
+yet accepted. Next connect typed Explod resource lookup and lifetime to the shared
+effect scene, then repeat these captures. The dropped variant and the scripted
+state tests do not excuse the normal/forward rendering defect.

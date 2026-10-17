@@ -90,3 +90,11 @@ entry deferred until each actor's positive pass. GetHitVar(isbound) publishes
 the subject's last update, so the earlier root sees the previous observation
 until the target's turn. This is separate from the queued constraint and its
 physical expiry. Full helper/projectile/world scheduling remains open.
+
+
+M4ad separates the contact pose from the advanced AIR element: each root saves
+its completed simulation pose before advancing its animation clock. The next
+contact phase uses that pose for both Clsn1 and Clsn2. Independent one-tick
+windows and a stock throw's GameTime stamp distinguish this from checking the
+already-advanced element. Direct CheckCollision uses current frames. Full
+pause/helper/projectile and late-push frame ordering still need their own traces.

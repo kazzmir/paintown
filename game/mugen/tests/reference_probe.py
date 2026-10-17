@@ -375,6 +375,15 @@ def main():
                 'bank': args.bank, 'bare_constants': args.bare_constants}
     if files:
         evidence['files'] = files
+        resolved = {}
+        for key, value in files.items():
+            for directory in [run / 'chars/kfm', run / 'data', run]:
+                path = (directory / value).resolve()
+                if path.is_relative_to(run.resolve()) and path.is_file():
+                    resolved[key] = {'path': str(path.relative_to(run.resolve())), 'sha256': digest(path)}
+                    break
+        if resolved:
+            evidence['file_sha256'] = resolved
     if args.fixture_constants:
         evidence['fixture_constants'] = True
     if args.clipboard_in_cmd:
@@ -421,6 +430,8 @@ def main():
     expected = {}
     if not args.record:
         expected = case_expected or json.loads(fixture.with_suffix('.json').read_text())
+        if expected.get('file_sha256') and expected['file_sha256'] != evidence.get('file_sha256'):
+            raise RuntimeError('Resolved Files inputs differ from pinned fixture')
         if expected.get('bank', 'var') != args.bank or expected.get('bare_constants', False) != args.bare_constants:
             raise RuntimeError('Variable bank/constants mode differs from pinned fixture')
         if expected.get('fixture_constants', False) != args.fixture_constants:

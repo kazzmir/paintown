@@ -78,7 +78,7 @@ func TickCharacters(players []*Character) error {
 				if defender == attacker || defender.Life <= 0 || attacker.HitGuard[int(defender.EntityID)] {
 					continue
 				}
-				if CheckCollision(attacker, defender) {
+				if tickCollision(attacker, defender) {
 					hit := attacker.CurrentHitDef
 					hit.Attr = attacker.attributesForHit(hit)
 					contacts = append(contacts, contact{attacker, defender, hit, attacker.HitGuard, defender.guardsHit(hit)})

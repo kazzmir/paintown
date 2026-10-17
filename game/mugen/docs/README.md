@@ -30,5 +30,7 @@ and the handoff for current progress; the assessment describes the original base
 
 16. [HitDef custom states](CUSTOMHIT.md): contact transitions, override exclusions, binding flags and infinite AIR clock evidence.
 
+17. [Stock throws](THROWS.md): original CNS/AIR composition, grab timing, contact poses and fall-velocity omission.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

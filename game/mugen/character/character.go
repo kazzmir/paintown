@@ -62,9 +62,11 @@ type Character struct {
 	Palettes            *palette.State
 
 	// AIR data containing animation definitions
-	AirFile       *air.Data
-	animationFile *air.Data
-	animation     *air.Player
+	AirFile           *air.Data
+	animationFile     *air.Data
+	animation         *air.Player
+	contactFrame      *air.Element
+	contactFrameReady bool
 	// CMD data containing command definitions
 	CmdFile *cmd.Data
 
@@ -489,6 +491,9 @@ func (c *Character) finishTick() {
 			}
 			break
 		}
+		// Contacts at the next tick use this completed simulation pose, before
+		// the animation clock selects the next CNS/display element.
+		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
 		c.Time++
 		if c.MoveHit > 0 {
 			c.MoveHit++
@@ -501,6 +506,10 @@ func (c *Character) finishTick() {
 		}
 		c.UpdateAnimation()
 		c.ageBinding()
+	} else {
+		// ignorehitpause controllers can still change an action while its
+		// clock is frozen, so publish their resulting pose too.
+		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
 	}
 
 	// 6. Update Helpers, Projectiles, Explods
@@ -1231,7 +1240,9 @@ func (c *Character) SetHitFallDamage(damage int) {
 func (c *Character) SetHitFallVel(active bool) {
 	c.HitFallVelActive = active
 	if active {
-		c.VelX = c.GetHitVar("fall.xvel")
+		if !c.GetHit.FallXUnchanged {
+			c.VelX = c.GetHitVar("fall.xvel")
+		}
 		c.VelY = c.GetHitVar("fall.yvel")
 	}
 }

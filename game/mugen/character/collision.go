@@ -45,6 +45,21 @@ func Intersects(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2 float64) bool {
 // CheckCollision evaluates if the attacker's hitboxes (Clsn1) intersect
 // with the defender's hurtboxes (Clsn2).
 func CheckCollision(attacker, defender *Character) bool {
+	return collisionAtFrames(attacker, defender, attacker.CurrentElement(), defender.CurrentElement())
+}
+
+func tickCollision(attacker, defender *Character) bool {
+	first, second := attacker.contactFrame, defender.contactFrame
+	if !attacker.contactFrameReady {
+		first = attacker.CurrentElement()
+	}
+	if !defender.contactFrameReady {
+		second = defender.CurrentElement()
+	}
+	return collisionAtFrames(attacker, defender, first, second)
+}
+
+func collisionAtFrames(attacker, defender *Character, el1, el2 *air.Element) bool {
 	// Attaker must have a HitDef active and boxes to check
 	if attacker.MoveType != "A" || !attacker.HitDefActive {
 		return false
@@ -61,12 +76,10 @@ func CheckCollision(attacker, defender *Character) bool {
 		return false
 	}
 
-	el1 := attacker.CurrentElement()
 	if el1 == nil || len(el1.Clsn1) == 0 {
 		return false
 	}
 
-	el2 := defender.CurrentElement()
 	if el2 == nil || len(el2.Clsn2) == 0 {
 		return false
 	}

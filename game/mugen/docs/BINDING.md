@@ -105,3 +105,10 @@ not a new/cancelled request or the remaining constraint pointer; see CUSTOMHIT.m
 Complete throws remain unfinished. Run all
 native/app/Ebiten/audio clients serially on private :97; do not touch the desktop
 or original distribution. Preserve root modules and scope edits to game/mugen/.
+
+
+M4ad now exercises actual KFM TargetBind/TargetState/TargetLifeAdd controllers
+through normal/forward stock throws and TargetDrop escape. The latter invokes
+820's real isbound fallback and own fall/get-up states. See THROWS.md; this is
+separate from the still-open rule forcing bound victims to fall when their
+attacker receives a new hit.

@@ -4,6 +4,52 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ad — Stock throw composition and one-tick contact poses
+
+Eight native programs compare 228 numbers. Four load the original KFM throw,
+common state and AIR files through hash-pinned Files overrides: normal throw,
+forward branch, released-target escape and an independent GameTime start stamp.
+The first throw-relative trace could match despite Go delaying the grab until
+action 800 wrapped. The stamp exposes native one tick versus the old Go 22.
+Four independent attack/hurtbox window programs distinguish first/second
+one-tick elements. Contacts now use the preceding simulation pose saved before
+AIR advancement; the direct collision API still uses current elements.
+
+The stock TargetDrop escape also exposed assigning the omitted fall-X sentinel
+as velocity. HitFallVel now preserves X for that omission. The victim stays at
+native X=42, enters its own fall/get-up states and loses no life. Normal and
+forward throws apply 78 damage, release their last bind, land, get up and drop
+from the acquired list. See THROWS.md for exact samples, fixture controls and
+remaining obligations. The forward wrapper sets the stock throw's var(2),
+which exercises its branch without claiming command-input coverage.
+
+Full scoped races pass in temp/m4ad-full-first-race.log, including all previous
+contact/guard/pause/ownership/spark/sound cases. Every authored input and the
+original CNS/AIR overrides are hash checked. The reference harness records
+resolved Files hashes and checks them on replay; stock scheduler runs use 240
+ticks. Four fresh replays match start/drop and independent first/second windows,
+including the pinned original Files hashes. Simulation-only tests omit sound
+banks; production asset/window checks are recorded below. Original reference
+files remain unchanged.
+
+The normal, forward and TargetDrop variants also run through real 1280x720 Go
+windows at temp/app-runs/stock-throw-{base,forward,drop}-go/. Captures at 2/3/4/7
+seconds show the stock lift in both directions, released fall and final recovery.
+Original sprite and sound banks load; no runtime errors appear. These are owned
+window/asset smoke checks, not framebuffer or complete audio parity.
+
+The final normal/forward captures expose a remaining visual bug: common landing
+Explods using anim=F(expression) fall through the legacy literal parser to own
+action 0 and infinite lifetime. They leave extra standing KFM sprites after
+recovery. State/health/target observations pass, but a clean visual throw is not
+yet accepted. Next connect typed Explod resource lookup and lifetime to the shared
+effect scene, then repeat these captures. The dropped variant and the scripted
+state tests do not excuse the normal/forward rendering defect.
+
+This does not complete HitDef facing/hit flags/priority, dynamic Width, new-hit
+interrupted bindings, complete helper/projectile phases or the other engine/
+asset/mode/input gates. M4ac's reversal point is `c9e70791`.
+
 ## M4ac — HitDef custom states, binding publication and infinite AIR clocks
 
 Thirty-eight original native programs pin 1244 distinct per-program numeric

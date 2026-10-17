@@ -114,3 +114,9 @@ actors and no runtime errors. This remains a smoke check, not pixel parity.
 
 Full stock throws still need facing/priority/Width and interrupted-binding checks;
 full state-machine and asset compatibility are not declared complete.
+
+
+M4ad subsequently runs the actual stock throw/common states and AIR, adds an
+initial-grab stamp and fixes saved contact poses and omitted fall-X handling.
+See THROWS.md. The normal/forward/drop paths now have native composition packets;
+facing/hit flags/priority/Width and attacker-hit interruption remain open.

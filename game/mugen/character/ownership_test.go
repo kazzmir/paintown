@@ -30,7 +30,15 @@ func TestNativeCustomHitStates(t *testing.T) {
 	replayNativeWorldPrograms(t, "customhit-*.json", 38)
 }
 
-func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
+func TestNativeStockThrows(t *testing.T) {
+	replayNativeWorldPrograms(t, "throw-*.json", 4, 240)
+}
+
+func TestNativeContactFrames(t *testing.T) {
+	replayNativeWorldPrograms(t, "contactframe-*.json", 4)
+}
+
+func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration ...int) {
 	t.Helper()
 	stock, err := os.ReadFile("../temp/mugen-1.1b1/chars/kfm/kfm.cns")
 	if err != nil {
@@ -58,10 +66,22 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 				P2Hash    map[string]string `json:"p2_sha256"`
 				P2Local   string            `json:"p2_localcoord"`
 				Error     string            `json:"expected_load_error"`
-				Captures  []struct{ Variables map[string]float64 }
+				Files     map[string]string `json:"files"`
+				FileHash  map[string]struct {
+					Path string `json:"path"`
+					Hash string `json:"sha256"`
+				} `json:"file_sha256"`
+				Captures []struct{ Variables map[string]float64 }
 			}
 			if err := json.Unmarshal(data, &reference); err != nil {
 				t.Fatal(err)
+			}
+			stockInput := func(key string) []byte {
+				input, present := reference.FileHash[key]
+				if !present || input.Hash == "" || filepath.IsAbs(input.Path) || strings.Contains(input.Path, "..") {
+					t.Fatal("stock Files override lacks a safe pinned input", key, input)
+				}
+				return checkedAudioInput(t, filepath.Join("../temp/mugen-1.1b1", filepath.FromSlash(input.Path)), input.Hash)
 			}
 			load := func(stem string, hashes map[string]string) *Character {
 				file, err := cns.ParseNamed(bytes.NewReader(checkedAudioInput(t, stem+".cns", hashes["cns"])), stem+".cns")
@@ -70,6 +90,24 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 				}
 				file.SetLanguageVersion("1.1")
 				file.Data, file.Size, file.Velocity, file.Movement, file.ConstantFields = constants.Data, constants.Size, constants.Velocity, constants.Movement, constants.ConstantFields
+				merge := func(source []byte, name string) {
+					states, err := cns.ParseNamed(bytes.NewReader(source), name)
+					if err != nil {
+						t.Fatal(err)
+					}
+					states.SetLanguageVersion("1.1")
+					for id, state := range states.States {
+						if file.States[id] == nil {
+							file.States[id] = state
+						}
+					}
+				}
+				for index := 0; index <= 9; index++ {
+					key := "st" + strconv.Itoa(index)
+					if reference.Files[key] != "" {
+						merge(stockInput(key), reference.FileHash[key].Path)
+					}
+				}
 				if hash := hashes["cmd"]; hash != "" {
 					commands, err := cns.ParseNamed(bytes.NewReader(checkedAudioInput(t, stem+".cmd", hash)), stem+".cmd")
 					if err != nil {
@@ -82,7 +120,14 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 						}
 					}
 				}
-				frames, err := air.Parse(bytes.NewReader(checkedAudioInput(t, stem+".air", hashes["air"])))
+				if reference.Files["stcommon"] != "" {
+					merge(stockInput("stcommon"), reference.FileHash["stcommon"].Path)
+				}
+				framesSource := checkedAudioInput(t, stem+".air", hashes["air"])
+				if reference.Files["anim"] != "" {
+					framesSource = stockInput("anim")
+				}
+				frames, err := air.Parse(bytes.NewReader(framesSource))
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -116,7 +161,11 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 				c.ChangeState(0, -1, -1)
 				c.Ctrl = true
 			}
-			for tick := 0; tick < 60; tick++ {
+			ticks := 60
+			if len(duration) > 0 {
+				ticks = duration[0]
+			}
+			for tick := 0; tick < ticks; tick++ {
 				if err := TickCharacters(players); err != nil {
 					t.Fatal(err)
 				}

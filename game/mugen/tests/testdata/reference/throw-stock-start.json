@@ -1,0 +1,55 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "be975d575fb428fbd0bad8ce2257097f7060c3cfe851c246664410fd81e467ce",
+  "air_sha256": "8aa00b3db52d399f2f1120a9e336494434599fe4afe53eea03979fc66ed671f2",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "447dfc02b076d569c12cb2baa09767febda99f9840a87c7644c1c92738667083",
+      "variables": {
+        "0": 820,
+        "1": 5000,
+        "2": 0,
+        "3": 1,
+        "4": 0,
+        "5": 1,
+        "6": 820,
+        "7": 820,
+        "8": 1,
+        "9": 12,
+        "10": -16,
+        "11": -1
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "st0": "kfm.cns",
+    "stcommon": "common1.cns",
+    "anim": "kfm.air"
+  },
+  "file_sha256": {
+    "st0": {
+      "path": "chars/kfm/kfm.cns",
+      "sha256": "af4c90afdfc664dcff9108185ff80ece9cafa31f3bbc15b4bbea9c9d481a97c2"
+    },
+    "stcommon": {
+      "path": "data/common1.cns",
+      "sha256": "1b3fa7977d31884d3c7c3475a7238cdc6d463ac61f60a55daedaec757aff54d3"
+    },
+    "anim": {
+      "path": "chars/kfm/kfm.air",
+      "sha256": "a9ed7aae299fe25e79b7ccf2fe66c36dbe8d42063f430600cd38127c3250f825"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_fixture": "throw-stock-victim",
+  "p2_sha256": {
+    "cns": "e8630b2b574bcc0c0e6e82a5d1d93f513fe0b4828b90fb47a1eca61b34c09744",
+    "air": "8aa00b3db52d399f2f1120a9e336494434599fe4afe53eea03979fc66ed671f2"
+  }
+}

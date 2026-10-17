@@ -7,6 +7,15 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ad composes the actual stock throw/common states and AIR through hash-pinned
+Files overrides. Eight programs compare 228 numbers: normal/forward/released
+throws, an independent start stamp, and first/second attack/hurtbox windows.
+The stamp exposed a 22-tick Go grab versus native one tick; contacts now use
+the saved simulation pose before AIR advances. HitFallVel preserves omitted X
+velocity instead of assigning GetHitVar's sentinel. All scoped races pass in
+temp/m4ad-full-first-race.log. Full facing/hitflag/priority/Width, attacker-hit
+interruption and helper/world/asset/input/mode gates remain open; see THROWS.md.
+
 M4ac connects HitDef custom-state expressions/owners and deferred entry, with
 38 native programs/1244 numbers/three load rejections. Matching override
 exclusions, H-override target suppression, missing-state counter reset and

@@ -4,7 +4,32 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ac: HitDef p1stateno/p2stateno/p2getp1state compile and select measured
+Latest M4ad: actual stock throw/common CNS and AIR composition has eight native
+programs/228 numbers. An initial-GameTime stamp disproves an otherwise passing
+throw-relative trace: Go formerly grabbed on tick 22; native grabs on tick one.
+Root contacts now use completed simulation poses before AIR advances. Independent
+first/second attack and hurtbox windows confirm both sides. HitFallVel preserves
+omitted X instead of assigning its numeric sentinel, so TargetDrop escape stays
+at native X=42, falls, lands and gets up with full life. Normal/forward throws
+apply 78 damage and recover with target cleanup. See THROWS.md. Full scoped
+races pass at temp/m4ad-full-first-race.log, retaining all previous regressions.
+The harness pins/checks original Files override paths/hashes; stock replays use
+240 ticks. Wrappers declare 1.1 and the forward wrapper sets stock var(2) after
+its input sample; no command or complete legacy-version parity claim follows.
+Four fresh native replays match the start/drop and independent contact-window
+packets, including original Files hashes. The normal/forward/drop Go windows are inspected at 2/3/4/7 seconds under
+temp/app-runs/stock-throw-{base,forward,drop}-go/, with actual sprite/sound banks
+loaded and no runtime errors. This is smoke coverage, not full raster/audio parity.
+
+The final normal/forward captures expose a remaining visual bug: common landing
+Explods using anim=F(expression) fall through the legacy literal parser to own
+action 0 and infinite lifetime. They leave extra standing KFM sprites after
+recovery. State/health/target observations pass, but a clean visual throw is not
+yet accepted. Next connect typed Explod resource lookup and lifetime to the shared
+effect scene, then repeat these captures. The dropped variant and the scripted
+state tests do not excuse the normal/forward rendering defect.
+
+Previous M4ac: HitDef p1stateno/p2stateno/p2getp1state compile and select measured
 custom state owners with deferred entry. Thirty-eight native programs pin 1244
 distinct per-program numbers and three load rejections. Full scoped races pass
 in temp/m4ac-full-final-race.log. See CUSTOMHIT.md. Matching HitOverride excludes
@@ -35,8 +60,9 @@ The real with-box Go match runs through seven-second 1280x720 captures at
 temp/app-runs/targetbind-with-box-go/. Sustained movement reaches an edge;
 camera/body-edge/framebuffer parity remains open. Root module hashes match.
 
-Next compare and integrate stock throws through their actual CNS/AIR/assets,
-including HitDef facing/priority/hit flags, Width and interrupted bindings. Then
+Next fix the visually discovered Explod common-resource/lifetime bug, then
+compare HitDef facing/priority/hit flags, Width and attacker-hit interrupted
+bindings. Stock throw wrappers now cover the ordinary/forward/drop paths. Then
 complete BindToTarget/Parent/Root and helper negative/keyctrl/world phases;
 compare pause/foreign/multi-target/retirement binding edges, remaining hit
 schemas and all input/render/audio/mode/asset gates. Native bottom-power
@@ -586,8 +612,9 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Continue the stock throw path with facing/priority/hit flags, Width and
-interrupted-binding controls, then complete the other binding/helper/world and
+Connect typed Explod common resources/lifetime, rerun stock throw captures,
+then continue facing/priority/hit flags, Width and attacker-hit interrupted
+binding controls, then complete the other binding/helper/world and
 engine/asset gates. The selection-to-fight path runs, but the complete M4 and
 whole 1.1 beta compatibility gates remain open. Implementation
 choices are delegated after approval; ask only about concrete blockers or
@@ -606,3 +633,13 @@ native captures. See CUSTOMHIT.md for boundaries and diagnostic exclusions.
 The stock KFM/KFM720 regression window also runs at 1280x720 through seven
 seconds at temp/app-runs/customhit-stock-regression-go/, with both full-sized
 actors and no runtime errors. This remains a smoke check, not pixel parity.
+
+
+M4ad throw-stock-{base,drop,forward,start} use --p2-fixture throw-stock-victim,
+--file st0=kfm.cns --file stcommon=common1.cns --file anim=kfm.air, version 1.1,
+fvar/CMD clipboard and seven-second captures. Use pages from each JSON. Their
+actual original CNS/AIR inputs are additionally pinned by file_sha256. The
+contactframe-* programs use their same-name -victim fixtures and pages 0 12.
+TestNativeStockThrows and TestNativeContactFrames replay all eight packets.
+The initial throw-relative base draft is not proof of first-grab timing; the
+start stamp must remain. No original state/art files were committed.
