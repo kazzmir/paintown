@@ -18,7 +18,11 @@ type World struct {
 	Roots     []*Character
 	Helpers   []*Character
 	HelperMax int
-	random    *rand.Rand
+
+	// AfterRootUpdate observes completed root CNS/physics before the next root.
+	// Match uses this for the camera; isolated state-only worlds leave it nil.
+	AfterRootUpdate func()
+	random          *rand.Rand
 }
 
 func NewWorld(helperMax int) *World {

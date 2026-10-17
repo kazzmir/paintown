@@ -149,6 +149,9 @@ func TickCharacters(players []*Character) error {
 		if c.RuntimeError != nil {
 			return c.RuntimeError
 		}
+		if c.Parent == nil && world.AfterRootUpdate != nil {
+			world.AfterRootUpdate()
+		}
 	}
 	// Body push waits until every root has run CNS/movement. A later root can
 	// observe authored PosSet and completed physics before this body correction.

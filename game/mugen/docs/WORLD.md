@@ -19,6 +19,13 @@ starts at X=-70 and sets Vel X=2 is visible to the second root at X=-68 and
 Time=1 during that second root's Time=0 body. The old Go all-CNS-then-physics
 sequence returned X=-70 and Time=0, and failed the new native replay.
 
+M4ag adds a camera observation after that root completion point. Match advances
+horizontal tension/easing there and once again in its shared late phase. A
+native phase trace reads camera X=3.12001038 from the earlier root, then
+4.56401062 from the later root in the same frame. Isolated state-only worlds
+leave this observer nil; nested helper/projectile adapters do not emit root
+observations. See CAMERA.md for the bounded camera scope and remaining rules.
+
 Attacker priority applies to the entire root update. In the second-root-attacker
 fixture, the first root's Time=1 CNS sees the second root at Time=2. Equal
 priorities keep root order. This extends the M4k CNS ordering evidence; it does

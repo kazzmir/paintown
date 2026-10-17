@@ -4,6 +4,39 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ag — Horizontal camera tension, easing and root phases
+
+Twenty native programs pin 720 numbers and 60 authored input hashes. The
+horizontal camera now retains a tension-constrained goal, eases after each
+completed root and in the shared late phase, and clamps to the goal/stage
+limits. Float32 left-edge rounding reproduces native query values. A phase
+program distinguishes earlier/later root observations; long/return controls
+distinguish finite arrival and retained goals from recentering or stopping early.
+See CAMERA.md for exact values and the bounded zoom-one/320-stage scope.
+
+The first ten static/phase cases pass without proving motion. Added walking
+cases exposed a missing speed floor imposed by the actor beyond the tension
+edge. Interior-only movement leaves the static trace unchanged; extreme-only
+movement and mixed 1280/320 profiles retain the measured physical trace. Speeds
+.5/1/2/3 distinguish the floor from ordinary easing. Full scoped races pass in
+temp/m4ag-full-final-race.log, retaining all earlier camera/combat/asset/flow
+regressions. Four old-average failures are in temp/m4ag-before-camera.log.
+
+Four fresh native phase/return/slow-motion/stage-limit replays reproduce their
+pinned values and hashes. Actual 1280x720 motion and stock throw windows are
+inspected at temp/app-runs/camerafollow-motion-go/ (2/3/4 seconds) and
+stock-throw-camera-go/ (2/3/4/7). Seven capture hashes/nonblack pixels pass,
+without runtime/missing-resource errors. The throw still recovers with two
+fighters and no permanent dust clones. The minimal motion stage exposes the
+remaining screen-edge clipping and limited background/debugbg rendering;
+window smoke checks do not establish full native raster/geometry parity.
+
+World exposes its existing root completion point to Match; nested child
+adapters do not emit root observations. The camera goal resets with the round.
+Vertical/1.1 edge tension, zoom, complete bounds/ScreenBound/movecamera,
+helper/projectile/priority/pause effects, every stage/default/profile and full
+renderer equivalence remain open. M4af's reversal point is `7306da2e`.
+
 ## M4af — Screen-centered positions with nonzero camera controls
 
 Seven native programs compare 192 numbers and two original RGB anchors. Pos X

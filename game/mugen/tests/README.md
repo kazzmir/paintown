@@ -396,3 +396,14 @@ cameras must be subtracted from stage positions before comparison.
 TestNativeCameraPositionCoordinates and TestNativeCameraExplodGeometry use the
 production CNS, stage and effect paths. Camera follow/easing/zoom and native
 filter-edge equivalence remain open; see ../docs/COORDINATES.md.
+
+M4ag adds 20 camerafollow-* packets: 720 numbers and 60 authored input hashes.
+Replay with reference_probe.py --fixture NAME --name UNIQUE --fixture-stage
+--bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 24 --seconds 7.
+motion-mixed additionally uses --p2-localcoord 1280,960. TestNativeCameraFollowing
+loads the authored stage and CNS/AIR into a stock Match, adjusts the measured
+profiles, resets the round and advances through control grant and 90 more ticks.
+It compares all recorded fvars, including both roots' observations in phases.
+Long/return traces include Time=60. Static success alone is insufficient: the
+eight motion packets distinguish the extreme-actor speed floor. See CAMERA.md
+for exact scope; vertical/zoom/full bounds/ownership/renderer rules remain open.

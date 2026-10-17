@@ -1,5 +1,8 @@
 # Coordinate spaces
 
+M4ag now measures moving horizontal cameras and their root update points;
+see [CAMERA.md](CAMERA.md) for the zoom-one tension/easing/speed-floor scope.
+
 ## M4af screen-centered script positions
 
 Seven native programs pin 192 numbers and two original RGB placements with

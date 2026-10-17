@@ -7,6 +7,14 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ag adds 20 native horizontal camera programs/720 numbers. Tension/retained
+goals, float32 easing, stage limits, per-root/shared update points and motion
+speed floors match the measured zoom-one controls. Mixed units and interior-
+versus extreme-only movement are distinguished. Full scoped races pass in
+temp/m4ag-full-final-race.log. Complete vertical/1.1 edge tension, zoom,
+ScreenBound/movecamera, entity/pause/priority and rendering behavior remain
+open; see CAMERA.md. No whole camera/controller compatibility claim.
+
 M4af corrects screen-centered Pos X/PosSet while preserving absolute actor
 storage and floor-relative Y. Seven fixed nonzero-camera native programs pin
 192 numbers and two RGB effect placements, including mixed/borrowed units,

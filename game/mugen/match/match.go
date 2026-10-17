@@ -79,6 +79,7 @@ type Match struct {
 	commonEffects          effect.Source
 	timeTicks              int
 	matchDone              bool
+	cameraGoalX            float64
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -94,6 +95,7 @@ func New(request Request, options Options) (*Match, error) {
 		helperMax = 56
 	}
 	m.World = character.NewWorld(helperMax)
+	m.World.AfterRootUpdate = m.updateHorizontalCamera
 	if options.SuperTargetDefenceMul <= 0 {
 		options.SuperTargetDefenceMul = 1.5
 		m.Options = options
@@ -164,6 +166,7 @@ func (m *Match) resetRound() error {
 	s := m.Stage
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
+	m.cameraGoalX = m.CameraX
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	for slot, p := range m.Players {
 		previous := p.Character
@@ -367,14 +370,13 @@ func (m *Match) finishRound() {
 }
 
 func (m *Match) updateCamera() {
+	m.updateHorizontalCamera()
 	scale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
-	x, y := 0.0, 0.0
+	y := 0.0
 	for _, p := range m.Players {
 		factor, _ := p.LocalCoord.ScaleTo(m.Options.GameSpace)
-		x += p.Character.X * factor / 2
 		y = math.Min(y, p.Character.Y*factor)
 	}
-	m.CameraX = math.Max(m.Stage.Camera.BoundLeft*scale, math.Min(m.Stage.Camera.BoundRight*scale, x))
 	y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
 	m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y)) + m.Viewport.CropY
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY

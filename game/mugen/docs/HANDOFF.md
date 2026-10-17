@@ -4,7 +4,25 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4af: screen-centered Pos X/PosSet with absolute internal storage and
+Latest M4ag: horizontal camera tension/retained goals, easing with float32 left
+edges, speed floors and per-root/shared late update points. Twenty native
+programs compare 720 numbers; all 60 authored input hashes are checked. Static
+inside/boundary/edge/spread, phase, long/return, stage limits, speeds .5/1/2/3,
+one-sided movement and mixed widths pass through real Match scheduling. Full
+scoped races pass in temp/m4ag-full-final-race.log. The static-only draft passed
+ten programs but failed walking; the final extreme-actor speed floor resolves
+the additional eight motion cases. See CAMERA.md. M4af is `7306da2e`.
+Four fresh native phase/return/slow-motion/limit replays match. Actual 1280x720
+windows at temp/app-runs/camerafollow-motion-go/ (2/3/4 seconds) and
+stock-throw-camera-go/ (2/3/4/7) are inspected; all seven capture hashes/nonblack
+pixels pass, with no runtime/missing-resource errors. The stock throw recovers
+with two fighters and no dust clones. The minimal motion stage still exposes
+screen-edge clipping and background/debugbg limits. Full boundary margins and
+ScreenBound/movecamera should be compared next; this is not full raster parity.
+Vertical/1.1 edge tension, zoom, full bounds/ScreenBound/movecamera, helper/
+projectile/attack-priority/pause and all renderer/mode/asset obligations remain.
+
+Previous M4af: screen-centered Pos X/PosSet with absolute internal storage and
 floor-relative Y. Seven native programs compare 192 numbers and two own/common
 RGB positions on fixed nonzero cameras. Mixed widths, Enemy/P2Dist, omitted
 axes, facing-relative PosAdd, borrowed state/SelfState and the stock stage-effect
@@ -104,7 +122,8 @@ The real with-box Go match runs through seven-second 1280x720 captures at
 temp/app-runs/targetbind-with-box-go/. Sustained movement reaches an edge;
 camera/body-edge/framebuffer parity remains open. Root module hashes match.
 
-Next verify camera follow/easing/zoom and remaining effect motion/
+Next compare full screen boundaries and ScreenBound/movecamera, then vertical
+camera/1.1 edge tension/zoom, remaining horizontal camera and effect motion/
 binding/pause/ownership/priority, then HitDef facing/priority/hit flags, Width
 and attacker-hit interrupted bindings. Stock throw wrappers now cover the ordinary/forward/drop paths. Then
 complete BindToTarget/Parent/Root and helper negative/keyctrl/world phases;

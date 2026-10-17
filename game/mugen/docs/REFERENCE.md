@@ -7,6 +7,21 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4ag horizontal camera following
+
+Twenty camerafollow-* programs compare 720 numbers through the production
+Match scheduler. All 60 authored CNS/AIR/stage hashes are checked. Static
+tension/threshold/direction/spread, per-root phase, long/retained-goal, stage
+limits, speeds .5/1/2/3, one-sided movement and mixed-profile motion distinguish
+the measured zoom-one behavior. The old center-average failures and the initial
+static-only draft are retained as diagnostics; the latter does not establish
+walking until the extreme-actor speed floor is applied. Full scoped races pass
+in temp/m4ag-full-final-race.log. See CAMERA.md for values and remaining scope.
+Four fresh native phase/return/slow-motion/limit replays match all packet values
+and input hashes. Seven real motion/stock-throw Go window captures were hash
+checked and inspected; remaining clipping/background/filter limits are recorded
+in CAMERA.md. No complete framebuffer or screen-boundary claim follows.
+
 ## M4af fixed nonzero-camera coordinates
 
 Seven authored programs pin 192 numbers and two RGB positions. Five camerapos-*
