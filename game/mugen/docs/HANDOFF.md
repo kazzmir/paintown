@@ -4,7 +4,26 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
+Latest M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
+query bindings. Thirty-one native programs compare 336 numbers, three load
+rejections and all 93 authored input hashes. Ground push, one-pass reset,
+negative offsets, replacement/parameter precedence, nonzero-camera edges,
+asymmetric margins and mixed-profile redirection match the controls. P2BodyDist
+uses base CNS widths independently of Width and selects the opponent's nearer
+edge. Full scoped races pass in temp/m4ai-full-race.log and pure engine/evaluator
+races in temp/m4ai-pure-race.log. See WIDTH.md. Full helper/foreign/air/pause/
+movement/zoom/zero-axis and all other engine/asset/mode gates remain open.
+
+Four fresh native reset/negative-offset/replacement/mixed-redirect replays
+reproduce their pinned observations and input hashes. Real 1280x720 windows
+at temp/app-runs/width-push-go/ (2/4/7 seconds) and width-stock-throw-go/
+(2/3/4/7) complete without runtime/missing-resource errors. All seven capture
+hash/dimension/nonblack checks pass. The push scene shows the expanded spacing;
+the inspected stock recovery retains two fighters and no permanent dust clones.
+The minimal probe background and full filter/framebuffer equivalence remain
+renderer obligations; these captures are smoke checks.
+
+Previous M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
 screen margins and root camera eligibility. Forty-seven native programs pin
 924 numbers, four controller rejections, three stage rejections and all 141
 authored input hashes. Fixed/mixed/nonzero-camera edges, retained velocity,
@@ -696,8 +715,9 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Complete dynamic Width and its edge/body-distance/push interactions, then
-facing/priority/hit flags and attacker-hit interrupted binding controls. Continue
+Complete Helper typed parameters, keyctrl/negative-state eligibility and global
+child scheduling, then remaining facing/priority/hit flags and attacker-hit
+interrupted binding controls. Continue
 remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and
 engine/asset gates. The selection-to-fight path runs, but the complete M4 and
 whole 1.1 beta compatibility gates remain open. Implementation

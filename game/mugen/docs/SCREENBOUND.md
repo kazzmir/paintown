@@ -107,6 +107,13 @@ permanent dust clones. The box-free motion scene eventually overlays the two
 actors at the right limit; its minimal background still ends during scrolling.
 These are window/asset smoke checks, not full native framebuffer parity.
 
+## Width follow-up
+
+M4ai adds native temporary edge offsets and eight edge query bindings, including
+stage-margin subtraction and mixed-profile redirection. See WIDTH.md. Its
+selected ground push controls supersede the unimplemented Width limitation
+recorded here; complete Width/pause/bind/helper/zoom coverage is still open.
+
 ## Remaining comparisons
 
 Hitpause/world-pause reset timing, constraints during active binds, dynamic Width,

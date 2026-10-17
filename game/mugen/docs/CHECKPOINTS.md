@@ -4,6 +4,36 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ai — Width offsets, body push and horizontal edge queries
+
+M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
+query bindings. Thirty-one native programs compare 336 numbers, three load
+rejections and all 93 authored input hashes. Ground push, one-pass reset,
+negative offsets, replacement/parameter precedence, nonzero-camera edges,
+asymmetric margins and mixed-profile redirection match the controls. P2BodyDist
+uses base CNS widths independently of Width and selects the opponent's nearer
+edge. Full scoped races pass in temp/m4ai-full-race.log and pure engine/evaluator
+races in temp/m4ai-pure-race.log. See WIDTH.md. Full helper/foreign/air/pause/
+movement/zoom/zero-axis and all other engine/asset/mode gates remain open.
+
+Four fresh native reset/negative-offset/replacement/mixed-redirect replays
+reproduce their pinned observations and input hashes. Real 1280x720 windows
+at temp/app-runs/width-push-go/ (2/4/7 seconds) and width-stock-throw-go/
+(2/3/4/7) complete without runtime/missing-resource errors. All seven capture
+hash/dimension/nonblack checks pass. The push scene shows the expanded spacing;
+the inspected stock recovery retains two fighters and no permanent dust clones.
+The minimal probe background and full filter/framebuffer equivalence remain
+renderer obligations; these captures are smoke checks.
+
+The first 26 native programs pass focused races in
+temp/m4ai-width-first-race.log. Additional ignored-float, player-over-value,
+asymmetric/reversed margins and mixed-profile edge redirection bring the final
+corpus to 31; the full suite includes them all. Empty Width rejects despite the
+manual; explicit edge/player causes value to be ignored, even its otherwise-
+invalid float literal. Width adds to margins/CNS push widths, while body-distance
+queries remain based on CNS sizes. No original art/binaries are tracked and root
+module hashes remain unchanged. Reversal point: `2dbb1eed` (M4ah).
+
 ## M4ah — Screen confinement, stage margins and camera eligibility
 
 M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage

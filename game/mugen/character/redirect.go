@@ -57,6 +57,8 @@ func (r *redirectEnvironment) LookupIdentifier(name string) (evaluator.Value, bo
 	switch name {
 	case "gamewidth", "gameheight", "screenwidth", "screenheight", "screenpos x", "screenpos y", "camerapos x", "camerapos y", "parentdist x", "parentdist y", "rootdist x", "rootdist y":
 		value = r.value(value)
+	case "leftedge", "rightedge", "frontedge", "backedge", "frontedgedist", "backedgedist", "frontedgebodydist", "backedgebodydist":
+		value = r.value(value)
 	}
 	return value, true
 }

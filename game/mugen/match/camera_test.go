@@ -19,18 +19,22 @@ import (
 )
 
 func TestNativeCameraFollowing(t *testing.T) {
-	replayNativeCameraPrograms(t, "camerafollow-*.json", 20)
+	replayNativeGeometryPrograms(t, "camerafollow-*.json", 20)
 }
 
 func TestNativeScreenBoundaries(t *testing.T) {
-	replayNativeCameraPrograms(t, "screenbound-*.json", 47)
+	replayNativeGeometryPrograms(t, "screenbound-*.json", 47)
 }
 
-func replayNativeCameraPrograms(t *testing.T, pattern string, count int) {
+func TestNativeWidth(t *testing.T) {
+	replayNativeGeometryPrograms(t, "width-*.json", 31)
+}
+
+func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
 	if err != nil || len(paths) != count {
-		t.Fatal("incomplete native camera corpus", len(paths), err)
+		t.Fatal("incomplete native geometry corpus", len(paths), err)
 	}
 	for _, path := range paths {
 		t.Run(filepath.Base(path), func(t *testing.T) {
@@ -59,7 +63,7 @@ func replayNativeCameraPrograms(t *testing.T, pattern string, count int) {
 				}
 				hash := sha256.Sum256(data)
 				if hex.EncodeToString(hash[:]) != want {
-					t.Fatal("native camera input changed", path)
+					t.Fatal("native geometry input changed", path)
 				}
 				return data
 			}

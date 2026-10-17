@@ -91,6 +91,11 @@ func (s *stateEnvironment) BindTargets(p engine.TargetBindParameters) error {
 	p.X, p.Y = s.storageVector(p.X, p.Y)
 	return s.Character.BindTargets(p)
 }
+func (s *stateEnvironment) SetWidth(p engine.WidthParameters) error {
+	p.Edge[0], p.Edge[1] = s.storageVector(p.Edge[0], p.Edge[1])
+	p.Player[0], p.Player[1] = s.storageVector(p.Player[0], p.Player[1])
+	return s.Character.SetWidth(p)
+}
 func (s *stateEnvironment) CreateExplod(p engine.ExplodParameters) error {
 	p.X, p.Y = s.storageVector(p.X, p.Y)
 	p.VelX, p.VelY = s.storageVector(p.VelX, p.VelY)

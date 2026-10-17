@@ -419,3 +419,14 @@ must reject; those with expected_stage_error reject at the stage loader. Accepte
 empty/word/negative/fraction margins are intentional native controls. See
 ../docs/SCREENBOUND.md for exact defaults, camera-axis coupling and remaining
 pause/Width/helper/world obligations.
+
+M4ai adds 31 width-* packets: 336 numbers, three load rejections and 93 input
+hashes. TestNativeWidth uses the same production geometry runner as the camera
+and ScreenBound programs. Replay with reference_probe.py --fixture NAME
+--name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd
+--pages 0 --seconds 7. wide additionally uses --localcoord 1280,960
+--p2-localcoord 320,240; query-redirect uses --p2-localcoord 1280,960. All use the
+same fixture for both roots. Selected push cases have hurtboxes; edge/query
+cases are deliberately box-free. Empty Width and active float/extra-component
+fields must reject. The ignored-float packet must load: explicit edge causes
+native to ignore value entirely. See ../docs/WIDTH.md for scope and limits.

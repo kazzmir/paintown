@@ -29,8 +29,9 @@ func (c *Character) bodyWidths() (front, back float64) {
 	return float64(size.GroundFront), float64(size.GroundBack)
 }
 
-// GetOpponentBodyDistance returns front-to-front horizontal distance in the
-// caller's facing and local coordinate space. Vertical distance is axis-based.
+// GetOpponentBodyDistance measures from the caller's front to the opponent's
+// nearer base edge, in the caller's facing and units. Width's push offsets do
+// not affect this query. Vertical distance is axis-based.
 func (c *Character) GetOpponentBodyDistance() (float64, float64) {
 	if len(c.Opponents) == 0 {
 		return 0, 0
@@ -38,8 +39,13 @@ func (c *Character) GetOpponentBodyDistance() (float64, float64) {
 	other := c.Opponents[0]
 	x, y := c.PositionOf(other)
 	front, _ := c.bodyWidths()
-	otherFront, _ := other.bodyWidths()
-	x += float64(other.Facing) * otherFront * c.ScaleFrom(other)
+	otherFront, otherBack := other.bodyWidths()
+	otherEdge := otherFront
+	direction := float64(other.Facing)
+	if (c.X-x)*direction < 0 {
+		otherEdge, direction = otherBack, -direction
+	}
+	x += direction * otherEdge * c.ScaleFrom(other)
 	x -= c.X + float64(c.Facing)*front
 	return x * float64(c.Facing), y - c.Y
 }

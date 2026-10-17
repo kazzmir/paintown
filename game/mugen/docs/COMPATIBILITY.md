@@ -7,6 +7,16 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
+query bindings. Thirty-one native programs compare 336 numbers, three load
+rejections and all 93 authored input hashes. Ground push, one-pass reset,
+negative offsets, replacement/parameter precedence, nonzero-camera edges,
+asymmetric margins and mixed-profile redirection match the controls. P2BodyDist
+uses base CNS widths independently of Width and selects the opponent's nearer
+edge. Full scoped races pass in temp/m4ai-full-race.log and pure engine/evaluator
+races in temp/m4ai-pure-race.log. See WIDTH.md. Full helper/foreign/air/pause/
+movement/zoom/zero-axis and all other engine/asset/mode gates remain open.
+
 M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
 screen margins and root camera eligibility. Forty-seven native programs pin
 924 numbers, four controller rejections, three stage rejections and all 141
@@ -477,7 +487,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | VelMul | Present | 15 | Basic expression components; source preservation/types/scaling unverified. |
 | VelSet | Present | 46 | Basic expression components; source preservation/types/scaling unverified. |
 | VictoryQuote | Present | 0 | Stores literal quote index; victory screen does not consume it. |
-| Width | Stub | 32 | Registered handler has no effective implementation. |
+| Width | Partial | 32 | Typed edge/player offsets, reset/precedence, native ground push and query controls; complete pause/helper/foreign/air/zoom behavior open. |
 
 Controller status totals: 8 Missing, 34 Stub, 47 Present, 0 Verified.
 
@@ -502,9 +512,9 @@ The reference documents 127 trigger entries, including math functions. Base name
 | Asin | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | Atan | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | AuthorName | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| BackEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| BackEdgeBodyDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| BackEdgeDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| BackEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| BackEdgeBodyDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| BackEdgeDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
 | BottomEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | CameraPos | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | CameraZoom | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
@@ -523,9 +533,9 @@ The reference documents 127 trigger entries, including math functions. Base name
 | Exp | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | Facing | Present | Reads facing; entity/coordinate interactions unverified. |
 | Floor | Present | Math call exists; types/bottom not modeled. |
-| FrontEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| FrontEdgeBodyDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| FrontEdgeDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| FrontEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| FrontEdgeBodyDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| FrontEdgeDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
 | FVar | Present | Reads float array; fixed Go float64 rather than target numeric model. |
 | GameHeight | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | GameTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
@@ -543,7 +553,7 @@ The reference documents 127 trigger entries, including math functions. Base name
 | InGuardDist | Present | Queries opponent-like Target list; dynamic AttackDist and team/range rules incomplete. |
 | IsHelper | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | IsHomeTeam | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| LeftEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| LeftEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
 | Life | Present | Reads life; damage/guard/match rules incomplete. |
 | LifeMax | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | Ln | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
@@ -565,7 +575,7 @@ The reference documents 127 trigger entries, including math functions. Base name
 | NumProjID | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | NumTarget | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | P1Name | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| P2BodyDist | Present | Aliases axis distance; body edges are not subtracted. |
+| P2BodyDist | Partial | Native base-width front/near-opponent-edge queries, mixed units and Width independence; complete entity/air/zero-axis rules open. |
 | P2Dist | Present | Uses first Target as opponent; real enemy selection/scaling missing. |
 | P2Life | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | P2MoveType | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
@@ -590,7 +600,7 @@ The reference documents 127 trigger entries, including math functions. Base name
 | ProjHit | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | ProjHitTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | Random | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
-| RightEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| RightEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
 | RootDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
 | RoundNo | Present | Hardcoded to 1. |
 | RoundsExisted | Present | Reads field; production round reset/progression absent. |

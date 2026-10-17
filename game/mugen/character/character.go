@@ -134,6 +134,7 @@ type Character struct {
 	ScreenRightMargin     float64
 	screenBoundsDisabled  bool
 	cameraDisabled        [2]bool
+	frameWidths           engine.WidthParameters
 
 	// Controller persistence counters (key is controller name or ID)
 	PersistenceCounters map[string]int
@@ -367,6 +368,7 @@ func (c *Character) runStateTick() bool {
 	c.PushDisabled = false
 	c.screenBoundsDisabled = c.Parent != nil
 	c.cameraDisabled = [2]bool{c.Parent != nil, c.Parent != nil}
+	c.frameWidths = engine.WidthParameters{}
 	c.ActiveReversalDef = make(map[string]string)
 	c.DrawAngle = 0
 	c.DrawOffset = []float64{0, 0}
@@ -929,7 +931,13 @@ func (c *Character) ScreenBound(params map[string]string) {
 }
 
 func (c *Character) Width(params map[string]string) {
-	// Stub
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteWidthParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("Width: %w", err)
+	}
 }
 
 func (c *Character) Trans(params map[string]string) {
@@ -1638,8 +1646,8 @@ func (c *Character) ResolvePushCollision() {
 		if (othSt == "S" || othSt == "C") && !other.PosFrozen {
 			otherX, _ := c.PositionOf(other)
 			dist := otherX - c.X
-			front, back := c.bodyWidths()
-			otherFront, otherBack := other.bodyWidths()
+			front, back := c.pushWidths()
+			otherFront, otherBack := other.pushWidths()
 			leftWidth, rightWidth := back, front
 			if c.Facing < 0 {
 				leftWidth, rightWidth = front, back

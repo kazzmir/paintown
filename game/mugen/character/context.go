@@ -13,6 +13,9 @@ func (c *Character) cameraPositionX() float64 {
 }
 
 func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
+	if value, known := c.lookupEdges(name); known {
+		return value, true
+	}
 	if value, known := c.lookupEntity(name); known {
 		return value, true
 	}

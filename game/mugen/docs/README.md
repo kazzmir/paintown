@@ -40,5 +40,7 @@ and the handoff for current progress; the assessment describes the original base
 
 21. [Screen boundaries](SCREENBOUND.md): native root/helper defaults, stage margins, typed ScreenBound and camera participation.
 
+22. [Width and edge queries](WIDTH.md): native temporary offsets, base body distance, ground push and edge-trigger semantics.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.
