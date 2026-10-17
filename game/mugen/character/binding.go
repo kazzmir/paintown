@@ -25,8 +25,8 @@ func (c *Character) BindTargets(p engine.TargetBindParameters) error {
 }
 
 func (c *Character) prepareBinding() {
-	// The trigger publishes the result of the subject's most recent update,
-	// rather than a freshly queued constraint on another actor's CNS pass.
+	// Own CNS sees whether this pass applied the binding. Other entities see
+	// completed requests/passes, published by publishBindings.
 	c.bindingReported = false
 	b := c.binding
 	if b == nil {
@@ -44,13 +44,35 @@ func (c *Character) prepareBinding() {
 			return
 		}
 	}
-	x, y := c.PositionOf(anchor)
-	c.X, c.Y = x+b.x*float64(anchor.Facing), y+b.y
-	scale := c.ScaleFrom(anchor)
-	c.VelX = anchor.VelX * float64(anchor.Facing*c.Facing) * scale
-	c.VelY = anchor.VelY * scale
 	c.boundThisTick = true
-	c.bindingReported = true
+	c.bindingReported = anchor.tickMoveType == "A"
+}
+
+func (c *Character) publishBindings() {
+	if c.World == nil || c.destroyed || c.worldFrozen {
+		return
+	}
+	// Constraints publish at the anchor's completed movement, before another
+	// actor runs. An idle anchor still moves its targets, whose own CNS flag is
+	// false; their bound physics remains suppressed while the constraint lives.
+	apply := func(target *Character) {
+		b := target.binding
+		if target.destroyed || b == nil || b.anchor != c || b.generation != target.hitGeneration {
+			return
+		}
+		x, y := target.PositionOf(c)
+		target.X, target.Y = x+b.x*float64(c.Facing), y+b.y
+		scale := target.ScaleFrom(c)
+		target.VelX = c.VelX * float64(c.Facing*target.Facing) * scale
+		target.VelY = c.VelY * scale
+		target.bindingReported = true
+	}
+	for _, target := range c.World.Roots {
+		apply(target)
+	}
+	for _, target := range c.World.Helpers {
+		apply(target)
+	}
 }
 
 func (c *Character) ageBinding() {

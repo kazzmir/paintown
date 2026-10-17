@@ -68,6 +68,11 @@ still require their own controls.
 
 ## GetHitVar(isbound)
 
+M4am adds third-entity helper controls that distinguish anchor-completion
+publication from the victim's own binding flag, plus native retirement fall and
+delayed hit facing. See HELPER-BINDING.md. Its phase findings supersede the
+simpler M4ac subject-last-update interpretation below.
+
 The trigger is an integer. Its value publishes the result of the subject's most
 recent update. A freshly issued TargetBind leaves a caller's immediate query
 at zero; the target's own pass sees one, and an earlier root sees that published

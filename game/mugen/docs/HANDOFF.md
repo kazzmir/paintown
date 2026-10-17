@@ -4,7 +4,29 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4al adds native helper sound ownership controls: two programs, 24 numeric
+Latest M4am adds anchor-completion binding publication, idle-anchor constraints,
+external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.
+Twenty-seven native programs compare 564 numbers, one load rejection and 108
+input hashes. Third-entity/own-CNS flag controls, changing speed, own/borrowed
+states and reversed headings distinguish the phases. Full scoped races pass in
+temp/m4am-full-race.log; focused/pure races and five fresh native replays pass.
+See HELPER-BINDING.md. Whole binding/combat/helper/render/asset/mode gates remain
+open; the helper fall's late clipped right sprite still has a small raster gap.
+
+Seven real 1280x720 app captures pass hashes/dimensions/nonblack/runtime-log
+checks: temp/app-runs/helperbind-idle-fall-go/ (3/5/7 seconds) and
+helperbind-stock-throw-go/ (2/3/4/7). The stock throw recovers with two fighters
+and no permanent dust clones. The helper probe takes the native fall path;
+its source intentionally omits standard state 5000 and retains that native
+warning. The stationary left sprite's clothing mask matches exactly. The late
+clipped right sprite starts at x=1003 in Go versus native 1004, with identical
+vertical bounds; white counts are 8316/8229 and the full mask differs at 801
+pixels. Late numeric position, mirrored placement and clipping still need an
+independent calibration. This is not full framebuffer parity. Native debug
+magenta/Go black and minimal background filtering differences remain open.
+Measurements: temp/m4am-app-comparison.json.
+
+Previous M4al adds native helper sound ownership controls: two programs, 24 numeric
 observations and eight PCM tick checks (48 stereo tone amplitudes). Root/parent/
 descendant voices coexist on channel 1. Both ordinary and recursive DestroySelf
 retire entities while their sounds continue; root channel-1 StopSnd removes only
@@ -775,9 +797,10 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Compare native bound-target release publication, then opposing-helper contacts.
-Complete helper sound capacity/round/pause/foreign ownership controls alongside
-remaining entity work. Continue positive input, helper palettes/foreign/paused creation,
+Complete opposing-helper contacts, then remaining BindTo* controllers and
+paused/foreign/multi-target binding. Calibrate the helper fall's late mirrored
+right-edge raster difference with independent position/flip controls. Continue
+helper sound capacity/round/pause/foreign ownership alongside remaining entity work. Continue positive input, helper palettes/foreign/paused creation,
 remaining facing/priority/hit flags and attacker-hit interrupted binding controls.
 Continue
 remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and

@@ -46,5 +46,7 @@ and the handoff for current progress; the assessment describes the original base
 
 24. [Helper retirement](RETIREMENT.md): recursive removal, retained parent snapshots, orphan effects and lifetime/binding cleanup.
 
+25. [Helper binding phases](HELPER-BINDING.md): anchor completion, own/redirected flags, forced retirement fall and delayed victim facing.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

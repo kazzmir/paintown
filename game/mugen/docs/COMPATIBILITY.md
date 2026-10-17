@@ -7,6 +7,15 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4am adds anchor-completion binding publication, idle-anchor constraints,
+external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.
+Twenty-seven native programs compare 564 numbers, one load rejection and 108
+input hashes. Third-entity/own-CNS flag controls, changing speed, own/borrowed
+states and reversed headings distinguish the phases. Full scoped races pass in
+temp/m4am-full-race.log; focused/pure races and five fresh native replays pass.
+See HELPER-BINDING.md. Whole binding/combat/helper/render/asset/mode gates remain
+open; the helper fall's late clipped right sprite still has a small raster gap.
+
 M4al adds native helper sound ownership controls: two programs, 24 numeric
 observations and eight PCM tick checks (48 stereo tone amplitudes). Root/parent/
 descendant voices coexist on channel 1. Both ordinary and recursive DestroySelf
@@ -463,7 +472,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | Helper | Partial | 0 | Typed arguments and native birth/order/postype/size/negative/pause controls; full contacts, input, palettes, foreign ownership and lifecycle open. |
 | HitAdd | Present | 0 | Increments a counter; hit/unique-hit bookkeeping and expressions incomplete. |
 | HitBy | Present | 0 | Records masks/timers; collision does not enforce them. |
-| HitDef | Present | 82 | Subset parsed as literals; hit/guard/priority/juggle/target/custom-state rules incomplete. |
+| HitDef | Partial | 82 | Typed cue/ID/custom-state/P2-facing subset with native timing/ownership controls; full dynamic hit/guard/priority/juggle/accounting schema remains open. |
 | HitFallDamage | Present | 2 | Adds damage to life; complete fall/KO/defence behavior unverified. |
 | HitFallSet | Present | 1 | Boolean fall value only; velocity parameters and complete semantics missing. |
 | HitFallVel | Present | 1 | Basic flag/velocity application; fall lifecycle unverified. |
@@ -499,7 +508,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | SndPan | Stub | 0 | Registered handler has no effective implementation. |
 | StopSnd | Stub | 0 | Registered handler has no effective implementation. |
 | SuperPause | Stub | 4 | Registered handler has no effective implementation. |
-| TargetBind | Partial | 18 | Typed acquired-target constraint, native duration/geometry/lifecycle/grammar/root phases; full pause/entity/foreign cases remain open. |
+| TargetBind | Partial | 18 | Typed constraints; native root/helper anchor completion, durations, flag phases and retirement fall; full pause/multi-target/foreign/controller-family cases open. |
 | TargetDrop | Stub | 0 | Registered handler has no effective implementation. |
 | TargetFacing | Stub | 2 | Registered handler has no effective implementation. |
 | TargetLifeAdd | Stub | 2 | Registered handler has no effective implementation. |

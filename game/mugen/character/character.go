@@ -56,6 +56,8 @@ type Character struct {
 	binding             *actorBinding
 	boundThisTick       bool
 	bindingReported     bool
+	tickMoveType        string
+	pendingHitFacing    int
 	LocalCoord          coord.Space
 	GameCoord           coord.Space
 	Viewport            *coord.Viewport
@@ -326,6 +328,7 @@ func (c *Character) Update() {
 
 func (c *Character) startTick() bool {
 	c.boundThisTick = false
+	c.tickMoveType = c.MoveType
 	if c.Viewport != nil && c.Viewport.Space.Width > 0 {
 		scale := float64(c.LocalCoordinateWidth()) / float64(c.Viewport.Space.Width)
 		c.CameraX = c.Viewport.CameraX * scale
@@ -437,7 +440,18 @@ func (c *Character) runStateTick() bool {
 }
 
 func (c *Character) finishTick() {
-	defer func() { c.updateActive = false }()
+	defer func() {
+		if c.RuntimeError == nil {
+			if c.pendingHitFacing != 0 {
+				if c.Facing != c.pendingHitFacing {
+					c.Turn()
+				}
+				c.pendingHitFacing = 0
+			}
+			c.publishBindings()
+		}
+		c.updateActive = false
+	}()
 	if c.RuntimeError != nil {
 		return
 	}
@@ -1919,6 +1933,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.GetHitGuarded = guarded
 	hit = c.hitInLocalSpace(attacker, hit)
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
+	if !guarded && (hit.P2Facing == 1 || hit.P2Facing == -1) {
+		c.pendingHitFacing = -hit.P2Facing * attacker.Facing
+	}
 	c.HitPauseTime = 0
 	c.pausedThisTick = false
 
@@ -1961,14 +1978,6 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 
 	// Knockback is stored in GetHit and applied by the get-hit state's
 	// HitVelSet, rather than inventing an immediate opposite-sign velocity.
-
-	// Turn to face attacker
-	attackerX, _ := c.PositionOf(attacker)
-	if attackerX > c.X {
-		c.Facing = 1
-	} else if attackerX < c.X {
-		c.Facing = -1
-	}
 
 	// Set HitTime duration based on state
 	if guarded {

@@ -479,3 +479,20 @@ sound_probe.py --fixture helperaudio-recursive --name UNIQUE_NAME --seconds 9
 quiet-HUD/configuration and original synthetic tone bank. Capture-shutdown
 silence is not a semantic stop event. See AUDIO.md for the measured retained
 voices, initial GameTime alignment, real device evidence and remaining gaps.
+
+## M4am helper binding phases and hit facing
+
+TestNativeHelperBindingRetirement compares 27 helperbind programs: 564 numeric
+observations, one deliberate rejection and all 108 authored input hashes.
+Examples, always using fresh run names and the private display/audio setup:
+
+```
+python3 game/mugen/tests/reference_probe.py --fixture helperbind-flag-prepost --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 24 --seconds 7
+python3 game/mugen/tests/reference_probe.py --fixture helperbind-fall-idle-speed --name UNIQUE_NAME_2 --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 24 28 --seconds 7
+```
+
+Use each JSON's page list for other cases, and explicit page 0 for facing-float's
+expected state-800 rejection. HELPER-BINDING.md distinguishes anchor completion,
+per-pass flags, idle constraints, external 5050 timing and delayed facing. Full
+races pass in temp/m4am-full-race.log; the documented late right-edge raster
+difference remains separate from passing numeric conformance.

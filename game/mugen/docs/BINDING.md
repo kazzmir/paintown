@@ -1,5 +1,10 @@
 # Target binding and native push gating
 
+M4am adds third-entity helper controls that distinguish anchor-completion
+publication from the victim's own binding flag, plus native retirement fall and
+delayed hit facing. See HELPER-BINDING.md. Its phase findings supersede the
+simpler M4ac subject-last-update interpretation below.
+
 M4ab adds 53 original native programs: 840 numeric observations and ten load
 rejections. Typed TargetBind acts on acquired targets using an actor-owned
 constraint with a registered anchor, lifetime and coordinate conversion.

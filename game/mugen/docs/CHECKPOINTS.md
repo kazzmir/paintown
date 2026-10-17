@@ -4,6 +4,54 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4am — Helper binding phases, retirement fall and deferred hit facing
+
+M4am adds anchor-completion binding publication, idle-anchor constraints,
+external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.
+Twenty-seven native programs compare 564 numbers, one load rejection and 108
+input hashes. Third-entity/own-CNS flag controls, changing speed, own/borrowed
+states and reversed headings distinguish the phases. Full scoped races pass in
+temp/m4am-full-race.log; focused/pure races and five fresh native replays pass.
+See HELPER-BINDING.md. Whole binding/combat/helper/render/asset/mode gates remain
+open; the helper fall's late clipped right sprite still has a small raster gap.
+
+Binding position/velocity/flag publication moves from target preparation to
+anchor completion. A third actor can read the completed request before the
+victim runs; an idle anchor still constrains movement while the victim's own
+flag is zero. General H/A/I sorting remains unchanged. Helper retirement queues
+external 5050 only for a valid bound H victim; borrowed unbound states survive.
+Changing-speed snapshots pin current position/velocity, normal entry attributes
+and same-tick/next-tick entry at GameTime 134/135. Typed p2facing rejects literal
+1.5, keeps omission unchanged and applies +/-1 after the first victim CNS while
+preserving world velocity. Reversed headings distinguish absolute from relative
+turn assumptions; value 2 leaves facing unchanged.
+
+All 27 focused programs pass in temp/m4am-helper-second-race.log. The first
+integrated comparison has one idle-victim flag mismatch in the first log;
+pre-fix failures are in m4am-before-binding.log. Pure engine/evaluator races
+pass in m4am-pure-race.log; the full race suite includes every previous
+throw/contact/binding/pause/camera/sound/asset regression. See HELPER-BINDING.md.
+
+Seven real 1280x720 app captures pass hashes/dimensions/nonblack/runtime-log
+checks: temp/app-runs/helperbind-idle-fall-go/ (3/5/7 seconds) and
+helperbind-stock-throw-go/ (2/3/4/7). The stock throw recovers with two fighters
+and no permanent dust clones. The helper probe takes the native fall path;
+its source intentionally omits standard state 5000 and retains that native
+warning. The stationary left sprite's clothing mask matches exactly. The late
+clipped right sprite starts at x=1003 in Go versus native 1004, with identical
+vertical bounds; white counts are 8316/8229 and the full mask differs at 801
+pixels. Late numeric position, mirrored placement and clipping still need an
+independent calibration. This is not full framebuffer parity. Native debug
+magenta/Go black and minimal background filtering differences remain open.
+Measurements: temp/m4am-app-comparison.json.
+
+Five fresh native controls pass, including the float rejection after repairing
+the wrapper's missing page argument. State ownership after forced fall with
+independent opponent files, attacker-hit interruption, pause/foreign/multi-target
+binding, opposing-helper contacts and all other full engine/asset/mode gates
+remain open. Root module hashes remain unchanged; only authored in-scope data
+is tracked. Reversal point: a3cadeab (M4al).
+
 ## M4al — Native helper sound ownership and retirement evidence
 
 M4al adds native helper sound ownership controls: two programs, 24 numeric

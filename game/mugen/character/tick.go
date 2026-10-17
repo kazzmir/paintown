@@ -142,6 +142,9 @@ func TickCharacters(players []*Character) error {
 	// next root's CNS. Native trade snapshots can see the first root's reduced
 	// life, just as redirected Pos/Time see its completed movement and clock.
 	ordered := append([]*Character(nil), players...)
+	for _, c := range ordered {
+		c.tickMoveType = c.MoveType
+	}
 	sort.SliceStable(ordered, func(i, j int) bool {
 		return ordered[i].MoveType == "A" && ordered[j].MoveType != "A"
 	})

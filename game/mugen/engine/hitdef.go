@@ -17,7 +17,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		args []argument
 	}
 	var cues []cue
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -50,7 +50,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		entry := cue{key: key, own: own}
 		for i, expr := range expressions {
-			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state") && integerFieldFloatLiteral(expr) {
+			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state" || key == "p2facing") && integerFieldFloatLiteral(expr) {
 				return nil, true, fmt.Errorf("%s: expected int value and read float", key)
 			}
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
