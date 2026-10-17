@@ -7,6 +7,21 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4bb adds pre-entry kill/guard.kill damage caps, fatal guard normalization,
+one-shot raw fall damage, typed fall/kill fields and receiver-scaled KO velocity.
+Ninety native programs compare1,080 observations, four float-literal rejections
+and360 source hashes. Repeated ordinary CNS parameters now keep the first
+value; explicit damage/kill/PowerSet controls confirm the rule. All90 integrated
+race replays pass (Match61.287s), as do pure parser/compiler/combat races.
+Thirteen apps/sixteen captures pass provenance/runtime checks and twelve strict
+garment masks match exactly, including native KO poses. Nine fresh native
+programs reproduce ten captures and one type rejection. Stock throw recovery
+was inspected. Full scoped races pass in m4bb-full-race.log
+(Match618.564s, Character11.012s, System5.027s). See HIT-LETHALITY.md.
+Reversal:3fa397a9. Absolute KO/round timing, wider combat combinations,
+remaining HitDef schema, stage diagnostic fill, six RGB alpha precision gates,
+and full engine/assets/modes remain open.
+
 M4ba adds typed damage/GetPower/GivePower, repeated expression defaults,
 configured zero/negative factors, shared root/helper pools and contact transfer
 before entry. Sixty-six original programs compare804 observations, three type
@@ -19,8 +34,8 @@ exactly. Four fresh native programs/six captures reproduce their observations.
 Stock throw recovery shows two fighters; high configured factors visibly reach
 both HUD level3 counters. Pure races and root module checks pass. See HIT-POWER.md.
 Reversal:83eb5bd9. Whole combat/engine/assets/modes remain open, along with
-M4az alpha precision and diagnostic background fill. Lethality/fall-damage
-consumers are the next combat task.
+M4az alpha precision and diagnostic background fill. M4bb subsequently covers the bounded lethal/fall-damage
+behavior described above.
 
 True-color fight HUD/effects now share the clamped linear sampler and preserve
 caller blend/tint options. Cue coordinates truncate in signed common-game units

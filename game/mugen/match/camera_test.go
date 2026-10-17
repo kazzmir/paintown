@@ -100,6 +100,10 @@ func TestNativeHitPowerPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitpower-*.json", 66)
 }
 
+func TestNativeHitLethalityPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitkill-*.json", 90)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

@@ -38,6 +38,7 @@ trigger1 = command = "a;b"
 trigger1 = time!=0 && var(1):=5.0
 v = var(2)
 value = ifelse(var(1), 1.0, 2)
+Value = 999
 text = "quoted text"
 `))
 	if err != nil {

@@ -1173,7 +1173,7 @@ func (c *Character) GetHitOver() bool {
 }
 
 func (c *Character) GetHitFall() bool {
-	return c.HitFall
+	return c.MoveType == "H" && c.HitFall
 }
 
 func (c *Character) SetHitFall(fall bool) {
@@ -1343,7 +1343,11 @@ func (c *Character) GetHitVar(name string) float64 {
 	case "yaccel":
 		val = c.GetHit.YAccel
 	case "fall":
-		if c.HitFall {
+		if c.GetHitFall() {
+			val = 1
+		}
+	case "fall.kill":
+		if c.GetHit.FallKill == nil || *c.GetHit.FallKill {
 			val = 1
 		}
 	case "fall.damage":
@@ -1938,6 +1942,12 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 }
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
+	finalDamage, lethal := c.contactDamage(attacker, hit, guarded)
+	// A lethal chip contact keeps guard damage/kill selection but publishes
+	// the ordinary hit reaction, power and contact classification.
+	if lethal {
+		guarded = false
+	}
 	c.binding = nil
 	if !guarded {
 		if err := c.interruptTargets(); err != nil {
@@ -1999,6 +2009,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.GetHitGuarded = guarded
 	originalHit := hit
 	hit = c.hitInLocalSpace(attacker, hit)
+	if lethal {
+		c.koHitVelocity(&hit)
+	}
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 	c.recordCornerPush(attacker, originalHit)
@@ -2014,30 +2027,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.HitPauseTime = 0
 	c.pausedThisTick = false
 
-	// Life reduction
-	damage := 0
-	if len(hit.Damage) > 0 {
-		damage = hit.Damage[0]
-	}
-	if guarded {
-		damage = 0
-		if len(hit.Damage) > 1 {
-			damage = hit.Damage[1]
-		}
-	}
-	// Apply attack/defence multipliers
-	// A new get-hit sequence clears the prior idle-state defence adjustment.
-	// Later H-to-H contacts retain a multiplier established while being hit.
-	if c.MoveType != "H" {
-		c.DefenceMul = 1
-	}
-	superDefence := c.superDefenceMul
-	if superDefence <= 0 {
-		superDefence = 1
-	}
-	// Native adds one half before truncating; negative damage therefore has
-	// a different boundary from an away-from-zero rounding operation.
-	finalDamage := int(float64(damage)*attacker.AttackMul*c.DefenceMul/superDefence + .5)
+	// Effective pending damage is bounded before get-hit state entry.
 	c.GetHitDamage = finalDamage
 	if c.hasPendingHitDamage {
 		c.GetHitDamage += c.pendingHitDamage
@@ -2078,7 +2068,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	if airHit {
 		fall = hit.AirFall == 1
 	}
-	c.HitFall = fall || (!guarded && c.MoveType == "H" && c.HitFall && !hit.ForceNoFall)
+	c.HitFall = lethal || fall || (!guarded && c.MoveType == "H" && c.HitFall && !hit.ForceNoFall)
 
 	// Guarding vs Normal Hit
 	// A fresh contact restores the receiver's own state definitions, including

@@ -55,9 +55,9 @@ controls rule out an arbitrary repeated-evaluation count.
 
 The typed compiler models these ten fields in one expression-default builder.
 Five corner values are compiled, stored and converted with the hit snapshot.
-**Physical corner-push movement remains unimplemented.** This checkpoint needs
-its default expressions to fix velocity/VM behavior; it does not close corner
-combat or promote the whole HitDef controller to verified.
+M4ax subsequently implements the bounded [physical corner-push behavior](CORNER-PUSH.md).
+This checkpoint's default expressions establish velocity/VM behavior; they do
+not promote the whole HitDef controller to verified.
 
 ## Down-hit Y offset
 
@@ -98,7 +98,7 @@ recovery retains two fighters without persistent dust. Results are
 `temp/m4aw-app-checks.json` and `temp/m4aw-app-checks.log`. Background/HUD/debug
 and whole-frame renderer parity remain open.
 
-Physical corner push, paused/frozen/bound/foreign/helper/projectile combinations,
+Wider corner-push, paused/frozen/bound/foreign/helper/projectile combinations,
 full down/bounce/recovery/juggle/KO behavior, arbitrary parameter grammar and
 cross-field order outside this group, remaining GetHitVar fields and complete
 engine/asset/mode compatibility remain open. Reversal: 31795b0c (M4av).

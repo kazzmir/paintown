@@ -18,9 +18,9 @@ type hitDefCue struct {
 // This order is measured by the tagged full-field and vector programs. Source
 // declaration order does not determine parameter expression side effects.
 var hitDefEvaluationOrder = []string{
-	"id", "hitonce", "damage", "getpower", "givepower", "numhits",
+	"id", "kill", "guard.kill", "fall.kill", "hitonce", "damage", "getpower", "givepower", "numhits",
 	"hitsound", "guardsound", "priority", "p1stateno", "p2stateno", "p2getp1state",
-	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall",
+	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall.damage",
 	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "p2facing",
 	"ground.velocity", "ground.cornerpush.veloff", "air.velocity", "air.cornerpush.veloff",
 	"down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.cornerpush.veloff",
@@ -36,7 +36,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	}
 	var cues []hitDefCue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "kill", "guard.kill", "fall.kill", "fall.damage"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -92,7 +92,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		entry := hitDefCue{key: key, own: own}
 		strictInteger := false
 		switch key {
-		case "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand":
+		case "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "kill", "guard.kill", "fall.kill", "fall.damage":
 			strictInteger = true
 		}
 		for i, expr := range expressions {
@@ -147,7 +147,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if !present {
 				continue
 			}
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.floating)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}

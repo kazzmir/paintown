@@ -680,12 +680,11 @@ func handleHitVelSet(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleHitFallDamage(ctrl *cns.StateController, env Environment) error {
-	charEnv, ok := env.(evaluator.CharacterEnvironment)
-	if !ok {
+	if context, ok := env.(interface{ ApplyHitFallDamage() }); ok {
+		context.ApplyHitFallDamage()
 		return nil
 	}
-	env.AddLife(-int(charEnv.GetHitVar("fall.damage")))
-	return nil
+	return fmt.Errorf("HitFallDamage context is unavailable")
 }
 
 func handleHitFallSet(ctrl *cns.StateController, env Environment) error {

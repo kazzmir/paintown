@@ -1,94 +1,122 @@
 # Current handoff
 
-Updated2026-10-17. Continuous implementation/local commits authorized. Do not
-ask to continue, stop at a checkpoint, push, or claim the whole port complete.
-All authored edits stay under game/mugen/. Read ../AGENTS.md.
+Updated 2026-10-17. Continuous implementation and local commits are authorized.
+Do not ask to continue, stop at a checkpoint, push, or call the whole port
+complete. All authored changes stay under game/mugen/. Read ../AGENTS.md.
 
-## Latest checkpoint: M4ba damage/power
+## Latest verified checkpoint: M4bb
 
-M4ba is verified and ready for its local checkpoint; see git log for its hash.
-Reversal83eb5bd9 (M4az). Read HIT-POWER.md and HITDEF-SCHEMA.md. Sixty-six original
-programs compare804 observations, three literal-float rejections and264 source
-hashes. All66 integrated programs pass. Full scoped races PASS in
-m4ba-full-race.log: Match538.364s, Character12.143s. Pipeline session88607 exited0;
-no GUI client remains. Pure races and original/root module integrity checks pass.
+M4bb is verified; reversal/predecessor is 3fa397a9 (M4ba). Read HIT-LETHALITY.md.
+The accepted corpus is now 90 hitkill programs: 1,080 numeric observations,
+four float-literal rejections and 360 CNS/AIR/CMD/stage hashes. Sources/goldens
+are frozen; never rerun their authors. Final source hashes are audited against
+the native JSON. Diagnostic killdiag sources moved to
+`temp/m4bb-flow-diagnostic-sources/`; none belong in the final corpus.
 
-Eight app runs/eleven captures pass input/config/binary/capture/runtime audit;
-all seven clothing masks match exactly (six11,181 pixels, helper16,713).
-Binary554c7ba209dd5fe6c8c08ccec8cbf2526429101ff2d697f3ec179679338f6a4e.
-Four fresh native programs/six captures reproduce observations. Viewed native/Go
-high-rule counters show3/3; stock7s shows two fighters without lingering effects.
-Final captures end go-m4ba-final. No stock art/captures/binaries are committed.
+Validation pipeline57076 completed exit0 in temp/m4bb-post-validation.log.
+All phases pass: app audit, fresh native replays and full scoped races. Match
+618.564s, Character11.012s, System5.027s in m4bb-full-race.log. Root module checks
+also pass. No active GUI client remains.
 
-Compiler order now follows the full27-component tags plus M4aw vector order:
-id,hitonce,damage,getpower,givepower,numhits,hitsound,guardsound,priority,
-p1stateno,p2stateno,p2getp1state,p1sprpriority,p2sprpriority,forcestand,forcenofall,
-sparkno,guard.sparkno,sparkxy,p1facing,p1getp2facing,p2facing,then vectors.
-Defaults retain raw source ASTs and reevaluate them; 2.9 deals2 but grants2/1,
-tagged defaults execute Damage five times. Rules are optional so explicit0 is
-meaningful. Production config passes factors into round actors/helpers. Helpers
-read/write root pools. Transfer precedes entry even for overrideI without life
-loss. AttackMul/NumHits do not scale power. Signed damage uses int(product+.5):
-raw-10 heals9, guard-3 heals2, scaled-1.75 heals1, with bounded life.
+Validation:
+- All90 integrated race replays pass: m4bb-integrated.log, Match61.287s.
+- Pure CNS/engine/combat/evaluator races pass: m4bb-precedence-pure.log.
+- Thirteen app runs/sixteen captures share binary
+  d354737083b645fc513029e69f441268af50869ed14c3dbed067b2d5048185bb.
+  All provenance/runtime checks and all12 exact garment masks pass in
+  m4bb-final-app-audit.json. The mask selects RGB247,239,231 in
+  box160,180..1120,650, excluding grayscale round text. This is an actor check,
+  never whole-frame parity. Stock throw7s was visually inspected: two recovered fighters, no lingering effects.
+- Native airborne capture initially had a K.O. overlay hiding1,180 garment
+  pixels. Retained as *-occluded diagnostics. A fresh unchanged source replay
+  `m4bb-replay-ko-air-up-unoccluded` at8s verifies pinned numeric observations
+  and matches all13,923 garment pixels exactly. No golden or tolerance changed.
+- Root go.mod/go.sum and original mugen.exe checks pass; final check follows
+  the full suite too. Native binary SHA remains
+  d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
 
-M4az83eb5bd9's RGB consumer filtering/placement remains verified for its scope;
-six alpha precision crops remain OPEN. Another observed asset gap is native
-magenta uncovered stage fill for BGDef.debugbg=1 versus Go black; parser ignores
-that key. Keep these documented and unwaived. Full engine/assets/modes remain
-unfinished; config omission/extreme overflow/foreign/projectile/team/pause/
-multiple-hit power combinations and remaining literal HitDef fields stay open.
+Native findings implemented:
+- Effective damage caps before entry to remaining life, or life-1 for
+  kill/guard.kill0. Victim5/raw10 exposes5(fatal) or4(nonlethal), entryLife5;
+  raw-derived power remains7/6. Entry LifeSet0 stays dead.
+- Fatal guard retains chip/guard.kill selection but normalizes reaction,
+  counters, power and context to ordinary hit. Fall is forced. Normal fatal
+  contacts get KO-adjusted velocities before CNS/HitVelSet.
+- Ground zeroY scales X by float32.66; nonzero X then gains signed2.5.
+  Airborne skips.66. NonpositiveY loses2 with ceiling-6 ground/-3 air;
+  positiveY stays. Constants scale by receiver width/320, after source vector
+  conversion. Downed contacts retain the supplied vector. Thirty-eight controls
+  cover signs, thresholds, falling/nonlethal, S/C/A/L and mixed coordinates.
+- Typed kill/guard.kill/fall.kill/fall.damage follow the measured full31-tag
+  component order (36 typed keys total). GetHitVar(fall.kill) defaults1 and
+  returns int. Getter fall is0 outside H.
+- Native HitFallDamage consumes raw signed fall.damage once, without attack/
+  defence scaling, even outside fall/H and with fall.kill0. Repeated6 only
+  applies once; negative6 heals6. The controller does not itself force a fall.
+- CNS ordinary parameters now keep the first duplicate; repeated triggers stay
+  separate. Seven airborne/downed probes exposed the former last-wins bug.
+  Three explicit duplicate damage/kill/PowerSet controls confirm the fix.
+  Metadata/Statedef duplicate rules remain outside these controls.
 
-## Next M4bb: lethal hits and fall damage
+Earlier failed focused logs are diagnostic evidence: m4bb-first-integrated
+(typed fall.kill selector absent), m4bb-ko-integrated (seven first/last parameter
+mismatches), and prior empty-state/unreached snapshot pilots. Current sources
+include their fixes. Pilot capture errors never count as expected load rejection.
+The accepted snapshot protocol is positiveState700 last, Time>=8 one-shotVar59,
+clipboard there at delay0, FVar8=100000+Var29 sentinel. KO motion programs freeze
+positions after the first three physics steps; phase timing remains independent.
 
-Continue immediately without permission. kill/guard.kill/fall.kill have no
-fields/consumers; HitFallDamage just calls AddLife on fall.damage and ignores
-fall eligibility/kill policy. GetHitVar(fall.kill) is documented by native but
-missing here. SetHitFallDamage is an unused stub (not a proven controller path).
-Read local sctrls.html HitDef/HitFallDamage and trigger.html GetHitVar.
+Next: continue with stage diagnostic fill, then remaining combat/schema/KO
+and renderer gates. M4bb contains only authored MUGEN source/fixtures/docs;
+never stage temp, captures, original art or binaries. The final native/app
+artifacts stay ignored under temp. Keep future checkpoints scoped and local.
 
-Prepared temp/author-hit-kill.py is UNRUN. It would write38 original hitkill
-programs for hit/guard flags, coercion/default/sign/bottom/redirect/type cases,
-nonlethal entry-death, fall flags/damage/repetition/scaling/defence. It clones
-power fixtures but snapshots GameTime145 to observe lethal contact before round
-reset; intended capture4s. It appends simple180/5150 states to avoid missing win/
-dead state paths. Use --clipboard-delay0 for these KO probes to avoid waiting
-for Time30 after winner state changes. Begin with pilots hit-default/hit-zero/
-fall-default and verify capture timing before recording the rest. Preserve the
-existing66 power sources/JSONs. Add tagged kill/fall.damage order controls and
-MoveTypeI/H/air contexts before implementing their consumers. These are plans,
-not native findings. No M4bb source or native JSONs exist yet.
+## Remaining gates and next work
 
-A low-impact diagnostic background fix is also independently identified:
-stage/loader.go BGDef parses only spr; FightState fills stageCanvas black. A
-future measured DebugBG field/fill can close magenta-vs-black exposed above.
-Do not change the original reference distribution or relax raster/alpha gates.
+Full engine/assets/modes remain unfinished. Known unwaived gaps include M4az's
+six RGB alpha precision crops, absolute KO slowdown/round transitions, complete
+literal HitDef schema, recovery/juggle/projectile/reversal/team/foreign/multiple
+contacts, and broader modes/assets/rendering. Do not claim whole-engine parity.
+
+An independently confirmed low-impact stage gap is next: BGDef.debugbg1 fills
+uncovered native stage pixels magenta; Go ignores the key and fills black.
+Local docs/bgs.html explicitly states this behavior, and current authored
+contact stages expose it. Stage loader only reads spr in BGDef; FightState fills
+stageCanvas black. Measure on/off and viewport boundaries, implement the scoped
+field/fill, and compare original captures. Do not relax existing raster gates.
+
+Local fight.def also exposes Round slow.time=60 (alongside over.waittime45,
+over.hittime10, over.wintime45, over.time210). Match currently has no KO slowdown.
+Measure CNS/GameTime/phase boundaries deterministically before implementing it;
+wall-clock screenshots alone do not establish the slowdown factor or consumers.
+
+Previous verified checkpoint: M4ba3fa397a9, reversal83eb5bd9. HIT-POWER.md
+records66 native programs,804 observations, three type rejections,264 hashes;
+full races passed Match538.364s/Character12.143s. M4az83eb5bd9 closes bounded RGB
+sampling/placement and retains six strict alpha failures. Older notes are in
+archive/HANDOFF-2026-10-17-long.md; its active-task instructions are obsolete.
 
 ## Scope and environment
 
-Read ../AGENTS.md. All changes stay under game/mugen/. Preserve temp/mugen-1.1b1/
-and root Go modules. Stage explicit authored files plus tracked MUGEN edits;
-never stage temp, original assets/binaries, caches or captures. No agents, skill
-or goal tool is active. Branch go-rewrite-mugen. Sandbox bwrap is broken; scoped
-require_escalated calls have passed automatic review. No approval blocker exists.
+Branch go-rewrite-mugen. No agents, skills or goal tool active. Sandbox bwrap
+startup is broken; scoped require_escalated calls have passed automatic review.
+No approval blocker. Do not touch the host display/audio/keyboard/focus.
 
-Private display: DISPLAY=:97,
+Private display DISPLAY=:97,
 XAUTHORITY=/home/juvinious/projects/paintown/game/mugen/temp/virtual-display/Xauthority,
-LIBGL_ALWAYS_SOFTWARE=1. Xvfb PID2146490. Private Pulse PID1393643:
+LIBGL_ALWAYS_SOFTWARE=1. XvfbPID2146490. Private PulsePID1393643:
 PULSE_SERVER=unix:/home/juvinious/projects/paintown/game/mugen/temp/audio-reference/native;
 PULSE_COOKIE points to that directory's cookie; ALSA_CONFIG_PATH to its alsa.conf.
-Never print cookie contents, touch desktop/focus/keyboard or use host audio.
+Never print cookie contents. Native/app/audio/GUI tests run sequentially. Wait
+for the prior session, then separately check
+`ps -eo pid,stat,comm | rg 'mugen.exe|mugen-go|match.test|character.test'`.
+Idle Wine service processes are fine.
 
-Native probes, actual apps/audio and full Ebiten suites run sequentially. Before
-each new client, wait for the prior session then separately check:
-ps -eo pid,stat,comm | rg 'mugen.exe|mugen-go|match.test|character.test'
-Idle wineserver/winedevice is okay. Pure env -u DISPLAY tests can run alongside.
-
-Full suite from workspace root with private display vars:
-GOPROXY=off game/mugen/mugen --check -race -timeout=20m
-Redirect output to temp. Keep commentary updates during long tests. Scoped builds
-use GOCACHE=.../game/mugen/temp/go-build, GOTMPDIR=.../game/mugen/temp/tmp,
-GOFLAGS='-modfile=/home/juvinious/projects/paintown/game/mugen/mugen.mod -mod=readonly'.
-Root module baseline: temp/root-module.before-font.sha256. Last free space~82G.
-
-Historical notes are in archive/HANDOFF-2026-10-17-long.md; its active instructions
-are obsolete. Prefer this handoff and current checkpoint documentation.
+Use scoped builds with GOCACHE=.../game/mugen/temp/go-build,
+GOTMPDIR=.../game/mugen/temp/tmp,
+GOFLAGS='-modfile=/home/juvinious/projects/paintown/game/mugen/mugen.mod -mod=readonly',
+GOPROXY=off. Full suite uses private display/audio variables and
+`game/mugen/mugen --check -race -timeout=20m`; growing Match corpus needs the
+explicit timeout. Never save disposable Go snapshots with a .go extension under
+temp; recursive tests discover them even when gitignored. Root baseline is
+`temp/root-module.before-font.sha256`. Free space last checked75G.

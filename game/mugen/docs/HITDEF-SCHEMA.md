@@ -1,8 +1,9 @@
 # HitDef parameter completion audit
 
 The bundled 1.1 beta manual contains 81 HitDef parameter entries. A source audit
-at M4av found20 compiled keys. M4aw extended that to29; M4ba adds
-Damage/GetPower/GivePower for32 expression keys across engine/hitdef.go,
+at M4av found20 compiled keys. M4aw extended that to29; M4ba added
+Damage/GetPower/GivePower and M4bb adds kill/guard.kill/fall.kill/fall.damage,
+for36 expression keys across engine/hitdef.go,
 hit_vectors.go and hit_power.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
@@ -21,7 +22,7 @@ implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
 - Reaction: fall.animtype, air.type, fall.recovertime, down.bounce.
-- Combat: air.juggle, chainID, nochainID, kill, guard.kill, fall.kill.
+- Combat: air.juggle, chainID, nochainID.
 - Constraints: mindist, maxdist, snap.
 - Palette: palfx.time, palfx.mul, palfx.add.
 - Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
@@ -38,6 +39,15 @@ close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
 projectile/reversal/team interactions and whole-engine/asset/mode gates remain
 open in COMPATIBILITY.md and PLAN.md.
 
-The disposable audit is `temp/hitdef-schema-audit.txt`; its input is the local
-reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list. No original
-reference distribution files are modified or committed.
+M4bb's [lethality controls](HIT-LETHALITY.md) add typed kill flags/fall damage,
+pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
+measured KO velocity adjustments. These do not establish absolute KO/round
+timing, full fall recovery, or the broad contact combinations listed above.
+
+The refreshed audit is `temp/m4bb-hitdef-current-audit.json`; its input is the
+local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
+It records all81 documented keys,36 expression keys and45 keys that remain
+literal or absent. Those45 include compile-time enums/attributes as well as
+numeric expressions; they need appropriate schemas rather than being treated
+uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
+historical M4aw snapshot. No original reference files are modified or committed.

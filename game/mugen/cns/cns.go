@@ -148,11 +148,15 @@ type HitDef struct {
 	AirFall            int
 	ForceNoFall        bool
 	ForceStand         *bool // nil: derive from the unscaled ground Y velocity
-	FallDamage         int
-	FallVel            []float64
-	FallXUnchanged     bool
-	FallRecover        bool
-	YAccel             float64
+	// Nil kill flags preserve the native true default.
+	Kill           *bool
+	GuardKill      *bool
+	FallKill       *bool
+	FallDamage     int
+	FallVel        []float64
+	FallXUnchanged bool
+	FallRecover    bool
+	YAccel         float64
 }
 
 type StateDef struct {
@@ -485,7 +489,11 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 					strVal := attributeExpression(attr)
 					ctrl.Triggers = append(ctrl.Triggers, fmt.Sprintf("%s = %s", attr.ID.String(), strVal))
 				} else {
-					ctrl.Params[key] = attributeExpression(attr)
+					// Beta uses the first ordinary parameter. Repeated trigger
+					// lines above remain separate conditions in their group.
+					if _, present := ctrl.Params[key]; !present {
+						ctrl.Params[key] = attributeExpression(attr)
+					}
 				}
 			}
 
@@ -611,6 +619,13 @@ func ParseHitDef(params map[string]string) HitDef {
 		FallRecover:    true,
 		FallXUnchanged: true,
 		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
+	}
+	for key, destination := range map[string]**bool{"kill": &hd.Kill, "guard.kill": &hd.GuardKill, "fall.kill": &hd.FallKill} {
+		if raw, present := params[key]; present {
+			number, _ := strconv.Atoi(raw)
+			value := number != 0
+			*destination = &value
+		}
 	}
 	for key, destination := range map[string]**int{"p1stateno": &hd.P1StateNo, "p2stateno": &hd.P2StateNo} {
 		if raw, present := params[key]; present {

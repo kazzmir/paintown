@@ -159,6 +159,23 @@ func TickCharacters(players []*Character) error {
 		if event.defender.RuntimeError != nil {
 			return event.defender.RuntimeError
 		}
+		if event.guarded && !event.defender.GetHitGuarded {
+			c := event.attacker
+			c.MoveHit, c.MoveGuarded = 1, 0
+			number := 1
+			if event.hit.NumHits != nil {
+				number = *event.hit.NumHits
+			}
+			if !counted[c] {
+				c.HitCount += number
+				counted[c] = true
+			}
+			c.UniqHitCount += number
+			c.HitPauseTime = 0
+			if len(event.hit.PauseTime) > 0 {
+				c.HitPauseTime = event.hit.PauseTime[0]
+			}
+		}
 		event.defender.pendingHitDamage += amount
 		event.defender.hasPendingHitDamage = true
 	}
