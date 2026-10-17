@@ -1,8 +1,9 @@
 # HitDef parameter completion audit
 
 The bundled 1.1 beta manual contains 81 HitDef parameter entries. A source audit
-at M4av found 20 compiled keys. M4aw extends that to 29 keys across
-`engine/hitdef.go` and `engine/hit_vectors.go`. This count measures source routing, not complete behavioral
+at M4av found20 compiled keys. M4aw extended that to29; M4ba adds
+Damage/GetPower/GivePower for32 expression keys across engine/hitdef.go,
+hit_vectors.go and hit_power.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
 The remaining literal-parser fields must also receive typed parameter schemas.
@@ -25,9 +26,12 @@ claim that the other keys are complete:
 - Palette: palfx.time, palfx.mul, palfx.add.
 - Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
 
-Literal-only damage, pause, timing, power, fall and remaining physical fields
-need dynamic expression/coercion/order coverage. Power and down
-time still lack complete runtime consumers; corner push has the bounded M4ax
+The M4ba [power controls](HIT-POWER.md) add typed damage/power, expression
+defaults, all current typed-field order, root/helper pools, configured factors
+and immediate contact transfer. Broad foreign/projectile/team/pause/multiple
+contexts remain open. Literal-only pause, timing, fall and remaining physical
+fields still need expression/coercion/order coverage. Down
+time still lacks complete runtime consumers; corner push has the bounded M4ax
 consumer described above. Existing
 normal/guard/override/common-state fixtures are bounded evidence; they do not
 close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,

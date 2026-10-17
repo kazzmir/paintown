@@ -159,6 +159,7 @@ type Character struct {
 	MaxLife    int
 	Power      int
 	MaxPower   int
+	PowerRules *combat.PowerRules
 	AttackMul  float64
 	DefenceMul float64
 
@@ -699,6 +700,7 @@ func (c *Character) SetMoveType(mtype string) {
 }
 
 func (c *Character) SetPower(power int) {
+	c = c.rootPlayer()
 	c.Power = power
 	if c.Power > c.MaxPower {
 		c.Power = c.MaxPower
@@ -709,11 +711,11 @@ func (c *Character) SetPower(power int) {
 }
 
 func (c *Character) AddPower(power int) {
-	c.SetPower(c.Power + power)
+	c.SetPower(c.GetPower() + power)
 }
 
 func (c *Character) GetPower() int {
-	return c.Power
+	return c.rootPlayer().Power
 }
 
 func (c *Character) SetLife(life int) {
@@ -1914,10 +1916,7 @@ func (c *Character) applyHitDamage(damage int) {
 	if c.MoveType != "H" {
 		return
 	}
-	c.Life -= damage
-	if c.Life < 0 {
-		c.Life = 0
-	}
+	c.SetLife(c.Life - damage)
 }
 
 // HitOverride suppresses guarding; guard flags then select eligible postures.
@@ -1969,6 +1968,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		return 0
 	}
 	override, hasOverride := c.matchingOverride(hit.Attr)
+	c.creditHitPower(attacker, hit, guarded)
 	// Contact chooses the attack direction now, but publishes the attacker's
 	// turn after its CNS/physics, like the receiver's deferred P2Facing turn.
 	// Entry expressions and Time=0 controllers still observe the old heading.
@@ -2035,7 +2035,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	if superDefence <= 0 {
 		superDefence = 1
 	}
-	finalDamage := int(math.Round(float64(damage) * attacker.AttackMul * c.DefenceMul / superDefence))
+	// Native adds one half before truncating; negative damage therefore has
+	// a different boundary from an away-from-zero rounding operation.
+	finalDamage := int(float64(damage)*attacker.AttackMul*c.DefenceMul/superDefence + .5)
 	c.GetHitDamage = finalDamage
 	if c.hasPendingHitDamage {
 		c.GetHitDamage += c.pendingHitDamage

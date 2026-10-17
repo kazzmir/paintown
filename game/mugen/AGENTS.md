@@ -40,6 +40,8 @@ Do not modify the reference distribution. Do not commit its binaries/assets.
   overlay; see `docs/BUILD.md`. Keep it synchronized when dependencies change.
 - Use non-Go extensions for disposable source snapshots. The recursive check
   also discovers ordinary packages below `temp/`; ignored files still compile.
+- Full race checks use `--check -race -timeout=20m`; the growing native Match
+  corpus approaches Go's default ten-minute package deadline.
 - Update `docs/COMPATIBILITY.md` and `docs/HANDOFF.md` when behavior or verified
   coverage changes. Do not call the port complete without tests and reference
   evidence covering the advertised compatibility.

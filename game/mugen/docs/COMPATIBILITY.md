@@ -7,6 +7,21 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ba adds typed damage/GetPower/GivePower, repeated expression defaults,
+configured zero/negative factors, shared root/helper pools and contact transfer
+before entry. Sixty-six original programs compare804 observations, three type
+rejections and264 source hashes. Full27-field source/reverse controls establish
+the current typed evaluation order. Signed healing now adds.5 before truncation
+and clamps life. All66 integrated programs/full scoped races pass in
+m4ba-full-race.log: Match538.364s, Character12.143s. Eight apps/eleven captures
+share one binary and pass provenance/runtime checks; seven clothing masks match
+exactly. Four fresh native programs/six captures reproduce their observations.
+Stock throw recovery shows two fighters; high configured factors visibly reach
+both HUD level3 counters. Pure races and root module checks pass. See HIT-POWER.md.
+Reversal:83eb5bd9. Whole combat/engine/assets/modes remain open, along with
+M4az alpha precision and diagnostic background fill. Lethality/fall-damage
+consumers are the next combat task.
+
 True-color fight HUD/effects now share the clamped linear sampler and preserve
 caller blend/tint options. Cue coordinates truncate in signed common-game units
 before stage/camera translation. Sixteen original programs record192 numbers

@@ -17,6 +17,11 @@ The launcher keeps build caches and disposable files under `temp/`. Font and
 Character packages still import Ebitengine and need DISPLAY even for CPU tests;
 the engine/evaluator/SFF/parser core is display independent.
 
+The growing native fixture corpus takes about nine minutes for a full Match
+race run. Use `game/mugen/mugen --check -race -timeout=20m` for full race
+validation so Go's default ten-minute package deadline does not become a false
+failure as coverage grows.
+
 ## Font lookup and fallback
 
 FNT v2 loads its bitmap SFF or TrueType file relative to the definition. For

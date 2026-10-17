@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -29,7 +30,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None, p2_fixture=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None, p2_fixture=None, rules=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -119,6 +120,11 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
                                   lambda match: key + ' = ' + str(value), settings)
         if count != 1:
             raise RuntimeError('Expected one disposable video setting: ' + key)
+    for key, value in (rules or {}).items():
+        settings, count = re.subn(r'(?im)^\s*' + re.escape(key) + r'\s*=.*$',
+                                  lambda match: key + ' = ' + str(value), settings)
+        if count != 1:
+            raise RuntimeError('Expected one disposable rule setting: ' + key)
     config.write_text(settings)
     return source
 
@@ -259,6 +265,7 @@ def main():
     parser.add_argument('--game-width', type=int, help='Override common game-space width for coordinate probes')
     parser.add_argument('--game-height', type=int, help='Override configured game-space height for coordinate probes')
     parser.add_argument('--video', action='append', default=[], help='Disposable video override: StageFit/SystemFit/KeepAspect=0|1 or Width/Height=N')
+    parser.add_argument('--rule', action='append', default=[], help='Disposable power rule override: Default.Attack.LifeToPowerMul=N or Default.GetHit.LifeToPowerMul=N')
     parser.add_argument('--hud-marker', action='store_true', help='Use the fixture-owned probe.sff for calibrated Face background markers in disposable fight files')
     parser.add_argument('--helper-max', type=int, help='Override only the copied HelperMax for entity identity/allocation probes')
     parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
@@ -294,6 +301,7 @@ def main():
         args.fixture_stage = case_expected.get('fixture_stage',False)
         args.stage_version = case_expected.get('stage_version')
         args.video = [key+'='+str(value) for key,value in case_expected.get('video',{}).items()]
+        args.rule = [key+'='+str(value) for key,value in case_expected.get('rules',{}).items()]
         args.hud_marker = case_expected.get('hud_marker',False)
         args.helper_max = case_expected.get('helper_max')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
@@ -326,6 +334,18 @@ def main():
         if key in video or (value not in [0,1] if key in ['StageFit','SystemFit','KeepAspect'] else not 64<=value<=4096):
             parser.error('Duplicate or out-of-range video override')
         video[key] = value
+    rules = {}
+    for item in args.rule:
+        key, separator, raw = item.partition('=')
+        if not separator or key not in ['Default.Attack.LifeToPowerMul', 'Default.GetHit.LifeToPowerMul']:
+            parser.error('Unsupported power rule override')
+        try:
+            value = float(raw)
+        except ValueError:
+            parser.error('Power rule overrides require finite numbers')
+        if key in rules or not math.isfinite(value) or abs(value) > 1000:
+            parser.error('Duplicate or out-of-range power rule override')
+        rules[key] = value
     files = {}
     for item in args.file:
         key, separator, value = item.partition('=')
@@ -344,7 +364,7 @@ def main():
         parser.error('State-file order must contain unique st/stN keys')
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max,p2_fixture)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max,p2_fixture,rules)
     if args.fixture_stage:
         if args.stage not in ['kfm', 'probe-stage']:
             parser.error('Fixture stage owns the stage path; omit --stage')
@@ -423,6 +443,8 @@ def main():
         evidence['game_height'] = args.game_height
     if video:
         evidence['video'], evidence['config_sha256'] = video, digest(run/'data/mugen.cfg')
+    if rules:
+        evidence['rules'], evidence['config_sha256'] = rules, digest(run/'data/mugen.cfg')
     if args.helper_max is not None:
         evidence['helper_max'],evidence['config_sha256']=args.helper_max,digest(run/'data/mugen.cfg')
     if args.hud_marker:
@@ -464,6 +486,8 @@ def main():
             raise RuntimeError('Fixture stage ownership differs from pinned fixture')
         if expected.get('video',{})!=video:
             raise RuntimeError('Video overrides differ from pinned fixture')
+        if expected.get('rules',{})!=rules:
+            raise RuntimeError('Power rule overrides differ from pinned fixture')
         if expected.get('hud_marker',False)!=args.hud_marker:
             raise RuntimeError('HUD marker mode differs from pinned fixture')
         if expected.get('helper_max')!=args.helper_max:

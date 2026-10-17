@@ -31,6 +31,7 @@ func (c *Character) CreateHelper(p engine.HelperParameters) error {
 	h.Commands = NewCommandBuffer(120)
 	h.RoundState, h.RoundNo, h.RoundsExisted = c.RoundState, c.RoundNo, c.RoundsExisted
 	h.Timeline, h.SuperTargetDefenceMul = c.Timeline, c.SuperTargetDefenceMul
+	h.PowerRules = c.PowerRules
 	h.helperBirthKnown = true
 	if c.Timeline != nil {
 		h.helperBirthTick = c.Timeline.GameTime

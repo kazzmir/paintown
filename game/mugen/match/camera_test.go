@@ -15,6 +15,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/combat"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 )
@@ -95,6 +96,10 @@ func TestNativeRGBConsumerPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "rgbconsumer-*.json", 16)
 }
 
+func TestNativeHitPowerPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitpower-*.json", 66)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
@@ -108,18 +113,19 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				FixtureConstants bool              `json:"fixture_constants"`
-				CNSHash          string            `json:"cns_sha256"`
-				AIRHash          string            `json:"air_sha256"`
-				StageHash        string            `json:"stage_fixture_sha256"`
-				CMDHash          string            `json:"cmd_sha256"`
-				Local            string            `json:"localcoord"`
-				P2Local          string            `json:"p2_localcoord"`
-				StageError       string            `json:"expected_stage_error"`
-				LoadError        string            `json:"expected_load_error"`
-				ErrorState       int               `json:"expected_compile_state"`
-				GameWidth        int               `json:"game_width"`
-				ExtraHashes      map[string]string `json:"extra_sha256"`
+				FixtureConstants bool               `json:"fixture_constants"`
+				CNSHash          string             `json:"cns_sha256"`
+				AIRHash          string             `json:"air_sha256"`
+				StageHash        string             `json:"stage_fixture_sha256"`
+				CMDHash          string             `json:"cmd_sha256"`
+				Local            string             `json:"localcoord"`
+				P2Local          string             `json:"p2_localcoord"`
+				StageError       string             `json:"expected_stage_error"`
+				LoadError        string             `json:"expected_load_error"`
+				ErrorState       int                `json:"expected_compile_state"`
+				GameWidth        int                `json:"game_width"`
+				Rules            map[string]float64 `json:"rules"`
+				ExtraHashes      map[string]string  `json:"extra_sha256"`
 				ActorRender      *struct {
 					FrontID int `json:"front_entity_id"`
 				} `json:"actor_render"`
@@ -195,6 +201,20 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			m := stockMatch(t, 99)
+			if len(reference.Rules) > 0 {
+				rules := combat.DefaultPowerRules()
+				for key, value := range reference.Rules {
+					switch key {
+					case "Default.Attack.LifeToPowerMul":
+						rules.Attack = value
+					case "Default.GetHit.LifeToPowerMul":
+						rules.GetHit = value
+					default:
+						t.Fatal("unhandled native rule", key)
+					}
+				}
+				m.Options.PowerRules = &rules
+			}
 			constants := m.Players[0].Character.StateFile
 			if !reference.FixtureConstants {
 				file.Data, file.Size, file.Velocity, file.Movement, file.ConstantFields = constants.Data, constants.Size, constants.Velocity, constants.Movement, constants.ConstantFields

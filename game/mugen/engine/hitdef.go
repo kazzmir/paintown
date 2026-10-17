@@ -15,9 +15,25 @@ type hitDefCue struct {
 	args          []argument
 }
 
+// This order is measured by the tagged full-field and vector programs. Source
+// declaration order does not determine parameter expression side effects.
+var hitDefEvaluationOrder = []string{
+	"id", "hitonce", "damage", "getpower", "givepower", "numhits",
+	"hitsound", "guardsound", "priority", "p1stateno", "p2stateno", "p2getp1state",
+	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall",
+	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "p2facing",
+	"ground.velocity", "ground.cornerpush.veloff", "air.velocity", "air.cornerpush.veloff",
+	"down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.cornerpush.veloff",
+	"airguard.velocity", "airguard.cornerpush.veloff",
+}
+
 // Sound, spark, custom-state and selection parameters compile here while the
 // remaining legacy schema is replaced. Never mutate the shared source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
+	power, err := compileHitPower(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
 	var cues []hitDefCue
 	priorityClass := "Hit"
 	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand"} {
@@ -95,6 +111,17 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	cues = append(cues, vectors...)
+	byKey := make(map[string]hitDefCue, len(cues))
+	for _, cue := range cues {
+		known := false
+		for _, key := range hitDefEvaluationOrder {
+			known = known || key == cue.key
+		}
+		if !known {
+			return nil, true, fmt.Errorf("unrouted HitDef parameter %q", cue.key)
+		}
+		byKey[cue.key] = cue
+	}
 	if raw, present := ctrl.Params["affectteam"]; present {
 		team := strings.ToUpper(strings.TrimSpace(raw))
 		if team == "" || !strings.ContainsAny(team[:1], "EFB") {
@@ -106,8 +133,21 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		for key, value := range ctrl.Params {
 			params[key] = value
 		}
-		for _, cue := range cues {
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.floating)
+		damage, transfers := power.cues(env)
+		for _, key := range hitDefEvaluationOrder {
+			cue, present := byKey[key]
+			switch key {
+			case "damage":
+				cue, present = damage, true
+			case "getpower":
+				cue, present = transfers[0], true
+			case "givepower":
+				cue, present = transfers[1], true
+			}
+			if !present {
+				continue
+			}
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}

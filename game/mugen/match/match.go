@@ -9,6 +9,7 @@ import (
 
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/combat"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
@@ -43,6 +44,7 @@ type Options struct {
 	SuperTargetDefenceMul        float64
 	StageCrop                    bool // false preserves the default StageFit=1
 	HelperMax                    int
+	PowerRules                   *combat.PowerRules
 }
 
 type Phase int
@@ -186,6 +188,7 @@ func (m *Match) resetRound() error {
 		c.Viewport = m.Viewport
 		c.BindTimeline(m.Timeline)
 		c.SuperTargetDefenceMul = m.Options.SuperTargetDefenceMul
+		c.PowerRules = m.Options.PowerRules
 		c.Palettes = palette.New(p.SFF)
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.InputSlot, p.InputSlot = slot+1, slot+1

@@ -1,67 +1,67 @@
 # Current handoff
 
-Updated2026-10-17. Implementation/local checkpoint commits are authorized.
-Continue without routine review requests; never push. Full MUGEN1.1 beta1
-engine/assets/modes remain unfinished. All authored changes stay in game/mugen/.
+Updated2026-10-17. Continuous implementation/local commits authorized. Do not
+ask to continue, stop at a checkpoint, push, or claim the whole port complete.
+All authored edits stay under game/mugen/. Read ../AGENTS.md.
 
-## Latest checkpoint: M4az RGB consumers
+## Latest checkpoint: M4ba damage/power
 
-M4az is verified for its bounded scope; see git log for the local checkpoint
-hash. Reversal:d572399f (M4ay). Read RGB-CONSUMERS.md for measured rules, rejected
-hypotheses and open gates. HUD/effect true-color sprites use the shared sampler;
-Linear.DrawImage preserves blend/tint/geometry options. Shared shader arithmetic
-is byte-for-byte M4ay. Indexed consumers are unchanged. RGB cue X/Y truncate in
-signed common-game units before stage/camera translation; fractional owner and
-common960 controls match.
+M4ba is verified and ready for its local checkpoint; see git log for its hash.
+Reversal83eb5bd9 (M4az). Read HIT-POWER.md and HITDEF-SCHEMA.md. Sixty-six original
+programs compare804 observations, three literal-float rejections and264 source
+hashes. All66 integrated programs pass. Full scoped races PASS in
+m4ba-full-race.log: Match538.364s, Character12.143s. Pipeline session88607 exited0;
+no GUI client remains. Pure races and original/root module integrity checks pass.
 
-All16 numeric programs pass:192 observations/80 source hashes, no final rejected
-programs. Ten2100-pixel consumer crops match exactly. Three AS192D64 cases each
-fail12 pixels max1; half/independent destination cases each fail117 pixels max1.
-These six alpha precision gates remain OPEN; native goldens and strict checks
-are unchanged. All three video-fit HUD/world profiles now match bounds/core
-hashes exactly, closing the pre-existing nearest-filter gap. Never waive hashes.
+Eight app runs/eleven captures pass input/config/binary/capture/runtime audit;
+all seven clothing masks match exactly (six11,181 pixels, helper16,713).
+Binary554c7ba209dd5fe6c8c08ccec8cbf2526429101ff2d697f3ec179679338f6a4e.
+Four fresh native programs/six captures reproduce observations. Viewed native/Go
+high-rule counters show3/3; stock7s shows two fighters without lingering effects.
+Final captures end go-m4ba-final. No stock art/captures/binaries are committed.
 
-Five representative actor crops remain byte-exact; three fresh native replays
-reproduce goldens, including two alpha controls. All25 app runs/28 captures pass
-input/config/binary/capture/runtime provenance; see m4az-final-app-audit.json.
-Binary7c40366876ea6cd4dee8a3b73eccd3581c8626b8fff4a017ef9751740f8f8394.
-Viewed stock7s: two fighters, no lingering effects. Final consumer captures end
-go-m4az-final; intermediate candidates are diagnostic. Full clean scoped races
-PASS (session83481 exit0): Match489.826s, Character10.368s in m4az-full-race.log.
-Pure races/root module checks pass. The first full invocation's temp-snapshot
-mixed-package setup failure is retained separately; its actual package tests
-passed, but its overall command failed. Diagnostic Go snapshots now use .go.txt;
-AGENTS documents why. No GUI client is active after83481; check ps before next.
+Compiler order now follows the full27-component tags plus M4aw vector order:
+id,hitonce,damage,getpower,givepower,numhits,hitsound,guardsound,priority,
+p1stateno,p2stateno,p2getp1state,p1sprpriority,p2sprpriority,forcestand,forcenofall,
+sparkno,guard.sparkno,sparkxy,p1facing,p1getp2facing,p2facing,then vectors.
+Defaults retain raw source ASTs and reevaluate them; 2.9 deals2 but grants2/1,
+tagged defaults execute Damage five times. Rules are optional so explicit0 is
+meaningful. Production config passes factors into round actors/helpers. Helpers
+read/write root pools. Transfer precedes entry even for overrideI without life
+loss. AttackMul/NumHits do not scale power. Signed damage uses int(product+.5):
+raw-10 heals9, guard-3 heals2, scaled-1.75 heals1, with bounded life.
 
-## Next M4ba: combat power
+M4az83eb5bd9's RGB consumer filtering/placement remains verified for its scope;
+six alpha precision crops remain OPEN. Another observed asset gap is native
+magenta uncovered stage fill for BGDef.debugbg=1 versus Go black; parser ignores
+that key. Keep these documented and unwaived. Full engine/assets/modes remain
+unfinished; config omission/extreme overflow/foreign/projectile/team/pause/
+multiple-hit power combinations and remaining literal HitDef fields stay open.
 
-Continue immediately; no permission dependency. Runtime Get/GivePower consumers
-are absent, Damage/Get/GivePower are literal-parsed, config .7/.6 rules do not
-reach Match actors and helper/root pool sharing is unverified. Read
-HITDEF-SCHEMA.md and temp/power-next-notes.txt. Do not infer numeric/default/order/
-entry timing from the manual alone; record original native programs first.
+## Next M4bb: lethal hits and fall damage
 
-Prepared44 root programs already exist untracked as hitpower-* CNS/CMD/AIR/stage
-files, structurally audited in m4ba-prepared-inputs.json. No native power JSONs
-exist yet. author-hit-power.py is the generator; do not rerun after recording.
-hitpower-cases.json has decisive defaults/guard/explicit/computed/order/150/type
-controls first. temp/run-hitpower.py is ready for sequential native recording.
+Continue immediately without permission. kill/guard.kill/fall.kill have no
+fields/consumers; HitFallDamage just calls AddLife on fall.damage and ignores
+fall eligibility/kill policy. GetHitVar(fall.kill) is documented by native but
+missing here. SetHitFallDamage is an unused stub (not a proven controller path).
+Read local sctrls.html HitDef/HitFallDamage and trigger.html GetHitVar.
 
-temp/author-helper-power.py is prepared but UNRUN: eight observe/set/add/cap/
-lower/root-add/Statedef-entry/SuperPause controls compare root/helper/parent
-power and publication phases. temp/author-power-rules.py is also prepared but
-UNRUN: six custom zero/fractional/sign/explicit-factor controls. Generate these
-and merge case lists with root44 before native recording if useful (58 total).
+Prepared temp/author-hit-kill.py is UNRUN. It would write38 original hitkill
+programs for hit/guard flags, coercion/default/sign/bottom/redirect/type cases,
+nonlethal entry-death, fall flags/damage/repetition/scaling/defence. It clones
+power fixtures but snapshots GameTime145 to observe lethal contact before round
+reset; intended capture4s. It appends simple180/5150 states to avoid missing win/
+dead state paths. Use --clipboard-delay0 for these KO probes to avoid waiting
+for Time30 after winner state changes. Begin with pilots hit-default/hit-zero/
+fall-default and verify capture timing before recording the rest. Preserve the
+existing66 power sources/JSONs. Add tagged kill/fall.damage order controls and
+MoveTypeI/H/air contexts before implementing their consumers. These are plans,
+not native findings. No M4bb source or native JSONs exist yet.
 
-tests/reference_probe.py has an UNSTAGED next-checkpoint --rule extension:
-two finite power factors, prepared-config hash and strict replay recipe checks.
-Pure preparation/invalid CLI tests pass; original reference config hash unchanged.
-This tool change and all hitpower inputs belong to M4ba, outside M4az staging.
-After measuring, add integrated numeric coverage and implement typed source
-expressions/default evaluation order, contact transfer/timing and configured
-rules/ownership. Zero factors are meaningful; use explicit presence, not a zero
-sentinel. Broader pause/foreign/projectile/team/multiple-contact pools remain
-separate gates. Preserve every existing native expectation.
+A low-impact diagnostic background fix is also independently identified:
+stage/loader.go BGDef parses only spr; FightState fills stageCanvas black. A
+future measured DebugBG field/fill can close magenta-vs-black exposed above.
+Do not change the original reference distribution or relax raster/alpha gates.
 
 ## Scope and environment
 
@@ -84,7 +84,7 @@ ps -eo pid,stat,comm | rg 'mugen.exe|mugen-go|match.test|character.test'
 Idle wineserver/winedevice is okay. Pure env -u DISPLAY tests can run alongside.
 
 Full suite from workspace root with private display vars:
-GOPROXY=off game/mugen/mugen --check -race
+GOPROXY=off game/mugen/mugen --check -race -timeout=20m
 Redirect output to temp. Keep commentary updates during long tests. Scoped builds
 use GOCACHE=.../game/mugen/temp/go-build, GOTMPDIR=.../game/mugen/temp/tmp,
 GOFLAGS='-modfile=/home/juvinious/projects/paintown/game/mugen/mugen.mod -mod=readonly'.
