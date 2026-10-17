@@ -441,9 +441,6 @@ func (c *Character) finishTick() {
 					}
 				}
 
-				// Push collision
-				c.ResolvePushCollision()
-
 				// Engine turning belongs to the common idle/crouch/walk states;
 				// custom states retain their facing. Preserve world momentum on flip.
 				if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Opponents) > 0 {

@@ -7,6 +7,13 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4aa adds three native root-phase programs/48 numbers. Each ordered root now
+completes CNS, pending damage, physics and clocks before the next root's CNS.
+The second side of a trade sees already-reduced opponent life. Body push stays
+shared after all roots; old push/guard/viewport and all other scoped race
+regressions pass. This supersedes the earlier shared post-CNS damage assumption.
+Complete helper/projectile/world phases and binding remain open; see WORLD.md.
+
 M4z separates state/animation ownership with eleven native programs and 200
 distinct per-program numeric observations. TargetState/ChangeState/SelfState,
 deferred external entry, foreign -2 versus excluded -3/-1, mixed-unit position/

@@ -24,5 +24,7 @@ and the handoff for current progress; the assessment describes the original base
 
 13. [Custom state and animation ownership](OWNERSHIP.md): native external entry, negative eligibility, borrowed coordinates/AIR and remaining throw integration.
 
+14. [Root world phases](WORLD.md): native per-root CNS/damage/physics/clocks, shared late push and remaining entity scheduling.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

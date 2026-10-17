@@ -4,6 +4,27 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4aa — Per-root CNS/damage/physics clocks and shared late push
+
+Three independent native programs pin 48 numbers. A later root sees the earlier
+root's completed movement and Time increment; attacker priority covers this
+entire root update. A two-sided trade shows the second root's Time=0 CNS sees
+the first root's reduced life, while its own life is still unchanged. The old
+global post-CNS damage assumption is superseded. See WORLD.md.
+
+Each root now completes CNS, pending damage, physics and clocks before the next
+root's CNS. Body push stays in a shared late phase; the initial per-root-push
+draft broke old native push/guard/viewport packets, and splitting it restores
+them. The complete scoped race suite passes, including pause/audio/effect/target/
+ownership tests. Fresh replays of all three native packets match. The real
+1280x720 mixed KFM/KFM720 fight loads/runs through seven-second window captures
+at temp/app-runs/root-phases-stock-go/ without runtime errors. Root module
+hashes remain unchanged. This is a smoke check, not complete fight parity.
+
+Binding probes exposed the gap but binding is still in progress. Helper/
+projectile/team/neutral scheduling, complete KO/camera phases, binding and HitDef
+custom-state parameters remain open. M4z's reversal point is `adae7dfd`.
+
 ## M4z — Borrowed states, animation sources and external entry timing
 
 Eleven native programs pin 200 distinct per-program numeric observations (216

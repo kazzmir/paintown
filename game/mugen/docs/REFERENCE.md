@@ -676,3 +676,13 @@ clocks, missing/negative destinations, preserved control and repeat hits are
 compared. See OWNERSHIP.md for precise observations and remaining throw/HitDef/
 binding/rendering obligations. Early four-second drafts retained stale intro
 clipboard output and are diagnostic only; promoted captures use seven seconds.
+
+## Root movement, clocks and two-sided trade damage (M4aa)
+
+Three original independent programs record 48 values. A later root sees the
+earlier root's completed movement/Time; attacker priority covers the whole
+root update. The second root's get-hit Time=0 CNS sees already-reduced opponent
+life while its own life is pending. The old single-sided trade evidence remains
+valid but could not distinguish this from one shared post-CNS damage phase.
+Shared late push is retained by the earlier push/guard/viewport packets. See
+WORLD.md for the order, failed-draft evidence and remaining entity/world limits.

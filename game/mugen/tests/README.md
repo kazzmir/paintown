@@ -319,3 +319,11 @@ animation ownership, external-entry timing, units, control, missing destinations
 and repeat hits. Four-second draft captures sometimes retained intro clipboards
 and are diagnostic only. See OWNERSHIP.md for limits; complete throws/binding,
 borrowed AIR geometry and multi-entity behavior remain open.
+
+
+phase-root-physics, phase-root-attacker-second and phase-trade-life use their
+same-named -victim opponent fixtures and the independent-opponent recipe above.
+The first two use --pages 0; the trade uses --pages 0 12. TestNativeRootUpdatePhases
+compares all 48 numbers. These packets distinguish per-root movement/clocks/
+damage from shared late body push; see WORLD.md. The initial intro-Time draft
+and per-root-push implementation are diagnostic only, not passing evidence.

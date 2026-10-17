@@ -4,6 +4,14 @@ Updated: 2026-10-16. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4aa follows M4z: three native root-phase programs/48 values prove each ordered
+root completes CNS, pending damage, physics and clocks before the next root's
+CNS. Body push remains a shared late phase. The first per-root-push draft
+failed old native push/guard/viewport cases; separating late push restores the
+full scoped race suite. See WORLD.md. Two-sided trade life observations
+supersede the old all-roots-post-CNS damage interpretation. TargetBind probes
+exposed this gap; the binding controllers themselves are still in progress.
+
 Latest work is M4z: eleven native ownership programs, 200 distinct per-program
 observations (216 capture entries), compared through the production Character
 scheduler. TargetState selects borrowed definitions with deferred entry after

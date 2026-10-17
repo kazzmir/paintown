@@ -15,6 +15,15 @@ import (
 )
 
 func TestNativeCustomStateOwnership(t *testing.T) {
+	replayNativeWorldPrograms(t, "ownership-*.json", 11)
+}
+
+func TestNativeRootUpdatePhases(t *testing.T) {
+	replayNativeWorldPrograms(t, "phase-*.json", 3)
+}
+
+func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
+	t.Helper()
 	stock, err := os.ReadFile("../temp/mugen-1.1b1/chars/kfm/kfm.cns")
 	if err != nil {
 		t.Fatal(err)
@@ -23,9 +32,9 @@ func TestNativeCustomStateOwnership(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	paths, err := filepath.Glob("../tests/testdata/reference/ownership-*.json")
-	if err != nil || len(paths) != 11 {
-		t.Fatal("missing ownership corpus", err)
+	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
+	if err != nil || len(paths) != count {
+		t.Fatal("incomplete native world corpus", pattern, len(paths), count, err)
 	}
 	for _, path := range paths {
 		t.Run(filepath.Base(path), func(t *testing.T) {

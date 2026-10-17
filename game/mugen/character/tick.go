@@ -119,6 +119,9 @@ func TickCharacters(players []*Character) error {
 	// Timed defence remains active for contact, then can be renewed by CNS.
 	// Attackers execute first; root order breaks ties. Changes during a pass
 	// affect the following tick's order, not the already selected sequence.
+	// Each root completes CNS, pending damage, physics and clocks before the
+	// next root's CNS. Native trade snapshots can see the first root's reduced
+	// life, just as redirected Pos/Time see its completed movement and clock.
 	ordered := append([]*Character(nil), players...)
 	sort.SliceStable(ordered, func(i, j int) bool {
 		return ordered[i].MoveType == "A" && ordered[j].MoveType != "A"
@@ -130,12 +133,27 @@ func TickCharacters(players []*Character) error {
 		if !c.runStateTick() {
 			return c.RuntimeError
 		}
-	}
-
-	for _, c := range players {
 		if !c.worldFrozen && c.hasPendingHitDamage {
 			c.applyHitDamage(c.pendingHitDamage)
 			c.pendingHitDamage, c.hasPendingHitDamage = 0, false
+		}
+		var active []*Character
+		for _, p := range c.Projectiles {
+			if !projectileHits[p] {
+				active = append(active, p)
+			}
+		}
+		c.Projectiles = active
+		c.finishTick()
+		if c.RuntimeError != nil {
+			return c.RuntimeError
+		}
+	}
+	// Body push waits until every root has run CNS/movement. A later root can
+	// observe authored PosSet and completed physics before this body correction.
+	for _, c := range players {
+		if !c.worldFrozen && !c.pausedThisTick && !c.PosFrozen {
+			c.ResolvePushCollision()
 		}
 	}
 	suppressKO := false
@@ -148,19 +166,6 @@ func TickCharacters(players []*Character) error {
 		}
 		if err := c.updateKOSound(suppressKO); err != nil {
 			c.RuntimeError = fmt.Errorf("player %d KO sound: %w", c.InputSlot, err)
-			return c.RuntimeError
-		}
-	}
-	for _, c := range players {
-		var active []*Character
-		for _, p := range c.Projectiles {
-			if !projectileHits[p] {
-				active = append(active, p)
-			}
-		}
-		c.Projectiles = active
-		c.finishTick()
-		if c.RuntimeError != nil {
 			return c.RuntimeError
 		}
 	}
