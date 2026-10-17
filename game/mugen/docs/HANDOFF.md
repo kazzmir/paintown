@@ -4,7 +4,15 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
+Latest M4al adds native helper sound ownership controls: two programs, 24 numeric
+observations and eight PCM tick checks (48 stereo tone amplitudes). Root/parent/
+descendant voices coexist on channel 1. Both ordinary and recursive DestroySelf
+retire entities while their sounds continue; root channel-1 StopSnd removes only
+the root voice. Existing production behavior matches, so no stop-on-retirement
+change is introduced. All 29 PCM programs/30 cases pass race comparison in
+temp/m4al-pcm-first-race.log; both fresh native replays pass. See AUDIO.md.
+
+Previous M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
 Explod clocks. Fourteen native programs compare 288 numbers, two load
 rejections and 56 authored input hashes. Nonrecursive descendants retain parent
 metadata while the live registry/parent writes retire; recursive removal covers
@@ -767,8 +775,9 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Compare helper sound ownership and native bound-target release publication,
-then opposing-helper contacts. Continue positive input, helper palettes/foreign/paused creation,
+Compare native bound-target release publication, then opposing-helper contacts.
+Complete helper sound capacity/round/pause/foreign ownership controls alongside
+remaining entity work. Continue positive input, helper palettes/foreign/paused creation,
 remaining facing/priority/hit flags and attacker-hit interrupted binding controls.
 Continue
 remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and

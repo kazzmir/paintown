@@ -468,3 +468,14 @@ parent writes, recursive effect removal and the finite/permanent orphan scenes.
 TestOrphanExplodClockExpiryBindingAndRoundReset checks clocks, released anchors
 and round cleanup without graphics resources. Full scoped races pass in
 temp/m4ak-full-race.log; pre-fix failures remain in m4ak-before-retirement.log.
+
+## M4al helper sound ownership
+
+helperaudio-ordinary and helperaudio-recursive add 24 numeric observations,
+eight PCM tick windows and 48 stereo amplitude checks. TestNativeSoundControllerPCM
+passes all 29 programs/30 cases with race detection. Native replay uses
+sound_probe.py --fixture helperaudio-recursive --name UNIQUE_NAME --seconds 9
+(and ordinary), with the private display/audio environment. The JSON pins the
+quiet-HUD/configuration and original synthetic tone bank. Capture-shutdown
+silence is not a semantic stop event. See AUDIO.md for the measured retained
+voices, initial GameTime alignment, real device evidence and remaining gaps.

@@ -16,6 +16,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/snd"
 	"github.com/kazzmir/paintown/game/mugen/sound"
 )
@@ -23,6 +24,8 @@ import (
 type audioReferenceCase struct {
 	CNSHash     string            `json:"cns_sha256"`
 	AIRHash     string            `json:"air_sha256"`
+	CMDHash     string            `json:"cmd_sha256"`
+	Version     string            `json:"mugenversion"`
 	ExtraHashes map[string]string `json:"extra_sha256"`
 	Captures    []struct{ Variables map[string]float64 }
 	Audio       struct {
@@ -34,6 +37,7 @@ type audioReferenceCase struct {
 		} `json:"segments"`
 		Checks           []struct{ Tick, Segment, WindowTicks int } `json:"checks"`
 		MissingResources int                                        `json:"missing_resources"`
+		InitialGameTime  int32                                      `json:"initial_gametime"`
 	} `json:"audio"`
 }
 
@@ -72,7 +76,7 @@ func audioLevels(data []byte, rate int, frequencies []float64) map[string][2]flo
 
 func TestNativeSoundControllerPCM(t *testing.T) {
 	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio", "contact-sound", "guard-sound", "override-sound", "contact-sound-close", "contact-sound-common", "contact-sound-default", "guard-sound-default", "contact-sound-common-single", "contact-sound-retained", "ko-sound", "ko-sound-echo", "ko-sound-suppressed", "ko-sound-initial-suppressed",
-		"superpause-sound-own", "superpause-sound-common", "superpause-sound-common-single"} {
+		"superpause-sound-own", "superpause-sound-common", "superpause-sound-common-single", "helperaudio-ordinary", "helperaudio-recursive"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")
@@ -87,6 +91,9 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 				t.Run(caseName, func(t *testing.T) {
 					source := checkedAudioInput(t, stem+".cns", reference.CNSHash)
 					frames := checkedAudioInput(t, stem+".air", reference.AIRHash)
+					if reference.CMDHash != "" {
+						checkedAudioInput(t, stem+".cmd", reference.CMDHash)
+					}
 					bankData := checkedAudioInput(t, stem+".extra/probe.snd", reference.ExtraHashes["probe.snd"])
 					bank, err := snd.Parse(bytes.NewReader(bankData))
 					if err != nil {
@@ -105,6 +112,7 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 						t.Fatal(err)
 					}
 					file.Data.Life = 1000
+					file.SetLanguageVersion(reference.Version)
 					actions, err := air.Parse(bytes.NewReader(frames))
 					if err != nil {
 						t.Fatal(err)
@@ -119,10 +127,12 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 						t.Fatal(err)
 					}
 					queue := &sound.Queue{}
+					timeline := &engine.Timeline{GameTime: reference.Audio.InitialGameTime}
 					players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 					for slot, c := range players {
 						c.GameCoord = coord.Space{Width: settings["GameWidth"], Height: settings["GameHeight"]}
 						c.BindSound(queue, bank, common)
+						c.BindTimeline(timeline)
 						c.InputSlot, c.Facing, c.X = slot+1, 1, -70
 						if slot == 1 {
 							c.Facing, c.X = -1, 70

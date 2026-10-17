@@ -1,5 +1,10 @@
 # Helper retirement and orphaned effects
 
+M4al adds native sound lifetime controls: numbered helper channels remain
+independent and voices survive ordinary/recursive DestroySelf. See AUDIO.md.
+This supersedes that narrow open item in the M4ak record below; full sound
+lifecycle/capacity/round/pause combinations remain open.
+
 M4ak compares fourteen helperretire programs: 288 numeric observations, two
 intentional load rejections and 56 authored CNS/AIR/CMD/stage hashes. The native
 engine, source and recipe are pinned by each JSON. Diagnostic authors/runners

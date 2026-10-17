@@ -6,8 +6,16 @@ channel-0 interruption. M4o adds root KO voices/echoes; complete KO lifecycle an
 thread-safe signed-16 stereo PCM reader. Character sound controllers now compile
 typed tuples/parameters and emit commands; source banks remain immutable CPU
 assets. Helpers/projectiles receive independent audio owners on the shared
-queue, separate from their currently conflated gameplay/input IDs. Full entity
+queue, independently of gameplay entity/input IDs. Full entity
 ownership and lifecycle behavior remains a separate obligation.
+
+M4al adds two helperaudio controls for ordinary/recursive destruction. Root,
+parent helper and descendant coexist on channel 1 at 441/882/1323 Hz. Their
+numbered channels are independent. DestroySelf retires entity IDs but leaves
+their sounds playing; root StopSnd channel 1 removes only the root tone. Go
+already retained the measured voices, so this checkpoint adds conformance
+evidence rather than a sound cleanup change. See RETIREMENT.md for the entity
+side. Complete sound lifecycle/capacity/pause/round behavior remains open.
 
 Native audio is captured through a task-owned PulseAudio 16.1 server with only
 a null sink and an authenticated Unix socket under `temp/audio-reference/`.
@@ -176,3 +184,51 @@ contain overlapping Go HUD output and are diagnostic only. A fresh isolated
 superpause-sound-replay matches. Existing eight-unit/.35-second tolerances apply.
 The shared mixer continues streaming while simulation pauses. See SUPERPAUSE.md
 for clock/combat/effect evidence and remaining schema/ownership limits.
+
+## Helper channel ownership and retirement (M4al)
+
+helperaudio-ordinary/recursive use original 441/882/1323 Hz tones for the root,
+parent helper and nested descendant, all on channel 1. Parent DestroySelf at
+Time=120 removes one or both helpers; root StopSnd channel 1 at Time=240 removes
+only the 441 Hz voice. Native helper tones continue across both retirement
+variants, including after their IDs vanish. Parent/child numbered channels are
+independent of each other and the root. This is focused lifetime evidence;
+capacity/stealing, pause, borrowed-state banks, round/exit and remaining helper
+sound behavior still need their full controls.
+
+The programs add 24 numeric observations and eight PCM windows (48 stereo tone
+amplitudes). Tick 30 precedes destruction, 150 follows it, and 270/300 follow
+root StopSnd. Native plateaus are approximately 4530.2/3436.3 per audible tone,
+within the existing eight signed-16-unit tolerance. Both initial recordings and
+fresh replays match. Closing silence caused by terminating the native process
+is retained in raw evidence, but is not an in-game stop event or a Go tick check.
+The numeric packet includes GameTime=430 at root Time=300. State-only PCM replay
+starts its timeline at 130, the independently pinned Match control boundary.
+
+The PCM runner now checks authored CMD hashes and the recorded language version,
+and explicitly shares the timeline. All 29 listed programs/30 cases pass race
+comparison in temp/m4al-pcm-first-race.log, including all older sound cases.
+Production already keeps these voices; only a retirement comment and reference/
+test coverage change. The last full scoped suite is M4ak's m4ak-full-race.log,
+with the final renderer's additional m4ak-system-final-race.log.
+
+Actual device/window evidence: temp/app-runs/helperaudio-recursive-go/ captures
+3/5/7/9 seconds at 1280x960 on the private display/audio server. All four PNG
+hash/dimension/nonblack and runtime-log checks pass. PCM has 446,321 stereo
+frames, peak 11,307 and RMS 3836.95. Tone measurements match native plateaus to
+the reported decimal: all three before root StopSnd, then only helper tones.
+The S16 stream and measurements remain under temp; no desktop audio is recorded.
+This verifies the production device path, not arbitrary waveform/latency parity.
+
+Replay with the private PULSE_SERVER/PULSE_COOKIE and display environment:
+
+```
+python3 game/mugen/tests/sound_probe.py --fixture helperaudio-ordinary --name UNIQUE_NAME --seconds 9
+python3 game/mugen/tests/sound_probe.py --fixture helperaudio-recursive --name UNIQUE_NAME_2 --seconds 9
+```
+
+Each JSON pins the quiet-HUD recipe, configuration, executable, CNS/AIR/CMD and
+synthetic SND inputs. Recreate probe.snd with tests/generate_sound_bank.py; its
+SHA-256 is 58b6beecae0ad5b26566d89fee1fc53ef1b0f0e9cc453b8f81899ee55d41b543.
+The first rejected empty-state diagnostic is only in temp/reference-runs/;
+the corrected recordings use helperaudio-*-native-final and replays use *-replay.

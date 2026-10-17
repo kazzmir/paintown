@@ -7,6 +7,14 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4al adds native helper sound ownership controls: two programs, 24 numeric
+observations and eight PCM tick checks (48 stereo tone amplitudes). Root/parent/
+descendant voices coexist on channel 1. Both ordinary and recursive DestroySelf
+retire entities while their sounds continue; root channel-1 StopSnd removes only
+the root voice. Existing production behavior matches, so no stop-on-retirement
+change is introduced. All 29 PCM programs/30 cases pass race comparison in
+temp/m4al-pcm-first-race.log; both fresh native replays pass. See AUDIO.md.
+
 M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
 Explod clocks. Fourteen native programs compare 288 numbers, two load
 rejections and 56 authored input hashes. Nonrecursive descendants retain parent

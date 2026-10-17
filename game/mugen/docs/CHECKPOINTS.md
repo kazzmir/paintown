@@ -4,6 +4,34 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4al — Native helper sound ownership and retirement evidence
+
+M4al adds native helper sound ownership controls: two programs, 24 numeric
+observations and eight PCM tick checks (48 stereo tone amplitudes). Root/parent/
+descendant voices coexist on channel 1. Both ordinary and recursive DestroySelf
+retire entities while their sounds continue; root channel-1 StopSnd removes only
+the root voice. Existing production behavior matches, so no stop-on-retirement
+change is introduced. All 29 PCM programs/30 cases pass race comparison in
+temp/m4al-pcm-first-race.log; both fresh native replays pass. See AUDIO.md.
+
+The numeric packet pins retirement/counts and GameTime=430 at Time=300. The
+state-only runner starts at the previously established control boundary 130,
+checks CMD hashes/language versions and shares a timeline. PCM windows precede/
+follow retirement and root StopSnd; capture-shutdown silence is excluded from
+semantic checks. Tone generation and the quiet-HUD recipe are reproducible.
+
+The real Go device path at temp/app-runs/helperaudio-recursive-go/ produces
+native-equivalent tone plateaus before/after retirement. Four 1280x960 windows
+at 3/5/7/9 seconds pass hashes/dimensions/nonblack/log checks; PCM peak is 11,307,
+RMS 3836.95. Raw PCM and tone measurements remain task-private under temp.
+Full scoped tests last passed at M4ak; only a production comment, test harness,
+authored fixtures and documentation change here, with all PCM cases rerun.
+
+Still open: native binding publication, helper/projectile combat, sound capacity/
+stealing/round/pause/foreign banks and other engine/asset/mode gates. No full
+sound/helper controller claim. Root modules remain unchanged; synthetic tones
+are original data, and no reference art/binary is added. Reversal: f8e2176b.
+
 ## M4ak — Helper retirement, parent snapshots and orphan Explod clocks
 
 Fourteen helperretire programs compare 288 numbers, two intentional load
