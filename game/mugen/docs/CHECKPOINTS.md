@@ -4,6 +4,37 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4t — Landing resumption, physics order and shared tick budget
+
+Eighteen native programs pin 336 numeric observations and one runaway rejection.
+Movement precedes Physics A acceleration and S/C friction. Ground contact enters
+52 without clamping position or zeroing velocity, including MoveType H, and runs
+Time=0 CNS/physics again immediately. Negative passes and final time/animation
+clocks run once per tick. PosFreeze stops movement while acceleration continues.
+State 105 remains exempt from automatic Physics A landing. See PHYSICS.md for
+the exact values, custom-state probes and limits.
+
+The shared StatePassBudget now counts CNS transitions across engine/landing
+resumes; engine entries and terminal passes do not consume it. Native completes
+2510 successive engine landings in one tick, beyond the CNS loop budget. A chain
+near the CNS limit can land/resume successfully; its additional transition
+fails at pending state 706, matching both production and a headless budget test.
+
+Native custom states 40/50/51/52/100/105 with Physics N retain their authored
+states and clocks. Removed Go's forced jump/down/landing/run exits; common CNS
+owns those transitions. The production mixed KFM/KFM720 input test now requires
+both characters to jump, reach 52 and return to controlled idle on the ground.
+
+Full scoped races and pure engine races pass. Fresh frozen-landing and shared-
+budget overflow replays match. The first full race run exposed missing geometry
+getters in the new headless test host; those were supplied, and final races pass.
+The first transition capture requested a page past the 40-fvar bank; corrected
+fixtures use page 28. Root module files remain unchanged. M4s's reversal point
+is commit `697fd8e1`. Full world/body/physics/pause and ownership semantics remain
+open; no complete state-machine or combat claim is made.
+Actual 1280x720 mixed-stock windows were inspected at physics-stock-match/;
+their idle scene/timer smoke is distinct from the injected jump test.
+
 ## M4s — Native state continuation limit and pending-state diagnostics
 
 Fifteen native programs pin seven accepted packets (84 integer values) and

@@ -76,6 +76,29 @@ calls have separate budgets. Native landing/physics phase probes and shared
 budget integration remain necessary; this checkpoint is limited to each
 positive chain and its negative-state launch behavior.
 
+## M4t physics and resumed state execution
+
+Eighteen programs pin 336 numbers and one native runtime error. Landing simple/
+transition/hit/frozen cases establish immediate 52 CNS, retained velocity and
+overshoot, resumed movement and one final clock update. Physics standing/
+crouching establishes position integration before friction; backhop and Physics
+N probes distinguish state 105 and ordinary state 50. Six custom-state cases
+show that 40/50/51/52/100/105 retain their scripted state through Time=5. See
+PHYSICS.md for the values and limits.
+
+Landing-budget and its overflow variant establish that the CNS counter is
+retained after engine landing: terminal 705 succeeds, while the extra transition
+fails at pending 706. Repeated engine-entry programs finish after 3 and 2510
+landings in one fixture tick, so engine entries do not consume the CNS counter.
+The shared Go budget now preserves this distinction. Fresh frozen-landing and
+budget-overflow replays match their pinned packets/error.
+
+The initial landing-transition capture request exceeded the 40-fvar bank and
+was rejected by the harness before launch; final source/captures use page 28.
+Focused early observations suggested clamping, but the frozen case disproved
+that: movement-before-acceleration explains the normal Y=0 and overshoot cases.
+No clamp or velocity reset is applied by the engine landing path.
+
 ## Wine startup, 2026-10-16
 
 Environment: Wine 9.0, a private Win32 prefix at `temp/wine-reference`, and a

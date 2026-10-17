@@ -25,9 +25,11 @@ The former ten-state cap is replaced by the beta's measured 2500-loop guard.
 Its post-increment greater-than check allows 2502 positive state executions if
 the last terminates; a further continuation fails and names the pending state.
 Fifteen native programs cover self/alternating chains, terminal boundaries and
-negative-state launches. Headless and production Character tests agree. The
-budget across separate engine/physics continuations still needs integration and
-reference tests; this is the positive-chain boundary, not complete tick parity.
+negative-state launches. Headless and production Character tests agree. M4t adds
+an explicit StatePassBudget shared by CNS and engine/physics resumes in a tick.
+It counts CNS transitions; negative/engine entries and terminal passes do not
+consume it. Native landing budget/overflow and 2510 repeated engine entries back
+that distinction. World/pause/ownership scheduling remains incomplete.
 
 State entry now has a single explicit EnterState path. Entry expressions compile
 once and evaluate on entry, with omission/U semantics and combat persistence.

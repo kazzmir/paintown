@@ -380,13 +380,22 @@ across separate physics/engine resumes and landing phases remain open. Current
 finishTick enters 52 after movement without executing Time=0 CNS that tick;
 compare native landing next, including shared continuation budget.
 
+M4s is commit `697fd8e1`. M4t fixes native movement-before-forces, immediate
+landing CNS/physics resumption with retained Y/VY, state-105 exemption and CNS
+budget sharing across engine resumes. Eighteen programs pin 336 values and one
+overflow. Engine landings do not consume the CNS counter; native accepts 2510
+of them in one tick. Custom 40/50/51/52/100/105 retain their CNS-owned exits, so
+Go's forced exits are removed. Full races, pure engine races, frozen/budget
+replays and actual mixed stock jump/landing recovery pass. See PHYSICS.md.
+Other builtin recovery/trip/KO/auto-turn/input rules, full phase/body/pause and
+world ownership still need native comparison. No full M2/M4 gate is claimed.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next compare native landing/physics state resumption and shared tick budgets,
-then continue complete
+Next continue native builtin-state/recovery rules and complete
 HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated.

@@ -34,6 +34,7 @@ type Character struct {
 	contactSerial     uint64
 	tickContactSerial uint64
 	stateSerial       uint64
+	statePassBudget   engine.StatePassBudget
 	RuntimeWarnings   []string
 	warningSeen       map[string]bool
 
@@ -399,7 +400,8 @@ func (c *Character) runStateTick() bool {
 	// -3, then -2, then -1, then current state level.
 
 	// Paused passes still evaluate controllers with ignorehitpause.
-	if err := c.SM.RunStatePass(c.StateFile.States, c); err != nil {
+	c.statePassBudget = engine.StatePassBudget{}
+	if err := c.SM.RunStatePassWithBudget(c.StateFile.States, c, &c.statePassBudget); err != nil {
 		c.RuntimeError = fmt.Errorf("player %d: %w", c.PlayerID, err)
 	}
 	if c.RuntimeError != nil {
@@ -413,7 +415,7 @@ func (c *Character) runStateTick() bool {
 		c.HandleBuiltinTransitions()
 	}
 	if c.RuntimeError == nil && generation != c.stateSerial {
-		c.RuntimeError = c.SM.RunPositivePass(c.StateFile.States, c)
+		c.RuntimeError = c.SM.RunPositivePassWithBudget(c.StateFile.States, c, &c.statePassBudget)
 	}
 	if c.RuntimeError != nil {
 		c.updateActive = false
@@ -431,6 +433,77 @@ func (c *Character) finishTick() {
 
 	// 5. Physics and Time update
 	if !isPaused {
+		for {
+			if !c.PosFrozen {
+				// VelX is in CHARACTER-LOCAL space (positive = toward opponent).
+				// Multiply by Facing to get world-space displacement.
+				c.X += c.VelX * float64(c.Facing)
+				c.Y += c.VelY
+
+				// Clamp bounds
+				if c.X < c.LeftBound {
+					c.X = c.LeftBound
+				}
+				if c.X > c.RightBound {
+					c.X = c.RightBound
+				}
+
+				// Screen boundaries
+				if c.ScreenWidth > 0 {
+					edge := float64(c.ScreenWidth) / 2.0
+					if c.X < c.CameraX-edge {
+						c.X = c.CameraX - edge
+					}
+					if c.X > c.CameraX+edge {
+						c.X = c.CameraX + edge
+					}
+				}
+
+				// Push collision
+				c.ResolvePushCollision()
+
+				// Engine turning belongs to the common idle/crouch/walk states;
+				// custom states retain their facing. Preserve world momentum on flip.
+				if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Target) > 0 {
+					opponent := c.Target[0]
+					newFacing := c.Facing
+					opponentX, _ := c.PositionOf(opponent)
+					if opponentX > c.X {
+						newFacing = 1
+					} else if opponentX < c.X {
+						newFacing = -1
+					}
+					if newFacing != c.Facing {
+						c.Facing = newFacing
+						c.VelX = -c.VelX // Preserve absolute momentum across the flip
+					}
+				}
+			}
+
+			// Native integrates position before applying the physics forces.
+			c.ApplyFriction()
+			if strings.EqualFold(c.Physics, "A") || c.GravityActive {
+				yaccel := 0.44
+				if c.StateFile != nil {
+					yaccel = c.StateFile.Movement.YAccel
+				}
+				c.VelY += yaccel
+			}
+			if c.Y >= 0 && c.VelY >= 0 && strings.EqualFold(c.Physics, "A") && c.StateNo != 105 {
+				c.ChangeState(52, -1, -1)
+				if c.RuntimeError != nil {
+					return
+				}
+				c.RuntimeError = c.SM.RunPositivePassWithBudget(c.StateFile.States, c, &c.statePassBudget)
+				if c.RuntimeError != nil {
+					return
+				}
+				// Landing retains position/velocity and immediately resumes CNS and
+				// physics. Negative states and final clocks still run once per tick.
+				continue
+			}
+			break
+		}
 		c.Time++
 		if c.contactSerial == c.tickContactSerial {
 			if c.MoveHit > 0 {
@@ -444,72 +517,6 @@ func (c *Character) finishTick() {
 			}
 		}
 		c.UpdateAnimation()
-
-		// Apply friction
-		c.ApplyFriction()
-
-		// Apply gravity
-		if strings.ToUpper(c.Physics) == "A" || c.GravityActive {
-			yaccel := 0.44 // Default
-			if c.StateFile != nil {
-				yaccel = c.StateFile.Movement.YAccel
-			}
-			c.VelY += yaccel
-		}
-
-		if !c.PosFrozen {
-			// VelX is in CHARACTER-LOCAL space (positive = toward opponent).
-			// Multiply by Facing to get world-space displacement.
-			c.X += c.VelX * float64(c.Facing)
-			c.Y += c.VelY
-
-			// Clamp bounds
-			if c.X < c.LeftBound {
-				c.X = c.LeftBound
-			}
-			if c.X > c.RightBound {
-				c.X = c.RightBound
-			}
-
-			// Screen boundaries
-			if c.ScreenWidth > 0 {
-				edge := float64(c.ScreenWidth) / 2.0
-				if c.X < c.CameraX-edge {
-					c.X = c.CameraX - edge
-				}
-				if c.X > c.CameraX+edge {
-					c.X = c.CameraX + edge
-				}
-			}
-
-			// Push collision
-			c.ResolvePushCollision()
-
-			// Engine turning belongs to the common idle/crouch/walk states;
-			// custom states retain their facing. Preserve world momentum on flip.
-			if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Target) > 0 {
-				opponent := c.Target[0]
-				newFacing := c.Facing
-				opponentX, _ := c.PositionOf(opponent)
-				if opponentX > c.X {
-					newFacing = 1
-				} else if opponentX < c.X {
-					newFacing = -1
-				}
-				if newFacing != c.Facing {
-					c.Facing = newFacing
-					c.VelX = -c.VelX // Preserve absolute momentum across the flip
-				}
-			}
-		}
-
-		// Standard MUGEN Grounding
-		// Standard MUGEN Grounding: Only for normal movement (Jump)
-		if c.Y >= 0 && c.VelY >= 0 && strings.ToUpper(c.Physics) == "A" && c.MoveType != "H" {
-			c.Y = 0
-			c.VelY = 0
-			c.ChangeState(52, -1, -1)
-		}
 	}
 
 	// 6. Update Helpers, Projectiles, Explods
@@ -1416,23 +1423,8 @@ func (c *Character) HandleBuiltinTransitions() {
 		}
 	}
 
-	// Jumping Sequence (Phase 10)
-	if c.StateNo == 40 && c.GetAnimTime() == 0 {
-		c.ChangeState(50, -1, -1)
-		return
-	}
-	if c.StateNo == 50 && c.VelY > 0 {
-		c.ChangeState(51, -1, -1)
-		return
-	}
-	if (c.StateNo == 50 || c.StateNo == 51) && c.Y >= 0 && c.VelY >= 0 {
-		c.ChangeState(52, -1, -1)
-		return
-	}
-	if c.StateNo == 52 && (c.GetAnimTime() == 0 || c.Time >= 3) {
-		c.ChangeState(0, -1, -1)
-		return
-	}
+	// Jump and landing controllers belong to the character/common CNS. Physics
+	// A supplies the automatic landing entry independently of the state number.
 
 	// Guarding Transitions (States 120-132)
 	if c.Ctrl && !c.Specials["noguard"] && c.GetInGuardDist() && c.Command("holdback") {
@@ -1521,16 +1513,8 @@ func (c *Character) HandleBuiltinTransitions() {
 		}
 	}
 
-	// State-specific maintenance (System)
-	if c.StateNo == 100 { // RUN_FWD
-		if !c.Command("holdfwd") {
-			c.ChangeState(0, -1, -1)
-		}
-	} else if c.StateNo == 105 { // RUN_BACK
-		if !c.Command("holdback") {
-			c.ChangeState(0, -1, -1)
-		}
-	}
+	// Run/backhop exits are authored by CNS as well; state 105 is exempt from
+	// automatic Physics A landing so its own controller can select state 106.
 
 	// Air Jump Bookkeeping (State 45)
 	if c.StateNo == 45 && c.Time == 0 {

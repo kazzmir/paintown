@@ -243,6 +243,14 @@ pure/full races and fresh success/failure replays cover the positive-chain
 boundary. Physics/engine resumptions sharing a tick budget and complete phase/
 ownership/pause behavior remain open. See REFERENCE.md and engine/README.md.
 
+M4t adds same-tick landing CNS/physics resumption, movement-before-forces order,
+retained landing vectors/overshoot, state-105 exemption and a CNS transition
+budget shared across engine resumes. Eighteen native programs pin 336 numbers
+and one overflow; custom movement states retain their CNS-owned exits. Full/
+headless races, frozen/budget replays and mixed stock jump/landing recovery pass.
+Complete phase/body/pause/entity and ownership behavior remains open; see
+PHYSICS.md for the verified scope.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

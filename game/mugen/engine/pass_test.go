@@ -140,6 +140,10 @@ func TestStatePassRunawayAndMissingState(t *testing.T) {
 
 type chainHost struct{ *passHost }
 
+func (h *chainHost) GetPos() (float64, float64) { return 0, 0 }
+func (h *chainHost) GetVel() (float64, float64) { return h.x, h.y }
+func (h *chainHost) GetStateType() string       { return h.stateType }
+
 func (h *chainHost) LookupIdentifier(name string) (evaluator.Value, bool) {
 	switch name {
 	case "roundstate":
@@ -178,6 +182,33 @@ func TestNativeStateChainBoundariesWithoutDisplay(t *testing.T) {
 				t.Fatal(err)
 			}
 			compareReferenceVariables(t, name, h.vars)
+		})
+	}
+}
+
+func TestNativeBudgetContinuesAcrossEngineLandingEntry(t *testing.T) {
+	for _, name := range []string{"landing-budget", "landing-budget-overflow"} {
+		t.Run(name, func(t *testing.T) {
+			h := &chainHost{referencePassHost(t, name)}
+			h.ctrl = true
+			budget := &StatePassBudget{}
+			if err := h.sm.RunStatePassWithBudget(h.states, h, budget); err != nil {
+				t.Fatal(err)
+			}
+			if h.state != 702 {
+				t.Fatal("pre-landing chain did not reach 702")
+			}
+			if err := h.Transition(52, EntryOverrides{}, false); err != nil {
+				t.Fatal(err)
+			}
+			err := h.sm.RunPositivePassWithBudget(h.states, h, budget)
+			if name == "landing-budget-overflow" {
+				if err == nil || !strings.Contains(err.Error(), "stopped after 2500 loops): 706") {
+					t.Fatal("native shared-budget overflow differs", err)
+				}
+			} else if err != nil || h.state != 705 {
+				t.Fatal("native terminal continuation rejected", h.state, err)
+			}
 		})
 	}
 }

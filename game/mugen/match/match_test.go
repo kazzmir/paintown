@@ -149,3 +149,34 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 	}
 	t.Fatalf("logical walk/punch/hit/recovery incomplete: attack=%v hit=%v life=%d state=%d ctrl=%v", sawAttack, sawHit, m.Players[1].Character.Life, m.Players[1].Character.StateNo, m.Players[1].Character.Ctrl)
 }
+
+func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
+	m := stockMatch(t, 99)
+	advanceUntil(t, m, Active, 600)
+	frame := 0
+	for _, p := range m.Players {
+		p.Character.InputSource = func(int, int) []string {
+			if frame < 5 {
+				return []string{"DirUp"}
+			}
+			return nil
+		}
+	}
+	var airborne, landing [2]bool
+	for ; frame < 180; frame++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		for slot, p := range m.Players {
+			c := p.Character
+			airborne[slot] = airborne[slot] || c.Y < 0 && c.StateType == "A"
+			landing[slot] = landing[slot] || c.StateNo == 52
+		}
+	}
+	for slot, p := range m.Players {
+		c := p.Character
+		if !airborne[slot] || !landing[slot] || c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelY != 0 {
+			t.Fatalf("player %d jump/landing incomplete: airborne=%v landing=%v state=%d ctrl=%v y=%v vy=%v", slot+1, airborne[slot], landing[slot], c.StateNo, c.Ctrl, c.Y, c.VelY)
+		}
+	}
+}
