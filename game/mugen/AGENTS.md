@@ -8,10 +8,12 @@ validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
 The user pushed the README checkpoint and resumed bounded implementation.
-M4be refreshes the ledger and completes the bounded HitDef pause-expression
-allocation; all validation passes. Finish its local checkpoint, then perform
-the user's explicitly requested binary/Git-history reconciliation as a separate
-task. Do not begin another feature family without a new allocation. Read `README.md`,
+M4be is committed as f27496f9 with all validation passing. The user clarified
+that the extensionless Bash launcher caused the binary concern and requested
+renaming it to mugen.sh. Complete that source/ignore documentation checkpoint,
+then fetch and integrate the configured upstream change as explicitly requested.
+Preserve local checkpoint history; do not push or start another feature family.
+Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 
 ## Scope
@@ -22,7 +24,7 @@ compatibility evidence, and handoffs in `docs/`.
 
 The user explicitly prohibits adding binaries to the repository. Commit source,
 text fixtures and documentation only; keep compiled executables, generated
-binary artifacts and reference resources in ignored `temp/`. The tracked `mugen`
+binary artifacts and reference resources in ignored `temp/`. The tracked `mugen.sh`
 file is a text Bash launcher. Existing binary test resources are historical;
 do not add more binary files. Verify staged content before each local commit.
 

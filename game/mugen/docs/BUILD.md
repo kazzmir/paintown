@@ -1,6 +1,6 @@
 # Build and font dependencies
 
-Use `game/mugen/mugen --check` or `game/mugen/mugen --game`. The launcher uses
+Use `game/mugen/mugen.sh --check` or `game/mugen/mugen.sh --game`. The launcher uses
 the repository module with alternate metadata at `game/mugen/mugen.mod` and
 `mugen.sum`, via Go's `-modfile` option. Both metadata files remain inside the
 approved project boundary; root `go.mod` and `go.sum` are unchanged. This is not
@@ -18,7 +18,7 @@ Character packages still import Ebitengine and need DISPLAY even for CPU tests;
 the engine/evaluator/SFF/parser core is display independent.
 
 The growing native fixture corpus takes about nine minutes for a full Match
-race run. Use `game/mugen/mugen --check -race -timeout=20m` for full race
+race run. Use `game/mugen/mugen.sh --check -race -timeout=20m` for full race
 validation so Go's default ten-minute package deadline does not become a false
 failure as coverage grows.
 
@@ -69,7 +69,7 @@ game/mugen/temp/virtual-display/root/usr/bin/Xvfb :97 -screen 0 1280x960x24 -nol
 While that task-owned server runs, checks and probes use:
 
 ```
-DISPLAY=:97 XAUTHORITY=/home/juvinious/projects/paintown/game/mugen/temp/virtual-display/Xauthority LIBGL_ALWAYS_SOFTWARE=1 GOPROXY=off game/mugen/mugen --check -race
+DISPLAY=:97 XAUTHORITY=/home/juvinious/projects/paintown/game/mugen/temp/virtual-display/Xauthority LIBGL_ALWAYS_SOFTWARE=1 GOPROXY=off game/mugen/mugen.sh --check -race
 ```
 
 The same environment can prefix reference_probe.py or app_smoke.py. Captures

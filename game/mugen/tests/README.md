@@ -1,6 +1,6 @@
 # Tests and reference fixtures
 
-From any working directory, run `game/mugen/mugen --check` using the launcher's
+From any working directory, run `game/mugen/mugen.sh --check` using the launcher's
 absolute path if needed. It keeps build/test temporary files under
 `game/mugen/temp/` and prevents changes to the root Go module.
 It uses scoped `mugen.mod`/`mugen.sum`; direct Go commands need
@@ -14,7 +14,7 @@ committing the distribution itself. No test reads the old `data-new/` tree.
 
 The `physics_check`, `character`, `stage`, `air_player`, `snd_player`, and
 `fetch-all-data` directories are executable diagnostic applications. Launch one
-with `game/mugen/mugen --test NAME`; pass its `--data-dir` explicitly when needed.
+with `game/mugen/mugen.sh --test NAME`; pass its `--data-dir` explicitly when needed.
 Their output is not a substitute for semantic assertions.
 
 Pure parser/evaluator tests can run without DISPLAY. Packages importing
@@ -31,7 +31,7 @@ committed; Elecbyte art remains untracked.
 Run headless language fixtures with:
 
 ```
-game/mugen/mugen --test expressions --input game/mugen/tests/testdata/expressions.jsonl
+game/mugen/mugen.sh --test expressions --input game/mugen/tests/testdata/expressions.jsonl
 ```
 
 Each JSONL fixture has a name, initial state time, and ordered expression steps
@@ -64,7 +64,7 @@ catalogue; the one reference-rejected name is an explicit unavailable slot.
 The exact glyph reader accepts signed decimals/exponents, preserving nine-digit
 float32 round trips. Kind assertions follow the documentation's declarations.
 
-Build the optional error reader with `game/mugen/mugen --reference-tools`.
+Build the optional error reader with `game/mugen/mugen.sh --reference-tools`.
 It reads only the reference MUGEN error dialog inside the private Wine prefix,
 without input/clipboard/focus operations. The runner uses it to record and check
 expected load rejections. For example, `--fixture constant-unavailable --pages 0

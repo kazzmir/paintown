@@ -4,6 +4,18 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## Launcher source clarification
+
+After M4be (`f27496f9`), the user requested reconciling an apparent added binary.
+The history audit checked4,134 unique MUGEN blobs across local refs, finding no
+ELF/PE/Mach-O executable. All five revisions of the extensionless launcher were
+Bash source. The user requested the clearer `mugen.sh` name; active build/run
+instructions now use it. Historical command receipts below retain the old path.
+The user's ignore entry is preserved alongside explicit compiled-output guards.
+Bash syntax/help, expression fixtures and focused stock/production-flow checks
+pass. No Go runtime or compiled binary is added. The user also requested
+configured upstream integration after this separate rename checkpoint.
+
 ## M4be — Compiled HitDef contact pauses and current coverage ledger
 
 M4be adds pausetime/guard.pausetime expressions, repeated source defaults,

@@ -1,2 +1,8 @@
 /temp/
 /unresolved.log
+mugen
+
+# Compiled game and test outputs belong under temp/.
+/mugen-go
+*.exe
+*.test

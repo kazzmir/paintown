@@ -2,8 +2,10 @@
 
 Updated 2026-10-17. The user pushed the README checkpoint and resumed the bounded
 workflow. M4be refreshes the current behavior ledger and implements two HitDef
-pause keys. Validation has passed. **Commit M4be, then reconcile the binary/Git
-history concern as the user explicitly requested; no further feature batch.**
+pause keys. Validation passed and M4be is committed as `f27496f9`. The user
+identified the extensionless launcher as the binary concern and requested
+renaming it to mugen.sh, then integrating an upstream change. **Finish the rename
+checkpoint, fetch/merge configured upstream, then stop; no new feature batch.**
 Historical continuous-iteration instructions below do
 not override that boundary. Never push. All authored changes stay under
 `game/mugen/`. Read [../AGENTS.md](../AGENTS.md), [COVERAGE.md](COVERAGE.md),
@@ -36,7 +38,7 @@ Character11.118s, System4.730s, stock tests6.567s. No test/native/app GUI client
 remains. Root module and original native executable integrity checks pass.
 
 Latest user steering: do not add binaries to Git. Audited all tracked MUGEN
-files: none is an ELF/PE compiled executable; `game/mugen/mugen` is the Bash
+files: none is an ELF/PE compiled executable; `game/mugen/mugen.sh` is the Bash
 launcher. The compiled executable is ignored under temp/bin/. The user added
 `mugen` to .gitignore during this run; that edit is preserved alongside explicit
 compiled-output ignore rules. All M4be additions are text; do not add new binary
@@ -51,11 +53,32 @@ stage/HUD intact, no persistent effects. These are smoke/provenance observations
 not full-frame parity. The first audit script assumed kfm720.snd; it was fixed
 to the actual stock kfm720/kfm.snd before the final audit. No runtime/data change.
 
-Next: commit the verified M4be allocation, then handle binary reconciliation in
-a separate step. Do not stage .gitignore with M4be: its pending ignore edits
-belong to that follow-up. Existing six alpha/two spark raster failures
+The feature checkpoint is `f27496f9`. Its source/text-only audit passed before
+commit; .gitignore was deliberately left for the separately requested follow-up.
+Existing six alpha/two spark raster failures
 stay unwaived. Other timing/fall/round-clock/renderer/mode work is outside this
 allocation. No remote push or new feature batch.
+
+## Launcher reconciliation and upstream integration
+
+The historical audit checked4,134 unique Git blobs under game/mugen across all
+local refs: no ELF/PE/Mach-O executable found, no blob over1MiB. The launcher
+has five recorded revisions, all Bash, from05fbb2aa37 through d972c8d1. The user
+accepted that clarification and requested the .sh extension. No history rewrite
+is needed. Evidence: temp/committed-executable-audit.json.
+
+Launcher is renamed to mugen.sh with active README/build/match/test/environment
+commands updated. Historical checkpoint command receipts retain the prior path.
+The user's `mugen` ignore entry is preserved; explicit mugen-go/*.exe/*.test
+ignore rules keep build outputs out. Bash syntax/help and the expression runner
+pass. Focused renamed-launcher stock/production-flow checks also pass in
+temp/launcher-rename-flow.log. No Go runtime changed.
+
+Then fetch and merge origin/go-rewrite-mugen after the rename commit. The
+currently visible upstream commit is3d638348 (one-line sound diagnostic change);
+fetch may reveal newer work. User explicitly requested integration. Keep local
+checkpoints, preserve unrelated untracked files, inspect the incoming diff and
+run relevant checks. No remote push is authorized.
 
 ## Latest documentation checkpoint: project README
 
@@ -290,7 +313,7 @@ Use scoped builds with GOCACHE=.../game/mugen/temp/go-build,
 GOTMPDIR=.../game/mugen/temp/tmp,
 GOFLAGS='-modfile=/home/juvinious/projects/paintown/game/mugen/mugen.mod -mod=readonly',
 GOPROXY=off. Full suite uses private display/audio variables and
-`game/mugen/mugen --check -race -timeout=20m`; growing Match corpus needs the
+`game/mugen/mugen.sh --check -race -timeout=20m`; growing Match corpus needs the
 explicit timeout. Never save disposable Go snapshots with a .go extension under
 temp; recursive tests discover them even when gitignored. Root baseline is
 `temp/root-module.before-font.sha256`. Free space last checked75G.

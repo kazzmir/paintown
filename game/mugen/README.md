@@ -7,7 +7,7 @@ and asset compatibility remains in progress.
 
 ## Requirements and data
 
-- Go **1.24 or newer** and Bash for the launcher. Dependencies are pinned in
+- Go **1.24 or newer** and Bash for the [mugen.sh launcher](mugen.sh). Dependencies are pinned in
   [mugen.mod](mugen.mod) and [mugen.sum](mugen.sum).
 - A graphical desktop with working OpenGL and audio. Linux builds require a C
   toolchain, `pkg-config`, ALSA development files and X11 development libraries
@@ -30,13 +30,13 @@ Linux is the currently exercised development platform.
 Launch the title/menu and character/stage selection:
 
 ```bash
-game/mugen/mugen --game --data-dir game/mugen/temp/mugen-1.1b1
+game/mugen/mugen.sh --game --data-dir game/mugen/temp/mugen-1.1b1
 ```
 
 Start a two-player KFM versus KFM720 match immediately:
 
 ```bash
-game/mugen/mugen --game \
+game/mugen/mugen.sh --game \
   --data-dir game/mugen/temp/mugen-1.1b1 \
   --quick-match chars/kfm/kfm.def,chars/kfm720/kfm720.def \
   --stage stages/kfm.def
@@ -81,13 +81,13 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 
 ```bash
 # Build/test every MUGEN package against the stock reference corpus.
-game/mugen/mugen --check -timeout=20m
+game/mugen/mugen.sh --check -timeout=20m
 
 # Full race checks; the Match package alone currently takes about ten minutes.
-game/mugen/mugen --check -race -timeout=20m
+game/mugen/mugen.sh --check -race -timeout=20m
 
 # Focused stock character loading and state compilation.
-game/mugen/mugen --check -run '^TestStockPlayerLoadAndCompilationInventory$' -v
+game/mugen/mugen.sh --check -run '^TestStockPlayerLoadAndCompilationInventory$' -v
 ```
 
 Many tests require a display because Character/font/Match still import

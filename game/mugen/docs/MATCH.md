@@ -25,7 +25,7 @@ opponent policy through logical command inputs, not a reference-equivalent AI.
 A direct production match can be started with:
 
 ```
-GOPROXY=off game/mugen/mugen --game --data-dir game/mugen/temp/mugen-1.1b1 --quick-match chars/kfm/kfm.def,chars/kfm720/kfm720.def --stage stages/kfm.def
+GOPROXY=off game/mugen/mugen.sh --game --data-dir game/mugen/temp/mugen-1.1b1 --quick-match chars/kfm/kfm.def,chars/kfm720/kfm720.def --stage stages/kfm.def
 ```
 
 The Go runtime reads the reference resources; executable reference probes and
