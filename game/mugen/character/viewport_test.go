@@ -106,12 +106,12 @@ func runViewportReference(t *testing.T, stem string, reference viewportReference
 	localScale, _ := background.StageInfo.LocalCoord.ScaleTo(local)
 	for slot, c := range players {
 		c.LocalCoord, c.GameCoord, c.Viewport = local, space, view
-		c.PlayerID = slot + 1
+		c.InputSlot = slot + 1
 		c.X, c.Y, c.Facing = background.PlayerInfo.P1StartX*localScale, background.PlayerInfo.P1StartY*localScale, background.PlayerInfo.P1Facing
 		if slot == 1 {
 			c.X, c.Y, c.Facing = background.PlayerInfo.P2StartX*localScale, background.PlayerInfo.P2StartY*localScale, background.PlayerInfo.P2Facing
 		}
-		c.Target = []*Character{players[1-slot]}
+		c.Opponents = []*Character{players[1-slot]}
 		c.ChangeState(0, -1, -1)
 		c.Ctrl = true
 	}

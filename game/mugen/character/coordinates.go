@@ -27,10 +27,10 @@ func (c *Character) bodyWidths() (front, back float64) {
 // GetOpponentBodyDistance returns front-to-front horizontal distance in the
 // caller's facing and local coordinate space. Vertical distance is axis-based.
 func (c *Character) GetOpponentBodyDistance() (float64, float64) {
-	if len(c.Target) == 0 {
+	if len(c.Opponents) == 0 {
 		return 0, 0
 	}
-	other := c.Target[0]
+	other := c.Opponents[0]
 	x, y := c.PositionOf(other)
 	front, _ := c.bodyWidths()
 	otherFront, _ := other.bodyWidths()

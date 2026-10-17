@@ -123,11 +123,11 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 					for slot, c := range players {
 						c.GameCoord = coord.Space{Width: settings["GameWidth"], Height: settings["GameHeight"]}
 						c.BindSound(queue, bank, common)
-						c.PlayerID, c.Facing, c.X = slot+1, 1, -70
+						c.InputSlot, c.Facing, c.X = slot+1, 1, -70
 						if slot == 1 {
 							c.Facing, c.X = -1, 70
 						}
-						c.Target = []*Character{players[1-slot]}
+						c.Opponents = []*Character{players[1-slot]}
 						c.ChangeState(0, -1, -1)
 						c.Ctrl = true
 					}
@@ -267,7 +267,7 @@ func TestSoundBanksAndOwnerDoNotFollowInputSlot(t *testing.T) {
 	a.BindSound(queue, own, common)
 	b.BindSound(queue, own, common)
 	// Helpers may share a keyboard/player slot while owning independent voices.
-	a.PlayerID, b.PlayerID = 1, 1
+	a.InputSlot, b.InputSlot = 1, 1
 	if err := a.PlaySound(sound.PlayParameters{Group: 1, Channel: 0, VolumeScale: 100, Frequency: 1}); err != nil {
 		t.Fatal(err)
 	}

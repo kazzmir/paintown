@@ -17,14 +17,14 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		args []argument
 	}
 	var cues []cue
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
 		}
 		raw = strings.TrimSpace(raw)
 		own := false
-		resource := key != "sparkxy"
+		resource := key != "sparkxy" && key != "id"
 		if resource && len(raw) > 0 {
 			switch raw[0] {
 			case 'S', 's':
@@ -35,7 +35,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 		count := 2
-		if key == "sparkno" || key == "guard.sparkno" {
+		if key == "sparkno" || key == "guard.sparkno" || key == "id" {
 			count = 1
 		}
 		expressions, err := evaluator.ParseReferenceTupleForVersion(raw, count, ctrl.LanguageVersion)

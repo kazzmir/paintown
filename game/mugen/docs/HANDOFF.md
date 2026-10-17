@@ -443,6 +443,30 @@ zoom and full raster parity remain open. Next separate world/entity/input IDs,
 opponents/acquired targets and runtime redirection before complete combat
 ownership. Keep native/Go captures and Ebiten tests sequential on :97.
 
+M4w is commit `ca067064`. M4x separates InputSlot/EntityID/TeamSide/HelperID and
+Opponents/acquired targets. The match-owned registry supports live IDs and
+runtime parent/root/helper/enemy redirection/counts. Nine stable programs cover
+thirteen cases, 240 numbers and one VM rejection. Helper capacity clamps to
+4..56 and determines initial root IDs. Nested helpers share their root family;
+leaf DestroySelf aborts later controllers, retires the ID and does not reuse it.
+See ENTITIES.md for exact scope and remaining global scheduling/parameter work.
+
+M4x also corrects documentation-based bottom assumptions: measured operators
+consume integer zero, IfElse selects false for a bottom condition, and Cond
+preserves it. VarSet/Add and VelSet/Add zero boundaries match; bitwise NOT of
+bottom remains fatal with source context in the headless/production executor.
+Full races, pure engine/evaluator races and fresh capacity/nested/operator/fatal
+replays pass. The old JSONL logical-bottom expectation is superseded. BOTTOM.md
+records two unresolved native power programs returning layout-dependent values;
+they are not Go conformance goldens or included in the stable numeric count.
+
+Continue acquired-target/HitDef ID retention and Target controllers against
+native fixtures, then complete helper typed parameters/negative states/ownership
+and projectile/global phases. Registry round reset is authored-tested; native
+ID continuity across rounds still needs a trace. Complete menu/SystemFit, raster
+filtering, input, BGM and mode/asset/state gates remain open. No full compatibility
+or complete state machine claim is made.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with

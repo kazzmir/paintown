@@ -17,10 +17,11 @@ const (
 )
 
 type Value struct {
-	kind    Kind
-	integer int32
-	real    float32
-	text    string
+	kind         Kind
+	integer      int32
+	real         float32
+	text         string
+	runtimeError string
 }
 
 func Int(n int32) Value { return Value{kind: IntKind, integer: n} }
@@ -39,6 +40,12 @@ func Bool(b bool) Value {
 }
 func (v Value) Kind() Kind     { return v.kind }
 func (v Value) IsBottom() bool { return v.kind == BottomKind }
+func (v Value) RuntimeError() error {
+	if v.runtimeError == "" {
+		return nil
+	}
+	return fmt.Errorf("%s", v.runtimeError)
+}
 func (v Value) IsNumber() bool { return v.kind == IntKind || v.kind == FloatKind }
 func (v Value) Bool() bool     { return v.IsNumber() && v.Number() != 0 }
 func (v Value) Number() float64 {

@@ -4,6 +4,29 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4x — Entity IDs, helper families and native bottom boundaries
+
+Nine stable native programs cover thirteen cases: 240 numeric values and one
+runtime malformed-expression rejection. InputSlot/EntityID/TeamSide/HelperID
+and opponents/acquired targets are now distinct. The match-owned registry
+supports live ID/parent/root/helper/enemy queries, helper families and leaf
+retirement/non-reuse. HelperMax clamps to 4..56 and sets the initial root ID.
+See ENTITIES.md for exact observations and remaining scheduling/schema limits.
+
+The probes also disprove ordinary bottom propagation in the supplied beta:
+measured operators consume integer zero, IfElse treats a bottom condition as
+false, and Cond preserves it. VarSet/Add and VelSet/Add use their measured zero
+boundaries. Bitwise NOT of bottom remains a fatal VM error, shared by headless
+and production execution. See BOTTOM.md. Two exponentiation programs retain
+layout-dependent native results as unresolved evidence, outside stable goldens.
+
+Full scoped races and pure core races pass, with fresh root-limit/nested/operator/
+fatal replays. The first full run found the old JSONL propagation expectation;
+it is updated to native integer zero and final races pass. Round registry reset
+has authored coverage; native round continuity, full target/HitDef IDs, helper
+parameters/negative states, projectiles and global entity phases remain open.
+M4w's reversal point is `ca067064`. Root modules/reference/desktop are unchanged.
+
 ## M4w — Shared fight HUD projection and native stage cropping
 
 Ten native cases pin 240 numeric values and twenty original marker cores.

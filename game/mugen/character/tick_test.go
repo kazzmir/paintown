@@ -46,8 +46,8 @@ value=1
 	actions := &air.Data{Actions: map[int]*air.Action{0: {Elements: []air.Element{{Time: -1, Clsn1: []air.Box{box}, Clsn2: []air.Box{box}}}}}}
 	players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 	for slot, c := range players {
-		c.PlayerID = slot + 1
-		c.Target = []*Character{players[1-slot]}
+		c.InputSlot = slot + 1
+		c.Opponents = []*Character{players[1-slot]}
 		c.ChangeState(0, -1, -1)
 	}
 	if err := TickCharacters(players); err != nil {

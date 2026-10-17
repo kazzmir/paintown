@@ -284,3 +284,14 @@ All ten packets run through Character, and pure coord tests compare native
 projection boundaries with a one-pixel fractional core tolerance. Actual Go
 window inspections distinguish projection from the still-different filtered
 world edges; see COORDINATES.md. No full framebuffer claim follows from them.
+
+
+Identity cases use reference_probe.py --fixture identity-roots --case limit32
+--name UNIQUE, or identity-helper --case default. Single identity-helper-nested,
+identity-helper-retire, identity-bottom, identity-missing and bottom-operator
+programs use --mugenversion 1.1 --clipboard-in-cmd --bank fvar and their pinned
+pages. --helper-max changes only copied configuration and is restored by case
+replay. identity-bottom-bitnot is an expected runtime rejection. Full Character
+identity regressions and pure evaluator operator replay consume the stable
+source/hash packets. See ENTITIES.md and BOTTOM.md. The two identity-bottom-power
+programs are explicitly unresolved native behavior, not passing Go goldens.

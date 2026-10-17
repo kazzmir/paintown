@@ -181,7 +181,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	p := &Player{Dir: baseDir, DefPath: defPath, Definition: def, CMD: commandData,
 		LocalCoord: local,
-		Commands:   NewCommandBuffer(120), PlayerID: 1}
+		Commands:   NewCommandBuffer(120), InputSlot: 1}
 	spritePath, err := resolve("sprite")
 	if err != nil {
 		return nil, err

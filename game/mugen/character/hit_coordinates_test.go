@@ -194,8 +194,8 @@ func TestReferenceHitCoordinates(t *testing.T) {
 							c.X = -c.X
 							c.Facing = 1
 						}
-						c.PlayerID = slot + 1
-						c.Target = []*Character{players[1-slot]}
+						c.InputSlot = slot + 1
+						c.Opponents = []*Character{players[1-slot]}
 						c.ChangeState(0, -1, -1)
 						c.Ctrl = true
 					}

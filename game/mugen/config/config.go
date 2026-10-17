@@ -142,6 +142,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	cfg := &MugenConfig{}
 	cfg.Sound = DefaultSoundConfig()
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
+	cfg.Config.HelperMax = 56
 	cfg.Video.StageFit, cfg.Video.SystemFit, cfg.Video.KeepAspect = true, true, true
 	// Set some defaults
 	cfg.Config.GameSpeed = 60

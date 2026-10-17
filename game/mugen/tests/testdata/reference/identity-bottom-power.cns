@@ -1,0 +1,82 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=700
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, native invalid power 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=(1/0) ** 0
+[State 700, native invalid power 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=0 ** (1/0)
+[State 700, native invalid power 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=2
+[State 700, native invalid power 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=3
+[State 700, native invalid power 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=4
+[State 700, native invalid power 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=5
+[State 700, native invalid power 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=6
+[State 700, native invalid power 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=7
+[State 700, native invalid power 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=8
+[State 700, native invalid power 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=9
+[State 700, native invalid power 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=10
+[State 700, native invalid power 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=11

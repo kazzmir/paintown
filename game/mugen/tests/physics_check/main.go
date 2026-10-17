@@ -30,8 +30,8 @@ func main() {
 		log.Fatalf("failed to load p2: %v", err)
 	}
 
-	p2.Character.PlayerID = 2
-	p2.Character.Target = []*character.Character{p1.Character}
+	p2.Character.InputSlot = 2
+	p2.Character.Opponents = []*character.Character{p1.Character}
 	p2.Character.ChangeState(0, -1, -1)
 
 	fmt.Println("Starting Console Physics Test...")

@@ -163,23 +163,31 @@ func (sm *StateMachine) compileTriggers(ctrl *cns.StateController) (triggerProgr
 	return program, nil
 }
 
-func (p *triggerProgram) match(env Environment) bool {
+func (p *triggerProgram) match(env Environment) (bool, error) {
 	for _, expr := range p.all {
-		if !evaluator.EvaluateValue(expr, env).Bool() {
-			return false
+		value := evaluator.EvaluateValue(expr, env)
+		if value.RuntimeError() != nil {
+			return false, value.RuntimeError()
+		}
+		if !value.Bool() {
+			return false, nil
 		}
 	}
 	for _, group := range p.groups {
 		matched := true
 		for _, expr := range group {
-			if !evaluator.EvaluateValue(expr, env).Bool() {
+			value := evaluator.EvaluateValue(expr, env)
+			if value.RuntimeError() != nil {
+				return false, value.RuntimeError()
+			}
+			if !value.Bool() {
 				matched = false
 				break
 			}
 		}
 		if matched {
-			return true
+			return true, nil
 		}
 	}
-	return false
+	return false, nil
 }

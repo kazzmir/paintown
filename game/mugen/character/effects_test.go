@@ -80,13 +80,13 @@ func TestNativeSparkGeometryAndResourceSelection(t *testing.T) {
 			players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 			for slot, c := range players {
 				c.GameCoord = coord.Space{Width: 1280, Height: 720}
-				c.PlayerID, c.Facing, c.X = slot+1, 1, -70
+				c.InputSlot, c.Facing, c.X = slot+1, 1, -70
 				if slot == 1 {
 					c.Facing, c.X = -1, 70
 				}
 				c.Palettes = palette.New(ownArchive)
 				c.BindEffects(&scene.Queue, common)
-				c.Target = []*Character{players[1-slot]}
+				c.Opponents = []*Character{players[1-slot]}
 				c.ChangeState(0, -1, -1)
 				c.Ctrl = true
 			}

@@ -45,7 +45,7 @@ func TestNativePauseRootClocks(t *testing.T) {
 			}
 			players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 			for slot, c := range players {
-				c.PlayerID, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
+				c.InputSlot, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
 				c.ChangeState(0, -1, -1)
 				c.Ctrl = true
 			}

@@ -303,9 +303,9 @@ func (c *Character) updateCommands(isPaused bool) {
 	if c.Commands != nil && c.CmdFile != nil {
 		var physicalRaw []string
 		if c.InputSource != nil {
-			physicalRaw = c.InputSource(c.PlayerID, c.Facing)
+			physicalRaw = c.InputSource(c.InputSlot, c.Facing)
 		} else {
-			physicalRaw = GetRawInputs(c.PlayerID, c.Facing)
+			physicalRaw = GetRawInputs(c.InputSlot, c.Facing)
 		}
 		raw := make([]string, len(physicalRaw))
 		copy(raw, physicalRaw)

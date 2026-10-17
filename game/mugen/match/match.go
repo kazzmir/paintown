@@ -42,6 +42,7 @@ type Options struct {
 	MaxEffects                   int
 	SuperTargetDefenceMul        float64
 	StageCrop                    bool // false preserves the default StageFit=1
+	HelperMax                    int
 }
 
 type Phase int
@@ -74,6 +75,7 @@ type Match struct {
 	Effects                *effect.Scene
 	Viewport               *coord.Viewport
 	Timeline               *engine.Timeline
+	World                  *character.World
 	commonEffects          effect.Source
 	timeTicks              int
 	matchDone              bool
@@ -87,6 +89,11 @@ func New(request Request, options Options) (*Match, error) {
 		return nil, fmt.Errorf("invalid match time/life options")
 	}
 	m := &Match{Request: request, Options: options, Round: 1, Winner: -1, Timeline: &engine.Timeline{}}
+	helperMax := options.HelperMax
+	if helperMax == 0 {
+		helperMax = 56
+	}
+	m.World = character.NewWorld(helperMax)
 	if options.SuperTargetDefenceMul <= 0 {
 		options.SuperTargetDefenceMul = 1.5
 		m.Options = options
@@ -169,7 +176,7 @@ func (m *Match) resetRound() error {
 		c.SuperTargetDefenceMul = m.Options.SuperTargetDefenceMul
 		c.Palettes = palette.New(p.SFF)
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
-		c.PlayerID, p.PlayerID = slot+1, slot+1
+		c.InputSlot, p.InputSlot = slot+1, slot+1
 		c.PaletteNo, c.AILevel = m.Request.Players[slot].Palette, m.Request.Players[slot].AILevel
 		c.RoundNo, c.RoundsExisted, c.RoundState = m.Round, m.Round-1, 0
 		c.Ctrl = false
@@ -204,8 +211,10 @@ func (m *Match) resetRound() error {
 		c.TopBound, c.BotBound = s.PlayerInfo.TopBound*scale, s.PlayerInfo.BotBound*scale
 		p.Character = c
 	}
-	for slot, p := range m.Players {
-		p.Character.Target = []*character.Character{m.Players[1-slot].Character}
+	if err := m.World.ResetRoots(m.Players[0].Character, m.Players[1].Character); err != nil {
+		return err
+	}
+	for _, p := range m.Players {
 		p.Character.ChangeState(5900, -1, -1)
 		if p.Character.RuntimeError != nil {
 			return p.Character.RuntimeError

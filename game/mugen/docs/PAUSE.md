@@ -31,7 +31,7 @@ effect after the issuing frame, preserving its CNS/physics completion.
 
 Timeline advances GameTime once per outer tick; nested helper/projectile
 adapters share that frame. Movement allowance belongs to an identity distinct
-from PlayerID/input slots. Frozen roots skip CNS, local clocks, physics and timed
+from input slots and script EntityID. Frozen roots skip CNS, local clocks, physics and timed
 defence aging. M4v corrects the initial contact assumption: a frozen attack box
 can hit a moving defender, and a moving attacker can hit a frozen defender.
 Only pairs with both actors frozen skip collision. A frozen receiver enters

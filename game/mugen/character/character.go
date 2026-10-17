@@ -36,7 +36,8 @@ type Character struct {
 	HitDefActive          bool
 	stateSerial           uint64
 	statePassBudget       engine.StatePassBudget
-	hitTargets            map[*Character]uint64
+	hitTargets            map[*Character]hitTarget
+	targetOrder           []*Character
 	hitGeneration         uint64
 	superDefenceMul       float64
 	SuperTargetDefenceMul float64
@@ -95,8 +96,14 @@ type Character struct {
 	// Buffered commands for the current tick
 	ActiveCommands []string
 
-	// Player ID (1 or 2)
-	PlayerID int
+	// InputSlot selects a keyboard/controller; EntityID is script-visible ID.
+	InputSlot    int
+	EntityID     int32
+	TeamSide     int
+	HelperID     int
+	World        *World
+	destroyed    bool
+	isProjectile bool
 
 	// Attacker pause suppresses CNS/time; receiver shake does not.
 	ShakeTime    int
@@ -147,9 +154,9 @@ type Character struct {
 	CommonSounds      *snd.SoundBank
 
 	// Hierarchy
-	Parent *Character
-	Root   *Character
-	Target []*Character
+	Parent    *Character
+	Root      *Character
+	Opponents []*Character
 
 	// Stats
 	HitCount int
@@ -181,7 +188,7 @@ type Character struct {
 	MoveContact int
 	MoveGuarded int
 
-	// HitGuard tracks which targets (by PlayerID) have already been hit by the current HitDef
+	// HitGuard tracks world EntityIDs already hit by the current HitDef.
 	// activation, preventing the same attack from landing multiple times per swing.
 	HitGuard         map[int]bool
 	GetHit           cns.HitDef
@@ -245,7 +252,8 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		Physics:               "S",
 		MoveType:              "I",
 		Ctrl:                  true,
-		PlayerID:              1, // Default to P1
+		InputSlot:             1, // Default to P1
+		EntityID:              -1,
 		Facing:                1, // Default to Right
 		PersistenceCounters:   make(map[string]int),
 		ActiveCommands:        make([]string, 0),
@@ -273,7 +281,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		CurrentHitDef:         cns.HitDef{},
 		ActiveReversalDef:     make(map[string]string),
 		Specials:              make(map[string]bool),
-		Target:                make([]*Character, 0),
+		Opponents:             make([]*Character, 0),
 		Helpers:               make([]*Character, 0),
 		Projectiles:           make([]*Character, 0),
 		Explods:               make([]*ExplodData, 0),
@@ -289,6 +297,9 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 // Update advances an isolated entity through the same tick adapter as matches.
 // Multi-player callers must pass all roots to TickCharacters once per tick.
 func (c *Character) Update() {
+	if c.destroyed {
+		return
+	}
 	if err := TickCharacters([]*Character{c}); err != nil {
 		c.RuntimeError = err
 	}
@@ -369,7 +380,7 @@ func (c *Character) runStateTick() bool {
 	// Paused passes still evaluate controllers with ignorehitpause.
 	c.statePassBudget = engine.StatePassBudget{}
 	if err := c.SM.RunStatePassWithBudget(c.StateFile.States, c, &c.statePassBudget); err != nil {
-		c.RuntimeError = fmt.Errorf("player %d: %w", c.PlayerID, err)
+		c.RuntimeError = fmt.Errorf("player %d: %w", c.InputSlot, err)
 	}
 	if c.RuntimeError != nil {
 		c.updateActive = false
@@ -431,8 +442,8 @@ func (c *Character) finishTick() {
 
 				// Engine turning belongs to the common idle/crouch/walk states;
 				// custom states retain their facing. Preserve world momentum on flip.
-				if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Target) > 0 {
-					opponent := c.Target[0]
+				if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Opponents) > 0 {
+					opponent := c.Opponents[0]
 					newFacing := c.Facing
 					opponentX, _ := c.PositionOf(opponent)
 					if opponentX > c.X {
@@ -485,9 +496,14 @@ func (c *Character) finishTick() {
 	}
 
 	// 6. Update Helpers, Projectiles, Explods
+	var activeHelpers []*Character
 	for _, h := range c.Helpers {
 		h.Update()
+		if !h.destroyed {
+			activeHelpers = append(activeHelpers, h)
+		}
 	}
+	c.Helpers = activeHelpers
 	for _, p := range c.Projectiles {
 		p.Update()
 	}
@@ -742,6 +758,14 @@ func (c *Character) SetAttackDistance(distance int) {
 func (c *Character) SetPlayerPush(enabled bool) { c.PushDisabled = !enabled }
 
 func (c *Character) Helper(params map[string]string) {
+	if err := c.ensureWorld(); err != nil {
+		c.RuntimeError = err
+		return
+	}
+	if len(c.World.Helpers) >= c.World.HelperMax {
+		c.EvaluationWarning("Helper limit reached")
+		return
+	}
 	// Helper(id, name, pos, pos_type, facing, stathero, ownpal, keyctrl, anim)
 	stateno := 0
 	if v, ok := params["stateno"]; ok {
@@ -767,7 +791,8 @@ func (c *Character) Helper(params map[string]string) {
 	if h.Root == nil {
 		h.Root = c
 	}
-	h.PlayerID = c.PlayerID
+	h.InputSlot = c.InputSlot
+	h.HelperID, _ = strconv.Atoi(params["id"])
 	h.Facing = c.Facing
 
 	// Default pos is (0,0) relative to parent axis
@@ -784,6 +809,10 @@ func (c *Character) Helper(params map[string]string) {
 		}
 	}
 
+	if err := c.World.addHelper(h); err != nil {
+		c.RuntimeError = err
+		return
+	}
 	h.ChangeState(stateno, 0, -1)
 	c.Helpers = append(c.Helpers, h)
 }
@@ -796,6 +825,8 @@ func (c *Character) Projectile(params map[string]string) {
 	}
 
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+	p.isProjectile = true
+	p.World = c.World
 	p.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
 	p.BindEffects(c.EffectQueue, c.CommonEffects)
 	p.LocalCoord = c.LocalCoord
@@ -812,7 +843,7 @@ func (c *Character) Projectile(params map[string]string) {
 	if p.Root == nil {
 		p.Root = c
 	}
-	p.PlayerID = c.PlayerID
+	p.InputSlot = c.InputSlot
 	p.Facing = c.Facing
 	p.Anim = anim
 	p.X = c.X
@@ -1050,7 +1081,20 @@ func (c *Character) SuperPause(params map[string]string) {
 }
 
 func (c *Character) DestroySelf() {
-	// Logic: mark for deletion from the game world
+	if c.Parent == nil || c.isProjectile {
+		return
+	}
+	c.destroyed = true
+	if c.World != nil {
+		c.World.Registry.Remove(c.EntityID)
+		var active []*Character
+		for _, h := range c.World.Helpers {
+			if !h.destroyed {
+				active = append(active, h)
+			}
+		}
+		c.World.Helpers = active
+	}
 }
 func (c *Character) VarRandom(id int, min, max int) {
 	// Stub: set variable to random value
@@ -1145,7 +1189,7 @@ func (c *Character) GetRoundsExisted() int {
 }
 
 func (c *Character) GetInGuardDist() bool {
-	for _, target := range c.Target {
+	for _, target := range c.Opponents {
 		if strings.ToUpper(target.MoveType) == "A" {
 			// Range extends in the attacker's facing. The defender may face
 			// away and vertical separation does not affect this query.
@@ -1319,8 +1363,8 @@ func (c *Character) GetHitVar(name string) float64 {
 
 // GetTargetPos returns the opponent's position in this player's local units.
 func (c *Character) GetTargetPos() (float64, float64) {
-	if len(c.Target) > 0 {
-		return c.PositionOf(c.Target[0])
+	if len(c.Opponents) > 0 {
+		return c.PositionOf(c.Opponents[0])
 	}
 	return c.X, c.Y // No target: return self (distance = 0)
 }
@@ -1535,7 +1579,7 @@ func (c *Character) ResolvePushCollision() {
 		return
 	}
 
-	for _, other := range c.Target {
+	for _, other := range c.Opponents {
 		if other.PushDisabled {
 			continue
 		}
@@ -1561,7 +1605,7 @@ func (c *Character) ResolvePushCollision() {
 			absDist := math.Abs(dist)
 			if absDist < pushDist {
 				direction := 1.0
-				if dist < 0 || (dist == 0 && c.PlayerID > other.PlayerID) {
+				if dist < 0 || (dist == 0 && c.InputSlot > other.InputSlot) {
 					direction = -1
 				}
 				delta := (pushDist - absDist) / 2 * direction
@@ -1616,7 +1660,7 @@ func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {
 	}
 	next, found := c.StateFile.States[stateNo]
 	if !found || stateNo < 0 {
-		c.RuntimeError = fmt.Errorf("state %d is not defined for player %d", stateNo, c.PlayerID)
+		c.RuntimeError = fmt.Errorf("state %d is not defined for player %d", stateNo, c.InputSlot)
 		return
 	}
 	if err := c.SM.CompileState(next); err != nil {
@@ -1668,17 +1712,17 @@ func (c *Character) EvaluationWarning(message string) {
 		return
 	}
 	c.warningSeen[key] = true
-	warning := fmt.Sprintf("player %d state %d: %s", c.PlayerID, c.StateNo, message)
+	warning := fmt.Sprintf("player %d state %d: %s", c.InputSlot, c.StateNo, message)
 	c.RuntimeWarnings = append(c.RuntimeWarnings, warning)
 	logger.LogUnresolved(warning)
 }
 func (c *Character) SetJuggleCost(cost int) { c.JuggleCost = cost }
 func (c *Character) FaceOpponent() {
-	if len(c.Target) == 0 {
+	if len(c.Opponents) == 0 {
 		return
 	}
 	facing := c.Facing
-	x, _ := c.PositionOf(c.Target[0])
+	x, _ := c.PositionOf(c.Opponents[0])
 	if x > c.X {
 		facing = 1
 	} else if x < c.X {
@@ -1746,14 +1790,24 @@ func (c *Character) HandleHit(other *Character) {
 	if !c.HitDefActive {
 		return
 	}
+	if err := c.ensureWorld(); err != nil {
+		c.RuntimeError = err
+		return
+	}
+	if other.World == nil {
+		if err := c.World.AddRoots(other); err != nil {
+			c.RuntimeError = err
+			return
+		}
+	}
 	// Prevent the same target from being hit multiple times by the same HitDef swing
 	if c.HitGuard == nil {
 		c.HitGuard = make(map[int]bool)
 	}
-	if c.HitGuard[other.PlayerID] {
+	if c.HitGuard[int(other.EntityID)] {
 		return // Already hit this target this swing
 	}
-	c.HitGuard[other.PlayerID] = true
+	c.HitGuard[int(other.EntityID)] = true
 
 	// 1. Mark attacker results
 	hit := c.CurrentHitDef
@@ -1821,11 +1875,11 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
 	if err := c.contactEffect(attacker, hit, guarded); err != nil {
-		c.RuntimeError = fmt.Errorf("player %d contact effect: %w", c.PlayerID, err)
+		c.RuntimeError = fmt.Errorf("player %d contact effect: %w", c.InputSlot, err)
 		return 0
 	}
 	if err := c.contactSound(attacker, hit, guarded); err != nil {
-		c.RuntimeError = fmt.Errorf("player %d contact sound: %w", c.PlayerID, err)
+		c.RuntimeError = fmt.Errorf("player %d contact sound: %w", c.InputSlot, err)
 		return 0
 	}
 	override, hasOverride := c.matchingOverride(hit.Attr)
@@ -1933,10 +1987,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		c.ChangeState(state, 0, -1)
 	}
 	if c.MoveType == "H" {
-		if attacker.hitTargets == nil {
-			attacker.hitTargets = map[*Character]uint64{}
-		}
-		attacker.hitTargets[c] = c.hitGeneration
+		attacker.acquireTarget(c, hit.ID)
 	}
 	return finalDamage
 }

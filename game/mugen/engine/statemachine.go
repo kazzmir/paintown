@@ -262,6 +262,9 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 	isPaused := env.IsPaused()
 
 	for i, compiled := range program.controllers {
+		if host, ok := env.(interface{ StateExecutionStopped() bool }); ok && host.StateExecutionStopped() {
+			return false, nil
+		}
 		ctrl := compiled.source
 		if isPaused && ctrl.IgnoreHitPause == 0 {
 			continue
@@ -280,7 +283,14 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 			env.SetPersistence(key, count-1)
 			continue
 		}
-		if !compiled.triggers.match(env) {
+		matched, err := compiled.triggers.match(env)
+		if err != nil {
+			return false, controllerError(state, i, ctrl, err)
+		}
+		if host, ok := env.(interface{ StateExecutionError() error }); ok && host.StateExecutionError() != nil {
+			return false, controllerError(state, i, ctrl, host.StateExecutionError())
+		}
+		if !matched {
 			continue
 		}
 		if ctrl.Persistent == 0 {

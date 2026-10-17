@@ -1,0 +1,142 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=700
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+v=0
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+v=1
+value=73
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Parent,ID
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=2+(Parent,ID)
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Ln(-1)
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=1%0
+[State 700, bottom parameter]
+type=VarAdd
+trigger1=Time=0
+fv=4
+value=Parent,ID
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+v=0
+value=Parent,ID
+[State 700, bottom parameter]
+type=VarAdd
+trigger1=Time=0
+v=1
+value=Parent,ID
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Var(0)
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Var(1)
+[State 700, bottom parameter]
+type=VelSet
+trigger1=Time=0
+x=5
+y=6
+[State 700, bottom parameter]
+type=VelAdd
+trigger1=Time=0
+x=Parent,ID
+y=2
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Vel X
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Vel Y
+[State 700, bottom parameter]
+type=VelSet
+trigger1=Time=0
+x=Parent,ID
+y=2
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Vel X
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Vel Y
+[State 700, bottom parameter]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=1

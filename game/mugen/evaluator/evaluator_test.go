@@ -109,7 +109,7 @@ func TestTypedArithmetic(t *testing.T) {
 }
 
 func TestBottomPropagation(t *testing.T) {
-	for _, source := range []string{"1/0", "1%0", "1.0%2", "~1.0", "1.0&1", "(-1)**0.5", "ln(0)", "acos(2)", "log(1,2)", "unknown", "unknown=0", "!unknown", "unknown(1)", "0&&(1/0)", "1||(1/0)", "var(-1)", "fvar(40)"} {
+	for _, source := range []string{"1/0", "1%0", "1.0%2", "~1.0", "1.0&1", "(-1)**0.5", "ln(0)", "acos(2)", "log(1,2)", "unknown", "unknown(1)", "var(-1)", "fvar(40)"} {
 		t.Run(source, func(t *testing.T) {
 			env := &fixtureEnvironment{}
 			if got := evaluate(t, source, env); !got.IsBottom() {

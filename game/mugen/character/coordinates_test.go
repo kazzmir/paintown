@@ -65,8 +65,8 @@ func TestReferenceMixedPlayerDistances(t *testing.T) {
 			}
 			c.X = -70 * float64(c.LocalCoordinateWidth()) / 320
 			other.X = 70 * float64(other.LocalCoordinateWidth()) / 320
-			other.Facing, other.PlayerID = -1, 2
-			c.Target = []*Character{other}
+			other.Facing, other.InputSlot = -1, 2
+			c.Opponents = []*Character{other}
 			c.ChangeState(0, -1, -1)
 			c.Update()
 			if c.RuntimeError != nil {
@@ -112,7 +112,7 @@ func TestMixedCoordinateCollisionAndPush(t *testing.T) {
 	a.StateFile.Size.GroundFront, a.StateFile.Size.GroundBack = 10, 5
 	b.StateFile.Size.GroundFront, b.StateFile.Size.GroundBack = 40, 20
 	a.X, b.X, a.Facing, b.Facing = 0, 40, 1, -1
-	a.Target = []*Character{b}
+	a.Opponents = []*Character{b}
 	a.ResolvePushCollision()
 	if a.X != -5 || b.X != 60 {
 		t.Fatal("push must move each body by five common units", a.X, b.X)

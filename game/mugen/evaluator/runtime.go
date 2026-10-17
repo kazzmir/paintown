@@ -43,6 +43,14 @@ func failure(env EvaluatorEnvironment, format string, args ...any) Value {
 	return Value{}
 }
 
+func malformed(env EvaluatorEnvironment, message string) Value {
+	err := fmt.Errorf("malformed expression: %s", message)
+	if sink, ok := env.(interface{ EvaluationFailure(error) }); ok {
+		sink.EvaluationFailure(err)
+	}
+	return Value{runtimeError: err.Error()}
+}
+
 func EvaluateValue(expr Expression, env EvaluatorEnvironment) Value {
 	switch e := expr.(type) {
 	case *Number:
@@ -58,6 +66,15 @@ func EvaluateValue(expr Expression, env EvaluatorEnvironment) Value {
 		return identifier(e.Name, env)
 	case *Unary:
 		v := EvaluateValue(e.Expression, env)
+		if v.RuntimeError() != nil {
+			return v
+		}
+		if e.Operator == "~" && v.IsBottom() {
+			return malformed(env, "bitwise not of bottom")
+		}
+		if v.IsBottom() {
+			v = Int(0)
+		}
 		if !v.IsNumber() {
 			return failure(env, "invalid operand for %s", e.Operator)
 		}
@@ -160,9 +177,27 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 		}
 	}
 	left := EvaluateValue(e.Left, env)
+	if left.RuntimeError() != nil {
+		return left
+	}
+	if left.IsBottom() {
+		left = Int(0)
+	}
 	if interval, ok := e.Right.(*Interval); ok {
 		low := EvaluateValue(interval.Left, env)
 		high := EvaluateValue(interval.Right, env)
+		if low.RuntimeError() != nil {
+			return low
+		}
+		if high.RuntimeError() != nil {
+			return high
+		}
+		if low.IsBottom() {
+			low = Int(0)
+		}
+		if high.IsBottom() {
+			high = Int(0)
+		}
 		if !left.IsNumber() || !low.IsNumber() || !high.IsNumber() {
 			return failure(env, "invalid interval operand")
 		}
@@ -180,8 +215,11 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 	}
 	// Ordinary operators evaluate both operands; only Cond suppresses unused work.
 	right := EvaluateValue(e.Right, env)
-	if left.IsBottom() || right.IsBottom() {
-		return Value{}
+	if right.RuntimeError() != nil {
+		return right
+	}
+	if right.IsBottom() {
+		right = Int(0)
 	}
 	if left.kind == TextKind || right.kind == TextKind {
 		if left.kind != TextKind || right.kind != TextKind {
@@ -297,6 +335,12 @@ func assignment(e *Binary, env EvaluatorEnvironment) Value {
 	}
 	index := EvaluateValue(variable.Arguments[0], env)
 	value := EvaluateValue(e.Right, env)
+	if index.RuntimeError() != nil {
+		return index
+	}
+	if value.RuntimeError() != nil {
+		return value
+	}
 	indexNumber, indexErr := CoerceInt(index, env, "assignment index")
 	if indexErr != nil || !value.IsNumber() {
 		return failure(env, "invalid assignment operand")
@@ -325,6 +369,9 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 			return failure(env, "%s expects three arguments", name)
 		}
 		condition := EvaluateValue(e.Arguments[0], env)
+		if condition.RuntimeError() != nil {
+			return condition
+		}
 		if name == "cond" {
 			if !condition.IsNumber() {
 				return Value{}
@@ -335,8 +382,14 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 			return EvaluateValue(e.Arguments[2], env)
 		}
 		yes := EvaluateValue(e.Arguments[1], env)
+		if yes.RuntimeError() != nil {
+			return yes
+		}
 		no := EvaluateValue(e.Arguments[2], env)
-		if !condition.IsNumber() {
+		if no.RuntimeError() != nil {
+			return no
+		}
+		if !condition.IsNumber() && !condition.IsBottom() {
 			return Value{}
 		}
 		if condition.Bool() {
@@ -354,6 +407,9 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 			}
 		}
 		args[i] = EvaluateValue(expr, env)
+		if args[i].RuntimeError() != nil {
+			return args[i]
+		}
 	}
 	if context, ok := env.(FunctionEnvironment); ok {
 		if value, found := context.LookupFunction(name, args); found {

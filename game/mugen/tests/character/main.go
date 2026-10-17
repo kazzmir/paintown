@@ -228,8 +228,8 @@ func main() {
 	p1.Character.Y = p1.Character.StartY
 	p1.Character.Z = p1.Character.StartZ
 	p1.Character.Facing = p1.Character.StartFacing
-	p1.Character.PlayerID = 1
-	p1.Character.Target = []*character.Character{p2.Character}
+	p1.Character.InputSlot = 1
+	p1.Character.Opponents = []*character.Character{p2.Character}
 
 	// Apply boundaries (stage-defined)
 	p1.Character.LeftBound = s.PlayerInfo.LeftBound
@@ -250,8 +250,8 @@ func main() {
 	p2.Character.Y = p2.Character.StartY
 	p2.Character.Z = p2.Character.StartZ
 	p2.Character.Facing = p2.Character.StartFacing
-	p2.Character.PlayerID = 2
-	p2.Character.Target = []*character.Character{p1.Character}
+	p2.Character.InputSlot = 2
+	p2.Character.Opponents = []*character.Character{p1.Character}
 
 	p2.Character.LeftBound = s.PlayerInfo.LeftBound
 	p2.Character.RightBound = s.PlayerInfo.RightBound

@@ -276,6 +276,15 @@ native replays and actual Go HUD/world inspections pass. Filtered world edges
 still differ; menus/SystemFit, other renderers, overdraw and complete camera/
 zoom/configuration semantics remain open. See COORDINATES.md.
 
+M4x separates entity/input/team/helper IDs and opponents/acquired targets, adds
+the match registry and runtime redirection/count bindings, and implements
+native-backed helper-family/leaf retirement behavior. Nine stable programs/
+thirteen cases cover 240 numbers and one malformed-expression rejection.
+Native bottom operator/controller boundaries supersede earlier propagation
+assumptions; two layout-dependent power cases remain unresolved. Full/pure
+races and fresh replays pass. Complete target ownership, helper/projectile
+schemas and global phases remain open. See ENTITIES.md and BOTTOM.md.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

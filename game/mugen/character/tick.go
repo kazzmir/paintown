@@ -16,14 +16,25 @@ type contact struct {
 }
 
 // TickCharacters advances root players through shared state, contact and physics
-// phases. Helper/projectile scheduling and the entity registry remain separate
-// world work; their existing adapters are retained here.
+// phases. The World registry owns identities; complete helper/projectile phase
+// scheduling remains separate work and their existing child adapters remain.
 func TickCharacters(players []*Character) error {
 	if len(players) == 0 {
 		return nil
 	}
 	if players[0] == nil {
 		return fmt.Errorf("nil character in tick group")
+	}
+	if err := players[0].ensureWorld(); err != nil {
+		return err
+	}
+	world := players[0].World
+	for _, c := range players {
+		if c != nil && c.Parent == nil {
+			if err := world.AddRoots(c); err != nil {
+				return err
+			}
+		}
 	}
 	timeline := players[0].Timeline
 	if timeline == nil {
@@ -60,11 +71,11 @@ func TickCharacters(players []*Character) error {
 			if attacker.HitGuard == nil {
 				attacker.HitGuard = map[int]bool{}
 			}
-			for _, defender := range c.Target {
+			for _, defender := range c.Opponents {
 				if timeline.Frozen(attacker.pauseActor) && timeline.Frozen(defender.pauseActor) {
 					continue
 				}
-				if defender == attacker || defender.Life <= 0 || attacker.HitGuard[defender.PlayerID] {
+				if defender == attacker || defender.Life <= 0 || attacker.HitGuard[int(defender.EntityID)] {
 					continue
 				}
 				if CheckCollision(attacker, defender) {
@@ -82,7 +93,7 @@ func TickCharacters(players []*Character) error {
 	// Snapshot all eligible contacts before any get-hit transition can disable
 	// the other player's active attack. Equal-priority normal attacks can trade.
 	for _, event := range contacts {
-		event.guard[event.defender.PlayerID] = true
+		event.guard[int(event.defender.EntityID)] = true
 		c := event.attacker
 		c.MoveHit, c.MoveContact, c.MoveGuarded = 1, 1, 0
 		if event.guarded {
@@ -136,7 +147,7 @@ func TickCharacters(players []*Character) error {
 			continue
 		}
 		if err := c.updateKOSound(suppressKO); err != nil {
-			c.RuntimeError = fmt.Errorf("player %d KO sound: %w", c.PlayerID, err)
+			c.RuntimeError = fmt.Errorf("player %d KO sound: %w", c.InputSlot, err)
 			return c.RuntimeError
 		}
 	}

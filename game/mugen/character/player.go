@@ -34,7 +34,7 @@ type Player struct {
 	Commands *CommandBuffer
 
 	// Player ID (1 or 2)
-	PlayerID int
+	InputSlot int
 }
 
 // Update advances the player's state.

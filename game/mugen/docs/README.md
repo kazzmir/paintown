@@ -18,5 +18,7 @@ and the handoff for current progress; the assessment describes the original base
 
 10. [Pause scheduling](PAUSE.md) and [SuperPause](SUPERPAUSE.md): shared clocks, native contacts, defence, cues and remaining ownership limits.
 
+11. [Entity identity](ENTITIES.md) and [bottom boundaries](BOTTOM.md): native IDs, helper families, runtime redirection and unresolved VM error behavior.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

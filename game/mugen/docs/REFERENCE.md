@@ -621,3 +621,26 @@ native fractional filtering. Full races pass. Owned Go default/crop/stretch
 windows have identical HUD cores and matching world centers; their smaller
 world solid cores remain an acknowledged filtering issue. See COORDINATES.md
 for crop truncation, exact cases, diagnostic-only oversized capture and limits.
+
+
+## Identity, helper families and bottom operands (M4x)
+
+Nine stable original programs cover thirteen cases: 240 numeric values and one
+VM malformed-expression rejection. identity-roots and identity-helper use named
+cases with --helper-max recipe/config hashes. Root allocation follows clamped
+HelperMax 4..56, separate from input/helper labels. Leaf retirement/non-reuse,
+nested families, Parent/Root timing and missing-selector behavior have focused
+programs. Fresh limit32/nested/operator/bitnot replays pass. Character compares
+every stable packet; pure evaluator replays all 24 bottom-operator values.
+Full scoped and pure core races pass. See ENTITIES.md/BOTTOM.md.
+
+Native ordinary operators consume bottom as integer zero in the measured cases,
+superseding manual-based propagation assumptions. IfElse/Cond differ for a bottom
+condition; measured variable/velocity argument boundaries also use zero. Bitwise
+NOT of bottom is a fatal VM error, with matching source-context diagnostics.
+Bottom exponentiation remains unresolved: raw identity-bottom-power and -layout
+programs record different non-mathematical values with different expression
+layouts. Their explicit status excludes them from stable Go goldens; do not
+claim parity or hardcode those observations. Native memory-level cause and
+applicability remain open. Root round continuity and complete target/helper/
+projectile/state ownership are separate remaining comparisons.

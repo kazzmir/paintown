@@ -22,8 +22,8 @@ func TestFixtureReplay(t *testing.T) {
 	if !bytes.Equal(first.Bytes(), second.Bytes()) {
 		t.Fatal("same fixture produced different traces")
 	}
-	if got := bytes.Count(first.Bytes(), []byte("\n")); got != 21 {
-		t.Fatalf("trace has %d observations, want 21", got)
+	if got := bytes.Count(first.Bytes(), []byte("\n")); got != 25 {
+		t.Fatalf("trace has %d observations, want 25", got)
 	}
 }
 

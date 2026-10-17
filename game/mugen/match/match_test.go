@@ -49,7 +49,7 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 		t.Fatal("selected palette did not reach common RemapPal")
 	}
 	for slot, p := range m.Players {
-		if !p.Character.Ctrl || p.Character.RoundState != 2 || p.Character.PlayerID != slot+1 {
+		if !p.Character.Ctrl || p.Character.RoundState != 2 || p.Character.InputSlot != slot+1 {
 			t.Fatal("control/identity", slot, p.Character)
 		}
 	}

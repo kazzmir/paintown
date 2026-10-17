@@ -113,10 +113,10 @@ func TestVariableExpressions(t *testing.T) {
 }
 
 func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
-	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\nsparkno=S(var(2):=99)\nguard.sparkno=-1\nsparkxy=(var(3):=-10),(var(4):=-70)\n")
+	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\nid=var(5)+700\nsparkno=S(var(2):=99)\nguard.sparkno=-1\nsparkxy=(var(3):=-10),(var(4):=-70)\n")
 	machine := NewStateMachine()
 	a, b := newParameterHost(), newParameterHost()
-	b.vars[0] = 10
+	b.vars[0], b.vars[5] = 10, 9
 	for _, h := range []*parameterHost{a, b} {
 		if _, err := machine.ExecuteState(state, h); err != nil {
 			t.Fatal(err)
@@ -124,6 +124,9 @@ func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
 	}
 	if a.hitParams["hitsound"] != "S6,7" || b.hitParams["hitsound"] != "S16,17" || a.hitParams["guardsound"] != "7,0" {
 		t.Fatal("sound tuple values/default/bank", a.hitParams, b.hitParams)
+	}
+	if a.hitParams["id"] != "700" || b.hitParams["id"] != "709" || state.Controllers[0].Params["id"] != "var(5)+700" {
+		t.Fatal("HitDef ID expression lost host isolation", a.hitParams, b.hitParams)
 	}
 	if a.hitParams["sparkno"] != "S99" || a.hitParams["guard.sparkno"] != "-1" || a.hitParams["sparkxy"] != "-10,-70" {
 		t.Fatal("spark resource expressions", a.hitParams)
@@ -331,10 +334,10 @@ func TestBadControllerParametersFailBeforeStateEffects(t *testing.T) {
 	}
 	h := newParameterHost()
 	state := stateSource(t, "[State 7, invalid runtime]\ntype=VelSet\ntrigger1=1\nx=5\ny=1/0\n")
-	if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
-		t.Fatal("accepted bottom argument")
+	if _, err := NewStateMachine().ExecuteState(state, h); err != nil {
+		t.Fatal("native VelSet bottom fallback failed", err)
 	}
-	if h.x != 2 || h.y != -3 {
-		t.Fatal("applied incomplete vector")
+	if h.x != 5 || h.y != 0 {
+		t.Fatal("did not apply the native zero fallback vector")
 	}
 }

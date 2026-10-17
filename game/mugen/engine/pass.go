@@ -34,6 +34,9 @@ func (sm *StateMachine) RunStatePassWithBudget(states map[int]*cns.StateDef, env
 		return err
 	}
 	for _, level := range []int{-3, -2, -1} {
+		if host, ok := env.(interface{ StateExecutionStopped() bool }); ok && host.StateExecutionStopped() {
+			return nil
+		}
 		if state := states[level]; state != nil {
 			if _, err := sm.ExecuteState(state, env); err != nil {
 				return err
@@ -57,6 +60,9 @@ func (sm *StateMachine) RunPositivePassWithBudget(states map[int]*cns.StateDef, 
 		return fmt.Errorf("nil state-pass budget")
 	}
 	for {
+		if host, ok := env.(interface{ StateExecutionStopped() bool }); ok && host.StateExecutionStopped() {
+			return nil
+		}
 		state := states[env.GetStateNo()]
 		if state == nil {
 			return fmt.Errorf("active state %d is missing", env.GetStateNo())

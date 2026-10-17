@@ -44,9 +44,19 @@ func compileArguments(ctrl *cns.StateController, specs []argumentSpec) ([]argume
 }
 
 func evaluateArguments(args []argument, env Environment) (map[string]evaluator.Value, error) {
+	return evaluateArgumentsWithBottom(args, env, false)
+}
+
+func evaluateArgumentsWithBottom(args []argument, env Environment, zeroBottom bool) (map[string]evaluator.Value, error) {
 	values := make(map[string]evaluator.Value, len(args))
 	for _, arg := range args {
 		value := evaluator.EvaluateValue(arg.expr, env)
+		if value.RuntimeError() != nil {
+			return nil, value.RuntimeError()
+		}
+		if zeroBottom && value.IsBottom() {
+			value = evaluator.Int(0)
+		}
 		if !value.IsNumber() {
 			return nil, fmt.Errorf("%s = %s evaluated to %v", arg.name, arg.expr.String(), value)
 		}
@@ -65,12 +75,16 @@ func evaluateArguments(args []argument, env Environment) (map[string]evaluator.V
 }
 
 func typedHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(Environment, map[string]evaluator.Value) error) (ControllerFunc, bool, error) {
+	return typedHandlerWithBottom(ctrl, specs, false, apply)
+}
+
+func typedHandlerWithBottom(ctrl *cns.StateController, specs []argumentSpec, zeroBottom bool, apply func(Environment, map[string]evaluator.Value) error) (ControllerFunc, bool, error) {
 	args, err := compileArguments(ctrl, specs)
 	if err != nil {
 		return nil, true, err
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		values, err := evaluateArguments(args, env)
+		values, err := evaluateArgumentsWithBottom(args, env, zeroBottom)
 		if err != nil {
 			return err
 		}
@@ -160,7 +174,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "velset", "veladd", "velmul", "posset", "posadd":
-		return typedHandler(ctrl, []argumentSpec{{"x", false, false}, {"y", false, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"x", false, false}, {"y", false, false}}, name == "velset" || name == "veladd", func(env Environment, v map[string]evaluator.Value) error {
 			x, y := 0.0, 0.0
 			if name == "velset" {
 				x, y = env.GetVel()
@@ -336,7 +350,7 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 	}
 	args := []argument{{argumentSpec{"index", true, true}, index}, {argumentSpec{"value", !strings.Contains(kind, "fvar"), true}, value}}
 	return func(_ *cns.StateController, env Environment) error {
-		values, err := evaluateArguments(args, env)
+		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
 			return err
 		}

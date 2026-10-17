@@ -55,8 +55,8 @@ func TestNativeSuperPauseContactAndTargetDefence(t *testing.T) {
 			}
 			players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 			for slot, c := range players {
-				c.PlayerID, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
-				c.Target = []*Character{players[1-slot]}
+				c.InputSlot, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
+				c.Opponents = []*Character{players[1-slot]}
 				c.ChangeState(0, -1, -1)
 				c.Ctrl = true
 			}
@@ -128,7 +128,7 @@ func TestNativeSuperPauseEffectResourcesProjectionAndTint(t *testing.T) {
 			scene := effect.NewScene(8)
 			players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 			for slot, c := range players {
-				c.PlayerID, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
+				c.InputSlot, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
 				c.GameCoord = coord.Space{Width: 1280, Height: 960}
 				c.Palettes = palette.New(archive)
 				c.BindEffects(&scene.Queue, effect.Source{})

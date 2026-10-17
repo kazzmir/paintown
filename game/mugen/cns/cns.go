@@ -82,6 +82,7 @@ type StateController struct {
 }
 
 type HitDef struct {
+	ID               int
 	Attr             string
 	HitFlag          string
 	GuardFlag        string
@@ -581,9 +582,13 @@ func ParseFloatList(s string) []float64 {
 
 func ParseHitDef(params map[string]string) HitDef {
 	hd := HitDef{
+		ID:             -1,
 		FallRecover:    true,
 		FallXUnchanged: true,
 		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
+	}
+	if v, ok := params["id"]; ok {
+		hd.ID, _ = strconv.Atoi(v)
 	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v

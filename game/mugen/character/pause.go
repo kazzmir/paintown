@@ -37,8 +37,8 @@ func (c *Character) SuperPauseGame(parameters engine.SuperPauseParameters) error
 		multiplier = c.SuperTargetDefenceMul
 	}
 	if multiplier > 0 {
-		for target, generation := range c.hitTargets {
-			if target.MoveType != "H" || target.hitGeneration != generation {
+		for target, record := range c.hitTargets {
+			if target.MoveType != "H" || target.hitGeneration != record.generation {
 				delete(c.hitTargets, target)
 				continue
 			}

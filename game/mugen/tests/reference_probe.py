@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -99,6 +99,8 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
         settings = re.sub(r'(?im)^GameWidth\s*=.*$', 'GameWidth = ' + str(game_width), settings)
     if game_height is not None:
         settings = re.sub(r'(?im)^GameHeight\s*=.*$', 'GameHeight = ' + str(game_height), settings)
+    if helper_max is not None:
+        settings = re.sub(r'(?im)^HelperMax\s*=.*$','HelperMax = '+str(helper_max),settings)
     for key, value in (video or {}).items():
         settings, count = re.subn(r'(?im)^\s*;?\s*' + re.escape(key) + r'\s*=.*$',
                                   lambda match: key + ' = ' + str(value), settings)
@@ -244,6 +246,7 @@ def main():
     parser.add_argument('--game-height', type=int, help='Override configured game-space height for coordinate probes')
     parser.add_argument('--video', action='append', default=[], help='Disposable video override: StageFit/SystemFit/KeepAspect=0|1 or Width/Height=N')
     parser.add_argument('--hud-marker', action='store_true', help='Use the fixture-owned probe.sff for calibrated Face background markers in disposable fight files')
+    parser.add_argument('--helper-max', type=int, help='Override only the copied HelperMax for entity identity/allocation probes')
     parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
     parser.add_argument('--stage-version',choices=['1.0','1.1'],help='Override only the copied stage version for compatibility probes')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
@@ -275,6 +278,7 @@ def main():
         args.stage_version = case_expected.get('stage_version')
         args.video = [key+'='+str(value) for key,value in case_expected.get('video',{}).items()]
         args.hud_marker = case_expected.get('hud_marker',False)
+        args.helper_max = case_expected.get('helper_max')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
@@ -285,6 +289,8 @@ def main():
         parser.error('Game width must be 1 through 8192 for bounded reference probes')
     if args.game_height is not None and not 1 <= args.game_height <= 8192:
         parser.error('Game height must be 1 through 8192 for bounded reference probes')
+    if args.helper_max is not None and not 0 <= args.helper_max <= 256:
+        parser.error('Helper allocation probe limit must be 0..256')
     if not re.fullmatch('[a-zA-Z0-9_./-]+',args.stage) or args.stage.startswith('/') or '..' in Path(args.stage).parts:
         parser.error('Stage must be a relative name/path in the disposable distribution')
     for profile in (args.localcoord, args.p2_localcoord):
@@ -318,7 +324,7 @@ def main():
         parser.error('State-file order must contain unique st/stN keys')
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max)
     hud_hashes = {}
     if args.hud_marker:
         marker = fixture.with_suffix('.extra')/'probe.sff'
@@ -377,6 +383,8 @@ def main():
         evidence['game_height'] = args.game_height
     if video:
         evidence['video'], evidence['config_sha256'] = video, digest(run/'data/mugen.cfg')
+    if args.helper_max is not None:
+        evidence['helper_max'],evidence['config_sha256']=args.helper_max,digest(run/'data/mugen.cfg')
     if args.hud_marker:
         evidence['hud_marker'],evidence['hud_fight_sha256']=True,hud_hashes
     if args.stage!='kfm':
@@ -409,6 +417,8 @@ def main():
             raise RuntimeError('Video overrides differ from pinned fixture')
         if expected.get('hud_marker',False)!=args.hud_marker:
             raise RuntimeError('HUD marker mode differs from pinned fixture')
+        if expected.get('helper_max')!=args.helper_max:
+            raise RuntimeError('Helper allocation limit differs from pinned fixture')
         if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
         if expected.get('clipboard_delay',30)!=args.clipboard_delay:

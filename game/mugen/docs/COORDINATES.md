@@ -34,8 +34,9 @@ Cross-player position queries, guard range/facing, collision boxes and push
 movement now translate the other player. Authored geometric tests verify equal
 physical extents and displacement across spaces. Push/collision timing and
 corner rules, dynamic Width overrides, full airborne cases and query redirection
-remain open. The current Target list still conflates opponents with acquired
-HitDef targets and must be replaced by the match ownership model.
+remain open. M4x separates Opponents from an acquired-target ledger and adds
+the match identity registry. Complete HitDef target/state ownership remains
+open; see ENTITIES.md.
 
 Received hit vectors now translate with float32 rounding into the defender's
 local units. Six native contact cases cover explicit/default acceleration/fall

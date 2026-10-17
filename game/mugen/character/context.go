@@ -3,6 +3,9 @@ package character
 import "github.com/kazzmir/paintown/game/mugen/evaluator"
 
 func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
+	if value, known := c.lookupEntity(name); known {
+		return value, true
+	}
 	if value, known := c.lookupViewport(name); known {
 		return value, true
 	}
@@ -14,10 +17,10 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		}
 		return evaluator.Int(c.Timeline.GameTime), true
 	case "p2life", "p2stateno", "p2statetype", "p2movetype":
-		if len(c.Target) == 0 {
+		if len(c.Opponents) == 0 {
 			return evaluator.Value{}, true
 		}
-		other := c.Target[0]
+		other := c.Opponents[0]
 		switch name {
 		case "p2life":
 			return evaluator.Int(int32(other.Life)), true
