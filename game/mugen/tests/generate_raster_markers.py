@@ -45,6 +45,25 @@ def archive(indexed=False, fine=False, lz5=False, power2=False):
     return bytes(header) + node + palette_node + palette + payload
 
 
+def consumer_archive(gray=180):
+    """Opaque gray actor and original RGB ramp for effect blend controls."""
+    payloads = [bytes((gray, gray, gray)) * (32 * 32),
+                bytes(v for y in range(4) for x in range(8) for v in (x * 31, y * 67, 75))]
+    nodes, pixels = bytearray(), bytearray()
+    for item, (width, height, axis_x, axis_y) in enumerate([(32, 32, 16, 32), (8, 4, 0, 0)]):
+        payload = payloads[item]
+        nodes += struct.pack('<7H2B2I2H', 0, item, width, height, axis_x, axis_y, 0,
+                             0, 24, len(pixels), len(payload), 0, 0)
+        pixels += payload
+    header = bytearray(512)
+    header[:12] = b'ElecbyteSpr\0'
+    header[12:16] = bytes([0, 1, 0, 2])
+    data_offset = len(header) + len(nodes)
+    struct.pack_into('<8I', header, 36, len(header), 2, data_offset, 0,
+                     data_offset, len(pixels), data_offset + len(pixels), 0)
+    return bytes(header + nodes + pixels)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)

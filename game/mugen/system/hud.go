@@ -11,20 +11,23 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 type FightHUD struct {
-	match      *match.Match
-	engine     *Engine
-	images     map[*sff.Sprite]*ebiten.Image
-	clocks     map[string]*air.Player
-	audioOwner uint64
-	played     map[string]bool
-	levels     [2]int
-	cue        string
-	cueTime    int
+	match         *match.Match
+	engine        *Engine
+	images        map[*sff.Sprite]*ebiten.Image
+	clocks        map[string]*air.Player
+	audioOwner    uint64
+	played        map[string]bool
+	levels        [2]int
+	cue           string
+	cueTime       int
+	linearSampler render.Linear
+	renderError   error
 }
 
 func NewFightHUD(game *match.Match, engine *Engine) *FightHUD {
@@ -64,6 +67,9 @@ func (h *FightHUD) text(section, key, fallback string) string {
 }
 
 func (h *FightHUD) Update(previous match.Phase, round int) error {
+	if h.renderError != nil {
+		return h.renderError
+	}
 	for _, clock := range h.clocks {
 		clock.Update()
 	}
@@ -144,7 +150,11 @@ func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy
 	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 	op.GeoM.Scale(sx, sy)
 	op.GeoM.Translate(x, y)
-	screen.DrawImage(img, op)
+	if _, indexed := sprite.Image.(*image.Paletted); indexed {
+		screen.DrawImage(img, op)
+	} else if err := h.linearSampler.DrawImage(screen, img, op); err != nil {
+		h.renderError = fmt.Errorf("fight HUD sprite %d,%d sampler: %w", sprite.GroupNumber, sprite.ImageNumber, err)
+	}
 }
 
 func findSprite(archive *sff.SFF, group, item int) *sff.Sprite {

@@ -4,6 +4,28 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4az — RGB HUD and effect sampling
+
+True-color fight HUD/effects now share the clamped linear sampler and preserve
+caller blend/tint options. Cue coordinates truncate in signed common-game units
+before stage/camera translation. Sixteen original programs record192 numbers
+and80 input hashes; ten strict2100-pixel crops match exactly. Three AS192D64
+cases each fail12 pixels max1; half/independent destination cases each fail117
+pixels max1. These six alpha gates remain open with unchanged native goldens.
+No precision allowance was added. All three HUD/world video-fit profiles now
+match exact core bounds/hashes, closing the prior nearest-filter gap.
+
+Five actor crops match byte-for-byte; three fresh native replays reproduce the
+native goldens, including two alpha controls. Twenty-five app runs/28 captures
+share binary7c40366876ea6cd4dee8a3b73eccd3581c8626b8fff4a017ef9751740f8f8394
+and pass input/config/capture/runtime provenance checks. Stock throw recovery
+shows two fighters without lingering effects. Pure races/root module checks
+pass. The clean full scoped race check passes (Match489.826s,
+Character10.368s), including all16 integrated consumer programs. The first
+invocation found diagnostic Go snapshots in temp/; they were renamed to text
+and its setup failure is retained separately. See RGB-CONSUMERS.md. Reversal:d572399f. Full RGBA/driver/effect/asset/
+engine/mode gates remain open; combat power is the next functional checkpoint.
+
 ## M4ay — Fractional sprite sampling
 
 M4ay matches fractional actor rendering with separate indexed/RGB samplers,

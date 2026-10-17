@@ -38,6 +38,8 @@ Do not modify the reference distribution. Do not commit its binaries/assets.
   artifacts and disposable tools belong in `temp/`, which is not source.
 - Use the launcher or `-modfile=game/mugen/mugen.mod` for the scoped dependency
   overlay; see `docs/BUILD.md`. Keep it synchronized when dependencies change.
+- Use non-Go extensions for disposable source snapshots. The recursive check
+  also discovers ordinary packages below `temp/`; ignored files still compile.
 - Update `docs/COMPATIBILITY.md` and `docs/HANDOFF.md` when behavior or verified
   coverage changes. Do not call the port complete without tests and reference
   evidence covering the advertised compatibility.

@@ -91,6 +91,10 @@ func TestNativeSpriteRasterPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "raster-*.json", 37)
 }
 
+func TestNativeRGBConsumerPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "rgbconsumer-*.json", 16)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

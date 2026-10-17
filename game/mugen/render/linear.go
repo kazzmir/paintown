@@ -30,6 +30,14 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 `
 
 func (r *Linear) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten.ColorScale) error {
+	return r.DrawImage(dst, src, &ebiten.DrawImageOptions{GeoM: geometry, ColorScale: tint})
+}
+
+// DrawImage retains the caller's blend operation as well as its transform/tint.
+func (r *Linear) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions) error {
+	if options == nil {
+		options = &ebiten.DrawImageOptions{}
+	}
 	if r.shader == nil {
 		shader, err := ebiten.NewShader([]byte(linearShader))
 		if err != nil {
@@ -39,8 +47,9 @@ func (r *Linear) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten.
 	}
 	// Rectangle APIs quantize vertices to a coarse subpixel grid. Triangles
 	// preserve the source-to-destination mapping through rasterization.
-	vertices := quad(src, geometry, tint)
+	vertices := quad(src, options.GeoM, options.ColorScale)
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
-		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src}})
+		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
+			Blend: options.Blend, CompositeMode: options.CompositeMode})
 	return nil
 }

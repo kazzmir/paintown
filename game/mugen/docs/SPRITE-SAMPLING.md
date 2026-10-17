@@ -4,6 +4,9 @@ M4ay matches the measured actor sampling and viewport interpolation. Reversal
 is 931467ac (M4ax). Full 1.1 beta 1 engine,
 asset and mode compatibility remains unfinished.
 
+The later [M4az consumer checkpoint](RGB-CONSUMERS.md) fixes the historical
+nearest-filter HUD/effect gap below. Six alpha precision gates remain open.
+
 ## Measured projection and sampling
 
 Actor axes remain fractional. AIR X offset multiplies Facing; AIR Y offset keeps
@@ -112,10 +115,11 @@ first-stage RGB images still use nearest filtering there, while native ramps
 are linear. This is an established pre-existing consumer gap, not a passed
 check. The probe stopped at default; stage0/stretch are prepared but unrun.
 
-Record this bounded actor checkpoint locally, then immediately implement and
-verify the RGB HUD/effect consumers as M4az. Do not relax the ramp hashes or
-claim all assets/consumers complete. Power probes remain deferred until that
-render gap is settled. There is no user review/permission dependency.
+M4ay was committed as d572399f. M4az subsequently closes the three HUD/world
+ramp filtering profiles with the shared sampler; see RGB-CONSUMERS.md for its
+strict final crops and remaining alpha precision failures. Ramp/crop hashes are
+unchanged. Whole assets/consumers are not complete; power is the next functional
+audit. No user review/permission dependency exists.
 
 The earlier48 original crops passed with the corrected RGB sampler; later fine
 controls exposed indexed rules absent from those coarse scenes. Prototype names
@@ -128,5 +132,5 @@ Pure evaluator/CNS/engine/SFF/palette/coordinate races pass m4ay-pure-race.log.
 
 Full RGBA/alpha, other drivers/renderers, every scale/zoom/rotation/interpolation/
 foreign-resource combination, background rendering, all effects and whole-frame
-equivalence remain open. Continue the RGB consumer follow-up, then the prepared combat power probes;
-temp/author-hit-power.py has not been run.
+equivalence remain open. The RGB consumer follow-up and prepared combat power probes are tracked in
+RGB-CONSUMERS.md and HANDOFF.md; consult the latter for active work.

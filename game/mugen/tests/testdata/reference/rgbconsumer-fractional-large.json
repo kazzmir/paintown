@@ -1,0 +1,58 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "b6154e72b168c1e1b7f6665fde8b88afa6fc6bbc034ad17878111d63988d861d",
+  "air_sha256": "55f5a433b26903924c23984e97c49fbcbb3a2ff2fb4eb781840daea3925ed2b3",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "cee53be3dbdda7e2d46d606e2cc95bf7b8a7387185e4c8918c5c5067e2441011",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 700,
+        "7": 701,
+        "8": 0,
+        "9": 0,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "42752c27e00ab5881352f058f6c74d645052f8c6f95df5212532df9ff4913dde"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "42752c27e00ab5881352f058f6c74d645052f8c6f95df5212532df9ff4913dde"
+  },
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b9583a5079f5e637fa4484fcf321fa0018464ac52ecac0d5b78dbb5b4f0fb4f2",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "pattern_native_config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+  "pattern_render": {
+    "region": [
+      620,
+      530,
+      680,
+      565
+    ],
+    "sha256": "28ef7b958b01b63eb55ec6ed2887dac8a5ccc31a23e92d8713bdb567b3f5a34d"
+  },
+  "pattern_crop_rgb_zlib": "eNrt1j+rY0UAhvFJNalTD2ujpLIIg1qksIsDT2FKiQyDRQpBCVgMBBvBdCMpRM5Gr/+Yw92VxbPLxb177pxKDg5MkUIQAvk2irX1AeH8eD/AU74vX45Go/9wc3NbVfFxFb+t4ndV/L6KP1bx5yrGKtZVvK3i0yr+UsVnVfy1is+r+KKKd1X8rYr3VXxVxYcqdv/u/sXdYM2PHtmJYCqYCZRgLlgIloKVYC3YCLaCnWAvOAiOgpOgFjSCVtALzoKL4Cr4J3u45tftRDKVzCRKMpcsJEvJSrKWbCRbyU6ylxwkR8lJUksaSSvpJWfJRXKVdI8HbH7LThRTxUyhFHPFQrFUrBRrxUaxVewUe8VBcVScFLWiUbSKXnFWXBRXRXczYLOxE81UM9MozVyz0Cw1K81as9FsNTvNXnPQHDUnTa1pNK2m15w1F81V0/00YPOHdmKYGmYGZZgbFoalYWVYGzaGrWFn2BsOhqPhZKgNjaE19Iaz4WK4Gro4YPOnduKYOmYO5Zg7Fo6lY+VYOzaOrWPn2DsOjqPj5KgdjaN19I6z4+K4OronAzZ/YSeeqWfmUZ65Z+FZelaetWfj2Xp2nr3n4Dl6Tp7a03haT+85ey6eq6d7NmDz13YSmAZmARWYBxaBZWAVWAc2gW1gF9gHDoFj4BSoA02gDfSBc+ASuAa6ZsDmWzuJTCOziIrMI4vIMrKKrCObyDayi+wjh8gxcorUkSbSRvrIOXKJXCPd3YDND3aSmCZmCZWYJxaJZWKVWCc2iW1il9gnDolj4pSoE02iTfSJc+KSuCa6+wGb/7CTwrQwK6jCvLAoLAurwrqwKWwLu8K+cCgcC6dCXWgKbaEvnAuXwrXQPQzX/E7/yWvZvpHtm9m+ne272b6X7fvZfpDtR9l+nO1n2X6e7ZfZfpXtN9n+kO2TbJ9n+yrb37Mt2f6Z7V/ZpvZ2PG+j0Wg0Go1Go9Ho/+VvlHcvbg=="
+}

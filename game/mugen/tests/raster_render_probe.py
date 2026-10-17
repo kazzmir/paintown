@@ -18,20 +18,21 @@ from PIL import Image
 
 sys.dont_write_bytecode = True
 from generate_actor_markers import archive as solid_archive
-from generate_raster_markers import archive as pattern_archive
+from generate_raster_markers import archive as pattern_archive, consumer_archive
 
 REGION = (400, 450, 800, 620)
+CONSUMER_REGION = (620, 530, 680, 565)
 
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def raster(path):
+def raster(path, region):
     image = Image.open(path).convert('RGB')
     if image.size != (1280, 720):
         raise RuntimeError('Expected the calibrated 1280x720 window')
-    return image.crop(REGION).tobytes()
+    return image.crop(region).tobytes()
 
 
 def main():
@@ -43,7 +44,7 @@ def main():
     source.add_argument('--go-run')
     parser.add_argument('--record', action='store_true')
     args = parser.parse_args()
-    if not re.fullmatch('raster-(marker|pattern)-[a-z0-9-]+', args.fixture):
+    if not re.fullmatch('(raster-(marker|pattern)|rgbconsumer)-[a-z0-9-]+', args.fixture):
         parser.error('Only the original raster markers/patterns can be recorded')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in
                [args.name, args.native_run or args.go_run]):
@@ -60,7 +61,7 @@ def main():
     bank = stem.with_suffix('.extra') / 'probe.sff'
     if digest(bank) != expected['extra_sha256']['probe.sff']:
         raise RuntimeError('Original sprite archive changed')
-    originals = [solid_archive()] + [pattern_archive(indexed, fine, lz5, power2)
+    originals = [solid_archive(), consumer_archive(), consumer_archive(gray=181)] + [pattern_archive(indexed, fine, lz5, power2)
                                     for indexed in [False, True] for fine in [False, True]
                                     for lz5 in ([False, True] if indexed else [False])
                                     for power2 in [False, True]]
@@ -117,19 +118,20 @@ def main():
         if [c['variables'] for c in evidence['captures']] != [c['variables'] for c in expected['captures']]:
             raise RuntimeError('Native numeric observations differ')
     results = []
+    region = CONSUMER_REGION if args.fixture.startswith('rgbconsumer-') else REGION
     for capture in evidence['captures']:
         path = run / capture['path']
         if digest(path) != capture['sha256']:
             raise RuntimeError('Captured window hash changed')
-        actual = raster(path)
-        measured = {'region': list(REGION), 'sha256': hashlib.sha256(actual).hexdigest()}
+        actual = raster(path, region)
+        measured = {'region': list(region), 'sha256': hashlib.sha256(actual).hexdigest()}
         if args.record:
             expected['pattern_render'] = measured
             expected['pattern_crop_rgb_zlib'] = base64.b64encode(zlib.compress(actual, 9)).decode('ascii')
             stem.with_suffix('.json').write_text(json.dumps(expected, indent=2) + '\n')
         want = expected['pattern_render']
         native = zlib.decompress(base64.b64decode(expected['pattern_crop_rgb_zlib'], validate=True))
-        if want['region'] != list(REGION) or len(native) != len(actual) or hashlib.sha256(native).hexdigest() != want['sha256']:
+        if want['region'] != list(region) or len(native) != len(actual) or hashlib.sha256(native).hexdigest() != want['sha256']:
             raise RuntimeError('Invalid native raster golden')
         errors = collections.Counter(max(abs(x-y) for x, y in zip(native[i:i+3], actual[i:i+3]))
                                      for i in range(0, len(native), 3))

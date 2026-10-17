@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -103,11 +106,15 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 		if instance.HasScale {
 			op.GeoM.Scale(instance.ScaleX, instance.ScaleY)
 		}
-		if instance.ScreenSpace {
-			op.GeoM.Translate(instance.X, instance.Y)
-		} else {
-			op.GeoM.Translate(float64(m.Options.GameSpace.Width)/2+instance.X-m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame+instance.Y-m.CameraY)
+		x, y := instance.X, instance.Y
+		if _, indexed := sprite.Image.(*image.Paletted); !indexed {
+			x, y = math.Trunc(x), math.Trunc(y)
 		}
+		if !instance.ScreenSpace {
+			x += float64(m.Options.GameSpace.Width)/2 - m.CameraX
+			y += m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY
+		}
+		op.GeoM.Translate(x, y)
 		switch el.Blend {
 		case "alpha":
 			src, dst := float32(max(0, min(256, el.AlphaSrc)))/256, float32(max(0, min(256, el.AlphaDst)))/256
@@ -120,7 +127,12 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 				BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOne,
 				BlendFactorSourceAlpha: ebiten.BlendFactorZero, BlendFactorDestinationAlpha: ebiten.BlendFactorOne}
 		}
-		screen.DrawImage(cached.image, op)
+		if _, indexed := sprite.Image.(*image.Paletted); indexed {
+			screen.DrawImage(cached.image, op)
+		} else if err := s.linearSampler.DrawImage(screen, cached.image, op); err != nil {
+			s.renderError = fmt.Errorf("fight effect action %d sprite %d,%d sampler: %w", instance.Action, el.Group, el.Image, err)
+			return
+		}
 	}
 	for key := range s.effectImages {
 		if !used[key] {

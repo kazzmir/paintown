@@ -1,71 +1,67 @@
 # Current handoff
 
-Updated 2026-10-17. Implementation/local checkpoint commits are authorized. The
-user wants continuous iteration without routine review requests. Never push.
-Full MUGEN 1.1 beta1 engine/assets/modes remain unfinished. Do not stop at a
-checkpoint or claim the whole port complete.
+Updated2026-10-17. Implementation/local checkpoint commits are authorized.
+Continue without routine review requests; never push. Full MUGEN1.1 beta1
+engine/assets/modes remain unfinished. All authored changes stay in game/mugen/.
 
-## Latest checkpoint: M4ay actor sampling
+## Latest checkpoint: M4az RGB consumers
 
-M4ay is verified and locally committed (reversal 931467ac, M4ax; see git log for
-the checkpoint hash). Continue immediately with M4az RGB HUD/effects; there is
-no permission dependency. Keep all authored changes under game/mugen/.
+M4az is verified for its bounded scope; see git log for the local checkpoint
+hash. Reversal:d572399f (M4ay). Read RGB-CONSUMERS.md for measured rules, rejected
+hypotheses and open gates. HUD/effect true-color sprites use the shared sampler;
+Linear.DrawImage preserves blend/tint/geometry options. Shared shader arithmetic
+is byte-for-byte M4ay. Indexed consumers are unchanged. RGB cue X/Y truncate in
+signed common-game units before stage/camera translation; fractional owner and
+common960 controls match.
 
-All 37 raster numeric programs pass:444 numbers/180 hashes/zero final rejections.
-All 32 original crops (2,176,000 RGB pixels) and28 unchanged flipmark crops match
-byte-for-byte, with no precision allowance. Six actual clothing masks match,
-including all four M4ax failures and irregular400. The67 app runs/70 captures
-share binary b0f0dd90433fcc6958594341d9dd37e886f8b394f80e5b579eb5d1d8d0f33d7b;
-all source/config/binary/capture/runtime checks pass. Stock7s capture was viewed:
-two healthy fighters, no lingering dust/effect clones. Six fresh native replays
-pass, five including strict original crops. Full scoped races pass in
-m4ay-full-race.log: Match 461.719s, Character 10.938s. Pure races and root module
-integrity checks pass. Final pipeline session 24438 completed with exit0.
+All16 numeric programs pass:192 observations/80 source hashes, no final rejected
+programs. Ten2100-pixel consumer crops match exactly. Three AS192D64 cases each
+fail12 pixels max1; half/independent destination cases each fail117 pixels max1.
+These six alpha precision gates remain OPEN; native goldens and strict checks
+are unchanged. All three video-fit HUD/world profiles now match bounds/core
+hashes exactly, closing the pre-existing nearest-filter gap. Never waive hashes.
 
-Renderer source: render/linear.go, nearest.go and quad.go; Player selects by
-indexed source image. Unsnapped triangles/local custom UVs avoid rectangle/atlas
-precision loss. RGB clamps edges and uses eight-bit weights plus byte-rounded
-bilinear arithmetic. Indexed geometry uses+.5 common pixel centers, four-bit
-source-address selection, ceil-minus-one for reversed axes and transparent guard
-coverage on every side. The guard preserves biased edge samples without atlas
-bleed. Read SPRITE-SAMPLING.md for measured rules and rejected models. Source
-raster goldens are original generated RGB/RLE8/LZ5/fine/32x32 banks only; no
-reference art or native framebuffer crops are committed.
+Five representative actor crops remain byte-exact; three fresh native replays
+reproduce goldens, including two alpha controls. All25 app runs/28 captures pass
+input/config/binary/capture/runtime provenance; see m4az-final-app-audit.json.
+Binary7c40366876ea6cd4dee8a3b73eccd3581c8626b8fff4a017ef9751740f8f8394.
+Viewed stock7s: two fighters, no lingering effects. Final consumer captures end
+go-m4az-final; intermediate candidates are diagnostic. Full clean scoped races
+PASS (session83481 exit0): Match489.826s, Character10.368s in m4az-full-race.log.
+Pure races/root module checks pass. The first full invocation's temp-snapshot
+mixed-package setup failure is retained separately; its actual package tests
+passed, but its overall command failed. Diagnostic Go snapshots now use .go.txt;
+AGENTS documents why. No GUI client is active after83481; check ps before next.
 
-The first LZ5 author used256 palette colors and exited during native rendering;
-corrected32-color input works. Final fine-lz5 and rgb-fine-integer native runs
-use native-fixed; all other raster native runs use native. Failed copies and
-old raw/ceil/point4/coverage/padded/etc candidates remain diagnostic under temp.
-Final accepted captures end go-m4ay-final. Never loosen raster or mask gates.
+## Next M4ba: combat power
 
-## Immediate M4az task: RGB HUD/effect consumers
+Continue immediately; no permission dependency. Runtime Get/GivePower consumers
+are absent, Damage/Get/GivePower are literal-parsed, config .7/.6 rules do not
+reach Match actors and helper/root pool sharing is unverified. Read
+HITDEF-SCHEMA.md and temp/power-next-notes.txt. Do not infer numeric/default/order/
+entry timing from the manual alone; record original native programs first.
 
-The additional default HUD/world ramp check FAILS color SHA despite exact bounds.
-Each 288-pixel core has256 differences, max channel 22. The pre-M4ay binary and
-M4ay binary produce identical core SHA 3b6d1fda45f45a849ae8a8e0e26db45d0b985d174f23082d1c04f590bde7cf6a;
-native is332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8.
-Baseline proof is m4ay-hud-baseline-checks.json and app-runs/m4ay-video-hud-baseline.
-Both HUD and the SuperPause effect still use nearest first-stage RGB filtering;
-those files are unchanged by M4ay. Source locations: system/hud.go drawSprite,
-system/effects.go drawEffects. Reuse the verified clamped RGB sampler while
-preserving blending/tints/resource/cache behavior; measure before guessing.
+Prepared44 root programs already exist untracked as hitpower-* CNS/CMD/AIR/stage
+files, structurally audited in m4ba-prepared-inputs.json. No native power JSONs
+exist yet. author-hit-power.py is the generator; do not rerun after recording.
+hitpower-cases.json has decisive defaults/guard/explicit/computed/order/150/type
+controls first. temp/run-hitpower.py is ready for sequential native recording.
 
-Prepared temp/run-m4ay-hud-checks.py tests existing video-fit default, stage0,
-window-stretch source copies against native exact HUD/world marker cores. It
-stopped at default, so the latter two are unrun. Existing native input directories
-are reference-runs/video-fit-hud-{default,stage0,window-stretch}/stock. Permanent
-tests/video_render_probe.py provides measure(); original goldens are
- tests/testdata/reference/video-fit.json. Do not relax color hashes or claim
-only geometry closes the gate. No GUI/audio client remains active; session 56208
-(the baseline replay) exited0. Run read-only ps before the next GUI client.
+temp/author-helper-power.py is prepared but UNRUN: eight observe/set/add/cap/
+lower/root-add/Statedef-entry/SuperPause controls compare root/helper/parent
+power and publication phases. temp/author-power-rules.py is also prepared but
+UNRUN: six custom zero/fractional/sign/explicit-factor controls. Generate these
+and merge case lists with root44 before native recording if useful (58 total).
 
-After M4az, continue power. temp/author-hit-power.py is prepared but NEVER RUN;
-it would write36 hitpower programs. temp/power-next-notes.txt records read-only
-integration hypotheses, not native results. Get/GivePower lack runtime consumers;
-Damage is literal-parsed, .7/.6 config rules are not passed into Match actors,
-and helper/root sharing is unverified. Add precision/omission cases if useful,
-record native behavior first, then implement. Do not mix unmeasured assumptions
-with findings. The HITDEF-SCHEMA audit and PLAN/COMPATIBILITY retain broad gates.
+tests/reference_probe.py has an UNSTAGED next-checkpoint --rule extension:
+two finite power factors, prepared-config hash and strict replay recipe checks.
+Pure preparation/invalid CLI tests pass; original reference config hash unchanged.
+This tool change and all hitpower inputs belong to M4ba, outside M4az staging.
+After measuring, add integrated numeric coverage and implement typed source
+expressions/default evaluation order, contact transfer/timing and configured
+rules/ownership. Zero factors are meaningful; use explicit presence, not a zero
+sentinel. Broader pause/foreign/projectile/team/multiple-contact pools remain
+separate gates. Preserve every existing native expectation.
 
 ## Scope and environment
 
