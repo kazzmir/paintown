@@ -4,6 +4,18 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bg: ground/guard timing
+
+Predecessor/reversal b1b8864c. Adds compiled ground hit/slide times and their
+four dependent guard timing fields, with re-executed source defaults, native
+order, truncation/clamping/bottom and load validation. Twenty-one native text
+programs pin 348 observations, four load rejections and84 source hashes. Focused
+integrated races pass (29.907s); fresh native defaults/order/rejection and four
+actual apps/five captures pass. Full scoped races pass in
+m4bg-final-full-race.log: Match 614.394s, Character 11.208s, System 4.601s, storyboard 1.789s, stock/resources 6.528s. See HIT-GROUND-TIMING.md and HANDOFF.md. Routing is
+44/81 (54.3%), with37 keys still literal/absent. Stop after this local checkpoint
+for user testing; existing alpha/spark and broader engine gates remain open.
+
 ## M4bf: storyboard canvas placement
 
 Predecessor/reversal99b4605c. Retains localcoord/default320x240, propagates it to

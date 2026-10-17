@@ -7,12 +7,11 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user authorized correcting storyboard scaling, then resuming one bounded
-combat batch through the next checkpoint for user testing. M4bf corrects the
-storyboard canvas; M4bg covers ground.hittime/ground.slidetime expression
-compilation and their measured defaults/order/consumers. Stop after M4bg's
-validated local checkpoint. Preserve local history and do not push or begin
-another feature family. Upstream integration is committed as 99b4605c.
+The current allocation is complete: storyboard canvas scaling (M4bf, b1b8864c)
+and ground hit/slide plus four dependent guard timing fields (M4bg). Focused,
+native, production and full scoped race checks pass. M4bg is the completed local
+checkpoint; pause for the user's testing and next allocation. Do not push or
+start another feature family. Upstream integration is committed as 99b4605c.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 

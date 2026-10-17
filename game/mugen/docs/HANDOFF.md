@@ -1,20 +1,55 @@
 # Current handoff
 
-Updated 2026-10-17. The user requested the storyboard scaling fix followed by
-one bounded combat batch through the next checkpoint for user testing. M4bf
-is validated; commit it, then implement ground.hittime/ground.slidetime schemas
-with native defaults/order/type controls (M4bg). Stop after that validated local
-checkpoint. Do not push. All authored changes stay under game/mugen/.
+Updated 2026-10-17. The user's allocation is complete: storyboard scaling
+(M4bf, b1b8864c), followed by the bounded ground/guard timing batch (M4bg).
+M4bg is the completed local checkpoint, with predecessor/reversal b1b8864c.
+Native, focused, production and full regression gates pass. Pause for the user's
+testing and next allocation. Do not push or begin another feature family.
+All authored changes stay under game/mugen/. No new binary files are tracked.
+
+## M4bg verified checkpoint
+
+Read HIT-GROUND-TIMING.md. Predecessor/reversal b1b8864c. Twenty-one original
+text programs pin 348 numeric observations, four native load rejections and
+84 source hashes. Do not rerun either temp/author-m4bg-* script or regenerate
+expected values from Go. Both pre-native input manifests still match all files.
+Ground defaults are 0; guard hit/slide/control and air guard control re-execute
+their inherited source independently. Negative/bottom become 0; runtime floats
+truncate; literal floats and tuples reject. All 44 routed keys now have native
+relative order, with source-forward/reverse controls.
+
+Focused Match races pass 21 new, 19 M4be and four M4bd pause programs (29.907s).
+Engine/evaluator/CNS/combat races pass 1.454s/1.020s/1.013s/1.012s. Three fresh
+native reproductions (guard source defaults, reversed order, float rejection)
+pass, recorded in temp/m4bg-replay-*.log. Initial validation then hit a stale
+pause-family directory name in a disposable app recipe before launch. This is
+retained in temp/m4bg-validation.log; it is corrected in the final pipeline.
+
+Final pipeline: temp/resume-m4bg-validation.py, log m4bg-final-validation.log.
+Four apps/five captures pass prepared-source/config/binary/PNG/runtime audit
+in temp/m4bg-evidence-audit.json. Shared binary SHA256:
+d5efec4146a6083cd46c4d260d0244f2bba9aa2b1a1b377de05541cc6a36724d.
+Apps exercise ground expressions, air guard inherited defaults, mixed stock
+fighters at 3/7s and KFM intro at 640x480. Stock 7s was visually inspected: two
+fighters, stage/HUD intact, no persistent effects. These are smoke checks, not
+full-frame parity. Full scoped races pass in temp/m4bg-final-full-race.log:
+Match 614.394s, Character 11.208s, System 4.601s, storyboard 1.789s,
+stock/resources 6.528s.
+Final validation pipeline exited 0. No GUI test/native/application client remains.
+Root module baseline upstream-post-merge-module.sha256 passes; native original
+executable SHA remains d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
+Existing six alpha/two spark failures remain open. No new binaries are tracked.
 
 ## M4bf storyboard canvas
 
-Read STORYBOARD-CANVAS.md. Predecessor99b4605c, the completed upstream merge.
-Six native controls and all six app comparisons pass12 marker rectangles/counts
-and24 edge samples. Tests now render the real Player on the GPU and compare
-native measurements. Parser/storyboard races1.013s/1.787s, System/resources
+Read STORYBOARD-CANVAS.md. Predecessor 99b4605c, the completed upstream merge.
+Six native controls and all six app comparisons pass 12 marker rectangles/counts
+and 24 edge samples. Tests now render the real Player on the GPU and compare
+native measurements. Parser/storyboard races 1.013s/1.787s, System/resources
 4.613s/6.530s pass; real KFM intro and mixed KFM/KFM720 fight smokes pass.
-Stock intro at640x480 was visually inspected. Full Match is unchanged and was
-not rerun; M4be remains its latest full-suite result. Binary resources/captures
+Stock intro at 640x480 was visually inspected. Match was unchanged and was not
+rerun at that checkpoint; M4bg's full suite above covers both changes.
+Binary resources/captures
 stay in ignored temp/. Root module baseline upstream-post-merge-module.sha256
 passes. No GUI client remains after validation. Existing alpha/spark failures
 remain open. Evidence: temp/m4bf-validation.log; tests/storyboard_probe.py.
@@ -41,7 +76,7 @@ float truncation, bottom0 and negative0 are measured. See HIT-PAUSE.md.
 
 Focused Match races pass all19 plus four M4bd controls in14.466s; pure engine/
 evaluator/CNS/combat races pass. The pre-fix host/atomic compilation failures
-are retained in m4be-before-pause-compilation.log. Pipeline96878 exited0:
+are retained in m4be-before-pause-compilation.log. Pipeline96878 exited 0:
 temp/m4be-validation.log. Three fresh native programs (default, full reverse
 order and float rejection) and three actual apps/four captures pass. The single
 full scoped race suite passes in m4be-full-race.log: Match607.027s,
@@ -59,7 +94,7 @@ App audit temp/m4be-evidence-audit.json passes source/prepared inputs, config,
 binary, PNG dimensions/hashes and runtime logs. Binary SHA256:
 0daa6080198b869d3e8d806c8f4646149267a9864c5b6c0566d50030ad179da8.
 Two app programs exercise expressions/default inheritance, plus mixed stock
-KFM/KFM720 at3/7s. The stock7s image was visually inspected: two fighters,
+KFM/KFM720 at 3/7s. The stock7s image was visually inspected: two fighters,
 stage/HUD intact, no persistent effects. These are smoke/provenance observations,
 not full-frame parity. The first audit script assumed kfm720.snd; it was fixed
 to the actual stock kfm720/kfm.snd before the final audit. No runtime/data change.
@@ -149,7 +184,7 @@ The latest full scoped suite remains M4bb (Match 618.564s); M4bc production/stoc
 scoped checks also pass. No full Match rerun was needed for this test/data-only
 checkpoint.
 
-Validation pipeline93682 exited0: m4bd-validation.log. Fresh native fatal audio,
+Validation pipeline93682 exited 0: m4bd-validation.log. Fresh native fatal audio,
 protected spark and fatal pause reproduce the pinned goldens. Four final apps /
 four captures pass prepared-resource/config/binary/PNG/runtime provenance audit.
 Two private-device PCM outputs match all 16 selected stereo amplitudes exactly
@@ -211,7 +246,7 @@ fifteen captures (suffix go-m4bc-verified), all11 color regions/88,000 pixels an
 Binary48df6ff9c82e06c1f73b459cd3265a0ceaef0edd18ec9310eda8a22e6b2c5548;
 results m4bc-final-app-audit.json. Four fresh native pixel/numeric replays pass
 m4bc-replays.log. Scoped sequential races pass m4bc-scoped-race.log:
-System4.713s, stock tests6.502s; stage builds. Root module checks pass. Stock7s
+System4.713s, stock tests6.502s; stage builds. Root module checks pass. Stock 7s
 was visually inspected: two recovered fighters/no persistent effects. No GUI
 client remains. Native original executable remains unchanged.
 

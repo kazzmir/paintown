@@ -744,3 +744,24 @@ byte. Go output cannot record a native golden. The old `sprite_render_probe.py`
 remains the independent 28-case flipmark geometry/edge gate. See
 [SPRITE-SAMPLING.md](../docs/SPRITE-SAMPLING.md) for measured rules, candidate
 failures and current validation status.
+
+## Storyboard canvas and ground/guard timing checkpoints
+
+M4bf's `storyboard_probe.py` compares generated RGB markers against six native
+canvas/window configurations. Sources and measured metadata are text; generated
+SFFs and captures stay in ignored temp/. See [canvas evidence](../docs/STORYBOARD-CANVAS.md)
+for sequential native/application commands and the GPU regression test.
+
+M4bg adds21 `hittiming-ground-*` programs,348 numeric observations and four
+native rejections for ground hit/slide plus their dependent guard timings.
+The normal Go suite replays every pinned input through the shared Match code.
+Fresh native reproduction requires BUILD.md's private display/audio environment:
+
+```
+python3 game/mugen/tests/reference_probe.py --fixture hittiming-ground-guard-side-effects --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-delay 0 --pages 0 --seconds 6
+```
+
+Do not record expected values from Go or regenerate frozen source inputs.
+[Timing evidence](../docs/HIT-GROUND-TIMING.md) lists defaults, field order,
+validation and remaining gates. Neither passing these controls nor a successful
+storyboard load establishes full engine/asset/rendering compatibility.

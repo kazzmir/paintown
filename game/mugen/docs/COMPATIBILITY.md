@@ -13,9 +13,19 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
-M4bf fixes storyboard localcoord/default320x240 loading, background canvas size
+M4bg compiles ground.hittime/ground.slidetime plus the four dependent guard
+timing fields. Native defaults re-evaluate source expressions at their measured
+evaluation points; runtime floats truncate, negative/bottom become 0, and literal
+floats/multi-value tuples reject. Twenty-one programs pin 348 observations,
+four native rejections and 84 source hashes. Focused Match races pass all 21
+plus prior pause controls (29.907s); core races pass. Routing is now 44/81
+(54.3%), with 37 literal/absent keys. Fresh native reproductions, four actual
+apps/five captures and the full scoped race suite pass (Match 614.394s).
+See [HIT-GROUND-TIMING.md](HIT-GROUND-TIMING.md) and HANDOFF.md.
+
+M4bf fixes storyboard localcoord/default 320x240 loading, background canvas size
 and the native storyboard-to-game-to-window fit/stretch path. Six native marker
-programs match12 rectangles/counts and24 edge samples in GPU tests and actual
+programs match 12 rectangles/counts and 24 edge samples in GPU tests and actual
 application captures. Stock KFM intro placement is visually checked; stock match,
 System/resource races pass. Full storyboard/audio/renderer parity remains open.
 See [STORYBOARD-CANVAS.md](STORYBOARD-CANVAS.md).

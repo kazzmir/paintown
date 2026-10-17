@@ -1,7 +1,7 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-17 through M4bf (storyboard canvas), after M4be and upstream
-merge 99b4605c. This ledger reconciles current source/tests with the historical
+Updated 2026-10-17 through M4bg ground/guard timing and M4bf storyboard
+canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
 
@@ -14,7 +14,7 @@ does not promote an entire controller from one passing parameter/default.
 | Targets/throws | Acquired target IDs/generations, custom state/animation ownership, binding and stock throw controls. TARGETS.md, OWNERSHIP.md, BINDING.md, THROWS.md. | Full foreign/helper/pause/projectile combinations and all controller variants. |
 | Hit/guard selection | Native hit flags, posture, reciprocal priority, heading and draw priority. HIT-FLAGS.md, COMBAT-PRIORITY.md, CONTACT-FACING.md. | Juggle/chains, reversals, teams and remaining HitDef constraints. |
 | Damage/power/KO vectors | Typed expressions, power defaults/rules, lethal caps, fatal guard normalization, fall damage and measured KO velocities. HIT-POWER.md, HIT-LETHALITY.md. | Fall recovery, all GetHitVar selectors and absolute KO/round clocks. |
-| HitDef timing | M4be compiles pausetime/guard.pausetime with native source defaults, reversed component evaluation, truncation, bottom/negative handling and malformed-input checks. HIT-PAUSE.md; prior FATAL-GUARD-CUES.md covers lethal cue selection. | Other hit/slide/control timing fields, broad foreign/helper/projectile/Pause/SuperPause combinations and absolute KO/round clocks are separate batches. |
+| HitDef timing | M4be compiles pausetime/guard.pausetime with native source defaults, reversed component evaluation, truncation, bottom/negative handling and malformed-input checks. HIT-PAUSE.md. M4bg adds ground.hittime/ground.slidetime and their four dependent guard timings, including source defaults and measured order. HIT-GROUND-TIMING.md. | Air/down hit timing, broad foreign/helper/projectile/Pause/SuperPause combinations and absolute KO/round clocks are separate batches. |
 | Projectiles/reversals | Projectile currently constructs a Character-derived object; ReversalDef stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. EXPLODS.md, RGB-CONSUMERS.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
@@ -28,10 +28,10 @@ does not promote an entire controller from one passing parameter/default.
 At the start of M4be: 87/89 documented controller names registered (97.8%),
 127/127 trigger names recognized (100%), 216/216 loaded stock state programs
 compile (100%), and 36/81 documented HitDef keys have expression routing
-(44.4%). M4be adds the two pause keys: **38/81 (46.9%)**, leaving 43 keys
-literal or absent. The other metrics are unchanged. See
+(44.4%). M4be added the two pause keys (38/81). M4bg adds six ground/guard timing
+keys: **44/81 (54.3%)**, leaving 37 keys literal or absent. The other metrics are unchanged. See
 [../README.md](../README.md) for numerator/denominator sources and
-[HIT-PAUSE.md](HIT-PAUSE.md) for the new native-backed scope.
+[HIT-GROUND-TIMING.md](HIT-GROUND-TIMING.md) for the new native-backed scope.
 Registration includes partial and empty behavior. No aggregate behavioral
 compatibility or line/branch test percentage is established by these counts.
 
@@ -46,7 +46,9 @@ distinguish missing Go behavior from operations disabled in the beta itself.
 
 The user authorized M4bf storyboard scaling, followed by one bounded combat
 batch through the next checkpoint. M4bf is validated. M4bg covers compiled
-`ground.hittime`/`ground.slidetime`, measured defaults/order/types and focused
-consumer controls. Commit the validated result and stop for user testing.
+`ground.hittime`/`ground.slidetime` and their four dependent guard fields.
+Focused integrated races, fresh native controls, four actual application runs
+and the full scoped race suite pass. M4bg is the completed local checkpoint;
+pause for user testing.
 Do not start further timing fields, round clocks or renderer families. Existing
 strict alpha/spark failures remain open.
