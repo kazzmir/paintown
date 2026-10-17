@@ -63,6 +63,8 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
+	log.SetFlags(log.Lshortfile | log.Ldate | log.Lmicroseconds)
+
 	dataDir := flag.String("data-dir", "data-new/mugen", "Path to the MUGEN data directory")
 	quickMatch := flag.String("quick-match", "", "Start a versus match with two character DEF paths, separated by a comma")
 	quickStage := flag.String("stage", "stages/kfm.def", "Stage DEF for --quick-match")

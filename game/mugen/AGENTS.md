@@ -8,11 +8,11 @@ validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
 The user pushed the README checkpoint and resumed bounded implementation.
-M4be is committed as f27496f9 with all validation passing. The user clarified
-that the extensionless Bash launcher caused the binary concern and requested
-renaming it to mugen.sh. Complete that source/ignore documentation checkpoint,
-then fetch and integrate the configured upstream change as explicitly requested.
-Preserve local checkpoint history; do not push or start another feature family.
+M4be is committed as f27496f9, and the launcher rename/ignore checkpoint as
+6fb25376. The requested upstream integration includes bac65e96 and3d638348;
+configuration/system/stock races and application build/logger checks pass.
+Finish its merge commit, then stop for the next bounded allocation. Preserve
+local checkpoint history; do not push or start another feature family.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 
@@ -21,6 +21,8 @@ Read `README.md`,
 All project changes for this effort belong under `game/mugen/`. Do not modify
 the root Go module, other engines, or existing data trees. Keep working notes,
 compatibility evidence, and handoffs in `docs/`.
+The explicitly requested upstream merge adds font requirements to root go.mod;
+preserve those incoming changes. Continue authoring port changes only here.
 
 The user explicitly prohibits adding binaries to the repository. Commit source,
 text fixtures and documentation only; keep compiled executables, generated

@@ -3,7 +3,7 @@
 Use `game/mugen/mugen.sh --check` or `game/mugen/mugen.sh --game`. The launcher uses
 the repository module with alternate metadata at `game/mugen/mugen.mod` and
 `mugen.sum`, via Go's `-modfile` option. Both metadata files remain inside the
-approved project boundary; root `go.mod` and `go.sum` are unchanged. This is not
+approved project boundary; the launcher keeps root module metadata read-only. This is not
 a separate nested module. When running Go directly from the repository root,
 include `-modfile=game/mugen/mugen.mod -mod=readonly`.
 
@@ -12,6 +12,9 @@ for TrueType/OpenType/TTC parsing and CPU rasterization, with x/text v0.29.0 for
 its character maps. These versions were already cached/transitive dependencies
 of Ebitengine. No dependency download or root module change was required.
 Future repository dependency updates must be reconciled into this scoped overlay.
+The user-requested upstream merge of bac65e96 also declares the same x/image
+and x/text versions in root go.mod. That incoming update is preserved; the
+scoped overlay remains compatible and runtime/build commands still use it.
 
 The launcher keeps build caches and disposable files under `temp/`. Font and
 Character packages still import Ebitengine and need DISPLAY even for CPU tests;

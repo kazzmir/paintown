@@ -35,7 +35,7 @@ func (s SoundConfig) Validate() error {
 		value int
 	}{{"MasterVolume", s.MasterVolume}, {"WavVolume", s.WavVolume}, {"BGMVolume", s.BGMVolume}} {
 		if volume.value < 0 || volume.value > 100 {
-			return fmt.Errorf("%s must be in 0..100", volume.name)
+			return fmt.Errorf("%s must be in 0..100 but was %d", volume.name, volume.value)
 		}
 	}
 	return nil

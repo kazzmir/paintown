@@ -4,8 +4,9 @@ Updated 2026-10-17. The user pushed the README checkpoint and resumed the bounde
 workflow. M4be refreshes the current behavior ledger and implements two HitDef
 pause keys. Validation passed and M4be is committed as `f27496f9`. The user
 identified the extensionless launcher as the binary concern and requested
-renaming it to mugen.sh, then integrating an upstream change. **Finish the rename
-checkpoint, fetch/merge configured upstream, then stop; no new feature batch.**
+renaming it to mugen.sh, then integrating upstream. Rename checkpoint6fb25376
+is committed; upstream checks pass. **Finish the merge commit, then stop for
+the next allocation; no new feature batch.**
 Historical continuous-iteration instructions below do
 not override that boundary. Never push. All authored changes stay under
 `game/mugen/`. Read [../AGENTS.md](../AGENTS.md), [COVERAGE.md](COVERAGE.md),
@@ -74,11 +75,25 @@ ignore rules keep build outputs out. Bash syntax/help and the expression runner
 pass. Focused renamed-launcher stock/production-flow checks also pass in
 temp/launcher-rename-flow.log. No Go runtime changed.
 
-Then fetch and merge origin/go-rewrite-mugen after the rename commit. The
-currently visible upstream commit is3d638348 (one-line sound diagnostic change);
-fetch may reveal newer work. User explicitly requested integration. Keep local
-checkpoints, preserve unrelated untracked files, inspect the incoming diff and
-run relevant checks. No remote push is authorized.
+Rename checkpoint6fb25376 is complete. Fetch found two upstream commits:
+bac65e96 adds filename/date/microsecond logging plus the already scoped font
+dependencies in root go.mod;3d638348 includes the invalid value in sound-volume
+errors. The requested no-rebase merge is clean and preserves both local
+checkpoints. Root go.mod matches upstream exactly; no authored root edits.
+The user's untracked go.sum and other unrelated files are preserved.
+
+Post-merge configuration/System/stock races pass in
+temp/upstream-integration-race.log (1.041s / 4.803s / 6.497s). Production build
+passes; temp/upstream-logging-smoke.log verifies source filename/date/microseconds
+on an intentional missing-data failure before audio/window creation. No full
+Match rerun for these diagnostic/dependency declarations: the runtime engine
+is unchanged from the full607.027s race checkpoint.
+
+The module integrity baseline is now temp/upstream-post-merge-module.sha256.
+The older before-font baseline is historical and will intentionally differ for
+go.mod after upstream's declared dependency additions. Do not undo those
+incoming changes. Complete the merge commit with these findings, then stop.
+No remote push is authorized; await a new feature allocation.
 
 ## Latest documentation checkpoint: project README
 

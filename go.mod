@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.9.8
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96
+	golang.org/x/image v0.31.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -16,4 +17,5 @@ require (
 	github.com/jezek/xgb v1.3.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 )

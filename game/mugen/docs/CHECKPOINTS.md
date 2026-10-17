@@ -4,6 +4,19 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## Requested upstream integration
+
+After rename checkpoint6fb25376, fetch/merge integrates bac65e96 and3d638348
+without rebasing local checkpoints. Incoming changes add application log source/
+timestamp flags, the invalid sound volume value in errors, and matching font
+dependency declarations in root go.mod. Root metadata matches upstream exactly;
+the user-requested incoming change is preserved and own edits stay under MUGEN.
+Configuration/System/stock race checks pass (1.041s / 4.803s / 6.497s), as do
+production build and an intentional missing-data logger smoke. The user's
+untracked go.sum remains unchanged. The fresh module integrity baseline is
+temp/upstream-post-merge-module.sha256. No new engine behavior or full Match
+rerun; its M4be full race result remains607.027s. Stop after this merge checkpoint.
+
 ## Launcher source clarification
 
 After M4be (`f27496f9`), the user requested reconciling an apparent added binary.
