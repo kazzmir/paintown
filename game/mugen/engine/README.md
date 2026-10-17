@@ -21,6 +21,14 @@ RunStatePass is shared by Character and the headless tests. It executes -3/-2/-1
 in order, then the positive transition chain. A transition aborts its controller
 block while later negative levels still run, as observed in the reference.
 
+The former ten-state cap is replaced by the beta's measured 2500-loop guard.
+Its post-increment greater-than check allows 2502 positive state executions if
+the last terminates; a further continuation fails and names the pending state.
+Fifteen native programs cover self/alternating chains, terminal boundaries and
+negative-state launches. Headless and production Character tests agree. The
+budget across separate engine/physics continuations still needs integration and
+reference tests; this is the positive-chain boundary, not complete tick parity.
+
 State entry now has a single explicit EnterState path. Entry expressions compile
 once and evaluate on entry, with omission/U semantics and combat persistence.
 Executing controllers at Time=0 does not reapply entry attributes. Native probes

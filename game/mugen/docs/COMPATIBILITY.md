@@ -236,6 +236,13 @@ programs; full races and a fresh rejection replay pass. The earlier empty-state
 acceptance assumption is superseded. Complete validation schemas and the
 transition cap still need comparison.
 
+M4s replaces the provisional ten-state continuation cap with the beta's measured
+post-increment 2500-loop guard: a terminal 2502nd positive execution succeeds;
+continuing further fails and names the pending state. Fifteen native programs,
+pure/full races and fresh success/failure replays cover the positive-chain
+boundary. Physics/engine resumptions sharing a tick budget and complete phase/
+ownership/pause behavior remain open. See REFERENCE.md and engine/README.md.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

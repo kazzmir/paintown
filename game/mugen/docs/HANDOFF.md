@@ -370,16 +370,28 @@ already rejected empty states correctly. A finite state-chain probe is drafted
 as state-chain.cns/.air but not yet recorded or committed: measure the provisional
 ten-transition cap next.
 
+M4r is commit `4d53ebd2`. M4s replaces the ten-state positive-chain cap with the
+measured native guard: 2502 executions can terminate; continuing beyond that
+raises the displayed 2500-loop error and names the pending state. Fifteen native
+programs (84 integer packet values/eight rejections), headless/full races and
+fresh overflow/negative-launch replays pass. Read-only executable inspection
+confirms its post-increment greater-than comparison. See REFERENCE.md. The budget
+across separate physics/engine resumes and landing phases remain open. Current
+finishTick enters 52 after movement without executing Time=0 CNS that tick;
+compare native landing next, including shared continuation budget.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next measure native state-chain continuation/limits, then continue complete
+Next compare native landing/physics state resumption and shared tick budgets,
+then continue complete
 HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
-Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains
-provisional. State ownership, match flow, font rendering parity, and many controller/world
+Selected stock v2 palettes and the deterministic one-on-one flow are integrated.
+M4s supersedes the provisional ten-transition limit. State ownership, match flow,
+font rendering parity, and many controller/world
 behaviors are incomplete. Do not call M1 or full M0/M2 complete.
 
 The reference quick match loaded successfully through match-loop initialization

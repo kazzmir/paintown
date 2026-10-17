@@ -129,11 +129,55 @@ func TestStateBindingReferenceTrace(t *testing.T) {
 func TestStatePassRunawayAndMissingState(t *testing.T) {
 	h := &passHost{entryHost: newEntryHost(), sm: NewStateMachine()}
 	h.states = map[int]*cns.StateDef{7: stateSource(t, "[State 7, repeat]\ntype=ChangeState\ntrigger1=1\nvalue=7\n")}
-	if err := h.sm.RunStatePass(h.states, h); err == nil || !strings.Contains(err.Error(), "transitions") {
+	if err := h.sm.RunStatePass(h.states, h); err == nil || !strings.Contains(err.Error(), "stopped after 2500 loops") {
 		t.Fatal(err)
 	}
 	h.state = 404
 	if err := h.sm.RunStatePass(h.states, h); err == nil || !strings.Contains(err.Error(), "404") {
 		t.Fatal(err)
+	}
+}
+
+type chainHost struct{ *passHost }
+
+func (h *chainHost) LookupIdentifier(name string) (evaluator.Value, bool) {
+	switch name {
+	case "roundstate":
+		return evaluator.Int(2), true
+	case "power":
+		return evaluator.Int(int32(min(3000, h.power))), true // Stock fixture power ceiling.
+	}
+	return h.passHost.LookupIdentifier(name)
+}
+
+func TestNativeStateChainBoundariesWithoutDisplay(t *testing.T) {
+	for _, name := range []string{"state-chain", "state-chain-2499", "state-chain-2500", "state-chain-2501", "state-chain-2502", "state-chain-2503", "state-chain-large",
+		"state-chain-pairs-1251", "state-chain-pairs-1252", "state-chain-pairs-2499", "state-chain-pairs-2500", "state-chain-pairs-2501",
+		"state-chain-self", "state-chain-negative", "state-chain-negative-overflow"} {
+		t.Run(name, func(t *testing.T) {
+			h := &chainHost{referencePassHost(t, name)}
+			h.ctrl = true
+			data, err := os.ReadFile("../tests/testdata/reference/" + name + ".json")
+			if err != nil {
+				t.Fatal(err)
+			}
+			var reference struct {
+				Failure string `json:"expected_load_error"`
+			}
+			if err := json.Unmarshal(data, &reference); err != nil {
+				t.Fatal(err)
+			}
+			err = h.sm.RunStatePass(h.states, h)
+			if reference.Failure != "" {
+				if err == nil || !strings.Contains(err.Error(), reference.Failure) {
+					t.Fatal("native runaway boundary differs", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			compareReferenceVariables(t, name, h.vars)
+		})
 	}
 }

@@ -4,6 +4,32 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4s — Native state continuation limit and pending-state diagnostics
+
+Fifteen native programs pin seven accepted packets (84 integer values) and
+eight runtime runaway rejections. The former ten-state cap rejected a legal
+24-iteration chain. Native self/alternating/terminal and negative-launched cases
+establish the actual boundary: 2502 positive executions may complete, while a
+further continuation fails with the displayed 2500-loop message naming the
+pending state. Source/AIR/executable hashes and rejection text are checked.
+
+Read-only inspection of the pinned executable confirms why the displayed and
+execution counts differ: an initial call precedes a post-increment counter test
+using greater-than 2500. No binary or reference assets are edited or committed.
+See REFERENCE.md for addresses and the exact inference boundaries.
+
+The shared headless executor now follows that boundary and retains source-file
+context in runaway diagnostics. Pure engine races and the full scoped race suite
+pass, with both hosts exercising all 15 native programs. Fresh terminal-overflow
+and maximum negative-launched success replays match. Root modules are unchanged.
+M4r's reversal point is commit `4d53ebd2`.
+
+Remaining: the budget across separate engine/physics resumptions, landing/physics
+phase timing, all world/entity ownership and Pause/SuperPause. The current
+Character landing path enters 52 in finishTick without running its Time=0 CNS
+until the next tick; compare that path next. This checkpoint does not establish
+complete per-tick state scheduling or full M2/M4 compatibility.
+
 ## M4r — Empty-state rejection and validation before merge
 
 Five minimal native cases distinguish empty positive/negative declarations,

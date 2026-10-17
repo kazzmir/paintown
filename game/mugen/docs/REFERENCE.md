@@ -43,6 +43,39 @@ are empty-load-default/explicit/negative, empty-duplicate-native and
 empty-shadowed-native. M4q's supposed native acceptance of empty declarations was
 an assumption, now disproved; no change to the executor's rejection was needed.
 
+## M4s positive state-chain boundary
+
+Fifteen original programs cover a 24-iteration alternating chain, total positive
+execution lengths 2499..2503, larger alternating chains, a self loop, and chains
+launched from -2. Seven successful packets contain 84 integer observations;
+eight programs reach the native runaway error. A terminal positive execution
+number 2502 succeeds; if that execution transitions again, native rejects the
+pending state before its controllers execute. The 2503 terminal-chain error names
+704, the negative-launch overflow names 703, and other rejected chains name
+701/702 as pinned. All accepted chains complete at Time=0 with zero fixture-frame
+delta; state entry power additions also match. The fixture resets its local
+counter at launch to exclude unrelated round-control timing.
+
+Read-only objdump inspection corroborates the counter interpretation in the
+same hash-pinned executable. At VA 0x43c6cb an initial state-execution call precedes
+the loop. The check at 0x43c6dd copies the old counter, increments it, compares the
+old value with 0x9c4, and uses signed greater-than to branch to the error at
+0x43ce5c. The next execution is called at 0x43c701. Thus the displayed 2500 is
+not an execution count; it permits 2501 follow-ups after the first execution.
+This explains the probes' 2502 boundary. No disassembly/binary is bundled.
+
+The shared executor and production Character both replay every pinned success/
+failure, with source/AIR hashes checked in Character. Fresh state-chain-overflow-
+replay and state-chain-negative-replay match. The early state-chain-native capture
+included absolute intro-frame values; the final state-chain-boundary fixture
+resets that counter and is the pinned successful base program.
+
+The inspected native function can return to positive execution after engine/
+physics processing without resetting its counter. Current Go RunPositivePass
+calls have separate budgets. Native landing/physics phase probes and shared
+budget integration remain necessary; this checkpoint is limited to each
+positive chain and its negative-state launch behavior.
+
 ## Wine startup, 2026-10-16
 
 Environment: Wine 9.0, a private Win32 prefix at `temp/wine-reference`, and a

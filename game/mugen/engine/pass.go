@@ -6,6 +6,10 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cns"
 )
 
+// StateLoopLimit is the beta's displayed loop limit. Its post-increment > check
+// permits 2502 positive executions when the final pass does not transition.
+const StateLoopLimit = 2500
+
 // RunStatePass runs negative states in order, then the active positive-state
 // chain. A transition aborts its controller block; later negative levels still
 // execute before the positive chain. The caller owns pause/physics/time phases.
@@ -36,9 +40,7 @@ func (sm *StateMachine) RunStatePass(states map[int]*cns.StateDef, env Environme
 // RunPositivePass continues the current state after an engine transition without
 // running negative states a second time in the same tick.
 func (sm *StateMachine) RunPositivePass(states map[int]*cns.StateDef, env Environment) error {
-	// Retain the existing diagnosed cap until its exact reference limit is
-	// measured. This is a runaway guard, not a conformance claim about the cap.
-	for i := 0; i < 10; i++ {
+	for i := 0; i < StateLoopLimit+2; i++ {
 		state := states[env.GetStateNo()]
 		if state == nil {
 			return fmt.Errorf("active state %d is missing", env.GetStateNo())
@@ -56,5 +58,9 @@ func (sm *StateMachine) RunPositivePass(states map[int]*cns.StateDef, env Enviro
 			return nil
 		}
 	}
-	return fmt.Errorf("exceeded 10 state transitions in one tick")
+	err := fmt.Errorf("State machine stuck in loop (stopped after %d loops): %d", StateLoopLimit, env.GetStateNo())
+	if state := states[env.GetStateNo()]; state != nil {
+		return stateError(state, err)
+	}
+	return err
 }
