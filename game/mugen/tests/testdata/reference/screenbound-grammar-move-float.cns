@@ -1,0 +1,191 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+
+
+[State 700, control]
+type=ScreenBound
+trigger1=1
+value=1
+movecamera=1.0,0
+
+[State 700, control]
+type=PosSet
+trigger1=Time=0
+x=130-CameraPos X
+y=0
+
+[State 700, control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=CameraPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=ScreenPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Vel X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Pos Y
+
+[State 700, control]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Enemy,Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=CameraPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=1
+fv=7
+value=Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=1
+fv=8
+value=ScreenPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=Vel X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=Pos Y
+
+[State 700, control]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=Enemy,Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=12
+value=CameraPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=13
+value=Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=14
+value=ScreenPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=15
+value=Vel X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=16
+value=Pos Y
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=17
+value=Enemy,Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=18
+value=CameraPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=19
+value=Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=20
+value=ScreenPos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=21
+value=Vel X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=22
+value=Pos Y
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=23
+value=Enemy,Pos X
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=PosSet
+trigger1=Time=0
+x=30-CameraPos X
+y=0

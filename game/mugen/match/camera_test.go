@@ -12,14 +12,24 @@ import (
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 )
 
 func TestNativeCameraFollowing(t *testing.T) {
-	paths, err := filepath.Glob("../tests/testdata/reference/camerafollow-*.json")
-	if err != nil || len(paths) != 20 {
+	replayNativeCameraPrograms(t, "camerafollow-*.json", 20)
+}
+
+func TestNativeScreenBoundaries(t *testing.T) {
+	replayNativeCameraPrograms(t, "screenbound-*.json", 47)
+}
+
+func replayNativeCameraPrograms(t *testing.T, pattern string, count int) {
+	t.Helper()
+	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
+	if err != nil || len(paths) != count {
 		t.Fatal("incomplete native camera corpus", len(paths), err)
 	}
 	for _, path := range paths {
@@ -29,12 +39,14 @@ func TestNativeCameraFollowing(t *testing.T) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				CNSHash   string `json:"cns_sha256"`
-				AIRHash   string `json:"air_sha256"`
-				StageHash string `json:"stage_fixture_sha256"`
-				Local     string `json:"localcoord"`
-				P2Local   string `json:"p2_localcoord"`
-				Captures  []struct{ Variables map[string]float64 }
+				CNSHash    string `json:"cns_sha256"`
+				AIRHash    string `json:"air_sha256"`
+				StageHash  string `json:"stage_fixture_sha256"`
+				Local      string `json:"localcoord"`
+				P2Local    string `json:"p2_localcoord"`
+				StageError string `json:"expected_stage_error"`
+				LoadError  string `json:"expected_load_error"`
+				Captures   []struct{ Variables map[string]float64 }
 			}
 			if err := json.Unmarshal(data, &reference); err != nil {
 				t.Fatal(err)
@@ -52,17 +64,31 @@ func TestNativeCameraFollowing(t *testing.T) {
 				return data
 			}
 			stem := strings.TrimSuffix(path, ".json")
+			// Check every authored input, including programs the reference rejects.
+			airBytes := checked(stem+".air", reference.AIRHash)
+			checked(stem+".stage.def", reference.StageHash)
 			file, err := cns.ParseNamed(bytes.NewReader(checked(stem+".cns", reference.CNSHash)), stem+".cns")
 			if err != nil {
 				t.Fatal(err)
 			}
 			file.SetLanguageVersion("1.1")
-			frames, err := air.Parse(bytes.NewReader(checked(stem+".air", reference.AIRHash)))
+			if reference.LoadError != "" && reference.StageError == "" {
+				if err := character.NewStateMachine().CompileState(file.States[700]); err == nil || !strings.Contains(err.Error(), "state 700 controller") || !strings.Contains(err.Error(), filepath.Base(stem)+".cns") {
+					t.Fatal("native-rejected controller was not rejected with source context", err)
+				}
+				return
+			}
+			frames, err := air.Parse(bytes.NewReader(airBytes))
 			if err != nil {
 				t.Fatal(err)
 			}
-			checked(stem+".stage.def", reference.StageHash)
 			background, err := stage.LoadStage(stem+".stage.def", "../temp/mugen-1.1b1/stages")
+			if reference.StageError != "" {
+				if err == nil || !strings.Contains(strings.ToLower(err.Error()), reference.StageError) || !strings.Contains(err.Error(), filepath.Base(stem)+".stage.def") {
+					t.Fatal("native-rejected stage was not rejected with context", err)
+				}
+				return
+			}
 			if err != nil {
 				t.Fatal(err)
 			}

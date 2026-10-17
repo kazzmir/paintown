@@ -211,6 +211,7 @@ func (m *Match) resetRound() error {
 		c.X, c.Y, c.Z, c.Facing = x*scale, y*scale, z*scale, facing
 		c.StartX, c.StartY, c.StartZ, c.StartFacing = c.X, c.Y, c.Z, c.Facing
 		c.LeftBound, c.RightBound = s.PlayerInfo.LeftBound*scale, s.PlayerInfo.RightBound*scale
+		c.ScreenLeftMargin, c.ScreenRightMargin = s.Bound.ScreenLeft*scale, s.Bound.ScreenRight*scale
 		c.TopBound, c.BotBound = s.PlayerInfo.TopBound*scale, s.PlayerInfo.BotBound*scale
 		p.Character = c
 	}
@@ -373,11 +374,20 @@ func (m *Match) updateCamera() {
 	m.updateHorizontalCamera()
 	scale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	y := 0.0
+	participants := false
+	horizontalParticipants := false
 	for _, p := range m.Players {
+		horizontalParticipants = horizontalParticipants || p.Character.CameraMovementEnabled(0)
+		if !p.Character.CameraMovementEnabled(1) {
+			continue
+		}
+		participants = true
 		factor, _ := p.LocalCoord.ScaleTo(m.Options.GameSpace)
 		y = math.Min(y, p.Character.Y*factor)
 	}
-	y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
-	m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y)) + m.Viewport.CropY
+	if participants && horizontalParticipants {
+		y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
+		m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y)) + m.Viewport.CropY
+	}
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 }

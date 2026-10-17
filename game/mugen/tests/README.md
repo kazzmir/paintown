@@ -407,3 +407,15 @@ It compares all recorded fvars, including both roots' observations in phases.
 Long/return traces include Time=60. Static success alone is insufficient: the
 eight motion packets distinguish the extreme-actor speed floor. See CAMERA.md
 for exact scope; vertical/zoom/full bounds/ownership/renderer rules remain open.
+
+M4ah adds 47 screenbound-* packets: 924 numbers, four controller rejections,
+three stage rejections and 141 authored input hashes. TestNativeScreenBoundaries
+uses the real stage loader/Match runner and checks the full input set even for
+rejected programs. Replay with reference_probe.py --fixture NAME --name UNIQUE
+--fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12
+--seconds 7. The three helper-* programs use only --pages 0. wide additionally
+uses --localcoord 1280,960 --p2-localcoord 320,240. Programs with expected_load_error
+must reject; those with expected_stage_error reject at the stage loader. Accepted
+empty/word/negative/fraction margins are intentional native controls. See
+../docs/SCREENBOUND.md for exact defaults, camera-axis coupling and remaining
+pause/Width/helper/world obligations.

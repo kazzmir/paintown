@@ -2,6 +2,7 @@ package stage
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,6 +41,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	var currentDef *background.BGCtrlDef
 
 	consumed := make(map[string]bool)
+	screenLeftPresent, screenRightPresent := false, false
 
 	for _, sec := range ast.Sections {
 		name := strings.ToLower(sec.Name)
@@ -140,9 +142,11 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
 				case "screenleft":
-					stage.Bound.ScreenLeft = background.GetFloat(attr.Value)
+					screenLeftPresent = true
+					stage.Bound.ScreenLeft = math.Trunc(background.GetFloat(attr.Value))
 				case "screenright":
-					stage.Bound.ScreenRight = background.GetFloat(attr.Value)
+					screenRightPresent = true
+					stage.Bound.ScreenRight = math.Trunc(background.GetFloat(attr.Value))
 				}
 			}
 		case name == "shadow":
@@ -247,6 +251,10 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 				}
 			}
 		}
+	}
+
+	if !screenLeftPresent || !screenRightPresent {
+		return nil, fmt.Errorf("%s [Bound]: screenleft and screenright are required", absPath)
 	}
 
 	// Parse animation data from AST (stages often embed AIR in .def)

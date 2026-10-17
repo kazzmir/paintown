@@ -9,7 +9,14 @@ func (m *Match) updateHorizontalCamera() {
 	stageScale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	left, right := math.Inf(1), math.Inf(-1)
 	leftVelocity, rightVelocity := 0.0, 0.0
+	participants := false
+	verticalParticipants := false
 	for _, player := range m.Players {
+		verticalParticipants = verticalParticipants || player.Character.CameraMovementEnabled(1)
+		if !player.Character.CameraMovementEnabled(0) {
+			continue
+		}
+		participants = true
 		scale, _ := player.LocalCoord.ScaleTo(m.Options.GameSpace)
 		x := player.Character.X * scale
 		velocity := player.Character.VelX * float64(player.Character.Facing) * scale
@@ -19,6 +26,11 @@ func (m *Match) updateHorizontalCamera() {
 		if x > right {
 			right, rightVelocity = x, velocity
 		}
+	}
+	// The beta freezes camera updates if either axis has no participants,
+	// even when the other axis still has eligible actors.
+	if !participants || !verticalParticipants {
+		return
 	}
 	half := float64(m.Options.GameSpace.Width) / 2
 	threshold := half - m.Stage.Camera.Tension*stageScale

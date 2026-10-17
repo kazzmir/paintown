@@ -69,6 +69,18 @@ publish through the shared viewport and cached actor camera fields before the
 later root evaluates position/screen/sound coordinates. The goal resets with
 the round's stage camera start. Shared late body push remains in its own phase.
 
+## ScreenBound follow-up
+
+M4ah compares root camera eligibility, per-pass reset and replacement, plus the
+beta's coupled-axis empty-participant rule. The horizontal camera uses only
+eligible roots. A nonempty X set and an empty Y set freeze X as well; constant
+and time-dependent controls distinguish this from easing or clock reset errors.
+SCREENBOUND.md records the 47-program boundary corpus and exact values. Root
+and ordinary helper screen confinement now includes converted stage margins.
+The following M4ag notes describe that checkpoint's historical window results;
+its missing-margin limitation is superseded by M4ah. Background/filtering and
+complete frame equivalence remain open.
+
 ## Scope and remaining work
 
 All 20 packets pass through TestNativeCameraFollowing, including their 60

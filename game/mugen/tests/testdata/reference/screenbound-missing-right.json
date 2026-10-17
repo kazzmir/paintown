@@ -1,0 +1,17 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "b6120969d50c478eef92f6970471b9c6fc4c99fcefd6f4255c505c57e9de1a10",
+  "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "7c96c889f220851fc68025d01e43f800f1d7438484556a3666c0b6361e8892f6",
+  "load_error": "Error detected.\n\nCan't read bound info: stages/probe-stage.def\n\nClipboard tail:\nSystem loaded OK\nInitialize OK\nSet up graphics...timer...OK\nPlaying quick VS.\n\nEntering gameflow loop\nGameflow 0\nGameflow 1\nGameflow 2\nInitializing character info...OK\nGameflow 3\nGameflow 6\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n\n",
+  "expected_stage_error": "bound",
+  "expected_load_error": "Can't read bound info"
+}

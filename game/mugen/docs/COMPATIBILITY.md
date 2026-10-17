@@ -7,6 +7,17 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
+screen margins and root camera eligibility. Forty-seven native programs pin
+924 numbers, four controller rejections, three stage rejections and all 141
+authored input hashes. Fixed/mixed/nonzero-camera edges, retained velocity,
+PosFreeze, one-tick reset, stage bypass, ordinary helper confinement and camera
+axis coupling match the measured controls. Full scoped races pass in
+temp/m4ah-full-race.log; pure engine/evaluator races also pass. SCREENBOUND.md
+records exact values and grammar, including accepted negative/fraction/empty/
+word stage margins. Complete pause/bind/Width/helper-camera, vertical/zoom and
+renderer obligations remain open; no whole-controller compatibility claim.
+
 M4ag adds 20 native horizontal camera programs/720 numbers. Tension/retained
 goals, float32 easing, stage limits, per-root/shared update points and motion
 speed floors match the measured zoom-one controls. Mixed units and interior-
@@ -441,7 +452,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | RemapPal | Stub | 1 | Registered handler has no effective implementation. |
 | RemoveExplod | Present | 0 | Filters matching IDs; default ID -1 does not remove all. |
 | ReversalDef | Present | 12 | Stores raw parameters; collision does not enforce reversal. |
-| ScreenBound | Stub | 4 | Registered handler has no effective implementation. |
+| ScreenBound | Partial | 4 | Typed value/movecamera, native root/helper confinement and root camera eligibility; full pause/Width/helper-camera/zoom cases remain open. |
 | SelfState | Partial | 11 | Restores own state definitions/units; continuing animation source remains independent, native chain compared. |
 | SprPriority | Present | 2 | Stores literal value; full renderer ordering missing. |
 | StateTypeSet | Present | 21 | Basic enum setters; unchanged/default and version semantics need tests. |

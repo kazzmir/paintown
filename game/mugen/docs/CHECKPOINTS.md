@@ -4,6 +4,37 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ah — Screen confinement, stage margins and camera eligibility
+
+M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
+screen margins and root camera eligibility. Forty-seven native programs pin
+924 numbers, four controller rejections, three stage rejections and all 141
+authored input hashes. Fixed/mixed/nonzero-camera edges, retained velocity,
+PosFreeze, one-tick reset, stage bypass, ordinary helper confinement and camera
+axis coupling match the measured controls. Full scoped races pass in
+temp/m4ah-full-race.log; pure engine/evaluator races also pass. SCREENBOUND.md
+records exact values and grammar, including accepted negative/fraction/empty/
+word stage margins. Complete pause/bind/Width/helper-camera, vertical/zoom and
+renderer obligations remain open; no whole-controller compatibility claim.
+
+Six fresh native replays reproduce reset, constant coupled-axis freezing,
+normal-helper confinement, float-literal rejection, 640-stage scaling and a
+missing-margin stage rejection. Real 1280x720 windows at
+`temp/app-runs/screenbound-motion-go/` and `screenbound-stock-throw-go/` run at
+2/3/4/7 seconds. All eight PNG hashes/nonblack checks pass, with no runtime or
+missing-resource errors. The stock throw recovers with two actors and no
+permanent dust clones. The box-free motion scene eventually overlays the two
+actors at the right limit; its minimal background still ends during scrolling.
+These are window/asset smoke checks, not full native framebuffer parity.
+
+The old no-op/default-edge failures are preserved in
+temp/m4ah-before-screenbound.log. Additional helper controls expose the old
+160-edge clamp and incorrect default confinement in temp/m4ah-before-helper.log;
+the final helper defaults and inherited margins resolve both. Stage missing
+attributes now report path/[Bound] errors; accepted zero/negative/fraction/
+empty/word values retain measured beta behavior. Root module hashes remain
+unchanged. The reversal point is M4ag commit `aa35d0a3`.
+
 ## M4ag — Horizontal camera tension, easing and root phases
 
 Twenty native programs pin 720 numbers and 60 authored input hashes. The

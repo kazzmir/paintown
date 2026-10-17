@@ -38,5 +38,7 @@ and the handoff for current progress; the assessment describes the original base
 
 20. [Horizontal camera](CAMERA.md): native tension, retained goals, easing, speed floors and root update points.
 
+21. [Screen boundaries](SCREENBOUND.md): native root/helper defaults, stage margins, typed ScreenBound and camera participation.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

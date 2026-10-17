@@ -4,7 +4,28 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ag: horizontal camera tension/retained goals, easing with float32 left
+Latest M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
+screen margins and root camera eligibility. Forty-seven native programs pin
+924 numbers, four controller rejections, three stage rejections and all 141
+authored input hashes. Fixed/mixed/nonzero-camera edges, retained velocity,
+PosFreeze, one-tick reset, stage bypass, ordinary helper confinement and camera
+axis coupling match the measured controls. Full scoped races pass in
+temp/m4ah-full-race.log; pure engine/evaluator races also pass. SCREENBOUND.md
+records exact values and grammar, including accepted negative/fraction/empty/
+word stage margins. Complete pause/bind/Width/helper-camera, vertical/zoom and
+renderer obligations remain open; no whole-controller compatibility claim.
+
+Six fresh native replays reproduce reset, constant coupled-axis freezing,
+normal-helper confinement, float-literal rejection, 640-stage scaling and a
+missing-margin stage rejection. Real 1280x720 windows at
+`temp/app-runs/screenbound-motion-go/` and `screenbound-stock-throw-go/` run at
+2/3/4/7 seconds. All eight PNG hashes/nonblack checks pass, with no runtime or
+missing-resource errors. The stock throw recovers with two actors and no
+permanent dust clones. The box-free motion scene eventually overlays the two
+actors at the right limit; its minimal background still ends during scrolling.
+These are window/asset smoke checks, not full native framebuffer parity.
+
+Previous M4ag: horizontal camera tension/retained goals, easing with float32 left
 edges, speed floors and per-root/shared late update points. Twenty native
 programs compare 720 numbers; all 60 authored input hashes are checked. Static
 inside/boundary/edge/spread, phase, long/return, stage limits, speeds .5/1/2/3,
@@ -675,9 +696,9 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Verify moving-camera coordinates and remaining effect motion/bind/pause/owner
-semantics, then facing/priority/hit flags, Width and attacker-hit interrupted
-binding controls, then complete the other binding/helper/world and
+Complete dynamic Width and its edge/body-distance/push interactions, then
+facing/priority/hit flags and attacker-hit interrupted binding controls. Continue
+remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and
 engine/asset gates. The selection-to-fight path runs, but the complete M4 and
 whole 1.1 beta compatibility gates remain open. Implementation
 choices are delegated after approval; ask only about concrete blockers or

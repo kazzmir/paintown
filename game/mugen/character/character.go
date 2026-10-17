@@ -130,6 +130,10 @@ type Character struct {
 	TopBound, BotBound    float64
 	CameraX               float64
 	ScreenWidth           int
+	ScreenLeftMargin      float64
+	ScreenRightMargin     float64
+	screenBoundsDisabled  bool
+	cameraDisabled        [2]bool
 
 	// Controller persistence counters (key is controller name or ID)
 	PersistenceCounters map[string]int
@@ -361,6 +365,8 @@ func (c *Character) runStateTick() bool {
 	// Clear frame-local specials
 	c.Specials = make(map[string]bool)
 	c.PushDisabled = false
+	c.screenBoundsDisabled = c.Parent != nil
+	c.cameraDisabled = [2]bool{c.Parent != nil, c.Parent != nil}
 	c.ActiveReversalDef = make(map[string]string)
 	c.DrawAngle = 0
 	c.DrawOffset = []float64{0, 0}
@@ -430,25 +436,6 @@ func (c *Character) finishTick() {
 				c.X += c.VelX * float64(c.Facing)
 				c.Y += c.VelY
 
-				// Clamp bounds
-				if c.X < c.LeftBound {
-					c.X = c.LeftBound
-				}
-				if c.X > c.RightBound {
-					c.X = c.RightBound
-				}
-
-				// Screen boundaries
-				if c.ScreenWidth > 0 {
-					edge := float64(c.ScreenWidth) / 2.0
-					if c.X < c.CameraX-edge {
-						c.X = c.CameraX - edge
-					}
-					if c.X > c.CameraX+edge {
-						c.X = c.CameraX + edge
-					}
-				}
-
 				// Engine turning belongs to the common idle/crouch/walk states;
 				// custom states retain their facing. Preserve world momentum on flip.
 				if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Opponents) > 0 {
@@ -491,6 +478,7 @@ func (c *Character) finishTick() {
 			}
 			break
 		}
+		c.constrainPosition()
 		// Contacts at the next tick use this completed simulation pose, before
 		// the animation clock selects the next CNS/display element.
 		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
@@ -791,6 +779,8 @@ func (c *Character) Helper(params map[string]string) {
 	h.LocalCoord = c.LocalCoord
 	h.GameCoord = c.GameCoord
 	h.Viewport = c.Viewport
+	h.LeftBound, h.RightBound = c.LeftBound, c.RightBound
+	h.ScreenLeftMargin, h.ScreenRightMargin = c.ScreenLeftMargin, c.ScreenRightMargin
 	h.Timeline = c.Timeline
 	h.SuperTargetDefenceMul = c.SuperTargetDefenceMul
 	h.Palettes = c.Palettes
@@ -929,7 +919,13 @@ func (c *Character) EnvColor(params map[string]string) {
 }
 
 func (c *Character) ScreenBound(params map[string]string) {
-	// Stub
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteScreenBoundParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("ScreenBound: %w", err)
+	}
 }
 
 func (c *Character) Width(params map[string]string) {
