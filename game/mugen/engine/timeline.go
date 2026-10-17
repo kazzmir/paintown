@@ -13,7 +13,8 @@ type PauseParameters struct {
 
 type pauseClock struct {
 	PauseParameters
-	owner *PauseActor
+	owner              *PauseActor
+	darken, unhittable bool
 }
 
 // Timeline is simulation-owned. Requests take effect after the issuing tick;
@@ -57,12 +58,39 @@ func (t *Timeline) RequestPause(owner *PauseActor, parameters PauseParameters, s
 		parameters.MoveTime = 0
 	}
 	parameters.EndCommandBufferTime = max(0, min(parameters.Time, parameters.EndCommandBufferTime))
-	clock := &pauseClock{parameters, owner}
+	clock := &pauseClock{PauseParameters: parameters, owner: owner}
 	if super {
 		t.pendingSuper = clock
 	} else {
 		t.pending = clock
 	}
+}
+
+func (t *Timeline) RequestSuperPause(owner *PauseActor, parameters SuperPauseParameters) {
+	t.RequestPause(owner, parameters.PauseParameters, true)
+	t.pendingSuper.darken, t.pendingSuper.unhittable = parameters.Darken, parameters.Unhittable
+}
+
+func (t *Timeline) SuperPaused() bool { return t.super.Time > 0 }
+
+func (t *Timeline) Darkened() bool { return t.SuperPaused() && t.super.darken }
+
+func (t *Timeline) SceneTint() [3]float32 {
+	if t.Darkened() {
+		return [3]float32{.3125, .3125, .5}
+	}
+	return [3]float32{1, 1, 1}
+}
+
+func (t *Timeline) ActorTint(actor *PauseActor) [3]float32 {
+	if t.Darkened() && t.super.owner != actor {
+		return [3]float32{.5, .5, .75}
+	}
+	return [3]float32{1, 1, 1}
+}
+
+func (t *Timeline) SuperUnhittable(actor *PauseActor) bool {
+	return t.SuperPaused() && t.super.owner == actor && t.super.unhittable
 }
 
 func (t *Timeline) activePause() *pauseClock {

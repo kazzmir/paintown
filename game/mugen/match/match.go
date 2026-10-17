@@ -40,6 +40,7 @@ type Options struct {
 	SoundQueue                   *sound.Queue
 	MotifSpace                   coord.Space
 	MaxEffects                   int
+	SuperTargetDefenceMul        float64
 }
 
 type Phase int
@@ -85,6 +86,10 @@ func New(request Request, options Options) (*Match, error) {
 		return nil, fmt.Errorf("invalid match time/life options")
 	}
 	m := &Match{Request: request, Options: options, Round: 1, Winner: -1, Timeline: &engine.Timeline{}}
+	if options.SuperTargetDefenceMul <= 0 {
+		options.SuperTargetDefenceMul = 1.5
+		m.Options = options
+	}
 	m.SoundQueue = options.SoundQueue
 	if m.SoundQueue == nil {
 		m.SoundQueue = &sound.Queue{}
@@ -159,6 +164,7 @@ func (m *Match) resetRound() error {
 		c.GameCoord = m.Options.GameSpace
 		c.Viewport = m.Viewport
 		c.BindTimeline(m.Timeline)
+		c.SuperTargetDefenceMul = m.Options.SuperTargetDefenceMul
 		c.Palettes = palette.New(p.SFF)
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.PlayerID, p.PlayerID = slot+1, slot+1
@@ -222,10 +228,8 @@ func (m *Match) Update() error {
 		return nil
 	}
 	paused := m.Timeline.Paused()
-	if !paused {
-		if err := m.Effects.Advance(); err != nil {
-			return fmt.Errorf("fight effects: %w", err)
-		}
+	if err := m.Effects.AdvanceWithPause(paused, m.Timeline.SuperPaused()); err != nil {
+		return fmt.Errorf("fight effects: %w", err)
 	}
 	if !m.Timeline.BackgroundFrozen() {
 		m.Stage.Update()

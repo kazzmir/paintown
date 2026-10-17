@@ -81,7 +81,10 @@ measured gates. Other version rules and legacy parameter handlers remain open.
 
 The production world and HUD fit independently inside the physical window. A
 320x240 stage at 1280x720 occupies X=160..1120, while the 1280x720 HUD fills the
-window. Actors/effects draw at common game resolution, avoiding an intermediate
+window. **M4v identifies that independent HUD fit as still incorrect:** native
+portraits begin near X=172/Y=14 versus Go X=16/Y=16 in the same scene. Compare
+StageFit/SystemFit/KeepAspect before claiming native HUD framing. World margins
+remain supported by the numeric/marker probes. Actors/effects draw at common game resolution, avoiding an intermediate
 320-wide actor raster. Backgrounds still use the stage raster. The owned-window
 capture temp/app-runs/viewport-spark-hd/ was inspected at the actual requested
 1280x720 size; metadata pins the binary/capture. It confirms corrected framing,

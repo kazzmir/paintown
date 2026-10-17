@@ -584,3 +584,23 @@ pixel-core hashes. Calibration is limited to static KFM scenes; EFFECTS.md gives
 bounds and the newly measured world/HUD viewport discrepancy. Full races and
 real Go normal/additive marker window inspections pass. No full framebuffer,
 blend, pause/lifetime or ownership parity is claimed.
+
+
+## SuperPause and frozen contacts (M4v)
+
+See SUPERPAUSE.md for 38 native programs/600 numeric observations, ten static
+render cases and three audio programs with seven segments/seven PCM checks.
+The suite includes the adopted M4u super clock pilot and an ordinary Pause
+contact comparison. Clock preemption/arguments/power, caller protection, frozen
+contact/damage, acquired-target defence stacking/recovery, effect lifecycle and
+common/own cues are exercised by production Character. Full races, stock KFM
+super integration and fresh serial effect-clock/other-pause/audio replays pass.
+
+The original RGB marker is reused without copying reference art. Super render
+analysis pins resource/core hashes and static sample coordinates; it is limited
+to fixed-camera KFM scenes. Scene/opponent tints are inferred within one byte,
+not full framebuffer parity. HUD projection still differs and fit flags are
+next. Early overlapping clock windows/audio drafts are diagnostic only; final
+measurements use serial owned captures and isolated private audio. AGENTS.md
+records the ordering rule. The optional --clipboard-delay is retained in recipe
+metadata for frozen P1 observations, with existing default 30 unchanged.

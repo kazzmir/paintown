@@ -4,6 +4,35 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4v — SuperPause, frozen contacts and presentation ownership
+
+Thirty-eight native programs pin 600 numeric observations, ten static render
+cases and three audio programs with seven stable segments/seven Go checks.
+Typed SuperPause now owns duration/movetime/preemption, power, unhittable,
+acquired-target defence adjustments, own/common cues, position and darkening.
+See SUPERPAUSE.md for exact boundaries and remaining schemas/ownership gaps.
+
+Frozen attack boxes may contact moving receivers. Frozen receivers enter their
+hit state immediately and accumulate damage until resumption. New HitDef rearms
+contacts; active-tick counter aging matches both new freeze traces and existing
+hitpause traces. Positive p2defmul stacks on acquired H targets, nonpositive uses
+configured 1.5, and recovery clears it. This contact ledger is deliberately not
+claimed as the complete world/Target registry.
+
+Super effects keep a spawn position and animate through either pause, including
+when their caller freezes; finite actions retire after one pass. Infinite
+frames survive pause expiry and anim=-1 replacement. Static scene/opponent/caller
+tints and common/own screen-X-panned audio match the measured scope. Full races,
+fresh clock/other-owner render and isolated audio replays pass. Real stock KFM
+super integration checks 30 frozen ticks, common cues and 1000 power consumption.
+
+Overlapping early capture/audio drafts were discarded; promoted evidence uses
+serial owned windows/private audio. AGENTS.md records this workflow requirement.
+No desktop/reference/root-module changes were made. M4u's reversal point is
+commit `b7df46ff`. The captures expose remaining HUD projection/configuration
+differences despite correct world margins; compare fit flags next. Full world,
+input, combat and controller gates remain open.
+
 ## M4u — Shared GameTime and root Pause scheduling
 
 Thirteen native programs pin 264 observations for duration, caller movement,

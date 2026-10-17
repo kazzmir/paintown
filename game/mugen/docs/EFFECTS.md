@@ -49,11 +49,20 @@ leaves a 23x12 solid RGB core, whose orientation confirms the facing flip. Go
 Character/scene tests compare the measured frame anchors and resource owner;
 they do not assert identical framebuffer framing/filtering.
 
-M4q corrects the measured M4d framing discrepancy: world and HUD fit separately,
+M4q corrects the measured M4d world framing discrepancy: world and HUD currently fit separately,
 and stage-aspect game dimensions come from native numeric probes. The actual
 1280x720 Go capture temp/app-runs/viewport-spark-hd/ shows the expected margins
 and marker projection. Filter-edge pixels still differ; background rasterization,
-camera/zoom and full-frame image parity remain open. See COORDINATES.md.
+camera/zoom and full-frame image parity remain open. M4v exposes an independent
+HUD fit mismatch; StageFit/SystemFit/KeepAspect still need native comparison.
+See COORDINATES.md.
+
+M4v adds SuperPause effects to the same scene. They retain their birth position,
+use common/own resources and animate through both pauses even with a frozen
+caller. Finite actions retire after one pass; explicit -1 survives pause end and
+a later anim=-1 request. Ten native marker/tint cases and real owned Go windows
+exercise this path. See SUPERPAUSE.md. Exact ordinary contact-effect pause and
+hitpause boundaries remain open; generic movement allowances have authored tests.
 
 ## Validation and limits
 

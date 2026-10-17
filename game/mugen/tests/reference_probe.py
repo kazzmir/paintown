@@ -103,26 +103,26 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
     return source
 
 
-def page_source(base, page, bank='var'):
+def page_source(base, page, bank='var', clipboard_delay=30):
     owner = re.findall(r'(?im)^\s*\[statedef\s+(-?\d+)\]', base)[-1]
     for chunk in range(2):
         start = page + chunk * 6
         base += ('\n[State ' + owner + ', dump]\ntype=' +
                  ('DisplayToClipboard' if chunk == 0 else 'AppendToClipboard') +
-                 '\ntrigger1=time>=30\ntext="P' + str(start) + ':' +
+                 '\ntrigger1=time>='+str(clipboard_delay)+'\ntext="P' + str(start) + ':' +
                  ','.join(['%.9g' if bank == 'fvar' else '%d'] * 6) + '\\n"\nparams=' +
                  ','.join(bank + '(' + str(i) + ')' for i in range(start, start + 6)) + '\n')
     return base
 
 
-def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False, stage='kfm'):
+def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False, stage='kfm', clipboard_delay=30):
     if clipboard_in_cmd:
         commands = run / 'chars/kfm/probe.cmd'
         base = re.split(r'(?im)\n\[State -?\d+, dump\]', commands.read_text())[0]
-        commands.write_text(page_source(base, page, bank))
+        commands.write_text(page_source(base, page, bank, clipboard_delay))
         (run / 'chars/kfm/probe.cns').write_text(source)
     else:
-        (run / 'chars/kfm/probe.cns').write_text(page_source(source, page, bank))
+        (run / 'chars/kfm/probe.cns').write_text(page_source(source, page, bank, clipboard_delay))
     opponent = run / 'chars/probeopponent'
     if opponent.exists():
         (opponent / 'probe.cns').write_text(source)
@@ -240,6 +240,7 @@ def main():
     parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
     parser.add_argument('--stage-version',choices=['1.0','1.1'],help='Override only the copied stage version for compatibility probes')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
+    parser.add_argument('--clipboard-delay',type=int,default=30,help='Minimum local Time for clipboard output; zero supports continuously frozen subjects')
     args = parser.parse_args()
     case_expected = None
     if args.case:
@@ -252,6 +253,7 @@ def main():
         args.file = [key + '=' + value for key, value in case_expected.get('files', {}).items()]
         args.omit_file = case_expected.get('omitted_files', [])
         args.clipboard_in_cmd = case_expected.get('clipboard_in_cmd', False)
+        args.clipboard_delay = case_expected.get('clipboard_delay',30)
         args.bank = case_expected.get('bank', 'var')
         args.mugenversion = case_expected.get('mugenversion')
         args.bare_constants = case_expected.get('bare_constants', False)
@@ -268,6 +270,8 @@ def main():
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
         parser.error('Page exceeds the variable bank')
+    if not 0<=args.clipboard_delay<=600:
+        parser.error('Clipboard delay must be 0..600 local ticks')
     if args.game_width is not None and not 1 <= args.game_width <= 8192:
         parser.error('Game width must be 1 through 8192 for bounded reference probes')
     if args.game_height is not None and not 1 <= args.game_height <= 8192:
@@ -319,6 +323,8 @@ def main():
         evidence['fixture_constants'] = True
     if args.clipboard_in_cmd:
         evidence['clipboard_in_cmd'] = True
+    if args.clipboard_delay!=30:
+        evidence['clipboard_delay']=args.clipboard_delay
     if args.omit_file:
         evidence['omitted_files'] = args.omit_file
     if args.state_file_order:
@@ -365,6 +371,8 @@ def main():
             raise RuntimeError('Stage version differs from pinned fixture')
         if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
+        if expected.get('clipboard_delay',30)!=args.clipboard_delay:
+            raise RuntimeError('Clipboard delay differs from pinned fixture')
         if expected.get('omitted_files', []) != args.omit_file:
             raise RuntimeError('Omitted files differ from pinned fixture')
         if expected.get('state_file_order') != args.state_file_order:
@@ -376,7 +384,7 @@ def main():
                               for index, value in capture['variables'].items()}
     for page in args.pages:
         try:
-            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd,args.stage)
+            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd,args.stage,args.clipboard_delay)
         except ReferenceRejected as error:
             evidence['load_error'] = error.text
             (work / 'evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')

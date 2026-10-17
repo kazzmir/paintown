@@ -263,3 +263,13 @@ is limited to static zero-camera KFM scenes and flipped markers. --expect-none
 checks disabled/missing markers after confirmed contact. Data-prefix coercion
 has a separate numeric-only case. See EFFECTS.md for the eight-case scope,
 production GPU inspections and the viewport discrepancy still being corrected.
+
+
+SuperPause native fixtures and tests are detailed in [SUPERPAUSE.md](../docs/SUPERPAUSE.md).
+For example, tests/super_render_probe.py --fixture superpause-effect-clock
+--name UNIQUE replays numeric packets and compares the original RGB marker core
+and static colors. The continuously frozen other-pause fixture records
+--clipboard-delay=0; reference_probe.py defaults to 30 and pins nondefault delay
+in metadata. Audio fixtures use sound_probe.py and require the private null-sink
+monitor. Run native/Go captures, audio and full Ebiten tests sequentially on the
+private display; overlapping windows/audio invalidate capture provenance.

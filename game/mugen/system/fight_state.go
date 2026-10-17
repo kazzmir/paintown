@@ -25,7 +25,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 		return nil, err
 	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
-		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, MaxEffects: engine.cfg.Config.SysExplodMax})
+		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, MaxEffects: engine.cfg.Config.SysExplodMax, SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul})
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +84,8 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	m.Stage.Draw(s.stageCanvas, cameraX, cameraY)
 	s.gameCanvas.Fill(color.Black)
 	backgroundOptions := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+	tint := m.Timeline.SceneTint()
+	backgroundOptions.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
 	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
 	// Render actors/effects in the common game surface so HD sprites are not
@@ -107,6 +109,9 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 			return
 		}
 		options := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+		if surface == s.hudCanvas {
+			options.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
+		}
 		options.GeoM.Scale(scale, scale)
 		options.GeoM.Translate(x, y)
 		screen.DrawImage(surface, options)

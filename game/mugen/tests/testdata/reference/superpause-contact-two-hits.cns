@@ -1,0 +1,127 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, origin]
+type=VarSet
+trigger1=Time=0
+v=50
+value=GameTime
+[Statedef 701]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, super]
+type=SuperPause
+trigger1=Time=0
+time=3
+movetime=3
+anim=-1
+sound=-1
+darken=0
+unhittable=0
+p2defmul=1
+[State 701, first and second hit]
+type=HitDef
+trigger1=Time=0 || Time=1
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=100,0
+pausetime=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+[Statedef -2]
+[State -2, gethit passes]
+type=VarAdd
+trigger1=StateNo=5000
+v=10
+value=1
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, snapshot 0 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=GameTime-var(50)
+[State 5000, snapshot 0 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Time
+[State 5000, snapshot 0 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=GetHitVar(damage)
+[State 5000, snapshot 0 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Life
+[State 5000, snapshot 0 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=var(10)
+[State 5000, snapshot 0 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=AnimElemTime(1)
+[State 5000, snapshot 1 0]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=GameTime-var(50)
+[State 5000, snapshot 1 1]
+type=VarSet
+trigger1=Time=1
+fv=7
+value=Time
+[State 5000, snapshot 1 2]
+type=VarSet
+trigger1=Time=1
+fv=8
+value=GetHitVar(damage)
+[State 5000, snapshot 1 3]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=Life
+[State 5000, snapshot 1 4]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=var(10)
+[State 5000, snapshot 1 5]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=AnimElemTime(1)

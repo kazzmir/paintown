@@ -16,5 +16,7 @@ and the handoff for current progress; the assessment describes the original base
 
 9. [Contact effects](EFFECTS.md): spark geometry, resource/clock/render wiring and viewport findings.
 
+10. [Pause scheduling](PAUSE.md) and [SuperPause](SUPERPAUSE.md): shared clocks, native contacts, defence, cues and remaining ownership limits.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

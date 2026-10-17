@@ -240,3 +240,46 @@ func TestPauseMatchClockBackgroundEffectsAndRoundReset(t *testing.T) {
 		}
 	}
 }
+
+func TestStockSuperPauseConsumesPowerAndUsesCommonResources(t *testing.T) {
+	m := stockMatch(t, 99)
+	advanceUntil(t, m, Active, 600)
+	c := m.Players[0].Character
+	c.SetPower(1500)
+	c.ChangeState(3000, 0, -1)
+	m.SoundQueue.Drain()
+	sawPause, sawEffect, sawSound := false, false, false
+	frozenTime, pausedFrames := -1, 0
+	for tick := 0; tick < 120; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		for _, command := range m.SoundQueue.Drain() {
+			if command.Operation == sound.Play && command.Bank == m.Fight.CommonSounds && command.Group == 20 && command.Item == 0 {
+				sawSound = true
+			}
+		}
+		for _, instance := range m.Effects.Active {
+			if instance.Action == 100 && instance.Source.Sprites == m.Fight.EffectSprites && instance.Source.Animations == m.Fight.EffectAnimations {
+				sawEffect = true
+			}
+		}
+		if m.Timeline.SuperPaused() {
+			pausedFrames++
+			if !sawPause {
+				sawPause, frozenTime = true, c.Time
+				if c.Power != 500 {
+					t.Fatal("stock SuperPause did not consume 1000 power", c.Power)
+				}
+			} else if c.Time != frozenTime {
+				t.Fatal("stock super caller advanced without movetime")
+			}
+		} else if sawPause && tick > 0 {
+			if pausedFrames != 30 || !sawEffect || !sawSound {
+				t.Fatal("stock SuperPause clock/resources incomplete", pausedFrames, sawEffect, sawSound)
+			}
+			return
+		}
+	}
+	t.Fatal("stock state 3000 did not execute and finish SuperPause")
+}

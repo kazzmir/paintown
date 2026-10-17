@@ -32,9 +32,11 @@ effect after the issuing frame, preserving its CNS/physics completion.
 Timeline advances GameTime once per outer tick; nested helper/projectile
 adapters share that frame. Movement allowance belongs to an identity distinct
 from PlayerID/input slots. Frozen roots skip CNS, local clocks, physics and timed
-defence aging. Frozen attackers do not initiate contacts; a moving attacker may
-still contact a frozen defender. Contact/HitOverride/KO/hitpause overlap and
-complete entity scheduling still need native interaction probes.
+defence aging. M4v corrects the initial contact assumption: a frozen attack box
+can hit a moving defender, and a moving attacker can hit a frozen defender.
+Only pairs with both actors frozen skip collision. A frozen receiver enters
+the hit state immediately, but its CNS and pending damage wait for resumption.
+See SUPERPAUSE.md for the native traces and remaining entity/overlap limits.
 
 Match uses the same Timeline across round resets, clears pause requests when
 new round actors replace old ones, freezes phase/timer/default contact-effect
@@ -51,12 +53,10 @@ currently supplies no input events, so command grammar, release/hold timing,
 buffer lifetimes and out-of-range buffer values still need native coverage.
 Those tests do not promote the full controller to Verified.
 
-The separate superpause-three fixture shows the same default root freeze clock
-for a SuperPause with animation/sound/darkening/defence effects disabled. It backs
-the pure Timeline clock only. The production SuperPause controller remains a
-stub at this checkpoint; its complete typed schema, presentation, invulnerability,
-target defence/power, preemption and effect allowances are next. No successful
-SuperPause gameplay implementation is claimed by that pilot.
+The separate superpause-three fixture began as a pure Timeline pilot. M4v now
+replays it through production Character alongside the typed SuperPause controller,
+preemption, protection, target defence, power and presentation probes. See
+[SUPERPAUSE.md](SUPERPAUSE.md); the pilot no longer describes a production stub.
 
 Validation: full scoped races and display-independent engine races pass; fresh
 pause-pair replay reproduces both native packets. Source/AIR/executable hashes

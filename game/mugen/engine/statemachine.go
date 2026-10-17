@@ -1092,8 +1092,7 @@ func handleForceFeedback(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleSuperPause(ctrl *cns.StateController, env Environment) error {
-	env.SuperPause(ctrl.Params)
-	return nil
+	return fmt.Errorf("SuperPause requires compiled parameters")
 }
 
 func handleHelper(ctrl *cns.StateController, env Environment) error {

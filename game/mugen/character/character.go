@@ -32,14 +32,18 @@ type Character struct {
 	pauseCommands    map[string]bool
 	pauseActor       *engine.PauseActor
 
-	JuggleCost        int
-	HitDefActive      bool
-	contactSerial     uint64
-	tickContactSerial uint64
-	stateSerial       uint64
-	statePassBudget   engine.StatePassBudget
-	RuntimeWarnings   []string
-	warningSeen       map[string]bool
+	JuggleCost            int
+	HitDefActive          bool
+	stateSerial           uint64
+	statePassBudget       engine.StatePassBudget
+	hitTargets            map[*Character]uint64
+	hitGeneration         uint64
+	superDefenceMul       float64
+	SuperTargetDefenceMul float64
+	pendingHitDamage      int
+	hasPendingHitDamage   bool
+	RuntimeWarnings       []string
+	warningSeen           map[string]bool
 
 	// CNS data containing states and physics globals
 	StateFile  *cns.CNS
@@ -217,66 +221,68 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		maxPower = 3000
 	}
 	return &Character{
-		Timeline:            &engine.Timeline{},
-		pauseActor:          engine.NewPauseActor(),
-		SoundQueue:          queue,
-		AudioOwner:          queue.NewOwner(),
-		EffectQueue:         &effect.Queue{},
-		LocalCoord:          coord.Default(),
-		GameCoord:           coord.Default(),
-		StateFile:           stateFile,
-		AirFile:             airFile,
-		CmdFile:             cmdFile,
-		SM:                  NewStateMachine(),
-		Time:                0,
-		StateNo:             0,
-		PrevStateNo:         0,
-		Anim:                0,
-		AnimTime:            0,
-		AnimElem:            0,
-		AnimElemTime:        0,
-		StateType:           "S",
-		Physics:             "S",
-		MoveType:            "I",
-		Ctrl:                true,
-		PlayerID:            1, // Default to P1
-		Facing:              1, // Default to Right
-		PersistenceCounters: make(map[string]int),
-		ActiveCommands:      make([]string, 0),
-		InputLatch:          make(map[string]int),
-		HitGuard:            make(map[int]bool),
-		Life:                stateFile.Data.Life,
-		MaxLife:             stateFile.Data.Life,
-		Power:               0,
-		MaxPower:            maxPower,
-		GuardDistance:       float64(stateFile.Size.AttackDist),
-		AttackMul:           1.0,
-		DefenceMul:          1.0,
-		X:                   0.0,
-		Y:                   0.0,
-		Z:                   0.0,
-		StartX:              0.0,
-		StartY:              0.0,
-		StartZ:              0.0,
-		StartFacing:         1,
-		LeftBound:           -1000, // Defaults
-		RightBound:          1000,
-		TopBound:            0,
-		BotBound:            0,
-		GravityActive:       false,
-		CurrentHitDef:       cns.HitDef{},
-		ActiveReversalDef:   make(map[string]string),
-		Specials:            make(map[string]bool),
-		Target:              make([]*Character, 0),
-		Helpers:             make([]*Character, 0),
-		Projectiles:         make([]*Character, 0),
-		Explods:             make([]*ExplodData, 0),
-		DrawOffset:          []float64{0, 0},
-		HitTime:             -1,
-		RoundState:          2,
-		RoundNo:             1,
-		PaletteNo:           1,
-		IsMatchOver:         false,
+		Timeline:              &engine.Timeline{},
+		pauseActor:            engine.NewPauseActor(),
+		superDefenceMul:       1,
+		SuperTargetDefenceMul: 1.5,
+		SoundQueue:            queue,
+		AudioOwner:            queue.NewOwner(),
+		EffectQueue:           &effect.Queue{},
+		LocalCoord:            coord.Default(),
+		GameCoord:             coord.Default(),
+		StateFile:             stateFile,
+		AirFile:               airFile,
+		CmdFile:               cmdFile,
+		SM:                    NewStateMachine(),
+		Time:                  0,
+		StateNo:               0,
+		PrevStateNo:           0,
+		Anim:                  0,
+		AnimTime:              0,
+		AnimElem:              0,
+		AnimElemTime:          0,
+		StateType:             "S",
+		Physics:               "S",
+		MoveType:              "I",
+		Ctrl:                  true,
+		PlayerID:              1, // Default to P1
+		Facing:                1, // Default to Right
+		PersistenceCounters:   make(map[string]int),
+		ActiveCommands:        make([]string, 0),
+		InputLatch:            make(map[string]int),
+		HitGuard:              make(map[int]bool),
+		Life:                  stateFile.Data.Life,
+		MaxLife:               stateFile.Data.Life,
+		Power:                 0,
+		MaxPower:              maxPower,
+		GuardDistance:         float64(stateFile.Size.AttackDist),
+		AttackMul:             1.0,
+		DefenceMul:            1.0,
+		X:                     0.0,
+		Y:                     0.0,
+		Z:                     0.0,
+		StartX:                0.0,
+		StartY:                0.0,
+		StartZ:                0.0,
+		StartFacing:           1,
+		LeftBound:             -1000, // Defaults
+		RightBound:            1000,
+		TopBound:              0,
+		BotBound:              0,
+		GravityActive:         false,
+		CurrentHitDef:         cns.HitDef{},
+		ActiveReversalDef:     make(map[string]string),
+		Specials:              make(map[string]bool),
+		Target:                make([]*Character, 0),
+		Helpers:               make([]*Character, 0),
+		Projectiles:           make([]*Character, 0),
+		Explods:               make([]*ExplodData, 0),
+		DrawOffset:            []float64{0, 0},
+		HitTime:               -1,
+		RoundState:            2,
+		RoundNo:               1,
+		PaletteNo:             1,
+		IsMatchOver:           false,
 	}
 }
 
@@ -309,7 +315,6 @@ func (c *Character) startTick() bool {
 		}
 	}
 	c.updateActive = true
-	c.tickContactSerial = c.contactSerial
 	if c.HitPauseTime > 0 {
 		c.HitPauseTime--
 	}
@@ -467,16 +472,14 @@ func (c *Character) finishTick() {
 			break
 		}
 		c.Time++
-		if c.contactSerial == c.tickContactSerial {
-			if c.MoveHit > 0 {
-				c.MoveHit++
-			}
-			if c.MoveContact > 0 {
-				c.MoveContact++
-			}
-			if c.MoveGuarded > 0 {
-				c.MoveGuarded++
-			}
+		if c.MoveHit > 0 {
+			c.MoveHit++
+		}
+		if c.MoveContact > 0 {
+			c.MoveContact++
+		}
+		if c.MoveGuarded > 0 {
+			c.MoveGuarded++
 		}
 		c.UpdateAnimation()
 	}
@@ -638,7 +641,12 @@ func (c *Character) SetPhysics(physics string) {
 }
 
 func (c *Character) SetMoveType(mtype string) {
-	c.MoveType = strings.ToUpper(mtype)
+	next := strings.ToUpper(mtype)
+	if c.MoveType == "H" && next != "H" {
+		c.hitGeneration++
+		c.superDefenceMul = 1
+	}
+	c.MoveType = next
 }
 
 func (c *Character) SetPower(power int) {
@@ -706,6 +714,7 @@ func (c *Character) PosFreeze(active bool) {
 
 func (c *Character) HitDef(params map[string]string) {
 	c.HitDefActive = true
+	c.HitGuard = make(map[int]bool)
 	// Parse and store the new HitDef
 	c.CurrentHitDef = cns.ParseHitDef(params)
 	if _, specified := params["sparkno"]; !specified {
@@ -722,7 +731,7 @@ func (c *Character) HitDef(params map[string]string) {
 		c.CurrentHitDef.YAccel = float64(float32(0.35) * float32(c.LocalCoordinateWidth()) / 320)
 	}
 	// Entering a HitDef makes the character an attacker
-	c.MoveType = "A"
+	c.SetMoveType("A")
 }
 
 func (c *Character) SetAttackDistance(distance int) {
@@ -748,6 +757,7 @@ func (c *Character) Helper(params map[string]string) {
 	h.GameCoord = c.GameCoord
 	h.Viewport = c.Viewport
 	h.Timeline = c.Timeline
+	h.SuperTargetDefenceMul = c.SuperTargetDefenceMul
 	h.Palettes = c.Palettes
 	if c.Palettes != nil && params["ownpal"] == "1" {
 		h.Palettes = c.Palettes.Clone()
@@ -792,6 +802,7 @@ func (c *Character) Projectile(params map[string]string) {
 	p.GameCoord = c.GameCoord
 	p.Viewport = c.Viewport
 	p.Timeline = c.Timeline
+	p.SuperTargetDefenceMul = c.SuperTargetDefenceMul
 	p.Palettes = c.Palettes
 	if c.Palettes != nil && params["ownpal"] == "1" {
 		p.Palettes = c.Palettes.Clone()
@@ -1035,7 +1046,7 @@ func (c *Character) ForceFeedback(params map[string]string) {
 }
 
 func (c *Character) SuperPause(params map[string]string) {
-	// Logic: handle global time freeze and darken
+	c.RuntimeError = fmt.Errorf("SuperPause requires compiled parameters")
 }
 
 func (c *Character) DestroySelf() {
@@ -1754,7 +1765,6 @@ func (c *Character) HandleHit(other *Character) {
 	if guarded {
 		c.MoveHit, c.MoveGuarded = 0, 1
 	}
-	c.contactSerial++
 
 	// Apply HitPause to attacker
 	pause := c.CurrentHitDef.PauseTime
@@ -1839,8 +1849,15 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		}
 	}
 	// Apply attack/defence multipliers
-	finalDamage := float64(damage) * attacker.AttackMul / c.DefenceMul
-	c.GetHitDamage = int(finalDamage)
+	superDefence := c.superDefenceMul
+	if superDefence <= 0 {
+		superDefence = 1
+	}
+	finalDamage := int(math.Round(float64(damage) * attacker.AttackMul / (c.DefenceMul * superDefence)))
+	c.GetHitDamage = finalDamage
+	if c.hasPendingHitDamage {
+		c.GetHitDamage += c.pendingHitDamage
+	}
 
 	// Hit Pause/Shake
 	pause := hit.PauseTime
@@ -1915,7 +1932,13 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		}
 		c.ChangeState(state, 0, -1)
 	}
-	return int(finalDamage)
+	if c.MoveType == "H" {
+		if attacker.hitTargets == nil {
+			attacker.hitTargets = map[*Character]uint64{}
+		}
+		attacker.hitTargets[c] = c.hitGeneration
+	}
+	return finalDamage
 }
 
 func (c *Character) Command(name string) bool {

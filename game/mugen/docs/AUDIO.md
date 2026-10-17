@@ -165,3 +165,14 @@ left the spoken KO announcement in initial diagnostic captures; those are not
 the promoted evidence. The reference copy and desktop are unchanged. The sound
 harness also retains analysis-window settings and fixture-owned constants for
 replay. Default tone-bank generation remains byte-identical; --ko adds group 11.
+
+
+SuperPause cues (M4v) use automatic channels, own/common prefixes and the measured
+screen-X pan. Three original tone programs produce seven native segments and
+seven Go PCM checks: distinct 1323/2646-Hz banks, group-only common selection,
+channel-0 voice preservation, finite expiry and silence. Final serial captures
+are temp/audio-runs/superpause-sound-*-isolated; earlier *-native drafts may
+contain overlapping Go HUD output and are diagnostic only. A fresh isolated
+superpause-sound-replay matches. Existing eight-unit/.35-second tolerances apply.
+The shared mixer continues streaming while simulation pauses. See SUPERPAUSE.md
+for clock/combat/effect evidence and remaining schema/ownership limits.

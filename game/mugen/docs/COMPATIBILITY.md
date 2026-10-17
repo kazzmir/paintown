@@ -255,8 +255,18 @@ M4u adds typed Pause and a shared GameTime/actor timeline. Thirteen native root
 programs pin 264 duration/movement/argument/replacement/cancellation observations;
 pure/full races and a fresh pair replay pass. Match background/effect/timer/reset
 and command-window checks are authored, with native interactions still pending.
-One SuperPause clock pilot does not implement its production controller, which
-remains a stub. See PAUSE.md for ownership, input, presentation and overlap gaps.
+The initial SuperPause pilot was only a pure clock test; M4v below supersedes
+that production-stub status. See PAUSE.md for the remaining input/ownership gaps.
+
+M4v connects typed SuperPause to production clocks, combat, power, effects,
+darkening and audio. Thirty-eight native programs cover 600 numeric observations,
+ten static render cases and seven audio segments/Go PCM checks. Frozen contacts,
+deferred receiver damage, acquired-target defence stacking/recovery, cue ownership
+and effect animation through pauses now match those fixtures. Full races, fresh
+render/audio replays and stock KFM's common-cue super pass. Complete native
+argument schemas, world/Target IDs, input and combat/effect interactions remain
+open; see SUPERPAUSE.md. Captures also identify an unresolved HUD/configuration
+framing difference, so M4q is not full framebuffer parity.
 
 ## Evidence and status definitions
 

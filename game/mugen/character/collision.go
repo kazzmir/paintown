@@ -49,6 +49,9 @@ func CheckCollision(attacker, defender *Character) bool {
 	if attacker.MoveType != "A" || !attacker.HitDefActive {
 		return false
 	}
+	if defender.Timeline != nil && defender.Timeline.SuperUnhittable(defender.pauseActor) {
+		return false
+	}
 	if !defender.allowsHit(attacker.attributesForHit(attacker.CurrentHitDef)) {
 		return false
 	}

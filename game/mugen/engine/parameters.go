@@ -83,6 +83,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 	switch name {
 	case "pause":
 		return compilePause(ctrl)
+	case "superpause":
+		return compileSuperPause(ctrl)
 	case "hitdef":
 		return compileHitDef(ctrl)
 	case "playsnd", "sndpan", "stopsnd":

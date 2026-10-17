@@ -57,13 +57,13 @@ func TickCharacters(players []*Character) error {
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
 		for _, attacker := range attackers {
-			if timeline.Frozen(attacker.pauseActor) {
-				continue
-			}
 			if attacker.HitGuard == nil {
 				attacker.HitGuard = map[int]bool{}
 			}
 			for _, defender := range c.Target {
+				if timeline.Frozen(attacker.pauseActor) && timeline.Frozen(defender.pauseActor) {
+					continue
+				}
 				if defender == attacker || defender.Life <= 0 || attacker.HitGuard[defender.PlayerID] {
 					continue
 				}
@@ -88,7 +88,6 @@ func TickCharacters(players []*Character) error {
 		if event.guarded {
 			c.MoveHit, c.MoveGuarded = 0, 1
 		}
-		c.contactSerial++
 		pause := event.hit.PauseTime
 		if event.guarded {
 			pause = event.hit.GuardPauseTime
@@ -97,17 +96,13 @@ func TickCharacters(players []*Character) error {
 			c.HitPauseTime = pause[0]
 		}
 	}
-	type damageEvent struct {
-		defender *Character
-		damage   int
-	}
-	var damage []damageEvent
 	for _, event := range contacts {
 		amount := event.defender.prepareContact(event.attacker, event.hit, event.guarded)
 		if event.defender.RuntimeError != nil {
 			return event.defender.RuntimeError
 		}
-		damage = append(damage, damageEvent{event.defender, amount})
+		event.defender.pendingHitDamage += amount
+		event.defender.hasPendingHitDamage = true
 	}
 	// Previous-tick definitions collide before this tick's state passes.
 	// Timed defence remains active for contact, then can be renewed by CNS.
@@ -126,8 +121,11 @@ func TickCharacters(players []*Character) error {
 		}
 	}
 
-	for _, event := range damage {
-		event.defender.applyHitDamage(event.damage)
+	for _, c := range players {
+		if !c.worldFrozen && c.hasPendingHitDamage {
+			c.applyHitDamage(c.pendingHitDamage)
+			c.pendingHitDamage, c.hasPendingHitDamage = 0, false
+		}
 	}
 	suppressKO := false
 	for _, c := range players {

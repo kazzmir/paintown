@@ -397,16 +397,41 @@ falls back to zero, and missing time is zero. Replacement/cancellation/last-call
 behavior matches. Command buffering and presentation/reset integration have
 authored tests, not native interaction parity. See PAUSE.md. The SuperPause pilot
 only tests pure Timeline clocks; its production controller is still a stub.
-Continue its complete schema/protection/presentation and native pause/input/
-contact/effect interactions next. Absolute GameTime origins remain unverified.
+M4v below supersedes that production-stub status. Absolute GameTime origins
+remain unverified.
+
+M4u is commit `b7df46ff`. M4v implements typed SuperPause through production
+clocks, power, protection, acquired-target defence, audio, effect clocks and
+darkening. Thirty-eight programs pin 600 numbers, ten render cases and seven
+audio segments/Go PCM checks. Full races and fresh serial effect-clock/other-
+pause/isolated-sound replays pass. A stock KFM super consumes 1000 power and
+uses common action 100/sound 20,0 with 30 frozen ticks. See SUPERPAUSE.md.
+
+Frozen attack boxes can hit moving receivers, correcting M4u's assumption.
+Frozen receivers enter the hit state immediately, accumulating damage until
+resumption. New HitDef rearms contacts; existing hitpause counter traces still
+pass. Super effects animate through either pause with a frozen caller, retain
+spawn position, and retire after one finite pass; -1 frames survive pause end
+and later anim=-1. The acquired-target generation ledger is limited to the
+measured defence behavior, not a complete entity/Target registry.
+
+Earlier overlapping window/audio drafts are diagnostic only. Run all native
+captures, Go window captures and audio probes sequentially on :97/private Pulse;
+the final serial paths/hashes are recorded in SUPERPAUSE.md. Pure tests with no
+DISPLAY can run alongside; full Ebiten tests must also wait for captures.
+
+Next compare StageFit/SystemFit/KeepAspect and HUD projection: native loads
+data/mugen1/fight.def and places portraits near X=172/Y=14, while Go's independent
+HUD fit puts them near X=16/Y=16. World margins/marker coordinates are correct,
+but M4q did not establish native HUD/full framebuffer parity. Then continue
+world/entity/target ownership, complete HitDef/input/effect/audio/mode gates.
 
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next implement complete SuperPause and native pause/input/contact/effect
-interactions, then continue native builtin-state/recovery rules and complete
+Continue native pause/input/contact/effect interactions, builtin-state/recovery rules and complete
 HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated.

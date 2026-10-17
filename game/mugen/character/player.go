@@ -115,6 +115,10 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 		return
 	}
 	opts := &ebiten.DrawImageOptions{}
+	if ent.Timeline != nil {
+		tint := ent.Timeline.ActorTint(ent.pauseActor)
+		opts.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
+	}
 	opts.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 
 	// Flip logic

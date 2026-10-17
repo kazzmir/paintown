@@ -30,6 +30,10 @@ Do not modify the reference distribution. Do not commit its binaries/assets.
 - Errors must identify the file/state/controller/expression. Never treat an
   unknown controller or invalid trigger as a successful no-op.
 - Exercise the complete selection-to-fight path as well as test applications.
+- Run native captures, app smoke captures and audio probes sequentially on the
+  private display/audio server. Overlapping windows can invalidate OpenGL
+  captures, and other audio output invalidates tone provenance. Pure tests
+  without DISPLAY may run alongside those probes.
 - Run Go with `GOFLAGS=-mod=readonly` so the root module stays unchanged. Build
   artifacts and disposable tools belong in `temp/`, which is not source.
 - Use the launcher or `-modfile=game/mugen/mugen.mod` for the scoped dependency

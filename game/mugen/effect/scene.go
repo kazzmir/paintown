@@ -18,9 +18,11 @@ type Source struct {
 }
 
 type Request struct {
-	Source         Source
-	Action, Facing int
-	X, Y           float64 // common game units
+	Source                        Source
+	Action, Facing                int
+	X, Y                          float64 // common game units
+	PauseMoveTime, SuperMoveTime  int
+	IgnorePause, IgnoreSuperPause bool
 }
 
 type Instance struct {
@@ -61,8 +63,29 @@ func NewScene(limit int) *Scene {
 // Advance runs before this tick's contacts. Newly queued effects retain their
 // first display frame until the following tick; every animation plays one pass.
 func (s *Scene) Advance() error {
+	return s.AdvanceWithPause(false, false)
+}
+
+func (s *Scene) AdvanceWithPause(paused, superPaused bool) error {
 	keep := s.Active[:0]
 	for _, instance := range s.Active {
+		if superPaused {
+			if !instance.IgnoreSuperPause && instance.SuperMoveTime <= 0 {
+				keep = append(keep, instance)
+				continue
+			}
+			if !instance.IgnoreSuperPause {
+				instance.SuperMoveTime--
+			}
+		} else if paused {
+			if !instance.IgnorePause && instance.PauseMoveTime <= 0 {
+				keep = append(keep, instance)
+				continue
+			}
+			if !instance.IgnorePause {
+				instance.PauseMoveTime--
+			}
+		}
 		instance.Clock.Update()
 		if instance.Clock.Error != nil {
 			return instance.Clock.Error

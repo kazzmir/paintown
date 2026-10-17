@@ -15,7 +15,8 @@ import (
 )
 
 func TestNativePauseRootClocks(t *testing.T) {
-	for _, name := range []string{"pause-three", "pause-move-one", "pause-move-all", "pause-zero", "pause-one", "pause-other", "pause-missing", "pause-negative", "pause-overmove", "pause-negmove", "pause-replace", "pause-cancel", "pause-pair"} {
+	for _, name := range []string{"pause-three", "pause-move-one", "pause-move-all", "pause-zero", "pause-one", "pause-other", "pause-missing", "pause-negative", "pause-overmove", "pause-negmove", "pause-replace", "pause-cancel", "pause-pair",
+		"superpause-three", "superpause-default", "superpause-move-one", "superpause-negative", "superpause-overmove", "superpause-power", "superpause-power-negative", "superpause-with-pause", "superpause-delayed-pause", "superpause-preempt-pause"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")
