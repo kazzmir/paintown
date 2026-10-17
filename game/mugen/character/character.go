@@ -1848,7 +1848,7 @@ func (c *Character) HandleHit(other *Character) {
 	if c.HitGuard == nil {
 		c.HitGuard = make(map[int]bool)
 	}
-	if c.HitGuard[int(other.EntityID)] {
+	if c.HitGuard[int(other.EntityID)] || (hit.HitOnce && len(c.HitGuard) > 0) {
 		return // Already hit this target this swing
 	}
 	c.HitGuard[int(other.EntityID)] = true
@@ -2058,6 +2058,12 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		}
 	}
 	if c.MoveType == "H" && !hasOverride {
+		if hit.HitOnce {
+			if err := attacker.DropTargets(engine.TargetDropParameters{ExcludeID: -1}); err != nil {
+				c.RuntimeError = err
+				return 0
+			}
+		}
 		attacker.acquireTarget(c, hit.ID)
 	}
 	return finalDamage

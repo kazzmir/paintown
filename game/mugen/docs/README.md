@@ -50,5 +50,7 @@ and the handoff for current progress; the assessment describes the original base
 
 26. [Helper combat](HELPER-COMBAT.md): defender candidates, birth activation, independent target identities and state-phase controls.
 
+27. [HitDef selection](HIT-SELECTION.md): one-target consumption, throw defaults, friendly teams and root/helper contact order.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

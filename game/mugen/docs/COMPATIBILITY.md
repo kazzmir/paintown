@@ -7,6 +7,16 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
+target dropping. Twenty-eight native programs compare 300 numbers, three load
+rejections and 112 authored input hashes. All throw classes default to one;
+guard consumes the contact. Independent root/root, root/helper and helper/helper
+controls pin roots before helpers, enemy roots before friendly roots and helper
+creation order regardless of team. Full scoped races pass in
+temp/m4ao-full-race.log; all focused cases and four fresh native replays pass.
+See HIT-SELECTION.md. Priority/reversal/override/projectile/team-mode and full
+binding/geometry/render/asset gates remain open.
+
 M4an adds helper defender candidates and measured incoming-contact activation.
 Ten native helpercontact programs compare 204 numbers and 40 authored input
 hashes. Normal/player/multiple helpers take damage, enter their own get-hit

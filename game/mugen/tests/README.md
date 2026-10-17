@@ -512,3 +512,20 @@ python3 game/mugen/tests/reference_probe.py --fixture helpercontact-two-normal -
 Use each JSON's recorded pages. Full scoped races, four fresh replays and seven
 private-display app captures pass; HELPER-COMBAT.md records the limits and
 remaining sprite-mask difference. No full HitDef/helper/renderer claim.
+
+## M4ao HitDef target and team selection
+
+TestNativeHitSelection compares 28 original hitselect programs: 300 numeric
+observations, three load rejections and 112 authored CNS/AIR/CMD/stage hashes.
+Controls cover hitonce consumption/defaults/replacement/guarding, affectteam
+syntax and independent root/root, root/helper and helper/helper selection order.
+To replay without changing goldens:
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture hitselect-helper-pair-team-order --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 --seconds 7
+```
+
+All these programs use page 0; rejected inputs have no captures and retain the
+expected state in expected_compile_state. HIT-SELECTION.md records grammar,
+phase evidence and validation. Complete priority/override/projectile/team-mode
+and binding-release rules remain open.

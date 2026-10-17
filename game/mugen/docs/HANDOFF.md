@@ -24,14 +24,41 @@ clipped placement, native debug magenta versus Go black, background filtering
 and HUD differences remain renderer obligations. Measurements:
 temp/m4an-app-comparison.json.
 
-Next: measure hitonce (including throw defaults) and affectteam against roots
-and helpers before implementation. Prepared original hitselect fixtures and
-native recording remain under the same scope. Continue autonomously; do not
-stop for routine permission or push. Corpus authors/catalogues:
-temp/author-helper-contact*.py and helpercontact-*-cases.json. Pre-fix/candidate-
-only failures: m4an-before-contacts.log and m4an-helper-first-race.log. Focused
-passes: m4an-helper-second-race.log and m4an-friendly-race.log. Four fresh
-replays: m4an-replay-player, pair-late-attack, phase-p2-attack and own-team.
+M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
+target dropping. Twenty-eight native programs compare 300 numbers, three load
+rejections and 112 authored input hashes. All throw classes default to one;
+guard consumes the contact. Independent root/root, root/helper and helper/helper
+controls pin roots before helpers, enemy roots before friendly roots and helper
+creation order regardless of team. Full scoped races pass in
+temp/m4ao-full-race.log; all focused cases and four fresh native replays pass.
+See HIT-SELECTION.md. Priority/reversal/override/projectile/team-mode and full
+binding/geometry/render/asset gates remain open.
+
+Seven real 1280x720 captures under temp/app-runs/hitselect-helper-order-go/
+(3/5/7 seconds) and hitselect-stock-throw-go/ (2/3/4/7) pass provenance,
+dimensions, nonblack and runtime/resource checks. Stock recovery retains two
+fighters without permanent dust clones. The overlapping helper scene's white
+clothing masks contain 22,362 native versus 22,626 Go pixels and differ at
+12,036 pixels. The foreground facing also differs at overlapping actors,
+pointing to a tied sprite-order problem that needs independent controls.
+Existing late clipped placement, native debug magenta versus Go black,
+background filtering and HUD differences remain open. These are smoke checks,
+not framebuffer parity. Measurements: temp/m4ao-app-comparison.json.
+
+Next: independently measure root/helper global draw order and SprPriority ties
+before changing the recursive actor renderer. The selection app scene exposes
+a large overlap difference; do not dismiss it as sampling alone. Priority/clash
+controls are prepared in temp/author-hit-clash.py but have not been authored
+or recorded yet. Keep that separate from rendering evidence. Continue without
+routine permission; all changes remain in game/mugen and no push is authorized.
+
+M4ao evidence: m4ao-before-selection.log (12/15 pre-fix failures),
+m4ao-first-selection-race.log (22/24 pass; bottom/root-order mismatches),
+m4ao-second-selection-race.log (28 pass), m4ao-pure-race.log and full log.
+Native catalogues: temp/hitselect-*-cases.json and author-hit-selection.py.
+Fresh replays: m4ao-replay-guard-once, replace-drop, helper-pair-team-order and
+invalid-team. Window checks pass under m4ao-apps.log. Root module hashes remain
+unchanged. The previous helper defender checkpoint is 0482a7b5.
 
 Previous M4am adds anchor-completion binding publication, idle-anchor constraints,
 external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.

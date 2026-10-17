@@ -167,11 +167,34 @@ func (w *World) enemies(c *Character, nearest bool) []*Character {
 }
 
 // Combat candidates include helpers without changing root-only Enemy/NumEnemy
-// queries. Creation order follows roots, then the live helper registry.
-func (w *World) contactEnemies(c *Character) []*Character {
-	result := w.enemies(c, false)
+// queries. Enemy roots precede friendly roots, then helpers follow creation.
+func (w *World) contactCandidates(c *Character, team string) []*Character {
+	eligible := func(other *Character) bool {
+		if other == c || other.destroyed {
+			return false
+		}
+		switch team {
+		case "B":
+			return true
+		case "F":
+			return other.TeamSide == c.TeamSide
+		default:
+			return other.TeamSide != c.TeamSide
+		}
+	}
+	var result []*Character
+	for _, root := range w.Roots {
+		if eligible(root) {
+			result = append(result, root)
+		}
+	}
+	// Roots precede helpers; among roots, opponents precede friends even
+	// when the friendly root has the lower world ID.
+	sort.SliceStable(result, func(i, j int) bool {
+		return result[i].TeamSide != c.TeamSide && result[j].TeamSide == c.TeamSide
+	})
 	for _, helper := range w.Helpers {
-		if !helper.destroyed && helper.TeamSide != c.TeamSide {
+		if eligible(helper) {
 			// Both normal/player helpers can attack after birth, but their
 			// first incoming contact is two world ticks after creation.
 			if helper.helperBirthKnown && c.Timeline != nil && c.Timeline.GameTime-helper.helperBirthTick < 2 {

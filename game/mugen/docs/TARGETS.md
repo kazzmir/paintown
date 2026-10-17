@@ -116,3 +116,9 @@ and BindToTarget/Parent/Root clocks/geometry, then complete helper typed
 parameters/negative eligibility, multi-target/neutral/team rules and projectile
 world phases. The unresolved bottom-power native defect from BOTTOM.md remains
 open. These tests do not promote any whole controller/trigger to Verified.
+
+M4ao adds native multi-target selection evidence: hitonce defaults for all throw
+classes, guarded consumption, replacement dropping and friendly/both-team root/
+helper candidates. Roots precede helpers; enemy roots precede friendly roots;
+helpers retain creation order independently of team. See HIT-SELECTION.md.
+This does not verify TargetDrop keepone RNG or all multi-entity retention rules.

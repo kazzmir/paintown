@@ -8,8 +8,8 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
-// Sound, spark and custom-state parameters compile here while the remaining legacy schema
-// is progressively replaced. Never mutate the shared controller's source map.
+// Sound, spark, custom-state and selection parameters compile here while the
+// remaining legacy schema is replaced. Never mutate the shared source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	type cue struct {
 		key  string
@@ -17,7 +17,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		args []argument
 	}
 	var cues []cue
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -50,7 +50,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		entry := cue{key: key, own: own}
 		for i, expr := range expressions {
-			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state" || key == "p2facing") && integerFieldFloatLiteral(expr) {
+			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state" || key == "p2facing" || key == "hitonce") && integerFieldFloatLiteral(expr) {
 				return nil, true, fmt.Errorf("%s: expected int value and read float", key)
 			}
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
@@ -60,13 +60,19 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		cues = append(cues, entry)
 	}
+	if raw, present := ctrl.Params["affectteam"]; present {
+		team := strings.ToUpper(strings.TrimSpace(raw))
+		if team == "" || !strings.ContainsAny(team[:1], "EFB") {
+			return nil, true, fmt.Errorf("invalid affectteam %q", raw)
+		}
+	}
 	return func(_ *cns.StateController, env Environment) error {
 		params := make(map[string]string, len(ctrl.Params))
 		for key, value := range ctrl.Params {
 			params[key] = value
 		}
 		for _, cue := range cues {
-			values, err := evaluateArguments(cue.args, env)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce")
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}

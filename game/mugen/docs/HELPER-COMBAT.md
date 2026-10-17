@@ -75,8 +75,9 @@ version 1.1, a fixed camera, neutral input and PlayerPush=0 to isolate contact
 from displacement. Sources query a missing optional helper/target in some
 controls; their expected warnings/bottom writes are not missing-asset errors.
 
-Still required: hitonce (including throw defaults), explicit friendly/both-team
-HitDefs, helpers hitting more helpers in trades, cancellation/priority/reversal,
+M4ao adds hitonce (including throw defaults), explicit friendly/both-team
+HitDefs and independent root/helper selection ordering; see HIT-SELECTION.md.
+Still required: helpers hitting more helpers in trades, cancellation/priority/reversal,
 helper KO/destruction, pause/foreign/mixed-unit contacts, active AIR/size/Width
 boundaries, and complete projectile and team-mode behavior. No whole Helper or
 HitDef row is promoted to Verified.

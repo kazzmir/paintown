@@ -82,7 +82,9 @@ type StateController struct {
 }
 
 type HitDef struct {
-	ID int
+	ID         int
+	HitOnce    bool
+	AffectTeam string
 	// Nil means no custom transition. Keep explicit values separate so a
 	// zero-valued, programmatic HitDef does not change either actor's state.
 	P1StateNo        *int
@@ -613,6 +615,16 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v
+	}
+	_, attackClass, _ := strings.Cut(hd.Attr, ",")
+	hd.HitOnce = strings.HasSuffix(strings.ToUpper(strings.TrimSpace(attackClass)), "T")
+	if raw, present := params["hitonce"]; present {
+		value, _ := strconv.Atoi(raw)
+		hd.HitOnce = value != 0
+	}
+	hd.AffectTeam = "E"
+	if raw := strings.ToUpper(strings.TrimSpace(params["affectteam"])); raw != "" {
+		hd.AffectTeam = raw[:1]
 	}
 	if v, ok := params["hitflag"]; ok {
 		hd.HitFlag = v

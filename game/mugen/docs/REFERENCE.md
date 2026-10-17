@@ -7,6 +7,29 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4ao HitDef target/team selection
+
+M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
+target dropping. Twenty-eight native programs compare 300 numbers, three load
+rejections and 112 authored input hashes. All throw classes default to one;
+guard consumes the contact. Independent root/root, root/helper and helper/helper
+controls pin roots before helpers, enemy roots before friendly roots and helper
+creation order regardless of team. Full scoped races pass in
+temp/m4ao-full-race.log; all focused cases and four fresh native replays pass.
+See HIT-SELECTION.md. Priority/reversal/override/projectile/team-mode and full
+binding/geometry/render/asset gates remain open.
+
+Seven real 1280x720 captures under temp/app-runs/hitselect-helper-order-go/
+(3/5/7 seconds) and hitselect-stock-throw-go/ (2/3/4/7) pass provenance,
+dimensions, nonblack and runtime/resource checks. Stock recovery retains two
+fighters without permanent dust clones. The overlapping helper scene's white
+clothing masks contain 22,362 native versus 22,626 Go pixels and differ at
+12,036 pixels. The foreground facing also differs at overlapping actors,
+pointing to a tied sprite-order problem that needs independent controls.
+Existing late clipped placement, native debug magenta versus Go black,
+background filtering and HUD differences remain open. These are smoke checks,
+not framebuffer parity. Measurements: temp/m4ao-app-comparison.json.
+
 ## M4an helper defenders and birth contact timing
 
 M4an adds helper defender candidates and measured incoming-contact activation.
