@@ -7,6 +7,16 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
+Explod clocks. Fourteen native programs compare 288 numbers, two load
+rejections and 56 authored input hashes. Nonrecursive descendants retain parent
+metadata while the live registry/parent writes retire; recursive removal covers
+the full descendant tree. Effects are removed or orphaned according to the flags.
+Focused native/lifetime/binding/reset checks and the full scoped race suite pass
+in temp/m4ak-focused-race.log and m4ak-full-race.log. See RETIREMENT.md. Complete
+binding publication, sound, retired-state queries, projectile and pause/foreign/
+combat lifecycle combinations remain open.
+
 M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
 root/helper scheduler. Seventy-two native programs pin 984 numbers, eight load
 rejections and 276 authored input hashes. Birth/negative-state eligibility,
@@ -432,7 +442,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | ClearClipboard | Present | 0 | Clears local text; debug display integration unverified. |
 | CtrlSet | Present | 21 | Literal-only value parsing. |
 | DefenceMulSet | Present | 2 | Literal parsing; target-version damage rules unverified. |
-| DestroySelf | Stub | 0 | Registered handler has no effective implementation. |
+| DestroySelf | Partial | 0 | Typed recursive/removeexplods, native descendant/parent-snapshot/effect-retirement controls; complete binding, sound, projectiles and pause/foreign lifecycle open. |
 | DisplayToClipboard | Present | 0 | Stores raw text; formatting/params and debug display incomplete. |
 | EnvColor | Stub | 0 | Registered handler has no effective implementation. |
 | EnvShake | Stub | 6 | Registered handler has no effective implementation. |

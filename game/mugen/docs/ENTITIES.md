@@ -1,5 +1,10 @@
 # Entity identity, redirection and current ownership limits
 
+M4ak adds native recursive removal and retained orphan-parent metadata, while
+live registry lookups and parent variable mutation retire. World-driven orphan
+effect clocks prevent frozen permanent sprites. See RETIREMENT.md; native
+binding publication, sound and complete combat/projectile retirement remain open.
+
 M4aj replaces recursive helper ticking with the shared ordered root/helper
 list, and adds typed creation arguments, measured negative eligibility, pause
 allowances, names, sizes and camera rules. See HELPERS.md. Nested creation and

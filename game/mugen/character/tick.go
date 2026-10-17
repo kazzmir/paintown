@@ -197,9 +197,15 @@ func TickCharacters(players []*Character) error {
 		c.Helpers = children
 	}
 	for _, c := range players {
+		if c.destroyed {
+			continue
+		}
 		if err := c.advanceExplods(pausedEffects, superPausedEffects); err != nil {
 			return err
 		}
+	}
+	if err := world.advanceOrphanExplods(rootGroup, pausedEffects, superPausedEffects); err != nil {
+		return err
 	}
 	suppressKO := false
 	for _, c := range players {

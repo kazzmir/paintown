@@ -13,10 +13,11 @@ import (
 // World owns entity identity and root relationships. TickCharacters schedules
 // roots/helpers; projectiles still use legacy child adapters.
 type World struct {
-	Registry  *engine.Registry[*Character]
-	Roots     []*Character
-	Helpers   []*Character
-	HelperMax int
+	Registry           *engine.Registry[*Character]
+	Roots              []*Character
+	Helpers            []*Character
+	HelperMax          int
+	orphanEffectOwners []*Character
 
 	// AfterEntityUpdate observes completed root/helper CNS and physics. Match
 	// uses this for camera easing; state-only worlds leave it nil.
@@ -30,6 +31,14 @@ func NewWorld(helperMax int) *World {
 }
 
 func (w *World) ResetRoots(players ...*Character) error {
+	for _, owner := range w.orphanEffectOwners {
+		for _, e := range owner.Explods {
+			if e.Visual != nil {
+				e.Visual.Active = false
+			}
+		}
+	}
+	w.orphanEffectOwners = nil
 	for _, helper := range w.Helpers {
 		helper.destroyed = true
 		w.Registry.Remove(helper.EntityID)
@@ -159,7 +168,7 @@ func (w *World) enemies(c *Character, nearest bool) []*Character {
 
 func (c *Character) helperFamily(id int, filter bool) []*Character {
 	var result []*Character
-	if c.World == nil {
+	if c.World == nil || c.destroyed {
 		return result
 	}
 	root := c.rootPlayer()
@@ -209,6 +218,9 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 		other := c.Parent
 		if name == "rootdist x" || name == "rootdist y" {
 			other = c.rootPlayer()
+		}
+		if other.destroyed {
+			return evaluator.Value{}, true
 		}
 		x, y := c.PositionOf(other)
 		if name == "parentdist x" || name == "rootdist x" {
@@ -262,7 +274,7 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 	var candidates []*Character
 	switch name {
 	case "parent":
-		if c.Parent != nil && !c.Parent.destroyed {
+		if c.Parent != nil {
 			return c.redirectEnvironment(c.Parent)
 		}
 	case "root":

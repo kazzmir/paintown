@@ -48,6 +48,8 @@ spawned process's window, sends no input, and makes no focus/pointer changes.
 Each capture reads two clipboard lines by exact matching against the bundled
 debug font, rejects ambiguous/missing glyphs, and checks the pinned observations.
 Captures/logs/hashes remain in its run directory. Each run name must be new.
+Each clipboard page starts a fresh native process and waits the requested
+seconds; pages are separate observations, not successive times in one match.
 The Go clock regressions use the committed numerical observations without Wine.
 
 Named state probes use `--fixture state-order --pages 0` or
@@ -449,3 +451,20 @@ Use the pages/recipe recorded in each JSON. Full scoped races pass in
 temp/m4aj-full-race.log; pure engine/evaluator races pass without DISPLAY in
 temp/m4aj-final-pure-race.log. HELPERS.md separates measured coverage from the
 remaining helper/world obligations.
+
+## M4ak helper retirement
+
+TestNativeHelperRetirement compares fourteen helperretire programs, 288 numeric
+observations, two load rejections and all 56 authored input hashes. Rejected
+programs identify expected_compile_state=800. Replay, using a new name:
+
+```
+python3 game/mugen/tests/reference_probe.py --fixture helperretire-orphan-parent --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 --seconds 7
+```
+
+The same recipe covers recursive-one/two/negative/computed/bottom, both float
+rejections and five scene-* programs. RETIREMENT.md describes retained metadata,
+parent writes, recursive effect removal and the finite/permanent orphan scenes.
+TestOrphanExplodClockExpiryBindingAndRoundReset checks clocks, released anchors
+and round cleanup without graphics resources. Full scoped races pass in
+temp/m4ak-full-race.log; pre-fix failures remain in m4ak-before-retirement.log.

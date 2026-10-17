@@ -1,0 +1,319 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+[State 700, control]
+type=PosSet
+trigger1=Time=0
+x=30
+y=-20
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+pos=11,-6
+
+
+[State 700, control]
+type=VarSet
+trigger1=Time=2
+fv=0
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=3
+fv=1
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=4
+fv=2
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=3
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=4
+value=PlayerIDExist(58)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=5
+value=PlayerIDExist(59)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=6
+value=PlayerIDExist(60)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=7
+value=Var(1)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=8
+value=Helper(124),FVar(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=9
+value=Helper(124),FVar(1)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=10
+value=Helper(124),FVar(2)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=11
+value=Helper(124),FVar(3)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=12
+value=Helper(124),FVar(4)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=13
+value=Helper(124),FVar(5)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=14
+value=Helper(125),FVar(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=15
+value=Helper(125),FVar(1)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=16
+value=Helper(125),FVar(2)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=17
+value=Helper(125),FVar(3)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=18
+value=Helper(125),FVar(4)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=19
+value=Helper(125),FVar(5)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=20
+value=Helper(124),StateNo
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=21
+value=Helper(125),StateNo
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=22
+value=NumHelper(123)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=23
+value=NumHelper(124)
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=PosSet
+trigger1=Time=0
+x=40
+y=-40
+
+[Statedef -3]
+
+[State -3, control]
+type=VarAdd
+trigger1=IsHelper
+v=0
+value=1
+
+[Statedef -2]
+
+[State -2, control]
+type=VarAdd
+trigger1=IsHelper
+v=1
+value=1
+
+
+[Statedef 800]
+physics=N
+anim=9990
+ctrl=0
+
+[State 800, control]
+type=Helper
+trigger1=Time=0
+id=124
+stateno=801
+
+[State 800, control]
+type=DestroySelf
+trigger1=Time=3
+recursive=1
+
+[State 800, control]
+type=ParentVarSet
+trigger1=Time=3
+v=1
+value=999
+
+[Statedef 801]
+physics=N
+anim=9990
+ctrl=0
+
+[State 801, control]
+type=Helper
+trigger1=Time=0
+id=125
+stateno=802
+
+[State 801, control]
+type=VarSet
+trigger1=Time=5
+fv=0
+value=Parent,ID
+
+[State 801, control]
+type=VarSet
+trigger1=Time=5
+fv=1
+value=Root,ID
+
+[State 801, control]
+type=VarSet
+trigger1=Time=5
+fv=2
+value=Time
+
+[State 801, control]
+type=VarSet
+trigger1=Time=5
+fv=3
+value=NumHelper
+
+[State 801, control]
+type=VarSet
+trigger1=Time=5
+fv=4
+value=ParentDist X
+
+[State 801, control]
+type=VarSet
+trigger1=Time=5
+fv=5
+value=PlayerIDExist(58)
+
+[Statedef 802]
+physics=N
+anim=9990
+ctrl=0
+
+[State 802, control]
+type=VarSet
+trigger1=Time=5
+fv=0
+value=Parent,ID
+
+[State 802, control]
+type=VarSet
+trigger1=Time=5
+fv=1
+value=Root,ID
+
+[State 802, control]
+type=VarSet
+trigger1=Time=5
+fv=2
+value=Time
+
+[State 802, control]
+type=VarSet
+trigger1=Time=5
+fv=3
+value=NumHelper
+
+[State 802, control]
+type=VarSet
+trigger1=Time=5
+fv=4
+value=ParentDist X
+
+[State 802, control]
+type=VarSet
+trigger1=Time=5
+fv=5
+value=PlayerIDExist(58)

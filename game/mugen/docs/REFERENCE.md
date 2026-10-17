@@ -7,6 +7,38 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4ak helper retirement and orphaned effects
+
+M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
+Explod clocks. Fourteen native programs compare 288 numbers, two load
+rejections and 56 authored input hashes. Nonrecursive descendants retain parent
+metadata while the live registry/parent writes retire; recursive removal covers
+the full descendant tree. Effects are removed or orphaned according to the flags.
+Focused native/lifetime/binding/reset checks and the full scoped race suite pass
+in temp/m4ak-focused-race.log and m4ak-full-race.log. See RETIREMENT.md. Complete
+binding publication, sound, retired-state queries, projectile and pause/foreign/
+combat lifecycle combinations remain open.
+
+Six final 1280x720 captures under temp/app-runs/helperretire-scene-*-go-final/
+match the native clothing masks exactly. Nonrecursive preserve/remove retain
+two/one effects; recursive preserve/remove retain two/zero. Each visible sprite
+has 8,379 thresholded white pixels, at the same coordinates in both engines.
+The finite recursive orphan shows two sprites at seven seconds and zero at
+fourteen. Native late expiry is the separate m4ak-replay-scene-finite capture;
+clipboard pages restart the native process, so pages alone are not elapsed-time
+samples. Full framebuffer/background/debug/HUD equivalence remains open.
+
+The first app captures exposed hardcoded linear effect filtering (15,304 white
+pixels versus native 16,758 for two sprites). Nearest-neighbor sampling fixes
+all final masks. Full scoped races pass in temp/m4ak-full-race.log; the final
+renderer change additionally passes m4ak-system-final-race.log. Pre-filter
+captures remain in the corresponding *-go directories. Final capture hashes,
+dimensions/nonblack checks and runtime logs pass; measured masks are recorded
+in temp/m4ak-window-comparison.json.
+
+Fresh recursive-negative/orphan-parent replays and the fourteen-second finite
+scene reproduce all observed variables/input hashes, under m4ak-replay-*.
+
 ## M4aj helper configuration and shared scheduling
 
 M4aj adds compiled Helper arguments, helper-owned size overrides and a shared

@@ -35,6 +35,10 @@ func TestNativeHelperConfiguration(t *testing.T) {
 	replayNativeGeometryPrograms(t, "helpercfg-*.json", 72)
 }
 
+func TestNativeHelperRetirement(t *testing.T) {
+	replayNativeGeometryPrograms(t, "helperretire-*.json", 14)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
@@ -56,6 +60,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				P2Local    string `json:"p2_localcoord"`
 				StageError string `json:"expected_stage_error"`
 				LoadError  string `json:"expected_load_error"`
+				ErrorState int    `json:"expected_compile_state"`
 				Captures   []struct{ Variables map[string]float64 }
 			}
 			if err := json.Unmarshal(data, &reference); err != nil {
@@ -101,7 +106,11 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				}
 			}
 			if reference.LoadError != "" && reference.StageError == "" {
-				if err := character.NewStateMachine().CompileState(file.States[700]); err == nil || !strings.Contains(err.Error(), "state 700 controller") || !strings.Contains(err.Error(), filepath.Base(stem)+".cns") {
+				number := reference.ErrorState
+				if number == 0 {
+					number = 700
+				}
+				if err := character.NewStateMachine().CompileState(file.States[number]); err == nil || !strings.Contains(err.Error(), "state "+strconv.Itoa(number)+" controller") || !strings.Contains(err.Error(), filepath.Base(stem)+".cns") {
 					t.Fatal("native-rejected controller was not rejected with source context", err)
 				}
 				return

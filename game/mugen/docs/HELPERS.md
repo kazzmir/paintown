@@ -1,5 +1,10 @@
 # Helpers: configuration and shared scheduling
 
+M4ak extends this configuration foundation with descendant retirement, parent
+snapshots and world-driven orphan Explod lifetimes; see RETIREMENT.md. Its
+focused coverage supersedes the corresponding open items at the M4aj checkpoint
+below. Complete helper combat/input/palette/ownership gates remain open.
+
 M4aj compares 72 authored programs against the supplied 1.1 beta executable:
 984 numeric observations, eight intentional load rejections and 276 authored
 CNS/AIR/stage/CMD hashes. TestNativeHelperConfiguration runs the same inputs

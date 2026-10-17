@@ -111,7 +111,7 @@ func (c *Character) advanceExplods(paused, superPaused bool) error {
 			if e.Time == 0 {
 				e.Visual.Active = false
 			}
-		} else if e.IgnoreHitPause || !c.IsPaused() {
+		} else if c.destroyed || e.IgnoreHitPause || !c.IsPaused() {
 			previous := e.Visual.Age
 			if err := e.Visual.Advance(paused, superPaused); err != nil {
 				return err

@@ -44,5 +44,7 @@ and the handoff for current progress; the assessment describes the original base
 
 23. [Helper configuration](HELPERS.md): native birth/order, typed parameters, sizes, pause allowances, camera precision and intro timing.
 
+24. [Helper retirement](RETIREMENT.md): recursive removal, retained parent snapshots, orphan effects and lifetime/binding cleanup.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

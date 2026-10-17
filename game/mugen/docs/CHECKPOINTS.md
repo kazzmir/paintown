@@ -4,6 +4,55 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ak — Helper retirement, parent snapshots and orphan Explod clocks
+
+Fourteen helperretire programs compare 288 numbers, two intentional load
+rejections and 56 authored input hashes. Typed recursive/removeexplods arguments
+validate before effects; negative/non-one/computed recursion and bottom/default
+behavior match native. Nonrecursive descendants survive with retained Parent
+metadata; live registry lookup, parent writes and family participation retire.
+The retiring parent's final physics/time step remains observable. Recursive
+removal retires the full descendant tree in stable creation order.
+
+Retained Explods now advance through the world after helper removal instead of
+freezing indefinitely. Flags select removal versus orphaning for the helper and
+its descendants. Anchors to retired actors release, finite effects expire and
+round reset clears orphan resources. Native default postype=none keeps the
+visual scene positions in stage space; binding-release publication still needs
+an executable control beyond the manual/direct lifecycle regression.
+
+Focused comparisons and clock/expiry/binding/reset tests pass in
+temp/m4ak-focused-race.log. The engine race regression rejects an invalid later
+argument before earlier assignments (m4ak-engine-race.log). Pre-fix divergences
+remain in m4ak-before-retirement.log. Full races include every prior helper,
+contact/throw/guard/pause/ownership/effect/asset regression. See RETIREMENT.md.
+
+Six final 1280x720 captures under temp/app-runs/helperretire-scene-*-go-final/
+match the native clothing masks exactly. Nonrecursive preserve/remove retain
+two/one effects; recursive preserve/remove retain two/zero. Each visible sprite
+has 8,379 thresholded white pixels, at the same coordinates in both engines.
+The finite recursive orphan shows two sprites at seven seconds and zero at
+fourteen. Native late expiry is the separate m4ak-replay-scene-finite capture;
+clipboard pages restart the native process, so pages alone are not elapsed-time
+samples. Full framebuffer/background/debug/HUD equivalence remains open.
+
+The first app captures exposed hardcoded linear effect filtering (15,304 white
+pixels versus native 16,758 for two sprites). Nearest-neighbor sampling fixes
+all final masks. Full scoped races pass in temp/m4ak-full-race.log; the final
+renderer change additionally passes m4ak-system-final-race.log. Pre-filter
+captures remain in the corresponding *-go directories. Final capture hashes,
+dimensions/nonblack checks and runtime logs pass; measured masks are recorded
+in temp/m4ak-window-comparison.json.
+
+Fresh recursive-negative/orphan-parent replays and the fourteen-second finite
+scene reproduce all observed variables/input hashes, under m4ak-replay-*.
+
+Remaining: helper sound ownership, native binding publication, retired-state
+assignments/remaining queries, helper projectiles, death/KO versus DestroySelf,
+pause/foreign combinations and full multi-entity combat. No whole helper gate
+is complete. Root module hashes remain unchanged; all authored edits stay in
+scope and no original art/binary is tracked. Reversal point: 0672ee13 (M4aj).
+
 ## M4aj — Helper configuration, entity order and intro/camera corrections
 
 Seventy-two native helpercfg programs compare 984 numeric observations, eight

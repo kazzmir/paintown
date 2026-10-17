@@ -4,7 +4,37 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
+Latest M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
+Explod clocks. Fourteen native programs compare 288 numbers, two load
+rejections and 56 authored input hashes. Nonrecursive descendants retain parent
+metadata while the live registry/parent writes retire; recursive removal covers
+the full descendant tree. Effects are removed or orphaned according to the flags.
+Focused native/lifetime/binding/reset checks and the full scoped race suite pass
+in temp/m4ak-focused-race.log and m4ak-full-race.log. See RETIREMENT.md. Complete
+binding publication, sound, retired-state queries, projectile and pause/foreign/
+combat lifecycle combinations remain open.
+
+Six final 1280x720 captures under temp/app-runs/helperretire-scene-*-go-final/
+match the native clothing masks exactly. Nonrecursive preserve/remove retain
+two/one effects; recursive preserve/remove retain two/zero. Each visible sprite
+has 8,379 thresholded white pixels, at the same coordinates in both engines.
+The finite recursive orphan shows two sprites at seven seconds and zero at
+fourteen. Native late expiry is the separate m4ak-replay-scene-finite capture;
+clipboard pages restart the native process, so pages alone are not elapsed-time
+samples. Full framebuffer/background/debug/HUD equivalence remains open.
+
+The first app captures exposed hardcoded linear effect filtering (15,304 white
+pixels versus native 16,758 for two sprites). Nearest-neighbor sampling fixes
+all final masks. Full scoped races pass in temp/m4ak-full-race.log; the final
+renderer change additionally passes m4ak-system-final-race.log. Pre-filter
+captures remain in the corresponding *-go directories. Final capture hashes,
+dimensions/nonblack checks and runtime logs pass; measured masks are recorded
+in temp/m4ak-window-comparison.json.
+
+Fresh recursive-negative/orphan-parent replays and the fourteen-second finite
+scene reproduce all observed variables/input hashes, under m4ak-replay-*.
+
+Previous M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
 root/helper scheduler. Seventy-two native programs pin 984 numbers, eight load
 rejections and 276 authored input hashes. Birth/negative-state eligibility,
 creation order, postype/facing/defaults, names/counts and separate paused-tick
@@ -737,8 +767,8 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Complete DestroySelf recursion/orphan/effect/binding ownership and opposing-
-helper contacts. Continue positive input, helper palettes/foreign/paused creation,
+Compare helper sound ownership and native bound-target release publication,
+then opposing-helper contacts. Continue positive input, helper palettes/foreign/paused creation,
 remaining facing/priority/hit flags and attacker-hit interrupted binding controls.
 Continue
 remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and

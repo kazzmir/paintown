@@ -95,7 +95,7 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 		if el.FlipY {
 			sy = -sy
 		}
-		op := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+		op := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
 		op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 		op.GeoM.Scale(sx, sy)
 		op.GeoM.Translate(float64(el.XOffset*instance.Facing), float64(el.YOffset))

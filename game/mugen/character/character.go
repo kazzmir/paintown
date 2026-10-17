@@ -1076,19 +1076,8 @@ func (c *Character) SuperPause(params map[string]string) {
 }
 
 func (c *Character) DestroySelf() {
-	if c.Parent == nil || c.isProjectile {
-		return
-	}
-	c.destroyed = true
-	if c.World != nil {
-		c.World.Registry.Remove(c.EntityID)
-		var active []*Character
-		for _, h := range c.World.Helpers {
-			if !h.destroyed {
-				active = append(active, h)
-			}
-		}
-		c.World.Helpers = active
+	if err := c.DestroyHelper(engine.DestroySelfParameters{}); err != nil {
+		c.RuntimeError = err
 	}
 }
 func (c *Character) VarRandom(id int, min, max int) {
@@ -1651,7 +1640,7 @@ func (c *Character) Transition(stateNo int, overrides engine.EntryOverrides, sel
 }
 
 func (c *Character) ParentEnvironment() engine.Environment {
-	if c.Parent == nil {
+	if c.Parent == nil || c.Parent.destroyed {
 		return nil
 	}
 	return c.Parent
