@@ -251,6 +251,13 @@ headless races, frozen/budget replays and mixed stock jump/landing recovery pass
 Complete phase/body/pause/entity and ownership behavior remains open; see
 PHYSICS.md for the verified scope.
 
+M4u adds typed Pause and a shared GameTime/actor timeline. Thirteen native root
+programs pin 264 duration/movement/argument/replacement/cancellation observations;
+pure/full races and a fresh pair replay pass. Match background/effect/timer/reset
+and command-window checks are authored, with native interactions still pending.
+One SuperPause clock pilot does not implement its production controller, which
+remains a stub. See PAUSE.md for ownership, input, presentation and overlap gaps.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 )
 
 type contact struct {
@@ -18,6 +19,24 @@ type contact struct {
 // phases. Helper/projectile scheduling and the entity registry remain separate
 // world work; their existing adapters are retained here.
 func TickCharacters(players []*Character) error {
+	if len(players) == 0 {
+		return nil
+	}
+	if players[0] == nil {
+		return fmt.Errorf("nil character in tick group")
+	}
+	timeline := players[0].Timeline
+	if timeline == nil {
+		timeline = &engine.Timeline{}
+	}
+	for _, c := range players {
+		if c == nil {
+			return fmt.Errorf("nil character in tick group")
+		}
+		c.BindTimeline(timeline)
+	}
+	timeline.BeginFrame()
+	defer timeline.EndFrame()
 	defer func() {
 		for _, c := range players {
 			if c != nil {
@@ -38,6 +57,9 @@ func TickCharacters(players []*Character) error {
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
 		for _, attacker := range attackers {
+			if timeline.Frozen(attacker.pauseActor) {
+				continue
+			}
 			if attacker.HitGuard == nil {
 				attacker.HitGuard = map[int]bool{}
 			}
@@ -96,7 +118,9 @@ func TickCharacters(players []*Character) error {
 		return ordered[i].MoveType == "A" && ordered[j].MoveType != "A"
 	})
 	for _, c := range ordered {
-		c.ageDefenses()
+		if !c.worldFrozen {
+			c.ageDefenses()
+		}
 		if !c.runStateTick() {
 			return c.RuntimeError
 		}
@@ -110,6 +134,9 @@ func TickCharacters(players []*Character) error {
 		suppressKO = suppressKO || c.Specials["nokosnd"]
 	}
 	for _, c := range players {
+		if c.worldFrozen {
+			continue
+		}
 		if err := c.updateKOSound(suppressKO); err != nil {
 			c.RuntimeError = fmt.Errorf("player %d KO sound: %w", c.PlayerID, err)
 			return c.RuntimeError

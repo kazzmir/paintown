@@ -5,7 +5,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/effect"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sound"
 )
@@ -177,6 +181,62 @@ func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
 		c := p.Character
 		if !airborne[slot] || !landing[slot] || c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelY != 0 {
 			t.Fatalf("player %d jump/landing incomplete: airborne=%v landing=%v state=%d ctrl=%v y=%v vy=%v", slot+1, airborne[slot], landing[slot], c.StateNo, c.Ctrl, c.Y, c.VelY)
+		}
+	}
+}
+
+func TestPauseMatchClockBackgroundEffectsAndRoundReset(t *testing.T) {
+	for _, pauseBackground := range []bool{false, true} {
+		m := stockMatch(t, 99)
+		advanceUntil(t, m, Active, 600)
+		marker := &background.NormalElement{CommonElement: background.CommonElement{Enabled: true, Velocity: [2]float64{1, 0}}}
+		m.Stage.Background.Elements = append(m.Stage.Background.Elements, marker)
+		actions := &air.Data{Actions: map[int]*air.Action{9999: {ID: 9999, Elements: []air.Element{{Group: -1, Time: 100}}}}}
+		if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: m.Fight.EffectSprites, Animations: actions, Scale: 1}, Action: 9999, Facing: 1}); err != nil {
+			t.Fatal(err)
+		}
+		if err := m.Effects.Flush(); err != nil {
+			t.Fatal(err)
+		}
+		m.Timeline.BeginFrame()
+		if err := m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 3, PauseBackground: pauseBackground}); err != nil {
+			t.Fatal(err)
+		}
+		m.Timeline.EndFrame()
+		gameTime, phaseTime, timer := m.Timeline.GameTime, m.PhaseTime, m.timeTicks
+		local := [2]int{m.Players[0].Character.Time, m.Players[1].Character.Time}
+		for tick := 0; tick < 3; tick++ {
+			if err := m.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		backgroundTicks := 3
+		if pauseBackground {
+			backgroundTicks = 0
+		}
+		if m.Timeline.GameTime != gameTime+3 || m.PhaseTime != phaseTime || m.timeTicks != timer || marker.Time != backgroundTicks || m.Effects.Active[0].Clock.Elapsed != 0 {
+			t.Fatal("match pause failed to separate global/local/background/effect clocks", pauseBackground)
+		}
+		for slot, p := range m.Players {
+			if p.Character.Time != local[slot] {
+				t.Fatal("frozen match advanced a player")
+			}
+		}
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		if m.PhaseTime != phaseTime+1 || m.timeTicks != timer+1 || m.Effects.Active[0].Clock.Elapsed != 1 {
+			t.Fatal("match clocks failed to resume")
+		}
+		m.Timeline.BeginFrame()
+		_ = m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 3})
+		m.Timeline.EndFrame()
+		gameTime = m.Timeline.GameTime
+		if err := m.resetRound(); err != nil {
+			t.Fatal(err)
+		}
+		if m.Timeline.Paused() || m.Timeline.GameTime != gameTime || m.Players[0].Character.Timeline != m.Timeline {
+			t.Fatal("round reset retained pause or detached the world clock")
 		}
 	}
 }

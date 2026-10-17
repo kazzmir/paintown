@@ -81,6 +81,8 @@ func typedHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(En
 func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	name := strings.ToLower(ctrl.Type)
 	switch name {
+	case "pause":
+		return compilePause(ctrl)
 	case "hitdef":
 		return compileHitDef(ctrl)
 	case "playsnd", "sndpan", "stopsnd":

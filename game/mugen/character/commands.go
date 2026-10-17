@@ -1,6 +1,7 @@
 package character
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/input"
@@ -294,4 +295,71 @@ func IsButton(name string) bool {
 		return true
 	}
 	return false
+}
+
+func (c *Character) updateCommands(isPaused bool) {
+	c.ActiveCommands = nil
+	c.LastCommandMatched = ""
+	if c.Commands != nil && c.CmdFile != nil {
+		var physicalRaw []string
+		if c.InputSource != nil {
+			physicalRaw = c.InputSource(c.PlayerID, c.Facing)
+		} else {
+			physicalRaw = GetRawInputs(c.PlayerID, c.Facing)
+		}
+		raw := make([]string, len(physicalRaw))
+		copy(raw, physicalRaw)
+
+		// Input Latching (Phase 8): stabilize directional inputs against jitter/alternation
+		if !isPaused {
+			// 1. Apply existing latches for inputs that just dropped
+			for in, ticks := range c.InputLatch {
+				if ticks > 0 {
+					found := false
+					for _, r := range physicalRaw {
+						if r == in {
+							found = true
+							break
+						}
+					}
+					if !found {
+						// Only add if not physically present this tick
+						raw = append(raw, in)
+						c.InputLatch[in] = ticks - 1
+					}
+				} else {
+					delete(c.InputLatch, in)
+				}
+			}
+
+			// 2. Refresh/Set latch ONLY for current PHYSICAL inputs
+			for _, in := range physicalRaw {
+				if strings.HasPrefix(in, "Dir") {
+					c.InputLatch[in] = 1 // 1 tick buffer is safer than 2
+				}
+			}
+		}
+
+		sort.Strings(raw)
+		c.Commands.Add(raw)
+
+		if len(c.Commands.History) > 0 {
+			var matched []string
+			for name, cmdList := range c.CmdFile.Commands {
+				for _, cmd := range cmdList {
+					// MUGEN command matching
+					if c.Commands.Match(cmd.Sequence, cmd.Time, cmd.BufferTime) {
+						c.ActiveCommands = append(c.ActiveCommands, name)
+						matched = append(matched, name)
+						break // Found a match for this command name
+					}
+				}
+			}
+			if len(matched) > 0 {
+				sort.Strings(matched)
+				c.LastCommandMatched = strings.Join(matched, ", ")
+			}
+		}
+	}
+
 }

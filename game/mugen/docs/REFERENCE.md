@@ -99,6 +99,27 @@ Focused early observations suggested clamping, but the frozen case disproved
 that: movement-before-acceleration explains the normal Y=0 and overshoot cases.
 No clamp or velocity reset is applied by the engine landing path.
 
+## M4u root Pause clock packets
+
+Thirteen programs pin 264 values. Pause-three/one/zero/move-one/move-all/other
+distinguish duration, caller movement and caller ordering. Pause-missing/negative/
+overmove/negmove establish accepted omission and invalid numeric fallbacks.
+Pause-replace/cancel/pair prove replacement, cancellation and the later idle
+root's precedence. A fresh pause-pair replay reproduces both packets. Every
+source/AIR/executable hash is checked by Character clock tests.
+
+GameTime keeps advancing while local Time, position and animation freeze. The
+issuing tick finishes; time=3/default movetime gives the first Time=1 observation
+at relative GameTime=4. Movetime=1 gives Time=1 at GameTime=1, Time=2 at GameTime=4.
+Visit counts for ordinary/ignorehitpause controllers remain one during the freeze.
+Missing time is accepted as zero; movetime greater than time falls back to zero
+rather than the duration. See PAUSE.md for runtime integration and limits.
+
+Superpause-three pins 24 additional values with presentation/defence effects
+disabled. It backs the pure Timeline clock, not the still-stubbed production
+SuperPause controller. End-command buffering, backgrounds/effect clocks and round
+reset have authored Go tests; they have no native input/presentation proof yet.
+
 ## Wine startup, 2026-10-16
 
 Environment: Wine 9.0, a private Win32 prefix at `temp/wine-reference`, and a

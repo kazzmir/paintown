@@ -390,12 +390,23 @@ replays and actual mixed stock jump/landing recovery pass. See PHYSICS.md.
 Other builtin recovery/trip/KO/auto-turn/input rules, full phase/body/pause and
 world ownership still need native comparison. No full M2/M4 gate is claimed.
 
+M4t is commit `05dc5222`. M4u adds typed Pause, shared GameTime/actor Timeline and
+Match freezing. Thirteen native programs pin 264 values; full/pure races and a
+fresh pair-caller replay pass. Requests freeze following ticks, invalid movetime
+falls back to zero, and missing time is zero. Replacement/cancellation/last-caller
+behavior matches. Command buffering and presentation/reset integration have
+authored tests, not native interaction parity. See PAUSE.md. The SuperPause pilot
+only tests pure Timeline clocks; its production controller is still a stub.
+Continue its complete schema/protection/presentation and native pause/input/
+contact/effect interactions next. Absolute GameTime origins remain unverified.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next continue native builtin-state/recovery rules and complete
+Next implement complete SuperPause and native pause/input/contact/effect
+interactions, then continue native builtin-state/recovery rules and complete
 HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated.

@@ -7,6 +7,12 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "gametime":
+		if c.Timeline == nil {
+			c.EvaluationWarning("GameTime requires a timeline")
+			return evaluator.Value{}, true
+		}
+		return evaluator.Int(c.Timeline.GameTime), true
 	case "p2life", "p2stateno", "p2statetype", "p2movetype":
 		if len(c.Target) == 0 {
 			return evaluator.Value{}, true

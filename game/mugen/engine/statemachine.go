@@ -735,8 +735,7 @@ func handlePosFreeze(ctrl *cns.StateController, env Environment) error {
 }
 
 func handlePause(ctrl *cns.StateController, env Environment) error {
-	// Stub
-	return nil
+	return fmt.Errorf("Pause requires compiled parameters")
 }
 
 func handlePlaySnd(ctrl *cns.StateController, env Environment) error {

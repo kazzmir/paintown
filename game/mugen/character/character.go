@@ -28,6 +28,9 @@ type Character struct {
 	stateInitialized bool
 	updateActive     bool
 	pausedThisTick   bool
+	worldFrozen      bool
+	pauseCommands    map[string]bool
+	pauseActor       *engine.PauseActor
 
 	JuggleCost        int
 	HitDefActive      bool
@@ -43,6 +46,7 @@ type Character struct {
 	LocalCoord coord.Space
 	GameCoord  coord.Space
 	Viewport   *coord.Viewport
+	Timeline   *engine.Timeline
 	Palettes   *palette.State
 
 	// AIR data containing animation definitions
@@ -213,6 +217,8 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		maxPower = 3000
 	}
 	return &Character{
+		Timeline:            &engine.Timeline{},
+		pauseActor:          engine.NewPauseActor(),
 		SoundQueue:          queue,
 		AudioOwner:          queue.NewOwner(),
 		EffectQueue:         &effect.Queue{},
@@ -291,6 +297,11 @@ func (c *Character) startTick() bool {
 	if c.RuntimeError != nil {
 		return false
 	}
+	c.worldFrozen = c.Timeline != nil && c.Timeline.Frozen(c.pauseActor)
+	if c.worldFrozen {
+		c.updateActive = true
+		return true
+	}
 	if !c.stateInitialized {
 		c.ChangeState(c.StateNo, -1, -1)
 		if c.RuntimeError != nil {
@@ -313,11 +324,12 @@ func (c *Character) startTick() bool {
 }
 
 func (c *Character) runStateTick() bool {
+	if c.worldFrozen {
+		c.bufferPausedCommands()
+		return true
+	}
 	c.pausedThisTick = c.HitPauseTime > 0
 	isPaused := c.IsPaused()
-	// 1. Buffer commands once for the start of the tick
-	c.ActiveCommands = make([]string, 0)
-	c.LastCommandMatched = "" // Clear stale match
 	// Clear frame-local specials
 	c.Specials = make(map[string]bool)
 	c.PushDisabled = false
@@ -334,66 +346,16 @@ func (c *Character) runStateTick() bool {
 		c.PosFrozen = false
 	}
 
-	if c.Commands != nil && c.CmdFile != nil {
-		var physicalRaw []string
-		if c.InputSource != nil {
-			physicalRaw = c.InputSource(c.PlayerID, c.Facing)
-		} else {
-			physicalRaw = GetRawInputs(c.PlayerID, c.Facing)
+	c.updateCommands(isPaused)
+	for name := range c.pauseCommands {
+		if !c.Command(name) {
+			c.ActiveCommands = append(c.ActiveCommands, name)
 		}
-		raw := make([]string, len(physicalRaw))
-		copy(raw, physicalRaw)
-
-		// Input Latching (Phase 8): stabilize directional inputs against jitter/alternation
-		if !isPaused {
-			// 1. Apply existing latches for inputs that just dropped
-			for in, ticks := range c.InputLatch {
-				if ticks > 0 {
-					found := false
-					for _, r := range physicalRaw {
-						if r == in {
-							found = true
-							break
-						}
-					}
-					if !found {
-						// Only add if not physically present this tick
-						raw = append(raw, in)
-						c.InputLatch[in] = ticks - 1
-					}
-				} else {
-					delete(c.InputLatch, in)
-				}
-			}
-
-			// 2. Refresh/Set latch ONLY for current PHYSICAL inputs
-			for _, in := range physicalRaw {
-				if strings.HasPrefix(in, "Dir") {
-					c.InputLatch[in] = 1 // 1 tick buffer is safer than 2
-				}
-			}
-		}
-
-		sort.Strings(raw)
-		c.Commands.Add(raw)
-
-		if len(c.Commands.History) > 0 {
-			var matched []string
-			for name, cmdList := range c.CmdFile.Commands {
-				for _, cmd := range cmdList {
-					// MUGEN command matching
-					if c.Commands.Match(cmd.Sequence, cmd.Time, cmd.BufferTime) {
-						c.ActiveCommands = append(c.ActiveCommands, name)
-						matched = append(matched, name)
-						break // Found a match for this command name
-					}
-				}
-			}
-			if len(matched) > 0 {
-				sort.Strings(matched)
-				c.LastCommandMatched = strings.Join(matched, ", ")
-			}
-		}
+	}
+	if len(c.pauseCommands) > 0 {
+		sort.Strings(c.ActiveCommands)
+		c.LastCommandMatched = strings.Join(c.ActiveCommands, ", ")
+		c.pauseCommands = nil
 	}
 
 	// 3. MUGEN multi-level state processing:
@@ -432,7 +394,7 @@ func (c *Character) finishTick() {
 	isPaused := c.pausedThisTick
 
 	// 5. Physics and Time update
-	if !isPaused {
+	if !isPaused && !c.worldFrozen {
 		for {
 			if !c.PosFrozen {
 				// VelX is in CHARACTER-LOCAL space (positive = toward opponent).
@@ -785,6 +747,7 @@ func (c *Character) Helper(params map[string]string) {
 	h.LocalCoord = c.LocalCoord
 	h.GameCoord = c.GameCoord
 	h.Viewport = c.Viewport
+	h.Timeline = c.Timeline
 	h.Palettes = c.Palettes
 	if c.Palettes != nil && params["ownpal"] == "1" {
 		h.Palettes = c.Palettes.Clone()
@@ -828,6 +791,7 @@ func (c *Character) Projectile(params map[string]string) {
 	p.LocalCoord = c.LocalCoord
 	p.GameCoord = c.GameCoord
 	p.Viewport = c.Viewport
+	p.Timeline = c.Timeline
 	p.Palettes = c.Palettes
 	if c.Palettes != nil && params["ownpal"] == "1" {
 		p.Palettes = c.Palettes.Clone()

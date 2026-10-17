@@ -4,6 +4,30 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4u — Shared GameTime and root Pause scheduling
+
+Thirteen native programs pin 264 observations for duration, caller movement,
+issuing/release boundaries, zero/missing/negative arguments, replacement,
+cancellation and later-caller precedence. Native accepts omitted time as zero
+and resets invalid movetime to zero, contrary to treating it as a clamped range.
+The typed Pause controller and production root clock reproduce all packets.
+GameTime advances through frozen local Time/position/animation. See PAUSE.md.
+
+The Timeline has independent actor identities, one outer-frame clock for nested
+entity adapters, queued requests that preserve the issuing tick, and pause
+clocks shared with Match. Match/command-window authored tests exercise phase/
+timer/background/effect freezing, pausebg, round reset, and end command buffering.
+Those interaction/presentation/input checks are not yet native parity evidence.
+All scoped races and pure timeline/engine races pass. A fresh pair-caller native
+replay matches. Root modules and the reference remain unchanged.
+
+One SuperPause pilot pins its disabled-presentation root clock for pure Timeline
+tests; its production controller is still a stub. Implement the full SuperPause
+schema/presentation/protection and native pause/contact/command/effect interactions
+next. GameTime absolute origins and complete helper/projectile/world ownership
+remain open. M4t's reversal point is commit `05dc5222`; this does not finish M2,
+M4, or the whole Pause controller coverage gate.
+
 ## M4t — Landing resumption, physics order and shared tick budget
 
 Eighteen native programs pin 336 numeric observations and one runaway rejection.

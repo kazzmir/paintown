@@ -11,6 +11,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/fight"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sound"
@@ -70,6 +71,7 @@ type Match struct {
 	SoundQueue             *sound.Queue
 	Effects                *effect.Scene
 	Viewport               *coord.Viewport
+	Timeline               *engine.Timeline
 	commonEffects          effect.Source
 	timeTicks              int
 	matchDone              bool
@@ -82,7 +84,7 @@ func New(request Request, options Options) (*Match, error) {
 	if options.RoundTime < -1 || options.LifePercent <= 0 {
 		return nil, fmt.Errorf("invalid match time/life options")
 	}
-	m := &Match{Request: request, Options: options, Round: 1, Winner: -1}
+	m := &Match{Request: request, Options: options, Round: 1, Winner: -1, Timeline: &engine.Timeline{}}
 	m.SoundQueue = options.SoundQueue
 	if m.SoundQueue == nil {
 		m.SoundQueue = &sound.Queue{}
@@ -136,6 +138,7 @@ func (m *Match) Setting(section, key string, fallback int) int {
 }
 
 func (m *Match) resetRound() error {
+	m.Timeline.ClearPauses()
 	m.Effects.Clear()
 	// A fresh round retires its voices/cache before new entry controllers emit
 	// commands. Complete native round/custom-state lifecycle remains to verify.
@@ -155,6 +158,7 @@ func (m *Match) resetRound() error {
 		c.LocalCoord = p.LocalCoord
 		c.GameCoord = m.Options.GameSpace
 		c.Viewport = m.Viewport
+		c.BindTimeline(m.Timeline)
 		c.Palettes = palette.New(p.SFF)
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.PlayerID, p.PlayerID = slot+1, slot+1
@@ -217,10 +221,15 @@ func (m *Match) Update() error {
 	if m.Phase == Finished {
 		return nil
 	}
-	if err := m.Effects.Advance(); err != nil {
-		return fmt.Errorf("fight effects: %w", err)
+	paused := m.Timeline.Paused()
+	if !paused {
+		if err := m.Effects.Advance(); err != nil {
+			return fmt.Errorf("fight effects: %w", err)
+		}
 	}
-	m.Stage.Update()
+	if !m.Timeline.BackgroundFrozen() {
+		m.Stage.Update()
+	}
 	for _, p := range m.Players {
 		c := p.Character
 		scale, _ := m.Options.GameSpace.ScaleTo(p.LocalCoord)
@@ -238,6 +247,9 @@ func (m *Match) Update() error {
 	}
 	m.updateCamera()
 	m.Tick++
+	if paused {
+		return nil
+	}
 	m.PhaseTime++
 	switch m.Phase {
 	case PreIntro:
