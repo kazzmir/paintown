@@ -6,10 +6,25 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 [ASSESSMENT.md](ASSESSMENT.md), and [PLAN.md](PLAN.md).
 
 For the current review, use [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+The refreshed [behavior coverage ledger](COVERAGE.md) records current evidence
+and remaining gates by subsystem.
 The controller/trigger tables remain dated baseline evidence; they are not a
 current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
+
+M4be adds compiled HitDef pausetime/guard.pausetime with native source-default
+re-evaluation, per-component inheritance, second-before-first evaluation,
+runtime truncation, bottom/negative handling and load validation. Nineteen native
+programs record252 observations, four rejections and76 authored hashes. All19
+Match replays plus the four M4bd pause controls pass under race checks
+(14.466s); core races also pass. Fresh native default/order/rejection replays
+and three production apps/four captures pass, including mixed stock fighters.
+The current expression-routing audit is38/81 HitDef keys (46.9%), leaving43
+literal/absent keys. This is not whole-engine behavioral coverage. Read
+[HIT-PAUSE.md](HIT-PAUSE.md); full regression results are in CHECKPOINTS/HANDOFF.
+The six alpha and two spark raster failures remain open. This bounded batch
+stops at its local checkpoint; other timing fields and round clocks are separate.
 
 M4bd adds native fatal/hit/safe/protected cue/pause controls without changing
 production behavior. Twelve programs compare 144 observations and 40 source

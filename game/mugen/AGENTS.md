@@ -7,18 +7,24 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user reviewed M4bd and the assessment, and tried the semi-playable build.
-Latest instruction: add README build/run/progress/coverage documentation and
-commit it locally; the user will push, then resume implementation with bounded
-workflow changes. This turn authorizes that documentation checkpoint. Wait for
-the user's resume after committing it; do not begin a feature batch now. Read
-`README.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff before resuming.
+The user pushed the README checkpoint and resumed bounded implementation.
+M4be refreshes the ledger and completes the bounded HitDef pause-expression
+allocation; all validation passes. Finish its local checkpoint, then perform
+the user's explicitly requested binary/Git-history reconciliation as a separate
+task. Do not begin another feature family without a new allocation. Read `README.md`,
+`docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify
 the root Go module, other engines, or existing data trees. Keep working notes,
 compatibility evidence, and handoffs in `docs/`.
+
+The user explicitly prohibits adding binaries to the repository. Commit source,
+text fixtures and documentation only; keep compiled executables, generated
+binary artifacts and reference resources in ignored `temp/`. The tracked `mugen`
+file is a text Bash launcher. Existing binary test resources are historical;
+do not add more binary files. Verify staged content before each local commit.
 
 ## Compatibility target
 

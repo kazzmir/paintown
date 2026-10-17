@@ -3,8 +3,9 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4bd assessment reviewed; implementation paused for the user's
-documentation-checkpoint push and resume. Read the
+Current status: M4be is the first bounded implementation batch after the
+documentation checkpoint. Read the [current coverage ledger](COVERAGE.md) and
+[contact pause evidence](HIT-PAUSE.md), alongside the
 [current progress assessment](PROGRESS-ASSESSMENT.md) for working behavior,
 remaining gates and bounded allocations. See the
 [checkpoint history](CHECKPOINTS.md) and handoff for evidence; the original
@@ -84,6 +85,9 @@ assessment describes the baseline.
 39. [Lethality](HIT-LETHALITY.md), [diagnostic stage fill](STAGE-CLEAR.md) and
     [fatal guard cues](FATAL-GUARD-CUES.md): recent behavior/evidence checkpoints
     and unwaived production raster failures.
+
+40. [HitDef pause expressions](HIT-PAUSE.md): typed hit/guard pause pairs,
+    native component/default/evaluation order and remaining timing obligations.
 
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

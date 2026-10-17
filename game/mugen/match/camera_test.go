@@ -108,6 +108,10 @@ func TestNativeFatalGuardPausePrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "guardcue-pause-*.json", 4)
 }
 
+func TestNativeHitPauseExpressionPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hittiming-pause-*.json", 19)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

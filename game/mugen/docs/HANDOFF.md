@@ -1,13 +1,61 @@
 # Current handoff
 
-Updated 2026-10-17. The user reviewed the assessment, tried the semi-playable
-build and accepted the bounded workflow proposal. Latest request: add project
-README build/run/progress/coverage instructions, commit locally, then wait for
-the user to push and resume work. **Pause after this documentation checkpoint;
-do not start a feature batch now.** This supersedes continuous iteration and
-historical "next" instructions below. Never push. All authored changes stay
-under `game/mugen/`. Read [../AGENTS.md](../AGENTS.md), [../README.md](../README.md)
-and [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+Updated 2026-10-17. The user pushed the README checkpoint and resumed the bounded
+workflow. M4be refreshes the current behavior ledger and implements two HitDef
+pause keys. Validation has passed. **Commit M4be, then reconcile the binary/Git
+history concern as the user explicitly requested; no further feature batch.**
+Historical continuous-iteration instructions below do
+not override that boundary. Never push. All authored changes stay under
+`game/mugen/`. Read [../AGENTS.md](../AGENTS.md), [COVERAGE.md](COVERAGE.md),
+[HIT-PAUSE.md](HIT-PAUSE.md) and the original assessment before resuming work.
+
+## Verified M4be checkpoint
+
+Predecessor/reversal `e2addf06`. Production source is frozen after adding
+engine/hit_pause.go and its routing in hitdef.go. HitDef expression routing is
+now38/81 (46.9%);43 literal/absent fields remain. Controller/trigger/stock
+compilation percentages keep the README's narrow meanings. COVERAGE.md is the
+refreshed subsystem ledger; historical inventory status columns are not current.
+
+Nineteen original hittiming-pause-* programs record252 observations, four load
+rejections and76 hashes. All source hashes match m4be-prepared-inputs.json.
+Never rerun author-m4be-pause.py or regenerate expected values from Go.
+Full forward/reverse tags establish pausetime after GivePower/before NumHits,
+guard.pausetime after guard.velocity/before guard.cornerpush, both Y-before-X.
+Omitted guard components re-execute hit source defaults; a trailing empty second
+component inherits, while leading empty/three-component tuples reject. Runtime
+float truncation, bottom0 and negative0 are measured. See HIT-PAUSE.md.
+
+Focused Match races pass all19 plus four M4bd controls in14.466s; pure engine/
+evaluator/CNS/combat races pass. The pre-fix host/atomic compilation failures
+are retained in m4be-before-pause-compilation.log. Pipeline96878 exited0:
+temp/m4be-validation.log. Three fresh native programs (default, full reverse
+order and float rejection) and three actual apps/four captures pass. The single
+full scoped race suite passes in m4be-full-race.log: Match607.027s,
+Character11.118s, System4.730s, stock tests6.567s. No test/native/app GUI client
+remains. Root module and original native executable integrity checks pass.
+
+Latest user steering: do not add binaries to Git. Audited all tracked MUGEN
+files: none is an ELF/PE compiled executable; `game/mugen/mugen` is the Bash
+launcher. The compiled executable is ignored under temp/bin/. The user added
+`mugen` to .gitignore during this run; that edit is preserved alongside explicit
+compiled-output ignore rules. All M4be additions are text; do not add new binary
+fixture resources in later checkpoints. Audit staged content before committing.
+
+App audit temp/m4be-evidence-audit.json passes source/prepared inputs, config,
+binary, PNG dimensions/hashes and runtime logs. Binary SHA256:
+0daa6080198b869d3e8d806c8f4646149267a9864c5b6c0566d50030ad179da8.
+Two app programs exercise expressions/default inheritance, plus mixed stock
+KFM/KFM720 at3/7s. The stock7s image was visually inspected: two fighters,
+stage/HUD intact, no persistent effects. These are smoke/provenance observations,
+not full-frame parity. The first audit script assumed kfm720.snd; it was fixed
+to the actual stock kfm720/kfm.snd before the final audit. No runtime/data change.
+
+Next: commit the verified M4be allocation, then handle binary reconciliation in
+a separate step. Do not stage .gitignore with M4be: its pending ignore edits
+belong to that follow-up. Existing six alpha/two spark raster failures
+stay unwaived. Other timing/fall/round-clock/renderer/mode work is outside this
+allocation. No remote push or new feature batch.
 
 ## Latest documentation checkpoint: project README
 
@@ -91,8 +139,8 @@ not a complete-feature count. KO/round clocks, remaining combat/language,
 projectiles/reversals/teams, BGM, modes, rendering/assets and final conformance
 remain substantial. The controller/trigger tables are dated baseline data, not
 an updated completion ledger. Refresh a concise evidence ledger if the user
-resumes after pushing the documentation checkpoint, then stop at the agreed
-next batch boundary. **Currently paused.**
+resumes for a later allocation, then stop at the agreed next batch boundary.
+The M4be ledger refresh above supersedes this older proposed first step.
 
 ## Historical checkpoint evidence
 

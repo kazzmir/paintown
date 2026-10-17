@@ -4,6 +4,27 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4be — Compiled HitDef contact pauses and current coverage ledger
+
+M4be adds pausetime/guard.pausetime expressions, repeated source defaults,
+per-component inheritance, measured Y-before-X/field evaluation order, integer
+coercion, bottom/negative normalization and source-context load validation.
+Nineteen native programs compare252 observations, four rejections and76 source
+hashes. All19 integrated programs plus four M4bd pause controls pass under race
+checks (Match14.466s); core races pass. Three fresh native programs reproduce
+defaults, full reverse order and a float rejection. Three apps/four captures
+pass provenance/runtime checks; mixed stock fighters were visually inspected.
+One full scoped race suite passes: Match607.027s, Character11.118s,
+System4.730s, stock tests6.567s. Root module/native integrity and links pass.
+See HIT-PAUSE.md. Reversal: `e2addf06`.
+
+COVERAGE.md reconciles source/tests/topic evidence into a current subsystem
+ledger. HitDef expression routing is38/81 keys (46.9%);43 remain literal/absent.
+Other README name/compilation metrics retain their narrow meanings. Existing
+six alpha/two spark raster failures remain unwaived. Stop this feature allocation
+after its local commit; the user requested a separate binary/Git-history
+reconciliation next. All new M4be files are text; no binary artifact is staged.
+
 ## Project README and bounded workflow
 
 After reviewing M4bd and trying the semi-playable build, the user requested

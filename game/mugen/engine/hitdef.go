@@ -18,12 +18,12 @@ type hitDefCue struct {
 // This order is measured by the tagged full-field and vector programs. Source
 // declaration order does not determine parameter expression side effects.
 var hitDefEvaluationOrder = []string{
-	"id", "kill", "guard.kill", "fall.kill", "hitonce", "damage", "getpower", "givepower", "numhits",
+	"id", "kill", "guard.kill", "fall.kill", "hitonce", "damage", "getpower", "givepower", "pausetime", "numhits",
 	"hitsound", "guardsound", "priority", "p1stateno", "p2stateno", "p2getp1state",
 	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall.damage",
 	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "p2facing",
 	"ground.velocity", "ground.cornerpush.veloff", "air.velocity", "air.cornerpush.veloff",
-	"down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.cornerpush.veloff",
+	"down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.pausetime", "guard.cornerpush.veloff",
 	"airguard.velocity", "airguard.cornerpush.veloff",
 }
 
@@ -31,6 +31,10 @@ var hitDefEvaluationOrder = []string{
 // remaining legacy schema is replaced. Never mutate the shared source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	power, err := compileHitPower(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
+	pauses, err := compileHitPauses(ctrl)
 	if err != nil {
 		return nil, true, err
 	}
@@ -111,6 +115,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	cues = append(cues, vectors...)
+	cues = append(cues, pauses...)
 	byKey := make(map[string]hitDefCue, len(cues))
 	for _, cue := range cues {
 		known := false
@@ -147,7 +152,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if !present {
 				continue
 			}
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.floating)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}
@@ -159,7 +164,11 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				if cue.floating {
 					return strconv.FormatFloat(values[index].Number(), 'g', -1, 32)
 				}
-				return strconv.Itoa(int(values[index].Number()))
+				number := int(values[index].Number())
+				if cue.key == "pausetime" || cue.key == "guard.pausetime" {
+					number = max(0, number)
+				}
+				return strconv.Itoa(number)
 			}
 			params[cue.key] = prefix + format("0")
 			if len(cue.args) == 2 {

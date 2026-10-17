@@ -1,5 +1,10 @@
 # Progress assessment at the M4bd pause
 
+Historical review snapshot, accepted by the user. After the README push, M4be
+resumed bounded work on HitDef pause expressions; see the updated
+[coverage ledger](COVERAGE.md), [README](../README.md) and
+[pause findings](HIT-PAUSE.md). The remaining milestones below stay open.
+
 Assessment date: 2026-10-17. The user requested a checkpoint, an assessment and a
 pause before further token spending. Implementation is paused after M4bd until
 the user resumes it. The approved target remains full M.U.G.E.N 1.1 beta 1
