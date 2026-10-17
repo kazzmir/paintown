@@ -4,6 +4,28 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ax — Physical corner push
+
+M4ax adds the separate physical corner-push impulse and its common-space
+proximity/cutoff, context selection, double accumulation and float32 decay
+coefficient. Fifty-one original programs compare 1,224 numbers and 204 authored
+hashes. Direction/sign, zero/default/explicit, five hit/guard contexts, interior/
+edge proximity, resolution, irregular precision, pause/freeze, state/target/turn
+lifetime and deferred hit-facing match native. All 51 integrated comparisons
+pass. Full scoped races pass in temp/m4ax-full-race.log (Match439.097 seconds);
+six fresh native replays pass. Ten actual app captures pass provenance/runtime
+checks. Four fractional-position white masks differ by567/471/933/567 pixels;
+the stationary control matches. This render gap is the immediate next task.
+See CORNER-PUSH.md. Projectile-owner push and broader helper/foreign/bind/multiple/
+zoom/camera combinations remain open, along with full combat/asset/mode gates.
+
+The initial recorder's clock bug is retained as diagnostic evidence, not a final
+expectation. Corrected22 baseline fails17. Large and irregular impulses reject
+approximate arithmetic; threshold/proximity controls bracket exact common-unit
+rules. Read-only beta call paths corroborate observed storage and comparisons.
+Reversal:7af38317. Full/reference/runtime checks pass; the documented fractional
+sprite mask gap remains open and will be investigated immediately next.
+
 ## M4aw — Hit velocity defaults and down-hit offsets
 
 M4aw adds typed hit vectors and inherited corner-push expressions, separate

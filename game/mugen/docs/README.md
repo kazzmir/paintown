@@ -70,5 +70,7 @@ and the handoff for current progress; the assessment describes the original base
 
 36. [Hit velocity defaults](HIT-VELOCITY.md): repeated inherited expressions, profile-aware vectors and consumed down-hit Y offsets.
 
+37. [Physical corner push](CORNER-PUSH.md): common-pixel proximity, independent world impulses, precision and lifetime.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

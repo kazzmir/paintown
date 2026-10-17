@@ -60,6 +60,7 @@ type Character struct {
 	pendingHitFacing    int
 	getHitFacing        int // selected hit heading, independent of deferred physical turns
 	pendingHitYOffset   float64
+	cornerPushVelocity  float64 // world impulse in common engine units
 	LocalCoord          coord.Space
 	GameCoord           coord.Space
 	Viewport            *coord.Viewport
@@ -469,6 +470,7 @@ func (c *Character) finishTick() {
 		// consumed before the first movement step. GetHitVar observes zero next tick.
 		c.Y += c.pendingHitYOffset
 		c.pendingHitYOffset = 0
+		c.advanceCornerPush()
 		for {
 			if !c.PosFrozen && !c.boundThisTick {
 				// VelX is in CHARACTER-LOCAL space (positive = toward opponent).
@@ -1995,9 +1997,11 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.GetHitDown = c.StateType == "L" && !airHit
 	c.GetHitAir = airHit
 	c.GetHitGuarded = guarded
+	originalHit := hit
 	hit = c.hitInLocalSpace(attacker, hit)
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
+	c.recordCornerPush(attacker, originalHit)
 	c.pendingHitYOffset = 0
 	if c.GetHitDown && len(hit.DownVel) > 1 && hit.DownVel[1] != 0 {
 		// Beta uses a fixed 240p offset, independently of character trip/width

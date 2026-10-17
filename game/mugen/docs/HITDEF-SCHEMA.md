@@ -10,8 +10,9 @@ The remaining literal-parser fields must also receive typed parameter schemas.
 M4aw's [velocity/default controls](HIT-VELOCITY.md) cover the measured air,
 guard, air-guard and down vectors, component inheritance, repeated default
 expressions, profile conversion and down-hit Y offsets. Five corner-push fields
-now compile/store their expressions, but their physical movement is still
-missing and is the next runtime gate. These controls do not establish arbitrary
+compile/store their expressions. M4ax [physical corner-push controls](CORNER-PUSH.md)
+now cover the measured root/own-state movement, proximity, decay, units and
+lifetime; projectile-owner and wider world combinations remain open. These controls do not establish arbitrary
 blank/malformed tuple grammar or all paused/foreign/helper/contact combinations.
 
 These documented keys have no direct parser/compiler field and need explicit
@@ -25,8 +26,9 @@ claim that the other keys are complete:
 - Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
 
 Literal-only damage, pause, timing, power, fall and remaining physical fields
-need dynamic expression/coercion/order coverage. Power,
-corner push and down time still lack complete runtime consumers. Existing
+need dynamic expression/coercion/order coverage. Power and down
+time still lack complete runtime consumers; corner push has the bounded M4ax
+consumer described above. Existing
 normal/guard/override/common-state fixtures are bounded evidence; they do not
 close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
 projectile/reversal/team interactions and whole-engine/asset/mode gates remain

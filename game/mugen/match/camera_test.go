@@ -83,6 +83,10 @@ func TestNativeHitVelocity(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitvelocity-*.json", 63)
 }
 
+func TestNativeCornerPush(t *testing.T) {
+	replayNativeGeometryPrograms(t, "cornerpush-*.json", 51)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

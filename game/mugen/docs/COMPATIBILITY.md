@@ -7,6 +7,19 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ax adds the separate physical corner-push impulse and its common-space
+proximity/cutoff, context selection, double accumulation and float32 decay
+coefficient. Fifty-one original programs compare 1,224 numbers and 204 authored
+hashes. Direction/sign, zero/default/explicit, five hit/guard contexts, interior/
+edge proximity, resolution, irregular precision, pause/freeze, state/target/turn
+lifetime and deferred hit-facing match native. All 51 integrated comparisons
+pass. Full scoped races pass in temp/m4ax-full-race.log (Match439.097 seconds);
+six fresh native replays pass. Ten actual app captures pass provenance/runtime
+checks. Four fractional-position white masks differ by567/471/933/567 pixels;
+the stationary control matches. This render gap is the immediate next task.
+See CORNER-PUSH.md. Projectile-owner push and broader helper/foreign/bind/multiple/
+zoom/camera combinations remain open, along with full combat/asset/mode gates.
+
 M4aw adds typed hit vectors and inherited corner-push expressions, separate
 component defaults, stored down-contact selection and consumed float Y offsets.
 Sixty-three original programs compare 1,020 numbers and 252 authored hashes with

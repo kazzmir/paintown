@@ -699,3 +699,21 @@ The trip7/back8 fixtures contain original numeric constant sections and require
 not final expectations. Both-player1280 and true mixed1280/320 cases are
 separate. See [HIT-VELOCITY.md](../docs/HIT-VELOCITY.md) for exact values and
 remaining physical corner-push, pause/bind/foreign/down/HitDef gates.
+
+## M4ax physical corner push
+
+`TestNativeCornerPush` compares 51 original `cornerpush-*` programs: 1,224
+numbers and 204 CNS/AIR/CMD/stage hashes. World-frame packets distinguish the
+separate impulse from ordinary velocity, context selection, proximity versus
+predicted movement, cutoff units, double precision/float32 coefficient, signs,
+state/target/turn lifetime, deferred hit-facing, PosFreeze and ScreenBound.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture cornerpush-ground-unit-game640 --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --game-width 640 --video Width=1280 --video Height=720 --pages 0 12 --seconds 7
+```
+
+All cases use pages 0/12. Honor localcoord/game_width/video metadata; the width400
+case is a deliberate precision discriminator. The first pre-round-clock captures
+are diagnostic copies only; final expectations use native-controlled, native-math
+and native-integration runs. See [CORNER-PUSH.md](../docs/CORNER-PUSH.md) for exact
+rules, validated scope and remaining projectile/helper/foreign/bind/world gates.

@@ -18,13 +18,18 @@ func (c *Character) constrainPosition() {
 	}
 	c.X = max(c.LeftBound, min(c.RightBound, c.X))
 	if c.ScreenWidth > 0 {
-		half := float64(c.ScreenWidth) / 2
-		camera := c.cameraPositionX()
-		front, back := c.edgeWidths()
-		left, right := back, front
-		if c.Facing < 0 {
-			left, right = front, back
-		}
-		c.X = max(camera-half+left, min(camera+half-right, c.X))
+		left, right := c.screenPositionBounds()
+		c.X = max(left, min(right, c.X))
 	}
+}
+
+func (c *Character) screenPositionBounds() (left, right float64) {
+	half := float64(c.ScreenWidth) / 2
+	camera := c.cameraPositionX()
+	front, back := c.edgeWidths()
+	leftMargin, rightMargin := back, front
+	if c.Facing < 0 {
+		leftMargin, rightMargin = front, back
+	}
+	return camera - half + leftMargin, camera + half - rightMargin
 }
