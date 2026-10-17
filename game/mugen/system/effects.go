@@ -28,7 +28,7 @@ type effectImage struct {
 	image    *ebiten.Image
 }
 
-func (s *FightState) drawEffects(screen *ebiten.Image) {
+func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 	if s.effectImages == nil {
 		s.effectImages = map[effectImageKey]effectImage{}
 	}
@@ -36,6 +36,9 @@ func (s *FightState) drawEffects(screen *ebiten.Image) {
 	m := s.match
 	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	for _, instance := range m.Effects.Active {
+		if !instance.Active {
+			continue
+		}
 		el := instance.Clock.CurrentElement()
 		if el == nil || el.Group < 0 {
 			continue
@@ -54,6 +57,15 @@ func (s *FightState) drawEffects(screen *ebiten.Image) {
 		}
 		key := effectImageKey{source.Sprites, source.Palette, index}
 		used[key] = true
+		layer := 1
+		if instance.OnTop {
+			layer = 2
+		} else if instance.OwnerDriven && instance.SpritePriority < 0 {
+			layer = 0
+		}
+		if len(layers) > 0 && layer != layers[0] {
+			continue
+		}
 		revision := uint64(0)
 		if source.Palette != nil {
 			revision = source.Palette.Revision
@@ -74,6 +86,9 @@ func (s *FightState) drawEffects(screen *ebiten.Image) {
 		}
 		sprite := source.Sprites.Sprites[index]
 		sx, sy := float64(instance.Facing), 1.0
+		if instance.VFacing < 0 {
+			sy = -sy
+		}
 		if el.FlipX {
 			sx = -sx
 		}
@@ -85,7 +100,14 @@ func (s *FightState) drawEffects(screen *ebiten.Image) {
 		op.GeoM.Scale(sx, sy)
 		op.GeoM.Translate(float64(el.XOffset*instance.Facing), float64(el.YOffset))
 		op.GeoM.Scale(source.Scale, source.Scale)
-		op.GeoM.Translate(float64(m.Options.GameSpace.Width)/2+instance.X-m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame+instance.Y-m.CameraY)
+		if instance.HasScale {
+			op.GeoM.Scale(instance.ScaleX, instance.ScaleY)
+		}
+		if instance.ScreenSpace {
+			op.GeoM.Translate(instance.X, instance.Y)
+		} else {
+			op.GeoM.Translate(float64(m.Options.GameSpace.Width)/2+instance.X-m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame+instance.Y-m.CameraY)
+		}
 		switch el.Blend {
 		case "alpha":
 			src, dst := float32(max(0, min(256, el.AlphaSrc)))/256, float32(max(0, min(256, el.AlphaDst)))/256

@@ -103,6 +103,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileHitDef(ctrl)
 	case "targetbind":
 		return compileTargetBind(ctrl)
+	case "explod":
+		return compileExplod(ctrl)
 	case "targetdrop", "targetfacing", "targetlifeadd", "targetpoweradd", "targetvelset", "targetveladd", "targetstate":
 		return compileTarget(ctrl, name)
 	case "playsnd", "sndpan", "stopsnd":

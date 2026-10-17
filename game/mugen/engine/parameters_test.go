@@ -26,6 +26,7 @@ type parameterHost struct {
 	attackDistance             int
 	pushEnabled                bool
 	hitParams                  map[string]string
+	explod                     ExplodParameters
 }
 
 func newParameterHost() *parameterHost {
@@ -67,6 +68,10 @@ func (h *parameterHost) SetHitFilter(slot int, value combat.HitFilter) error {
 func (h *parameterHost) SetAttackDistance(value int)     { h.attackDistance = value }
 func (h *parameterHost) SetPlayerPush(value bool)        { h.pushEnabled = value }
 func (h *parameterHost) HitDef(params map[string]string) { h.hitParams = params }
+func (h *parameterHost) CreateExplod(p ExplodParameters) error {
+	h.explod = p
+	return nil
+}
 func (h *parameterHost) GetHitVar(name string) float64 {
 	if name == "xvel" {
 		return -4
@@ -146,6 +151,28 @@ func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
 	badState := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nhitsound=var(0):=99,0\np2stateno=unknown_trigger(1)\n")
 	if _, err := machine.ExecuteState(badState, a); err == nil || a.vars[0] != before {
 		t.Fatal("invalid custom state allowed partial execution", err, a.vars[0])
+	}
+}
+
+func TestExplodExpressionsAreHostLocalAndValidateBeforeEffects(t *testing.T) {
+	state := stateSource(t, "[State 7, effect]\ntype=Explod\ntrigger1=1\nanim=F(60+var(0))\nid=var(1)\npostype=none\npos=(var(2):=20),ifelse(1,-10,-20)\nfacing=facing\nsprpriority=ifelse(var(0),10,-10)\n")
+	machine := NewStateMachine()
+	a, b := newParameterHost(), newParameterHost()
+	a.vars[1], b.vars[0], b.vars[1] = 100, 1, 200
+	for _, h := range []*parameterHost{a, b} {
+		if _, err := machine.ExecuteState(state, h); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if a.explod.Action != 60 || b.explod.Action != 61 || !a.explod.Common || !b.explod.Common || a.explod.ID != 100 || b.explod.ID != 200 || a.explod.X != 20 || a.explod.Y != -10 || a.explod.Facing != -1 || a.explod.SpritePriority != -10 || b.explod.SpritePriority != 10 {
+		t.Fatal("Explod expression/bank isolation", a.explod, b.explod)
+	}
+	if state.Controllers[0].Params["anim"] != "F(60+var(0))" || state.Controllers[0].Params["pos"] != "(var(2):=20),ifelse(1,-10,-20)" {
+		t.Fatal("Explod mutated shared source")
+	}
+	bad := stateSource(t, "[State 7, effect]\ntype=Explod\ntrigger1=1\nanim=var(2):=999\naccel=unknown_trigger(1),0\n")
+	if _, err := machine.ExecuteState(bad, a); err == nil || a.vars[2] != 20 {
+		t.Fatal("malformed later Explod argument allowed an earlier assignment", err, a.vars[2])
 	}
 }
 

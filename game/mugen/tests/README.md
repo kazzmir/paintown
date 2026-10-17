@@ -361,3 +361,18 @@ file_sha256 and verified on native/Go replay. TestNativeStockThrows runs 240 tic
 TestNativeContactFrames compares one-tick attack and hurtbox windows. Keep the
 GameTime start stamp: throw-relative positions alone initially hid a 22-tick
 Go grab versus native one tick. See ../docs/THROWS.md for limits and exact recipes.
+
+
+M4ae adds 18 explod-* and nine explodmark-* packets: 636 numeric observations,
+two load rejections and nine RGB placement/resource controls. Lifetime programs
+use reference_probe.py with their version/fvar/CMD/pages, and no independent
+opponent. Missing anim loads and creates no object despite the manual. Marker
+programs reuse spark_probe.py --fixture NAME --name UNIQUE --action 9100; the
+historical spark field stores calibration. Their constants/extra RGB SFF hashes
+are required, and common recipes modify only disposable fightfx resources.
+TestNativeExplodLifetimes and TestNativeExplodMarkerGeometry replay the native
+state and position/source results. See ../docs/EXPLODS.md for scope and limits.
+
+Quick-match app_smoke.py captures require Pillow and reject an entirely black
+window; a live process and correct dimensions alone do not establish rendering.
+Stored capture hashes and visual inspection still matter.

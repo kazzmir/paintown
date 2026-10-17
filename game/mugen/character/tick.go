@@ -47,6 +47,7 @@ func TickCharacters(players []*Character) error {
 		c.BindTimeline(timeline)
 	}
 	timeline.BeginFrame()
+	pausedEffects, superPausedEffects := timeline.Paused(), timeline.SuperPaused()
 	defer timeline.EndFrame()
 	defer func() {
 		for _, c := range players {
@@ -154,6 +155,11 @@ func TickCharacters(players []*Character) error {
 	for _, c := range players {
 		if !c.worldFrozen && !c.pausedThisTick && !c.PosFrozen {
 			c.ResolvePushCollision()
+		}
+	}
+	for _, c := range players {
+		if err := c.advanceExplods(pausedEffects, superPausedEffects); err != nil {
+			return err
 		}
 	}
 	suppressKO := false

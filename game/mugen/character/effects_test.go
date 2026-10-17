@@ -3,8 +3,11 @@ package character
 import (
 	"bytes"
 	"encoding/json"
+	"math"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/air"
@@ -14,6 +17,111 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
+
+func TestNativeExplodMarkerGeometry(t *testing.T) {
+	paths, err := filepath.Glob("../tests/testdata/reference/explodmark-*.json")
+	if err != nil || len(paths) != 9 {
+		t.Fatal("incomplete native Explod marker corpus", len(paths), err)
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var reference struct {
+				CNSHash  string            `json:"cns_sha256"`
+				AIRHash  string            `json:"air_sha256"`
+				Extra    map[string]string `json:"extra_sha256"`
+				Captures []struct{ Variables map[string]float64 }
+				Marker   struct {
+					Visible, Common bool
+					Action, Facing  int
+					Anchor          [2]float64 `json:"frame_anchor_240p"`
+				} `json:"spark"` // shared RGB calibration packet
+			}
+			if err := json.Unmarshal(data, &reference); err != nil {
+				t.Fatal(err)
+			}
+			stem := strings.TrimSuffix(path, ".json")
+			file, err := cns.ParseNamed(bytes.NewReader(checkedAudioInput(t, stem+".cns", reference.CNSHash)), stem+".cns")
+			if err != nil {
+				t.Fatal(err)
+			}
+			file.SetLanguageVersion("1.1")
+			framesData := checkedAudioInput(t, stem+".air", reference.AIRHash)
+			frames, err := air.Parse(bytes.NewReader(framesData))
+			if err != nil {
+				t.Fatal(err)
+			}
+			commonFrames, err := air.Parse(bytes.NewReader(framesData))
+			if err != nil {
+				t.Fatal(err)
+			}
+			pixels := checkedAudioInput(t, stem+".extra/probe.sff", reference.Extra["probe.sff"])
+			own, err := sff.Parse(bytes.NewReader(pixels))
+			if err != nil {
+				t.Fatal(err)
+			}
+			common, err := sff.Parse(bytes.NewReader(pixels))
+			if err != nil {
+				t.Fatal(err)
+			}
+			scene := effect.NewScene(16)
+			view := &coord.Viewport{Space: coord.Space{Width: 1280, Height: 960}, GroundY: 800, Zoom: 1}
+			players := []*Character{NewCharacter(file, frames, nil), NewCharacter(file, frames, nil)}
+			for slot, c := range players {
+				c.InputSlot, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
+				c.GameCoord, c.Viewport = view.Space, view
+				c.Palettes = palette.New(own)
+				c.BindEffects(&scene.Queue, effect.Source{Sprites: common, Animations: commonFrames, Scale: 4})
+				c.ChangeState(0, -1, -1)
+				c.Ctrl = true
+			}
+			for tick := 0; tick < 40; tick++ {
+				if err := scene.Advance(); err != nil {
+					t.Fatal(err)
+				}
+				if err := TickCharacters(players); err != nil {
+					t.Fatal(err)
+				}
+				if err := scene.Flush(); err != nil {
+					t.Fatal(err)
+				}
+			}
+			for _, capture := range reference.Captures {
+				for key, want := range capture.Variables {
+					index, err := strconv.Atoi(key)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if got := players[0].FloatVars[index]; float32(got) != float32(want) {
+						t.Errorf("fvar(%d)=%v native=%v", index, got, want)
+					}
+				}
+			}
+			if !reference.Marker.Visible || len(scene.Active) != 1 {
+				t.Fatal("missing/extra marker", len(scene.Active))
+			}
+			instance := scene.Active[0]
+			x, y := instance.X, instance.Y
+			if instance.ScreenSpace {
+				x -= 640
+				y -= 800
+			}
+			if math.Abs(x/4-reference.Marker.Anchor[0]) > .001 || math.Abs(y/4-reference.Marker.Anchor[1]) > .001 || instance.Facing != reference.Marker.Facing || instance.Action != reference.Marker.Action {
+				t.Fatal("native marker anchor/action/facing mismatch", x/4, y/4, instance.Facing, reference.Marker)
+			}
+			archive := own
+			if reference.Marker.Common {
+				archive = common
+			}
+			if instance.Source.Sprites != archive {
+				t.Fatal("Explod selected the wrong sprite bank")
+			}
+		})
+	}
+}
 
 func TestNativeSparkGeometryAndResourceSelection(t *testing.T) {
 	for _, name := range []string{"spark-own", "guard-spark-own", "spark-own-offset", "spark-common", "spark-common-default", "spark-disabled", "spark-common-missing"} {

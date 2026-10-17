@@ -12,6 +12,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/effect"
 )
 
 func TestNativeCustomStateOwnership(t *testing.T) {
@@ -38,6 +39,10 @@ func TestNativeContactFrames(t *testing.T) {
 	replayNativeWorldPrograms(t, "contactframe-*.json", 4)
 }
 
+func TestNativeExplodLifetimes(t *testing.T) {
+	replayNativeWorldPrograms(t, "explod-*.json", 18)
+}
+
 func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration ...int) {
 	t.Helper()
 	stock, err := os.ReadFile("../temp/mugen-1.1b1/chars/kfm/kfm.cns")
@@ -45,6 +50,14 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration
 		t.Fatal(err)
 	}
 	constants, err := cns.Parse(bytes.NewReader(stock))
+	if err != nil {
+		t.Fatal(err)
+	}
+	commonData, err := os.ReadFile("../temp/mugen-1.1b1/data/fightfx.air")
+	if err != nil {
+		t.Fatal(err)
+	}
+	commonFrames, err := air.Parse(bytes.NewReader(commonData))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,10 +146,12 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration
 				}
 				return NewCharacter(file, frames, nil)
 			}
-			players := []*Character{
-				load(strings.TrimSuffix(path, ".json"), map[string]string{"cns": reference.CNSHash, "air": reference.AIRHash, "cmd": reference.CMDHash}),
-				load(filepath.Join(filepath.Dir(path), reference.P2Fixture), reference.P2Hash),
+			primary, primaryHashes := strings.TrimSuffix(path, ".json"), map[string]string{"cns": reference.CNSHash, "air": reference.AIRHash, "cmd": reference.CMDHash}
+			opponent, opponentHashes := filepath.Join(filepath.Dir(path), reference.P2Fixture), reference.P2Hash
+			if reference.P2Fixture == "" {
+				opponent, opponentHashes = primary, primaryHashes
 			}
+			players := []*Character{load(primary, primaryHashes), load(opponent, opponentHashes)}
 			if reference.Error != "" {
 				err := players[0].SM.CompileState(players[0].StateFile.States[700])
 				if err == nil || !strings.Contains(err.Error(), "state 700 controller") || !strings.Contains(err.Error(), filepath.Base(strings.TrimSuffix(path, ".json"))+".cns") {
@@ -150,6 +165,7 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration
 			}
 			view := &coord.Viewport{Space: coord.Space{1280, 960}, GroundY: 800, Zoom: 1}
 			for slot, c := range players {
+				c.CommonEffects = effect.Source{Animations: commonFrames, Scale: 4}
 				if slot == 1 && reference.P2Local != "" {
 					c.LocalCoord, err = coord.Parse(reference.P2Local)
 					if err != nil {

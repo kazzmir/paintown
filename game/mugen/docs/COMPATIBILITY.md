@@ -7,6 +7,16 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ae replaces literal Explod parsing with typed expression/resource/lifetime
+state and shared owned rendering. Twenty-seven native programs compare 636
+numbers, two load rejections and nine RGB positions. Default/negative IDs,
+late shared expiry, immediate removal, missing actions/anim, common F(expr),
+and stage/screen/P1/P2/edge placement are measured. Full scoped races pass in
+temp/m4ae-full-markers-race.log; eight fresh lifecycle/RGB replays match. The
+stock dust clones are removed in the inspected draft window. Full motion,
+binding/pause, palette/transforms/priority and helper/controller coverage remain
+open; see EXPLODS.md. No whole controller/trigger is promoted to Verified.
+
 M4ad composes the actual stock throw/common states and AIR through hash-pinned
 Files overrides. Eight programs compare 228 numbers: normal/forward/released
 throws, an independent start stamp, and first/second attack/hurtbox windows.

@@ -98,3 +98,10 @@ contact phase uses that pose for both Clsn1 and Clsn2. Independent one-tick
 windows and a stock throw's GameTime stamp distinguish this from checking the
 already-advanced element. Direct CheckCollision uses current frames. Full
 pause/helper/projectile and late-push frame ordering still need their own traces.
+
+
+M4ae publishes owned Explod expiry after all root CNS/physics/shared-push passes.
+A later root can still count the earlier root's expiring object in that tick;
+following ticks see it removed. The object and renderer share one clock/active
+flag, so count/removal and image lifetime cannot diverge. These are bounded
+root traces; full helper/projectile/binding/pause/global ordering remains open.

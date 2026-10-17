@@ -171,7 +171,7 @@ func (c *Character) helperFamily(id int, filter bool) []*Character {
 
 func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 	switch name {
-	case "id", "teamside", "ishelper", "numhelper", "numtarget", "numenemy", "numpartner", "parentdist x", "parentdist y", "rootdist x", "rootdist y":
+	case "id", "teamside", "ishelper", "numhelper", "numtarget", "numexplod", "numenemy", "numpartner", "parentdist x", "parentdist y", "rootdist x", "rootdist y":
 	default:
 		return evaluator.Value{}, false
 	}
@@ -187,7 +187,7 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 		return evaluator.Int(c.EntityID), true
 	case "teamside":
 		return evaluator.Int(int32(c.TeamSide)), true
-	case "ishelper", "numhelper", "numtarget":
+	case "ishelper", "numhelper", "numtarget", "numexplod":
 		return c.LookupFunction(name, nil)
 	case "numenemy":
 		return evaluator.Int(int32(len(c.World.enemies(c, false)))), true
@@ -298,7 +298,7 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 
 func (c *Character) LookupFunction(name string, args []evaluator.Value) (evaluator.Value, bool) {
 	switch name {
-	case "ishelper", "numhelper", "numtarget", "playeridexist":
+	case "ishelper", "numhelper", "numtarget", "numexplod", "playeridexist":
 	default:
 		return evaluator.Value{}, false
 	}
@@ -326,6 +326,8 @@ func (c *Character) LookupFunction(name string, args []evaluator.Value) (evaluat
 		return evaluator.Int(int32(len(c.helperFamily(id, len(args) > 0)))), true
 	case "numtarget":
 		return evaluator.Int(int32(len(c.acquiredTargets(id, len(args) > 0)))), true
+	case "numexplod":
+		return evaluator.Int(int32(c.numExplods(id, len(args) > 0))), true
 	default:
 		who, ok := c.World.Registry.Lookup(int32(id))
 		return evaluator.Bool(ok && !who.destroyed), true

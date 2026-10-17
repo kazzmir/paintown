@@ -91,6 +91,12 @@ func (s *stateEnvironment) BindTargets(p engine.TargetBindParameters) error {
 	p.X, p.Y = s.storageVector(p.X, p.Y)
 	return s.Character.BindTargets(p)
 }
+func (s *stateEnvironment) CreateExplod(p engine.ExplodParameters) error {
+	p.X, p.Y = s.storageVector(p.X, p.Y)
+	p.VelX, p.VelY = s.storageVector(p.VelX, p.VelY)
+	p.AccelX, p.AccelY = s.storageVector(p.AccelX, p.AccelY)
+	return s.Character.CreateExplod(p)
+}
 func (s *stateEnvironment) Redirect(name string, id evaluator.Value, hasID bool) evaluator.EvaluatorEnvironment {
 	destination := s.Character.Redirect(name, id, hasID)
 	if proxy, ok := destination.(*redirectEnvironment); ok {

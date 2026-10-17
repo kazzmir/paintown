@@ -32,5 +32,7 @@ and the handoff for current progress; the assessment describes the original base
 
 17. [Stock throws](THROWS.md): original CNS/AIR composition, grab timing, contact poses and fall-velocity omission.
 
+18. [Explod state and rendering](EXPLODS.md): native lifecycle/counts, common resources, calibrated placement and remaining effect coverage.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

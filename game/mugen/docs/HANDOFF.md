@@ -4,7 +4,36 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ad: actual stock throw/common CNS and AIR composition has eight native
+Latest M4ae: typed Explod/NumExplod, owned shared effect instances and resource/
+lifetime rendering repair permanent landing-dust clones. Twenty-seven native
+programs compare 636 numbers, two load rejections and nine RGB marker placements.
+All lifecycle/position/source cases pass, along with full scoped races in
+temp/m4ae-full-markers-race.log. Eight fresh native lifecycle/RGB replays match.
+See EXPLODS.md. Missing anim is accepted despite the manual's required label;
+missing actions create none; IDs clamp/default zero, negative count/removal
+select all, and expiry is a shared late phase after root CNS. Explicit stage
+space preserves stage Y even with a deprecated screen-edge origin.
+All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7
+seconds at temp/app-runs/stock-throw-{base,forward,drop}-effects-go/. They recover
+with two fighters and no permanent dust clones, without missing-effect warnings
+or runtime errors. The ordinary throw was also repeated in
+stock-throw-base-effects-recheck-go/. A black preview was a display artifact:
+the stored original/repeat recovery PNGs have identical hashes and substantial
+nonblack pixels. app_smoke.py now rejects entirely black quick-match captures.
+These remain window/asset smoke checks, not full camera/filter/layer/audio parity.
+No complete Explod/controller/render parity claim.
+Explicit bindID is a contextual runtime error; remaining parameter/entity/
+pause/geometry/renderer obligations are recorded in EXPLODS.md.
+
+Private display :97 was restored after the old task server exited. Current
+Xvfb PID 2146490, exec session 19354, uses the original 1280x960, -noreset,
+-auth and task-local framebuffer settings documented in BUILD.md. Its brief
+1920x1080 replacement was stopped before assertions/captures resumed. Old
+session 15800 is complete. Private Pulse PID 1393643 remains running. Never
+print/commit authentication cookies, change the desktop, or overlap native/app/
+full Ebiten/audio clients. The failed display init executed no assertions.
+
+Previous M4ad: actual stock throw/common CNS and AIR composition has eight native
 programs/228 numbers. An initial-GameTime stamp disproves an otherwise passing
 throw-relative trace: Go formerly grabbed on tick 22; native grabs on tick one.
 Root contacts now use completed simulation poses before AIR advances. Independent
@@ -60,9 +89,9 @@ The real with-box Go match runs through seven-second 1280x720 captures at
 temp/app-runs/targetbind-with-box-go/. Sustained movement reaches an edge;
 camera/body-edge/framebuffer parity remains open. Root module hashes match.
 
-Next fix the visually discovered Explod common-resource/lifetime bug, then
-compare HitDef facing/priority/hit flags, Width and attacker-hit interrupted
-bindings. Stock throw wrappers now cover the ordinary/forward/drop paths. Then
+Next verify moving-camera position semantics and remaining effect motion/
+binding/pause/ownership/priority, then HitDef facing/priority/hit flags, Width
+and attacker-hit interrupted bindings. Stock throw wrappers now cover the ordinary/forward/drop paths. Then
 complete BindToTarget/Parent/Root and helper negative/keyctrl/world phases;
 compare pause/foreign/multi-target/retirement binding edges, remaining hit
 schemas and all input/render/audio/mode/asset gates. Native bottom-power
@@ -612,8 +641,8 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Connect typed Explod common resources/lifetime, rerun stock throw captures,
-then continue facing/priority/hit flags, Width and attacker-hit interrupted
+Verify moving-camera coordinates and remaining effect motion/bind/pause/owner
+semantics, then facing/priority/hit flags, Width and attacker-hit interrupted
 binding controls, then complete the other binding/helper/world and
 engine/asset gates. The selection-to-fight path runs, but the complete M4 and
 whole 1.1 beta compatibility gates remain open. Implementation
@@ -643,3 +672,14 @@ contactframe-* programs use their same-name -victim fixtures and pages 0 12.
 TestNativeStockThrows and TestNativeContactFrames replay all eight packets.
 The initial throw-relative base draft is not proof of first-grab timing; the
 start stamp must remain. No original state/art files were committed.
+
+
+M4ae TestNativeExplodLifetimes compares 18 explod-* packets; these same-fixture
+opponents do not need --p2-fixture. Use each packet's fvar/CMD/version/pages;
+two float grammar packets have expected_load_error. Missing anim is accepted.
+TestNativeExplodMarkerGeometry compares nine explodmark-* packets and the own/
+common sprite archive. spark_probe.py supplies the existing RGB calibration;
+its historical JSON key is spark although these controllers are Explod. Common
+marker recipes replace only disposable fightfx files; no original art is tracked.
+Run --fixture NAME --name UNIQUE --action 9100 for marker replay. Marker byte
+hashes and constant groups are required. See EXPLODS.md for remaining limits.

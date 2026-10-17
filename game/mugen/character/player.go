@@ -83,6 +83,9 @@ func (p *Player) DrawScaled(screen *ebiten.Image, screenX, screenY, scaleX, scal
 
 	// 4. Draw Explods
 	for _, ex := range p.Character.Explods {
+		if ex.Visual != nil {
+			continue // shared fight effect scene owns the rendered instance
+		}
 		exX := screenX + (ex.X-p.Character.X)*scaleX
 		exY := screenY - (ex.Y-p.Character.Y)*scaleY
 		p.drawExplod(screen, ex, exX, exY, scaleX, scaleY)

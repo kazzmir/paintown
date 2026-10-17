@@ -90,3 +90,11 @@ priority/layers, effect palette/PalFX/custom-state ownership, full Explod family
 and configuration/capacity fallbacks. Scene limit defaults to 256 if not supplied;
 production passes SysExplodMax. Its limit and the 16384 undrained queue bound are
 diagnosed implementation limits, not native fallback claims.
+
+
+M4ae now compiles Explod resource/position/lifetime parameters, shares owned
+instances with the scene, and removes the permanent own-action-0 landing-dust
+fallback. NumExplod/removal and nine static RGB placements have native packets;
+see EXPLODS.md. Sparks keep their scene-driven policy. Full Explod fields,
+relative layer sorting, moving camera, pause/entity and framebuffer gates remain
+open. The historical sprite clones in M4ad captures are a diagnosed prior bug.

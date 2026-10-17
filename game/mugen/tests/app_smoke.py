@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build/run the Go application in a disposable data copy; capture its own window.
 
-Requires Go, DISPLAY, xdotool and ImageMagick import. No keyboard/pointer/focus
+Requires Go, DISPLAY, xdotool, ImageMagick import and Pillow. No keyboard/pointer/focus
 operations are performed. Captures are inspection artifacts, not parity tests.
 """
 import argparse
@@ -15,6 +15,8 @@ import re
 import shutil
 import subprocess
 import time
+
+from PIL import Image
 
 
 def digest(path):
@@ -108,6 +110,8 @@ def main():
                 metadata['captures'].append({'seconds': seconds, 'path': output.name, 'sha256': digest(output), 'dimensions': dimensions})
                 if dimensions != [args.width, args.height]:
                     raise RuntimeError('Captured window dimensions differ from requested size: ' + str(dimensions))
+                if args.match and Image.open(output).convert('RGB').getbbox() is None:
+                    raise RuntimeError('Quick-match capture is entirely black; inspect this diagnostic run and repeat the isolated window check')
                 print('Captured', output, flush=True)
         except Exception as error:
             metadata['error'] = str(error)

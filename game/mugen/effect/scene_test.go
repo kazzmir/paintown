@@ -127,3 +127,43 @@ func TestEffectErrorsAreDiagnosed(t *testing.T) {
 		}
 	}
 }
+
+func TestOwnedEffectSharesClockAndRetiresImmediately(t *testing.T) {
+	scene := NewScene(8)
+	r := testRequest()
+	lifetime := -1
+	r.RemoveTime = &lifetime
+	owned := &Instance{Request: r, Clock: air.NewPlayer(r.Source.Animations.Actions[7]), Active: true, OwnerDriven: true}
+	if err := scene.Queue.PushOwned(owned); err != nil {
+		t.Fatal(err)
+	}
+	if err := scene.Flush(); err != nil || scene.Active[0] != owned {
+		t.Fatal("owned instance was copied instead of shared", err)
+	}
+	for tick := 0; tick < 10; tick++ {
+		if err := scene.Advance(); err != nil {
+			t.Fatal(err)
+		}
+		if owned.Age != tick {
+			t.Fatal("render scene advanced an owner-driven clock", owned.Age, tick)
+		}
+		if err := owned.Advance(false, false); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !owned.Active || owned.Age != 10 {
+		t.Fatal("indefinite owned animation expired on its first pass")
+	}
+	owned.Active = false
+	if err := scene.Advance(); err != nil || len(scene.Active) != 0 {
+		t.Fatal("owner removal left a visible instance", err)
+	}
+	queued := &Instance{Request: r, Clock: air.NewPlayer(r.Source.Animations.Actions[7]), Active: true, OwnerDriven: true}
+	if err := scene.Queue.PushOwned(queued); err != nil {
+		t.Fatal(err)
+	}
+	scene.Clear()
+	if queued.Active || len(scene.Queue.Drain()) != 0 {
+		t.Fatal("scene retirement retained an owned request")
+	}
+}

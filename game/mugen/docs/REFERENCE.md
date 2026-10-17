@@ -776,3 +776,38 @@ recovery. State/health/target observations pass, but a clean visual throw is not
 yet accepted. Next connect typed Explod resource lookup and lifetime to the shared
 effect scene, then repeat these captures. The dropped variant and the scripted
 state tests do not excuse the normal/forward rendering defect.
+
+
+## M4ae Explod lifecycle and RGB placement
+
+Eighteen original numeric programs pin 528 values and two float-literal load
+errors. Nine additional original RGB marker programs pin 108 values and static
+position/facing/resource measurements. Total: 27 programs, 636 numbers and 63
+authored input files, with no committed Elecbyte art. The marker is the original
+formats.sff RGB ramp; common recipes replace only disposable fightfx files.
+Source/AIR/extra/recipe/core hashes are retained. spark_probe.py and its spark
+JSON field are reused for calibration, not contact behavior.
+
+The first front/space=stage/Y=100 run was off-screen and remains diagnostic.
+Promoted implicit screen-edge controls and the visible explicit-stage/Y=-30
+case distinguish the coordinate modes. Both own/common (20,-30), P1/P2, screen,
+front in both directions, back facing left and stage-edge cases compare through
+the production simulation. Full moving-camera/filter/relative-priority parity
+is not established by these static captures.
+
+Full scoped races pass in temp/m4ae-full-markers-race.log; eight fresh native
+replays match cross-root expiry, common resources, negative removal, omitted
+anim, float rejection and common/stage/back RGB cases. The private X server
+exited before one assertion run; the task-owned server was restored to the
+same configuration, then the complete run passed. See EXPLODS.md for exact
+semantics, rendering smoke and remaining work.
+
+
+All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7
+seconds at temp/app-runs/stock-throw-{base,forward,drop}-effects-go/. They recover
+with two fighters and no permanent dust clones, without missing-effect warnings
+or runtime errors. The ordinary throw was also repeated in
+stock-throw-base-effects-recheck-go/. A black preview was a display artifact:
+the stored original/repeat recovery PNGs have identical hashes and substantial
+nonblack pixels. app_smoke.py now rejects entirely black quick-match captures.
+These remain window/asset smoke checks, not full camera/filter/layer/audio parity.

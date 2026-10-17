@@ -4,6 +4,54 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ae — Owned Explod resources, lifetime and calibrated placement
+
+Twenty-seven native programs compare 636 distinct per-program observations,
+two float-literal load rejections and nine RGB marker positions. Typed Explod
+parameters replace the literal parser that interpreted common F(expression)
+as own animation 0. Character-owned animation/lifetime instances are shared
+with the renderer without double advancement. NumExplod and immediate removal
+follow those same objects, and retirement includes queued owned instances.
+Default IDs/negative IDs become zero; negative lookups/removals select all.
+
+Native counters remain active through the last CNS pass before shared late
+expiry. Zero removal retires in its creation tick; finite, positive, indefinite
+and below--2 lifetime cases are distinguished. Missing own/common actions
+create nothing. Despite the manual's required label, omitted anim is accepted
+and creates no object. Common F60 uses the real common animation rather than
+an authored infinite own action 60. See EXPLODS.md for exact limits/defaults.
+
+Nine owned-window RGB calibrations pin own/common stage placement, P1/P2,
+screen space, both front directions, back facing left and an explicit-stage
+edge control. An early front+explicit-stage marker with Y=100 was off-screen;
+the promoted visible control proves stage Y is retained while edge X converts.
+Sprite bank selection and geometry are compared in the production simulation.
+Full framebuffer, dynamic camera and complete priority equivalence are open.
+
+Full scoped races pass in temp/m4ae-full-markers-race.log, including all prior
+stock/contact/guard/pause/sound/effect/ownership packets. Pure tests pin shared
+owned clocks/retirement and host-local, pre-effect parameter compilation. Eight
+fresh native replays match lifecycle, omission/rejection, resources and RGB
+space cases. Root module hashes remain unchanged; original resources are
+untouched. Final repaired stock window checks accompany this checkpoint.
+
+All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7
+seconds at temp/app-runs/stock-throw-{base,forward,drop}-effects-go/. They recover
+with two fighters and no permanent dust clones, without missing-effect warnings
+or runtime errors. The ordinary throw was also repeated in
+stock-throw-base-effects-recheck-go/. A black preview was a display artifact:
+the stored original/repeat recovery PNGs have identical hashes and substantial
+nonblack pixels. app_smoke.py now rejects entirely black quick-match captures.
+These remain window/asset smoke checks, not full camera/filter/layer/audio parity.
+
+The task-owned Xvfb server exited during this work; it was restored with the
+original authenticated 1280x960/noreset configuration. A failed display init
+ran no assertions and is not a test failure attributed to the engine. No
+user desktop/audio settings changed. M4ad's reversal point is `e635ea8c`.
+Full bindID (currently a contextual unsupported-binding error), ModifyExplod,
+ExplodBindTime, motion/pause/palette/3D/transparency/ownership and all remaining
+engine/asset gates remain unfinished.
+
 ## M4ad — Stock throw composition and one-tick contact poses
 
 Eight native programs compare 228 numbers. Four load the original KFM throw,

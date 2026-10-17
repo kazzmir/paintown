@@ -97,3 +97,20 @@ recovery. State/health/target observations pass, but a clean visual throw is not
 yet accepted. Next connect typed Explod resource lookup and lifetime to the shared
 effect scene, then repeat these captures. The dropped variant and the scripted
 state tests do not excuse the normal/forward rendering defect.
+
+
+M4ae repairs that diagnosed dust fallback through typed common resource lookup,
+owned animation/lifetime and shared drawing. Its draft base recovery window
+shows two fighters without permanent clones. Full repaired variants and evidence
+are recorded in the M4ae checkpoint. See EXPLODS.md; a clean frame is not complete
+moving-camera/layer/audio or stock throw parity.
+
+
+All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7
+seconds at temp/app-runs/stock-throw-{base,forward,drop}-effects-go/. They recover
+with two fighters and no permanent dust clones, without missing-effect warnings
+or runtime errors. The ordinary throw was also repeated in
+stock-throw-base-effects-recheck-go/. A black preview was a display artifact:
+the stored original/repeat recovery PNGs have identical hashes and substantial
+nonblack pixels. app_smoke.py now rejects entirely black quick-match captures.
+These remain window/asset smoke checks, not full camera/filter/layer/audio parity.

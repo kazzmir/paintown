@@ -524,14 +524,6 @@ func (c *Character) finishTick() {
 	for _, p := range c.Projectiles {
 		p.Update()
 	}
-	var activeExplods []*ExplodData
-	for _, e := range c.Explods {
-		e.CurrentTime++
-		if e.Time == -1 || e.CurrentTime < e.Time {
-			activeExplods = append(activeExplods, e)
-		}
-	}
-	c.Explods = activeExplods
 
 	// Diagnostic: detect infinite fall
 	if c.Y > 5000 && !c.PosFrozen {
@@ -899,42 +891,22 @@ func (c *Character) AssertSpecial(flag string) {
 }
 
 func (c *Character) Explod(params map[string]string) {
-	id := 0
-	if v, ok := params["id"]; ok {
-		id, _ = strconv.Atoi(v)
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
 	}
-	anim := 0
-	if v, ok := params["anim"]; ok {
-		anim, _ = strconv.Atoi(v)
+	if err := engine.ExecuteExplodParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("Explod: %w", err)
 	}
-
-	e := &ExplodData{
-		ID:     id,
-		Anim:   anim,
-		X:      c.X,
-		Y:      c.Y,
-		Facing: c.Facing,
-		Time:   -1, // Default infinite until animation ends (simplified here)
-	}
-
-	if v, ok := params["pos"]; ok {
-		pos := cns.ParseFloatList(v)
-		if len(pos) >= 1 {
-			e.X += pos[0] * float64(c.Facing)
-		}
-		if len(pos) >= 2 {
-			e.Y += pos[1]
-		}
-	}
-
-	c.Explods = append(c.Explods, e)
 }
 
 func (c *Character) RemoveExplod(id int) {
 	var remaining []*ExplodData
 	for _, e := range c.Explods {
-		if id != -1 && e.ID != id {
+		if id >= 0 && e.ID != id {
 			remaining = append(remaining, e)
+		} else if e.Visual != nil {
+			e.Visual.Active = false
 		}
 	}
 	c.Explods = remaining
@@ -1979,6 +1951,11 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
 	c.binding = nil
+	for _, e := range c.Explods {
+		if e.RemoveOnGetHit && e.Visual != nil {
+			e.Visual.Active = false
+		}
+	}
 	if err := c.contactEffect(attacker, hit, guarded); err != nil {
 		c.RuntimeError = fmt.Errorf("player %d contact effect: %w", c.InputSlot, err)
 		return 0
@@ -2197,14 +2174,19 @@ func cbLast(history [][]string) []string {
 }
 
 type ExplodData struct {
-	ID          int
-	Anim        int
-	X, Y        float64
-	PosType     string
-	Facing      int
-	VelX, VelY  float64
-	Time        int // Ticks remaining (-1 for infinite)
-	CurrentTime int
+	ID                                            int
+	Anim                                          int
+	X, Y                                          float64
+	PosType                                       string
+	Facing                                        int
+	VelX, VelY                                    float64
+	Time                                          int // Ticks remaining (-1 for infinite)
+	CurrentTime                                   int
+	Visual                                        *effect.Instance
+	Fresh, IgnoreHitPause, RemoveOnGetHit         bool
+	AccelX, AccelY, ScaleToGame, OffsetX, OffsetY float64
+	Anchor                                        *Character
+	BindingTime                                   int
 }
 
 func (c *Character) ageDefenses() {
