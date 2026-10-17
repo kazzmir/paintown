@@ -529,3 +529,24 @@ All these programs use page 0; rejected inputs have no captures and retain the
 expected state in expected_compile_state. HIT-SELECTION.md records grammar,
 phase evidence and validation. Complete priority/override/projectile/team-mode
 and binding-release rules remain open.
+
+## M4ap actor sprite priority and ties
+
+TestNativeActorDrawOrder compares fourteen actororder programs: 156 numeric
+observations, one load rejection, thirteen native foreground identities and 70
+CNS/AIR/CMD/stage/SFF hashes. Original solid markers identify the front actor
+independently of the Go sort. Equal priorities prefer the lower world ID;
+priorities cross root/helper ownership. Typed SprPriority boundaries include
+bottom, literal/computed floats and accepted values outside -5..5.
+
+```sh
+python3 game/mugen/tests/actor_render_probe.py --fixture actororder-helpers-reverse-birth --name UNIQUE_NAME
+python3 game/mugen/tests/generate_actor_markers.py game/mugen/temp/actor-markers.sff
+```
+
+The native pixel tool also verifies pure-color bounds/counts and all input,
+executable, capture and numeric hashes/observations. --adopt-run can measure an
+existing run; --record updates only the requested render metadata after these
+checks. Rejected float inputs use reference_probe.py instead. All source sprites
+are original raw RGB data, not reference character art. See ACTOR-ORDER.md for
+pre-fix windows, full regression evidence and the remaining flipped-edge gap.

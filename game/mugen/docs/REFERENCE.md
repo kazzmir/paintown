@@ -7,6 +7,30 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4ap original RGB actor-order calibration
+
+M4ap adds global actor sprite ordering and native SprPriority boundaries.
+Fourteen original programs compare 156 numbers, one load rejection, thirteen
+foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins
+across root/helper ownership; lower world ID wins ties, including reversed
+helper birth. Bottom becomes zero, computed floats truncate, literal floats
+reject, and measured +/-99 values retain ordering. Full scoped races pass in
+temp/m4ap-full-race.log (Match 172.121 seconds); all focused and pure races pass.
+Three fresh native color/rectangle replays and the float rejection pass. See
+ACTOR-ORDER.md. Complete effect/projectile/foreign/render/asset gates remain open.
+
+Twenty real 1280x720 captures pass provenance/dimension/nonblack/runtime/resource
+checks. All thirteen accepted actororder-*-go-final scenes match native foreground
+RGB/identity; eight pure-color rectangles match exactly and five flipped scenes
+retain the independently measured edge gap (native 9,120 versus Go 9,216 pixels).
+The real-art scene at temp/app-runs/actororder-real-overlap-go/ (3/5/7 seconds)
+reduces clothing-mask differences from 12,036 to 408 pixels, with correct
+foreground facing. Native/Go white counts remain 22,362/22,626. Stock recovery at
+actororder-stock-throw-go/ (2/3/4/7) retains two fighters without dust clones.
+This is ordering/smoke evidence, not full framebuffer parity. Native debug magenta,
+background/HUD/filtering and flipped edge sampling remain open. Measurements:
+temp/m4ap-app-comparison.json.
+
 ## M4ao HitDef target/team selection
 
 M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-

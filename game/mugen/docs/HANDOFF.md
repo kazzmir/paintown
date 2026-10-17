@@ -4,61 +4,66 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-M4an adds helper defender candidates and measured incoming-contact activation.
-Ten native helpercontact programs compare 204 numbers and 40 authored input
-hashes. Normal/player/multiple helpers take damage, enter their own get-hit
-state and acquire independent target IDs; same-team helpers remain unharmed
-under the default enemy rule. Incoming contact begins two world ticks after
-birth. Independent negative/positive-state controls confirm the existing
-per-entity ordering. Full scoped races pass in temp/m4an-full-race.log; focused
-races and four fresh native replays pass. See HELPER-COMBAT.md. Complete combat,
-HitDef selection, projectiles, pause/foreign/geometry and rendering remain open.
+M4ap adds global actor sprite ordering and native SprPriority boundaries.
+Fourteen original programs compare 156 numbers, one load rejection, thirteen
+foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins
+across root/helper ownership; lower world ID wins ties, including reversed
+helper birth. Bottom becomes zero, computed floats truncate, literal floats
+reject, and measured +/-99 values retain ordering. Full scoped races pass in
+temp/m4ap-full-race.log (Match 172.121 seconds); all focused and pure races pass.
+Three fresh native color/rectangle replays and the float rejection pass. See
+ACTOR-ORDER.md. Complete effect/projectile/foreign/render/asset gates remain open.
 
-Seven real 1280x720 captures under temp/app-runs/helpercontact-two-go/
-(3/5/7 seconds) and helpercontact-stock-throw-go/ (2/3/4/7) pass provenance,
-dimensions, nonblack and runtime/resource checks. Stock recovery retains two
-fighters without permanent dust clones. The helper scene shows both victims;
-its native/Go white clothing masks contain 19,993/19,692 pixels and differ at
-1,507 pixels. This is a smoke check, not framebuffer parity. Existing mirrored/
-clipped placement, native debug magenta versus Go black, background filtering
-and HUD differences remain renderer obligations. Measurements:
-temp/m4an-app-comparison.json.
+Twenty real 1280x720 captures pass provenance/dimension/nonblack/runtime/resource
+checks. All thirteen accepted actororder-*-go-final scenes match native foreground
+RGB/identity; eight pure-color rectangles match exactly and five flipped scenes
+retain the independently measured edge gap (native 9,120 versus Go 9,216 pixels).
+The real-art scene at temp/app-runs/actororder-real-overlap-go/ (3/5/7 seconds)
+reduces clothing-mask differences from 12,036 to 408 pixels, with correct
+foreground facing. Native/Go white counts remain 22,362/22,626. Stock recovery at
+actororder-stock-throw-go/ (2/3/4/7) retains two fighters without dust clones.
+This is ordering/smoke evidence, not full framebuffer parity. Native debug magenta,
+background/HUD/filtering and flipped edge sampling remain open. Measurements:
+temp/m4ap-app-comparison.json.
 
-M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
-target dropping. Twenty-eight native programs compare 300 numbers, three load
-rejections and 112 authored input hashes. All throw classes default to one;
-guard consumes the contact. Independent root/root, root/helper and helper/helper
-controls pin roots before helpers, enemy roots before friendly roots and helper
-creation order regardless of team. Full scoped races pass in
-temp/m4ao-full-race.log; all focused cases and four fresh native replays pass.
-See HIT-SELECTION.md. Priority/reversal/override/projectile/team-mode and full
-binding/geometry/render/asset gates remain open.
+Next M4aq: calibrate flip alignment and AIR offsets with a single original red
+marker over a black stage region. Compare GameWidth 320/640/1280, facing versus
+AIR H/V/HV/cancelled flips, nonzero offsets and fractional positions. Native
+edge colors fit a one-game-pixel flip shift followed by the measured viewport
+linear fit, but this is a hypothesis until independent resolution controls.
+Do not apply a guessed screen-pixel or character-unit correction. Read the
+existing coord.StageViewport behavior: StageFit derives height from stage
+aspect, so default 1280 becomes a 1280x960 render surface for these stages.
 
-Seven real 1280x720 captures under temp/app-runs/hitselect-helper-order-go/
-(3/5/7 seconds) and hitselect-stock-throw-go/ (2/3/4/7) pass provenance,
-dimensions, nonblack and runtime/resource checks. Stock recovery retains two
-fighters without permanent dust clones. The overlapping helper scene's white
-clothing masks contain 22,362 native versus 22,626 Go pixels and differ at
-12,036 pixels. The foreground facing also differs at overlapping actors,
-pointing to a tied sprite-order problem that needs independent controls.
-Existing late clipped placement, native debug magenta versus Go black,
-background filtering and HUD differences remain open. These are smoke checks,
-not framebuffer parity. Measurements: temp/m4ao-app-comparison.json.
+Priority/clash controls remain prepared in temp/author-hit-clash.py and have not
+been authored or recorded. After renderer calibration, continue attack priority,
+remaining typed HitDef fields and the broader documented compatibility gates.
+Continue autonomously; local commits are authorized, no push is authorized and
+all work stays under game/mugen. Full compatibility is still unfinished.
 
-Next: independently measure root/helper global draw order and SprPriority ties
-before changing the recursive actor renderer. The selection app scene exposes
-a large overlap difference; do not dismiss it as sampling alone. Priority/clash
-controls are prepared in temp/author-hit-clash.py but have not been authored
-or recorded yet. Keep that separate from rendering evidence. Continue without
-routine permission; all changes remain in game/mugen and no push is authorized.
+M4ap reproduction: tests/actor_render_probe.py and generate_actor_markers.py.
+Bank SHA f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f.
+Native author/catalogues: temp/author-actor-order.py, author-actor-priority.py and
+actororder-*-cases.json. Pre-fix colors: m4ap-before-comparison.json; priority
+failures: m4ap-before-priority.log (12/14 pass). Final focused:
+m4ap-final-actor-race.log. Native source-linked color extraction:
+m4ap-native-renders-final.log. Fresh replays: m4ap-replay-{roots-tie,cross-helper-
+front,helpers-reverse-birth,float}. All final windows/checks: m4ap-apps.log and
+m4ap-app-checks.log. Preserve first invalid SFF-version/ineffective birth drafts
+only as diagnostics; accepted goldens use corrected inputs. Root Go module
+hashes remain unchanged. Reversal point: fb344800 (M4ao).
 
-M4ao evidence: m4ao-before-selection.log (12/15 pre-fix failures),
-m4ao-first-selection-race.log (22/24 pass; bottom/root-order mismatches),
-m4ao-second-selection-race.log (28 pass), m4ao-pure-race.log and full log.
-Native catalogues: temp/hitselect-*-cases.json and author-hit-selection.py.
-Fresh replays: m4ao-replay-guard-once, replace-drop, helper-pair-team-order and
-invalid-team. Window checks pass under m4ao-apps.log. Root module hashes remain
-unchanged. The previous helper defender checkpoint is 0482a7b5.
+Previous M4ao (fb344800) adds HitDef hitonce/affectteam, one-target consumption,
+replacement dropping and root/helper team ordering. Twenty-eight native programs
+compare 300 numbers, three load rejections and 112 input hashes. Full races,
+four fresh native replays and seven app checks pass; see HIT-SELECTION.md.
+Its overlap finding is now narrowed from 12,036 to 408 mask pixels by M4ap.
+
+Previous M4an (0482a7b5) adds helper defender candidates and incoming birth+2
+activation without changing root-only Enemy queries. Ten programs pin 204
+numbers and 40 hashes. Full races, four native replays and seven app checks pass;
+independent state-phase controls confirm the existing per-entity ordering.
+See HELPER-COMBAT.md.
 
 Previous M4am adds anchor-completion binding publication, idle-anchor constraints,
 external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.

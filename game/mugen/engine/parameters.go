@@ -248,7 +248,9 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			env.AddLife(amount)
 			return nil
 		})
-	case "ctrlset", "lifeset", "powerset", "poweradd", "sprpriority", "hitadd":
+	case "sprpriority":
+		return compileSprPriority(ctrl)
+	case "ctrlset", "lifeset", "powerset", "poweradd", "hitadd":
 		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, v map[string]evaluator.Value) error {
 			n := int(v["value"].Number())
 			switch name {
@@ -260,8 +262,6 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 				env.SetPower(n)
 			case "poweradd":
 				env.AddPower(n)
-			case "sprpriority":
-				env.SetSprPriority(n)
 			case "hitadd":
 				env.HitAdd(n)
 			}

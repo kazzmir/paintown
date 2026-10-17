@@ -60,28 +60,17 @@ func (p *Player) Draw(screen *ebiten.Image, screenX, screenY float64) {
 // DrawScaled renders the player and its subordinates.
 func (p *Player) DrawScaled(screen *ebiten.Image, screenX, screenY, scaleX, scaleY float64) {
 	p.pruneSpriteCache()
-	// 1. Draw main character
-	p.drawEntity(screen, p.Character, screenX, screenY, scaleX, scaleY)
-
-	// 2. Draw Helpers
-	for _, h := range p.helpers() {
-		// Helpers are drawn relative to screenX/screenY (which is character axis)
-		// But Character.X/Y are absolute world coords.
-		// Actually p1.Character.X is -60, h.X is -60 + offX.
-		// So h.X - p1.Character.X is real offset.
-		hx := screenX + (h.X-p.Character.X)*scaleX
-		hy := screenY + (h.Y-p.Character.Y)*scaleY
-		p.drawEntity(screen, h, hx, hy, scaleX, scaleY)
+	for _, actor := range OrderedActors([]*Player{p}) {
+		c := actor.Character
+		x := screenX + (c.X-p.Character.X)*scaleX
+		y := screenY + (c.Y-p.Character.Y)*scaleY
+		p.drawEntity(screen, c, x, y, scaleX, scaleY)
 	}
 
-	// 3. Draw Projectiles
-	for _, pr := range p.Character.Projectiles {
-		px := screenX + (pr.X-p.Character.X)*scaleX
-		py := screenY + (pr.Y-p.Character.Y)*scaleY
-		p.drawEntity(screen, pr, px, py, scaleX, scaleY)
-	}
+	p.drawLegacyExplods(screen, screenX, screenY, scaleX, scaleY)
+}
 
-	// 4. Draw Explods
+func (p *Player) drawLegacyExplods(screen *ebiten.Image, screenX, screenY, scaleX, scaleY float64) {
 	for _, ex := range p.Character.Explods {
 		if ex.Visual != nil {
 			continue // shared fight effect scene owns the rendered instance

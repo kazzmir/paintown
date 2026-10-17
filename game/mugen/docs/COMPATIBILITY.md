@@ -7,6 +7,16 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ap adds global actor sprite ordering and native SprPriority boundaries.
+Fourteen original programs compare 156 numbers, one load rejection, thirteen
+foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins
+across root/helper ownership; lower world ID wins ties, including reversed
+helper birth. Bottom becomes zero, computed floats truncate, literal floats
+reject, and measured +/-99 values retain ordering. Full scoped races pass in
+temp/m4ap-full-race.log (Match 172.121 seconds); all focused and pure races pass.
+Three fresh native color/rectangle replays and the float rejection pass. See
+ACTOR-ORDER.md. Complete effect/projectile/foreign/render/asset gates remain open.
+
 M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
 target dropping. Twenty-eight native programs compare 300 numbers, three load
 rejections and 112 authored input hashes. All throw classes default to one;

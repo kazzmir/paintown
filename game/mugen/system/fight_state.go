@@ -92,11 +92,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
 	s.drawEffects(s.gameCanvas, 0)
-	for _, p := range m.Players {
-		scale, _ := p.LocalCoord.ScaleTo(gameSpace)
-		c := p.Character
-		p.DrawScaled(s.gameCanvas, float64(gameSpace.Width)/2+c.X*scale-m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame+c.Y*scale-m.CameraY, scale, scale)
-	}
+	character.DrawPlayers(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY)
 	s.drawEffects(s.gameCanvas, 1)
 	s.stageCanvas.Clear()
 	m.Stage.DrawForeground(s.stageCanvas, cameraX, cameraY)

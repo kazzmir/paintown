@@ -51,6 +51,10 @@ func TestNativeHitSelection(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitselect-*.json", 28)
 }
 
+func TestNativeActorDrawOrder(t *testing.T) {
+	replayNativeGeometryPrograms(t, "actororder-*.json", 14)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
@@ -64,16 +68,20 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				CNSHash    string `json:"cns_sha256"`
-				AIRHash    string `json:"air_sha256"`
-				StageHash  string `json:"stage_fixture_sha256"`
-				CMDHash    string `json:"cmd_sha256"`
-				Local      string `json:"localcoord"`
-				P2Local    string `json:"p2_localcoord"`
-				StageError string `json:"expected_stage_error"`
-				LoadError  string `json:"expected_load_error"`
-				ErrorState int    `json:"expected_compile_state"`
-				Captures   []struct{ Variables map[string]float64 }
+				CNSHash     string            `json:"cns_sha256"`
+				AIRHash     string            `json:"air_sha256"`
+				StageHash   string            `json:"stage_fixture_sha256"`
+				CMDHash     string            `json:"cmd_sha256"`
+				Local       string            `json:"localcoord"`
+				P2Local     string            `json:"p2_localcoord"`
+				StageError  string            `json:"expected_stage_error"`
+				LoadError   string            `json:"expected_load_error"`
+				ErrorState  int               `json:"expected_compile_state"`
+				ExtraHashes map[string]string `json:"extra_sha256"`
+				ActorRender *struct {
+					FrontID int `json:"front_entity_id"`
+				} `json:"actor_render"`
+				Captures []struct{ Variables map[string]float64 }
 			}
 			if err := json.Unmarshal(data, &reference); err != nil {
 				t.Fatal(err)
@@ -91,6 +99,9 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				return data
 			}
 			stem := strings.TrimSuffix(path, ".json")
+			for name, hash := range reference.ExtraHashes {
+				checked(filepath.Join(stem+".extra", name), hash)
+			}
 			// Check every authored input, including programs the reference rejects.
 			airBytes := checked(stem+".air", reference.AIRHash)
 			checked(stem+".stage.def", reference.StageHash)
@@ -181,6 +192,20 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					if got := m.Players[0].Character.FloatVars[index]; float32(got) != float32(want) {
 						t.Errorf("fvar(%d)=%v native=%v", index, got, want)
 					}
+				}
+			}
+			if reference.ActorRender != nil {
+				// Every visible solid marker covers the calibrated sample. Its
+				// native color identifies the foreground entity independently of
+				// the renderer's sorting implementation.
+				front := 0
+				for _, actor := range character.OrderedActors(m.Players[:]) {
+					if el := actor.Character.CurrentElement(); el != nil && el.Group >= 0 {
+						front = int(actor.Character.EntityID)
+					}
+				}
+				if front != reference.ActorRender.FrontID {
+					t.Errorf("foreground entity=%d native=%d", front, reference.ActorRender.FrontID)
 				}
 			}
 		})

@@ -52,5 +52,7 @@ and the handoff for current progress; the assessment describes the original base
 
 27. [HitDef selection](HIT-SELECTION.md): one-target consumption, throw defaults, friendly teams and root/helper contact order.
 
+28. [Actor sprite order](ACTOR-ORDER.md): native priority/ties, global root/helper drawing and original RGB pixel calibration.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

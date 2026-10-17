@@ -4,6 +4,47 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ap — Global actor sprite order and native color calibration
+
+M4ap adds global actor sprite ordering and native SprPriority boundaries.
+Fourteen original programs compare 156 numbers, one load rejection, thirteen
+foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins
+across root/helper ownership; lower world ID wins ties, including reversed
+helper birth. Bottom becomes zero, computed floats truncate, literal floats
+reject, and measured +/-99 values retain ordering. Full scoped races pass in
+temp/m4ap-full-race.log (Match 172.121 seconds); all focused and pure races pass.
+Three fresh native color/rectangle replays and the float rejection pass. See
+ACTOR-ORDER.md. Complete effect/projectile/foreign/render/asset gates remain open.
+
+Twenty real 1280x720 captures pass provenance/dimension/nonblack/runtime/resource
+checks. All thirteen accepted actororder-*-go-final scenes match native foreground
+RGB/identity; eight pure-color rectangles match exactly and five flipped scenes
+retain the independently measured edge gap (native 9,120 versus Go 9,216 pixels).
+The real-art scene at temp/app-runs/actororder-real-overlap-go/ (3/5/7 seconds)
+reduces clothing-mask differences from 12,036 to 408 pixels, with correct
+foreground facing. Native/Go white counts remain 22,362/22,626. Stock recovery at
+actororder-stock-throw-go/ (2/3/4/7) retains two fighters without dust clones.
+This is ordering/smoke evidence, not full framebuffer parity. Native debug magenta,
+background/HUD/filtering and flipped edge sampling remain open. Measurements:
+temp/m4ap-app-comparison.json.
+
+The pre-fix real root/cross-helper windows both show green instead of native
+red/blue. A shared OrderedActors list replaces family-recursive fight drawing;
+standalone player drawing uses the same order and keeps each sprite-bank owner.
+The native color golden maps solid marker colors to observed EntityIDs, checking
+CNS/AIR/CMD/stage/SFF/executable/capture provenance independently of Go sorting.
+The corrected birth control makes P2 A in state 0; the earlier draft changed
+A too late and did not reverse creation. The original SFF generator needs no
+reference art or external compiler. An initial incorrect version header is
+retained only as a rejected diagnostic under temp.
+
+Typed SprPriority fixes the only two boundary mismatches (bottom/float) after
+12/14 first-pass programs. Thirteen accepted runtime programs and the rejection
+pass; actual marker windows independently exercise the renderer. Native exact-
+color rectangles expose a separate flipped edge sample, not a sort error.
+No guessed raster offset or full controller/render/asset claim. Root modules
+remain unchanged. Reversal point: fb344800 (M4ao).
+
 ## M4ao — HitDef one-target and team selection
 
 M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
