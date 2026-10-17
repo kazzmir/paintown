@@ -105,3 +105,10 @@ p2stateno and p2getp1state; complete helper parameters/eligibility, owner deleti
 multi-target/world phases and every remaining controller geometry boundary.
 Complete throws, all state-machine behavior and whole controller/trigger rows
 remain unverified. See TARGETS.md, ENTITIES.md and COMPATIBILITY.md.
+
+
+M4ac now connects HitDef custom-state fields to these ownership/entry paths.
+Custom destinations supersede standard get-hit entry attributes and preserve
+the victim's animation clock; standard numbers remain visible as PrevStateNo.
+Undefined external entry still resets contact counters after the negative pass.
+See CUSTOMHIT.md for overrides, flags/grammar, binding publication and clocks.

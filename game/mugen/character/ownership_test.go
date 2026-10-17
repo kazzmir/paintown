@@ -26,6 +26,10 @@ func TestNativeTargetBindings(t *testing.T) {
 	replayNativeWorldPrograms(t, "binding-*.json", 53)
 }
 
+func TestNativeCustomHitStates(t *testing.T) {
+	replayNativeWorldPrograms(t, "customhit-*.json", 38)
+}
+
 func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	stock, err := os.ReadFile("../temp/mugen-1.1b1/chars/kfm/kfm.cns")
@@ -91,7 +95,7 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int) {
 			if reference.Error != "" {
 				err := players[0].SM.CompileState(players[0].StateFile.States[700])
 				if err == nil || !strings.Contains(err.Error(), "state 700 controller") || !strings.Contains(err.Error(), filepath.Base(strings.TrimSuffix(path, ".json"))+".cns") {
-					t.Fatal("native malformed binding was not rejected with source context", err)
+					t.Fatal("native malformed controller was not rejected with source context", err)
 				}
 				return
 			}

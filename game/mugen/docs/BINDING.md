@@ -99,6 +99,9 @@ facing, head/mid/foot offsets, helper retirement and pause comparisons. TargetBi
 still needs full Pause/SuperPause/hitpause, foreign-state geometry, multiple
 targets/teams and entity-retirement/native lifecycle edges. Registry retirement
 currently cancels a stale anchor defensively, without a native retirement trace.
-HitDef p1stateno/p2stateno/p2getp1state and complete throws remain unfinished. Run all
+M4ac now integrates the measured HitDef custom-state fields and integer
+GetHitVar(isbound) publication. The flag reflects the subject's last update,
+not a new/cancelled request or the remaining constraint pointer; see CUSTOMHIT.md.
+Complete throws remain unfinished. Run all
 native/app/Ebiten/audio clients serially on private :97; do not touch the desktop
 or original distribution. Preserve root modules and scope edits to game/mugen/.

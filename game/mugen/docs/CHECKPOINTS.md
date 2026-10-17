@@ -4,6 +4,50 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ac — HitDef custom states, binding publication and infinite AIR clocks
+
+Thirty-eight original native programs pin 1244 distinct per-program numeric
+observations and three load rejections. HitDef custom-state fields compile as
+host-local expressions before effects. Attacker/victim transitions select
+numbers immediately, defer entry until after negatives and use the measured
+state owner/coordinate profile. A custom victim supersedes the standard get-hit
+entry attributes while retaining its number as PrevStateNo. Missing external
+states also defer contact-counter reset. See CUSTOMHIT.md.
+
+Native controls distinguish borrowed/own states, -3/-2/-1 eligibility, first-pass
+life before pending damage, negative/omitted/missing fields, literal-float load
+errors and computed fractional coercion. Matching HitOverride excludes custom
+hits before contact; explicit/default borrowing flags matter even without an
+effective P2 destination. Ordinary overridden H states do not acquire targets.
+
+GetHitVar(isbound) is an integer published by the subject's last update; requests,
+cancel/drop and expiry do not prematurely replace that last observation.
+Duration/recovery programs distinguish publication from physical constraints.
+Infinite AIR AnimTime advances as elapsed+1. An accepted nonfinal -1 has the
+native finite clock/element starts rather than permanently holding that frame.
+The old infinite/unreachable unit assumptions were not native evidence and are
+replaced by three pure clock comparisons and production scheduler packets.
+
+The full scoped race suite passes in temp/m4ac-full-final-race.log. Parameter
+cache isolation, pre-mutation validation and untouched direct-hit adapters also
+pass. The initial distinct-
+animation control lacked Clsn2 and made no contact; its zero-valued run is
+explicitly diagnostic. The corrected contact control has independent AIR hashes.
+Seven fresh native replays match entry, overrides/sentinels, cancel publication,
+nonfinal AIR, fractional flags and integer-literal rejection. A real 1280x720
+Go window runs the mixed-profile custom-entry case through seven seconds at
+temp/app-runs/customhit-entry-go/. Both actors render; the authored victim uses
+320-art in a 1280 profile and is correspondingly small. This is process/render
+smoke, not framebuffer or stock throw parity. Root module hashes are unchanged.
+
+The stock KFM/KFM720 regression window also runs at 1280x720 through seven
+seconds at temp/app-runs/customhit-stock-regression-go/, with both full-sized
+actors and no runtime errors. This remains a smoke check, not pixel parity.
+
+Full stock throws still need facing/priority/Width/interruption comparisons;
+complete HitDef, bind-family/helper/world, input/render/audio/mode/asset gates
+remain open. M4ab's reversal point is `4d586c69`. No whole controller is Verified.
+
 ## M4ab — Target binding, literal grammar and native hurtbox push gating
 
 Fifty-three original native programs pin 840 numeric observations and ten load

@@ -6,7 +6,34 @@ import (
 
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/combat"
 )
+
+func TestExcludedCustomHitLeavesDirectAdaptersUnchanged(t *testing.T) {
+	source := "[State 7, hold]\ntype=Null\ntrigger1=1\n"
+	attacker, victim := fixtureCharacter(t, source), fixtureCharacter(t, source)
+	attributes, err := combat.ParseAttributes("S,NA")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := victim.SetHitOverride(combat.HitOverride{Attributes: attributes, StateNo: 7, Time: -1}); err != nil {
+		t.Fatal(err)
+	}
+	victim.MoveType, victim.Time, victim.Life = "H", 9, 913
+	victim.GetHitDamage, victim.ShakeTime = 27, 4
+	constraint := &actorBinding{anchor: attacker, remaining: 10}
+	victim.binding = constraint
+	hit := cns.ParseHitDef(map[string]string{"attr": "S,NA", "p1stateno": "999", "damage": "100"})
+	victim.ProcessHit(attacker, hit)
+	attacker.CurrentHitDef, attacker.HitDefActive, attacker.MoveContact = hit, true, 3
+	attacker.HandleHit(victim)
+	if victim.RuntimeError != nil || victim.StateNo != 7 || victim.Time != 9 || victim.Life != 913 || victim.GetHitDamage != 27 || victim.ShakeTime != 4 || victim.binding != constraint {
+		t.Fatal("excluded direct hit changed receiver metadata", victim.RuntimeError, victim.StateNo, victim.Time, victim.Life, victim.GetHitDamage, victim.ShakeTime)
+	}
+	if attacker.RuntimeError != nil || attacker.MoveContact != 3 || len(attacker.HitGuard) != 0 {
+		t.Fatal("excluded direct hit changed attacker contact", attacker.RuntimeError, attacker.MoveContact, attacker.HitGuard)
+	}
+}
 
 func TestContactContinuationDoesNotRepeatNegativeStatesOrTimeZero(t *testing.T) {
 	file, err := cns.Parse(strings.NewReader(`[Data]

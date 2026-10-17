@@ -470,7 +470,7 @@ func callWithArguments(e *Call, env, argumentsEnv EvaluatorEnvironment) Value {
 		switch field {
 		case "xvel", "yvel", "yaccel", "fall.xvel", "fall.yvel":
 			return Float(float32(who.GetHitVar(field)))
-		case "animtype", "air.animtype", "groundtype", "fall", "fall.damage", "fall.recover", "hittime", "slidetime", "ctrltime", "damage", "guarded", "hitshaketime":
+		case "animtype", "air.animtype", "groundtype", "fall", "fall.damage", "fall.recover", "hittime", "slidetime", "ctrltime", "damage", "guarded", "hitshaketime", "isbound":
 			return Int(int32(who.GetHitVar(field)))
 		default:
 			return failure(env, "unimplemented GetHitVar field %s", field)

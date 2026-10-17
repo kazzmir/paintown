@@ -1,10 +1,27 @@
 # Handoff
 
-Updated: 2026-10-16. State/language, sprite/font, and finite animation checkpoints
+Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoints
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ab work: typed TargetBind, 53 native programs/840 values/ten load
+Latest M4ac: HitDef p1stateno/p2stateno/p2getp1state compile and select measured
+custom state owners with deferred entry. Thirty-eight native programs pin 1244
+distinct per-program numbers and three load rejections. Full scoped races pass
+in temp/m4ac-full-final-race.log. See CUSTOMHIT.md. Matching HitOverride excludes
+custom hits before contact; ordinary overridden H states acquire no target.
+Missing external destinations reset contact counters after negatives. The
+isbound trigger publishes the subject's last update, including expiry/cancel/
+drop/recovery lag. Final infinite AnimTime is elapsed+1; accepted nonfinal -1
+finite scheduling is separately compared. Native malformed literal fields fail
+with source context, while computed .5 borrowing flags truncate to zero.
+The first distinct-animation native control had no Clsn2 and made no contact;
+only the corrected customhit-entry-contact-native input/hash is promoted.
+Seven fresh native replays match. The real 1280x720 custom-entry Go smoke at
+temp/app-runs/customhit-entry-go/ renders both actors through seven seconds.
+The authored victim has 320-art in a 1280 profile and is intentionally small;
+this is not a stock throw/framebuffer parity claim. Root hashes are unchanged.
+
+Previous M4ab work: typed TargetBind, 53 native programs/840 values/ten load
 rejections; full scoped races and seven fresh representative native replays
 pass. Constraints apply before the target's negative pass, convert mixed
 coordinates, inherit world velocity, and release on expiry/cancel/drop/new hit/
@@ -18,11 +35,12 @@ The real with-box Go match runs through seven-second 1280x720 captures at
 temp/app-runs/targetbind-with-box-go/. Sustained movement reaches an edge;
 camera/body-edge/framebuffer parity remains open. Root module hashes match.
 
-Next integrate HitDef p1stateno/p2stateno/p2getp1state to reach stock throws using
-the measured state/animation/binding paths. Then complete BindToTarget/Parent/
-Root and helper negative/keyctrl/world phases; compare pause/foreign/multi-target/
-retirement binding edges, remaining hit schemas and all input/render/audio/mode/
-asset gates. Native bottom-power instability and camera/filtering gaps remain.
+Next compare and integrate stock throws through their actual CNS/AIR/assets,
+including HitDef facing/priority/hit flags, Width and interrupted bindings. Then
+complete BindToTarget/Parent/Root and helper negative/keyctrl/world phases;
+compare pause/foreign/multi-target/retirement binding edges, remaining hit
+schemas and all input/render/audio/mode/asset gates. Native bottom-power
+instability and camera/filtering gaps remain.
 
 M4aa follows M4z: three native root-phase programs/48 values prove each ordered
 root completes CNS, pending damage, physics and clocks before the next root's
@@ -53,8 +71,8 @@ on private :97 and the private Pulse server. Early four-second ownership capture
 included stale intro clipboard contents and are diagnostic only; promoted
 packets use seven seconds and pinned independent opponent hashes.
 
-Next complete TargetBind/BindToTarget/Parent/Root clocks/geometry and HitDef
-p1stateno/p2stateno/p2getp1state integration. Then finish helper typed parameters/
+M4ab/M4ac now cover the measured TargetBind and HitDef custom-state root paths.
+Complete other binding clocks/geometry and finish helper typed parameters/
 negative eligibility, owner retirement, all controller coordinate boundaries,
 projectile/global phases and the remaining input/render/audio/mode/asset gates.
 Borrowed AIR offsets/boxes and native camera easing remain unverified/different.
@@ -568,9 +586,23 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Continue reference harness work and the typed expression and
-simulation foundations plus asset support. Reach the first playable KFM match
-at M4 and continue through the complete compatibility gates. Implementation
+Continue the stock throw path with facing/priority/hit flags, Width and
+interrupted-binding controls, then complete the other binding/helper/world and
+engine/asset gates. The selection-to-fight path runs, but the complete M4 and
+whole 1.1 beta compatibility gates remain open. Implementation
 choices are delegated after approval; ask only about concrete blockers or
 unresolvable scope/reference ambiguities. Keep this handoff and the evidence
 inventory current.
+
+
+customhit-* packets use their pinned independent opponent and profile. Most
+specify --p2-localcoord 1280,960; customhit-bound-* do not. Use each JSON's exact
+pages, including supplemental page 28 for cancel/drop. TestNativeCustomHitStates
+replays all 38 programs; pure TestNativeInfiniteAnimationClocks compares three
+infinite/nonfinal schedules. JSON capture run fields identify supplemental
+native captures. See CUSTOMHIT.md for boundaries and diagnostic exclusions.
+
+
+The stock KFM/KFM720 regression window also runs at 1280x720 through seven
+seconds at temp/app-runs/customhit-stock-regression-go/, with both full-sized
+actors and no runtime errors. This remains a smoke check, not pixel parity.

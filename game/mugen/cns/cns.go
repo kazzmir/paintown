@@ -82,7 +82,12 @@ type StateController struct {
 }
 
 type HitDef struct {
-	ID               int
+	ID int
+	// Nil means no custom transition. Keep explicit values separate so a
+	// zero-valued, programmatic HitDef does not change either actor's state.
+	P1StateNo        *int
+	P2StateNo        *int
+	P2GetP1State     bool
 	Attr             string
 	HitFlag          string
 	GuardFlag        string
@@ -586,6 +591,17 @@ func ParseHitDef(params map[string]string) HitDef {
 		FallRecover:    true,
 		FallXUnchanged: true,
 		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
+	}
+	for key, destination := range map[string]**int{"p1stateno": &hd.P1StateNo, "p2stateno": &hd.P2StateNo} {
+		if raw, present := params[key]; present {
+			value, _ := strconv.Atoi(raw)
+			*destination = &value
+		}
+	}
+	hd.P2GetP1State = hd.P2StateNo != nil
+	if raw, present := params["p2getp1state"]; present {
+		value, _ := strconv.Atoi(raw)
+		hd.P2GetP1State = value != 0
 	}
 	if v, ok := params["id"]; ok {
 		hd.ID, _ = strconv.Atoi(v)

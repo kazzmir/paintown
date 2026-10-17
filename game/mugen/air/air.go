@@ -270,15 +270,16 @@ func parseElement(groupID string, list parsers.ValueList) (Element, error) {
 }
 
 type Player struct {
-	Action          *Action
-	CurrentIdx      int
-	TickCounter     int
-	Elapsed         int
-	Error           error
-	time            int64
-	starts          []int64
-	total, loopTime int64
-	boundary        bool
+	Action           *Action
+	CurrentIdx       int
+	TickCounter      int
+	Elapsed          int
+	Error            error
+	time             int64
+	starts           []int64
+	total, loopTime  int64
+	boundary         bool
+	nonfinalInfinite bool
 }
 
 func NewPlayer(action *Action) *Player {

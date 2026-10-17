@@ -55,6 +55,11 @@ func CheckCollision(attacker, defender *Character) bool {
 	if !defender.allowsHit(attacker.attributesForHit(attacker.CurrentHitDef)) {
 		return false
 	}
+	hit := attacker.CurrentHitDef
+	hit.Attr = attacker.attributesForHit(hit)
+	if defender.excludesCustomHit(hit) {
+		return false
+	}
 
 	el1 := attacker.CurrentElement()
 	if el1 == nil || len(el1.Clsn1) == 0 {

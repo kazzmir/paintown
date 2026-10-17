@@ -1,10 +1,58 @@
 package air
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
+
+func TestNativeInfiniteAnimationClocks(t *testing.T) {
+	for _, label := range []string{"infinite", "prefix-infinite", "suffix-infinite"} {
+		t.Run(label, func(t *testing.T) {
+			stem := "../tests/testdata/reference/customhit-animation-" + label
+			data, err := os.ReadFile(stem + ".json")
+			if err != nil {
+				t.Fatal(err)
+			}
+			var reference struct {
+				AIRHash  string `json:"air_sha256"`
+				Captures []struct{ Variables map[string]int }
+			}
+			if err := json.Unmarshal(data, &reference); err != nil {
+				t.Fatal(err)
+			}
+			source, err := os.ReadFile(stem + ".air")
+			if err != nil || fmt.Sprintf("%x", sha256.Sum256(source)) != reference.AIRHash {
+				t.Fatal("native AIR hash mismatch", err)
+			}
+			frames, err := Parse(strings.NewReader(string(source)))
+			if err != nil {
+				t.Fatal(err)
+			}
+			values := map[string]int{}
+			for _, capture := range reference.Captures {
+				for key, value := range capture.Variables {
+					values[key] = value
+				}
+			}
+			p := NewPlayer(frames.Actions[9300])
+			for tick := 0; tick < 6; tick++ {
+				want, present := values[fmt.Sprint(tick)]
+				if !present || p.Error != nil || p.AnimTime() != want {
+					t.Fatalf("tick %d AnimTime=%d native=%d present=%v error=%v", tick, p.AnimTime(), want, present, p.Error)
+				}
+				elapsed, valid := p.ElemTime(1)
+				if want, present := values[fmt.Sprint(tick+6)]; !present || !valid || elapsed != want {
+					t.Fatalf("tick %d ElemTime(1)=%d,%v native=%d present=%v", tick, elapsed, valid, want, present)
+				}
+				p.Update()
+			}
+		})
+	}
+}
 
 func loopAction() *Action {
 	return &Action{ID: 9990, LoopStart: 1, Elements: []Element{{Time: 2}, {Time: 3}, {Time: 4}}}
@@ -63,15 +111,15 @@ func TestClockDurationsAndReset(t *testing.T) {
 	if n, ok := p.ElemTime(2); !ok || n != 0 {
 		t.Fatal("selected element elapsed time")
 	}
-	p = NewPlayer(&Action{LoopStart: -1, Elements: []Element{{Time: 2}, {Time: -1}, {Time: 4}}})
+	p = NewPlayer(&Action{LoopStart: -1, Elements: []Element{{Time: 2}, {Time: -1}}})
 	for i := 0; i < 10; i++ {
 		p.Update()
 	}
-	if p.CurrentIdx != 1 || p.TickCounter != 8 || p.AnimTime() != -1 {
+	if p.CurrentIdx != 1 || p.TickCounter != 8 || p.AnimTime() != 11 {
 		t.Fatal("infinite frame does not advance elapsed time")
 	}
 	if _, ok := p.ElemTime(3); ok {
-		t.Fatal("unreachable element start is not a valid time")
+		t.Fatal("element beyond the action is not a valid time")
 	}
 	for _, action := range []*Action{{LoopStart: -1, Elements: []Element{{Time: 0}}}, {LoopStart: 1, Elements: []Element{{Time: 1}, {Time: 0}}}, {LoopStart: 2, Elements: []Element{{Time: 1}}}, {LoopStart: -1, Elements: []Element{{Time: -2}}}} {
 		p := NewPlayer(action)

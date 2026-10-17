@@ -7,6 +7,14 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4ac connects HitDef custom-state expressions/owners and deferred entry, with
+38 native programs/1244 numbers/three load rejections. Matching override
+exclusions, H-override target suppression, missing-state counter reset and
+GetHitVar(isbound)'s published integer timing are compared. Infinite and
+nonfinal -1 AIR clocks now follow native controls. Full scoped races pass;
+full throws, HitDef grammar/flags/priority, all binding/entity/phase and other
+engine/asset gates remain open. See CUSTOMHIT.md.
+
 M4ab adds typed TargetBind and 53 native programs: 840 numbers/ten load rejections.
 Measured duration, units, facing, queue timing, ownership cleanup, CNS writes,
 literal/expression typing and tuple/bottom behavior match. Independent controls
@@ -134,8 +142,8 @@ parity is pending. See BUILD.md for dependencies and font lookup.
 M2d unifies animation clocks and binds AnimElem/AnimElemTime/AnimElemNo in
 Character. A 24-tick authored looping action matches the supplied executable's
 recorded AnimTime, all three element elapsed times, and current-element queries.
-Other offset/zero/infinite cases have documentation-based tests but still need
-reference probes. Both stock players load; 105/108 states per character compile,
+M4ac subsequently compares final/nonfinal infinite clocks. Other offsets,
+zero-duration and malformed schedules still need native probes. Both stock players load; 105/108 states per character compile,
 with HitOverride blocking the remaining three. Match playability is pending.
 
 M2e adds executable reference evidence for negative-state order/abortion and

@@ -25,6 +25,9 @@ func (c *Character) BindTargets(p engine.TargetBindParameters) error {
 }
 
 func (c *Character) prepareBinding() {
+	// The trigger publishes the result of the subject's most recent update,
+	// rather than a freshly queued constraint on another actor's CNS pass.
+	c.bindingReported = false
 	b := c.binding
 	if b == nil {
 		return
@@ -47,6 +50,7 @@ func (c *Character) prepareBinding() {
 	c.VelX = anchor.VelX * float64(anchor.Facing*c.Facing) * scale
 	c.VelY = anchor.VelY * scale
 	c.boundThisTick = true
+	c.bindingReported = true
 }
 
 func (c *Character) ageBinding() {

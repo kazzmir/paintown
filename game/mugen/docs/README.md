@@ -28,5 +28,7 @@ and the handoff for current progress; the assessment describes the original base
 
 15. [Target binding](BINDING.md): native constraint timing/lifetime, units, cleanup, parameter grammar and hurtbox push gating.
 
+16. [HitDef custom states](CUSTOMHIT.md): contact transitions, override exclusions, binding flags and infinite AIR clock evidence.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

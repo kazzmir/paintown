@@ -8,7 +8,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
-// Sound and spark parameters compile here while the remaining legacy schema
+// Sound, spark and custom-state parameters compile here while the remaining legacy schema
 // is progressively replaced. Never mutate the shared controller's source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	type cue struct {
@@ -17,14 +17,14 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		args []argument
 	}
 	var cues []cue
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
 		}
 		raw = strings.TrimSpace(raw)
 		own := false
-		resource := key != "sparkxy" && key != "id"
+		resource := key == "hitsound" || key == "guardsound" || key == "sparkno" || key == "guard.sparkno"
 		if resource && len(raw) > 0 {
 			switch raw[0] {
 			case 'S', 's':
@@ -35,7 +35,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 		count := 2
-		if key == "sparkno" || key == "guard.sparkno" || key == "id" {
+		if key != "hitsound" && key != "guardsound" && key != "sparkxy" {
 			count = 1
 		}
 		expressions, err := evaluator.ParseReferenceTupleForVersion(raw, count, ctrl.LanguageVersion)
@@ -50,6 +50,9 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		entry := cue{key: key, own: own}
 		for i, expr := range expressions {
+			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state") && integerFieldFloatLiteral(expr) {
+				return nil, true, fmt.Errorf("%s: expected int value and read float", key)
+			}
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
 				return nil, true, fmt.Errorf("%s: %w", key, err)
 			}

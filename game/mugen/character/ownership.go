@@ -14,6 +14,12 @@ func (c *Character) currentStateOwner() *Character {
 }
 
 func (c *Character) PreparePositiveState() error {
+	if c.pendingMissingEntry {
+		c.pendingMissingEntry = false
+		// Undefined external states still reset entry persistence/counters,
+		// while retaining the actor's current entry attributes and animation.
+		c.BeginStateEntry(false, false, false)
+	}
 	if state := c.pendingStateEntry; state != nil {
 		c.pendingStateEntry = nil
 		if err := c.SM.EnterState(state, c.stateEnvironment(), engine.EntryOverrides{}); err != nil {

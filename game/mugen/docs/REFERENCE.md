@@ -703,3 +703,36 @@ packets/rejections. A 1280x720 Go with-box match runs through seven-second windo
 captures; actors reach an edge under sustained scripted motion, so this does
 not establish camera/body-edge/framebuffer parity. All original reference
 assets, root module hashes and desktop settings remain unchanged.
+
+
+## M4ac custom HitDef, binding publication and AIR clocks
+
+Thirty-eight original customhit-* programs pin 1244 distinct per-program numbers
+and three direct-float load rejections. Independent opponent CNS/AIR/CMD and
+profile hashes distinguish owned/borrowed state definitions, animation clocks,
+negative passes, pending damage and override exclusions. Most use P2 localcoord
+1280,960; binding-flag variants use equal profiles. Exact pages/flags are pinned
+per packet. Supplemental cancel/drop and computed-flag captures retain their
+run names in capture entries. No original binary or art is committed.
+
+The first customhit-entry-native control lacked Clsn2 on its distinct action,
+so no hit occurred and all observations stayed zero. It is diagnostic only.
+The promoted customhit-entry-contact-native control adds an authored hurtbox
+and independently pins the new opponent AIR. It proves that standard get-hit
+entry animation is superseded rather than resetting before a custom state.
+
+Final -1 clocks and a nonfinal 2,-1,4 schedule expose native AnimTime and query
+rules contrary to the old documentation-based assumptions. Three pure AIR tests
+and the ten-tick detailed scheduler program compare those numbers. See
+CUSTOMHIT.md for exact behavior and limits. Full scoped races pass in
+temp/m4ac-full-final-race.log. Seven fresh replays match entry, override/negative
+sentinels, cancel publication, nonfinal clocks, fractional flags and literal
+rejection. The real custom-entry game window at temp/app-runs/customhit-entry-go/
+is 1280x720 and inspected through seven seconds, with both actors rendered. The
+authored victim uses low-resolution art in a 1280 profile and is small; no
+framebuffer/stock-throw parity claim follows. Full world/engine gates remain open.
+
+
+The stock KFM/KFM720 regression window also runs at 1280x720 through seven
+seconds at temp/app-runs/customhit-stock-regression-go/, with both full-sized
+actors and no runtime errors. This remains a smoke check, not pixel parity.

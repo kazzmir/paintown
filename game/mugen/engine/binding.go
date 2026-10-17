@@ -13,15 +13,15 @@ type TargetBindParameters struct {
 	X, Y     float64
 }
 
-func bindingFloatLiteral(expr evaluator.Expression) bool {
+func integerFieldFloatLiteral(expr evaluator.Expression) bool {
 	switch value := expr.(type) {
 	case *evaluator.Number:
 		return value.IsFloat
 	case *evaluator.Group:
-		return bindingFloatLiteral(value.Expression)
+		return integerFieldFloatLiteral(value.Expression)
 	case *evaluator.Unary:
 		if value.Operator == "+" || value.Operator == "-" {
-			return bindingFloatLiteral(value.Expression)
+			return integerFieldFloatLiteral(value.Expression)
 		}
 	}
 	return false
@@ -33,7 +33,7 @@ func compileTargetBind(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		return nil, true, err
 	}
 	for _, arg := range args {
-		if bindingFloatLiteral(arg.expr) {
+		if integerFieldFloatLiteral(arg.expr) {
 			return nil, true, fmt.Errorf("%s: expected int value and read float", arg.name)
 		}
 	}

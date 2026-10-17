@@ -2,8 +2,18 @@ package character
 
 import (
 	"fmt"
+
+	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/combat"
 )
+
+func (c *Character) excludesCustomHit(hit cns.HitDef) bool {
+	if !hit.P2GetP1State && (hit.P1StateNo == nil || *hit.P1StateNo < 0) {
+		return false
+	}
+	_, overridden := c.matchingOverride(hit.Attr)
+	return overridden
+}
 
 func (c *Character) SetHitOverride(override combat.HitOverride) error {
 	if override.Slot < 0 || override.Slot >= len(c.HitOverrides) || override.Time < -1 {

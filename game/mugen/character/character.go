@@ -47,17 +47,19 @@ type Character struct {
 	warningSeen           map[string]bool
 
 	// CNS data containing states and physics globals
-	StateFile         *cns.CNS
-	stateOwner        *Character
-	pendingStateEntry *cns.StateDef
-	allowMissingState bool
-	binding           *actorBinding
-	boundThisTick     bool
-	LocalCoord        coord.Space
-	GameCoord         coord.Space
-	Viewport          *coord.Viewport
-	Timeline          *engine.Timeline
-	Palettes          *palette.State
+	StateFile           *cns.CNS
+	stateOwner          *Character
+	pendingStateEntry   *cns.StateDef
+	pendingMissingEntry bool
+	allowMissingState   bool
+	binding             *actorBinding
+	boundThisTick       bool
+	bindingReported     bool
+	LocalCoord          coord.Space
+	GameCoord           coord.Space
+	Viewport            *coord.Viewport
+	Timeline            *engine.Timeline
+	Palettes            *palette.State
 
 	// AIR data containing animation definitions
 	AirFile       *air.Data
@@ -1403,6 +1405,10 @@ func (c *Character) GetHitVar(name string) float64 {
 		if c.GetHitGuarded {
 			val = 1
 		}
+	case "isbound":
+		if c.bindingReported {
+			val = 1
+		}
 	case "hitshaketime":
 		val = float64(c.ShakeTime)
 	case "slidetime":
@@ -1742,7 +1748,7 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 			return
 		}
 	} else {
-		c.EvaluationWarning(fmt.Sprintf("TargetState: state %d is missing from the state owner", stateNo))
+		c.EvaluationWarning(fmt.Sprintf("external transition: state %d is missing from the state owner", stateNo))
 	}
 	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, name)
 	c.PrevStateNo = c.StateNo
@@ -1752,6 +1758,7 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 	c.HitFallVelActive = false
 	c.PosFrozen = false
 	c.pendingStateEntry = nil
+	c.pendingMissingEntry = false
 	c.allowMissingState = !found
 	for key := range c.PersistenceCounters {
 		if strings.HasPrefix(key, "pos") {
@@ -1761,6 +1768,7 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 	c.stateInitialized = true
 	if external {
 		c.pendingStateEntry = next
+		c.pendingMissingEntry = !found
 		return
 	}
 	if err := c.SM.EnterState(next, c.stateEnvironment(), overrides); err != nil {
@@ -1873,6 +1881,11 @@ func (c *Character) HandleHit(other *Character) {
 	if !c.HitDefActive {
 		return
 	}
+	hit := c.CurrentHitDef
+	hit.Attr = c.attributesForHit(hit)
+	if other.excludesCustomHit(hit) {
+		return
+	}
 	if err := c.ensureWorld(); err != nil {
 		c.RuntimeError = err
 		return
@@ -1893,8 +1906,6 @@ func (c *Character) HandleHit(other *Character) {
 	c.HitGuard[int(other.EntityID)] = true
 
 	// 1. Mark attacker results
-	hit := c.CurrentHitDef
-	hit.Attr = c.attributesForHit(hit)
 	guarded := other.guardsHit(hit)
 	c.MoveHit = 1
 	c.MoveContact = 1
@@ -1917,7 +1928,11 @@ func (c *Character) HandleHit(other *Character) {
 }
 
 func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
-	damage := c.prepareHit(attacker, hit)
+	hit.Attr = attacker.attributesForHit(hit)
+	if c.excludesCustomHit(hit) {
+		return
+	}
+	damage := c.prepareContact(attacker, hit, c.guardsHit(hit))
 	c.applyHitDamage(damage)
 }
 
@@ -1931,11 +1946,6 @@ func (c *Character) applyHitDamage(damage int) {
 	if c.Life < 0 {
 		c.Life = 0
 	}
-}
-
-func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
-	hit.Attr = attacker.attributesForHit(hit)
-	return c.prepareContact(attacker, hit, c.guardsHit(hit))
 }
 
 // HitOverride suppresses guarding; guard flags then select eligible postures.
@@ -2076,9 +2086,30 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		} else if airHit {
 			state = 5020
 		}
-		c.ChangeState(state, 0, -1)
+		customVictim := hit.P2StateNo != nil && *hit.P2StateNo >= 0
+		if customVictim {
+			// The standard number is observable as PrevStateNo, but its entry
+			// attributes are superseded by the custom destination. Contact
+			// itself establishes H/no-control before the negative state passes.
+			c.changeStateWithEntry(state, engine.EntryOverrides{}, true)
+			c.SetMoveType("H")
+			c.SetCtrl(false)
+		} else {
+			c.ChangeState(state, 0, -1)
+		}
 	}
-	if c.MoveType == "H" {
+	if !guarded && !hasOverride {
+		if hit.P1StateNo != nil && *hit.P1StateNo >= 0 {
+			attacker.changeStateWithEntry(*hit.P1StateNo, engine.EntryOverrides{}, true)
+		}
+		if hit.P2StateNo != nil && *hit.P2StateNo >= 0 {
+			if hit.P2GetP1State {
+				c.stateOwner = attacker.currentStateOwner()
+			}
+			c.changeStateWithEntry(*hit.P2StateNo, engine.EntryOverrides{}, true)
+		}
+	}
+	if c.MoveType == "H" && !hasOverride {
 		attacker.acquireTarget(c, hit.ID)
 	}
 	return finalDamage

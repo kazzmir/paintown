@@ -340,3 +340,15 @@ failures. Early constant-speed duration runs could not distinguish release
 from continued matching velocity; current packets use a changing anchor.
 Independent hurtbox controls replace the disproved H-only push inference.
 See BINDING.md for scope, exact defaults and remaining pause/entity/throw work.
+
+
+M4ac adds 38 customhit-* packets with 1244 distinct per-program observations
+and three required native load rejections. TestNativeCustomHitStates uses each
+packet's independent CNS/AIR/CMD opponent and profile. Supplemental capture run
+names identify cancel/drop page 28 and computed-flag detail pages. Most packets
+use --p2-localcoord 1280,960; the binding-flag programs use equal profiles.
+Pure TestNativeInfiniteAnimationClocks compares three schedules. The detailed
+nonfinal -1 program also compares native frame selection and element clocks.
+See ../docs/CUSTOMHIT.md for exact scope, diagnostic exclusions and remaining
+stock throw/world obligations. All display/audio clients run serially on the
+task-owned private servers; pure tests without DISPLAY can run alongside probes.

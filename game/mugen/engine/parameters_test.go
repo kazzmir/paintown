@@ -113,10 +113,11 @@ func TestVariableExpressions(t *testing.T) {
 }
 
 func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
-	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\nid=var(5)+700\nsparkno=S(var(2):=99)\nguard.sparkno=-1\nsparkxy=(var(3):=-10),(var(4):=-70)\n")
+	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\nid=var(5)+700\nsparkno=S(var(2):=99)\nguard.sparkno=-1\nsparkxy=(var(3):=-10),(var(4):=-70)\np1stateno=var(5)+810\np2stateno=var(5)+820\np2getp1state=fvar(1)\n")
 	machine := NewStateMachine()
 	a, b := newParameterHost(), newParameterHost()
 	b.vars[0], b.vars[5] = 10, 9
+	b.floats[1] = 1
 	for _, h := range []*parameterHost{a, b} {
 		if _, err := machine.ExecuteState(state, h); err != nil {
 			t.Fatal(err)
@@ -131,6 +132,9 @@ func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
 	if a.hitParams["sparkno"] != "S99" || a.hitParams["guard.sparkno"] != "-1" || a.hitParams["sparkxy"] != "-10,-70" {
 		t.Fatal("spark resource expressions", a.hitParams)
 	}
+	if a.hitParams["p1stateno"] != "810" || b.hitParams["p1stateno"] != "819" || a.hitParams["p2stateno"] != "820" || b.hitParams["p2stateno"] != "829" || a.hitParams["p2getp1state"] != "0" || b.hitParams["p2getp1state"] != "1" {
+		t.Fatal("custom-state fields lost host isolation", a.hitParams, b.hitParams)
+	}
 	if state.Controllers[0].Params["hitsound"] != "S(var(0):=var(0)+6),var(1):=var(0)+1" {
 		t.Fatal("compiled sound changed shared CNS source")
 	}
@@ -138,6 +142,10 @@ func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
 	before := a.vars[0]
 	if _, err := machine.ExecuteState(bad, a); err == nil || a.vars[0] != before {
 		t.Fatal("invalid later sound parameter allowed partial execution", err, a.vars[0])
+	}
+	badState := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nhitsound=var(0):=99,0\np2stateno=unknown_trigger(1)\n")
+	if _, err := machine.ExecuteState(badState, a); err == nil || a.vars[0] != before {
+		t.Fatal("invalid custom state allowed partial execution", err, a.vars[0])
 	}
 }
 

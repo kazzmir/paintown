@@ -83,3 +83,10 @@ body-push phase. Independent controls show H and I both push when both actors
 have Clsn2; absent Clsn2 excludes push. CNS widths provide horizontal extents,
 and bound actors can still be displaced by shared late push. See BINDING.md;
 full vertical/frame/helper/width/pause eligibility remains open.
+
+
+M4ac adds measured HitDef custom transitions before these ordered passes, with
+entry deferred until each actor's positive pass. GetHitVar(isbound) publishes
+the subject's last update, so the earlier root sees the previous observation
+until the target's turn. This is separate from the queued constraint and its
+physical expiry. Full helper/projectile/world scheduling remains open.

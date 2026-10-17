@@ -11,7 +11,8 @@ No full Target/helper/projectile/controller gate is declared complete.
 ## Acquisition, labels and release
 
 A successful normal or guarded hit acquires the victim when it enters H. An
-override remaining I acquires none. The target is visible to the attacker's
+override acquires none: M4ac adds the independently measured H destination,
+extending M4y's I-only control. The target is visible to the attacker's
 following CNS pass, before deferred hit damage changes Life. A target with
 EntityID 57 and HitDef ID 1234 gives NumTarget=1, NumTarget(1234)=1 and Target,ID
 57. EntityID and HitDef ID remain distinct.
