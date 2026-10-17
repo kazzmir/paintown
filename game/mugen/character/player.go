@@ -2,6 +2,7 @@ package character
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
@@ -131,10 +132,20 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 		opts.GeoM.Scale(1, -1)
 	}
 
-	opts.GeoM.Translate(float64(currentElement.XOffset), float64(currentElement.YOffset))
+	opts.GeoM.Translate(float64(currentElement.XOffset*ent.Facing), float64(currentElement.YOffset))
 	characterScaleX, characterScaleY := ent.spriteScale()
 	opts.GeoM.Scale(sx*characterScaleX, sy*characterScaleY)
-	opts.GeoM.Translate(x, y)
+	// Native offsets an effective flipped axis by one game-surface pixel.
+	// Apply this after local scaling; the final viewport fit samples it.
+	if elementFlipX {
+		opts.GeoM.Translate(1, 0)
+	}
+	if elementFlipY {
+		opts.GeoM.Translate(0, 1)
+	}
+	// Native floors the game-space draw axis while preserving CNS positions
+	// and fractional sprite scaling. Negative clipped axes floor as well.
+	opts.GeoM.Translate(math.Floor(x), math.Floor(y))
 
 	screen.DrawImage(ebitenSprite, opts)
 }

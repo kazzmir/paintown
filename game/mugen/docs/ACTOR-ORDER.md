@@ -67,3 +67,9 @@ actor and column 688 blends the background; foreground interiors are exact.
 This is separate from actor order and agrees with the earlier clipped-right
 edge gap. Full native vertex/filter calibration remains open. No arbitrary
 one-pixel position correction is introduced by this checkpoint.
+
+M4aq subsequently isolates game-pixel flip phase and floors draw axes while
+preserving CNS fractions. The real-art mask differences and reverse-helper
+rectangle now match exactly; SPRITE-ALIGNMENT.md records 28 independent rasters
+and the four sparse one-channel corner differences. Original M4ap captures
+remain historical evidence rather than the current renderer result.

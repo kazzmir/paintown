@@ -4,6 +4,49 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4aq — Actor flip/offset coordinates and native raster alignment
+
+M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.
+Twenty-eight native programs compare 336 numbers, 140 input hashes and 28
+original-marker rasters across 320/640/1280 render widths, combined/cancelled
+flips, clipping, fractional positions and helper sizing. Final full races pass
+in temp/m4aq-final-full-race.log (Match 190.318 seconds); all focused cases and
+four final independent native replays pass. All 28 actual Go crops match exact
+geometry; 24 are byte-identical and four have quantified one-channel-level
+rounding at one/four blended corners. Strict checking remains default; the
+opt-in edge allowance preserves exact geometry/pure pixels. See
+SPRITE-ALIGNMENT.md. No whole renderer/asset/engine compatibility claim.
+
+Thirty-nine final-code 1280x720 captures pass source/binary/config/PNG/dimension/
+runtime/resource checks, from one identical binary. Reverse-helper color/order/
+rectangle matches. Real-art overlap and helper-fall clothing masks match exactly:
+22,362 and 16,608 white pixels respectively, zero differences versus the previous
+408/801 (overlap was 12,036 before M4ap ordering). Stock recovery has two fighters
+without dust clones. Results: temp/m4aq-axis-raster-summary.json and
+m4aq-final-app-checks.json. Background/debug/HUD, four tiny corner-precision
+exceptions and broader render/asset/combat/mode gates remain open.
+
+Facing multiplies AIR X offset independently of effective image flip. Y offset
+keeps direction. Effective flipped axes add one game-surface pixel after sprite/
+local scaling. Projected draw axes floor before combination with fractional
+image axes/scales/frame offsets; CNS positions stay fractional. Negative clipped
+axes distinguish floor from truncation, and a 1.1 helper plus AIR X=1 locates the
+operation before local offset/scaling. Physical window overrides isolate game
+resolution from the native default window-size change.
+
+The initial three app failures are all corrected byte-for-byte. Expanded crop
+checks reveal half-pixel axis failures, fixed by independent negative/fractional
+controls. Four sparse blended-corner differences retain max one channel level;
+strict SHA remains available. Explicit precision mode permits <=4 nonblack/
+nonpure-red pixels, never altered bounds/counts, validates original native RGB
+against its SHA, and still rejects the known shifted geometry. No color hack or
+Go-derived oracle is introduced. Compressed crops contain only original marker/
+black data; no reference art/binary is committed.
+
+The earlier full log precedes axis flooring. Final full races, all 28 final-code
+crops, 39 capture checks and four final native replays pass. No whole-engine
+promotion; root module hashes remain unchanged. Reversal point: 8de8d697 (M4ap).
+
 ## M4ap — Global actor sprite order and native color calibration
 
 M4ap adds global actor sprite ordering and native SprPriority boundaries.

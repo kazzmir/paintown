@@ -7,6 +7,17 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.
+Twenty-eight native programs compare 336 numbers, 140 input hashes and 28
+original-marker rasters across 320/640/1280 render widths, combined/cancelled
+flips, clipping, fractional positions and helper sizing. Final full races pass
+in temp/m4aq-final-full-race.log (Match 190.318 seconds); all focused cases and
+four final independent native replays pass. All 28 actual Go crops match exact
+geometry; 24 are byte-identical and four have quantified one-channel-level
+rounding at one/four blended corners. Strict checking remains default; the
+opt-in edge allowance preserves exact geometry/pure pixels. See
+SPRITE-ALIGNMENT.md. No whole renderer/asset/engine compatibility claim.
+
 M4ap adds global actor sprite ordering and native SprPriority boundaries.
 Fourteen original programs compare 156 numbers, one load rejection, thirteen
 foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins

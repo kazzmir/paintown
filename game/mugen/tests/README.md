@@ -550,3 +550,28 @@ existing run; --record updates only the requested render metadata after these
 checks. Rejected float inputs use reference_probe.py instead. All source sprites
 are original raw RGB data, not reference character art. See ACTOR-ORDER.md for
 pre-fix windows, full regression evidence and the remaining flipped-edge gap.
+
+## M4aq actor sprite alignment
+
+TestNativeSpriteFramePrograms compares 28 flipmark programs: 336 numbers and
+140 CNS/AIR/CMD/stage/SFF hashes. Native crop goldens cover facing/AIR H/V/HV,
+cancelled flips, offsets, fractional positions, three render widths and
+nonuniform helper sizing. Stage debugbg=0 isolates the original marker over
+black. Low-resolution runs explicitly pin the physical video size.
+
+```sh
+python3 game/mugen/tests/sprite_render_probe.py --fixture flipmark-left-320 --name UNIQUE_NATIVE
+python3 game/mugen/tests/app_smoke.py --name UNIQUE_GO --reference game/mugen/temp/reference-runs/UNIQUE_NATIVE/stock --match chars/kfm/kfm.def chars/kfm/kfm.def --stage stages/probe-stage.def --motif data/mugen1/system.def --width 1280 --height 720 --seconds 5
+python3 game/mugen/tests/sprite_render_probe.py --fixture flipmark-left-320 --name UNIQUE_CHECK --go-run UNIQUE_GO
+```
+
+Go verification checks binary/config/capture hashes, prepared source, AIR, marker
+bank, stage and render profile, then requires identical bounds, color counts and
+complete crop SHA-256 by default. Explicit --max-edge-channel-error 1 allows at
+most four blended pixels to differ by one channel level. Pure red/black pixels
+and geometry stay exact; the report retains exact versus differing-edge counts.
+The compressed native crop validates against its SHA before comparison. The
+precision allowance still rejects the known half-pixel position failure.
+Go verification cannot record or overwrite native goldens. Native
+--adopt-run/--record retain the input/executable/config/video/capture checks.
+SPRITE-ALIGNMENT.md records the measured rule, validation and remaining scope.

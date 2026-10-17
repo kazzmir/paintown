@@ -4,60 +4,60 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-M4ap adds global actor sprite ordering and native SprPriority boundaries.
-Fourteen original programs compare 156 numbers, one load rejection, thirteen
-foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins
-across root/helper ownership; lower world ID wins ties, including reversed
-helper birth. Bottom becomes zero, computed floats truncate, literal floats
-reject, and measured +/-99 values retain ordering. Full scoped races pass in
-temp/m4ap-full-race.log (Match 172.121 seconds); all focused and pure races pass.
-Three fresh native color/rectangle replays and the float rejection pass. See
-ACTOR-ORDER.md. Complete effect/projectile/foreign/render/asset gates remain open.
+M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.
+Twenty-eight native programs compare 336 numbers, 140 input hashes and 28
+original-marker rasters across 320/640/1280 render widths, combined/cancelled
+flips, clipping, fractional positions and helper sizing. Final full races pass
+in temp/m4aq-final-full-race.log (Match 190.318 seconds); all focused cases and
+four final independent native replays pass. All 28 actual Go crops match exact
+geometry; 24 are byte-identical and four have quantified one-channel-level
+rounding at one/four blended corners. Strict checking remains default; the
+opt-in edge allowance preserves exact geometry/pure pixels. See
+SPRITE-ALIGNMENT.md. No whole renderer/asset/engine compatibility claim.
 
-Twenty real 1280x720 captures pass provenance/dimension/nonblack/runtime/resource
-checks. All thirteen accepted actororder-*-go-final scenes match native foreground
-RGB/identity; eight pure-color rectangles match exactly and five flipped scenes
-retain the independently measured edge gap (native 9,120 versus Go 9,216 pixels).
-The real-art scene at temp/app-runs/actororder-real-overlap-go/ (3/5/7 seconds)
-reduces clothing-mask differences from 12,036 to 408 pixels, with correct
-foreground facing. Native/Go white counts remain 22,362/22,626. Stock recovery at
-actororder-stock-throw-go/ (2/3/4/7) retains two fighters without dust clones.
-This is ordering/smoke evidence, not full framebuffer parity. Native debug magenta,
-background/HUD/filtering and flipped edge sampling remain open. Measurements:
-temp/m4ap-app-comparison.json.
+Thirty-nine final-code 1280x720 captures pass source/binary/config/PNG/dimension/
+runtime/resource checks, from one identical binary. Reverse-helper color/order/
+rectangle matches. Real-art overlap and helper-fall clothing masks match exactly:
+22,362 and 16,608 white pixels respectively, zero differences versus the previous
+408/801 (overlap was 12,036 before M4ap ordering). Stock recovery has two fighters
+without dust clones. Results: temp/m4aq-axis-raster-summary.json and
+m4aq-final-app-checks.json. Background/debug/HUD, four tiny corner-precision
+exceptions and broader render/asset/combat/mode gates remain open.
 
-Next M4aq: calibrate flip alignment and AIR offsets with a single original red
-marker over a black stage region. Compare GameWidth 320/640/1280, facing versus
-AIR H/V/HV/cancelled flips, nonzero offsets and fractional positions. Native
-edge colors fit a one-game-pixel flip shift followed by the measured viewport
-linear fit, but this is a hypothesis until independent resolution controls.
-Do not apply a guessed screen-pixel or character-unit correction. Read the
-existing coord.StageViewport behavior: StageFit derives height from stage
-aspect, so default 1280 becomes a 1280x960 render surface for these stages.
+Next M4ar: measure HitDef priority and Hit/Miss/Dodge clash behavior. The ignored
+script temp/author-hit-clash.py is prepared but UNEXECUTED; no hitclash fixture
+sources/goldens exist yet. Inspect the author first, record native controls,
+capture pre-fix mismatches, implement measured semantics, run appropriate checks
+and document/commit the checkpoint. Continue autonomously; all changes stay in
+game/mugen, local commits are authorized and no push is authorized. Full 1.1 beta
+compatibility remains unfinished. Priority/hitflags/reversal/projectiles/teams,
+remaining typed parameters, camera/zoom and complete assets/modes still need work.
 
-Priority/clash controls remain prepared in temp/author-hit-clash.py and have not
-been authored or recorded. After renderer calibration, continue attack priority,
-remaining typed HitDef fields and the broader documented compatibility gates.
-Continue autonomously; local commits are authorized, no push is authorized and
-all work stays under game/mugen. Full compatibility is still unfinished.
+M4aq evidence: m4aq-axis-frame-race.log, m4aq-final-full-race.log,
+m4aq-axis-go-checks.log, m4aq-axis-raster-summary.json and
+m4aq-final-app-checks.json. Four final native replays are
+m4aq-final-replay-{offscreen-left,helper-fractional-offset,right-eighth-y,left-640}.
+Final app names are flipmark-*-go-axis and sprite-*-axis-go. The old *-go-final
+runs include the pre-flooring failures; do not mislabel them final code.
+Earlier full logs are intermediate. Reversal: 8de8d697. Source authors and
+catalogues are temp/author-flip-*.py and flipmark-*-cases.json. Native suffix is
+native-fixed-window for recorded game_width cases and the original left/right-
+eighth pair; native-final for all others. Keep the wrong-window first drafts as
+diagnostics only. Permanent native/Go verifier: tests/sprite_render_probe.py.
+The native crop compressed RGB is original marker/black data only and checked
+against its SHA. Root Go module hashes remain unchanged.
 
-M4ap reproduction: tests/actor_render_probe.py and generate_actor_markers.py.
-Bank SHA f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f.
-Native author/catalogues: temp/author-actor-order.py, author-actor-priority.py and
-actororder-*-cases.json. Pre-fix colors: m4ap-before-comparison.json; priority
-failures: m4ap-before-priority.log (12/14 pass). Final focused:
-m4ap-final-actor-race.log. Native source-linked color extraction:
-m4ap-native-renders-final.log. Fresh replays: m4ap-replay-{roots-tie,cross-helper-
-front,helpers-reverse-birth,float}. All final windows/checks: m4ap-apps.log and
-m4ap-app-checks.log. Preserve first invalid SFF-version/ineffective birth drafts
-only as diagnostics; accepted goldens use corrected inputs. Root Go module
-hashes remain unchanged. Reversal point: fb344800 (M4ao).
+Previous M4ap (8de8d697) fixes global actor sprite priority and lower-ID ties.
+Fourteen programs compare 156 numbers, one rejection, thirteen foreground IDs
+and 70 hashes. Full races/native replay/windows pass; the initially retained
+flipped edge and real-art mask gaps are now resolved geometrically by M4aq.
+See ACTOR-ORDER.md for original diagnostics and marker generator provenance.
 
 Previous M4ao (fb344800) adds HitDef hitonce/affectteam, one-target consumption,
 replacement dropping and root/helper team ordering. Twenty-eight native programs
 compare 300 numbers, three load rejections and 112 input hashes. Full races,
 four fresh native replays and seven app checks pass; see HIT-SELECTION.md.
-Its overlap finding is now narrowed from 12,036 to 408 mask pixels by M4ap.
+Its overlap mask falls from 12,036 to 408 at M4ap and now matches at M4aq.
 
 Previous M4an (0482a7b5) adds helper defender candidates and incoming birth+2
 activation without changing root-only Enemy queries. Ten programs pin 204

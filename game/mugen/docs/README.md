@@ -54,5 +54,7 @@ and the handoff for current progress; the assessment describes the original base
 
 28. [Actor sprite order](ACTOR-ORDER.md): native priority/ties, global root/helper drawing and original RGB pixel calibration.
 
+29. [Sprite alignment](SPRITE-ALIGNMENT.md): native facing/AIR offsets, effective flips and pixel phase across render widths and helper sizes.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

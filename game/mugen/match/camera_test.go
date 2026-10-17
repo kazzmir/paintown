@@ -55,6 +55,10 @@ func TestNativeActorDrawOrder(t *testing.T) {
 	replayNativeGeometryPrograms(t, "actororder-*.json", 14)
 }
 
+func TestNativeSpriteFramePrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "flipmark-*.json", 28)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
@@ -77,6 +81,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				StageError  string            `json:"expected_stage_error"`
 				LoadError   string            `json:"expected_load_error"`
 				ErrorState  int               `json:"expected_compile_state"`
+				GameWidth   int               `json:"game_width"`
 				ExtraHashes map[string]string `json:"extra_sha256"`
 				ActorRender *struct {
 					FrontID int `json:"front_entity_id"`
@@ -156,6 +161,15 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			constants := m.Players[0].Character.StateFile
 			file.Data, file.Size, file.Velocity, file.Movement, file.ConstantFields = constants.Data, constants.Size, constants.Velocity, constants.Movement, constants.ConstantFields
 			m.Stage = background
+			if reference.GameWidth > 0 {
+				configured := m.Options.GameSpace
+				configured.Width = reference.GameWidth
+				m.Viewport, err = coord.StageViewport(configured, background.StageInfo.LocalCoord, true, background.Camera.CutHigh, background.Camera.CutLow)
+				if err != nil {
+					t.Fatal(err)
+				}
+				m.Options.GameSpace = m.Viewport.Space
+			}
 			for slot, player := range m.Players {
 				// The reference launches KFM against KFM; stockMatch's second
 				// loading template is KFM720, whose name is different.
