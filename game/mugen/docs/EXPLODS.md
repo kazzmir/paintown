@@ -90,11 +90,13 @@ are not covered by this checkpoint. Full Explod, engine and asset compatibility
 remain unfinished. See THROWS.md, EFFECTS.md and COMPATIBILITY.md.
 
 
-Moving-camera expressions such as Pos X + CameraPos X still require dedicated
-native comparison; all nine marker controls keep camera zero. The static point
-results do not establish those moving-camera boundaries or full framebuffer
-filtering. Do not accept complete stock visual/engine parity from a clean
-post-recovery frame alone.
+M4af adds two fixed nonzero-camera marker controls for Pos X + CameraPos X,
+using own/common banks. Both project to native (30,-10) with camera (80,-20),
+and the production scene and real windows retain that position. Pos X/PosSet
+now convert between screen-centered scripts and stage-based actor storage.
+See COORDINATES.md. These controls establish the coordinate contract; dynamic
+camera follow/easing/zoom and full framebuffer filtering remain open. Do not
+accept complete stock visual/engine parity from a clean recovery frame alone.
 
 
 All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7

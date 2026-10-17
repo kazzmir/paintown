@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Locate the original RGB spark marker in an owned native window capture.
 
-The calibration is deliberately limited to these static 320x240 KFM scenes:
-camera zero, ground zoffset 200, blank fighters and the original formats.sff
+The calibration is deliberately limited to these static 320x240 scenes:
+ground zoffset 200, blank fighters and the original formats.sff
 RGB ramp. It measures geometry, not full framebuffer or blend/timing parity.
 """
 import argparse
@@ -74,6 +74,7 @@ def main():
     parser.add_argument('--action',type=int,required=True)
     parser.add_argument('--record',action='store_true')
     parser.add_argument('--common',action='store_true')
+    parser.add_argument('--fixture-stage',action='store_true',help='Use the authored fixed-camera stage sidecar; reported anchors remain screen-relative')
     parser.add_argument('--expect-none',action='store_true')
     parser.add_argument('--adopt-run',help='Promote an existing source-hash-checked owned capture without another native launch')
     args=parser.parse_args()
@@ -83,6 +84,7 @@ def main():
     expected=json.loads(stem.with_suffix('.json').read_text()) if not args.record else None
     if expected is not None:
         args.common=expected['spark']['common']
+        args.fixture_stage=expected.get('fixture_stage',False)
         args.expect_none=not expected['spark']['visible']
         if args.action!=expected['spark']['action']:
             parser.error('Action differs from pinned marker evidence')
@@ -92,6 +94,8 @@ def main():
     command=[sys.executable,str(project/'tests/reference_probe.py'),'--fixture',args.fixture,'--name',args.name,
              '--fixture-constants','--file','sprite=probe.sff','--mugenversion','1.1','--bank','fvar',
              '--clipboard-in-cmd','--pages','0','--seconds','6']
+    if args.fixture_stage:
+        command+=['--fixture-stage']
     if args.common:
         if args.adopt_run:
             parser.error('Adoption is only supported for unmodified own-bank scenes')
@@ -123,6 +127,8 @@ def main():
             raise RuntimeError('Source changed since the adopted capture')
     if digest(stem.with_suffix('.extra')/'probe.sff')!=evidence['extra_sha256']['probe.sff']:
         raise RuntimeError('Original marker bank changed since capture')
+    if args.fixture_stage and digest(stem.with_suffix('.stage.def'))!=evidence.get('stage_fixture_sha256'):
+        raise RuntimeError('Authored stage changed since capture')
     spark=marker(run/'animation-page0.png',args.expect_none or args.action<0)
     spark.update(action=args.action,common=args.common,recipe_sha256=hashes)
     (work/'measurements.json').write_text(json.dumps(spark,indent=2)+'\n')

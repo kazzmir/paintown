@@ -1,0 +1,50 @@
+; Authored fixed-camera coordinate control. Uses an unchanged stock sprite bank.
+[Info]
+name = "Coordinate probe"
+author = "Paintown tests"
+mugenversion = 1.1
+[Camera]
+startx = 80
+starty = -20
+boundleft = 80
+boundright = 80
+boundhigh = -20
+boundlow = -20
+verticalfollow = 0
+floortension = 0
+tension = 60
+zoomin = 1
+zoomout = 1
+[PlayerInfo]
+p1startx = -20
+p1starty = 0
+p1facing = 1
+p2startx = 120
+p2starty = 0
+p2facing = -1
+leftbound = -1000
+rightbound = 1000
+[Bound]
+screenleft = 15
+screenright = 15
+[StageInfo]
+zoffset = 200
+autoturn = 0
+resetBG = 1
+localcoord = 320,240
+xscale = 1
+yscale = 1
+[Shadow]
+intensity = 0
+[Reflection]
+intensity = 0
+[Music]
+bgmusic =
+[BGDef]
+spr = kfm.sff
+debugbg = 1
+[BG marker]
+type = normal
+spriteno = 0,0
+start = 0,0
+delta = 1,1

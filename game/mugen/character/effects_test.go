@@ -19,8 +19,17 @@ import (
 )
 
 func TestNativeExplodMarkerGeometry(t *testing.T) {
-	paths, err := filepath.Glob("../tests/testdata/reference/explodmark-*.json")
-	if err != nil || len(paths) != 9 {
+	replayNativeExplodMarkers(t, "explodmark-*.json", 9)
+}
+
+func TestNativeCameraExplodGeometry(t *testing.T) {
+	replayNativeExplodMarkers(t, "cameramark-*.json", 2)
+}
+
+func replayNativeExplodMarkers(t *testing.T, pattern string, count int) {
+	t.Helper()
+	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
+	if err != nil || len(paths) != count {
 		t.Fatal("incomplete native Explod marker corpus", len(paths), err)
 	}
 	for _, path := range paths {
@@ -30,11 +39,12 @@ func TestNativeExplodMarkerGeometry(t *testing.T) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				CNSHash  string            `json:"cns_sha256"`
-				AIRHash  string            `json:"air_sha256"`
-				Extra    map[string]string `json:"extra_sha256"`
-				Captures []struct{ Variables map[string]float64 }
-				Marker   struct {
+				CNSHash   string            `json:"cns_sha256"`
+				AIRHash   string            `json:"air_sha256"`
+				Extra     map[string]string `json:"extra_sha256"`
+				StageHash string            `json:"stage_fixture_sha256"`
+				Captures  []struct{ Variables map[string]float64 }
+				Marker    struct {
 					Visible, Common bool
 					Action, Facing  int
 					Anchor          [2]float64 `json:"frame_anchor_240p"`
@@ -70,8 +80,16 @@ func TestNativeExplodMarkerGeometry(t *testing.T) {
 			scene := effect.NewScene(16)
 			view := &coord.Viewport{Space: coord.Space{Width: 1280, Height: 960}, GroundY: 800, Zoom: 1}
 			players := []*Character{NewCharacter(file, frames, nil), NewCharacter(file, frames, nil)}
+			if reference.StageHash != "" {
+				fixedStage := fixedCameraReferenceStage(t, stem, reference.StageHash, view)
+				factor, _ := fixedStage.StageInfo.LocalCoord.ScaleTo(coord.Default())
+				players[0].X, players[1].X = fixedStage.PlayerInfo.P1StartX*factor, fixedStage.PlayerInfo.P2StartX*factor
+			}
 			for slot, c := range players {
-				c.InputSlot, c.Facing, c.X = slot+1, 1-2*slot, float64(-70+140*slot)
+				c.InputSlot, c.Facing = slot+1, 1-2*slot
+				if reference.StageHash == "" {
+					c.X = float64(-70 + 140*slot)
+				}
 				c.GameCoord, c.Viewport = view.Space, view
 				c.Palettes = palette.New(own)
 				c.BindEffects(&scene.Queue, effect.Source{Sprites: common, Animations: commonFrames, Scale: 4})
@@ -108,6 +126,9 @@ func TestNativeExplodMarkerGeometry(t *testing.T) {
 			if instance.ScreenSpace {
 				x -= 640
 				y -= 800
+			} else {
+				x -= view.CameraX
+				y -= view.CameraY
 			}
 			if math.Abs(x/4-reference.Marker.Anchor[0]) > .001 || math.Abs(y/4-reference.Marker.Anchor[1]) > .001 || instance.Facing != reference.Marker.Facing || instance.Action != reference.Marker.Action {
 				t.Fatal("native marker anchor/action/facing mismatch", x/4, y/4, instance.Facing, reference.Marker)

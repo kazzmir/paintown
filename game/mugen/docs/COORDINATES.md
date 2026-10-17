@@ -1,5 +1,63 @@
 # Coordinate spaces
 
+## M4af screen-centered script positions
+
+Seven native programs pin 192 numbers and two original RGB placements with
+nonzero, fixed camera controls. Five CNS programs cover camera X=80/-60,
+camera Y=-20/0, 320/1280 profiles in both directions, direct Enemy position
+queries, P2Dist, facing-relative PosAdd, omitted PosSet axes and borrowed states.
+Two marker programs compare own/common Explod banks using the stock idiom
+`pos = Pos X + CameraPos X, -30` with explicit stage space.
+
+The bundled [Pos trigger](../temp/mugen-1.1b1/docs/trigger.html#pos) and
+[PosSet controller](../temp/mugen-1.1b1/docs/sctrls.html#posset) describe X as
+relative to the screen center. Native confirms that at CameraPos X=80,
+PosSet X=30 produces Pos X=30, ScreenPos X=190 and absolute stage X=110.
+The former Go getter/setter both used stage X; their errors canceled in a
+Pos-only observation, while ScreenPos was 80 units wrong. The old binary's
+four failing comparisons are preserved in temp/m4af-before-camera.log.
+
+Character storage, collisions, body distances, target constraints and physics
+remain stage-based. GetPos subtracts the camera offset; SetPosition adds it.
+GetTargetPos uses that same screen-centered basis before P2Dist subtraction.
+Direct redirected geometry and the borrowed-state environment then apply their
+existing width conversions. PosAdd remains a facing-relative displacement.
+Pos Y stays floor-relative and never subtracts CameraPos Y. ScreenPos Y does
+include vertical camera displacement: Y=-40 with camera Y=-20 reports 180 on
+the authored stage's ground=200. Omitted PosSet axes retain their current value.
+
+Borrowed state 900 runs in 320 units on a 1280-unit victim. Its PosSet X=30,
+Y=-40 and later Y-only=-11 yield screen X=190/Y=209. SelfState restores native
+Pos X=120/Y=-44, CameraPos X=320/Y=-80 and ScreenPos X=760/Y=836. No rescaling
+of stored actor position or accidental second camera offset is needed.
+
+Authored .stage.def sidecars are copied only into disposable reference runs
+with --fixture-stage. Their hashes are pinned/checked and Go loads them through
+the production stage loader. The tests require equal start/bounds, explicitly
+controlling the camera rather than asserting a camera-follow algorithm.
+Stage player start X remains an absolute stage coordinate. The first diagnostic
+placed P1 outside the fixed camera's native screen boundary; the final control
+starts both players inside it and does not claim boundary-clamp parity.
+
+Own/common RGB markers both have native screen-relative anchor (30,-10) on
+this camera (80,-20). State/scene tests compare source bank and projected
+position. Real 1280x720 captures at temp/app-runs/cameramark-{own,common}-go/
+were inspected at 2/4/7 seconds. Their PNGs are identical across banks;
+the displayed marker is present and capture hashes/nonblack pixels were checked.
+Go's RGB core [708,572,728,580] differs from native [707,570,730,582]. Filter
+edges remain open; the coordinate agreement is not a framebuffer-parity claim.
+Measurements are in temp/m4af-window-marker-inspection.json.
+
+Full scoped races pass in temp/m4af-full-first-race.log, with all previous native
+contact/throw/guard/pause/binding/ownership/effect packets. Pure engine/evaluator/
+effect/coordinate races also pass. Four fresh native negative-camera, borrowed
+state and own/common RGB replays match, including stage/source/core hashes.
+All 25 authored inputs are hash checked. Dynamic camera follow/easing/zoom, screen
+bounds, all fractional precision edges, other controller boundaries, full helper
+and projectile ownership and complete raster/rendering behavior remain open.
+
+## Profiles and earlier observations
+
 The supplied [coordinate-space specification](../temp/mugen-1.1b1/docs/coordspace.html)
 defines a common game space through Config.GameWidth/GameHeight. Characters and
 motifs use Info.localcoord; stages use StageInfo.localcoord. Vector translation
@@ -92,7 +150,7 @@ viewport-spark-production/ stayed 320x240 because commented window settings were
 not overridden; it is diagnostic only. The smoke harness now sets explicit YAML
 dimensions and rejects mismatching capture sizes.
 
-All native viewport scenes have zero camera displacement and zoom one. Moving
+The M4q native viewport scenes have zero camera displacement and zoom one. Moving
 camera/zoom timing, full screen bounds, stage raster/filter fidelity and complete
 framebuffer comparisons are not established by this checkpoint.
 

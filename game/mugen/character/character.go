@@ -620,7 +620,7 @@ func (c *Character) AddPosition(x, y float64) {
 }
 
 func (c *Character) SetPosition(x, y float64) {
-	c.X = x
+	c.X = x + c.cameraPositionX()
 	c.Y = y
 }
 
@@ -643,7 +643,7 @@ func (c *Character) CurrentElement() *air.Element {
 }
 
 func (c *Character) GetPos() (float64, float64) {
-	return c.X, c.Y
+	return c.X - c.cameraPositionX(), c.Y
 }
 
 func (c *Character) GetVel() (float64, float64) {
@@ -1413,12 +1413,14 @@ func (c *Character) GetHitVar(name string) float64 {
 	return val
 }
 
-// GetTargetPos returns the opponent's position in this player's local units.
+// GetTargetPos returns the opponent's screen-centered X and floor-relative Y
+// in this player's local units, matching GetPos for P2Dist subtraction.
 func (c *Character) GetTargetPos() (float64, float64) {
 	if len(c.Opponents) > 0 {
-		return c.PositionOf(c.Opponents[0])
+		x, y := c.PositionOf(c.Opponents[0])
+		return x - c.cameraPositionX(), y
 	}
-	return c.X, c.Y // No target: return self (distance = 0)
+	return c.GetPos() // No target: return self (distance = 0)
 }
 
 func (c *Character) IsPaused() bool {

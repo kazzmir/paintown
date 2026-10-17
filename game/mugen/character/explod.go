@@ -72,7 +72,7 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 			}
 		}
 		if !screen {
-			x += c.CameraX - viewWidth/2
+			x += c.cameraPositionX() - viewWidth/2
 		}
 	}
 	if p.BindID != -2 {

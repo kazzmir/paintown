@@ -7,6 +7,23 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4af fixed nonzero-camera coordinates
+
+Seven authored programs pin 192 numbers and two RGB positions. Five camerapos-*
+packets compare positive/negative horizontal offsets, vertical displacement,
+mixed/borrowed state units, Enemy/P2Dist and omitted PosSet axes. Two cameramark-*
+packets compare own/common stage effects using Pos X+CameraPos X. Stage sidecars
+are authored, hashed, copied only into disposable native runs and loaded through
+the real Go stage loader. Equal camera start/bounds isolate the coordinate
+contract from still-incomplete native camera following. See COORDINATES.md for
+exact samples, old-binary failures, final window inspection and filter limits.
+Four fresh negative-camera/borrowed-state/own-common RGB replays match, including
+stage and marker core hashes. All 25 authored input hashes are checked.
+
+Initial stage-path/clipboard setup failures and the first edge-clamped start
+are diagnostic runs only. Final inputs use -s probe-stage, CMD clipboard output,
+and player starts inside the fixed view. No original distribution files changed.
+
 ## M4q viewport evidence
 
 The viewport catalogue has eight cases: seven accepted profile combinations

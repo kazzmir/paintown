@@ -29,6 +29,25 @@ type viewportReference struct {
 	Captures  []struct{ Variables map[string]float64 }
 }
 
+func fixedCameraReferenceStage(t *testing.T, stem, hash string, view *coord.Viewport) *stage.Stage {
+	t.Helper()
+	path := stem + ".stage.def"
+	checkedAudioInput(t, path, hash)
+	// The authored stage controls the camera; this is not a follow/easing test.
+	// Its original stock sprite archive stays in the reference directory.
+	background, err := stage.LoadStage(path, "../temp/mugen-1.1b1/stages")
+	if err != nil {
+		t.Fatal(err)
+	}
+	camera := background.Camera
+	if camera.StartX != camera.BoundLeft || camera.StartX != camera.BoundRight || camera.StartY != camera.BoundHigh || camera.StartY != camera.BoundLow {
+		t.Fatal("camera coordinate probe must have fixed bounds", camera)
+	}
+	factor, _ := background.StageInfo.LocalCoord.ScaleTo(view.Space)
+	view.CameraX, view.CameraY, view.GroundY = camera.StartX*factor, camera.StartY*factor, background.StageInfo.ZOffset*factor
+	return background
+}
+
 func runViewportReference(t *testing.T, stem string, reference viewportReference) {
 	t.Helper()
 	source := checkedAudioInput(t, stem+".cns", reference.CNSHash)

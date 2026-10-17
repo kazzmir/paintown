@@ -259,7 +259,8 @@ M4p spark-* and guard-spark-own programs use the original formats.sff RGB marker
 with blank fighters. spark_probe.py --fixture spark-common-default --name NEW
 --action 9992 replays numeric/source checks plus the calibrated native marker
 geometry/core hash; common-bank patch recipes repeat automatically. Calibration
-is limited to static zero-camera KFM scenes and flipped markers. --expect-none
+originally covered static zero-camera KFM scenes and flipped markers; M4af adds
+authored fixed nonzero-camera controls. --expect-none
 checks disabled/missing markers after confirmed contact. Data-prefix coercion
 has a separate numeric-only case. See EFFECTS.md for the eight-case scope,
 production GPU inspections and the viewport discrepancy still being corrected.
@@ -376,3 +377,22 @@ state and position/source results. See ../docs/EXPLODS.md for scope and limits.
 Quick-match app_smoke.py captures require Pillow and reject an entirely black
 window; a live process and correct dimensions alone do not establish rendering.
 Stored capture hashes and visual inspection still matter.
+
+M4af adds five camerapos-* and two cameramark-* packets: 192 numbers and two RGB
+positions with fixed nonzero cameras. --fixture-stage copies the authored,
+hash-pinned .stage.def sidecar into the disposable stage directory. A replay is:
+
+```
+python3 game/mugen/tests/reference_probe.py --fixture camerapos-fixed-xy --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 24 --seconds 7
+```
+
+negative uses the same options; mixed adds --p2-localcoord 1280,960; wide adds
+--localcoord 1280,960 --p2-localcoord 320,240. borrowed uses --pages 0 12 and
+--p2-fixture camerapos-borrowed-victim --p2-localcoord 1280,960. RGB replays use
+spark_probe.py --fixture cameramark-own (or cameramark-common) --name UNIQUE
+--action 9100; pinned metadata supplies stage/common options. Its historical
+frame_anchor_240p key reports screen-center/ground-200 coordinates, so nonzero
+cameras must be subtracted from stage positions before comparison.
+TestNativeCameraPositionCoordinates and TestNativeCameraExplodGeometry use the
+production CNS, stage and effect paths. Camera follow/easing/zoom and native
+filter-edge equivalence remain open; see ../docs/COORDINATES.md.

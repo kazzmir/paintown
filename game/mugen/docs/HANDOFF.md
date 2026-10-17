@@ -4,7 +4,22 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ae: typed Explod/NumExplod, owned shared effect instances and resource/
+Latest M4af: screen-centered Pos X/PosSet with absolute internal storage and
+floor-relative Y. Seven native programs compare 192 numbers and two own/common
+RGB positions on fixed nonzero cameras. Mixed widths, Enemy/P2Dist, omitted
+axes, facing-relative PosAdd, borrowed state/SelfState and the stock stage-effect
+expression Pos X+CameraPos X pass. See COORDINATES.md. Full scoped races pass in
+temp/m4af-full-first-race.log; pure engine/evaluator/effect/coordinate races pass.
+Four fresh native negative-camera/borrowed-state/own-common RGB replays match;
+all 25 authored input hashes are checked.
+Four pre-fix failures are in temp/m4af-before-camera.log. Authored .stage.def
+inputs are hash checked; the fixed controls do not assert camera follow/easing.
+Real own/common 1280x720 windows at temp/app-runs/cameramark-{own,common}-go/
+were inspected at 2/4/7 seconds, with matching PNG hashes across banks. Positions
+agree; native RGB core [707,570,730,582] differs from Go [708,572,728,580], so full
+filter/framebuffer equivalence remains open. Root module hashes are unchanged.
+
+Previous M4ae: typed Explod/NumExplod, owned shared effect instances and resource/
 lifetime rendering repair permanent landing-dust clones. Twenty-seven native
 programs compare 636 numbers, two load rejections and nine RGB marker placements.
 All lifecycle/position/source cases pass, along with full scoped races in
@@ -89,7 +104,7 @@ The real with-box Go match runs through seven-second 1280x720 captures at
 temp/app-runs/targetbind-with-box-go/. Sustained movement reaches an edge;
 camera/body-edge/framebuffer parity remains open. Root module hashes match.
 
-Next verify moving-camera position semantics and remaining effect motion/
+Next verify camera follow/easing/zoom and remaining effect motion/
 binding/pause/ownership/priority, then HitDef facing/priority/hit flags, Width
 and attacker-hit interrupted bindings. Stock throw wrappers now cover the ordinary/forward/drop paths. Then
 complete BindToTarget/Parent/Root and helper negative/keyctrl/world phases;

@@ -1,0 +1,324 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 700, hold round]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State 700, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=0,0
+pausetime=0,0
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+id=1234
+[State 700, custom state]
+type=TargetState
+trigger1=Time=2
+value=900
+
+
+
+[State 700, copy 0]
+type=VarSet
+trigger1=Time>=20
+fv=0
+value=Enemy,FVar(0)
+
+[State 700, copy 1]
+type=VarSet
+trigger1=Time>=20
+fv=1
+value=Enemy,FVar(1)
+
+[State 700, copy 2]
+type=VarSet
+trigger1=Time>=20
+fv=2
+value=Enemy,FVar(2)
+
+[State 700, copy 3]
+type=VarSet
+trigger1=Time>=20
+fv=3
+value=Enemy,FVar(3)
+
+[State 700, copy 4]
+type=VarSet
+trigger1=Time>=20
+fv=4
+value=Enemy,FVar(4)
+
+[State 700, copy 5]
+type=VarSet
+trigger1=Time>=20
+fv=5
+value=Enemy,FVar(5)
+
+[State 700, copy 6]
+type=VarSet
+trigger1=Time>=20
+fv=6
+value=Enemy,FVar(6)
+
+[State 700, copy 7]
+type=VarSet
+trigger1=Time>=20
+fv=7
+value=Enemy,FVar(7)
+
+[State 700, copy 8]
+type=VarSet
+trigger1=Time>=20
+fv=8
+value=Enemy,FVar(8)
+
+[State 700, copy 9]
+type=VarSet
+trigger1=Time>=20
+fv=9
+value=Enemy,FVar(9)
+
+[State 700, copy 10]
+type=VarSet
+trigger1=Time>=20
+fv=10
+value=Enemy,FVar(10)
+
+[State 700, copy 11]
+type=VarSet
+trigger1=Time>=20
+fv=11
+value=Enemy,FVar(11)
+
+[State 700, copy 12]
+type=VarSet
+trigger1=Time>=20
+fv=12
+value=Enemy,FVar(12)
+
+[State 700, copy 13]
+type=VarSet
+trigger1=Time>=20
+fv=13
+value=Enemy,FVar(13)
+
+[State 700, copy 14]
+type=VarSet
+trigger1=Time>=20
+fv=14
+value=Enemy,FVar(14)
+
+[State 700, copy 15]
+type=VarSet
+trigger1=Time>=20
+fv=15
+value=Enemy,FVar(15)
+
+[State 700, copy 16]
+type=VarSet
+trigger1=Time>=20
+fv=16
+value=Enemy,FVar(16)
+
+[State 700, copy 17]
+type=VarSet
+trigger1=Time>=20
+fv=17
+value=Enemy,FVar(17)
+
+[State 700, copy 18]
+type=VarSet
+trigger1=Time>=20
+fv=18
+value=Enemy,FVar(18)
+
+[State 700, copy 19]
+type=VarSet
+trigger1=Time>=20
+fv=19
+value=Enemy,FVar(19)
+
+[State 700, copy 20]
+type=VarSet
+trigger1=Time>=20
+fv=20
+value=Enemy,FVar(20)
+
+[State 700, copy 21]
+type=VarSet
+trigger1=Time>=20
+fv=21
+value=Enemy,FVar(21)
+
+[State 700, copy 22]
+type=VarSet
+trigger1=Time>=20
+fv=22
+value=Enemy,FVar(22)
+
+[State 700, copy 23]
+type=VarSet
+trigger1=Time>=20
+fv=23
+value=Enemy,FVar(23)
+
+[Statedef 900]
+movetype=H
+physics=N
+ctrl=0
+
+[State 900, record 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Pos X
+
+[State 900, record 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Pos Y
+
+[State 900, record 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=CameraPos X
+
+[State 900, record 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=CameraPos Y
+
+[State 900, record 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=ScreenPos X
+
+[State 900, record 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=ScreenPos Y
+
+[State 900, set borrowed]
+type=PosSet
+trigger1=Time=0
+x=30
+y=-40
+
+[State 900, record 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Pos X
+
+[State 900, record 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Pos Y
+
+[State 900, record 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=CameraPos X
+
+[State 900, record 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=CameraPos Y
+
+[State 900, record 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=ScreenPos X
+
+[State 900, record 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=ScreenPos Y
+
+[State 900, set borrowed Y only]
+type=PosSet
+trigger1=Time=1
+y=-11
+
+[State 900, record 12]
+type=VarSet
+trigger1=Time=1
+fv=12
+value=Pos X
+
+[State 900, record 13]
+type=VarSet
+trigger1=Time=1
+fv=13
+value=Pos Y
+
+[State 900, record 14]
+type=VarSet
+trigger1=Time=1
+fv=14
+value=CameraPos X
+
+[State 900, record 15]
+type=VarSet
+trigger1=Time=1
+fv=15
+value=CameraPos Y
+
+[State 900, record 16]
+type=VarSet
+trigger1=Time=1
+fv=16
+value=ScreenPos X
+
+[State 900, record 17]
+type=VarSet
+trigger1=Time=1
+fv=17
+value=ScreenPos Y
+
+[State 900, restore]
+type=SelfState
+trigger1=Time=2
+value=902

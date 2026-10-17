@@ -262,6 +262,7 @@ def main():
     parser.add_argument('--hud-marker', action='store_true', help='Use the fixture-owned probe.sff for calibrated Face background markers in disposable fight files')
     parser.add_argument('--helper-max', type=int, help='Override only the copied HelperMax for entity identity/allocation probes')
     parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
+    parser.add_argument('--fixture-stage', action='store_true', help='Use the authored fixture .stage.def sidecar in the disposable distribution')
     parser.add_argument('--stage-version',choices=['1.0','1.1'],help='Override only the copied stage version for compatibility probes')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     parser.add_argument('--clipboard-delay',type=int,default=30,help='Minimum local Time for clipboard output; zero supports continuously frozen subjects')
@@ -290,6 +291,7 @@ def main():
         args.game_width = case_expected.get('game_width')
         args.game_height = case_expected.get('game_height')
         args.stage = case_expected.get('stage','kfm')
+        args.fixture_stage = case_expected.get('fixture_stage',False)
         args.stage_version = case_expected.get('stage_version')
         args.video = [key+'='+str(value) for key,value in case_expected.get('video',{}).items()]
         args.hud_marker = case_expected.get('hud_marker',False)
@@ -343,6 +345,11 @@ def main():
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
     base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max,p2_fixture)
+    if args.fixture_stage:
+        if args.stage not in ['kfm', 'probe-stage']:
+            parser.error('Fixture stage owns the stage path; omit --stage')
+        shutil.copyfile(fixture.with_suffix('.stage.def'), run / 'stages/probe-stage.def')
+        args.stage = 'probe-stage'
     hud_hashes = {}
     if args.hud_marker:
         marker = fixture.with_suffix('.extra')/'probe.sff'
@@ -422,6 +429,9 @@ def main():
         evidence['hud_marker'],evidence['hud_fight_sha256']=True,hud_hashes
     if args.stage!='kfm':
         evidence['stage']=args.stage
+    if args.fixture_stage:
+        evidence['fixture_stage'] = True
+        evidence['stage_fixture_sha256'] = digest(fixture.with_suffix('.stage.def'))
     if args.stage_version:
         evidence['stage_version'],evidence['stage_sha256']=args.stage_version,stage_hash
     if fixture.with_suffix('.cmd').exists():
@@ -450,6 +460,8 @@ def main():
             raise RuntimeError('Configured height/stage differs from pinned fixture')
         if expected.get('stage_version')!=args.stage_version:
             raise RuntimeError('Stage version differs from pinned fixture')
+        if expected.get('fixture_stage',False)!=args.fixture_stage:
+            raise RuntimeError('Fixture stage ownership differs from pinned fixture')
         if expected.get('video',{})!=video:
             raise RuntimeError('Video overrides differ from pinned fixture')
         if expected.get('hud_marker',False)!=args.hud_marker:

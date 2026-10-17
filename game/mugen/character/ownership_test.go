@@ -13,6 +13,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
+	"github.com/kazzmir/paintown/game/mugen/stage"
 )
 
 func TestNativeCustomStateOwnership(t *testing.T) {
@@ -41,6 +42,10 @@ func TestNativeContactFrames(t *testing.T) {
 
 func TestNativeExplodLifetimes(t *testing.T) {
 	replayNativeWorldPrograms(t, "explod-*.json", 18)
+}
+
+func TestNativeCameraPositionCoordinates(t *testing.T) {
+	replayNativeWorldPrograms(t, "camerapos-*.json", 5)
 }
 
 func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration ...int) {
@@ -78,6 +83,8 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration
 				P2Fixture string            `json:"p2_fixture"`
 				P2Hash    map[string]string `json:"p2_sha256"`
 				P2Local   string            `json:"p2_localcoord"`
+				Local     string            `json:"localcoord"`
+				StageHash string            `json:"stage_fixture_sha256"`
 				Error     string            `json:"expected_load_error"`
 				Files     map[string]string `json:"files"`
 				FileHash  map[string]struct {
@@ -164,8 +171,18 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration
 				t.Fatal(err)
 			}
 			view := &coord.Viewport{Space: coord.Space{1280, 960}, GroundY: 800, Zoom: 1}
+			var fixedStage *stage.Stage
+			if reference.StageHash != "" {
+				fixedStage = fixedCameraReferenceStage(t, primary, reference.StageHash, view)
+			}
 			for slot, c := range players {
 				c.CommonEffects = effect.Source{Animations: commonFrames, Scale: 4}
+				if reference.Local != "" {
+					c.LocalCoord, err = coord.Parse(reference.Local)
+					if err != nil {
+						t.Fatal(err)
+					}
+				}
 				if slot == 1 && reference.P2Local != "" {
 					c.LocalCoord, err = coord.Parse(reference.P2Local)
 					if err != nil {
@@ -174,6 +191,13 @@ func replayNativeWorldPrograms(t *testing.T, pattern string, count int, duration
 				}
 				c.GameCoord, c.Viewport, c.InputSlot, c.Facing = view.Space, view, slot+1, 1-2*slot
 				c.X = float64(-70+140*slot) * float64(c.LocalCoordinateWidth()) / 320
+				if fixedStage != nil {
+					factor, _ := fixedStage.StageInfo.LocalCoord.ScaleTo(c.LocalCoord)
+					c.X, c.Y = fixedStage.PlayerInfo.P1StartX*factor, fixedStage.PlayerInfo.P1StartY*factor
+					if slot == 1 {
+						c.X, c.Y = fixedStage.PlayerInfo.P2StartX*factor, fixedStage.PlayerInfo.P2StartY*factor
+					}
+				}
 				c.ChangeState(0, -1, -1)
 				c.Ctrl = true
 			}

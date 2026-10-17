@@ -7,6 +7,15 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4af corrects screen-centered Pos X/PosSet while preserving absolute actor
+storage and floor-relative Y. Seven fixed nonzero-camera native programs pin
+192 numbers and two RGB effect placements, including mixed/borrowed units,
+omitted axes, Enemy/P2Dist and own/common Pos X+CameraPos X expressions. Full
+scoped races pass in temp/m4af-full-first-race.log. Actual own/common 1280x720
+windows agree in position; native filter edges still differ. These camera
+controls do not establish follow/easing/zoom or complete bounds/render parity.
+See COORDINATES.md. Full compatibility remains unfinished.
+
 M4ae replaces literal Explod parsing with typed expression/resource/lifetime
 state and shared owned rendering. Twenty-seven native programs compare 636
 numbers, two load rejections and nine RGB positions. Default/negative IDs,

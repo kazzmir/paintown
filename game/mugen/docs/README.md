@@ -34,5 +34,7 @@ and the handoff for current progress; the assessment describes the original base
 
 18. [Explod state and rendering](EXPLODS.md): native lifecycle/counts, common resources, calibrated placement and remaining effect coverage.
 
+19. [Coordinate spaces](COORDINATES.md): profiles, viewport fitting, fixed-camera script positions and remaining camera/rendering gaps.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

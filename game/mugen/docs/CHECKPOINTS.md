@@ -4,6 +4,39 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4af — Screen-centered positions with nonzero camera controls
+
+Seven native programs compare 192 numbers and two original RGB anchors. Pos X
+and PosSet X use the screen center; internal actor storage remains absolute.
+Pos Y stays floor-relative, and P2Dist subtracts two positions in the same
+basis. Positive/negative camera offsets, vertical displacement, mixed widths,
+omitted axes, facing-relative PosAdd and borrowed state/SelfState conversions
+are compared. The old getter/setter errors canceled in Pos-only samples;
+ScreenPos exposes them. Four old-binary failures are preserved in
+temp/m4af-before-camera.log. See COORDINATES.md for exact observations.
+
+Authored fixed-camera stage sidecars have checked hashes, are loaded through
+the production stage loader in Go, and are copied only into disposable native
+runs. They control camera inputs without claiming camera-follow equivalence.
+Own/common stage Explods using Pos X+CameraPos X both project to native anchor
+(30,-10) on camera (80,-20). The real 1280x720 Go windows at
+temp/app-runs/cameramark-{own,common}-go/ are inspected at 2/4/7 seconds. Their
+PNG hashes match across banks. Position agrees, while native/Go filtered RGB
+core extents remain different and are recorded separately.
+
+Full scoped races pass in temp/m4af-full-first-race.log, retaining all prior
+regressions; pure engine/evaluator/effect/coordinate races also pass. Four fresh
+native negative-camera/borrowed-state/own-common RGB replays match. All 25 authored
+inputs are hash checked. Root module
+hashes remain unchanged. Initial native stage-path and clipboard-attachment
+attempts were harness diagnostics only; final pinned programs use the corrected
+stage invocation and CMD clipboard. The early edge-clamped spawn control is
+also excluded. No screen-boundary or camera-follow fix is inferred from it.
+
+Complete camera follow/easing/zoom, bounds, precision edges, all other controller
+coordinate boundaries and remaining world/asset/input/render/audio/mode gates
+remain open. M4ae's reversal point is `0ff0f321`.
+
 ## M4ae — Owned Explod resources, lifetime and calibrated placement
 
 Twenty-seven native programs compare 636 distinct per-program observations,

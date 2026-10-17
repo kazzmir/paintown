@@ -2,6 +2,16 @@ package character
 
 import "github.com/kazzmir/paintown/game/mugen/evaluator"
 
+// Script X positions use the current screen center; Character.X and all
+// collision/binding geometry stay in absolute stage coordinates.
+func (c *Character) cameraPositionX() float64 {
+	if c.Viewport != nil && c.Viewport.Space.Width > 0 {
+		scale := float32(c.LocalCoordinateWidth()) / float32(c.Viewport.Space.Width)
+		return float64(float32(c.Viewport.CameraX) * scale)
+	}
+	return c.CameraX
+}
+
 func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 	if value, known := c.lookupEntity(name); known {
 		return value, true
