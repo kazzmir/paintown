@@ -7,6 +7,19 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4av adds typed P1Facing/P1GetP2Facing, contact-selected hit direction and
+end-of-actor facing publication. Forty-eight original programs compare 552
+numbers, two load rejections and 192 authored hashes. Miss/guard/override,
+activation/contact headings, range/coercion/precedence, momentum, entry and
+combined P2Facing controls match native. Shared entry fixes apply FaceP2 before
+remaining expressions and defer ordinary get-hit Statedef until the receiver's
+positive pass. All 48 integrated comparisons and pure/Character races pass. Full scoped races
+pass in temp/m4av-full-race.log (Match 349.165 seconds). Six fresh native replays
+and ten actual app captures pass; six sprite masks match exactly, and stock
+throw recovery retains two fighters without persistent dust. See CONTACT-FACING.md.
+The new HITDEF-SCHEMA.md audit identifies remaining parameter/consumer gates;
+whole HitDef, combat, input, rendering, asset and mode compatibility remains open.
+
 M4au adds optional Forcestand, float32 ground.velocity expressions and correct
 world-oriented GetHitVar X with facing-relative HitVelSet. Thirty-eight native
 programs compare 540 numbers, two load rejections and 152 authored hashes.

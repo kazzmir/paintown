@@ -98,6 +98,8 @@ type HitDef struct {
 	P2StateNo        *int
 	P2GetP1State     bool
 	P2Facing         int
+	P1Facing         int
+	P1GetP2Facing    int
 	Attr             string
 	HitFlag          string
 	HitFlagSpecified bool
@@ -620,6 +622,12 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if raw, present := params["p2facing"]; present {
 		hd.P2Facing, _ = strconv.Atoi(raw)
+	}
+	if raw, present := params["p1facing"]; present {
+		hd.P1Facing, _ = strconv.Atoi(raw)
+	}
+	if raw, present := params["p1getp2facing"]; present {
+		hd.P1GetP2Facing, _ = strconv.Atoi(raw)
 	}
 	if v, ok := params["id"]; ok {
 		hd.ID, _ = strconv.Atoi(v)

@@ -29,7 +29,7 @@ type entryProgram struct {
 	values                       map[string][]evaluator.Expression
 }
 
-var entryOrder = []string{"anim", "velset", "ctrl", "poweradd", "juggle", "facep2", "hitdefpersist", "movehitpersist", "hitcountpersist", "sprpriority"}
+var entryOrder = []string{"facep2", "anim", "velset", "ctrl", "poweradd", "juggle", "hitdefpersist", "movehitpersist", "hitcountpersist", "sprpriority"}
 
 func compileEntry(state *cns.StateDef) (entryProgram, error) {
 	program := entryProgram{stateType: strings.ToUpper(state.Type), moveType: strings.ToUpper(state.MoveType), physics: strings.ToUpper(state.Physics), values: make(map[string][]evaluator.Expression)}
@@ -135,6 +135,10 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 			}
 			values[name] = append(values[name], value)
 		}
+		// Native turns before evaluating the remaining entry expressions.
+		if name == "facep2" && len(values[name]) > 0 && values[name][0].Bool() {
+			env.FaceOpponent()
+		}
 	}
 	flag := func(name string) bool { return len(values[name]) > 0 && values[name][0].Bool() }
 	env.BeginStateEntry(flag("hitdefpersist"), flag("movehitpersist"), flag("hitcountpersist"))
@@ -146,10 +150,6 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 	}
 	if program.physics != "U" {
 		env.SetPhysics(program.physics)
-	}
-	// Establish facing before applying a new local velocity.
-	if flag("facep2") {
-		env.FaceOpponent()
 	}
 	for _, name := range entryOrder {
 		v := values[name]

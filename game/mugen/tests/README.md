@@ -659,3 +659,23 @@ python3 game/mugen/tests/reference_probe.py --fixture forcestand-facing-same-lef
 Use each JSON's page list; rejected programs use page 0. See
 [FORCED-STANDING.md](../docs/FORCED-STANDING.md) for exact rules, prototype
 failures, native provenance and remaining coordinate/velocity/heading gates.
+
+## M4av contact facing and entry phases
+
+`TestNativeContactFacing` compares 48 original `hitfacing-*` programs: 552
+numbers, two load rejections and 192 CNS/AIR/CMD/stage hashes. The corpus pins
+P1Facing/P1GetP2Facing sign, precedence, integer coercion, bottom and fixed
+evaluation order; combined P2Facing; before/after activation turns; guard,
+override, miss, custom entry and momentum. Negative/positive/receiver-entry
+controls distinguish selected hit direction from the later physical turn.
+Ordinary/contact entry and side-effect controls pin FaceP2 before other entry
+expressions and ordinary receiver entry at its positive pass.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture hitfacing-entry-order-after --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 --seconds 7
+```
+
+Every program uses page 0, including float rejections. Native source hashes must
+match before replay; Go observations cannot overwrite the native expectations.
+See [CONTACT-FACING.md](../docs/CONTACT-FACING.md) for timing, prototype failures,
+verification and remaining contact/entry/velocity gates.

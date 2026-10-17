@@ -58,7 +58,7 @@ type Character struct {
 	bindingReported     bool
 	tickMoveType        string
 	pendingHitFacing    int
-	getHitFacing        int // attacker heading when the contact was accepted
+	getHitFacing        int // selected hit heading, independent of deferred physical turns
 	LocalCoord          coord.Space
 	GameCoord           coord.Space
 	Viewport            *coord.Viewport
@@ -1953,6 +1953,23 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		return 0
 	}
 	override, hasOverride := c.matchingOverride(hit.Attr)
+	// Contact chooses the attack direction now, but publishes the attacker's
+	// turn after its CNS/physics, like the receiver's deferred P2Facing turn.
+	// Entry expressions and Time=0 controllers still observe the old heading.
+	hitFacing := attacker.Facing
+	if !guarded && !hasOverride {
+		if hit.P1GetP2Facing != 0 {
+			hitFacing = c.Facing
+			if hit.P1GetP2Facing < 0 {
+				hitFacing = -hitFacing
+			}
+		} else if hit.P1Facing < 0 {
+			hitFacing = -hitFacing
+		}
+		if hit.P1GetP2Facing != 0 || hit.P1Facing < 0 {
+			attacker.pendingHitFacing = hitFacing
+		}
+	}
 	airHit := c.StateType == "A" || (hasOverride && override.ForceAir)
 	forceStand := len(hit.GroundVel) > 1 && hit.GroundVel[1] != 0
 	if hit.ForceStand != nil {
@@ -1964,10 +1981,10 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.GetHitAir = airHit
 	c.GetHitGuarded = guarded
 	hit = c.hitInLocalSpace(attacker, hit)
-	c.getHitFacing = attacker.Facing
+	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 	if !guarded && (hit.P2Facing == 1 || hit.P2Facing == -1) {
-		c.pendingHitFacing = -hit.P2Facing * attacker.Facing
+		c.pendingHitFacing = -hit.P2Facing * hitFacing
 	}
 	c.HitPauseTime = 0
 	c.pausedThisTick = false
@@ -2071,17 +2088,12 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		} else if airHit {
 			state = 5020
 		}
-		customVictim := hit.P2StateNo != nil && *hit.P2StateNo >= 0
-		if customVictim {
-			// The standard number is observable as PrevStateNo, but its entry
-			// attributes are superseded by the custom destination. Contact
-			// itself establishes H/no-control before the negative state passes.
-			c.changeStateWithEntry(state, engine.EntryOverrides{}, true)
-			c.SetMoveType("H")
-			c.SetCtrl(false)
-		} else {
-			c.ChangeState(state, 0, -1)
-		}
+		// Standard numbers and H/no-control publish at contact. Entry waits
+		// until this receiver's positive pass, after earlier actors finish.
+		// A custom destination below supersedes the standard entry entirely.
+		c.changeStateWithEntry(state, engine.EntryOverrides{}, true)
+		c.SetMoveType("H")
+		c.SetCtrl(false)
 	}
 	if !guarded && !hasOverride {
 		if hit.P1StateNo != nil && *hit.P1StateNo >= 0 {

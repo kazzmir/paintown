@@ -56,5 +56,17 @@ and the handoff for current progress; the assessment describes the original base
 
 29. [Sprite alignment](SPRITE-ALIGNMENT.md): native facing/AIR offsets, effective flips and pixel phase across render widths and helper sizes.
 
+30. [Combat priority](COMBAT-PRIORITY.md): reciprocal clashes, hit counters and interrupted target release.
+
+31. [Contact drawing priority](CONTACT-DRAW.md): HitDef sprite priorities and destination entry.
+
+32. [Hit flags](HIT-FLAGS.md): posture, falling eligibility, downed selection and fall continuation.
+
+33. [Forced standing and velocity](FORCED-STANDING.md): posture forcing, compiled ground velocity and world/facing conversion.
+
+34. [Contact facing](CONTACT-FACING.md): selected knockback direction, deferred physical turns and shared entry phases.
+
+35. [HitDef completion audit](HITDEF-SCHEMA.md): remaining typed parameter groups and ignored runtime fields.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

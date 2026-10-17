@@ -68,3 +68,7 @@ and `temp/m4au-app-checks.log`. No whole-frame renderer claim is made.
 Full air/guard/down velocity schema, arbitrary cross-field side-effect ordering,
 paused/foreign/helper/multiple contact combinations, all recovery/juggle rules
 and complete engine/asset/mode compatibility remain open. Reversal: 8ab6f50d.
+
+M4av [contact-facing controls](CONTACT-FACING.md) extend the heading rule to
+P1Facing/P1GetP2Facing and turns before/after activation. They distinguish the
+selected hit direction from the physical turn published after attacker CNS.

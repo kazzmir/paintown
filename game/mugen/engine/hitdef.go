@@ -20,7 +20,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	}
 	var cues []cue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "ground.velocity"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "ground.velocity"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -76,7 +76,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		entry := cue{key: key, own: own, floating: key == "ground.velocity"}
 		strictInteger := false
 		switch key {
-		case "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand":
+		case "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand":
 			strictInteger = true
 		}
 		for i, expr := range expressions {
@@ -102,7 +102,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			params[key] = value
 		}
 		for _, cue := range cues {
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.floating)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}

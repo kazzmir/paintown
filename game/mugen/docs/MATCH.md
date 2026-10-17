@@ -39,18 +39,21 @@ python3 game/mugen/tests/app_smoke.py --name UNIQUE_NAME --motif data/mugen1/sys
 fight definition, phase, round, wins, timer and camera. Script environments retain
 their local coordinates. Spawn/bounds/camera values translate explicitly.
 Character input accepts a logical source without polling the keyboard first;
-the physical adapter is the default for old diagnostic applications. The production root tick runs all state passes before collecting contacts,
-then snapshots eligible hits, enters/processes get-hit positive states before
-damage, and advances physics/time. This supports equal-priority trades and
-matches focused pre/post-damage and newly-started hitpause probes. Negative
-states run once; engine transitions continue through the same positive executor.
-The character diagnostic uses the same group tick. Isolated Character.Update
-retains a single-character adapter over the shared state/physics methods.
+the physical adapter is the default for old diagnostic applications. The production shared tick snapshots contacts from the previous tick's active
+definitions before current CNS, resolves clashes and consumes selected hits,
+then executes each actor's negative/positive states, pending damage, physics and
+clocks. Roots receiving hits precede helper receivers; attackers execute first
+with root order breaking ties. New helpers join the current pass. Body push
+waits until all actors finish. Focused WORLD.md, HELPERS.md and combat documents
+supersede the early M4 contact schedule.
 
-Target still conflates opponent and acquired target, and entity identity,
-priority/guard/overrides, multi-contact rules, helper/projectile and push/physics
-phases remain incomplete. Match tests open no window but Character/asset imports
-still initialize Ebitengine; fully display-independent extraction is pending.
+Acquired target sets now have independent HitDef IDs and generations, while a
+world registry separates entity identity, helper IDs and player/input slots.
+Normal/guard/override, multi-contact selection, binding, helper lifecycle and
+reciprocal priority have bounded native evidence. Complete parameter schemas,
+juggle/recovery/KO rules, projectiles, reversals, teams and all combinations
+remain unfinished. Match tests open no window, but Character/asset imports still
+initialize Ebitengine; fully display-independent extraction is pending.
 
 Current round phases cover pre-intro, Intro assertions, round/fight announcements,
 control grant, active timer, pre-over, win/lose poses, round reset and match
@@ -94,8 +97,13 @@ context. Override entry retains that intermediate state in PrevStateNo, and air
 hit data stays available even when the destination Statedef changes state type.
 This remains partial combat compatibility, not the full M4/M5 gates.
 
-Controlled native spark markers now expose a viewport mismatch in the provisional
-M4d crop path. The native 1280x720 KFM world fits height at scale three, leaving
-horizontal margins; its HUD spans the window. Correct world/HUD framing and
-screen/game coordinate bindings next. Contact frame anchors themselves match
-focused native scenes; see EFFECTS.md. Full screenshot parity is not claimed.
+M4af and later coordinate/viewport/camera/sprite checkpoints supersede the
+early M4d viewport mismatch described in EFFECTS.md. World and HUD spaces now
+have distinct mappings, and bounded marker/clothing crops match native.
+Background/debug/HUD, zoom, effects, interpolation and full-frame renderer parity
+remain open; those crop checks do not close the renderer/asset gate.
+
+M4av also corrects ordinary get-hit Statedef entry to the receiver's positive
+pass and FaceP2 before other entry expressions. Contact headings can be selected
+before physical turns publish after the actor's CNS/physics. See
+[CONTACT-FACING.md](CONTACT-FACING.md) for phase controls and verification.

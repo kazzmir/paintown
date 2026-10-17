@@ -4,6 +4,20 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4av contact facing is verified: 48 original programs, 552 numeric observations,
+two load rejections and 192 CNS/AIR/CMD/stage hashes. All corrected programs
+pass in m4av-entry-facing.log; pure races pass in m4av-entry-pure-race.log.
+Full scoped races pass in m4av-full-race.log (Match 349.165 seconds). Six fresh
+native replays pass in m4av-replays.log. Ten actual app captures pass provenance/
+runtime checks; six sprite masks match exactly (four16563, guard14991,
+override11181), stock recovery retains two fighters without persistent dust.
+See CONTACT-FACING.md and HITDEF-SCHEMA.md. Final source is ready for the
+local M4av commit; reversal is dc90bb1e. Next: run temp/author-hit-velocity.py
+and author-hitvelocity-extensions.py, then record/compare the 36 new programs
+for air/guard/airguard/down vectors, order, redirects and mixed profiles. Their
+authors are prepared but have NOT been run. Continue autonomously. No native/
+full/app graphics or audio clients may overlap. Never push without instruction.
+
 M4au forced standing/get-hit velocity: all 38 native forcestand programs are
 recorded (540 numbers, two rejects, 152 authored hashes). Corrected integrated
 comparison passes in m4au-world-fields.log; pure races pass in
@@ -12,7 +26,7 @@ m4au-velocity-pure-race.log. Full scoped races pass in m4au-full-race.log
 Nine actual app captures pass provenance/runtime checks in m4au-app-checks.json/
 log. Five white masks match exactly, including horizontal/clipped and vertical
 motion; stock recovery has two fighters without persistent dust. Finish the
-local M4au commit. Next author temp/author-hit-facing.py is prepared but NOT RUN:
+M4au checkpoint is committed locally as dc90bb1e. The next author is active:
 20 hitfacing programs for P1Facing/P1GetP2Facing, combined P2Facing and turns
 before/after HitDef activation. Verify heading-change timing before claiming
 the current contact-heading snapshot rule in those cases.
