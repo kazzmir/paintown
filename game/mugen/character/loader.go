@@ -103,6 +103,11 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	master := &cns.CNS{Data: constants.Data, Size: constants.Size,
 		Velocity: constants.Velocity, Movement: constants.Movement,
 		ConstantFields: constants.ConstantFields, States: make(map[int]*cns.StateDef)}
+	type stateFile struct {
+		key  string
+		data *cns.CNS
+	}
+	var stateFiles []stateFile
 	merge := func(parsed *cns.CNS) {
 		for id, state := range parsed.States {
 			if _, exists := master.States[id]; !exists {
@@ -124,6 +129,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		if err != nil {
 			return nil, err
 		}
+		stateFiles = append(stateFiles, stateFile{key, parsed})
 		merge(parsed)
 	}
 	cmdPath, err := resolve("cmd")
@@ -142,6 +148,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, context("cmd", err)
 	}
+	stateFiles = append(stateFiles, stateFile{"cmd", commandStates})
 	merge(commandStates)
 	// A blank/omitted stcommon uses the standard common file. A supplied
 	// filename must resolve; silently dropping common states hides broken chars.
@@ -149,12 +156,29 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, err
 	}
+	stateFiles = append(stateFiles, stateFile{"stcommon", common})
 	merge(common)
 	version := strings.TrimSpace(def.Info["mugenversion"])
 	if version == "" {
 		version = "legacy"
 	}
 	master.SetLanguageVersion(version)
+	compiler := NewStateMachine()
+	for _, file := range stateFiles {
+		// Native checks every loaded state file even when a higher-priority
+		// file already owns its IDs. Same-file duplicate definitions are ignored.
+		file.data.SetLanguageVersion(version)
+		ids := make([]int, 0, len(file.data.States))
+		for id := range file.data.States {
+			ids = append(ids, id)
+		}
+		sort.Ints(ids)
+		for _, id := range ids {
+			if err := compiler.CompileState(file.data.States[id]); err != nil {
+				return nil, context(file.key, fmt.Errorf("state program: %w", err))
+			}
+		}
+	}
 	p := &Player{Dir: baseDir, DefPath: defPath, Definition: def, CMD: commandData,
 		LocalCoord: local,
 		Commands:   NewCommandBuffer(120), PlayerID: 1}
@@ -199,25 +223,11 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		}
 	}
 	p.Character = NewCharacter(master, nil, p.CMD)
+	p.Character.SM = compiler
 	p.Character.OwnSounds = p.SND
 	p.Character.LocalCoord = local
 	p.Character.Palettes = palette.New(p.SFF)
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR
-	ids := make([]int, 0, len(master.States))
-	for id := range master.States {
-		ids = append(ids, id)
-	}
-	sort.Ints(ids)
-	for _, id := range ids {
-		// Resource files can declare empty states. Their runtime behavior is
-		// still a separate audit; validate every executable program on load.
-		if len(master.States[id].Controllers) == 0 {
-			continue
-		}
-		if err := p.Character.SM.CompileState(master.States[id]); err != nil {
-			return nil, fmt.Errorf("%s state program: %w", defPath, err)
-		}
-	}
 	return p, nil
 }
 

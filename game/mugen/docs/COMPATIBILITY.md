@@ -226,7 +226,15 @@ legacy accepted queries and three version rejections. Character loading now
 compiles nonempty states and enforces those measured 1.1 gates. Full races,
 stage-version/rejection replays and an actual 1280x720 owned window pass. Camera/
 zoom, remaining version schemas, filter-edge/full-frame parity and empty-state
-execution are still open; see COORDINATES.md.
+execution were still open at that checkpoint; see COORDINATES.md and M4r below.
+
+M4r confirms native load-time rejection of empty effective state declarations.
+Five cases distinguish final/negative/entry-only states, ignored same-file
+duplicates and rejected later-file definitions with already-owned IDs. The
+loader now validates each loaded state file before merge and reuses compiled
+programs; full races and a fresh rejection replay pass. The earlier empty-state
+acceptance assumption is superseded. Complete validation schemas and the
+transition cap still need comparison.
 
 ## Evidence and status definitions
 

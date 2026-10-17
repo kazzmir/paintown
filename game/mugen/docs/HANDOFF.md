@@ -360,13 +360,22 @@ version, compiles nonempty states and applies the three measured 1.1 viewport
 gates through typed arguments/entry/triggers, including AST cache hits. Other
 version rules/legacy handlers remain open. See COORDINATES.md.
 
+M4q is commit `7a1b9ec9`. M4r corrects its empty-state assumption: native rejects
+effective empty declarations during loading, including final/negative/entry-only
+states. Same-file duplicates are ignored, but lower-priority later files are
+still validated. Five native cases match; the loader now compiles each loaded
+state file before merge and shares the compiler with the player. Full races and
+a fresh shadowed-state replay pass. See CHECKPOINTS.md/REFERENCE.md. The executor
+already rejected empty states correctly. A finite state-chain probe is drafted
+as state-chain.cns/.air but not yet recorded or committed: measure the provisional
+ten-transition cap next.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next compare native empty-state execution/entry (loading already accepts empty
-declarations; the runtime still rejects them), then continue complete
+Next measure native state-chain continuation/limits, then continue complete
 HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains

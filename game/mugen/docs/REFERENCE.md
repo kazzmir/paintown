@@ -25,6 +25,24 @@ different from native. Earlier viewport-spark-production/ was inadvertently
 and rejects a capture-size mismatch. Camera displacement/zoom and whole-frame
 image equivalence remain unverified.
 
+## M4r empty-state loading evidence
+
+Five minimal source/AIR/executable-hash-pinned cases establish load behavior:
+empty-default (unreferenced final 700), empty-explicit (700 with entry attributes),
+empty-negative (-3), and empty-shadowed (st0 state 0 after st already defines 0)
+are rejected with “Need at least one state controller.” Empty-duplicate places
+an empty 0 after the valid same-file 0; native ignores the duplicate and retains
+marker 111. A fresh empty-shadowed replay reproduces rejection. Each loaded
+file's first definitions therefore require validation before the files merge.
+The loader now does so, retaining contextual errors and compiled programs.
+
+Draft captures empty-default-native and empty-default-positive-native contained,
+respectively, an empty -3 before other declarations and an invalid Physics query.
+They are diagnostic, not the minimal pinned positive cases. Final minimal runs
+are empty-load-default/explicit/negative, empty-duplicate-native and
+empty-shadowed-native. M4q's supposed native acceptance of empty declarations was
+an assumption, now disproved; no change to the executor's rejection was needed.
+
 ## Wine startup, 2026-10-16
 
 Environment: Wine 9.0, a private Win32 prefix at `temp/wine-reference`, and a

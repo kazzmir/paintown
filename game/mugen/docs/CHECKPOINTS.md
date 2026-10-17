@@ -4,6 +4,30 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4r — Empty-state rejection and validation before merge
+
+Five minimal native cases distinguish empty positive/negative declarations,
+explicit entry attributes, same-file duplicates and later-file definitions.
+The beta rejects all four effective empty declarations during character loading,
+including an unreferenced final state. A duplicate empty state after a valid
+same-file definition is ignored, retaining marker 111. An empty state in st0
+still fails even when st already owns that ID. This corrects M4q's unproven
+assumption that empty declarations were accepted and only needed runtime work.
+
+The loader now validates first definitions in every loaded st/stN/CMD/common
+file before merge, preserving the native same-file duplicate rule. It reuses
+those compiled programs in the player and includes DEF Files key, source,
+state and line in load errors. The constants-only CNS role remains distinct.
+The executor's existing empty-state rejection remains correct and unchanged.
+
+Full scoped races pass, including all stock loads, the five source/hash-pinned
+cases, and a fresh shadowed-state rejection replay. A final loader/resource race
+run also passes after simplifying the file list. One earlier command inherited
+the unavailable desktop display and failed at GLFW initialization; subsequent
+runs explicitly use the task's Xvfb. No desktop configuration changed.
+M4q's reversal point is commit `7a1b9ec9`. Next measure the provisional ten-state
+continuation cap, then continue world/entity, pause and full combat semantics.
+
 ## M4q — Native viewport profiles, framing and version gates
 
 Twelve native cases cover seven accepted stage/game/local profiles, same-pass

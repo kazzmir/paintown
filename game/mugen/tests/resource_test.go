@@ -102,7 +102,7 @@ func resourceDefinition(t *testing.T, dir, fixture string, test resourceCase) st
 }
 
 func TestReferenceCharacterResources(t *testing.T) {
-	for _, fixture := range []string{"resource-load", "resource-order", "resource-priority", "resource-common"} {
+	for _, fixture := range []string{"resource-load", "resource-order", "resource-priority", "resource-common", "empty-duplicate"} {
 		data, err := os.ReadFile(filepath.Join("testdata", "reference", fixture+".json"))
 		if err != nil {
 			t.Fatal(err)
@@ -165,6 +165,39 @@ func TestReferenceCharacterResources(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestNativeEmptyStatesFailDuringCharacterLoading(t *testing.T) {
+	for _, fixture := range []string{"empty-default", "empty-explicit", "empty-negative", "empty-shadowed"} {
+		t.Run(fixture, func(t *testing.T) {
+			data, err := os.ReadFile(filepath.Join("testdata", "reference", fixture+".json"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			var reference resourceCase
+			if err := json.Unmarshal(data, &reference); err != nil {
+				t.Fatal(err)
+			}
+			if reference.ExpectedFail != "Need at least one state controller" {
+				t.Fatal("fixture lacks the pinned native empty-state rejection")
+			}
+			dir := t.TempDir()
+			path := resourceDefinition(t, dir, fixture, reference)
+			player, err := character.LoadPlayerWithOptions(dir, filepath.Base(path), character.LoadOptions{RootDir: referenceRoot(t)})
+			if player != nil || err == nil {
+				t.Fatal("native-rejected empty state returned a usable player", err)
+			}
+			source := "probe.cns"
+			if fixture == "empty-shadowed" {
+				source = "second.cns"
+			}
+			for _, context := range []string{path, source, "[Files]", "line ", "has no controllers"} {
+				if !strings.Contains(err.Error(), context) {
+					t.Errorf("empty state lost %q context: %v", context, err)
+				}
+			}
+		})
 	}
 }
 
