@@ -1,12 +1,40 @@
 # Current handoff
 
-Updated 2026-10-17. **Pause after committing M4bd and the progress assessment.**
-The user's latest instruction requests a review of progress and remaining work
-before more token spending. It supersedes continuous iteration and any historical
-"next" instructions below. Do not start another implementation batch until the
-user explicitly resumes. Local commits were authorized; never push. All authored
-changes stay under `game/mugen/`. Read [../AGENTS.md](../AGENTS.md) and
-[PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+Updated 2026-10-17. The user reviewed the assessment, tried the semi-playable
+build and accepted the bounded workflow proposal. Latest request: add project
+README build/run/progress/coverage instructions, commit locally, then wait for
+the user to push and resume work. **Pause after this documentation checkpoint;
+do not start a feature batch now.** This supersedes continuous iteration and
+historical "next" instructions below. Never push. All authored changes stay
+under `game/mugen/`. Read [../AGENTS.md](../AGENTS.md), [../README.md](../README.md)
+and [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+
+## Latest documentation checkpoint: project README
+
+Predecessor/reversal: `637c3a0d`. Adds requirements, data setup, launcher and
+standalone build/run commands, stock controls, test commands, progress/remaining
+work and narrowly scoped coverage percentages. No production source change.
+Fresh source audit: 87/89 documented controller names registered (97.8%),
+127/127 trigger names recognized by the static validator (100%), 36/81 HitDef
+keys routed through expression compilation (44.4%). Unregistered controller
+names: ModifyExplod and ExplodBindTime. Registration/recognition includes
+partial/stub behavior and is not a semantic compatibility percentage.
+
+The README standalone build command passes with the scoped module overlay.
+Fresh focused stock compilation passes: 108/108 states per KFM variant,
+216/216 loaded state programs (100%), in temp/readme-stock-compilation.log
+(tests0.079s). This counts compilation, not every execution path. The full suite
+was not repeated for documentation changes. Source audit denominators are the
+documented controller/trigger name sets and current HitDef schema audit.
+The standalone/launcher help commands and documentation link checks pass.
+temp/readme-coverage-audit.json records the scoped counts. Root module integrity
+checks pass; the build output and validation logs remain ignored under temp.
+
+AGENTS.md now records bounded feature batches, an initial concise current
+behavior ledger refresh, focused checks during development, full suites at
+integration boundaries, dated metrics and documented local checkpoints. Apply
+that workflow when the user resumes after pushing. Do not begin the ledger
+refresh or a native probing campaign during the present documentation turn.
 
 ## M4bd checkpoint: cue/pause evidence, with open raster failures
 
@@ -63,7 +91,8 @@ not a complete-feature count. KO/round clocks, remaining combat/language,
 projectiles/reversals/teams, BGM, modes, rendering/assets and final conformance
 remain substantial. The controller/trigger tables are dated baseline data, not
 an updated completion ledger. Refresh a concise evidence ledger if the user
-resumes, then stop at the agreed next batch boundary. **Currently paused.**
+resumes after pushing the documentation checkpoint, then stop at the agreed
+next batch boundary. **Currently paused.**
 
 ## Historical checkpoint evidence
 

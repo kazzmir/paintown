@@ -4,6 +4,19 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## Project README and bounded workflow
+
+After reviewing M4bd and trying the semi-playable build, the user requested
+build/run instructions and dated progress/coverage figures in ../README.md.
+Fresh audits establish 87/89 controller registrations (97.8%), 127/127 recognized
+trigger names (100%) and 36/81 expression-routed HitDef keys (44.4%). These are
+narrow source metrics, not whole-engine behavioral coverage. The README build
+command succeeds and focused stock compilation passes for 216/216 loaded state
+programs (108 per character; tests0.079s). Documentation links/integrity are
+checked; no full regression rerun for this documentation-only change.
+AGENTS/HANDOFF record the bounded workflow and pause for the user's push/resume.
+No new feature batch is started. Reversal: `637c3a0d`.
+
 ## M4bd — Fatal guard cue and pause verification; review pause
 
 This test/evidence checkpoint adds no production behavior. Twelve original

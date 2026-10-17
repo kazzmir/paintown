@@ -1,8 +1,12 @@
 # MUGEN Go port review documents
 
-Current status: paused after M4bd for the user's progress and token-budget
-review. Read the [current progress assessment](PROGRESS-ASSESSMENT.md) for
-working behavior, remaining gates and proposed bounded allocations. See the
+Start with the [project README](../README.md) for requirements, building,
+running, controls and dated coverage percentages with their exact scopes.
+
+Current status: M4bd assessment reviewed; implementation paused for the user's
+documentation-checkpoint push and resume. Read the
+[current progress assessment](PROGRESS-ASSESSMENT.md) for working behavior,
+remaining gates and bounded allocations. See the
 [checkpoint history](CHECKPOINTS.md) and handoff for evidence; the original
 assessment describes the baseline.
 

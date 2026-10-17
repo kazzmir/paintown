@@ -7,11 +7,12 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-Latest instruction: finish M4bd, commit the checkpoint and progress assessment,
-then pause for the user's review and token-budget decision. This supersedes the
-earlier instruction to iterate continuously. After that checkpoint, do not begin
-another implementation batch until the user explicitly resumes work. Read
-`docs/PROGRESS-ASSESSMENT.md` and the current handoff before resuming.
+The user reviewed M4bd and the assessment, and tried the semi-playable build.
+Latest instruction: add README build/run/progress/coverage documentation and
+commit it locally; the user will push, then resume implementation with bounded
+workflow changes. This turn authorizes that documentation checkpoint. Wait for
+the user's resume after committing it; do not begin a feature batch now. Read
+`README.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff before resuming.
 
 ## Scope
 
@@ -29,6 +30,16 @@ Do not modify the reference distribution. Do not commit its binaries/assets.
 
 ## Implementation and verification
 
+- On resumption, refresh a concise current behavior-coverage ledger from source,
+  existing tests and topic documents before estimating broader work. The old
+  inventory status columns remain baseline evidence. Keep percentage metrics
+  dated, scoped and linked to their numerator/denominator sources.
+- Work in bounded feature batches with explicit acceptance and stopping points.
+  Use focused checks during development and full regression suites at meaningful
+  integration boundaries; repeat broad checks only for a concrete reason.
+  Record native evidence, unresolved differences and the next scope at each
+  local checkpoint. Stop at the agreed boundary unless more batches are
+  explicitly authorized; token-budget decisions belong to the user.
 - A registered controller or a successfully parsed file does not demonstrate
   behavioral compatibility. Track partial and missing behavior honestly.
 - Prefer deterministic, display-independent tests for expression and state
