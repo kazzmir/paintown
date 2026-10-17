@@ -42,7 +42,7 @@ func Load(path, root string) (*Storyboard, error) {
 	context := func(key string, line int, err error) error {
 		return fmt.Errorf("%s [SceneDef] %s (line %d): %w", source, key, line, err)
 	}
-	story := &Storyboard{Source: source, StartScene: definition.StartScene, RawSprites: make(map[string]*sff.Sprite)}
+	story := &Storyboard{Source: source, LocalCoord: definition.LocalCoord, StartScene: definition.StartScene, RawSprites: make(map[string]*sff.Sprite)}
 	spritePath, err := resource.Resolve(definition.SprFile, dir)
 	if err != nil {
 		return nil, context("spr", definition.SprLine, err)
@@ -114,7 +114,7 @@ func Load(path, root string) (*Storyboard, error) {
 		}
 		scene.DefaultPosition = position
 		if def.BGName != "" {
-			scene.Background = &background.Background{}
+			scene.Background = &background.Background{LocalCoord: story.LocalCoord}
 			scene.Background.LoadFromAST(ast, def.BGName, story.SpriteData, story.AIR)
 		}
 		for _, layer := range def.Layers {

@@ -4,6 +4,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
 )
@@ -67,6 +68,6 @@ func (s *StoryboardState) Update() (State, error) {
 func (s *StoryboardState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	if s.player != nil {
-		s.player.Draw(screen)
+		s.player.DrawToWindow(screen, coord.Space{Width: s.engine.cfg.Config.GameWidth, Height: s.engine.cfg.Config.GameHeight}, s.engine.cfg.Video.KeepAspect)
 	}
 }

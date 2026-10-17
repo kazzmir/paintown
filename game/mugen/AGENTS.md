@@ -7,12 +7,12 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user pushed the README checkpoint and resumed bounded implementation.
-M4be is committed as f27496f9, and the launcher rename/ignore checkpoint as
-6fb25376. The requested upstream integration includes bac65e96 and3d638348;
-configuration/system/stock races and application build/logger checks pass.
-Finish its merge commit, then stop for the next bounded allocation. Preserve
-local checkpoint history; do not push or start another feature family.
+The user authorized correcting storyboard scaling, then resuming one bounded
+combat batch through the next checkpoint for user testing. M4bf corrects the
+storyboard canvas; M4bg covers ground.hittime/ground.slidetime expression
+compilation and their measured defaults/order/consumers. Stop after M4bg's
+validated local checkpoint. Preserve local history and do not push or begin
+another feature family. Upstream integration is committed as 99b4605c.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 

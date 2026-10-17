@@ -1,0 +1,77 @@
+{
+  "inputs": {
+    "storyboard_sha256": "163dcf5c446274349211511dc592d1bc38b2cdfbb4eb0b6adee812567dede5fc",
+    "sprite_sha256": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f",
+    "localcoord": [
+      640,
+      480
+    ],
+    "window": [
+      1280,
+      720
+    ],
+    "keepaspect": 1
+  },
+  "render": {
+    "dimensions": [
+      1280,
+      720
+    ],
+    "markers": [
+      {
+        "rgb": [
+          220,
+          30,
+          40
+        ],
+        "bounds": [
+          256,
+          42,
+          304,
+          90
+        ],
+        "pixels": 2304
+      },
+      {
+        "rgb": [
+          30,
+          210,
+          50
+        ],
+        "bounds": [
+          1072,
+          648,
+          1120,
+          696
+        ],
+        "pixels": 2304
+      }
+    ],
+    "edge_samples": [
+      [
+        255,
+        255,
+        255
+      ],
+      [
+        255,
+        255,
+        255
+      ],
+      [
+        255,
+        255,
+        255
+      ],
+      [
+        255,
+        255,
+        255
+      ]
+    ]
+  },
+  "native_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "config_sha256": "7e8d2f723b8ebb0c23a864db09c319c54d94e0f5bc48ac89a88748921273026b",
+  "motif_sha256": "7155c102d7259d73bd47d27fdf2cc2362291597bf8d50ff005b86bb2032f4875",
+  "capture_sha256": "baff689109bab3a2e5f29b9aeb8ac0041d9c8644f8529ebaaa136bc19aafab17"
+}

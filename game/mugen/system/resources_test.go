@@ -40,3 +40,18 @@ func TestStoryboardStatePropagatesLoadFailureAndSkipsBlank(t *testing.T) {
 		t.Fatalf("blank optional storyboard did not advance: state=%T err=%v", got, err)
 	}
 }
+
+func TestStoryboardLayoutUsesWindowInsteadOfMotifCanvas(t *testing.T) {
+	engine := &Engine{logicalWidth: 1280, logicalHeight: 720}
+	engine.currentState = &StoryboardState{engine: engine}
+	if w, h := engine.Layout(640, 480); w != 640 || h != 480 {
+		t.Fatalf("storyboard output canvas=%dx%d", w, h)
+	}
+	if w, h := engine.Layout(0, 0); w != 1 || h != 1 {
+		t.Fatalf("minimized storyboard output canvas=%dx%d", w, h)
+	}
+	engine.currentState = &TitleState{}
+	if w, h := engine.Layout(640, 480); w != 1280 || h != 720 {
+		t.Fatalf("title motif canvas=%dx%d", w, h)
+	}
+}

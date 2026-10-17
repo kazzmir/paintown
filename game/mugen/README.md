@@ -3,7 +3,9 @@
 A Go/Ebitengine rewrite of Paintown's MUGEN engine, targeting Elecbyte
 **M.U.G.E.N 1.1 beta 1**. The current build is semi-playable: stock KFM/KFM720
 matches run with stages, HUD, sound, combat, rounds and rematches. Full engine
-and asset compatibility remains in progress.
+and asset compatibility remains in progress. Storyboard intros now honor their
+own canvas and scale correctly into the game/window; see
+[storyboard verification](docs/STORYBOARD-CANVAS.md).
 
 ## Requirements and data
 

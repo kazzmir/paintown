@@ -4,6 +4,17 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bf: storyboard canvas placement
+
+Predecessor/reversal99b4605c. Retains localcoord/default320x240, propagates it to
+backgrounds and separates story-to-game fit from KeepAspect window presentation.
+Six native text-only controls match12 marker bounds/counts and24 edge samples;
+GPU regression and six actual application comparisons pass. Stock intro was
+visually inspected and mixed stock fight smoke passes. Parser/storyboard races
+pass1.013s/1.787s; System/resources4.613s/6.530s. Module integrity is unchanged.
+Evidence: STORYBOARD-CANVAS.md and temp/m4bf-validation.log. No binaries added.
+Next authorized batch: ground.hittime/ground.slidetime, then stop for user testing.
+
 ## Requested upstream integration
 
 After rename checkpoint6fb25376, fetch/merge integrates bac65e96 and3d638348

@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
@@ -202,6 +203,11 @@ func (s *Scene) Update() bool {
 
 // Draw renders the scene to the screen.
 func (s *Scene) Draw(screen *ebiten.Image) {
+	s.drawContent(screen)
+	s.Fader.Draw(screen)
+}
+
+func (s *Scene) drawContent(screen *ebiten.Image) {
 	if s.ClearColorSet {
 		screen.Fill(s.ClearColor)
 	}
@@ -223,7 +229,6 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 		s.Background.DrawLayer(screen, 1, 0, 0, 0, spriteMap)
 	}
 
-	s.Fader.Draw(screen)
 }
 
 func (s *Scene) buildSpriteMap(screen *ebiten.Image) map[string]*background.SpriteImages {
@@ -233,6 +238,7 @@ func (s *Scene) buildSpriteMap(screen *ebiten.Image) map[string]*background.Spri
 // Storyboard holds all scenes and sprite data for a cutscene.
 type Storyboard struct {
 	Source     string
+	LocalCoord coord.Space
 	SpriteData *sff.SFF
 	SoundBank  *snd.SoundBank
 	Fonts      [10]*font.Font
@@ -283,6 +289,7 @@ func (s *Storyboard) prepareImages() {
 // sprites is the SFF sprite list, images is a pre-built ebiten image map.
 func NewStoryboard(sprites []*sff.Sprite, images map[string]*ebiten.Image) *Storyboard {
 	sb := &Storyboard{
+		LocalCoord: coord.Default(),
 		Sprites:    sprites,
 		SpriteMap:  make(map[string]*background.SpriteImages),
 		RawSprites: make(map[string]*sff.Sprite),
@@ -320,6 +327,8 @@ type Player struct {
 	currentIdx int
 	done       bool
 	Error      error
+	canvas     *ebiten.Image
+	gameCanvas *ebiten.Image
 }
 
 func NewPlayer(sb *Storyboard) *Player {
@@ -380,13 +389,61 @@ func (p *Player) Update(input InputState) bool {
 
 // Draw renders the current scene.
 func (p *Player) Draw(screen *ebiten.Image) {
+	if p.done {
+		return
+	}
+	p.DrawToWindow(screen, coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}, true)
+}
+
+// DrawToWindow first fits the storyboard inside the configured game canvas,
+// then presents that canvas using the window's KeepAspect setting. Clear color
+// and fades cover the game canvas, including the storyboard's fitted margins.
+func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect bool) {
 	if p.done || len(p.sb.Scenes) == 0 {
 		return
 	}
-	// Fill with black as default
+	space := p.sb.LocalCoord
+	if space == (coord.Space{}) {
+		space = coord.Default()
+	}
+	storyTransform, err := coord.Project(space, game, true)
+	if err != nil {
+		p.Error = fmt.Errorf("%s storyboard canvas: %w", p.sb.Source, err)
+		return
+	}
+	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
+	transform, err := coord.Project(game, target, keepAspect)
+	if err != nil {
+		p.Error = fmt.Errorf("%s storyboard canvas: %w", p.sb.Source, err)
+		return
+	}
+	if p.canvas == nil {
+		p.canvas = ebiten.NewImage(space.Width, space.Height)
+	}
+	if p.gameCanvas == nil || p.gameCanvas.Bounds().Dx() != game.Width || p.gameCanvas.Bounds().Dy() != game.Height {
+		if p.gameCanvas != nil {
+			p.gameCanvas.Deallocate()
+		}
+		p.gameCanvas = ebiten.NewImage(game.Width, game.Height)
+	}
 	p.sb.prepareImages()
-	screen.Fill(color.RGBA{0, 0, 0, 255})
-	p.sb.Scenes[p.currentIdx].Draw(screen)
+	scene := p.sb.Scenes[p.currentIdx]
+	p.canvas.Fill(color.Black)
+	p.gameCanvas.Fill(color.Black)
+	if scene.ClearColorSet {
+		p.gameCanvas.Fill(scene.ClearColor)
+	}
+	scene.drawContent(p.canvas)
+	options := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
+	options.GeoM.Scale(storyTransform.ScaleX, storyTransform.ScaleY)
+	options.GeoM.Translate(storyTransform.X, storyTransform.Y)
+	p.gameCanvas.DrawImage(p.canvas, options)
+	scene.Fader.Draw(p.gameCanvas)
+	screen.Fill(color.Black)
+	options.GeoM.Reset()
+	options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
+	options.GeoM.Translate(transform.X, transform.Y)
+	screen.DrawImage(p.gameCanvas, options)
 }
 
 // SubImage helper

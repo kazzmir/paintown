@@ -59,6 +59,9 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if _, fight := e.currentState.(*FightState); fight {
 		return max(1, outsideWidth), max(1, outsideHeight)
 	}
+	if _, storyboard := e.currentState.(*StoryboardState); storyboard {
+		return max(1, outsideWidth), max(1, outsideHeight)
+	}
 	return e.logicalWidth, e.logicalHeight
 }
 

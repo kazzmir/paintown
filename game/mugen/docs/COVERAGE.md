@@ -1,7 +1,7 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-17 for the first bounded batch after the README checkpoint
-`e2addf06`. This ledger reconciles current source/tests with the historical
+Updated 2026-10-17 through M4bf (storyboard canvas), after M4be and upstream
+merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
 
@@ -20,7 +20,7 @@ does not promote an entire controller from one passing parameter/default.
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
 | Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | All format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
 | Audio | Production command queue/mixer, channel ownership, pan/volume/voice/cues and owned native PCM controls. AUDIO.md. | BGM, broader configuration/resource/clock combinations; ForceFeedback remains an empty method. |
-| Stock match/UI | Title/selection/versus/fight/result/rematch/exit tested through production. MATCH.md, `system/flow_test.go`. | Exact KO/round persistence/draw/reset clocks. Full modes/AI/progression; win/continue/game-over types retain black-screen stubs. |
+| Stock match/UI | Title/selection/versus/fight/result/rematch/exit tested through production. M4bf storyboard localcoord and game/window scaling match six native placement controls. STORYBOARD-CANVAS.md, MATCH.md, `system/flow_test.go`. | Exact KO/round persistence/draw/reset clocks. Full modes/AI/progression; win/continue/game-over types retain black-screen stubs. |
 | Other explicit stubs | VarRandom, GameMakeAnim and MakeDust have empty Character methods (`character/character.go`). | Implement runtime behavior, schemas and native controls. BindToParent/Root's legacy methods are empty, but typed binding paths must be assessed through `engine/binding.go`, not those fallback bodies alone. |
 
 ## Quantitative scopes
@@ -44,16 +44,9 @@ distinguish missing Go behavior from operations disabled in the beta itself.
 
 ## Current allocation and stop condition
 
-M4be validation is complete: native integration, fresh reproductions, production
-smokes and the full scoped race suite pass. See HIT-PAUSE.md for logs/results.
-Only the local checkpoint and the user's separately requested binary-history
-reconciliation remain; no next feature family is started.
-
-M4be is limited to two HitDef keys: `pausetime` and `guard.pausetime`. Reuse
-the current pause recorder and shared Match replay. Measure expression order,
-omitted/inherited components, integer coercion and invalid inputs against native
-before implementing their schemas. Add focused host-local/atomic compilation
-checks where the native integration corpus cannot expose shared-host mutation.
-Run relevant core/Character/stock/production-flow regressions and representative
-fresh native/app checks. Keep all existing raster failures open. Document and
-commit this batch locally, then stop; do not start round-clock or renderer work.
+The user authorized M4bf storyboard scaling, followed by one bounded combat
+batch through the next checkpoint. M4bf is validated. M4bg covers compiled
+`ground.hittime`/`ground.slidetime`, measured defaults/order/types and focused
+consumer controls. Commit the validated result and stop for user testing.
+Do not start further timing fields, round clocks or renderer families. Existing
+strict alpha/spark failures remain open.

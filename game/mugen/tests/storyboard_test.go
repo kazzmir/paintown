@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/storyboard"
 )
 
@@ -18,6 +19,9 @@ func TestStockStoryboardResourcesAndPlayback(t *testing.T) {
 			}
 			if story.SpriteData == nil || len(story.Sprites) == 0 || len(story.Scenes) == 0 || story.SpriteMap != nil {
 				t.Fatal("CPU resources absent or images uploaded during loading")
+			}
+			if story.LocalCoord != coord.Default() {
+				t.Fatalf("stock storyboard canvas: %+v", story.LocalCoord)
 			}
 			if strings.HasSuffix(path, "data/kfm/intro.def") && (story.Scenes[0].Background == nil || len(story.Scenes[0].Background.Elements) == 0) {
 				t.Fatal("storyboard background was discarded")
@@ -81,5 +85,23 @@ func TestStoryboardResourceAndSceneFailures(t *testing.T) {
 				t.Fatalf("expected contextual failure containing %q: %v", test.want, err)
 			}
 		})
+	}
+}
+
+func TestStoryboardCanvasAlsoSetsBackgroundClip(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "scene.def")
+	source := "[Info]\nlocalcoord=1280,720\n" + strings.Replace(storyboardSource(t), "[Scene 0]", "[Scene 0]\nbg.name=Backdrop", 1)
+	source += "[BackdropDef]\n[Backdrop 0]\ntype=normal\nspriteno=0,0\n"
+	writeResource(t, path, []byte(source))
+	story, err := storyboard.Load(path, referenceRoot(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if story.LocalCoord != (coord.Space{Width: 1280, Height: 720}) || story.Scenes[0].Background.LocalCoord != story.LocalCoord {
+		t.Fatal("storyboard/background lost declared localcoord", story.LocalCoord)
+	}
+	writeResource(t, path, []byte(strings.Replace(source, "1280,720", "0,720", 1)))
+	if _, err := storyboard.Load(path, referenceRoot(t)); err == nil || !strings.Contains(err.Error(), path+": [Info] localcoord (line 2)") {
+		t.Fatal("invalid storyboard dimensions lost source context", err)
 	}
 }

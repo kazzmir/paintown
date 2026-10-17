@@ -1,13 +1,17 @@
 package parsers
 
 import (
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
+
+	"github.com/kazzmir/paintown/game/mugen/coord"
 )
 
 // StoryboardDef holds parsed data from a storyboard .def file.
 type StoryboardDef struct {
+	LocalCoord       coord.Space
 	SprFile          string
 	SndFile          string
 	SprLine, SndLine int
@@ -58,12 +62,22 @@ func ParseStoryboard(r io.Reader) (*StoryboardDef, error) {
 
 // ParseStoryboardFromAST builds a StoryboardDef from an already-parsed AST.
 func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
-	sb := &StoryboardDef{}
+	sb := &StoryboardDef{LocalCoord: coord.Default()}
 
 	for _, sec := range ast.Sections {
 		name := strings.ToLower(strings.TrimSpace(sec.Name))
 
 		switch {
+		case name == "info":
+			for _, attr := range sec.Attributes {
+				if strings.EqualFold(attr.ID.String(), "localcoord") {
+					space, err := coord.Parse(attr.RawValue)
+					if err != nil {
+						return nil, fmt.Errorf("[Info] localcoord (line %d): %w", attr.Line, err)
+					}
+					sb.LocalCoord = space
+				}
+			}
 		case name == "scenedef":
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())

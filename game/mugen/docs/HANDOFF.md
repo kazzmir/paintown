@@ -1,16 +1,26 @@
 # Current handoff
 
-Updated 2026-10-17. The user pushed the README checkpoint and resumed the bounded
-workflow. M4be refreshes the current behavior ledger and implements two HitDef
-pause keys. Validation passed and M4be is committed as `f27496f9`. The user
-identified the extensionless launcher as the binary concern and requested
-renaming it to mugen.sh, then integrating upstream. Rename checkpoint6fb25376
-is committed; upstream checks pass. **Finish the merge commit, then stop for
-the next allocation; no new feature batch.**
-Historical continuous-iteration instructions below do
-not override that boundary. Never push. All authored changes stay under
-`game/mugen/`. Read [../AGENTS.md](../AGENTS.md), [COVERAGE.md](COVERAGE.md),
-[HIT-PAUSE.md](HIT-PAUSE.md) and the original assessment before resuming work.
+Updated 2026-10-17. The user requested the storyboard scaling fix followed by
+one bounded combat batch through the next checkpoint for user testing. M4bf
+is validated; commit it, then implement ground.hittime/ground.slidetime schemas
+with native defaults/order/type controls (M4bg). Stop after that validated local
+checkpoint. Do not push. All authored changes stay under game/mugen/.
+
+## M4bf storyboard canvas
+
+Read STORYBOARD-CANVAS.md. Predecessor99b4605c, the completed upstream merge.
+Six native controls and all six app comparisons pass12 marker rectangles/counts
+and24 edge samples. Tests now render the real Player on the GPU and compare
+native measurements. Parser/storyboard races1.013s/1.787s, System/resources
+4.613s/6.530s pass; real KFM intro and mixed KFM/KFM720 fight smokes pass.
+Stock intro at640x480 was visually inspected. Full Match is unchanged and was
+not rerun; M4be remains its latest full-suite result. Binary resources/captures
+stay in ignored temp/. Root module baseline upstream-post-merge-module.sha256
+passes. No GUI client remains after validation. Existing alpha/spark failures
+remain open. Evidence: temp/m4bf-validation.log; tests/storyboard_probe.py.
+
+The older handoff sections below are historical; their stop instructions do
+not override the user's current allocation described above.
 
 ## Verified M4be checkpoint
 

@@ -13,6 +13,13 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bf fixes storyboard localcoord/default320x240 loading, background canvas size
+and the native storyboard-to-game-to-window fit/stretch path. Six native marker
+programs match12 rectangles/counts and24 edge samples in GPU tests and actual
+application captures. Stock KFM intro placement is visually checked; stock match,
+System/resource races pass. Full storyboard/audio/renderer parity remains open.
+See [STORYBOARD-CANVAS.md](STORYBOARD-CANVAS.md).
+
 M4be adds compiled HitDef pausetime/guard.pausetime with native source-default
 re-evaluation, per-component inheritance, second-before-first evaluation,
 runtime truncation, bottom/negative handling and load validation. Nineteen native
