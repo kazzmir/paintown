@@ -4,6 +4,40 @@ Updated 2026-10-17. Continuous implementation and local commits are authorized.
 Do not ask to continue, stop at a checkpoint, push, or call the whole port
 complete. All authored changes stay under game/mugen/. Read ../AGENTS.md.
 
+## Latest verified checkpoint: M4bc
+
+Read STAGE-CLEAR.md. Reversal/predecessor9ef4c313 (M4bb). Stage loads DebugBG
+with truncation toward zero before nonzero conversion, then clears magenta in
+Stage.Draw before layer0. Production and standalone viewer share the path.
+Eleven native programs record132 observations,44 source hashes, exact owned
+black/magenta region metadata and viewport points. No original art/binaries or
+window pixels are committed. Default fit keeps black side bars; stage0/stretch
+fills edge samples. Omitted/0/.5/-.5/foo sample black;1/-1/2/1.5 magenta.
+
+Final pipeline44482 completed exit0: m4bc-validation.log. Twelve final apps/
+fifteen captures (suffix go-m4bc-verified), all11 color regions/88,000 pixels and
+33 viewport points pass prepared-input/config/binary/PNG/runtime audit.
+Binary48df6ff9c82e06c1f73b459cd3265a0ceaef0edd18ec9310eda8a22e6b2c5548;
+results m4bc-final-app-audit.json. Four fresh native pixel/numeric replays pass
+m4bc-replays.log. Scoped sequential races pass m4bc-scoped-race.log:
+System4.713s, stock tests6.502s; stage builds. Root module checks pass. Stock7s
+was visually inspected: two recovered fighters/no persistent effects. No GUI
+client remains. Native original executable remains unchanged.
+
+Diagnostics are preserved: m4bc-before-fill.json proves8,000 original mismatch
+pixels; stageclear-half-go-m4bc-before-truncation and m4bc-half-before-check.log
+prove the initial float-boolean coercion error. Initial seven app runs use
+suffix go-m4bc-final and are not the final binary. Native record/verify tool is
+tests/stage_clear_probe.py; Go cannot record a golden. Sources are frozen.
+No whole-frame, no-clear persistence, pause/tint/foreground or general renderer
+completion claim. M4az's six alpha precision crops remain unwaived.
+
+Next: continue with fatal-guard sound/effect/pause selection and KO/round clocks,
+then remaining HitDef schemas/renderer/mode gates. Local commits remain
+explicitly authorized; no pause/check-in or remote push. Keep all edits/data/docs
+under MUGEN, temp ignored. M4bb9ef4c313 is the preceding full-race checkpoint;
+all90 lethality cases passed there along with the rest of the corpus.
+
 ## Latest verified checkpoint: M4bb
 
 M4bb is verified; reversal/predecessor is 3fa397a9 (M4ba). Read HIT-LETHALITY.md.
@@ -78,12 +112,9 @@ six RGB alpha precision crops, absolute KO slowdown/round transitions, complete
 literal HitDef schema, recovery/juggle/projectile/reversal/team/foreign/multiple
 contacts, and broader modes/assets/rendering. Do not claim whole-engine parity.
 
-An independently confirmed low-impact stage gap is next: BGDef.debugbg1 fills
-uncovered native stage pixels magenta; Go ignores the key and fills black.
-Local docs/bgs.html explicitly states this behavior, and current authored
-contact stages expose it. Stage loader only reads spr in BGDef; FightState fills
-stageCanvas black. Measure on/off and viewport boundaries, implement the scoped
-field/fill, and compare original captures. Do not relax existing raster gates.
+M4bc closes the bounded diagnostic fill gap. Complete background controllers,
+no-clear persistence applicability, pause/tint/foreground and renderer behavior
+remain separate gates. Do not relax the strict pixel expectations.
 
 Local fight.def also exposes Round slow.time=60 (alongside over.waittime45,
 over.hittime10, over.wintime45, over.time210). Match currently has no KO slowdown.

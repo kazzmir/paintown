@@ -130,5 +130,6 @@ checks all360 source hashes. Original reference executable and root module
 hashes remain intact. Full scoped races pass in m4bb-full-race.log
 (Match618.564s, Character11.012s, System5.027s).
 
-Reversal is M4ba3fa397a9. Absolute KO/announcement timing, stage debug fill,
-M4az's six alpha crops and complete engine/asset/mode compatibility remain open.
+Reversal is M4ba3fa397a9. M4bc subsequently closes the bounded stage debug-fill
+gap (STAGE-CLEAR.md). Absolute KO/announcement timing, M4az's six alpha crops
+and complete engine/asset/mode compatibility remain open.

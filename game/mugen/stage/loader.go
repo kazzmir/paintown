@@ -181,9 +181,12 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 			var sprPath string
 			var sprLine int
 			for _, attr := range sec.Attributes {
-				if strings.EqualFold(attr.ID.String(), "spr") {
+				switch strings.ToLower(attr.ID.String()) {
+				case "spr":
 					sprPath = background.GetString(attr.Value)
 					sprLine = attr.Line
+				case "debugbg":
+					stage.DebugBG = math.Trunc(background.GetFloat(attr.Value)) != 0
 				}
 			}
 			if sprPath != "" {

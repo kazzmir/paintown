@@ -1,6 +1,8 @@
 package stage
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/coord"
@@ -8,8 +10,9 @@ import (
 )
 
 type Stage struct {
-	Name   string
-	Source string
+	Name    string
+	Source  string
+	DebugBG bool
 
 	Camera struct {
 		StartX                    float64
@@ -73,6 +76,9 @@ func (s *Stage) Update() {
 }
 
 func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
+	if s.DebugBG {
+		screen.Fill(color.RGBA{R: 255, B: 255, A: 255})
+	}
 	s.Background.DrawLayer(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
 }
 

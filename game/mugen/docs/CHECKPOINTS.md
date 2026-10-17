@@ -4,6 +4,20 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bc — Diagnostic stage background fill
+
+M4bc implements native BGDef.debugbg clear before stage layer0, shared by
+production and the standalone viewer. Numeric values truncate toward zero before
+nonzero conversion; omitted/zero, signed fractions, integers and invalid text
+are measured. Eleven original native programs record132 observations and44
+source hashes. Twelve final apps/fifteen captures share one binary and pass
+provenance/runtime checks; all88,000 solid-color pixels and33 viewport samples
+match exactly. Default fit retains black bars; stage0/stretch expose magenta at
+window edges. Four fresh native programs reproduce pixel/numeric goldens.
+Scoped races pass (System4.713s, stock tests6.502s), as do root module checks.
+See STAGE-CLEAR.md. Reversal:9ef4c313. No whole-frame/renderer claim; KO timing,
+fatal-guard cues, remaining schemas/modes and six strict alpha gates remain open.
+
 ## M4bb — Lethal contacts, fall damage and KO vectors
 
 M4bb adds pre-entry kill/guard.kill damage caps, fatal guard normalization,

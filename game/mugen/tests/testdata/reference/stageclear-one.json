@@ -1,0 +1,99 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "8958e7d05d099e5884b414d6a07cfa583eb7587b8c2593ab0b65fc60a7a451c5",
+  "air_sha256": "55283a4205ad73a8f4bf7b93ed95b17e6242b8871ff4f12731698dd73bcf662b",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "ae37ecd9366dfb71305ca16d42fef2302b7c0d898114e21a57ec8ace18a5f1f8",
+      "variables": {
+        "0": 1,
+        "1": 1,
+        "2": 7,
+        "3": 6,
+        "4": 4,
+        "5": 5,
+        "6": 1,
+        "7": 0,
+        "8": 100000,
+        "9": 1,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "stage_clear_render": {
+    "window": [
+      1280,
+      720
+    ],
+    "box": [
+      900,
+      660,
+      1100,
+      700
+    ],
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "pixels": 8000,
+    "rgb_sha256": "82dcc440778ac2de4711583446216c129c64d7f529da7ef8bd8f0777c770ede9",
+    "sample_points": [
+      [
+        100,
+        640
+      ],
+      [
+        1180,
+        640
+      ],
+      [
+        1000,
+        640
+      ]
+    ],
+    "samples": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        255,
+        0,
+        255
+      ]
+    ]
+  },
+  "stage_clear_provenance": {
+    "native_run": "stageclear-one-native",
+    "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+    "prepared_sha256": {
+      "chars/kfm/probe.cns": "b410b6d491fb03754eea2d4c827f3b4e259455f620299e23f1d4222bf2b30411",
+      "chars/kfm/probe.cmd": "8a7beba647cb7bfc2299622eeb32bcfff3c61c0a6c6ca507a108c808a3e076ed",
+      "chars/kfm/probe.air": "55283a4205ad73a8f4bf7b93ed95b17e6242b8871ff4f12731698dd73bcf662b",
+      "chars/kfm/kfm.def": "a14bee1914995481f7cbc065cbf4a6d07ca2176f6dd9bffeb5795cd46898aa1b",
+      "chars/kfm/kfm.sff": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746",
+      "stages/probe-stage.def": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+      "stages/kfm.sff": "f5ddfc6e52e3f8de8cf731b924ba4f241450bfe56c51e61c45a04ee72e981fff",
+      "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+    }
+  }
+}
