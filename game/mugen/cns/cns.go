@@ -89,6 +89,9 @@ type HitDef struct {
 	PriorityClass string
 	// Nil preserves the ordinary one-hit multiplicity for programmatic definitions.
 	NumHits *int
+	// Nil preserves the native contact defaults: attacker one, receiver zero.
+	P1SprPriority *int
+	P2SprPriority *int
 	// Nil means no custom transition. Keep explicit values separate so a
 	// zero-valued, programmatic HitDef does not change either actor's state.
 	P1StateNo        *int
@@ -648,6 +651,12 @@ func ParseHitDef(params map[string]string) HitDef {
 	if raw, present := params["numhits"]; present {
 		value, _ := strconv.Atoi(raw)
 		hd.NumHits = &value
+	}
+	for key, destination := range map[string]**int{"p1sprpriority": &hd.P1SprPriority, "p2sprpriority": &hd.P2SprPriority} {
+		if raw, present := params[key]; present {
+			value, _ := strconv.Atoi(raw)
+			*destination = &value
+		}
 	}
 	if v, ok := params["hitflag"]; ok {
 		hd.HitFlag = v

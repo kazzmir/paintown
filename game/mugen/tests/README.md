@@ -597,3 +597,24 @@ and Go clients run sequentially on the private display/audio servers. See
 [COMBAT-PRIORITY.md](../docs/COMBAT-PRIORITY.md) for contact phases, limits and
 validation. Complete hitflags/protection/projectile/pause/team combinations
 remain outside this checkpoint's claim.
+
+## M4as HitDef drawing priority
+
+`TestNativeContactDrawPriority` compares 23 original `hitdraw-*` programs: 252
+numbers, two native load rejections, 21 foreground identities and 115 CNS/AIR/
+CMD/stage/original-SFF hashes. Exact tie controls bracket defaults 1/0; normal,
+guard, override, helper and custom/ordinary entry programs pin precedence.
+Range pairs retain +/-99 ordering; literal floats reject, computed floats
+truncate and bottom becomes zero. No-contact ties leave priorities unchanged.
+
+```sh
+python3 game/mugen/tests/actor_render_probe.py --fixture hitdraw-helper-override --name UNIQUE_NATIVE
+python3 game/mugen/tests/app_smoke.py --name UNIQUE_GO --reference game/mugen/temp/reference-runs/UNIQUE_NATIVE/stock --match chars/kfm/kfm.def chars/kfm/kfm.def --stage stages/probe-stage.def --motif data/mugen1/system.def --width 1280 --height 720 --seconds 5
+python3 game/mugen/tests/actor_render_probe.py --fixture hitdraw-helper-override --name UNIQUE_CHECK --go-run UNIQUE_GO
+```
+
+Go checking validates original/prepared inputs, bank, stage, profile, binary,
+configuration and captured PNG, then requires exact foreground RGB/ID/count/
+bounds. It cannot record or overwrite native goldens. Rejected fields use the
+ordinary reference probe with `--file sprite=probe.sff`. See
+[CONTACT-DRAW.md](../docs/CONTACT-DRAW.md) for reference evidence and open gates.

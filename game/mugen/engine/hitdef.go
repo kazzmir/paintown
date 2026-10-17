@@ -18,7 +18,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	}
 	var cues []cue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -72,8 +72,13 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			return nil, true, fmt.Errorf("%s: %w", key, err)
 		}
 		entry := cue{key: key, own: own}
+		strictInteger := false
+		switch key {
+		case "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority":
+			strictInteger = true
+		}
 		for i, expr := range expressions {
-			if (key == "p1stateno" || key == "p2stateno" || key == "p2getp1state" || key == "p2facing" || key == "hitonce" || key == "priority" || key == "numhits") && integerFieldFloatLiteral(expr) {
+			if strictInteger && integerFieldFloatLiteral(expr) {
 				return nil, true, fmt.Errorf("%s: expected int value and read float", key)
 			}
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
@@ -95,7 +100,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			params[key] = value
 		}
 		for _, cue := range cues {
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits")
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority")
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}

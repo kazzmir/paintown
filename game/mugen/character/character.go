@@ -1924,6 +1924,15 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 			return 0
 		}
 	}
+	// Contact priorities apply even when guarded or overridden. Subsequent
+	// own/custom state entry can replace either priority through its Statedef.
+	attacker.SprPriority, c.SprPriority = 1, 0
+	if hit.P1SprPriority != nil {
+		attacker.SprPriority = *hit.P1SprPriority
+	}
+	if hit.P2SprPriority != nil {
+		c.SprPriority = *hit.P2SprPriority
+	}
 	for _, e := range c.Explods {
 		if e.RemoveOnGetHit && e.Visual != nil {
 			e.Visual.Active = false

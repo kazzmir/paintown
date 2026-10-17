@@ -7,6 +7,19 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4as adds typed HitDef p1sprpriority/p2sprpriority and assignment at contact,
+before ordinary/custom state entry. Twenty-three original marker programs
+compare 252 numbers, two load rejections, 21 native foreground identities and
+115 authored input hashes. Defaults are 1/0; normal/guard/override/helper contact
+and later destination entry match. Measured +/-99 ordering is retained; literal
+floats reject, computed floats truncate and bottom becomes zero. Full scoped
+races pass in temp/m4as-full-race.log (Match 247.463 seconds), as do all focused/
+pure races and four fresh native replays. Twenty-two actual app captures pass
+provenance/runtime checks. Six marker RGB/ID/rectangles match exactly; four
+real-art white masks match exactly, resolving the bound-release 6,099-pixel gap.
+See CONTACT-DRAW.md. Full HitDef, projectile/effect, pause/foreign/team,
+renderer/asset/mode gates remain open.
+
 M4ar adds typed HitDef priority/numhits, reciprocal Hit/Miss/Dodge arbitration,
 HitCount/UniqHitCount credit and incoming-hit target release. Sixty-three native
 programs compare 996 numbers, five load rejections and 252 authored input hashes.

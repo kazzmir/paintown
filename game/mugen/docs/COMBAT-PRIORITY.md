@@ -84,9 +84,10 @@ no-hit and helper-trade white clothing masks match exactly (11,181/11,181/19,515
 pixels). Bound release has 12,501 native versus 12,528 Go white pixels and 6,099
 mask differences, with a different foreground facing in the overlap. This is
 recorded in `temp/m4ar-app-checks.json`; it does not invalidate the separate
-state/target observations. HitDef p1sprpriority/p2sprpriority are unimplemented
-and are the next marker-based investigation. Do not claim full sprite placement
-parity for that scene or guess an offset from the clothing mask.
+state/target observations. At M4ar, HitDef p1sprpriority/p2sprpriority were
+unimplemented. M4as isolates them with original markers and resolves the gap:
+12,501 white pixels in both scenes and zero mask differences, without a
+coordinate change. See CONTACT-DRAW.md. Full framebuffer parity remains open.
 An initial helper diagnostic was mistakenly put in root-only state -3; its
 all-zero helper page is diagnostic only and was replaced by positive-state
 publication. Root results independently distinguish priority outcomes.

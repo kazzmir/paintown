@@ -4,6 +4,26 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4as HitDef drawing priority has 23 recorded native programs (252 numbers, two
+load rejections, 21 foreground identities, 115 authored hashes). Native source log
+is m4as-native-first.log. The original hitdraw marker programs cover
+defaults, explicit/range/computed/bottom/float fields, guard/override, ordinary/
+custom entry and helper contacts. TestNativeContactDrawPriority expects 23.
+The pre-fix run fails 14 programs (m4as-before-draw.log). Typed fields and contact
+assignment before own/custom/override entry are now implemented. Defaults 1/0
+are bracketed by exact tie controls; explicit +/-99 ordering remains intact.
+Computed floats truncate, literal floats reject, bottom zero remains active.
+Pure races pass. All 23 corrected focused cases pass in m4as-fields-draw.log.
+Full races pass in m4as-full-race.log (Match 247.463 seconds). Four fresh native
+replays pass in m4as-replays.log. Twenty-two final app captures pass provenance/
+runtime checks. Six marker colors/IDs/rectangles match exactly; all four real-art
+white masks match exactly. Bound release is now 12,501 white pixels both sides,
+zero differences versus M4ar's 6,099. Data: m4as-app-checks.json/log. Finish the
+local M4as commit, then continue hitflag controls using author-hit-flags.py.
+The actor marker tool now accepts hitdraw names and adds
+strict --go-run verification that cannot overwrite native goldens. Never
+overlap GUI/audio clients. Reversal is committed 8cae270d.
+
 M4ar validation is complete; reversal is committed 6f90691f. All 63
 native hitclash programs are recorded: 996 numbers, five load rejections and
 252 authored hashes. Typed priority/numhits, reciprocal Hit/Miss/Dodge clash
@@ -19,9 +39,9 @@ suite passes in m4ar-full-race.log (Match 231.848 seconds). Pure CNS/engine/
 evaluator races and six independent native replays pass. Sixteen actual app
 captures pass provenance/dimensions/runtime checks; stock recovery has two
 fighters. Three white sprite masks match exactly. Bound release differs at
-6,099 pixels with a different foreground facing; HitDef drawing priorities are
-unimplemented and are the next marker investigation. Data: m4ar-app-checks.json.
-Finish docs and commit M4ar, then continue immediately.
+6,099 pixels with a different foreground facing at M4ar; M4as resolves it through
+HitDef drawing priorities. Baseline data: m4ar-app-checks.json.
+Committed locally as 8cae270d; do not repeat the completed M4ar validation.
 See COMBAT-PRIORITY.md. Disposable next-checkpoint author-hit-flags.py is written
 but not run; it would create49 initial hitflag controls. Do not mix it into the
 M4ar commit before its validation is complete. No push is authorized.
@@ -46,8 +66,7 @@ without dust clones. Results: temp/m4aq-axis-raster-summary.json and
 m4aq-final-app-checks.json. Background/debug/HUD, four tiny corner-precision
 exceptions and broader render/asset/combat/mode gates remain open.
 
-After M4ar, isolate HitDef p1sprpriority/p2sprpriority with original markers and
-resolve the bound-release foreground difference. Then continue hitflag eligibility; collision currently ignores
+After M4as, continue hitflag eligibility; collision currently ignores
 the stored HitFlag. Its initial author script is prepared under temp. Measure
 standing/crouching/air/down/falling and +/- MoveType conditions, parser edges,
 reciprocal eligibility and helper contacts. Continue autonomously; all changes stay in
@@ -880,7 +899,7 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Finish M4ar commit, then native HitDef drawing priority and hitflag eligibility. Opposing
+Finish M4as commit, then native HitDef hitflag eligibility. Opposing
 helper contacts, actor priority/raster alignment and the measured incoming-hit
 bound-target release are implemented in their checkpoints; do not repeat those
 as unstarted work. Continue remaining BindTo* controllers, paused/foreign/
