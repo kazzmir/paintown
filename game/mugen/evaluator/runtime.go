@@ -189,6 +189,16 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 	if left.RuntimeError() != nil {
 		return left
 	}
+	nameField := false
+	if id, ok := e.Left.(*Identifier); ok {
+		switch normalizeIdentifier(id.Name) {
+		case "name", "authorname", "p1name", "p2name", "p3name", "p4name":
+			nameField = true
+		}
+	}
+	if nameField && left.IsBottom() {
+		return Bool(e.Operator == "!=")
+	}
 	if left.IsBottom() {
 		left = Int(0)
 	}
@@ -235,9 +245,15 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 			return failure(env, "string/numeric operand mismatch")
 		}
 		if e.Operator == "=" || e.Operator == "==" {
+			if nameField {
+				return Bool(strings.EqualFold(left.text, right.text))
+			}
 			return Bool(left.text == right.text)
 		}
 		if e.Operator == "!=" {
+			if nameField {
+				return Bool(!strings.EqualFold(left.text, right.text))
+			}
 			return Bool(left.text != right.text)
 		}
 		return failure(env, "invalid string operator %s", e.Operator)

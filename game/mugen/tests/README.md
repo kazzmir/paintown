@@ -430,3 +430,22 @@ same fixture for both roots. Selected push cases have hurtboxes; edge/query
 cases are deliberately box-free. Empty Width and active float/extra-component
 fields must reject. The ignored-float packet must load: explicit edge causes
 native to ignore value entirely. See ../docs/WIDTH.md for scope and limits.
+
+## M4aj helper configuration
+
+TestNativeHelperConfiguration compares 72 helpercfg programs, 984 numeric
+observations, eight intentional load rejections and all 276 authored input
+hashes. CMD sidecars are checked and merged after CNS state definitions.
+Reproduce accepted controls with a fresh name, for example:
+
+```
+python3 game/mugen/tests/reference_probe.py --fixture helpercfg-nested-order --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 --seconds 7
+python3 game/mugen/tests/reference_probe.py --fixture helpercfg-size-scene --name UNIQUE_NAME_2 --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 --seconds 7
+```
+
+Other representatives are key-one, phase-attack, camera-enabled-far,
+camera-endpoints, pause-two and flow-active-twenty, all prefixed helpercfg-.
+Use the pages/recipe recorded in each JSON. Full scoped races pass in
+temp/m4aj-full-race.log; pure engine/evaluator races pass without DISPLAY in
+temp/m4aj-final-pure-race.log. HELPERS.md separates measured coverage from the
+remaining helper/world obligations.

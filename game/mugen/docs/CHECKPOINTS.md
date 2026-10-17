@@ -4,6 +4,57 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4aj — Helper configuration, entity order and intro/camera corrections
+
+Seventy-two native helpercfg programs compare 984 numeric observations, eight
+intentional load rejections and 276 authored CNS/AIR/stage/CMD hashes. Helper
+arguments compile before effects; per-host expression values and copied size
+constants do not mutate shared source/parent constants. Birth defaults/entry,
+missing/negative states, postype/facing, names/counts, normal/player negative
+eligibility and separate paused-tick allowances match their controls.
+
+Root/helper scheduling is one flat ordered pass, with new helpers appended.
+Nested creation distinguishes this from recursive child updates; existing
+attacking helpers precede idle roots on subsequent ticks. Normal/player helper
+counts stay separate from enemy/partner counts. Player helpers clamp at birth;
+camera participation starts on their first own pass. Camera easing observes
+each root/helper completion, including excluded helpers.
+
+Far-camera packets exposed separately rounded float32 endpoints and movement
+deltas, maximum-span correction and tiny zoom rounding. ScreenPos/edge queries
+keep double precision through division before their final script value. This
+supersedes M4ag's single-left-edge model. Five intro packets exposed the early
+RoundState 2/control grant: Intro now needs ten consecutive clear ticks and
+RoundState 2 starts with the fight announcement. Empty/five/twenty active
+assertions grant control at GameTime 130/135/150.
+
+Validation: the full scoped race suite passes in temp/m4aj-full-race.log;
+display-independent engine/evaluator races pass in m4aj-final-pure-race.log.
+Earlier 43/65-program failures remain in m4aj-helper-first-race.log and
+m4aj-helper-second-race.log; the corrected first 65 pass in the third log.
+Final full races include all 72. See HELPERS.md for measured details/recipes.
+
+
+Real 1280x720 windows at temp/app-runs/helper-size-go/ (2/4/7 seconds) and
+helper-stock-throw-go/ (2/3/4/7) pass all seven capture hash/dimension/nonblack
+checks, with no runtime/missing-resource errors. The scaled helper's white
+clothing occupies exactly [643,401,943,499) in both native and Go, with 10,381
+thresholded pixels in each. This pins the measured 2.5/.5 scale and nonzero Y;
+it is not full framebuffer equivalence. Native debug magenta versus Go black
+outside the minimal stage, background filtering and other rendering rules
+remain open. The inspected stock recovery has two fighters and no dust clones.
+
+Fresh native key-one, phase-attack, camera-enabled-far, camera-endpoints,
+pause-two, flow-active-twenty, nested-order and size-scene replays use
+m4aj-replay-* run directories and check all pinned values/input hashes.
+
+Still open: opposing-helper contacts, complete destruction/orphan/effect/binding
+ownership, positive input, ownpal/remappal RGB, foreign/paused creation, proper
+projectiles and the full vertical/zoom/render/audio/mode/asset gates. No whole
+helper/controller gate is promoted to complete. All authored files stay in
+scope; reference art/binaries remain untracked and root module hashes are
+unchanged. Reversal point: M4ai commit 31133c14.
+
 ## M4ai — Width offsets, body push and horizontal edge queries
 
 M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge

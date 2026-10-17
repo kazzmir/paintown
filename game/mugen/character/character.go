@@ -24,6 +24,7 @@ import (
 // Character represents a MUGEN entity running through the State Machine.
 // It implements the Environment interface so the state machine can execute controllers against it.
 type Character struct {
+	Name, AuthorName string
 	RuntimeError     error
 	stateInitialized bool
 	updateActive     bool
@@ -107,13 +108,16 @@ type Character struct {
 	ActiveCommands []string
 
 	// InputSlot selects a keyboard/controller; EntityID is script-visible ID.
-	InputSlot    int
-	EntityID     int32
-	TeamSide     int
-	HelperID     int
-	World        *World
-	destroyed    bool
-	isProjectile bool
+	InputSlot                                int
+	EntityID                                 int32
+	TeamSide                                 int
+	HelperID                                 int
+	HelperKeyControl, PlayerHelper           bool
+	HelperName                               string
+	helperPauseMoveTime, helperSuperMoveTime int
+	World                                    *World
+	destroyed                                bool
+	isProjectile                             bool
 
 	// Attacker pause suppresses CNS/time; receiver shake does not.
 	ShakeTime    int
@@ -331,6 +335,16 @@ func (c *Character) startTick() bool {
 		return false
 	}
 	c.worldFrozen = c.Timeline != nil && c.Timeline.Frozen(c.pauseActor)
+	if c.Parent != nil && !c.isProjectile && c.Timeline != nil && c.Timeline.Paused() {
+		allowance := &c.helperPauseMoveTime
+		if c.Timeline.SuperPaused() {
+			allowance = &c.helperSuperMoveTime
+		}
+		if *allowance > 0 {
+			*allowance--
+			c.worldFrozen = false
+		}
+	}
 	if c.worldFrozen {
 		c.updateActive = true
 		return true
@@ -366,8 +380,8 @@ func (c *Character) runStateTick() bool {
 	// Clear frame-local specials
 	c.Specials = make(map[string]bool)
 	c.PushDisabled = false
-	c.screenBoundsDisabled = c.Parent != nil
-	c.cameraDisabled = [2]bool{c.Parent != nil, c.Parent != nil}
+	c.screenBoundsDisabled = c.Parent != nil && !c.PlayerHelper
+	c.cameraDisabled = [2]bool{c.screenBoundsDisabled, c.screenBoundsDisabled}
 	c.frameWidths = engine.WidthParameters{}
 	c.ActiveReversalDef = make(map[string]string)
 	c.DrawAngle = 0
@@ -503,14 +517,6 @@ func (c *Character) finishTick() {
 	}
 
 	// 6. Update Helpers, Projectiles, Explods
-	var activeHelpers []*Character
-	for _, h := range c.Helpers {
-		h.Update()
-		if !h.destroyed {
-			activeHelpers = append(activeHelpers, h)
-		}
-	}
-	c.Helpers = activeHelpers
 	for _, p := range c.Projectiles {
 		p.Update()
 	}
@@ -759,65 +765,13 @@ func (c *Character) SetAttackDistance(distance int) {
 func (c *Character) SetPlayerPush(enabled bool) { c.PushDisabled = !enabled }
 
 func (c *Character) Helper(params map[string]string) {
-	if err := c.ensureWorld(); err != nil {
-		c.RuntimeError = err
-		return
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
 	}
-	if len(c.World.Helpers) >= c.World.HelperMax {
-		c.EvaluationWarning("Helper limit reached")
-		return
+	if err := engine.ExecuteHelperParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("Helper: %w", err)
 	}
-	// Helper(id, name, pos, pos_type, facing, stathero, ownpal, keyctrl, anim)
-	stateno := 0
-	if v, ok := params["stateno"]; ok {
-		stateno, _ = strconv.Atoi(v)
-	}
-
-	// Create a new character as a helper
-	// It shares the same files but has its own state machine
-	h := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
-	h.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
-	h.BindEffects(c.EffectQueue, c.CommonEffects)
-	h.LocalCoord = c.LocalCoord
-	h.GameCoord = c.GameCoord
-	h.Viewport = c.Viewport
-	h.LeftBound, h.RightBound = c.LeftBound, c.RightBound
-	h.ScreenLeftMargin, h.ScreenRightMargin = c.ScreenLeftMargin, c.ScreenRightMargin
-	h.Timeline = c.Timeline
-	h.SuperTargetDefenceMul = c.SuperTargetDefenceMul
-	h.Palettes = c.Palettes
-	if c.Palettes != nil && params["ownpal"] == "1" {
-		h.Palettes = c.Palettes.Clone()
-	}
-	h.Parent = c
-	h.Root = c.Root
-	if h.Root == nil {
-		h.Root = c
-	}
-	h.InputSlot = c.InputSlot
-	h.HelperID, _ = strconv.Atoi(params["id"])
-	h.Facing = c.Facing
-
-	// Default pos is (0,0) relative to parent axis
-	h.X = c.X
-	h.Y = c.Y
-
-	if v, ok := params["pos"]; ok {
-		pos := cns.ParseFloatList(v)
-		if len(pos) >= 1 {
-			h.X += pos[0] * float64(c.Facing)
-		}
-		if len(pos) >= 2 {
-			h.Y += pos[1]
-		}
-	}
-
-	if err := c.World.addHelper(h); err != nil {
-		c.RuntimeError = err
-		return
-	}
-	h.ChangeState(stateno, 0, -1)
-	c.Helpers = append(c.Helpers, h)
 }
 
 func (c *Character) Projectile(params map[string]string) {
@@ -2110,6 +2064,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 }
 
 func (c *Character) Command(name string) bool {
+	if c.Parent != nil && !c.isProjectile && !c.HelperKeyControl {
+		return false
+	}
 	// 1. Check matched sequences from c.ActiveCommands (computed in Update)
 	for _, active := range c.ActiveCommands {
 		if active == name {

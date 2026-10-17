@@ -1,5 +1,11 @@
 # Entity identity, redirection and current ownership limits
 
+M4aj replaces recursive helper ticking with the shared ordered root/helper
+list, and adds typed creation arguments, measured negative eligibility, pause
+allowances, names, sizes and camera rules. See HELPERS.md. Nested creation and
+normal/player count controls extend the identity foundation below; opposing-
+helper contacts, complete retirement and projectiles remain open.
+
 M4x separates Character.InputSlot, EntityID, TeamSide and HelperID. The former
 Target opponent list is named Opponents. A simulation-owned registry assigns
 IDs and resolves live roots/helpers independently of keyboard slots. Match owns

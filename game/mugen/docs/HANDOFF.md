@@ -4,7 +4,29 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
+Latest M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
+root/helper scheduler. Seventy-two native programs pin 984 numbers, eight load
+rejections and 276 authored input hashes. Birth/negative-state eligibility,
+creation order, postype/facing/defaults, names/counts and separate paused-tick
+allowances match the controls. Far helper cameras expose independently rounded
+endpoints/deltas and tiny zoom rounding. Intro now waits ten consecutive clear
+ticks; the measured empty/active assertion flows grant control at 130/135/150.
+Full scoped races pass in temp/m4aj-full-race.log; display-independent
+engine/evaluator races pass in temp/m4aj-final-pure-race.log. See HELPERS.md.
+Opposing-helper contacts, complete retirement, positive input, palette/foreign/
+paused-creation and full projectile/vertical/zoom/mode/asset gates remain open.
+
+Real 1280x720 windows at temp/app-runs/helper-size-go/ (2/4/7 seconds) and
+helper-stock-throw-go/ (2/3/4/7) pass all seven capture hash/dimension/nonblack
+checks, with no runtime/missing-resource errors. The scaled helper's white
+clothing occupies exactly [643,401,943,499) in both native and Go, with 10,381
+thresholded pixels in each. This pins the measured 2.5/.5 scale and nonzero Y;
+it is not full framebuffer equivalence. Native debug magenta versus Go black
+outside the minimal stage, background filtering and other rendering rules
+remain open. The inspected stock recovery has two fighters and no dust clones.
+
+
+Previous M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
 query bindings. Thirty-one native programs compare 336 numbers, three load
 rejections and all 93 authored input hashes. Ground push, one-pass reset,
 negative offsets, replacement/parameter precedence, nonzero-camera edges,
@@ -715,9 +737,10 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Complete Helper typed parameters, keyctrl/negative-state eligibility and global
-child scheduling, then remaining facing/priority/hit flags and attacker-hit
-interrupted binding controls. Continue
+Complete DestroySelf recursion/orphan/effect/binding ownership and opposing-
+helper contacts. Continue positive input, helper palettes/foreign/paused creation,
+remaining facing/priority/hit flags and attacker-hit interrupted binding controls.
+Continue
 remaining effect motion/bind/pause/owner semantics and the other binding/helper/world and
 engine/asset gates. The selection-to-fight path runs, but the complete M4 and
 whole 1.1 beta compatibility gates remain open. Implementation

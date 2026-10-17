@@ -85,20 +85,8 @@ func collisionAtFrames(attacker, defender *Character, el1, el2 *air.Element) boo
 	}
 
 	// Get scales from CNS Size
-	s1x, s1y := attacker.StateFile.Size.XScale, attacker.StateFile.Size.YScale
-	s2x, s2y := defender.StateFile.Size.XScale, defender.StateFile.Size.YScale
-	if s1x == 0 {
-		s1x = 1
-	}
-	if s1y == 0 {
-		s1y = 1
-	}
-	if s2x == 0 {
-		s2x = 1
-	}
-	if s2y == 0 {
-		s2y = 1
-	}
+	s1x, s1y := attacker.spriteScale()
+	s2x, s2y := defender.spriteScale()
 	// Compare all boxes in the attacker's local space. AIR and CNS size
 	// scales are character-local; the opponent's axis and extents both convert.
 	defenderX, defenderY := attacker.PositionOf(defender)

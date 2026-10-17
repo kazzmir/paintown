@@ -223,6 +223,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		}
 	}
 	p.Character = NewCharacter(master, nil, p.CMD)
+	p.Character.Name, p.Character.AuthorName = def.Info["name"], def.Info["author"]
 	p.Character.SM = compiler
 	p.Character.OwnSounds = p.SND
 	p.Character.LocalCoord = local

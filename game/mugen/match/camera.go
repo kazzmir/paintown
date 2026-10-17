@@ -1,25 +1,36 @@
 package match
 
-import "math"
+import (
+	"github.com/kazzmir/paintown/game/mugen/character"
+	"math"
+)
+
+func (m *Match) cameraActors() []*character.Character {
+	actors := make([]*character.Character, 0, len(m.Players)+len(m.World.Helpers))
+	for _, player := range m.Players {
+		actors = append(actors, player.Character)
+	}
+	return append(actors, m.World.Helpers...)
+}
 
 // The native zoom-one horizontal camera keeps a tension region, eases after
-// each root update and again in the shared late phase, and clamps at its goal.
-// Its single-precision left edge matters even when scripts expose the center.
+// each entity update and in the shared late phase. Both endpoints and the
+// movement delta round independently before the center/zoom are published.
 func (m *Match) updateHorizontalCamera() {
 	stageScale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	left, right := math.Inf(1), math.Inf(-1)
 	leftVelocity, rightVelocity := 0.0, 0.0
 	participants := false
 	verticalParticipants := false
-	for _, player := range m.Players {
-		verticalParticipants = verticalParticipants || player.Character.CameraMovementEnabled(1)
-		if !player.Character.CameraMovementEnabled(0) {
+	for _, actor := range m.cameraActors() {
+		verticalParticipants = verticalParticipants || actor.CameraMovementEnabled(1)
+		if !actor.CameraMovementEnabled(0) {
 			continue
 		}
 		participants = true
-		scale, _ := player.LocalCoord.ScaleTo(m.Options.GameSpace)
-		x := player.Character.X * scale
-		velocity := player.Character.VelX * float64(player.Character.Facing) * scale
+		scale := float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
+		x := actor.X * scale
+		velocity := actor.VelX * float64(actor.Facing) * scale
 		if x < left {
 			left, leftVelocity = x, velocity
 		}
@@ -43,27 +54,36 @@ func (m *Match) updateHorizontalCamera() {
 	}
 	wanted = math.Max(m.Stage.Camera.BoundLeft*stageScale, math.Min(m.Stage.Camera.BoundRight*stageScale, wanted))
 	m.cameraGoalX = wanted
-	currentEdge := float32(m.CameraX - half)
-	wantedEdge := float32(wanted - half)
-	if currentEdge != wantedEdge {
-		margin := 2 * float64(m.Options.GameSpace.Width) / 320
-		direction := math.Copysign(1, float64(wantedEdge-currentEdge))
-		step := float32(.95*float64(currentEdge) + .05*(float64(wantedEdge)+margin*direction))
-		if direction > 0 {
-			// The actor beyond the active tension edge also imposes a speed
-			// floor. An interior moving actor does not impose that constraint.
-			if right > m.CameraX+threshold && rightVelocity > 0 {
-				step = max(step, float32(float64(currentEdge)+rightVelocity))
-			}
-			step = min(step, wantedEdge)
-		} else {
-			if left < m.CameraX-threshold && leftVelocity < 0 {
-				step = min(step, float32(float64(currentEdge)+leftVelocity))
-			}
-			step = max(step, wantedEdge)
+	wantedLeft, wantedRight := float32(wanted-half), float32(wanted+half)
+	bias := float32(float64(float32(.1)) * float64(m.Options.GameSpace.Width) / 320)
+	advance := func(currentEdge, wantedEdge float32) float32 {
+		if currentEdge == wantedEdge {
+			return currentEdge
 		}
-		m.CameraX = float64(step) + half
+		direction := math.Copysign(1, float64(wantedEdge-currentEdge))
+		delta := float32(.95*float64(currentEdge) + .05*float64(wantedEdge) - float64(currentEdge) + float64(bias)*direction)
+		if direction > 0 {
+			if right > m.CameraX+threshold && rightVelocity > 0 {
+				delta = max(delta, float32(rightVelocity))
+			}
+			return min(currentEdge+delta, wantedEdge)
+		}
+		if left < m.CameraX-threshold && leftVelocity < 0 {
+			delta = min(delta, float32(leftVelocity))
+		}
+		return max(currentEdge+delta, wantedEdge)
 	}
+	m.cameraLeft, m.cameraRight = advance(m.cameraLeft, wantedLeft), advance(m.cameraRight, wantedRight)
+	width := float64(m.Options.GameSpace.Width)
+	if float64(m.cameraRight)-float64(m.cameraLeft) > width {
+		if m.cameraRight <= wantedRight {
+			m.cameraLeft = float32(float64(m.cameraRight) - width)
+		} else if m.cameraLeft >= wantedLeft {
+			m.cameraRight = float32(float64(m.cameraLeft) + width)
+		}
+	}
+	m.CameraX = float64(float32((float64(m.cameraLeft) + float64(m.cameraRight)) / 2))
+	m.Viewport.Zoom = float64(float32(width / (float64(m.cameraRight) - float64(m.cameraLeft))))
 	m.Viewport.CameraX = m.CameraX
 	for _, player := range m.Players {
 		scale, _ := m.Options.GameSpace.ScaleTo(player.LocalCoord)

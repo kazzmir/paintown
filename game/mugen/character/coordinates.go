@@ -2,6 +2,20 @@ package character
 
 import "strings"
 
+func (c *Character) spriteScale() (x, y float64) {
+	if c.StateFile == nil {
+		return 1, 1
+	}
+	x, y = c.StateFile.Size.XScale, c.StateFile.Size.YScale
+	if x == 0 && len(c.StateFile.ConstantFields["size.xscale"]) == 0 {
+		x = 1
+	}
+	if y == 0 && len(c.StateFile.ConstantFields["size.yscale"]) == 0 {
+		y = 1
+	}
+	return x, y
+}
+
 // ScaleFrom converts another player's script units into this player's units.
 // Zero-valued profiles are retained for legacy callers constructing Characters.
 func (c *Character) ScaleFrom(other *Character) float64 {

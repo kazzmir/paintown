@@ -109,6 +109,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileScreenBound(ctrl)
 	case "width":
 		return compileWidth(ctrl)
+	case "helper":
+		return compileHelper(ctrl)
 	case "targetdrop", "targetfacing", "targetlifeadd", "targetpoweradd", "targetvelset", "targetveladd", "targetstate":
 		return compileTarget(ctrl, name)
 	case "playsnd", "sndpan", "stopsnd":

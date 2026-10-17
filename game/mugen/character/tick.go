@@ -15,9 +15,9 @@ type contact struct {
 	guarded            bool
 }
 
-// TickCharacters advances root players through shared state, contact and physics
-// phases. The World registry owns identities; complete helper/projectile phase
-// scheduling remains separate work and their existing child adapters remain.
+// TickCharacters advances roots and helpers through shared state and physics
+// phases. New helpers join the end of the current pass. Complete multi-entity
+// contacts and the legacy projectile adapters still need their own integration.
 func TickCharacters(players []*Character) error {
 	if len(players) == 0 {
 		return nil
@@ -29,13 +29,31 @@ func TickCharacters(players []*Character) error {
 		return err
 	}
 	world := players[0].World
+	rootGroup := map[*Character]bool{}
 	for _, c := range players {
 		if c != nil && c.Parent == nil {
+			rootGroup[c] = true
 			if err := world.AddRoots(c); err != nil {
 				return err
 			}
 		}
 	}
+	queued := map[*Character]bool{}
+	for _, c := range players {
+		queued[c] = true
+	}
+	newHelpers := func() []*Character {
+		var added []*Character
+		for _, helper := range world.Helpers {
+			if !helper.destroyed && rootGroup[helper.rootPlayer()] && !queued[helper] {
+				queued[helper] = true
+				players = append(players, helper)
+				added = append(added, helper)
+			}
+		}
+		return added
+	}
+	newHelpers()
 	timeline := players[0].Timeline
 	if timeline == nil {
 		timeline = &engine.Timeline{}
@@ -73,7 +91,7 @@ func TickCharacters(players []*Character) error {
 				attacker.HitGuard = map[int]bool{}
 			}
 			for _, defender := range c.Opponents {
-				if timeline.Frozen(attacker.pauseActor) && timeline.Frozen(defender.pauseActor) {
+				if attacker.worldFrozen && defender.worldFrozen {
 					continue
 				}
 				if defender == attacker || defender.Life <= 0 || attacker.HitGuard[int(defender.EntityID)] {
@@ -127,7 +145,11 @@ func TickCharacters(players []*Character) error {
 	sort.SliceStable(ordered, func(i, j int) bool {
 		return ordered[i].MoveType == "A" && ordered[j].MoveType != "A"
 	})
-	for _, c := range ordered {
+	for index := 0; index < len(ordered); index++ {
+		c := ordered[index]
+		if c.destroyed {
+			continue
+		}
 		if !c.worldFrozen {
 			c.ageDefenses()
 		}
@@ -149,16 +171,30 @@ func TickCharacters(players []*Character) error {
 		if c.RuntimeError != nil {
 			return c.RuntimeError
 		}
-		if c.Parent == nil && world.AfterRootUpdate != nil {
-			world.AfterRootUpdate()
+		if !c.isProjectile && world.AfterEntityUpdate != nil {
+			world.AfterEntityUpdate()
+		}
+		for _, helper := range newHelpers() {
+			helper.BindTimeline(timeline)
+			if !helper.startTick() {
+				return helper.RuntimeError
+			}
+			ordered = append(ordered, helper)
 		}
 	}
 	// Body push waits until every root has run CNS/movement. A later root can
 	// observe authored PosSet and completed physics before this body correction.
 	for _, c := range players {
-		if !c.worldFrozen && !c.pausedThisTick && !c.PosFrozen {
+		if !c.destroyed && !c.worldFrozen && !c.pausedThisTick && !c.PosFrozen {
 			c.ResolvePushCollision()
 		}
+		var children []*Character
+		for _, child := range c.Helpers {
+			if !child.destroyed {
+				children = append(children, child)
+			}
+		}
+		c.Helpers = children
 	}
 	for _, c := range players {
 		if err := c.advanceExplods(pausedEffects, superPausedEffects); err != nil {

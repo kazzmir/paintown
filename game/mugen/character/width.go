@@ -39,8 +39,8 @@ func (c *Character) lookupEdges(name string) (evaluator.Value, bool) {
 	if zoom <= 0 {
 		zoom = 1
 	}
-	half := float32(v.Space.Width) * scale / zoom / 2
-	camera := float32(c.cameraPositionX())
+	half := float64(v.Space.Width) * float64(scale) / float64(zoom) / 2
+	camera := c.cameraPositionX()
 	left, right := camera-half, camera+half
 	front, back := right, left
 	frontMargin, backMargin := c.ScreenRightMargin, c.ScreenLeftMargin
@@ -48,9 +48,9 @@ func (c *Character) lookupEdges(name string) (evaluator.Value, bool) {
 		front, back = left, right
 		frontMargin, backMargin = backMargin, frontMargin
 	}
-	frontDistance := (front-float32(c.X))*float32(c.Facing) - float32(frontMargin)
-	backDistance := (float32(c.X)-back)*float32(c.Facing) - float32(backMargin)
-	var value float32
+	frontDistance := (front-c.X)*float64(c.Facing) - frontMargin
+	backDistance := (c.X-back)*float64(c.Facing) - backMargin
+	var value float64
 	switch name {
 	case "leftedge":
 		value = left
@@ -65,9 +65,9 @@ func (c *Character) lookupEdges(name string) (evaluator.Value, bool) {
 	case "backedgedist":
 		value = backDistance
 	case "frontedgebodydist":
-		value = frontDistance - float32(c.frameWidths.Edge[0])
+		value = frontDistance - c.frameWidths.Edge[0]
 	case "backedgebodydist":
-		value = backDistance - float32(c.frameWidths.Edge[1])
+		value = backDistance - c.frameWidths.Edge[1]
 	}
-	return evaluator.Float(value), true
+	return evaluator.Float(float32(value)), true
 }

@@ -23,6 +23,15 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "name", "p1name":
+		return evaluator.Text(c.Name), true
+	case "authorname":
+		return evaluator.Text(c.AuthorName), true
+	case "p2name":
+		if len(c.Opponents) > 0 {
+			return evaluator.Text(c.Opponents[0].Name), true
+		}
+		return evaluator.Value{}, true
 	case "gametime":
 		if c.Timeline == nil {
 			c.EvaluationWarning("GameTime requires a timeline")
@@ -91,9 +100,9 @@ func (c *Character) lookupViewport(name string) (evaluator.Value, bool) {
 	case "camerazoom":
 		value = zoom
 	case "screenpos x":
-		value = float32(c.X) - cameraX + width/zoom/2
+		value = float32(c.X - float64(cameraX) + float64(width)/float64(zoom)/2)
 	case "screenpos y":
-		value = float32(c.Y) - cameraY + float32(v.GroundY)*scale/zoom
+		value = float32(c.Y - float64(cameraY) + v.GroundY*float64(scale)/float64(zoom))
 	}
 	return evaluator.Float(value), true
 }

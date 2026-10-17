@@ -10,19 +10,18 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
-// World owns entity identity and root relationships. The existing root tick
-// phases and child adapters still schedule simulation; this is not a second
-// state runner.
+// World owns entity identity and root relationships. TickCharacters schedules
+// roots/helpers; projectiles still use legacy child adapters.
 type World struct {
 	Registry  *engine.Registry[*Character]
 	Roots     []*Character
 	Helpers   []*Character
 	HelperMax int
 
-	// AfterRootUpdate observes completed root CNS/physics before the next root.
-	// Match uses this for the camera; isolated state-only worlds leave it nil.
-	AfterRootUpdate func()
-	random          *rand.Rand
+	// AfterEntityUpdate observes completed root/helper CNS and physics. Match
+	// uses this for camera easing; state-only worlds leave it nil.
+	AfterEntityUpdate func()
+	random            *rand.Rand
 }
 
 func NewWorld(helperMax int) *World {

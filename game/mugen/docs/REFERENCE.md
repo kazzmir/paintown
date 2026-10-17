@@ -7,6 +7,30 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4aj helper configuration and shared scheduling
+
+M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
+root/helper scheduler. Seventy-two native programs pin 984 numbers, eight load
+rejections and 276 authored input hashes. Birth/negative-state eligibility,
+creation order, postype/facing/defaults, names/counts and separate paused-tick
+allowances match the controls. Far helper cameras expose independently rounded
+endpoints/deltas and tiny zoom rounding. Intro now waits ten consecutive clear
+ticks; the measured empty/active assertion flows grant control at 130/135/150.
+Full scoped races pass in temp/m4aj-full-race.log; display-independent
+engine/evaluator races pass in temp/m4aj-final-pure-race.log. See HELPERS.md.
+Opposing-helper contacts, complete retirement, positive input, palette/foreign/
+paused-creation and full projectile/vertical/zoom/mode/asset gates remain open.
+
+Real 1280x720 windows at temp/app-runs/helper-size-go/ (2/4/7 seconds) and
+helper-stock-throw-go/ (2/3/4/7) pass all seven capture hash/dimension/nonblack
+checks, with no runtime/missing-resource errors. The scaled helper's white
+clothing occupies exactly [643,401,943,499) in both native and Go, with 10,381
+thresholded pixels in each. This pins the measured 2.5/.5 scale and nonzero Y;
+it is not full framebuffer equivalence. Native debug magenta versus Go black
+outside the minimal stage, background filtering and other rendering rules
+remain open. The inspected stock recovery has two fighters and no dust clones.
+
+
 ## M4ai Width and edge queries
 
 M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge

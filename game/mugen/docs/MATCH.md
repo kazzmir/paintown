@@ -1,5 +1,11 @@
 # Connected one-on-one match
 
+M4aj pins pre-intro RoundState 1 at GameTime 30, ten consecutive clear intro
+ticks, RoundState 2 at the fight announcement and first control at 130 in the
+empty-intro fixture. Active five/twenty-tick intro assertions shift control to
+135/150. These production Match traces replace the earlier 121 control grant;
+complete round/end/skip/persistence timing remains open. See HELPERS.md.
+
 The normal launcher now reaches a real FightState through title, character
 selection, stage selection and versus. Confirm both players in versus, then
 choose a stage with P1 left/right and confirm. Start confirms a character;

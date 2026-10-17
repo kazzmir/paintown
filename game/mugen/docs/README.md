@@ -42,5 +42,7 @@ and the handoff for current progress; the assessment describes the original base
 
 22. [Width and edge queries](WIDTH.md): native temporary offsets, base body distance, ground push and edge-trigger semantics.
 
+23. [Helper configuration](HELPERS.md): native birth/order, typed parameters, sizes, pause allowances, camera precision and intro timing.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

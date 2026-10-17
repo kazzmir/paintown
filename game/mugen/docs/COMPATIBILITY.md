@@ -7,6 +7,18 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
+root/helper scheduler. Seventy-two native programs pin 984 numbers, eight load
+rejections and 276 authored input hashes. Birth/negative-state eligibility,
+creation order, postype/facing/defaults, names/counts and separate paused-tick
+allowances match the controls. Far helper cameras expose independently rounded
+endpoints/deltas and tiny zoom rounding. Intro now waits ten consecutive clear
+ticks; the measured empty/active assertion flows grant control at 130/135/150.
+Full scoped races pass in temp/m4aj-full-race.log; display-independent
+engine/evaluator races pass in temp/m4aj-final-pure-race.log. See HELPERS.md.
+Opposing-helper contacts, complete retirement, positive input, palette/foreign/
+paused-creation and full projectile/vertical/zoom/mode/asset gates remain open.
+
 M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
 query bindings. Thirty-one native programs compare 336 numbers, three load
 rejections and all 93 authored input hashes. Ground push, one-pass reset,
@@ -430,7 +442,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | FallEnvShake | Stub | 2 | Registered handler has no effective implementation. |
 | GameMakeAnim | Stub | 0 | Registered handler has no effective implementation. |
 | Gravity | Present | 0 | Sets a persistent flag rather than implementing one controller activation. |
-| Helper | Present | 0 | Basic Character allocation; unique ID, parameter set, control and lifecycle incomplete. |
+| Helper | Partial | 0 | Typed arguments and native birth/order/postype/size/negative/pause controls; full contacts, input, palettes, foreign ownership and lifecycle open. |
 | HitAdd | Present | 0 | Increments a counter; hit/unique-hit bookkeeping and expressions incomplete. |
 | HitBy | Present | 0 | Records masks/timers; collision does not enforce them. |
 | HitDef | Present | 82 | Subset parsed as literals; hit/guard/priority/juggle/target/custom-state rules incomplete. |

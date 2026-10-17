@@ -39,10 +39,18 @@ func (c *Character) MissingStateAllowed(number int) bool {
 func (c *Character) ResolveState(number int) (*cns.StateDef, engine.Environment) {
 	owner := c.currentStateOwner()
 	if number < 0 {
+		if c.Parent != nil && !c.isProjectile {
+			if number == -1 && !c.HelperKeyControl || number != -1 && !c.PlayerHelper {
+				return nil, c
+			}
+		}
 		if owner != c && (number == -3 || number == -1) {
 			return nil, c
 		}
 		owner = c
+		if number == -1 && c.Parent != nil && !c.isProjectile {
+			owner = c.rootPlayer()
+		}
 	}
 	if owner.StateFile == nil {
 		return nil, c
@@ -95,6 +103,10 @@ func (s *stateEnvironment) SetWidth(p engine.WidthParameters) error {
 	p.Edge[0], p.Edge[1] = s.storageVector(p.Edge[0], p.Edge[1])
 	p.Player[0], p.Player[1] = s.storageVector(p.Player[0], p.Player[1])
 	return s.Character.SetWidth(p)
+}
+func (s *stateEnvironment) CreateHelper(p engine.HelperParameters) error {
+	p.X, p.Y = s.storageVector(p.X, p.Y)
+	return s.Character.CreateHelper(p)
 }
 func (s *stateEnvironment) CreateExplod(p engine.ExplodParameters) error {
 	p.X, p.Y = s.storageVector(p.X, p.Y)

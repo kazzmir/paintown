@@ -300,6 +300,9 @@ func IsButton(name string) bool {
 func (c *Character) updateCommands(isPaused bool) {
 	c.ActiveCommands = nil
 	c.LastCommandMatched = ""
+	if c.Parent != nil && !c.isProjectile && !c.HelperKeyControl {
+		return
+	}
 	if c.Commands != nil && c.CmdFile != nil {
 		var physicalRaw []string
 		if c.InputSource != nil {

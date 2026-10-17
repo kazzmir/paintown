@@ -1,5 +1,16 @@
 # Horizontal camera following
 
+M4aj supersedes the single-left-endpoint precision and root-only observer model
+below. Both endpoints and movement deltas round independently to float32;
+a maximum-span correction precedes center/zoom publication. Even zoom-one
+controls can expose tiny zoom rounding. ScreenPos/edge division keeps double
+precision until the final script value. Every completed root/helper pass calls
+World.AfterEntityUpdate; a helper excluded from tracking still adds an easing
+step. New helper participation starts at its first own pass. Far normal/player/
+enabled helpers and explicit endpoint packets pin these distinctions. See
+HELPERS.md and the 72-program helpercfg corpus. Full vertical/1.1 zoom remains
+open. The earlier sections describe the original M4ag evidence.
+
 M4ag replaces averaging the two fighter positions with the reference's measured
 horizontal tension, retained goal, easing and root update points. The native
 programs use authored 320x240 stages, tension=60, zoom=1 and no hurtboxes/input.

@@ -59,27 +59,29 @@ const (
 )
 
 type Match struct {
-	Request                Request
-	Options                Options
-	Players                [2]*character.Player
-	Stage                  *stage.Stage
-	Fight                  *fight.Definition
-	Phase                  Phase
-	PhaseTime, Tick, Round int
-	Wins                   [2]int
-	Winner                 int // 0/1, or -1 for a draw
-	TimeOver               bool
-	TimeLeft               int     // counts; -1 means unlimited
-	CameraX, CameraY       float64 // common game-space units
-	SoundQueue             *sound.Queue
-	Effects                *effect.Scene
-	Viewport               *coord.Viewport
-	Timeline               *engine.Timeline
-	World                  *character.World
-	commonEffects          effect.Source
-	timeTicks              int
-	matchDone              bool
-	cameraGoalX            float64
+	Request                 Request
+	Options                 Options
+	Players                 [2]*character.Player
+	Stage                   *stage.Stage
+	Fight                   *fight.Definition
+	Phase                   Phase
+	PhaseTime, Tick, Round  int
+	Wins                    [2]int
+	Winner                  int // 0/1, or -1 for a draw
+	TimeOver                bool
+	TimeLeft                int     // counts; -1 means unlimited
+	CameraX, CameraY        float64 // common game-space units
+	SoundQueue              *sound.Queue
+	Effects                 *effect.Scene
+	Viewport                *coord.Viewport
+	Timeline                *engine.Timeline
+	World                   *character.World
+	commonEffects           effect.Source
+	timeTicks               int
+	matchDone               bool
+	cameraGoalX             float64
+	cameraLeft, cameraRight float32
+	introClearTicks         int
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -95,7 +97,7 @@ func New(request Request, options Options) (*Match, error) {
 		helperMax = 56
 	}
 	m.World = character.NewWorld(helperMax)
-	m.World.AfterRootUpdate = m.updateHorizontalCamera
+	m.World.AfterEntityUpdate = m.updateHorizontalCamera
 	if options.SuperTargetDefenceMul <= 0 {
 		options.SuperTargetDefenceMul = 1.5
 		m.Options = options
@@ -167,10 +169,17 @@ func (m *Match) resetRound() error {
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
 	m.cameraGoalX = m.CameraX
+	half := float64(m.Options.GameSpace.Width) / 2
+	m.cameraLeft, m.cameraRight = float32(m.CameraX-half), float32(m.CameraX+half)
+	m.Viewport.Zoom = 1
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	for slot, p := range m.Players {
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
+		c.Name, c.AuthorName = previous.Name, previous.AuthorName
+		if p.Definition != nil {
+			c.Name, c.AuthorName = p.Definition.Info["name"], p.Definition.Info["author"]
+		}
 		c.BindSound(m.SoundQueue, p.SND, m.Fight.CommonSounds)
 		c.LocalCoord = p.LocalCoord
 		c.GameCoord = m.Options.GameSpace
@@ -231,7 +240,12 @@ func (m *Match) ClearSounds() error {
 	return m.SoundQueue.Push(sound.Command{Operation: sound.ClearScene})
 }
 
-func (m *Match) enter(phase Phase) { m.Phase, m.PhaseTime = phase, 0 }
+func (m *Match) enter(phase Phase) {
+	m.Phase, m.PhaseTime = phase, 0
+	if phase == Intro {
+		m.introClearTicks = 0
+	}
+}
 func (m *Match) roundState(value int) {
 	for _, p := range m.Players {
 		p.Character.RoundState = value
@@ -281,12 +295,17 @@ func (m *Match) Update() error {
 		for _, p := range m.Players {
 			intro = intro || p.Character.Specials["intro"]
 		}
-		if !intro {
-			m.roundState(2)
+		if intro {
+			m.introClearTicks = 0
+		} else {
+			m.introClearTicks++
+		}
+		if m.introClearTicks >= 10 {
 			m.enter(RoundCall)
 		}
 	case RoundCall:
 		if m.PhaseTime >= m.Setting("Round", "round.default.displaytime", 60) {
+			m.roundState(2)
 			m.enter(FightCall)
 		}
 	case FightCall:
@@ -376,14 +395,14 @@ func (m *Match) updateCamera() {
 	y := 0.0
 	participants := false
 	horizontalParticipants := false
-	for _, p := range m.Players {
-		horizontalParticipants = horizontalParticipants || p.Character.CameraMovementEnabled(0)
-		if !p.Character.CameraMovementEnabled(1) {
+	for _, actor := range m.cameraActors() {
+		horizontalParticipants = horizontalParticipants || actor.CameraMovementEnabled(0)
+		if !actor.CameraMovementEnabled(1) {
 			continue
 		}
 		participants = true
-		factor, _ := p.LocalCoord.ScaleTo(m.Options.GameSpace)
-		y = math.Min(y, p.Character.Y*factor)
+		factor := float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
+		y = math.Min(y, actor.Y*factor)
 	}
 	if participants && horizontalParticipants {
 		y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow

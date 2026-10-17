@@ -13,6 +13,7 @@ import (
 
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/stage"
@@ -28,6 +29,10 @@ func TestNativeScreenBoundaries(t *testing.T) {
 
 func TestNativeWidth(t *testing.T) {
 	replayNativeGeometryPrograms(t, "width-*.json", 31)
+}
+
+func TestNativeHelperConfiguration(t *testing.T) {
+	replayNativeGeometryPrograms(t, "helpercfg-*.json", 72)
 }
 
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
@@ -46,6 +51,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				CNSHash    string `json:"cns_sha256"`
 				AIRHash    string `json:"air_sha256"`
 				StageHash  string `json:"stage_fixture_sha256"`
+				CMDHash    string `json:"cmd_sha256"`
 				Local      string `json:"localcoord"`
 				P2Local    string `json:"p2_localcoord"`
 				StageError string `json:"expected_stage_error"`
@@ -76,6 +82,24 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			file.SetLanguageVersion("1.1")
+			var commands *cmd.Data
+			if reference.CMDHash != "" {
+				data := checked(stem+".cmd", reference.CMDHash)
+				commands, err = cmd.Parse(bytes.NewReader(data))
+				if err != nil {
+					t.Fatal(err)
+				}
+				states, err := cns.ParseNamed(bytes.NewReader(data), stem+".cmd")
+				if err != nil {
+					t.Fatal(err)
+				}
+				states.SetLanguageVersion("1.1")
+				for number, state := range states.States {
+					if file.States[number] == nil {
+						file.States[number] = state
+					}
+				}
+			}
 			if reference.LoadError != "" && reference.StageError == "" {
 				if err := character.NewStateMachine().CompileState(file.States[700]); err == nil || !strings.Contains(err.Error(), "state 700 controller") || !strings.Contains(err.Error(), filepath.Base(stem)+".cns") {
 					t.Fatal("native-rejected controller was not rejected with source context", err)
@@ -101,7 +125,11 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			file.Data, file.Size, file.Velocity, file.Movement, file.ConstantFields = constants.Data, constants.Size, constants.Velocity, constants.Movement, constants.ConstantFields
 			m.Stage = background
 			for slot, player := range m.Players {
-				player.Character.StateFile, player.AIR, player.CMD = file, frames, nil
+				// The reference launches KFM against KFM; stockMatch's second
+				// loading template is KFM720, whose name is different.
+				player.Definition.Info["name"] = m.Players[0].Definition.Info["name"]
+				player.Definition.Info["author"] = m.Players[0].Definition.Info["author"]
+				player.Character.StateFile, player.AIR, player.CMD = file, frames, commands
 				player.LocalCoord = coord.Default()
 				local := reference.Local
 				if slot == 1 && reference.P2Local != "" {
