@@ -43,6 +43,10 @@ func TestNativeHelperBindingRetirement(t *testing.T) {
 	replayNativeGeometryPrograms(t, "helperbind-*.json", 27)
 }
 
+func TestNativeHelperDefenderContacts(t *testing.T) {
+	replayNativeGeometryPrograms(t, "helpercontact-*.json", 10)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

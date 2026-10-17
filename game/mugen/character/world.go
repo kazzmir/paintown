@@ -166,6 +166,23 @@ func (w *World) enemies(c *Character, nearest bool) []*Character {
 	return result
 }
 
+// Combat candidates include helpers without changing root-only Enemy/NumEnemy
+// queries. Creation order follows roots, then the live helper registry.
+func (w *World) contactEnemies(c *Character) []*Character {
+	result := w.enemies(c, false)
+	for _, helper := range w.Helpers {
+		if !helper.destroyed && helper.TeamSide != c.TeamSide {
+			// Both normal/player helpers can attack after birth, but their
+			// first incoming contact is two world ticks after creation.
+			if helper.helperBirthKnown && c.Timeline != nil && c.Timeline.GameTime-helper.helperBirthTick < 2 {
+				continue
+			}
+			result = append(result, helper)
+		}
+	}
+	return result
+}
+
 func (c *Character) helperFamily(id int, filter bool) []*Character {
 	var result []*Character
 	if c.World == nil || c.destroyed {

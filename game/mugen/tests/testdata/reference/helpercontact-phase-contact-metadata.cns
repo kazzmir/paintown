@@ -1,0 +1,225 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+[State 700, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[State 700, control]
+type=PosSet
+trigger1=Time=0
+x=40
+y=0
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+helpertype=normal
+pos=0,0
+
+[Statedef 701]
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+
+[State 701, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[State 701, control]
+type=PosSet
+trigger1=Time=0
+x=40
+y=0
+
+[State 701, control]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=10
+pausetime=0,0
+ground.type=High
+ground.velocity=0,0
+ground.hittime=30
+sparkno=-1
+hitsound=-1,0
+id=7
+
+[State 701, control]
+type=VarSet
+trigger1=1
+fv=0
+value=NumTarget
+
+[State 701, control]
+type=VarSet
+trigger1=1
+fv=1
+value=NumTarget(7)
+
+[State 701, control]
+type=VarSet
+trigger1=1
+fv=2
+value=Target,ID
+
+[State 701, control]
+type=VarSet
+trigger1=1
+fv=3
+value=MoveHit
+
+[State 701, control]
+type=VarSet
+trigger1=1
+fv=4
+value=MoveContact
+
+[State 701, control]
+type=VarSet
+trigger1=1
+fv=5
+value=NumEnemy
+
+[Statedef 800]
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+
+[State 800, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+
+[State 5000, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[State 5000, control]
+type=VarSet
+trigger1=IsHelper && Time=0
+fv=0
+value=Life
+
+[State 5000, control]
+type=VarSet
+trigger1=IsHelper && Time=0
+fv=1
+value=GetHitVar(damage)
+
+[State 5000, control]
+type=VarSet
+trigger1=IsHelper && Time=0
+fv=2
+value=Time
+
+[State 5000, control]
+type=VarSet
+trigger1=IsHelper && Time=0
+fv=3
+value=ID
+
+
+[State 5000, control]
+type=VarSet
+trigger1=!IsHelper && Time=0
+fv=18
+value=Life
+
+[State 5000, control]
+type=VarSet
+trigger1=!IsHelper && Time=0
+fv=19
+value=StateNo
+
+[State 5000, control]
+type=VarSet
+trigger1=!IsHelper && Time=0
+fv=20
+value=GetHitVar(damage)
+
+[State 5000, control]
+type=VarSet
+trigger1=!IsHelper && Time=0
+fv=21
+value=Enemy,MoveHit
+
+[State 5000, control]
+type=VarSet
+trigger1=!IsHelper && Time=0
+fv=22
+value=Helper(123),Life
+
+[State 5000, control]
+type=VarSet
+trigger1=!IsHelper && Time=0
+fv=23
+value=Helper(123),StateNo
+
+[Statedef -2]
+
+[State -2, control]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=[131,133]
+fv=6*(GameTime-131)+0
+value=Life
+
+[State -2, control]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=[131,133]
+fv=6*(GameTime-131)+1
+value=StateNo
+
+[State -2, control]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=[131,133]
+fv=6*(GameTime-131)+2
+value=GetHitVar(damage)
+
+[State -2, control]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=[131,133]
+fv=6*(GameTime-131)+3
+value=Enemy,MoveHit
+
+[State -2, control]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=[131,133]
+fv=6*(GameTime-131)+4
+value=Helper(123),Life
+
+[State -2, control]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=[131,133]
+fv=6*(GameTime-131)+5
+value=Helper(123),StateNo

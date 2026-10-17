@@ -48,5 +48,7 @@ and the handoff for current progress; the assessment describes the original base
 
 25. [Helper binding phases](HELPER-BINDING.md): anchor completion, own/redirected flags, forced retirement fall and delayed victim facing.
 
+26. [Helper combat](HELPER-COMBAT.md): defender candidates, birth activation, independent target identities and state-phase controls.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

@@ -86,11 +86,15 @@ func TickCharacters(players []*Character) error {
 	projectileHits := map[*Character]bool{}
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
+		defenders := c.Opponents
+		if !c.isProjectile {
+			defenders = world.contactEnemies(c)
+		}
 		for _, attacker := range attackers {
 			if attacker.HitGuard == nil {
 				attacker.HitGuard = map[int]bool{}
 			}
-			for _, defender := range c.Opponents {
+			for _, defender := range defenders {
 				if attacker.worldFrozen && defender.worldFrozen {
 					continue
 				}

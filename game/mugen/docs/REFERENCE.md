@@ -7,6 +7,28 @@ The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 compression tools write only to disposable output directories; the original
 distribution is unchanged.
 
+## M4an helper defenders and birth contact timing
+
+M4an adds helper defender candidates and measured incoming-contact activation.
+Ten native helpercontact programs compare 204 numbers and 40 authored input
+hashes. Normal/player/multiple helpers take damage, enter their own get-hit
+state and acquire independent target IDs; same-team helpers remain unharmed
+under the default enemy rule. Incoming contact begins two world ticks after
+birth. Independent negative/positive-state controls confirm the existing
+per-entity ordering. Full scoped races pass in temp/m4an-full-race.log; focused
+races and four fresh native replays pass. See HELPER-COMBAT.md. Complete combat,
+HitDef selection, projectiles, pause/foreign/geometry and rendering remain open.
+
+Seven real 1280x720 captures under temp/app-runs/helpercontact-two-go/
+(3/5/7 seconds) and helpercontact-stock-throw-go/ (2/3/4/7) pass provenance,
+dimensions, nonblack and runtime/resource checks. Stock recovery retains two
+fighters without permanent dust clones. The helper scene shows both victims;
+its native/Go white clothing masks contain 19,993/19,692 pixels and differ at
+1,507 pixels. This is a smoke check, not framebuffer parity. Existing mirrored/
+clipped placement, native debug magenta versus Go black, background filtering
+and HUD differences remain renderer obligations. Measurements:
+temp/m4an-app-comparison.json.
+
 ## M4am helper binding and deferred hit facing
 
 M4am adds anchor-completion binding publication, idle-anchor constraints,

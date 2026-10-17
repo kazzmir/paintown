@@ -496,3 +496,19 @@ expected state-800 rejection. HELPER-BINDING.md distinguishes anchor completion,
 per-pass flags, idle constraints, external 5050 timing and delayed facing. Full
 races pass in temp/m4am-full-race.log; the documented late right-edge raster
 difference remains separate from passing numeric conformance.
+
+## M4an helper defender contacts
+
+TestNativeHelperDefenderContacts compares ten helpercontact programs: 204 numeric
+observations and 40 CNS/AIR/CMD/stage hashes. Normal/player/multiple/same-team
+cases pin damage and target identities; early/late pairs pin incoming birth+2
+contact. Separate -3/-2/-1/positive controls distinguish scheduling from contact
+activation. Reproduce without overwriting the recorded goldens:
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture helpercontact-two-normal --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 --seconds 7
+```
+
+Use each JSON's recorded pages. Full scoped races, four fresh replays and seven
+private-display app captures pass; HELPER-COMBAT.md records the limits and
+remaining sprite-mask difference. No full HitDef/helper/renderer claim.

@@ -31,6 +31,10 @@ func (c *Character) CreateHelper(p engine.HelperParameters) error {
 	h.Commands = NewCommandBuffer(120)
 	h.RoundState, h.RoundNo, h.RoundsExisted = c.RoundState, c.RoundNo, c.RoundsExisted
 	h.Timeline, h.SuperTargetDefenceMul = c.Timeline, c.SuperTargetDefenceMul
+	h.helperBirthKnown = true
+	if c.Timeline != nil {
+		h.helperBirthTick = c.Timeline.GameTime
+	}
 	h.helperPauseMoveTime, h.helperSuperMoveTime = p.PauseMoveTime, p.SuperMoveTime
 	h.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
 	h.BindEffects(c.EffectQueue, c.CommonEffects)

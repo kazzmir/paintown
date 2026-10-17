@@ -4,7 +4,36 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
-Latest M4am adds anchor-completion binding publication, idle-anchor constraints,
+M4an adds helper defender candidates and measured incoming-contact activation.
+Ten native helpercontact programs compare 204 numbers and 40 authored input
+hashes. Normal/player/multiple helpers take damage, enter their own get-hit
+state and acquire independent target IDs; same-team helpers remain unharmed
+under the default enemy rule. Incoming contact begins two world ticks after
+birth. Independent negative/positive-state controls confirm the existing
+per-entity ordering. Full scoped races pass in temp/m4an-full-race.log; focused
+races and four fresh native replays pass. See HELPER-COMBAT.md. Complete combat,
+HitDef selection, projectiles, pause/foreign/geometry and rendering remain open.
+
+Seven real 1280x720 captures under temp/app-runs/helpercontact-two-go/
+(3/5/7 seconds) and helpercontact-stock-throw-go/ (2/3/4/7) pass provenance,
+dimensions, nonblack and runtime/resource checks. Stock recovery retains two
+fighters without permanent dust clones. The helper scene shows both victims;
+its native/Go white clothing masks contain 19,993/19,692 pixels and differ at
+1,507 pixels. This is a smoke check, not framebuffer parity. Existing mirrored/
+clipped placement, native debug magenta versus Go black, background filtering
+and HUD differences remain renderer obligations. Measurements:
+temp/m4an-app-comparison.json.
+
+Next: measure hitonce (including throw defaults) and affectteam against roots
+and helpers before implementation. Prepared original hitselect fixtures and
+native recording remain under the same scope. Continue autonomously; do not
+stop for routine permission or push. Corpus authors/catalogues:
+temp/author-helper-contact*.py and helpercontact-*-cases.json. Pre-fix/candidate-
+only failures: m4an-before-contacts.log and m4an-helper-first-race.log. Focused
+passes: m4an-helper-second-race.log and m4an-friendly-race.log. Four fresh
+replays: m4an-replay-player, pair-late-attack, phase-p2-attack and own-team.
+
+Previous M4am adds anchor-completion binding publication, idle-anchor constraints,
 external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.
 Twenty-seven native programs compare 564 numbers, one load rejection and 108
 input hashes. Third-entity/own-CNS flag controls, changing speed, own/borrowed

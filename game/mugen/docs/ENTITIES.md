@@ -95,3 +95,9 @@ See TARGETS.md. M4z adds independent state/animation ownership and native
 TargetState/ChangeState/SelfState, negative eligibility, mixed-unit and repeat-hit
 traces; see OWNERSHIP.md. Binding, HitDef state fields, all geometry boundaries,
 multiple-entity contacts, helper schemas and projectile phases remain open.
+
+M4an separates combat candidates from root-only enemy selectors. Live opposing
+helpers have distinct EntityID hit guards and target entries, and first incoming
+contact occurs two world ticks after birth in the measured controls. Normal,
+player, multiple and same-team cases compare against native; see
+HELPER-COMBAT.md. This does not complete team/projectile/priority/geometry rules.

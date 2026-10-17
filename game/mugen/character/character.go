@@ -116,6 +116,8 @@ type Character struct {
 	HelperID                                 int
 	HelperKeyControl, PlayerHelper           bool
 	HelperName                               string
+	helperBirthTick                          int32
+	helperBirthKnown                         bool
 	helperPauseMoveTime, helperSuperMoveTime int
 	World                                    *World
 	destroyed                                bool

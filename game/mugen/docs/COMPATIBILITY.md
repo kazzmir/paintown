@@ -7,6 +7,16 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4an adds helper defender candidates and measured incoming-contact activation.
+Ten native helpercontact programs compare 204 numbers and 40 authored input
+hashes. Normal/player/multiple helpers take damage, enter their own get-hit
+state and acquire independent target IDs; same-team helpers remain unharmed
+under the default enemy rule. Incoming contact begins two world ticks after
+birth. Independent negative/positive-state controls confirm the existing
+per-entity ordering. Full scoped races pass in temp/m4an-full-race.log; focused
+races and four fresh native replays pass. See HELPER-COMBAT.md. Complete combat,
+HitDef selection, projectiles, pause/foreign/geometry and rendering remain open.
+
 M4am adds anchor-completion binding publication, idle-anchor constraints,
 external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.
 Twenty-seven native programs compare 564 numbers, one load rejection and 108
