@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/cns"
@@ -12,13 +13,14 @@ import (
 // remaining legacy schema is replaced. Never mutate the shared source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	type cue struct {
-		key  string
-		own  bool
-		args []argument
+		key      string
+		own      bool
+		floating bool
+		args     []argument
 	}
 	var cues []cue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "ground.velocity"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -58,7 +60,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 		count := 2
-		if key != "hitsound" && key != "guardsound" && key != "sparkxy" {
+		if key != "hitsound" && key != "guardsound" && key != "sparkxy" && key != "ground.velocity" {
 			count = 1
 		}
 		expressions, err := evaluator.ParseReferenceTupleForVersion(raw, count, ctrl.LanguageVersion)
@@ -71,10 +73,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		if err != nil {
 			return nil, true, fmt.Errorf("%s: %w", key, err)
 		}
-		entry := cue{key: key, own: own}
+		entry := cue{key: key, own: own, floating: key == "ground.velocity"}
 		strictInteger := false
 		switch key {
-		case "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall":
+		case "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand":
 			strictInteger = true
 		}
 		for i, expr := range expressions {
@@ -84,7 +86,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
 				return nil, true, fmt.Errorf("%s: %w", key, err)
 			}
-			entry.args = append(entry.args, argument{argumentSpec: argumentSpec{name: fmt.Sprint(i), integer: true, required: true}, expr: expr})
+			entry.args = append(entry.args, argument{argumentSpec: argumentSpec{name: fmt.Sprint(i), integer: !entry.floating, required: true}, expr: expr})
 		}
 		cues = append(cues, entry)
 	}
@@ -100,7 +102,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			params[key] = value
 		}
 		for _, cue := range cues {
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "forcenofall")
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}
@@ -108,9 +110,15 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if cue.own {
 				prefix = "S"
 			}
-			params[cue.key] = fmt.Sprintf("%s%d", prefix, int(values["0"].Number()))
+			format := func(index string) string {
+				if cue.floating {
+					return strconv.FormatFloat(values[index].Number(), 'g', -1, 32)
+				}
+				return strconv.Itoa(int(values[index].Number()))
+			}
+			params[cue.key] = prefix + format("0")
 			if len(cue.args) == 2 {
-				params[cue.key] += fmt.Sprintf(",%d", int(values["1"].Number()))
+				params[cue.key] += "," + format("1")
 			}
 			if cue.key == "priority" {
 				params[cue.key] += "," + priorityClass

@@ -4,6 +4,29 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4au — Forced standing, dynamic knockback and velocity coordinates
+
+M4au adds optional Forcestand, float32 ground.velocity expressions and correct
+world-oriented GetHitVar X with facing-relative HitVelSet. Thirty-eight native
+programs compare 540 numbers, two load rejections and 152 authored hashes.
+Default/explicit posture, guard/override/entry phases, parameter side effects,
+heading/motion and nonzero/coerced axis flags match. Full scoped races pass in
+temp/m4au-full-race.log (Match 320.408 seconds); all focused/pure races pass.
+Six fresh native replays and nine actual app captures pass. Five white sprite
+masks match exactly, including moving/clipped receivers; stock recovery retains
+two fighters without persistent dust. See FORCED-STANDING.md.
+Remaining velocity schema, heading-change timing, full cross-field ordering,
+binding/juggle/projectile/team/input/render/asset/mode gates remain open.
+
+The initial 23-program run fails 14 cases. Five phase/order controls expose
+Forcestand-before-ground evaluation despite source order, and the first typed
+prototype retains two X-getter sign failures. Three facing controls independently
+pin world X and initial/late facing-relative velocity/positions. Seven axis-flag
+controls pin boolean selection, literal-float rejection and computed/bottom
+zero. The old unit host's raw-X expectation is corrected to this native contract.
+The registry adapter now delegates to the typed HitVelSet path; no duplicate
+velocity implementation remains there. Reversal point: 8ab6f50d (M4at).
+
 ## M4at — HitDef flags and fall contact eligibility
 
 M4at adds shared hitflag eligibility, explicit-empty distinction, downed state

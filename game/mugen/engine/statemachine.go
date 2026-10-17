@@ -672,40 +672,11 @@ func handleVelMul(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleHitVelSet(ctrl *cns.StateController, env Environment) error {
-	charEnv, ok := env.(evaluator.CharacterEnvironment)
-	if !ok {
-		return nil
+	handler, _, err := compileHitVelSet(ctrl)
+	if err != nil {
+		return err
 	}
-
-	curX, curY := env.GetVel()
-	newX, newY := curX, curY
-
-	if v, ok := ctrl.Params["x"]; ok {
-		evalX := 0.0
-		if expr, err := evaluator.Parse(v); err == nil {
-			evalX = evaluator.Evaluate(expr, env)
-		} else {
-			evalX, _ = strconv.ParseFloat(v, 64)
-		}
-		if evalX != 0 {
-			newX = charEnv.GetHitVar("xvel") * evalX
-		}
-	}
-
-	if v, ok := ctrl.Params["y"]; ok {
-		evalY := 0.0
-		if expr, err := evaluator.Parse(v); err == nil {
-			evalY = evaluator.Evaluate(expr, env)
-		} else {
-			evalY, _ = strconv.ParseFloat(v, 64)
-		}
-		if evalY != 0 {
-			newY = charEnv.GetHitVar("yvel") * evalY
-		}
-	}
-
-	env.SetVelocity(newX, newY)
-	return nil
+	return handler(ctrl, env)
 }
 
 func handleHitFallDamage(ctrl *cns.StateController, env Environment) error {

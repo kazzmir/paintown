@@ -142,6 +142,7 @@ type HitDef struct {
 	Fall             int
 	AirFall          int
 	ForceNoFall      bool
+	ForceStand       *bool // nil: derive from the unscaled ground Y velocity
 	FallDamage       int
 	FallVel          []float64
 	FallXUnchanged   bool
@@ -757,6 +758,11 @@ func ParseHitDef(params map[string]string) HitDef {
 	if raw, present := params["forcenofall"]; present {
 		value, _ := strconv.Atoi(raw)
 		hd.ForceNoFall = value != 0
+	}
+	if raw, present := params["forcestand"]; present {
+		value, _ := strconv.Atoi(raw)
+		force := value != 0
+		hd.ForceStand = &force
 	}
 	if v, ok := params["fall.damage"]; ok {
 		hd.FallDamage, _ = strconv.Atoi(v)

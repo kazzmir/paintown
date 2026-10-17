@@ -71,6 +71,10 @@ func TestNativeHitFlagEligibility(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitflag-*.json", 67)
 }
 
+func TestNativeForcedStanding(t *testing.T) {
+	replayNativeGeometryPrograms(t, "forcestand-*.json", 38)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

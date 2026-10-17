@@ -4,6 +4,40 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4au forced standing/get-hit velocity: all 38 native forcestand programs are
+recorded (540 numbers, two rejects, 152 authored hashes). Corrected integrated
+comparison passes in m4au-world-fields.log; pure races pass in
+m4au-velocity-pure-race.log. Full scoped races pass in m4au-full-race.log
+(Match 320.408 seconds). Six fresh native replays pass in m4au-replays.log.
+Nine actual app captures pass provenance/runtime checks in m4au-app-checks.json/
+log. Five white masks match exactly, including horizontal/clipped and vertical
+motion; stock recovery has two fighters without persistent dust. Finish the
+local M4au commit. Next author temp/author-hit-facing.py is prepared but NOT RUN:
+20 hitfacing programs for P1Facing/P1GetP2Facing, combined P2Facing and turns
+before/after HitDef activation. Verify heading-change timing before claiming
+the current contact-heading snapshot rule in those cases.
+Optional Forcestand, float32 ground.velocity,
+fixed Forcestand-before-ground parameter order, world-oriented GetHitVar X and
+facing-relative typed HitVelSet are implemented. One registry adapter delegates
+to the typed compiler. The old pure host assertion now uses the measured
+world-to-facing result. Reversal is committed 8ab6f50d.
+
+Evidence: initial pre-fix 23-program run fails14 (m4au-before-posture.log).
+Prototype28 fails two order and two X-sign cases (m4au-before-order.log).
+Native phase controls: guard skips forcing; idle override still applies it;
+entry U inherits forced S while explicit C replaces it. Side effects prove
+Forcestand before ground.velocity independent of written order (x=-2,y=3).
+Direction controls: getter is -groundX*attackerFacing in receiver-local units;
+HitVelSet converts world X by victim facing. same-right gives getter-2/Vel-2,
+same-left +2/-2, reversed +2/+2; positions +/-132 corroborate. X/Y flags 2/-1
+select rather than scale; literal float rejects, computed0.5/bottom become0.
+Native logs: m4au-native-first, m4au-extension-native, m4au-facing-native and
+m4au-hitvel-native. Authors/catalogues: author-force-stand, author-forcestand-
+extensions, author-forcestand-facing, author-hitvel-flags and forcestand-*-cases.
+Current binary: temp/m4au-world-velocity.test. Need full-suite completion, fresh
+native replays, actual application checks, final docs and authorized local
+commit. Continue autonomously; never overlap native/full/app graphics/audio.
+
 M4at hitflag eligibility: all49 original programs are recorded in
 m4at-native-first.log; the pre-fix comparison is m4at-before-flags.log. The shared
 flag gate, explicit-empty distinction, downed own5080 entry and measured fall
@@ -18,9 +52,8 @@ scoped race suite passes in m4at-full-race.log (Match 292.855 seconds). Native
 replays pass in m4at-replays.log. Nine actual app captures pass provenance and
 runtime checks in m4at-app-checks.json/log. Five white masks match exactly
 (11,181 pixels each); stock recovery has two fighters without persistent dust.
-Finish the local M4at commit. A next-checkpoint author, temp/author-force-stand.py,
-is prepared but NOT RUN; it creates23 forcestand/ground.velocity controls.
-Do not mix those sources into the M4at commit. Keep proceeding autonomously.
+Committed locally as8ab6f50d. Next forcestand controls are now active in M4au.
+Keep proceeding autonomously.
 Pre-fix binary
 temp/m4at-before.test expects49.
 Native quoted/lowercase flags accept; empty/Z accept but hit nothing. Falling
@@ -931,7 +964,7 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Finish M4at commit, then native HitDef forcestand/ground.velocity controls. Opposing
+Finish M4au commit, then native HitDef facing/timing controls. Opposing
 helper contacts, actor priority/raster alignment and the measured incoming-hit
 bound-target release are implemented in their checkpoints; do not repeat those
 as unstarted work. Continue remaining BindTo* controllers, paused/foreign/

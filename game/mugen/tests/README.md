@@ -639,3 +639,23 @@ values must not become artificial load errors. Falling eligibility needs A
 and F together while MoveType H; do not interpret the single-F miss as evidence
 of a juggle-budget failure. See [HIT-FLAGS.md](../docs/HIT-FLAGS.md) for the
 measured state rules and remaining guard/foreign/pause/juggle/down-state gates.
+
+## M4au forced standing and get-hit velocity axes
+
+`TestNativeForcedStanding` compares 38 original `forcestand-*` programs: 540
+numbers, two load rejections and 152 CNS/AIR/CMD/stage hashes. The corpus covers
+automatic/explicit Forcestand, guard/override/entry precedence, pre-force flag
+eligibility and compiled ground.velocity integer/fractional/redirect/single/
+bottom components. Side effects pin explicit Forcestand before ground.velocity
+independently of written order. Facing controls pin world-oriented GetHitVar X
+and HitVelSet's facing-relative assignment, initial velocity and actual motion.
+Nonzero axis flags select once; computed 0.5/bottom become zero; literal floats
+reject loading, including the HitVelSet error in state 5010.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture forcestand-facing-same-left --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 12 --seconds 7
+```
+
+Use each JSON's page list; rejected programs use page 0. See
+[FORCED-STANDING.md](../docs/FORCED-STANDING.md) for exact rules, prototype
+failures, native provenance and remaining coordinate/velocity/heading gates.

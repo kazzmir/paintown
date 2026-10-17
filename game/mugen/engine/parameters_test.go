@@ -311,8 +311,10 @@ func TestVectorExpressionsAndOmittedAxes(t *testing.T) {
 		t.Fatalf("position = %g,%g", h.px, h.py)
 	}
 	runController(t, h, "HitVelSet", "x=-3\ny=0")
-	if h.x != -4 || h.y != -4 {
-		t.Fatal("HitVelSet flag must not multiply hit velocity")
+	// Native facing controls pin world X=-4 as Vel X=+4 for a left-facing
+	// receiver. The nonzero flag selects the axis without multiplying it.
+	if h.x != 4 || h.y != -4 {
+		t.Fatal("HitVelSet must convert world X and leave unselected axes unchanged")
 	}
 }
 

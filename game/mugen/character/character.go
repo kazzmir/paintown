@@ -58,6 +58,7 @@ type Character struct {
 	bindingReported     bool
 	tickMoveType        string
 	pendingHitFacing    int
+	getHitFacing        int // attacker heading when the contact was accepted
 	LocalCoord          coord.Space
 	GameCoord           coord.Space
 	Viewport            *coord.Viewport
@@ -1302,6 +1303,11 @@ func (c *Character) GetHitVar(name string) float64 {
 		} else if len(c.GetHit.GroundVel) > 0 {
 			val = c.GetHit.GroundVel[0]
 		}
+		if c.getHitFacing != 0 {
+			// GetHitVar X is world-oriented, in receiver-local units. Keep
+			// its direction independent of subsequent turns/owner retirement.
+			val *= float64(-c.getHitFacing)
+		}
 	case "yvel":
 		if c.GetHitGuarded {
 			if c.GetHitAir && len(c.GetHit.AirGuardVel) > 1 {
@@ -1948,9 +1954,17 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	}
 	override, hasOverride := c.matchingOverride(hit.Attr)
 	airHit := c.StateType == "A" || (hasOverride && override.ForceAir)
+	forceStand := len(hit.GroundVel) > 1 && hit.GroundVel[1] != 0
+	if hit.ForceStand != nil {
+		forceStand = *hit.ForceStand
+	}
+	if !guarded && c.StateType == "C" && forceStand {
+		c.SetStateType("S")
+	}
 	c.GetHitAir = airHit
 	c.GetHitGuarded = guarded
 	hit = c.hitInLocalSpace(attacker, hit)
+	c.getHitFacing = attacker.Facing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 	if !guarded && (hit.P2Facing == 1 || hit.P2Facing == -1) {
 		c.pendingHitFacing = -hit.P2Facing * attacker.Facing

@@ -101,6 +101,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileSuperPause(ctrl)
 	case "hitdef":
 		return compileHitDef(ctrl)
+	case "hitvelset":
+		return compileHitVelSet(ctrl)
 	case "targetbind":
 		return compileTargetBind(ctrl)
 	case "explod":
@@ -274,22 +276,6 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 				quote = int(value.Number())
 			}
 			env.VictoryQuote(quote)
-			return nil
-		})
-	case "hitvelset":
-		return typedHandler(ctrl, []argumentSpec{{"x", true, false}, {"y", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
-			hit, ok := env.(interface{ GetHitVar(string) float64 })
-			if !ok {
-				return fmt.Errorf("HitVelSet requires hit data")
-			}
-			x, y := env.GetVel()
-			if v["x"].Bool() {
-				x = hit.GetHitVar("xvel")
-			}
-			if v["y"].Bool() {
-				y = hit.GetHitVar("yvel")
-			}
-			env.SetVelocity(x, y)
 			return nil
 		})
 	case "attackmulset", "defencemulset", "angleadd", "angleset", "anglemul":

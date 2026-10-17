@@ -7,6 +7,18 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4au adds optional Forcestand, float32 ground.velocity expressions and correct
+world-oriented GetHitVar X with facing-relative HitVelSet. Thirty-eight native
+programs compare 540 numbers, two load rejections and 152 authored hashes.
+Default/explicit posture, guard/override/entry phases, parameter side effects,
+heading/motion and nonzero/coerced axis flags match. Full scoped races pass in
+temp/m4au-full-race.log (Match 320.408 seconds); all focused/pure races pass.
+Six fresh native replays and nine actual app captures pass. Five white sprite
+masks match exactly, including moving/clipped receivers; stock recovery retains
+two fighters without persistent dust. See FORCED-STANDING.md.
+Remaining velocity schema, heading-change timing, full cross-field ordering,
+binding/juggle/projectile/team/input/render/asset/mode gates remain open.
+
 M4at adds shared hitflag eligibility, explicit-empty distinction, downed state
 5080 and typed ForceNoFall/fall continuation. Sixty-seven original programs
 compare 792 numbers, one load rejection and 268 authored input hashes. Posture,
