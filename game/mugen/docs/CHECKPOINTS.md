@@ -4,6 +4,28 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4at — HitDef flags and fall contact eligibility
+
+M4at adds shared hitflag eligibility, explicit-empty distinction, downed state
+5080 and typed ForceNoFall/fall continuation. Sixty-seven original programs
+compare 792 numbers, one load rejection and 268 authored input hashes. Posture,
+AF/MF, both modifier orders, non-H fall contexts and reciprocal priority controls
+match native; all focused/pure races and the full scoped suite pass in
+temp/m4at-full-race.log (Match 292.855 seconds). Six fresh native replays pass.
+Nine actual app captures pass provenance/dimension/runtime checks; five stable
+white masks match exactly (11,181 pixels each). Stock throw recovery retains
+two fighters without persistent dust. See HIT-FLAGS.md. Complete down physics, guard/fall,
+juggle, foreign/pause/projectile/team and remaining engine/asset gates stay open.
+
+The initial pre-fix 49-program run fails 35 cases. Native accepts empty/Z values
+as inactive, accepts quoted/lowercase flags, and requires A together with F for
+falling airborne H targets. Independent AF/MF and non-H controls distinguish
+posture from fall metadata. Both +/- orders exclude both idle and H; ineligible
+attacks cannot suppress an eligible reciprocal attack. State L selects 5080.
+Fall continuation, signed ForceNoFall, computed0.5 truncation, literal-float
+rejection, bottom0 and own-fall precedence have independent controls.
+Reversal point: 89b5a501 (M4as). No reference art/binary is committed.
+
 ## M4as — HitDef contact drawing priority
 
 M4as adds typed HitDef p1sprpriority/p2sprpriority and assignment at contact,

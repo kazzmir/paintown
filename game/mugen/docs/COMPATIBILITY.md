@@ -7,6 +7,17 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4at adds shared hitflag eligibility, explicit-empty distinction, downed state
+5080 and typed ForceNoFall/fall continuation. Sixty-seven original programs
+compare 792 numbers, one load rejection and 268 authored input hashes. Posture,
+AF/MF, both modifier orders, non-H fall contexts and reciprocal priority controls
+match native; all focused/pure races and the full scoped suite pass in
+temp/m4at-full-race.log (Match 292.855 seconds). Six fresh native replays pass.
+Nine actual app captures pass provenance/dimension/runtime checks; five stable
+white masks match exactly (11,181 pixels each). Stock throw recovery retains
+two fighters without persistent dust. See HIT-FLAGS.md. Complete down physics, guard/fall,
+juggle, foreign/pause/projectile/team and remaining engine/asset gates stay open.
+
 M4as adds typed HitDef p1sprpriority/p2sprpriority and assignment at contact,
 before ordinary/custom state entry. Twenty-three original marker programs
 compare 252 numbers, two load rejections, 21 native foreground identities and

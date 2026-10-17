@@ -4,6 +4,38 @@ Updated: 2026-10-17. State/language, sprite/font, and finite animation checkpoin
 are tested. Full compatibility remains unfinished. The production one-on-one fight path is
 connected; the complete playable M4 gate is still open.
 
+M4at hitflag eligibility: all49 original programs are recorded in
+m4at-native-first.log; the pre-fix comparison is m4at-before-flags.log. The shared
+flag gate, explicit-empty distinction, downed own5080 entry and measured fall
+preservation/typed ForceNoFall are implemented and pass all 67 integrated cases
+in m4at-fields-flags.log. Eighteen extensions are recorded through
+temp/run-hitflag.py hitflag-extension-cases.json (m4at-extension-native.log).
+They cover AF/MF, both-modifier orders/H, idle/attacking fall flags and eight
+ForceNoFall boundaries. All 67 JSONs now exist: 792 numbers, one rejection and
+268 authored hashes. TestNativeHitFlagEligibility expects67. The pre-fix run
+fails35/49 programs. Corrected binary is temp/m4at-native-fields.test. The full
+scoped race suite passes in m4at-full-race.log (Match 292.855 seconds). Native
+replays pass in m4at-replays.log. Nine actual app captures pass provenance and
+runtime checks in m4at-app-checks.json/log. Five white masks match exactly
+(11,181 pixels each); stock recovery has two fighters without persistent dust.
+Finish the local M4at commit. A next-checkpoint author, temp/author-force-stand.py,
+is prepared but NOT RUN; it creates23 forcestand/ground.velocity controls.
+Do not mix those sources into the M4at commit. Keep proceeding autonomously.
+Pre-fix binary
+temp/m4at-before.test expects49.
+Native quoted/lowercase flags accept; empty/Z accept but hit nothing. Falling
+MAF hits and preserves Fall1; A alone and F alone do not. Do not misread the
+single-F miss as a juggle-budget failure. The AF/MF extension distinguishes
+whether falling needs both A/F or any base posture plus F. Down D selects5080.
+Reciprocal ineligible higher-priority attacks must not win clashes. Final pure
+races pass in m4at-final-pure-race.log. AF hits but MF does not; falling H needs
+A and F together. Non-H context only needs A and starts fresh Fall0 on contact.
+Both modifier orders block H and idle. ForceNoFall -1 clears, computed0.5/bottom
+become0 and preserve, literalfloat rejects, own Fall/AirFall wins over forced
+clearing. Need final focused/
+full races, fresh native and actual app checks, docs and local commit. Never
+overlap native/full/app graphics/audio clients. Reversal is89b5a501 (M4as).
+
 M4as HitDef drawing priority has 23 recorded native programs (252 numbers, two
 load rejections, 21 foreground identities, 115 authored hashes). Native source log
 is m4as-native-first.log. The original hitdraw marker programs cover
@@ -18,8 +50,8 @@ Full races pass in m4as-full-race.log (Match 247.463 seconds). Four fresh native
 replays pass in m4as-replays.log. Twenty-two final app captures pass provenance/
 runtime checks. Six marker colors/IDs/rectangles match exactly; all four real-art
 white masks match exactly. Bound release is now 12,501 white pixels both sides,
-zero differences versus M4ar's 6,099. Data: m4as-app-checks.json/log. Finish the
-local M4as commit, then continue hitflag controls using author-hit-flags.py.
+zero differences versus M4ar's 6,099. Data: m4as-app-checks.json/log. Committed
+locally as89b5a501. Continue hitflag controls using author-hit-flags.py.
 The actor marker tool now accepts hitdraw names and adds
 strict --go-run verification that cannot overwrite native goldens. Never
 overlap GUI/audio clients. Reversal is committed 8cae270d.
@@ -899,7 +931,7 @@ See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 
-Finish M4as commit, then native HitDef hitflag eligibility. Opposing
+Finish M4at commit, then native HitDef forcestand/ground.velocity controls. Opposing
 helper contacts, actor priority/raster alignment and the measured incoming-hit
 bound-target release are implemented in their checkpoints; do not repeat those
 as unstarted work. Continue remaining BindTo* controllers, paused/foreign/

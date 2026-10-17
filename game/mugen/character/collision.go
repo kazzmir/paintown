@@ -64,6 +64,9 @@ func collisionAtFrames(attacker, defender *Character, el1, el2 *air.Element) boo
 	if attacker.MoveType != "A" || !attacker.HitDefActive {
 		return false
 	}
+	if !defender.allowsHitFlags(attacker.CurrentHitDef) {
+		return false
+	}
 	if defender.Timeline != nil && defender.Timeline.SuperUnhittable(defender.pauseActor) {
 		return false
 	}

@@ -2014,11 +2014,13 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		c.HitTime = hit.GroundHitTime
 	}
 
-	// Track if this hit causes a fall
-	c.HitFall = hit.Fall == 1
+	// A subsequent unguarded hit retains an existing get-hit fall unless
+	// ForceNoFall clears it. A hit's own fall setting still takes precedence.
+	fall := hit.Fall == 1
 	if airHit {
-		c.HitFall = hit.AirFall == 1
+		fall = hit.AirFall == 1
 	}
+	c.HitFall = fall || (!guarded && c.MoveType == "H" && c.HitFall && !hit.ForceNoFall)
 
 	// Guarding vs Normal Hit
 	// A fresh contact restores the receiver's own state definitions, including
@@ -2028,6 +2030,8 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		standard := 5000
 		if c.StateType == "C" {
 			standard = 5010
+		} else if c.StateType == "L" {
+			standard = 5080
 		}
 		if airHit {
 			standard = 5020
@@ -2048,6 +2052,8 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		state := 5000
 		if c.StateType == "C" {
 			state = 5010
+		} else if c.StateType == "L" {
+			state = 5080
 		} else if airHit {
 			state = 5020
 		}

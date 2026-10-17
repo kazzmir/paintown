@@ -618,3 +618,24 @@ configuration and captured PNG, then requires exact foreground RGB/ID/count/
 bounds. It cannot record or overwrite native goldens. Rejected fields use the
 ordinary reference probe with `--file sprite=probe.sff`. See
 [CONTACT-DRAW.md](../docs/CONTACT-DRAW.md) for reference evidence and open gates.
+
+## M4at HitDef hitflag eligibility and fall continuation
+
+`TestNativeHitFlagEligibility` compares 67 original `hitflag-*` programs: 792
+numbers, one native load rejection and 268 CNS/AIR/CMD/stage hashes. Posture
+matrices, independent AF/MF controls, both modifier orders, idle/attack/H fall
+contexts and reciprocal priorities distinguish eligibility from subsequent
+contact effects. Empty/Z flags are accepted inactive values; lowercase and
+quoted flags work. Downed targets select own state 5080. Typed ForceNoFall
+controls cover preservation, explicit clearing, signed/coerced/bottom values
+and precedence over a hit's own fall setting.
+
+```sh
+python3 game/mugen/tests/reference_probe.py --fixture hitflag-force-computed --name UNIQUE --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-in-cmd --pages 0 --seconds 7
+```
+
+All programs use page 0, including the float rejection. The accepted inactive
+values must not become artificial load errors. Falling eligibility needs A
+and F together while MoveType H; do not interpret the single-F miss as evidence
+of a juggle-budget failure. See [HIT-FLAGS.md](../docs/HIT-FLAGS.md) for the
+measured state rules and remaining guard/foreign/pause/juggle/down-state gates.

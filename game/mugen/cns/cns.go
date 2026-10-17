@@ -100,6 +100,7 @@ type HitDef struct {
 	P2Facing         int
 	Attr             string
 	HitFlag          string
+	HitFlagSpecified bool
 	GuardFlag        string
 	AnimType         string
 	AirAnimType      string
@@ -140,6 +141,7 @@ type HitDef struct {
 	Palfrm_Add       []int
 	Fall             int
 	AirFall          int
+	ForceNoFall      bool
 	FallDamage       int
 	FallVel          []float64
 	FallXUnchanged   bool
@@ -660,6 +662,7 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["hitflag"]; ok {
 		hd.HitFlag = v
+		hd.HitFlagSpecified = true
 	}
 	if v, ok := params["guardflag"]; ok {
 		hd.GuardFlag = v
@@ -750,6 +753,10 @@ func ParseHitDef(params map[string]string) HitDef {
 	hd.AirFall = hd.Fall
 	if v, ok := params["air.fall"]; ok {
 		hd.AirFall, _ = strconv.Atoi(v)
+	}
+	if raw, present := params["forcenofall"]; present {
+		value, _ := strconv.Atoi(raw)
+		hd.ForceNoFall = value != 0
 	}
 	if v, ok := params["fall.damage"]; ok {
 		hd.FallDamage, _ = strconv.Atoi(v)

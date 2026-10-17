@@ -18,7 +18,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	}
 	var cues []cue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -74,7 +74,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		entry := cue{key: key, own: own}
 		strictInteger := false
 		switch key {
-		case "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority":
+		case "p1stateno", "p2stateno", "p2getp1state", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall":
 			strictInteger = true
 		}
 		for i, expr := range expressions {
@@ -100,7 +100,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			params[key] = value
 		}
 		for _, cue := range cues {
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority")
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "forcenofall")
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}
