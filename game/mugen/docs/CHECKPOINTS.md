@@ -4,6 +4,20 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bk: fall velocity and hit gravity expressions
+
+Predecessor/reversal 3db8b057. Compiles fall X/Y and yaccel with per-host
+defaults, omission/zero distinction, float/bottom/order rules, profile
+conversion and verified velocity consumers. Twenty original native programs
+pin 276 observations, three tuple rejections and 80 input hashes. Routing
+reaches 53/81 (65.4%). Focused races pass (Match 73.453s, Character 1.121s),
+as do three fresh native reproductions and three apps/five captures with
+provenance checks. Combined full scoped races pass: Match 693.752s,
+Character 11.396s, System 4.735s, storyboard 1.790s, stock/resources 6.520s.
+The full integration boundary covers both M4bj and M4bk. No binaries or
+out-of-scope changes are committed; pause for user testing after this checkpoint.
+See FALL-VECTORS.md and HANDOFF.md.
+
 ## M4bj: trip contact and stock sweep recovery
 
 Predecessor/reversal 449ce7af. Removes the old recurring trip heuristic and

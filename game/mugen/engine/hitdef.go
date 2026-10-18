@@ -10,9 +10,10 @@ import (
 )
 
 type hitDefCue struct {
-	key           string
-	own, floating bool
-	args          []argument
+	key               string
+	own, floating     bool
+	coordinateDefault bool
+	args              []argument
 }
 
 // This order is measured by the tagged full-field and vector programs. Source
@@ -20,11 +21,11 @@ type hitDefCue struct {
 var hitDefEvaluationOrder = []string{
 	"id", "kill", "guard.kill", "fall.kill", "hitonce", "damage", "getpower", "givepower", "pausetime", "numhits",
 	"hitsound", "guardsound", "priority", "p1stateno", "p2stateno", "p2getp1state",
-	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall", "fall.damage", "fall.recover", "fall.recovertime",
+	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall", "fall.damage", "fall.xvelocity", "fall.yvelocity", "fall.recover", "fall.recovertime",
 	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "p2facing",
 	"ground.hittime", "ground.slidetime", "ground.velocity", "ground.cornerpush.veloff", "air.hittime", "air.fall", "air.velocity", "air.cornerpush.veloff",
 	"down.hittime", "down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.hittime", "guard.slidetime", "guard.ctrltime", "guard.pausetime", "guard.cornerpush.veloff",
-	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff",
+	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff", "yaccel",
 }
 
 // Sound, spark, custom-state and selection parameters compile here while the
@@ -43,6 +44,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	fall, err := compileHitFall(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
+	physics, err := compileHitFallVectors(ctrl)
 	if err != nil {
 		return nil, true, err
 	}
@@ -126,6 +131,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	cues = append(cues, pauses...)
 	cues = append(cues, timing...)
 	cues = append(cues, fall...)
+	cues = append(cues, physics...)
 	byKey := make(map[string]hitDefCue, len(cues))
 	for _, cue := range cues {
 		known := false
@@ -165,6 +171,13 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
+			}
+			if cue.coordinateDefault {
+				width := 320
+				if context, ok := env.(interface{ LocalCoordinateWidth() int }); ok && context.LocalCoordinateWidth() > 0 {
+					width = context.LocalCoordinateWidth()
+				}
+				values["0"] = evaluator.Float(float32(values["0"].Number()) * float32(width) / 320)
 			}
 			prefix := ""
 			if cue.own {

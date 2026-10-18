@@ -128,6 +128,10 @@ func TestNativeTripRoutingPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "triproute-*.json", 13)
 }
 
+func TestNativeFallVectorPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "fallvector-*.json", 20)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

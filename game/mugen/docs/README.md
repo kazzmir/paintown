@@ -3,11 +3,12 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4bj fixes the stock sweep/trip loop after M4bi's fall flags
-and eligibility work. M4bk is authorized for fall vectors/gravity. Read the
+Current status: M4bk compiles fall vectors/gravity after M4bj's stock sweep
+fix and M4bi's fall/eligibility work. Read the
 [current coverage ledger](COVERAGE.md),
 [fall/recovery evidence](HIT-FALL-RECOVERY.md),
-[trip recovery findings](TRIP-RECOVERY.md), and
+[trip recovery findings](TRIP-RECOVERY.md),
+[fall vector evidence](FALL-VECTORS.md), and
 [progress assessment](PROGRESS-ASSESSMENT.md) for working behavior, remaining
 gates and bounded allocations. The [checkpoint history](CHECKPOINTS.md) and
 [handoff](HANDOFF.md) record verification and authorization; the original

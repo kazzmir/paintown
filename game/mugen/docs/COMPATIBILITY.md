@@ -13,13 +13,20 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bk compiles fall.xvelocity/fall.yvelocity/yaccel with measured float, bottom,
+default/profile and evaluation-order rules and actual velocity consumers.
+Twenty native programs pin 276 observations, three tuple rejections and 80
+source hashes. Routing reaches 53/81 (65.4%), with 28 literal/absent keys.
+Focused, fresh-native, three-app/five-capture and combined full scoped race
+checks pass (Match 693.752s). See [FALL-VECTORS.md](FALL-VECTORS.md).
+
 M4bj fixes the reported KFM sweep loop by selecting Trip at contact and
 removing repeated state forcing. Thirteen native programs pin 156 observations
 and 52 source hashes, including the complete stock common recovery path.
 Real down+B sweeps recover in both mixed-profile directions. Ground/air type
 queries and literal air.type storage are corrected; numeric routing remains
-50/81. See [TRIP-RECOVERY.md](TRIP-RECOVERY.md). Full integration races follow
-at the second authorized checkpoint, M4bk.
+50/81 at that checkpoint. See [TRIP-RECOVERY.md](TRIP-RECOVERY.md). M4bk's
+combined full integration gate above also verifies the sweep fix.
 
 M4bi adds compiled fall/air.fall/fall.recover/fall.recovertime, native nonzero
 fall selection and default/coercion/order rules, plus fall.time/recovertime

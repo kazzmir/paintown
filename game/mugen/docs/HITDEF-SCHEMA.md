@@ -5,9 +5,10 @@ at M4av found20 compiled keys. M4aw extended that to29; M4ba added
 Damage/GetPower/GivePower; M4bb adds kill/guard.kill/fall.kill/fall.damage;
 M4be added pausetime/guard.pausetime; M4bg adds ground hit/slide times and four
 dependent guard timing keys; M4bh adds air.hittime/down.hittime; M4bi adds
-fall/air.fall/fall.recover/fall.recovertime, for 50 expression keys across
+fall/air.fall/fall.recover/fall.recovertime; M4bk adds fall x/y velocity and
+yaccel, for 53 expression keys across
 engine/hitdef.go, hit_vectors.go, hit_power.go, hit_pause.go, hit_timing.go and
-hit_fall.go. This count measures source routing, not complete behavioral
+hit_fall.go and hit_fall_vectors.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
 The remaining literal-parser fields must also receive typed parameter schemas.
@@ -48,19 +49,24 @@ close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
 projectile/reversal/team interactions and whole-engine/asset/mode gates remain
 open in COMPATIBILITY.md and PLAN.md.
 
+M4bk's [fall vectors](FALL-VECTORS.md) add the three expression schemas,
+per-host profile defaults, omission/zero distinction, type/error/order rules,
+mixed contact conversion and measured velocity consumers. Complete recovery
+and bounce behavior remains open.
+
 M4bj adds literal air.type storage and native trip contact selection/type
 queries; see [TRIP-RECOVERY.md](TRIP-RECOVERY.md). Numeric expression routing
-remains 50/81. Enum/attribute validation still requires its own schema work.
+at M4bj remained 50/81. Enum/attribute validation still requires its own schema work.
 
 M4bb's [lethality controls](HIT-LETHALITY.md) add typed kill flags/fall damage,
 pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
 measured KO velocity adjustments. These do not establish absolute KO/round
 timing, full fall recovery, or the broad contact combinations listed above.
 
-The refreshed audit is `temp/m4bi-hitdef-current-audit.json`; its input is the
+The refreshed audit is `temp/m4bk-hitdef-current-audit.json`; its input is the
 local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
-It records all 81 documented keys, 50 expression keys and 31 keys that remain
-literal or absent. Those 31 include compile-time enums/attributes as well as
+It records all 81 documented keys, 53 expression keys and 28 keys that remain
+literal or absent. Those 28 include compile-time enums/attributes as well as
 numeric expressions; they need appropriate schemas rather than being treated
 uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
 historical M4aw snapshot, and m4bb-hitdef-current-audit.json records the prior36.

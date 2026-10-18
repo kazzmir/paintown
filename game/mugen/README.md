@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bj**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bk**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -112,13 +112,15 @@ flags and recovery delay now compile, and CanRecover follows the measured
 fall clock; see [recovery evidence and limits](docs/HIT-FALL-RECOVERY.md).
 The stock sweep loop is fixed by choosing Trip at contact and allowing CNS
 recovery to finish; see [trip recovery](docs/TRIP-RECOVERY.md).
+Fall X/Y velocity and hit gravity now compile as expressions, with verified
+defaults, profile conversion and consumers; see [fall vectors](docs/FALL-VECTORS.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
-| Documented HitDef keys routed through the expression compiler | 50 / 81 | **61.7%** | The other 31 keys are literal or absent, including enum/attribute fields that need appropriate schemas. |
+| Documented HitDef keys routed through the expression compiler | 53 / 81 | **65.4%** | The other 28 keys are literal or absent, including enum/attribute fields that need appropriate schemas. |
 
 These percentages measure the named scopes. **Whole-engine behavioral
 compatibility has not yet been quantified.** They cannot be averaged into an

@@ -52,8 +52,9 @@ temp/m4bj-evidence-audit.json; the recovered 6s fixture image was inspected.
 Its magenta diagnostic stage fill is intentional. Application binary SHA256:
 58ce59cc00276489949717ea027b8a7ebec2cdd7da8d5dfa4aa11b9c3cfb4ad1.
 The final pipeline temp/run-m4bj-validation.py exited 0; no GUI client remains.
-One full scoped race run is scheduled at the
-M4bk integration boundary, covering both user-authorized checkpoints.
+The combined M4bk integration gate covers both user-authorized checkpoints
+and now passes, including both actual sweep directions
+and all trip controls (full Match 693.752s); see FALL-VECTORS.md and HANDOFF.md.
 
 The frozen stock-source fixture retains one original trailing space at line
 1242 (`x = 0 `). Git's whitespace check reports it; it is retained to preserve

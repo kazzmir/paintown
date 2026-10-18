@@ -1,13 +1,59 @@
 # Current handoff
 
-Updated 2026-10-18. The user reported an endless KFM sweep and authorized two
-checkpoints. M4bj is complete after M4bi (449ce7af): trip entry/routing, type
-queries and actual stock sweep recovery pass native/focused/core/app checks.
-Continue the authorized M4bk fall velocity/yaccel batch; run one full scoped
-race suite at that integration boundary, commit locally, then pause for user
-testing. Do not push or start further families. Read TRIP-RECOVERY.md,
+Updated 2026-10-18. The user's two-checkpoint allocation is complete. M4bj
+(3db8b057) fixes the sweep loop and trip routing; M4bk compiles fall velocity
+and yaccel expressions/defaults with bounded native consumers. Native, focused,
+core, application and combined full scoped race gates pass. M4bk is the
+completed local checkpoint; pause for user testing and the next allocation.
+Do not push or start further families. Read FALL-VECTORS.md, TRIP-RECOVERY.md,
 HIT-FALL-RECOVERY.md and COVERAGE.md.
 All authored changes stay under game/mugen/; no new binary files are tracked.
+
+## M4bk verified checkpoint
+
+Predecessor/reversal 3db8b057. Three compiled float fields bring expression
+routing to 53/81 (65.4%); 28 keys remain literal or absent. Other README
+metrics are unchanged and are not overall compatibility percentages.
+Omitted fall X preserves velocity; explicit zero/bottom sets zero. Fall Y
+and yaccel default to -4.5/0.35 in 320-wide coordinates, scaled per host.
+Explicit expressions retain source units and convert into receiver units
+once. Floating literals, negative gravity, mixed/reversed profiles, repeated
+HitFallVel consumption, source isolation and full relative order are measured.
+
+Twenty original programs pin 276 observations, three tuple rejections and
+80 source hashes in temp/m4bk-prepared-inputs.json. Do not rerun
+temp/author-m4bk-fall-vectors.py or derive expectations from Go. Four authored
+Go source hashes are frozen in temp/m4bk-production-inputs.json. The final
+audit also checks M4bj's five source hashes against commit 3db8b057, and both
+native families: 33 programs/432 observations/132 input hashes. No native
+expectations or tolerances changed.
+
+Focused races pass 20 vector, 13 trip, 63 earlier velocity controls and both
+real-input sweep directions (Match 73.453s). Character recovery-command and
+SuperPause checks pass 1.121s. Core development races pass engine/evaluator/
+CNS/combat 1.442s/1.020s/1.012s/1.012s. Three fresh native reproductions and
+three apps/five captures pass source/config/binary/PNG/runtime checks in
+temp/m4bk-evidence-audit.json. The stock 7s capture was visually inspected:
+intact fighters, stage and HUD; application checks are smoke, not full raster
+parity. Shared application binary SHA256:
+399865d0af49a3421c9e875ab3c3aa8a759399908b75de28b16a0164d60187ec.
+
+Final pipeline temp/run-m4bk-validation.py exited 0 (temp/m4bk-validation.log).
+One combined full scoped race run covers both authorized checkpoints:
+Match 693.752s, Character 11.396s, System 4.735s, storyboard 1.790s,
+stock/resources 6.520s; engine/evaluator/CNS/combat
+1.453s/1.023s/1.012s/1.011s. Log: temp/m4bk-full-race.log. No native/app/test
+GUI client remains. Root baseline temp/upstream-post-merge-module.sha256
+passes; original native executable SHA remains
+d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
+
+Next work needs another allocation: recovery-command state/velocity/alive
+conditions, down.bounce, non-fall GetHitVar(recovertime)/mashing clocks,
+HitFallSet variants, juggle/chains and broader contact/entity/pause cases.
+Absolute KO/round clocks, all-mode/asset conformance and the six alpha/two
+spark raster differences remain open. M4bj's one original stock-fixture
+trailing space is deliberately frozen and documented in TRIP-RECOVERY.md;
+the M4bk diff passes whitespace checks.
 
 ## M4bj verified checkpoint
 
