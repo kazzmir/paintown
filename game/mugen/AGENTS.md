@@ -7,14 +7,16 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user's next allocation is complete. M4bi implements four fall/recovery
-expression fields and the bounded recovery eligibility/clock consumers, after
-M4bh (ce6b7a50). Native, focused, application and full scoped race gates pass.
-M4bi is the completed local checkpoint; pause for user testing and the next
-allocation. Do not push or start another feature family. Legacy recovery
-state routing/physics, juggle, bounce and broader contact/pause combinations
-remain open; read HIT-FALL-RECOVERY.md. Storyboard scaling is b1b8864c;
-upstream integration is 99b4605c.
+The user reported the stock KFM sweep looping and authorized about two more
+checkpoints after M4bi (449ce7af). M4bj is complete: native trip contact entry,
+removal of the recurring trip-state heuristic, and stock sweep recovery
+regressions pass native/focused/core/app checks. M4bk covers fall x/y velocity and yaccel expressions/defaults and
+bounded consumers. Record native evidence, focused tests, app checks and a
+local commit for each. Run one full scoped race suite at the second integration
+boundary, covering both checkpoints; then pause for user testing. Do not push
+or extend into juggle, full recovery-command routing, round clocks or renderer
+families. Read HIT-FALL-RECOVERY.md for remaining limits. Storyboard scaling is
+b1b8864c; upstream integration is 99b4605c.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 

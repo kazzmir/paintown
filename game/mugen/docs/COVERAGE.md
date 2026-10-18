@@ -1,6 +1,6 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-17 through M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -16,6 +16,7 @@ does not promote an entire controller from one passing parameter/default.
 | Damage/power/KO vectors | Typed expressions, power defaults/rules, lethal caps, fatal guard normalization, fall damage and measured KO velocities. HIT-POWER.md, HIT-LETHALITY.md. | Fall recovery, all GetHitVar selectors and absolute KO/round clocks. |
 | HitDef timing | M4be compiles pausetime/guard.pausetime with native source defaults, reversed component evaluation, truncation, bottom/negative handling and malformed-input checks. HIT-PAUSE.md. M4bg adds ground.hittime/ground.slidetime and their four dependent guard timings, including source defaults and measured order. HIT-GROUND-TIMING.md. M4bh compiles air/down timers, default 20/explicit 0 and bounded launch/down/countdown selection. HIT-AIR-DOWN-TIMING.md. | Full recovery/timing interactions, broad foreign/helper/projectile/Pause/SuperPause combinations and absolute KO/round clocks are separate batches. |
 | Fall/recovery eligibility | M4bi compiles fall/air.fall/fall.recover/fall.recovertime; native boolean selection, repeated source default, delay default/coercion and order. GetHitVar(fall.time/fall.recovertime) and CanRecover share the receiver clock, including shake and H-state continuation controls. HIT-FALL-RECOVERY.md. | Full recovery/bounce physics, HitFallSet variants, juggle/chains and broad contact/entity/pause combinations. |
+| Trip recovery | M4bj removes the recurring trip-state heuristic, chooses native Trip entry at contact, stores air.type and corrects groundtype/airtype values. Thirteen native programs and real mixed-profile down+B sweeps complete lying down, get-up and idle/control. TRIP-RECOVERY.md. | Full enum validation, other recovery-command routing, liedown/mashing clocks and broad entity/contact/pause combinations. |
 | Projectiles/reversals | Projectile currently constructs a Character-derived object; ReversalDef stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. EXPLODS.md, RGB-CONSUMERS.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
@@ -46,6 +47,17 @@ Empty runtime methods are source-audit findings. Native comparison must still
 distinguish missing Go behavior from operations disabled in the beta itself.
 
 ## Current allocation and stop condition
+
+The user resumed on 2026-10-18 with a stock KFM sweep-loop report and authorized
+two checkpoints. M4bj establishes native trip entry and fixes the recurring
+trip-state heuristic, including stock sweep recovery. Native/focused/core/app
+checks pass and its local checkpoint is complete. M4bk will compile fall
+x/y velocity and yaccel with bounded native consumers. Use focused/native/app
+validation and local commits for both, with one full scoped race suite at the
+second integration boundary. Pause after M4bk for user testing. Other families
+and existing strict alpha/spark failures remain open.
+
+Prior allocation (completed):
 
 The user pushed M4bh (ce6b7a50) and resumed the next bounded checkpoint.
 M4bi implements fall/air.fall/fall.recover/fall.recovertime expressions and

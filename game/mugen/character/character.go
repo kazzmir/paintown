@@ -1293,15 +1293,23 @@ func (c *Character) GetHitVar(name string) float64 {
 		case "diagup":
 			val = 5
 		}
-	case "groundtype":
-		// None=0, Stand=1, Trip=2
-		switch strings.ToLower(c.GetHit.GroundType) {
+	case "type":
+		// Beta 1 reports zero in the entry and late trip/type controls.
+		val = 0
+	case "groundtype", "airtype":
+		kind := c.GetHit.GroundType
+		if strings.EqualFold(name, "airtype") && c.GetHit.AirType != "" {
+			kind = c.GetHit.AirType
+		}
+		switch strings.ToLower(kind) {
 		case "none":
 			val = 0
-		case "high", "low": // Stand
+		case "high":
 			val = 1
-		case "trip":
+		case "low":
 			val = 2
+		case "trip":
+			val = 3
 		default:
 			val = 1
 		}
@@ -1562,14 +1570,6 @@ func (c *Character) HandleBuiltinTransitions() {
 		canRecover := c.GetCanRecover()
 		if canRecover {
 			c.ChangeState(5200, -1, -1)
-			return
-		}
-	}
-
-	// Trip Sequence (5070)
-	if c.GetHitVar("fall") != 0 && strings.EqualFold(c.GetHit.GroundType, "Trip") {
-		if c.StateNo < 5070 || c.StateNo > 5071 {
-			c.ChangeState(5070, -1, -1)
 			return
 		}
 	}
@@ -2099,6 +2099,15 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 			state = 5080
 		} else if airHit {
 			state = 5020
+		}
+		// Trip chooses the contact entry, not a recurring transition. Later
+		// common/custom states own the fall and get-up sequence.
+		kind := hit.GroundType
+		if airHit && hit.AirType != "" {
+			kind = hit.AirType
+		}
+		if !c.GetHitDown && strings.EqualFold(kind, "Trip") {
+			state = 5070
 		}
 		// Standard numbers and H/no-control publish at contact. Entry waits
 		// until this receiver's positive pass, after earlier actors finish.

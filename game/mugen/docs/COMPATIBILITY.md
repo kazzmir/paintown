@@ -13,6 +13,14 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bj fixes the reported KFM sweep loop by selecting Trip at contact and
+removing repeated state forcing. Thirteen native programs pin 156 observations
+and 52 source hashes, including the complete stock common recovery path.
+Real down+B sweeps recover in both mixed-profile directions. Ground/air type
+queries and literal air.type storage are corrected; numeric routing remains
+50/81. See [TRIP-RECOVERY.md](TRIP-RECOVERY.md). Full integration races follow
+at the second authorized checkpoint, M4bk.
+
 M4bi adds compiled fall/air.fall/fall.recover/fall.recovertime, native nonzero
 fall selection and default/coercion/order rules, plus fall.time/recovertime
 selectors and CanRecover eligibility. Thirty native text programs pin 372

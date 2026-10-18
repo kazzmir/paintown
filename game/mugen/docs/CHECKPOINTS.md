@@ -4,6 +4,17 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bj: trip contact and stock sweep recovery
+
+Predecessor/reversal 449ce7af. Removes the old recurring trip heuristic and
+selects native Trip contact entry, preserving air/down/custom/override rules.
+Adds literal air.type and corrects type queries. Thirteen programs pin 156
+native observations/52 source hashes. Both actual mixed-profile down+B sweeps
+complete recovery; focused races pass 58.555s. Two fresh native reproductions,
+two real apps/four captures and core races pass. Full scoped races follow at
+M4bk's integration boundary, covering both checkpoints.
+See TRIP-RECOVERY.md and HANDOFF.md.
+
 ## M4bi: fall flags and recovery eligibility
 
 Predecessor/reversal ce6b7a50. Compiles four fall/recovery parameters, corrects

@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-17, through M4bi**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bj**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -110,6 +110,8 @@ expressions now follow native defaults and evaluation order. Air/down hit times
 now compile as expressions, with corrected launch/down timer selection. Fall
 flags and recovery delay now compile, and CanRecover follows the measured
 fall clock; see [recovery evidence and limits](docs/HIT-FALL-RECOVERY.md).
+The stock sweep loop is fixed by choosing Trip at contact and allowing CNS
+recovery to finish; see [trip recovery](docs/TRIP-RECOVERY.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |

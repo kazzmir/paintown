@@ -120,6 +120,7 @@ type HitDef struct {
 	HitSoundOwn        bool
 	GuardSoundOwn      bool
 	GroundType         string
+	AirType            string
 	GroundSlide        int
 	GroundHitTime      int
 	GuardSlide         int
@@ -732,6 +733,10 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["ground.type"]; ok {
 		hd.GroundType = v
+	}
+	hd.AirType = hd.GroundType
+	if v, ok := params["air.type"]; ok {
+		hd.AirType = v
 	}
 	if v, ok := params["ground.slidetime"]; ok {
 		hd.GroundSlide, _ = strconv.Atoi(v)

@@ -124,6 +124,10 @@ func TestNativeHitFallRecoveryPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitfall-recovery-*.json", 30)
 }
 
+func TestNativeTripRoutingPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "triproute-*.json", 13)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
@@ -147,6 +151,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				StageError       string             `json:"expected_stage_error"`
 				LoadError        string             `json:"expected_load_error"`
 				ErrorState       int                `json:"expected_compile_state"`
+				ReplayTicks      int                `json:"replay_ticks"`
 				GameWidth        int                `json:"game_width"`
 				Rules            map[string]float64 `json:"rules"`
 				ExtraHashes      map[string]string  `json:"extra_sha256"`
@@ -275,7 +280,14 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			advanceUntil(t, m, Active, 600)
-			for tick := 0; tick < 90; tick++ {
+			ticks := reference.ReplayTicks
+			if ticks == 0 {
+				ticks = 90
+			}
+			if ticks < 1 || ticks > 600 {
+				t.Fatal("invalid native replay duration", ticks)
+			}
+			for tick := 0; tick < ticks; tick++ {
 				if err := m.Update(); err != nil {
 					t.Fatal(err)
 				}

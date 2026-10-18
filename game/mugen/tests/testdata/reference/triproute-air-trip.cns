@@ -1,0 +1,402 @@
+[Statedef 5900]
+[State 5900, trip probe]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+[State 0, trip probe]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl && Var(57)=0
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+type=A
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, trip probe]
+type=VarSet
+trigger1=Time=0
+v=57
+value=1
+[State 701, trip probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=-10
+[State 701, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, trip probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=-99
+[State 701, trip probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=-99
+[State 701, trip probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=-99
+[State 701, trip probe]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=-99
+[State 701, trip probe]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=-99
+[Statedef -2]
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && MoveType=H && Var(54)=0
+fv=20
+value=StateNo
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && MoveType=H && Var(54)=0
+fv=26
+value=GetHitVar(groundtype)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && MoveType=H && Var(54)=0
+fv=27
+value=GetHitVar(airtype)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && MoveType=H && Var(54)=0
+fv=28
+value=GetHitVar(type)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && MoveType=H && Var(54)=0
+v=53
+value=GameTime
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && MoveType=H && Var(54)=0
+v=54
+value=1
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5070 && Var(40)=0
+fv=21
+value=GameTime-Var(53)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5070 && Var(40)=0
+v=40
+value=1
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5071 && Var(41)=0
+fv=22
+value=GameTime-Var(53)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5071 && Var(41)=0
+v=41
+value=1
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5110 && Var(42)=0
+fv=23
+value=GameTime-Var(53)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5110 && Var(42)=0
+v=42
+value=1
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5120 && Var(43)=0
+fv=24
+value=GameTime-Var(53)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=5120 && Var(43)=0
+v=43
+value=1
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=0 && Var(44)=0
+fv=25
+value=GameTime-Var(53)
+[State -2, trip probe]
+type=VarSet
+trigger1=Facing=-1 && Var(54)=1 && StateNo=0 && Var(44)=0
+v=44
+value=1
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5000, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5071
+ctrl=0
+[Statedef 5010]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5010, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5071
+ctrl=0
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5020, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5071
+ctrl=0
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5080, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5071
+ctrl=0
+[Statedef 5070]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5070, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5070, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5071
+ctrl=0
+[Statedef 5071]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5071, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5071, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5110
+ctrl=0
+[Statedef 5110]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5110, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5110, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=5120
+ctrl=0
+[Statedef 5120]
+type=L
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5120, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5120, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=0
+ctrl=1
+[Statedef 780]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 780, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 780, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=781
+ctrl=0
+[Statedef 781]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 781, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 781, trip probe]
+type=ChangeState
+trigger1=Time=2
+value=0
+ctrl=1
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, trip probe]
+type=VarSet
+trigger1=Time=0
+v=57
+value=1
+[State 700, trip probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, trip probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, trip probe]
+type=HitDef
+trigger1=Time=3
+attr=C,NA
+hitflag=MAFD
+guardflag=
+damage=10
+ground.type=High
+fall=1
+ground.hittime=17
+ground.slidetime=10
+ground.velocity=-1.5,-2
+air.velocity=-1.2,-3
+pausetime=0,0
+sparkno=-1
+hitsound=-1,0
+air.type=Trip
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=0
+value=Enemy,FVar(20)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=1
+value=Enemy,FVar(21)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=2
+value=Enemy,FVar(22)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=3
+value=Enemy,FVar(23)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=4
+value=Enemy,FVar(24)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=5
+value=Enemy,FVar(25)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=6
+value=Enemy,StateNo
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=7
+value=Enemy,Ctrl
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=8
+value=100000+(Enemy,Life)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=9
+value=Enemy,FVar(26)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=10
+value=Enemy,FVar(27)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=11
+value=Enemy,FVar(28)
+[State 700, trip probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+v=59
+value=1

@@ -24,7 +24,7 @@ These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
-- Reaction: fall.animtype, air.type, down.bounce.
+- Reaction: fall.animtype, down.bounce.
 - Combat: air.juggle, chainID, nochainID.
 - Constraints: mindist, maxdist, snap.
 - Palette: palfx.time, palfx.mul, palfx.add.
@@ -47,6 +47,10 @@ normal/guard/override/common-state fixtures are bounded evidence; they do not
 close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
 projectile/reversal/team interactions and whole-engine/asset/mode gates remain
 open in COMPATIBILITY.md and PLAN.md.
+
+M4bj adds literal air.type storage and native trip contact selection/type
+queries; see [TRIP-RECOVERY.md](TRIP-RECOVERY.md). Numeric expression routing
+remains 50/81. Enum/attribute validation still requires its own schema work.
 
 M4bb's [lethality controls](HIT-LETHALITY.md) add typed kill flags/fall damage,
 pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and

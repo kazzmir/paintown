@@ -1,12 +1,42 @@
 # Current handoff
 
-Updated 2026-10-17. The user's next-segment allocation is complete. M4bi
-implements fall/air.fall/fall.recover/fall.recovertime schemas and bounded
-recovery eligibility/clock consumers, after M4bh (ce6b7a50). Native, focused,
-application and full scoped race checks pass. M4bi is the completed local
-checkpoint; pause for user testing and the next allocation. Do not push or
-begin another feature family. Read HIT-FALL-RECOVERY.md and COVERAGE.md.
+Updated 2026-10-18. The user reported an endless KFM sweep and authorized two
+checkpoints. M4bj is complete after M4bi (449ce7af): trip entry/routing, type
+queries and actual stock sweep recovery pass native/focused/core/app checks.
+Continue the authorized M4bk fall velocity/yaccel batch; run one full scoped
+race suite at that integration boundary, commit locally, then pause for user
+testing. Do not push or start further families. Read TRIP-RECOVERY.md,
+HIT-FALL-RECOVERY.md and COVERAGE.md.
 All authored changes stay under game/mugen/; no new binary files are tracked.
+
+## M4bj verified checkpoint
+
+Predecessor/reversal 449ce7af. The sweep loop came from ea3599303's recurring
+Trip heuristic, not M4bi. It forced 5110/custom/override states back to 5070.
+Trip now selects contact entry only. Native grounded/crouching Trip selects
+5070 independently of fall; airborne Trip uses air.type (default ground.type),
+downed entry stays 5080 and custom/override destinations keep their own flow.
+Type queries expose High=1/Low=2/Trip=3; the entry/late legacy type query is 0
+in the measured beta controls. Numeric expression routing remains 50/81.
+
+Thirteen original text programs pin 156 observations/52 pre-native hashes in
+temp/m4bj-prepared-inputs.json. Do not rerun temp/author-m4bj-trips.py or derive
+expectations from Go. Stock common recovery observations at 0/13/29/89/103
+ticks match exactly. Both real down+B mixed-profile directions fail before
+the fix and now complete 5070/5071/5110/5120/0 with 72 damage and restored
+control; baseline log temp/m4bj-before-fix.log.
+
+Focused Match races pass 58.555s (13 new, two stock sweep directions, 38
+forced-standing and 30 fall controls). Core races pass engine/evaluator/CNS/
+combat 1.464s/1.024s/1.014s/1.013s. Two fresh native reproductions and two
+apps/four captures pass provenance; temp/m4bj-evidence-audit.json also verifies
+five authored Go source hashes. Binary SHA256:
+58ce59cc00276489949717ea027b8a7ebec2cdd7da8d5dfa4aa11b9c3cfb4ad1.
+The 6s recovered fixture capture was visually inspected; magenta diagnostic
+stage fill is intentional. temp/run-m4bj-validation.py exited 0; no GUI client
+remains. Full scoped races are deliberately deferred to the authorized M4bk
+integration boundary. Legacy recovery-command heuristics and broader gates
+remain open; see TRIP-RECOVERY.md.
 
 ## M4bi verified checkpoint
 
