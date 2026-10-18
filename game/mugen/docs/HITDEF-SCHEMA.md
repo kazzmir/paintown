@@ -6,7 +6,8 @@ Damage/GetPower/GivePower; M4bb adds kill/guard.kill/fall.kill/fall.damage;
 M4be added pausetime/guard.pausetime; M4bg adds ground hit/slide times and four
 dependent guard timing keys; M4bh adds air.hittime/down.hittime; M4bi adds
 fall/air.fall/fall.recover/fall.recovertime; M4bk adds fall x/y velocity and
-yaccel; M4bm adds down.bounce and M4bn adds guard.dist, for 55 expression keys across
+yaccel; M4bm adds down.bounce and M4bn adds guard.dist; M4bp adds chainID/nochainID/air.juggle, for 58
+expression keys across
 engine/hitdef.go, hit_vectors.go, hit_power.go, hit_pause.go, hit_timing.go and
 hit_fall.go and hit_fall_vectors.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
@@ -27,7 +28,6 @@ These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
-- Combat: air.juggle, chainID, nochainID.
 - Constraints: mindist, maxdist, snap.
 - Palette: palfx.time, palfx.mul, palfx.add.
 - Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
@@ -85,3 +85,8 @@ user-authorized 27-key allocation, including the nine literal schemas.
 M4bo closes the nine literal schemas with 65 native programs, 684 observations,
 eight load rejections and 260 frozen input hashes. The remaining 17 keys are
 numeric fields in the combat, constraint, palette and shake groups above.
+
+M4bp closes the three integer chain/juggle keys and bounded consumers with57
+native programs,660 observations/eight load rejections/228 frozen input hashes.
+Numeric routing58/81 plus nine literals gives67/81 typed schemas; fourteen keys
+remain. See [chain/juggle evidence and limits](HIT-CHAINS-JUGGLE.md).

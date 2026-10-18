@@ -1,5 +1,11 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bp adds typed chainID/nochainID/air.juggle, last-contact ownership, native
+per-move/projectile costs and non-fall preservation, chainid query/selector
+validation and a bounded single-contact projectile adapter.57 programs pin660
+observations/eight rejections/228 frozen hashes. Numeric routing58/81; with
+nine literals, typed schema coverage67/81. See [HIT-CHAINS-JUGGLE.md](HIT-CHAINS-JUGGLE.md).
+
 Current M4bo evidence adds nine HitDef literal mask/enum schemas, selected
 reaction metadata, None contact semantics, HitDefAttr and trip-defence entry.
 Sixty-five native programs pin 684 observations and eight load rejections.

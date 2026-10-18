@@ -78,6 +78,9 @@ func collisionAtFrames(attacker, defender *Character, el1, el2 *air.Element) boo
 	if defender.excludesCustomHit(hit) {
 		return false
 	}
+	if !defender.allowsHitChain(attacker, hit) || !defender.allowsJuggle(attacker, hit) {
+		return false
+	}
 
 	if el1 == nil || len(el1.Clsn1) == 0 {
 		return false

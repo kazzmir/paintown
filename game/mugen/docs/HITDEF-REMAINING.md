@@ -14,7 +14,7 @@ consumer evidence, or a demonstrated limitation in the target executable.
 | --- | --- | --- |
 | M4bn | guard.dist | Complete; GUARD-DISTANCE.md, 15 programs/204 observations/four native load rejections. |
 | M4bo | attr, hitflag, guardflag, affectteam, animtype, air.animtype, fall.animtype, ground.type, air.type | Complete; HIT-LITERALS.md, 65 programs/684 observations/eight load rejections. |
-| M4bp | air.juggle, chainID, nochainID | Native controls active; schema/runtime work follows M4bo validation. |
+| M4bp | air.juggle, chainID, nochainID | Complete; HIT-CHAINS-JUGGLE.md, 57 programs/660 observations/eight load rejections. |
 | M4bq | mindist, maxdist, snap | Pending schema and runtime consumers. |
 | M4br | palfx.time, palfx.mul, palfx.add | Pending schema and palette runtime. |
 | M4bs | envshake.time, envshake.freq, envshake.ampl, envshake.phase | Pending schema and shake runtime. |
@@ -30,3 +30,6 @@ All engine/mode/asset/renderer gates outside these keys remain open.
 After M4bo: 55 numeric expression keys + nine literal schemas =64/81 typed
 keys. Seventeen numeric keys remain; native measurements may expose ignored
 parameters that require explicit limitation accounting rather than evaluation.
+
+After M4bp: 58 numeric expression keys + nine literal schemas =67/81 typed
+keys (82.7%). Fourteen keys remain in the authorized allocation.

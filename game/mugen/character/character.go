@@ -40,6 +40,13 @@ type Character struct {
 	hitTargets            map[*Character]hitTarget
 	targetOrder           []*Character
 	hitGeneration         uint64
+	juggleGeneration      uint64
+	juggleRemaining       int
+	juggleInitialized     bool
+	juggleMoves           map[*Character]uint64
+	lastHitOwner          *Character
+	lastHitID             int
+	projectileLifetime    int
 	superDefenceMul       float64
 	SuperTargetDefenceMul float64
 	pendingHitDamage      int
@@ -551,9 +558,7 @@ func (c *Character) finishTick() {
 	}
 
 	// 6. Update Helpers, Projectiles, Explods
-	for _, p := range c.Projectiles {
-		p.Update()
-	}
+	c.advanceProjectiles()
 
 	// Diagnostic: detect infinite fall
 	if c.Y > 5000 && !c.PosFrozen {
@@ -702,6 +707,9 @@ func (c *Character) SetMoveType(mtype string) {
 	if c.MoveType == "H" && next != "H" {
 		c.hitGeneration++
 		c.superDefenceMul = 1
+		c.lastHitOwner = nil
+		c.juggleInitialized = false
+		c.juggleMoves = nil
 	}
 	c.MoveType = next
 }
@@ -816,6 +824,9 @@ func (c *Character) Projectile(params map[string]string) {
 	if v, ok := params["anim"]; ok {
 		anim, _ = strconv.Atoi(v)
 	}
+	if v, ok := params["projanim"]; ok {
+		anim, _ = strconv.Atoi(v)
+	}
 
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	p.isProjectile = true
@@ -839,8 +850,15 @@ func (c *Character) Projectile(params map[string]string) {
 	p.InputSlot = c.InputSlot
 	p.Facing = c.Facing
 	p.Anim = anim
+	p.ChangeAnim(anim)
 	p.X = c.X
 	p.Y = c.Y
+	p.Opponents = c.Opponents
+	p.projectileLifetime = -1
+	if raw, ok := params["projremovetime"]; ok {
+		p.projectileLifetime, _ = strconv.Atoi(raw)
+	}
+	p.HitDef(params)
 
 	if v, ok := params["pos"]; ok {
 		pos := cns.ParseFloatList(v)
@@ -860,6 +878,24 @@ func (c *Character) Projectile(params map[string]string) {
 			p.VelX = vel[0]
 		}
 		if len(vel) >= 2 {
+			p.VelY = vel[1]
+		}
+	}
+	if v, ok := params["offset"]; ok {
+		pos := cns.ParseFloatList(v)
+		if len(pos) > 0 {
+			p.X = c.X + pos[0]*float64(c.Facing)
+		}
+		if len(pos) > 1 {
+			p.Y = c.Y + pos[1]
+		}
+	}
+	if v, ok := params["velocity"]; ok {
+		vel := cns.ParseFloatList(v)
+		if len(vel) > 0 {
+			p.VelX = vel[0]
+		}
+		if len(vel) > 1 {
 			p.VelY = vel[1]
 		}
 	}
@@ -1414,6 +1450,8 @@ func (c *Character) GetHitVar(name string) float64 {
 		val = float64(c.HitTime)
 	case "damage":
 		val = float64(c.GetHitDamage)
+	case "chainid":
+		val = float64(c.lastHitID)
 	case "guarded":
 		if c.GetHitGuarded {
 			val = 1
@@ -1821,7 +1859,10 @@ func (c *Character) EvaluationWarning(message string) {
 	c.RuntimeWarnings = append(c.RuntimeWarnings, warning)
 	logger.LogUnresolved(warning)
 }
-func (c *Character) SetJuggleCost(cost int) { c.JuggleCost = cost }
+func (c *Character) SetJuggleCost(cost int) {
+	c.JuggleCost = cost
+	c.juggleGeneration++
+}
 func (c *Character) FaceOpponent() {
 	if len(c.Opponents) == 0 {
 		return
@@ -1898,6 +1939,9 @@ func (c *Character) HandleHit(other *Character) {
 	hit := c.CurrentHitDef
 	hit.Attr = c.attributesForHit(hit)
 	if other.excludesCustomHit(hit) {
+		return
+	}
+	if !other.allowsHitChain(c, hit) || !other.allowsJuggle(c, hit) {
 		return
 	}
 	if err := c.ensureWorld(); err != nil {
@@ -1988,6 +2032,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		c.selectHitAnimation(&hit, c.StateType == "A", false, false)
 		c.GetHit = hit
 		return 0
+	}
+	if !guarded {
+		c.consumeJuggle(attacker, hit)
 	}
 	finalDamage, lethal := c.contactDamage(attacker, hit, guarded)
 	// A lethal chip contact keeps guard damage/kill selection but publishes
@@ -2182,13 +2229,19 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		}
 	}
 	if c.MoveType == "H" && !hasOverride {
+		targetOwner := attacker.contactOwner()
 		if hit.HitOnce {
-			if err := attacker.DropTargets(engine.TargetDropParameters{ExcludeID: -1}); err != nil {
+			if err := targetOwner.DropTargets(engine.TargetDropParameters{ExcludeID: -1}); err != nil {
 				c.RuntimeError = err
 				return 0
 			}
 		}
-		attacker.acquireTarget(c, hit.ID)
+		targetOwner.acquireTarget(c, hit.ID)
+	}
+	if c.MoveType == "H" {
+		c.lastHitOwner, c.lastHitID = attacker.contactOwner(), hit.ID
+	} else {
+		c.lastHitOwner = nil
 	}
 	return finalDamage
 }

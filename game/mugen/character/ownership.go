@@ -25,6 +25,11 @@ func (c *Character) PreparePositiveState() error {
 		if err := c.SM.EnterState(state, c.stateEnvironment(), engine.EntryOverrides{}); err != nil {
 			c.RuntimeError = err
 		}
+		if c.hasPendingHitDamage && c.MoveType != "H" {
+			// An authored idle contact destination never establishes a fall.
+			// Later StateTypeSet within an existing hit state retains its flag.
+			c.SetHitFall(false)
+		}
 	}
 	return c.RuntimeError
 }

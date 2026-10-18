@@ -4,6 +4,19 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bp: chain selectors and native juggle costs
+
+Predecessor/reversal ff7a3296. Adds three integer schemas, prior-contact
+ownership/ID and guard/None/idle contexts, per-move/projectile costs, non-fall
+budget preservation, chainid query/selector validation and a narrow projectile
+consumer.57 programs pin660 observations/eight rejections/228 frozen hashes.
+The pre-lifetime enum/combat full race suite passes (Match805.949s). Final
+lifetime/query gates pass144 Match replays90.507s, Character11.481s, core races,
+two native reproductions and two apps/three captures. Final full integration
+follows M4bt; retain that source distinction. Numeric routing58/81 plus nine
+literals gives67/81 typed keys (82.7%); fourteen remain. Continue M4bq without
+pausing. See HIT-CHAINS-JUGGLE.md and HANDOFF.md.
+
 ## M4bo: literal masks/enums and selected reaction metadata
 
 Predecessor/reversal7d30ae85. Adds nine schemas, selected/stored reaction

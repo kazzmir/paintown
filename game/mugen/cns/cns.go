@@ -83,6 +83,9 @@ type StateController struct {
 
 type HitDef struct {
 	ID            int
+	ChainID       *int
+	NoChainID     []int
+	AirJuggle     int
 	HitOnce       bool
 	AffectTeam    string
 	Priority      int
@@ -656,6 +659,14 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.ID, _ = strconv.Atoi(v)
 		hd.ID = max(0, hd.ID)
 	}
+	if raw, present := params["chainid"]; present {
+		value, _ := strconv.Atoi(raw)
+		hd.ChainID = &value
+	}
+	if raw, present := params["nochainid"]; present {
+		hd.NoChainID = ParseIntList(raw)
+	}
+	hd.AirJuggle, _ = strconv.Atoi(params["air.juggle"])
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v
 	}

@@ -3,7 +3,7 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4bo closes nine literal schemas and measured contact metadata; the user
+Current status: M4bp closes chain/juggle expressions and bounded consumers; the user
 authorized all remaining 27 HitDef keys, tracked in
 [the allocation ledger](HITDEF-REMAINING.md). Read the
 [current coverage ledger](COVERAGE.md),
@@ -106,3 +106,5 @@ Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.
 
 - [HitDef literal schemas and reactions](HIT-LITERALS.md)
+
+- [HitDef chains and juggle costs](HIT-CHAINS-JUGGLE.md)

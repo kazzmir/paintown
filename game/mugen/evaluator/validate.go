@@ -26,6 +26,22 @@ func validateConstants(expr Expression) error {
 	switch e := expr.(type) {
 	case *Call:
 		name := strings.ToLower(e.Name)
+		if name == "gethitvar" {
+			if len(e.Arguments) != 1 {
+				return fmt.Errorf("GetHitVar requires one literal selector")
+			}
+			selector := ""
+			switch arg := e.Arguments[0].(type) {
+			case *Identifier:
+				selector = arg.Name
+			case *StringExpr:
+				selector = arg.Value
+			}
+			if !knownGetHitSelector(selector) {
+				return fmt.Errorf("GetHitVar: invalid selector %s", e.Arguments[0].String())
+			}
+			return nil
+		}
 		if (name == "const240p" || name == "const480p" || name == "const720p") && len(e.Arguments) != 1 {
 			return fmt.Errorf("%s requires one expression", e.Name)
 		}
@@ -59,4 +75,14 @@ func validateConstants(expr Expression) error {
 		}
 	}
 	return nil
+}
+
+// The manual's argument summary lists hitid, but the beta rejects it. The
+// detailed selector list uses chainid for the last authored HitDef ID instead.
+func knownGetHitSelector(name string) bool {
+	switch strings.ToLower(name) {
+	case "xveladd", "yveladd", "type", "animtype", "airtype", "groundtype", "damage", "hitcount", "fallcount", "hitshaketime", "hittime", "slidetime", "ctrltime", "recovertime", "xoff", "yoff", "zoff", "xvel", "yvel", "yaccel", "chainid", "guarded", "isbound", "fall", "fall.damage", "fall.xvel", "fall.yvel", "fall.recover", "fall.time", "fall.recovertime", "fall.kill", "fall.envshake.time", "fall.envshake.freq", "fall.envshake.ampl", "fall.envshake.phase":
+		return true
+	}
+	return false
 }
