@@ -765,3 +765,21 @@ Do not record expected values from Go or regenerate frozen source inputs.
 [Timing evidence](../docs/HIT-GROUND-TIMING.md) lists defaults, field order,
 validation and remaining gates. Neither passing these controls nor a successful
 storyboard load establishes full engine/asset/rendering compatibility.
+
+## Air, launch and downed timing (M4bh)
+
+Twenty-five `hittiming-flight-*` programs pin 336 numeric observations, three
+native load rejections and 100 source hashes. Match replay covers both typed
+fields, timer/slide selection, omission versus zero, bounded countdown/shake,
+fall/KO controls and source-forward/reverse evaluation order. Corrected downed
+controls use -contact names and D flags; the initial non-contact diagnostics
+remain ignored and are excluded from acceptance.
+
+```
+python3 game/mugen/tests/reference_probe.py --fixture hittiming-flight-down-omitted-contact --name UNIQUE_NAME --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-delay 0 --pages 0 --seconds 6
+```
+
+Use BUILD.md's private environment and run native/application/GUI tests
+sequentially. Do not regenerate frozen sources or record expectations from Go.
+[Air/down evidence](../docs/HIT-AIR-DOWN-TIMING.md) records measured behavior,
+verification and remaining recovery/KO/round/combination gates.

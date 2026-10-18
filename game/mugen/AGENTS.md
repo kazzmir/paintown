@@ -7,11 +7,12 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The current allocation is complete: storyboard canvas scaling (M4bf, b1b8864c)
-and ground hit/slide plus four dependent guard timing fields (M4bg). Focused,
-native, production and full scoped race checks pass. M4bg is the completed local
-checkpoint; pause for the user's testing and next allocation. Do not push or
-start another feature family. Upstream integration is committed as 99b4605c.
+The user's next segment is complete. M4bh implements air.hittime/down.hittime
+schemas and bounded timer consumers, following M4bg (e37dd7da). Native,
+focused, application and full scoped race checks pass. M4bh is the completed
+local checkpoint; pause for user testing and the next allocation. Do not push
+or start another feature family. Storyboard scaling is b1b8864c; upstream
+integration is 99b4605c.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 

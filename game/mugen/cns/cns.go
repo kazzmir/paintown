@@ -618,7 +618,7 @@ func ParseHitDef(params map[string]string) HitDef {
 		PriorityClass:  "Hit",
 		FallRecover:    true,
 		FallXUnchanged: true,
-		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
+		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20, DownHitTime: 20,
 	}
 	for key, destination := range map[string]**bool{"kill": &hd.Kill, "guard.kill": &hd.GuardKill, "fall.kill": &hd.FallKill} {
 		if raw, present := params[key]; present {

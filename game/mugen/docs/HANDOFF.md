@@ -1,11 +1,52 @@
 # Current handoff
 
-Updated 2026-10-17. The user's allocation is complete: storyboard scaling
-(M4bf, b1b8864c), followed by the bounded ground/guard timing batch (M4bg).
-M4bg is the completed local checkpoint, with predecessor/reversal b1b8864c.
-Native, focused, production and full regression gates pass. Pause for the user's
-testing and next allocation. Do not push or begin another feature family.
-All authored changes stay under game/mugen/. No new binary files are tracked.
+Updated 2026-10-17. The user's next-segment allocation is complete. M4bh covers
+air.hittime/down.hittime schemas and their bounded consumers, with predecessor/
+reversal e37dd7da (M4bg). Native, focused, application and full regression gates
+pass. M4bh is the completed local checkpoint; pause for user testing and the
+next allocation. Do not push or begin another feature family. All authored
+changes stay under game/mugen/; no new binary files are tracked.
+
+## M4bh verified checkpoint
+
+Predecessor/reversal e37dd7da. Read HIT-AIR-DOWN-TIMING.md. Both omission
+defaults are 20, explicitly zero/negative/bottom become 0, and runtime floats
+truncate. Ground/down vertical launches select the air timer independently
+of reaction state number. Ordinary down hits select DownHitTime. Slide time
+is 0 for the measured non-ground reactions. Fall controls keep counting their
+exposed timer; ground KO selects air time after its vector adjustment. Full
+recovery and absolute KO clocks remain outside this allocation.
+
+Twenty-five original text programs pin 336 observations, three native load
+rejections and 100 source hashes. Do not rerun temp/author-m4bh-times.py or
+record expectations from Go. temp/m4bh-prepared-inputs.json matches all 100
+inputs. Initial MAF-only down controls never connected: source/goldens are
+retained under temp/m4bh-before-down-hitflag/, excluded from acceptance. The
+corrected D-flag controls have new -contact names and hashes; recording also
+checks life 990 (0 for KO) to reject a missing-contact measurement.
+
+Focused replay passes 25 flight, 21 ground/guard, 19 pause and four fatal-guard
+pause programs (Match 42.414s). Character reference/pause/continuation checks
+pass 1.585s. Engine/evaluator/CNS/combat races pass 1.426s/1.021s/1.014s/1.011s.
+Final pipeline: temp/run-m4bh-validation.py, log temp/m4bh-validation.log.
+Fresh native default/order/rejection, air-zero/down-clock/mixed-stock apps,
+and one full scoped serial-package race run are included. Fresh native checks
+pass. Three actual apps/four captures pass prepared-source/config/binary/PNG/
+runtime audit in temp/m4bh-evidence-audit.json. Binary SHA256:
+7c1b14ae5e12f3a73324b0ba2ff732fac999e21c316f428f4b5a54833879a062.
+The stock 7s image was visually inspected: two fighters, intact stage/HUD,
+no persistent effects. These are smoke checks, not full-frame parity.
+Full scoped races pass in temp/m4bh-full-race.log:
+Match 648.043s, Character 11.516s, System 4.843s, storyboard 1.879s,
+stock/resources 6.625s.
+Final pipeline exited 0. No test/native/application GUI client remains.
+Root baseline remains
+temp/upstream-post-merge-module.sha256; original native SHA remains
+d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
+Existing six alpha/two spark failures stay open. Next work is a new allocation,
+not a continuation into recovery or round-clock logic during this checkpoint.
+
+Historical sections below do not override the current allocation.
 
 ## M4bg verified checkpoint
 
@@ -94,7 +135,7 @@ App audit temp/m4be-evidence-audit.json passes source/prepared inputs, config,
 binary, PNG dimensions/hashes and runtime logs. Binary SHA256:
 0daa6080198b869d3e8d806c8f4646149267a9864c5b6c0566d50030ad179da8.
 Two app programs exercise expressions/default inheritance, plus mixed stock
-KFM/KFM720 at 3/7s. The stock7s image was visually inspected: two fighters,
+KFM/KFM720 at 3/7s. The stock 7s image was visually inspected: two fighters,
 stage/HUD intact, no persistent effects. These are smoke/provenance observations,
 not full-frame parity. The first audit script assumed kfm720.snd; it was fixed
 to the actual stock kfm720/kfm.snd before the final audit. No runtime/data change.

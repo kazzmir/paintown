@@ -34,7 +34,7 @@ func TestHitTimingDefaultsRepeatSourcesForEachHost(t *testing.T) {
 }
 
 func TestHitTimingValidationPrecedesStateEffects(t *testing.T) {
-	for _, key := range []string{"ground.hittime", "ground.slidetime", "guard.hittime", "guard.slidetime", "guard.ctrltime", "airguard.ctrltime"} {
+	for _, key := range []string{"ground.hittime", "ground.slidetime", "guard.hittime", "guard.slidetime", "guard.ctrltime", "airguard.ctrltime", "air.hittime", "down.hittime"} {
 		for _, raw := range []string{"unknown_timing_trigger", "2.5", "1,2"} {
 			t.Run(key+"="+raw, func(t *testing.T) {
 				host := newParameterHost()
@@ -45,5 +45,37 @@ func TestHitTimingValidationPrecedesStateEffects(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestAirDownTimeDefaultsAndHostIsolation(t *testing.T) {
+	for _, test := range []struct{ source, air, down string }{
+		{"", "20", "20"},
+		{"air.hittime=0\ndown.hittime=0", "0", "0"},
+		{"air.hittime=-3\ndown.hittime=-4", "0", "0"},
+	} {
+		host := newParameterHost()
+		runController(t, host, "HitDef", test.source)
+		if host.hitParams["air.hittime"] != test.air || host.hitParams["down.hittime"] != test.down {
+			t.Fatal("omission/zero/negative timing", test.source, host.hitParams)
+		}
+	}
+	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nair.hittime=FVar(0)\ndown.hittime=FVar(1)\n")
+	machine := NewStateMachine()
+	for _, test := range []struct {
+		air, down         float64
+		wantAir, wantDown string
+	}{{3.9, 4.9, "3", "4"}, {0.9, -3.9, "0", "0"}} {
+		host := newParameterHost()
+		host.floats[0], host.floats[1] = test.air, test.down
+		if _, err := machine.ExecuteState(state, host); err != nil {
+			t.Fatal(err)
+		}
+		if host.hitParams["air.hittime"] != test.wantAir || host.hitParams["down.hittime"] != test.wantDown {
+			t.Fatal("shared timing retained another host's values", host.hitParams)
+		}
+	}
+	if state.Controllers[0].Params["air.hittime"] != "FVar(0)" || state.Controllers[0].Params["down.hittime"] != "FVar(1)" {
+		t.Fatal("timing compilation changed shared source")
 	}
 }

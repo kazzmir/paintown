@@ -4,6 +4,18 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bh: air/down timing
+
+Predecessor/reversal e37dd7da. Adds compiled air/down timers, measured default 20
+versus explicit 0, and native timer selection for air/ground launch/down hits.
+Non-ground reaction slide time is 0. Twenty-five text programs pin 336 numeric
+observations, three native load rejections and 100 source hashes. Focused Match
+and Character races pass 42.414s/1.585s; core races pass. Three fresh native reproductions and three actual apps/four captures pass
+provenance checks. Full scoped races pass in temp/m4bh-full-race.log:
+Match 648.043s, Character 11.516s, System 4.843s, storyboard 1.879s, stock/resources 6.625s. Routing 46/81 (56.8%) leaves 35 literal/
+absent keys. Stop at this local checkpoint for user testing; see
+HIT-AIR-DOWN-TIMING.md and HANDOFF.md for results and remaining gates.
+
 ## M4bg: ground/guard timing
 
 Predecessor/reversal b1b8864c. Adds compiled ground hit/slide times and their

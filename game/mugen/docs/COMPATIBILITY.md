@@ -13,6 +13,16 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bh compiles air.hittime/down.hittime, preserves explicit zero versus their
+measured default 20, and corrects launch/down timer and slide-time selection.
+Twenty-five native programs pin 336 observations, three load rejections and
+100 source hashes, including bounded countdown/pause/fall/KO controls and
+full forward/reverse field order. Focused integrated races pass (Match 42.414s,
+Character 1.585s); core races pass. Routing is now 46/81 (56.8%), with 35 keys
+literal/absent. Fresh native reproductions, three actual apps/four captures and
+the full scoped race suite pass (Match 648.043s). See
+[HIT-AIR-DOWN-TIMING.md](HIT-AIR-DOWN-TIMING.md) and HANDOFF.md.
+
 M4bg compiles ground.hittime/ground.slidetime plus the four dependent guard
 timing fields. Native defaults re-evaluate source expressions at their measured
 evaluation points; runtime floats truncate, negative/bottom become 0, and literal

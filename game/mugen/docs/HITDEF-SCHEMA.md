@@ -4,7 +4,7 @@ The bundled 1.1 beta manual contains 81 HitDef parameter entries. A source audit
 at M4av found20 compiled keys. M4aw extended that to29; M4ba added
 Damage/GetPower/GivePower; M4bb adds kill/guard.kill/fall.kill/fall.damage;
 M4be added pausetime/guard.pausetime; M4bg adds ground hit/slide times and four
-dependent guard timing keys, for44 expression keys across engine/hitdef.go,
+dependent guard timing keys; M4bh adds air.hittime/down.hittime, for46 expression keys across engine/hitdef.go,
 hit_vectors.go, hit_power.go, hit_pause.go and hit_timing.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
@@ -33,7 +33,8 @@ defaults, all current typed-field order, root/helper pools, configured factors
 and immediate contact transfer. Broad foreign/projectile/team/pause/multiple
 contexts remain open. M4be's [contact pause controls](HIT-PAUSE.md) cover the two
 pause keys. M4bg's [ground/guard timing controls](HIT-GROUND-TIMING.md) cover
-six more keys and source-default chains. Literal-only air/down hit timing, fall and remaining physical
+six more keys and source-default chains. M4bh's [air/down controls](HIT-AIR-DOWN-TIMING.md)
+cover both timers and the measured launch/down/countdown consumers. Fall and remaining physical
 fields still need expression/coercion/order coverage. Down
 time still lacks complete runtime consumers; corner push has the bounded M4ax
 consumer described above. Existing
@@ -47,10 +48,10 @@ pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
 measured KO velocity adjustments. These do not establish absolute KO/round
 timing, full fall recovery, or the broad contact combinations listed above.
 
-The refreshed audit is `temp/m4bg-hitdef-current-audit.json`; its input is the
+The refreshed audit is `temp/m4bh-hitdef-current-audit.json`; its input is the
 local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
-It records all81 documented keys,44 expression keys and37 keys that remain
-literal or absent. Those37 include compile-time enums/attributes as well as
+It records all81 documented keys,46 expression keys and35 keys that remain
+literal or absent. Those35 include compile-time enums/attributes as well as
 numeric expressions; they need appropriate schemas rather than being treated
 uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
 historical M4aw snapshot, and m4bb-hitdef-current-audit.json records the prior36.

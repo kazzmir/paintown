@@ -3,12 +3,12 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4be is the first bounded implementation batch after the
-documentation checkpoint. Read the [current coverage ledger](COVERAGE.md) and
-[contact pause evidence](HIT-PAUSE.md), alongside the
-[current progress assessment](PROGRESS-ASSESSMENT.md) for working behavior,
-remaining gates and bounded allocations. See the
-[checkpoint history](CHECKPOINTS.md) and handoff for evidence; the original
+Current status: M4bh implements air/down HitDef timing after the storyboard
+and ground/guard checkpoints. Read the [current coverage ledger](COVERAGE.md),
+[air/down timing evidence](HIT-AIR-DOWN-TIMING.md), and
+[progress assessment](PROGRESS-ASSESSMENT.md) for working behavior, remaining
+gates and bounded allocations. The [checkpoint history](CHECKPOINTS.md) and
+[handoff](HANDOFF.md) record verification and authorization; the original
 assessment describes the baseline.
 
 1. [Assessment](ASSESSMENT.md): source-confirmed gaps, baseline tests, and comparison with the C++ engine and bundled M.U.G.E.N 1.1 beta 1.
@@ -88,6 +88,12 @@ assessment describes the baseline.
 
 40. [HitDef pause expressions](HIT-PAUSE.md): typed hit/guard pause pairs,
     native component/default/evaluation order and remaining timing obligations.
+
+41. [Storyboard canvas](STORYBOARD-CANVAS.md): storyboard/game/window fitting and native placement controls.
+
+42. [Ground/guard timing](HIT-GROUND-TIMING.md): expression defaults, coercion and native evaluation order.
+
+43. [Air/down timing](HIT-AIR-DOWN-TIMING.md): launch/down selection, omission versus zero and bounded countdown controls.
 
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

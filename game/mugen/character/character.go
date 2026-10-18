@@ -1391,7 +1391,7 @@ func (c *Character) GetHitVar(name string) float64 {
 			if !c.GetHitAir {
 				val = float64(c.GetHit.GuardSlide)
 			}
-		} else {
+		} else if !c.GetHitDown && !c.hitUsesAirTime(c.GetHit) {
 			val = float64(c.GetHit.GroundSlide)
 		}
 	case "ctrltime":
@@ -2046,21 +2046,8 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	// Knockback is stored in GetHit and applied by the get-hit state's
 	// HitVelSet, rather than inventing an immediate opposite-sign velocity.
 
-	// Set HitTime duration based on state
-	if guarded {
-		c.HitTime = hit.GuardHitTime
-		if airHit {
-			c.HitTime = -1
-		}
-	} else if airHit {
-		if hit.AirHitTime > 0 {
-			c.HitTime = hit.AirHitTime
-		} else {
-			c.HitTime = 20 // Reasonable default if air.hittime missing
-		}
-	} else {
-		c.HitTime = hit.GroundHitTime
-	}
+	// The compiler supplies omission defaults; explicit zero remains zero.
+	c.setHitTime(hit, guarded)
 
 	// A subsequent unguarded hit retains an existing get-hit fall unless
 	// ForceNoFall clears it. A hit's own fall setting still takes precedence.

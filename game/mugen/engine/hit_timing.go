@@ -9,17 +9,21 @@ import (
 
 // Inherited times execute the original source again at each field's native
 // evaluation point. They cannot copy the previously evaluated/coerced integer.
-func compileHitGroundTiming(ctrl *cns.StateController) ([]hitDefCue, error) {
+func compileHitTiming(ctrl *cns.StateController) ([]hitDefCue, error) {
 	values := map[string]evaluator.Expression{}
 	var cues []hitDefCue
-	for _, field := range []struct{ key, fallback string }{
-		{"ground.hittime", ""}, {"ground.slidetime", ""},
-		{"guard.hittime", "ground.hittime"}, {"guard.slidetime", "ground.slidetime"},
-		{"guard.ctrltime", "guard.slidetime"}, {"airguard.ctrltime", "guard.ctrltime"},
+	for _, field := range []struct {
+		key, fallback string
+		defaultValue  float64
+	}{
+		{"ground.hittime", "", 0}, {"ground.slidetime", "", 0},
+		{"guard.hittime", "ground.hittime", 0}, {"guard.slidetime", "ground.slidetime", 0},
+		{"guard.ctrltime", "guard.slidetime", 0}, {"airguard.ctrltime", "guard.ctrltime", 0},
+		{"air.hittime", "", 20}, {"down.hittime", "", 20},
 	} {
 		expression := values[field.fallback]
 		if expression == nil {
-			expression = &evaluator.Number{}
+			expression = &evaluator.Number{Value: field.defaultValue}
 		}
 		if raw, present := ctrl.Params[field.key]; present {
 			expressions, err := evaluator.ParseReferenceTupleForVersion(raw, 1, ctrl.LanguageVersion)
@@ -40,9 +44,9 @@ func compileHitGroundTiming(ctrl *cns.StateController) ([]hitDefCue, error) {
 	return cues, nil
 }
 
-func hitGroundTimingKey(key string) bool {
+func hitTimingKey(key string) bool {
 	switch key {
-	case "ground.hittime", "ground.slidetime", "guard.hittime", "guard.slidetime", "guard.ctrltime", "airguard.ctrltime":
+	case "ground.hittime", "ground.slidetime", "guard.hittime", "guard.slidetime", "guard.ctrltime", "airguard.ctrltime", "air.hittime", "down.hittime":
 		return true
 	}
 	return false
