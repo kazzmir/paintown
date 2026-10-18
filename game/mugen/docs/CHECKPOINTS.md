@@ -4,6 +4,16 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bz: remaining trigger runtime inventory
+
+Predecessor/reversal 0414d54e. Reconciles all 127 primary-manual families against
+named production handlers: 109 candidate routes, 18 unbound. Separately inventories
+36 GetHitVar selectors: 29 routes, seven missing, plus extra air.animtype.
+TRIGGER-BINDINGS.md/JSON and tests/trigger_inventory.py record reproducible source
+evidence, explicit conditional routes and variant/context limitations. Source-only
+checkpoint; generator comparison and scoped evaluator checks pass. No production
+Go changes or new native/application claims. Continue M4ca then M4cb; no push/binaries.
+
 ## M4by: cumulative process GameTime and configured tick rate
 
 Predecessor/reversal e1299891. Engine owns GameTime through menus, matches,

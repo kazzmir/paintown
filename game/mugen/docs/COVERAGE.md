@@ -1,5 +1,12 @@
 # Current behavior coverage ledger
 
+M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
+runtime routes, **18 are unbound**; this does not establish complete variants or
+native behavior. GetHitVar has **29/36 documented selector routes (80.6%)**, with
+seven unbound. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
+[JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
+recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
+
 Updated 2026-10-18 through M4by process clocks, M4bx legacy HitVel, M4bw complete-match validation, M4bv results/reset and M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it

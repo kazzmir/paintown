@@ -1,5 +1,18 @@
 # Current handoff
 
+## Current allocation: M4bz → M4ca → M4cb
+
+The user authorized the next few checkpoints after pushing 0414d54e. M4bz is
+source-only: 109/127 candidate trigger routes, 18 absent; 29/36 documented
+GetHitVar selector routes, seven absent. Read TRIGGER-BINDINGS.md and run its
+inventory check. Production Go is unchanged and M4by remains the full integration
+baseline. Continue M4ca combat metadata/counters, then M4cb liedown/recovery,
+freezing new native inputs before observation. Keep recovertime in M4cb because
+its value and engine consumer must be measured together. Each gets a local
+source/text commit; full scoped races at final integration only. No push/binaries.
+
+The completed allocation below is historical; M4by is committed as 0414d54e.
+
 ## Completed trigger/clock allocation
 
 M4bx is committed as `e1299891`; M4by completes this allocation. Its final
@@ -45,8 +58,7 @@ PNG glyph/value/hash, executable, owned events, PCM and root modules. It
 preserves the config BOM and reverses only native FirstRun persistence and
 line endings. No original input, golden or tolerance was changed.
 
-Finalize the local M4by source/text commit, then report both checkpoints for
-user testing. No further implementation/validation remains in this bounded
+M4by was committed locally and pushed by the user. No further implementation/validation remains in this bounded
 allocation. Never push or add binaries. The next assessment priorities are a
 complete remaining-runtime-binding inventory, then recovery/input and entity/
 mode/audio slices; existing strict renderer/font/platform gates remain open.

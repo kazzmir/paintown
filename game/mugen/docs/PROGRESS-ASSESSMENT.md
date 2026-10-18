@@ -1,5 +1,12 @@
 # Current progress assessment
 
+M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
+runtime routes, **18 are unbound**; this does not establish complete variants or
+native behavior. GetHitVar has **29/36 documented selector routes (80.6%)**, with
+seven unbound. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
+[JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
+recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
+
 Updated 2026-10-18 through M4by process clocks and M4bx legacy HitVel.
 The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The 27-key HitDef allocation is complete. The user subsequently authorized
 M4bu clocks, M4bv results/reset and M4bw complete input-driven matches. All authored changes stay under game/mugen/, with local

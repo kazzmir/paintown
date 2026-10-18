@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4by**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bz**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -151,6 +151,8 @@ results). See [complete match validation](docs/COMPLETE-MATCHES.md).
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
+| Trigger families with candidate runtime routes | 109 / 127 | **85.8%** | Source routing only; 18 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
+| Documented GetHitVar selector routes | 29 / 36 | **80.6%** | Seven unbound; route presence does not prove native behavior. |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
 | Documented HitDef keys routed through the expression compiler | 72 / 81 | **88.9%** | Numeric expression routing; nine other documented keys are literal masks/enums. |
 | Documented HitDef keys with typed schemas | 81 / 81 | **100%** | 72 numeric and nine literal schemas with bounded native consumers; full interactions remain open. |

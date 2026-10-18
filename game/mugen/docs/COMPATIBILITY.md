@@ -1,5 +1,12 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
+runtime routes, **18 are unbound**; this does not establish complete variants or
+native behavior. GetHitVar has **29/36 documented selector routes (80.6%)**, with
+seven unbound. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
+[JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
+recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
+
 M4by makes GameTime process-owned across production menus/matches/rematches,
 binds integer TicksPerSecond and one-on-one MatchNo, and applies the measured
 Config.GameSpeed + 5*Options.GameSpeed rate to the actual loop. Six frozen

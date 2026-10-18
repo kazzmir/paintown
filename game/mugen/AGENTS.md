@@ -62,7 +62,7 @@ GameTime handoff and other documented engine gates remain open. Typed HitDef
 coverage stays 81/81; no whole-engine completion percentage is justified.
 No pushes or binaries.
 
-## Current trigger/clock allocation
+## Previous trigger/clock allocation (complete)
 
 The user validated M4bw and authorized proceeding. M4bx measures and binds
 legacy HitVel X/Y, preserving the three existing counterexamples and adding
@@ -87,10 +87,24 @@ pass. Final scoped integration PASSED against 408 frozen hashes: 2,735 test/
 subtest results, 24 tested and 12 compiled-only packages; Match 956.321s, total
 1,028.682s. Fresh native clock and four-PNG stock win/rematch/win with private
 PCM pass source/input/config/PNG/executable/audio/root-module audits. All
-sessions were awaited; no clients remain. Finalize the local M4by commit and
-report this completed allocation for user testing; no further feature batch
-is included. Keep renderer/mode/asset/remaining binding gates explicit; no
+sessions were awaited; no clients remain. M4by is committed as 0414d54e and was pushed by the user. This allocation is
+complete; the current allocation below supersedes its stop condition. Keep renderer/mode/asset/remaining binding gates explicit; no
 overall engine completion percentage is justified. No push or binaries.
+
+## Current binding/recovery allocation
+
+The user authorized the next few checkpoints after 0414d54e (2026-10-18).
+Proceed through three bounded checkpoints: M4bz audits all 127 trigger families
+against actual runtime routes, records selector/variant gaps and adds a
+reproducible inventory; M4ca implements missing GetHitVar combat metadata and
+combo/impact counters with frozen native controls; M4cb implements the remaining
+liedown recovery timer/input consumer and corrects recovery routing as supported
+by native observations. Split dependent selectors between M4ca/M4cb if needed;
+document the reason and keep the original inputs/goldens immutable. Each batch
+gets focused checks, evidence/limits and a local source/text commit. Use a full
+scoped race run at the final integration boundary, not at every small revision.
+Continue automatically through these three; stop at completion or an issue
+requiring user input. No pushes, binaries, changes outside game/mugen or agents.
 
 ## Scope
 
