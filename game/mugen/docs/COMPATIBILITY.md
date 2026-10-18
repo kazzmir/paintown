@@ -1,5 +1,10 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bq adds mindist/maxdist/snap integer schemas, deferred contact offsets and
+timed snap binding.39 programs pin588 observations/seven rejections/156 frozen
+hashes, including the undocumented third snap duration. Numeric routing61/81;
+with nine literals, typed coverage70/81 (86.4%). See [HIT-CONSTRAINTS.md](HIT-CONSTRAINTS.md).
+
 M4bp adds typed chainID/nochainID/air.juggle, last-contact ownership, native
 per-move/projectile costs and non-fall preservation, chainid query/selector
 validation and a bounded single-contact projectile adapter.57 programs pin660

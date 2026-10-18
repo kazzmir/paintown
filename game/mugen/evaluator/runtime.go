@@ -484,7 +484,7 @@ func callWithArguments(e *Call, env, argumentsEnv EvaluatorEnvironment) Value {
 		}
 		field := args[0].text
 		switch field {
-		case "xvel", "yvel", "yoff", "yaccel", "fall.xvel", "fall.yvel":
+		case "xvel", "yvel", "xoff", "yoff", "yaccel", "fall.xvel", "fall.yvel":
 			return Float(float32(who.GetHitVar(field)))
 		case "type", "animtype", "air.animtype", "groundtype", "airtype", "fall", "fall.damage", "fall.kill", "fall.recover", "fall.recovertime", "fall.time", "hittime", "slidetime", "ctrltime", "damage", "guarded", "hitshaketime", "isbound", "chainid":
 			return Int(int32(who.GetHitVar(field)))

@@ -86,6 +86,9 @@ type HitDef struct {
 	ChainID       *int
 	NoChainID     []int
 	AirJuggle     int
+	MinDist       []float64
+	MaxDist       []float64
+	SnapTime      int
 	HitOnce       bool
 	AffectTeam    string
 	Priority      int
@@ -667,6 +670,23 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.NoChainID = ParseIntList(raw)
 	}
 	hd.AirJuggle, _ = strconv.Atoi(params["air.juggle"])
+	if raw, present := params["mindist"]; present {
+		hd.MinDist = ParseFloatList(raw)
+	}
+	if raw, present := params["maxdist"]; present {
+		hd.MaxDist = ParseFloatList(raw)
+	}
+	if raw, present := params["snap"]; present {
+		values := ParseFloatList(raw)
+		if len(values) > 2 {
+			hd.SnapTime = int(values[2])
+			values = values[:2]
+		}
+		hd.MinDist, hd.MaxDist = values, append([]float64(nil), values...)
+	}
+	if raw, present := params["snap.time"]; present {
+		hd.SnapTime, _ = strconv.Atoi(raw)
+	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v
 	}

@@ -4,9 +4,46 @@ Updated 2026-10-18. The user authorized completion of all 27 HitDef keys
 remaining after24b3ebd0, with local checkpoint commits and continuous iteration
 until complete or blocked. No two-checkpoint pause remains. All authored work
 stays under game/mugen/. Never push or add binaries. Current completed batches:
-M4bn guard.dist, M4bo nine literal schemas, M4bp chains/juggle. Continue M4bq
-constraints, M4br palette, M4bs contact shake and M4bt fall shake automatically.
+M4bn guard.dist, M4bo nine literal schemas, M4bp chains/juggle and M4bq
+constraints. Continue M4br palette, M4bs contact shake and M4bt fall shake automatically.
 Read HITDEF-REMAINING.md, COVERAGE.md and the relevant topic documents.
+
+## M4bq verified checkpoint
+
+Predecessor/reversal b13c22d5.39 programs/588 observations/seven rejections/156
+frozen hashes. Topic HIT-CONSTRAINTS.md describes strict schemas, the undocumented
+third snap duration, repeated source/default order, deferred offsets, immediate
+binding, profiles/facing and entry-write/contact-axis phase. Numeric routing
+61/81 plus nine literals =70/81 typed keys (86.4%); eleven effect keys remain.
+
+All39 Match replays pass23.971s. Related binding-retirement/contact-facing/
+down-bounce/stock-sweep regressions pass68.873s. Full Character11.508s and core
+engine/evaluator/CNS/combat1.457/1.021/1.013/1.014s pass. Two fresh native
+reproductions and three apps/four captures pass source/config/binary/PNG/runtime
+provenance in m4bq-evidence-audit.json. Stock and indefinite-snap captures were
+visually inspected. The stock preview was losslessly reencoded because the
+image viewer showed black for a valid repeated PNG; its decoded RGB pixels
+were verified identical. Captured originals/goldens are untouched.
+run-m4bq-validation.py exited0. Nine Go hashes are frozen in
+m4bq-production-inputs.json. Application SHA256:
+125738f2800b6207e00036e0814ff47749f97df1471a273d897caefac32866a6.
+Manifests: m4bq-prepared-{inputs,extra,routing,offset-profile,entry-routing}.json.
+Native values/tolerances never changed; do not rerun authors. No full suite at
+this batch: final scoped integration follows M4bt. Stage only M4bq families;
+continue automatically, no push or binaries.
+
+## Active M4br
+
+Native runner temp/run-m4br-native-final.py is ACTIVE, exec session26607,
+log m4br-native-batch.log. Await it and separately check processes before any
+GUI/native/app.22 hitpalette-* sources were frozen before native execution in
+m4br-prepared-inputs.json and m4br-prepared-lifetime.json. Do not regenerate.
+Schema/runtime work is pending. Inspect palette operation order/rounding,
+negative/zero/infinite duration, partial tuples, ignored fields, guard/None,
+source/default side effects and second-contact preservation/reset behavior.
+Native captures include the original KFM garment, but commit only scalar color
+measurements, never reference art/binaries. The reusable effect-probe DRAFT is
+ignored temp/hit_effect_probe.py.txt; refine/calibrate before promoting.
 
 ## M4bp verified checkpoint
 
@@ -69,18 +106,7 @@ Root module and immutable native executable checksums pass. Final full scoped
 races follow M4bt, covering the lifetime/query changes and remaining fields.
 Do not relabel the earlier full run as a final-tree run.
 
-## Active M4bq and remaining frozen inputs
-
-Native runner temp/run-m4bq-native.py is ACTIVE, exec session99514, log
-m4bq-native-batch.log. Await it and make a separate process check before any
-GUI test/app/native run.22 hitconstraint-* programs/88 hashes were frozen in
-m4bq-prepared-inputs.json; do not regenerate them. Initial native observations:
-constraints apply after entry CNS (entry40,-20 remains visible; late min becomes
-60,-10; max becomes20,-30). Omitted min Y preserves Y. Float literals reject.
-Inspect the rest, especially optional components, guard/None, facing/profiles,
-component order and conflicting constraints before implementing consumers.
-No M4bq production Go changes yet. Consider two independent extra controls for
-entry PosSet precedence and moving-anchor phase; freeze before native execution.
+## Remaining frozen inputs
 
 Unexecuted future source sets are already frozen:
 - M4br:22 hitpalette-* programs; m4br-prepared-inputs.json plus

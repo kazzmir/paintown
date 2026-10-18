@@ -1,6 +1,6 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-18 through M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -22,6 +22,7 @@ does not promote an entire controller from one passing parameter/default.
 | Downed-hit bounce | M4bm compiles down.bounce; native zero/nonzero/float/bottom/order rules, zero-launch boundary, contact fall-vector reset and stock bounce/get-up consumers. PosFreeze survives same-tick transitions; first idle observation retains facing. DOWN-BOUNCE.md. | Full recovery, all auto-turn/PosFreeze edges and broad entity/contact/pause/foreign combinations. |
 | Literal masks/enums | M4bo schemas, selected/stored reaction types, untouched/guard type metadata, None contacts, HitDefAttr and trip defence entry. HIT-LITERALS.md. | Broad team/entity/foreign/pause combinations and all other fall-defence/state-number rules. |
 | Chains/juggle | M4bp integer schemas, predecessor ownership/ID, guard/None/idle context, per-move and per-projectile costs, non-fall budget preservation and chainid query. HIT-CHAINS-JUGGLE.md. | Broad helper/foreign/team/third-party/recovery/pause and full projectile interactions. |
+| Distance/snap constraints | M4bq strict integer schemas, source replacement/order, per-axis intervals, deferred offsets/GetHitVar and timed binding, facing/profile/CNS-write/moving-axis controls. HIT-CONSTRAINTS.md. | Broad entity/projectile/foreign/override/pause and moving timed-bind combinations. |
 | Guard distance | M4bn compiles guard.dist with native integer/coercion/bottom/order rules, preserves omitted/negative range, resets it on state entry and verifies facing/boundary/height/profile consumers. GUARD-DISTANCE.md. | Broad input/entity/foreign/pause combinations and other AttackDist variants. |
 | Projectiles/reversals | M4bp adds a narrow single-contact projectile adapter with native parameter names, animation, retirement/removal time, owner target credit and juggle cost. ReversalDef still stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. EXPLODS.md, RGB-CONSUMERS.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
@@ -43,7 +44,8 @@ fall/recovery keys (50/81). M4bk adds three fall velocity/gravity keys:
 **55/81 (67.9%)**, leaving 26 keys literal or absent at M4bn. M4bo adds nine literal schemas:
 55 numeric + nine literal = **64/81 typed keys (79.0%)**, with seventeen
 numeric keys remaining. M4bp adds three integer expressions: **58/81 (71.6%)** numeric, plus nine
-literal schemas = **67/81 typed keys (82.7%)**. Fourteen keys remain.
+literal schemas = **67/81 typed keys (82.7%)**. M4bq adds three constraint schemas: **61/81 numeric (75.3%)**, plus nine
+literals = **70/81 typed keys (86.4%)**. Eleven palette/shake keys remain.
 The other metrics are unchanged. See
 [../README.md](../README.md) for numerator/denominator sources and
 [GUARD-DISTANCE.md](GUARD-DISTANCE.md) for the latest native-backed scope.
@@ -67,7 +69,7 @@ shake (4), fall shake (4). Numeric routing remains a separate metric from the
 nine literal schemas. Each batch requires frozen native controls, runtime
 consumers or a demonstrated beta limitation, focused checks and documentation.
 Full scoped races follow the enum/combat and final integration boundaries.
-Prior renderer/round/mode/asset gaps remain open. M4bn, M4bo and M4bp are complete; M4bq constraints follow. See HITDEF-REMAINING.md for the live key ledger.
+Prior renderer/round/mode/asset gaps remain open. M4bn through M4bq are complete; M4br palette native controls are active. See HITDEF-REMAINING.md for the live key ledger.
 No remote push is authorized.
 
 Prior allocation (completed):

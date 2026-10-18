@@ -4,6 +4,20 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bq: distance bounds, deferred snap offsets and duration
+
+Predecessor/reversal b13c22d5. Adds mindist/maxdist/snap integer schemas,
+conditional source replacement/repeated evaluation and native field order.
+Runtime applies contact-time deltas after CNS, exposes typed offsets, honors
+valid intervals, profiles/facing/guard/None and timed/indefinite snap binding.
+39 programs pin588 observations/seven rejections/156 frozen input hashes.
+Focused Match passes23.971s; related binding/facing/down-hit/stock sweep
+regressions68.873s, full Character11.508s and core races pass. Two native
+reproductions and three apps/four captures pass provenance; stock/timed captures
+were visually inspected. Numeric routing61/81 plus nine literals gives70/81
+typed keys (86.4%); eleven palette/shake keys remain. Continue M4br. Final full
+integration follows M4bt. See HIT-CONSTRAINTS.md and HANDOFF.md.
+
 ## M4bp: chain selectors and native juggle costs
 
 Predecessor/reversal ff7a3296. Adds three integer schemas, prior-contact

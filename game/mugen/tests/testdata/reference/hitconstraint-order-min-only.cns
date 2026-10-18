@@ -1,0 +1,587 @@
+[Statedef 5900]
+[State 5900, literal schema probe]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, literal schema probe]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(TeamSide=1,700,701)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, literal schema probe]
+type=PosSet
+trigger1=Time=0
+x=40
+y=-20
+[State 701, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, literal schema probe]
+type=VarSet
+trigger1=Time=0
+v=0
+value=0
+[State 701, literal schema probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=-99
+[State 701, literal schema probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=-99
+[Statedef 5000]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5000, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5000, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5000, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 5000, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 5000, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 5010]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5010, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5010, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5010, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 5010, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 5010, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5020, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5020, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5020, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 5020, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 5020, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 5070]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5070, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5070, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5070, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5070, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 5070, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 5070, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 5080]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5080, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5080, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5080, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 5080, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 5080, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 150]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 150, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 150, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 150, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 150, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 150, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 152]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 152, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 152, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 152, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 152, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 152, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 152, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef 154]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 154, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 154, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 154, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 154, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[State 154, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Pos X
+[State 154, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos Y
+[Statedef -3]
+[State -3, literal schema probe]
+type=Null
+trigger1=0
+
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, constraint probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, constraint probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=30.75
+[State 700, constraint probe]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=-10.25
+[State 700, constraint probe]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+damage=((Var(1):=(Var(58):=Var(58)+1))*0+0)
+fall=0
+ground.velocity=0,0
+air.velocity=0,0
+pausetime=0,0
+sparkno=((Var(7):=(Var(58):=Var(58)+1))*0+-1)
+guard.sparkno=-1
+hitsound=-1,0
+guardsound=-1,0
+id=((Var(0):=(Var(58):=Var(58)+1))*0+7)
+p1sprpriority=((Var(2):=(Var(58):=Var(58)+1))*0+0)
+p2sprpriority=((Var(3):=(Var(58):=Var(58)+1))*0+0)
+mindist=((Var(4):=(Var(58):=Var(58)+1))*0+0),((Var(24):=(Var(58):=Var(58)+1))*0)
+ground.hittime=((Var(8):=(Var(58):=Var(58)+1))*0+0)
+guard.dist=((Var(9):=(Var(58):=Var(58)+1))*0+0)
+yaccel=((Var(10):=(Var(58):=Var(58)+1))*0+0)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=0
+value=Var(0)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=1
+value=Var(1)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=2
+value=Var(2)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=3
+value=Var(3)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=4
+value=Var(4)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=5
+value=Var(5)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=6
+value=Var(6)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=7
+value=Var(7)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=8
+value=Var(8)+100000
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=9
+value=Var(9)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=10
+value=Var(10)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=11
+value=Var(11)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=12
+value=Var(12)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=13
+value=Var(13)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=14
+value=Var(14)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=15
+value=Var(15)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=16
+value=Var(16)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=17
+value=Var(17)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=18
+value=Var(18)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=19
+value=Var(19)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=20
+value=Var(20)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=21
+value=Var(21)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=22
+value=Var(22)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=23
+value=Var(23)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=24
+value=Var(24)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=25
+value=Var(25)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=26
+value=Var(26)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=27
+value=Var(27)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=28
+value=Var(28)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=29
+value=Var(29)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=30
+value=Var(30)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=31
+value=Var(31)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=32
+value=Var(32)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=33
+value=Var(33)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=34
+value=Var(34)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=35
+value=Var(35)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=36
+value=Var(36)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=37
+value=Var(37)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=38
+value=Var(38)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=39
+value=Var(39)
+[State 700, order snapshot]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+v=59
+value=1

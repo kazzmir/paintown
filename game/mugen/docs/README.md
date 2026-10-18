@@ -3,7 +3,7 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4bp closes chain/juggle expressions and bounded consumers; the user
+Current status: M4bq closes distance/snap schemas and bounded consumers; the user
 authorized all remaining 27 HitDef keys, tracked in
 [the allocation ledger](HITDEF-REMAINING.md). Read the
 [current coverage ledger](COVERAGE.md),
@@ -108,3 +108,5 @@ effort stay under `game/mugen/`.
 - [HitDef literal schemas and reactions](HIT-LITERALS.md)
 
 - [HitDef chains and juggle costs](HIT-CHAINS-JUGGLE.md)
+
+- [HitDef distance/snap constraints](HIT-CONSTRAINTS.md)

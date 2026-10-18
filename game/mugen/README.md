@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bp**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bq**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -124,13 +124,15 @@ Literal masks/enums, contact animation metadata, None contacts and trip defence
 now follow measured beta behavior; see [literal schemas](docs/HIT-LITERALS.md).
 Chain selectors and per-move/projectile juggle costs now have measured consumers;
 see [chains and juggle](docs/HIT-CHAINS-JUGGLE.md).
+Distance limits and snap now have native timing, offset and duration consumers;
+see [distance/snap constraints](docs/HIT-CONSTRAINTS.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
-| Documented HitDef keys routed through the expression compiler | 58 / 81 | **71.6%** | Numeric routing; nine additional literal masks/enums give 67/81 typed keys (82.7%). Fourteen numeric keys remain. |
+| Documented HitDef keys routed through the expression compiler | 61 / 81 | **75.3%** | Numeric routing; nine additional literal masks/enums give 70/81 typed keys (86.4%). Eleven palette/shake keys remain. |
 
 These percentages measure the named scopes. **Whole-engine behavioral
 compatibility has not yet been quantified.** They cannot be averaged into an
