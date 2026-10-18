@@ -775,6 +775,7 @@ func (c *Character) HitDef(params map[string]string) {
 	c.HitGuard = make(map[int]bool)
 	// Parse and store the new HitDef
 	c.CurrentHitDef = cns.ParseHitDef(params)
+	c.HitDefActive = c.CurrentHitDef.Attr != ""
 	if _, specified := params["sparkno"]; !specified {
 		c.CurrentHitDef.SparkNo = c.StateFile.Data.SparkNo
 	}
@@ -1326,7 +1327,7 @@ func (c *Character) GetHitVar(name string) float64 {
 		case "trip":
 			val = 3
 		default:
-			val = 1
+			val = 0
 		}
 	case "xvel":
 		if c.GetHitGuarded && !c.GetHitAir {
@@ -1759,6 +1760,11 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, name)
 	c.PrevStateNo = c.StateNo
 	c.StateNo = stateNo
+	if stateNo == 5070 && c.StateFile != nil {
+		// Beta installs trip defence on entry, even for an authored 5070
+		// and for non-falling/custom-state contacts.
+		c.DefenceMul = 100 / float64(max(1, 100+c.StateFile.Data.FallDefenceUp))
+	}
 	c.stateSerial++
 	c.Time = 0
 	c.HitFallVelActive = false
@@ -1911,6 +1917,11 @@ func (c *Character) HandleHit(other *Character) {
 	if c.HitGuard[int(other.EntityID)] || (hit.HitOnce && len(c.HitGuard) > 0) {
 		return // Already hit this target this swing
 	}
+	if other.metadataOnlyHit(hit, other.guardsHit(hit)) {
+		c.HitGuard[int(other.EntityID)] = true
+		other.prepareContact(c, hit, false)
+		return
+	}
 	c.HitGuard[int(other.EntityID)] = true
 
 	// 1. Mark attacker results
@@ -1972,6 +1983,12 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 }
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
+	if c.metadataOnlyHit(hit, guarded) {
+		hit = c.hitInLocalSpace(attacker, hit)
+		c.selectHitAnimation(&hit, c.StateType == "A", false, false)
+		c.GetHit = hit
+		return 0
+	}
 	finalDamage, lethal := c.contactDamage(attacker, hit, guarded)
 	// A lethal chip contact keeps guard damage/kill selection but publishes
 	// the ordinary hit reaction, power and contact classification.
@@ -2047,6 +2064,12 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		// Restore the preserve-X sentinel rather than assigning horizontal zero.
 		hit.FallXUnchanged = true
 		hit.FallVel = []float64{0, 0}
+	}
+	// The chosen animation type is hit metadata, independent of later
+	// HitFallSet/StateTypeSet changes to the receiver's fall flag.
+	c.selectHitAnimation(&hit, airHit, guarded, lethal)
+	if guarded {
+		hit.GroundType, hit.AirType = "None", "None"
 	}
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
@@ -2168,6 +2191,31 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		attacker.acquireTarget(c, hit.ID)
 	}
 	return finalDamage
+}
+
+func (c *Character) metadataOnlyHit(hit cns.HitDef, guarded bool) bool {
+	kind := hit.GroundType
+	if c.StateType == "A" && hit.AirType != "" {
+		kind = hit.AirType
+	}
+	return !guarded && strings.EqualFold(kind, "None")
+}
+
+func (c *Character) selectHitAnimation(hit *cns.HitDef, air, guarded, lethal bool) {
+	fall := lethal || hit.Fall != 0 || (air && hit.AirFall != 0) || (c.MoveType == "H" && c.HitFall && !hit.ForceNoFall)
+	if fall && !guarded {
+		hit.AnimType = hit.FallAnimType
+		if hit.AnimType == "" {
+			hit.AnimType = "Back"
+			if strings.EqualFold(hit.AirAnimType, "Up") || strings.EqualFold(hit.AirAnimType, "DiagUp") {
+				hit.AnimType = hit.AirAnimType
+			}
+		}
+	} else if air && hit.AirAnimType != "" {
+		hit.AnimType = hit.AirAnimType
+	} else if !air && strings.EqualFold(hit.AnimType, "Back") {
+		hit.AnimType = "Hard"
+	}
 }
 
 func (c *Character) Command(name string) bool {

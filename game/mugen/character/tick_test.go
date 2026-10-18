@@ -45,6 +45,7 @@ anim=0
 [State 0, attack]
 type=HitDef
 trigger1=Time=0
+attr=S,NA
 damage=25
 pausetime=8,8
 ground.velocity=0,0

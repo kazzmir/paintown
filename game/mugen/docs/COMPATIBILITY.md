@@ -1,5 +1,11 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+Current M4bo evidence adds nine HitDef literal mask/enum schemas, selected
+reaction metadata, None contact semantics, HitDefAttr and trip-defence entry.
+Sixty-five native programs pin 684 observations and eight load rejections.
+Typed schema coverage is 64/81 (55 numeric + nine literal); expression routing
+stays 55/81. Seventeen numeric fields remain. See [HIT-LITERALS.md](HIT-LITERALS.md).
+
 Assessment snapshot: 2026-10-16. The tables below describe the original semantic
 baseline. M0a now fixes the build and pins the reference test corpus; no semantic
 row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),

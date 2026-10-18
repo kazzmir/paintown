@@ -1,12 +1,61 @@
 # Current handoff
 
-Updated 2026-10-18. The user authorized completion of all 27 HitDef keys
-remaining after 24b3ebd0, with local checkpoint commits and continuous work
-until complete or blocked. M4bn guard.dist is complete; M4bo literal enum/flag
-probes are active. Read HITDEF-REMAINING.md, GUARD-DISTANCE.md and COVERAGE.md.
-Continue the authorized batches without waiting for review. No push or binaries;
-all authored work stays under game/mugen/. Full suites follow the enum/combat
-and final integration boundaries, with focused checks per checkpoint.
+Updated 2026-10-18. User authorization remains all 27 HitDef keys after
+24b3ebd0, continuous iteration with local commits. No two-checkpoint pause.
+M4bn and M4bo are complete; continue M4bp juggle/chains, then M4bq constraints,
+M4br palette and M4bs/M4bt contact/fall shake. No push or binaries; authored
+changes only under game/mugen/. See HITDEF-REMAINING.md and COVERAGE.md.
+
+## M4bo verified checkpoint
+
+Predecessor/reversal 7d30ae85. Nine literal masks/enums now have typed schemas.
+Selected contact animation, untouched/guard type metadata, None contact
+semantics, HitDefAttr and trip-defence entry follow native controls. Numeric
+routing remains55/81; nine literals bring typed schema coverage to64/81 (79.0%).
+Seventeen numeric keys remain. Other engine/asset/mode/renderer gates stay open.
+
+65 hitliteral-* programs pin684 observations/eight load rejections/260 input
+hashes. Pre-native manifests: temp/m4bo-prepared-{inputs,extra,last,clocks,
+none-air,trip}.json. Nine authored Go hashes: temp/m4bo-production-inputs.json.
+Never regenerate frozen source or derive native expectations from Go.
+Focused Match races65 literal+13 trip programs pass55.619s. Broader flags,
+selection, forced-standing and both stock sweep replays pass97.325s. Full
+Character races pass11.772s. Pure engine/evaluator/CNS/combat races pass
+1.532/1.044/1.017/1.016s. Three fresh native reproductions, two apps/three
+captures and their source/config/binary/PNG/runtime audit pass in
+m4bo-evidence-audit.json. Stock7s capture visually inspected. Application SHA:
+1963d0c48bcf49c11c236fed3117652e2428f5fcf9c1da0f919f3bceb91e486a.
+The first focused log retains corrected failures; first full Character found
+one scheduling test with missing attr. Its input now explicitly describes a
+valid attack; native JSON values/tolerances are untouched. Full scoped races
+follow M4bp combat integration. Final runner m4bo-final-validation.py exited0.
+
+M4bp active:34 accepted/expected-rejected base hitcombo-* source sets captured.
+Two draft order inputs had a misplaced snapshot marker, archived unpromoted in
+temp/m4bp-draft-order. Native numeric dump remains diagnostic, not a golden.
+Three duplicate-state drafts were archived BEFORE native execution under
+temp/m4bp-draft-states. Nine extra controls and two corrected order controls
+are frozen; runner temp/run-m4bp-native-final.py currently active. Await its
+session and separately check processes before any GUI app/native/test.
+Manifests: m4bp-prepared-inputs.json (use34 non-order rows),
+m4bp-prepared-extra.json (use6 non-states rows), m4bp-prepared-final-states.json,
+m4bp-prepared-final-order.json. Total final45 programs. No production M4bp
+Go changes yet. Native air.juggle is strict integer/evaluates, but extra root
+cost is ineffective in the measured one-state controls. New state/projectile
+controls isolate consumers; do not infer global ignore from those root cases.
+Native chain >=0 requires matching previous ID; negative unrestricted.
+nochain first negative ignores following7; matching explicit chain wins over
+conflicting nochain. Inspect final evidence before implementing source/guard/
+None/idle lifetime rules. A native diagnostic order dump places chainid and
+nochainid after id, air.juggle after hitonce. Corrected independent order
+captures must confirm this. Roots/projectiles currently lack full juggle
+runtime. Existing Projectile adapter lacks hit definitions and uses legacy
+anim/pos/vel names; narrow dependency work may be required for air.juggle.
+
+M4bq22 hitconstraint-* and M4br19 hitpalette-* source sets are already frozen,
+not yet executed natively. Their temp author scripts must not be rerun.
+Manifests m4bq/m4br-prepared-inputs.json, runners run-m4bq/m4br-native.py.
+Do not include future-batch fixtures in the M4bo commit. Stage explicit families.
 
 ## M4bn verified checkpoint
 

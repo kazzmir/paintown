@@ -4,6 +4,17 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bo: literal masks/enums and selected reaction metadata
+
+Predecessor/reversal7d30ae85. Adds nine schemas, selected/stored reaction
+metadata, None contacts, HitDefAttr and measured trip-defence entry.65 native
+programs pin684 observations/eight rejections/260 frozen input hashes. Focused
+Match passes55.619s; broader hit-selection/flags/forced-standing/sweeps97.325s,
+full Character11.772s and pure core races pass. Three fresh native replays and
+two apps/three captures pass provenance. Typed schema coverage64/81 (55 numeric
++ nine literal); expression routing55/81. Continue M4bp automatically; full
+scoped races follow that combat integration. See HIT-LITERALS.md and HANDOFF.md.
+
 ## M4bn: integer guard-distance expressions and range updates
 
 Predecessor/reversal 24b3ebd0. Adds guard.dist schema and measured range

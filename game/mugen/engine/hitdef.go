@@ -143,15 +143,16 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		byKey[cue.key] = cue
 	}
-	if raw, present := ctrl.Params["affectteam"]; present {
-		team := strings.ToUpper(strings.TrimSpace(raw))
-		if team == "" || !strings.ContainsAny(team[:1], "EFB") {
-			return nil, true, fmt.Errorf("invalid affectteam %q", raw)
-		}
+	literals, err := compileHitDefLiterals(ctrl)
+	if err != nil {
+		return nil, true, err
 	}
 	return func(_ *cns.StateController, env Environment) error {
 		params := make(map[string]string, len(ctrl.Params))
 		for key, value := range ctrl.Params {
+			params[key] = value
+		}
+		for key, value := range literals {
 			params[key] = value
 		}
 		damage, transfers := power.cues(env)

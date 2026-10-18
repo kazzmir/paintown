@@ -11,7 +11,9 @@ engine/hitdef.go, hit_vectors.go, hit_power.go, hit_pause.go, hit_timing.go and
 hit_fall.go and hit_fall_vectors.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
-The remaining literal-parser fields must also receive typed parameter schemas.
+M4bo adds nine literal mask/enum schemas in hit_literals.go, including
+fall.animtype: 64/81 typed keys, of which 55 use numeric expressions.
+See [literal schema evidence](HIT-LITERALS.md).
 
 M4aw's [velocity/default controls](HIT-VELOCITY.md) cover the measured air,
 guard, air-guard and down vectors, component inheritance, repeated default
@@ -25,7 +27,6 @@ These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
-- Reaction: fall.animtype.
 - Combat: air.juggle, chainID, nochainID.
 - Constraints: mindist, maxdist, snap.
 - Palette: palfx.time, palfx.mul, palfx.add.
@@ -80,3 +81,7 @@ consumer gap and record the beta's ignored documented velocity parameters.
 M4bn's [guard distance](GUARD-DISTANCE.md) closes the bounded integer/range
 schema and consumers. [HITDEF-REMAINING.md](HITDEF-REMAINING.md) tracks the
 user-authorized 27-key allocation, including the nine literal schemas.
+
+M4bo closes the nine literal schemas with 65 native programs, 684 observations,
+eight load rejections and 260 frozen input hashes. The remaining 17 keys are
+numeric fields in the combat, constraint, palette and shake groups above.

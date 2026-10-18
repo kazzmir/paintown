@@ -1,6 +1,36 @@
 package character
 
-import "github.com/kazzmir/paintown/game/mugen/evaluator"
+import (
+	"strings"
+
+	"github.com/kazzmir/paintown/game/mugen/combat"
+	"github.com/kazzmir/paintown/game/mugen/evaluator"
+)
+
+func (c *Character) LookupLegacy(name, operator string, args []evaluator.Value, extra string) (evaluator.Value, bool) {
+	if name != "hitdefattr" {
+		return evaluator.Value{}, false
+	}
+	parts := make([]string, len(args))
+	for i, arg := range args {
+		value, ok := arg.Text()
+		if !ok {
+			return evaluator.Value{}, true
+		}
+		parts[i] = value
+	}
+	mask, err := combat.ParseAttributes(strings.Join(parts, ","))
+	if err != nil {
+		c.EvaluationWarning("HitDefAttr: " + err.Error())
+		return evaluator.Value{}, true
+	}
+	hit, _ := combat.ParseAttributes(c.attributesForHit(c.CurrentHitDef))
+	matched := !hit.Empty() && mask.Matches(hit)
+	if operator == "!=" {
+		matched = !matched
+	}
+	return evaluator.Bool(matched), true
+}
 
 // Script X positions use the current screen center; Character.X and all
 // collision/binding geometry stay in absolute stage coordinates.

@@ -127,6 +127,10 @@ func TickCharacters(players []*Character) error {
 	// the other player's active attack. Equal-priority normal attacks can trade.
 	counted := map[*Character]bool{}
 	for _, event := range contacts {
+		if event.defender.metadataOnlyHit(event.hit, event.guarded) {
+			event.guard[int(event.defender.EntityID)] = true
+			continue
+		}
 		if event.projectile {
 			projectileHits[event.attacker] = true
 		}
@@ -155,9 +159,13 @@ func TickCharacters(players []*Character) error {
 		}
 	}
 	for _, event := range contacts {
+		metadataOnly := event.defender.metadataOnlyHit(event.hit, event.guarded)
 		amount := event.defender.prepareContact(event.attacker, event.hit, event.guarded)
 		if event.defender.RuntimeError != nil {
 			return event.defender.RuntimeError
+		}
+		if metadataOnly {
+			continue
 		}
 		if event.guarded && !event.defender.GetHitGuarded {
 			c := event.attacker

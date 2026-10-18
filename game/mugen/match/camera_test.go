@@ -144,6 +144,10 @@ func TestNativeGuardDistancePrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "guardrange-*.json", 15)
 }
 
+func TestNativeHitLiteralPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitliteral-*.json", 65)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

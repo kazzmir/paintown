@@ -106,6 +106,7 @@ type HitDef struct {
 	GuardFlag          string
 	AnimType           string
 	AirAnimType        string
+	FallAnimType       string
 	Damage             []int // [hit, guard]
 	PauseTime          []int // [hit, guard]
 	GuardPauseTime     []int // [attacker pause, defender shake]
@@ -903,6 +904,13 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if _, ok := params["air.animtype"]; !ok {
 		hd.AirAnimType = hd.AnimType
+	}
+	hd.FallAnimType = "Back"
+	if strings.EqualFold(hd.AirAnimType, "Up") || strings.EqualFold(hd.AirAnimType, "DiagUp") {
+		hd.FallAnimType = hd.AirAnimType
+	}
+	if raw, present := params["fall.animtype"]; present {
+		hd.FallAnimType = raw
 	}
 
 	return hd
