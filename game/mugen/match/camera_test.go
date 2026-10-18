@@ -191,6 +191,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				StageError       string             `json:"expected_stage_error"`
 				LoadError        string             `json:"expected_load_error"`
 				ErrorState       int                `json:"expected_compile_state"`
+				ErrorFile        string             `json:"expected_compile_file"`
 				ReplayTicks      int                `json:"replay_ticks"`
 				GameWidth        int                `json:"game_width"`
 				Rules            map[string]float64 `json:"rules"`
@@ -250,7 +251,11 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				if number == 0 {
 					number = 700
 				}
-				if err := character.NewStateMachine().CompileState(file.States[number]); err == nil || !strings.Contains(err.Error(), "state "+strconv.Itoa(number)+" controller") || !strings.Contains(err.Error(), filepath.Base(stem)+".cns") {
+				filename := reference.ErrorFile
+				if filename == "" {
+					filename = filepath.Base(stem) + ".cns"
+				}
+				if err := character.NewStateMachine().CompileState(file.States[number]); err == nil || !strings.Contains(err.Error(), "state "+strconv.Itoa(number)+" controller") || !strings.Contains(err.Error(), filename) {
 					t.Fatal("native-rejected controller was not rejected with source context", err)
 				}
 				return

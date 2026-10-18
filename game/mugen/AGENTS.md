@@ -103,6 +103,8 @@ by native observations. Split dependent selectors between M4ca/M4cb if needed;
 document the reason and keep the original inputs/goldens immutable. Each batch
 gets focused checks, evidence/limits and a local source/text commit. Use a full
 scoped race run at the final integration boundary, not at every small revision.
+M4bz is bd018c65; M4ca metadata/counters pass their focused/native gates. Read
+GETHIT-METADATA.md. Continue M4cb timer/input/routing and final integration.
 Continue automatically through these three; stop at completion or an issue
 requiring user input. No pushes, binaries, changes outside game/mugen or agents.
 

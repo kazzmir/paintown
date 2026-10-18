@@ -1,9 +1,15 @@
 # Current progress assessment
 
+M4ca adds received hit/fall counters and typed zero-valued beta KO-add fields.
+Ten native controls / 120 values and three load rejections distinguish accepted
+selectors from manual-only hitid/zoff. GetHitVar now has 33/36 documented runtime
+routes, two rejected selectors and one remaining accepted selector (recovertime).
+Read [GETHIT-METADATA.md](GETHIT-METADATA.md); M4cb recovery is next.
+
 M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
 runtime routes, **18 are unbound**; this does not establish complete variants or
-native behavior. GetHitVar has **29/36 documented selector routes (80.6%)**, with
-seven unbound. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
+native behavior. The M4bz baseline had 29/36 documented selector routes; M4ca supersedes that
+selector count and distinguishes target rejections. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
 [JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
 recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
 

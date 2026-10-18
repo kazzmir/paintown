@@ -22,8 +22,8 @@ No row is marked variant-complete. The original compatibility table is historica
 | TopEdge, BottomEdge, StageVar | Vertical/zoom camera and typed stage selectors. |
 
 The manual documents 36 distinct GetHitVar selectors (including selectors listed
-in Details but omitted from its short argument list). 29/36 have both typed
-runtime and Character routes (80.6%); seven are missing: `fallcount`, `hitcount`,
+in Details but omitted from its short argument list). The M4bz baseline had 29/36 typed runtime/Character routes; its seven absent
+routes were: `fallcount`, `hitcount`,
 `hitid`, `recovertime`, `xveladd`, `yveladd`, `zoff`. The existing `air.animtype`
 route is an additional accepted selector, outside this denominator. M4ca measures
 combat metadata/counters; M4cb separately measures the liedown `recovertime`
@@ -42,3 +42,10 @@ evaluator tests pass. No Go runtime changed in M4bz, so no new native/applicatio
 capture or full race rerun is required for this source-only checkpoint. The
 M4by final integration remains the last full suite. Do not average this inventory
 with key registration, stock compilation, test counts or whole-engine coverage.
+
+M4ca update: 33/36 documented selectors now have both runtime routes (91.7% of
+manual entries), two are parser-rejected by the beta and Go (`hitid`, `zoff`),
+and one accepted selector remains unbound (`recovertime`). Native controls and
+limits are in [GETHIT-METADATA.md](GETHIT-METADATA.md). The generator now reports
+parser acceptance separately. The extra air.animtype runtime case is rejected
+by the reference parser; its route alone is not usable reference support.

@@ -203,6 +203,9 @@ type Character struct {
 	// ComboCount is the displayed combo counter, distinct from the current
 	// attack's HitCount. Match combat owns its reset/credit rules.
 	ComboCount int
+	// Received combo metadata is independent of the attacker's NumHits/HUD count.
+	receivedHitCount  int32
+	receivedFallCount int32
 
 	// Visual/Drawing State
 	DrawAngle  float64
@@ -559,6 +562,12 @@ func (c *Character) finishTick() {
 		// Contacts at the next tick use this completed simulation pose, before
 		// the animation clock selects the next CNS/display element.
 		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
+		if c.MoveType != "H" {
+			c.receivedFallCount = 0
+		} else if c.StateNo == 5100 && c.Time == 0 {
+			// Beta publishes the impact after the first landing CNS pass.
+			c.receivedFallCount++
+		}
 		c.Time++
 		if c.MoveHit > 0 {
 			c.MoveHit++
@@ -728,6 +737,7 @@ func (c *Character) SetMoveType(mtype string) {
 		c.hitGeneration++
 		c.superDefenceMul = 1
 		c.lastHitOwner = nil
+		c.lastHitID = 0
 		c.juggleInitialized = false
 		c.juggleMoves = nil
 	}
@@ -1340,6 +1350,13 @@ func (c *Character) GetHitVar(name string) float64 {
 	}
 	val := 0.0
 	switch strings.ToLower(name) {
+	case "xveladd", "yveladd":
+		// Beta folds KO offsets into xvel/yvel; these accepted selectors stay zero.
+		val = 0
+	case "hitcount":
+		val = float64(c.receivedHitCount)
+	case "fallcount":
+		val = float64(c.receivedFallCount)
 	case "animtype":
 		// Light=0, Medium=1, Hard=2, Back=3, Up=4, DiagUp=5
 		switch strings.ToLower(c.GetHit.AnimType) {
@@ -2077,6 +2094,12 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	// the ordinary hit reaction, power and contact classification.
 	if lethal {
 		guarded = false
+	}
+	if !guarded {
+		if c.MoveType != "H" {
+			c.receivedHitCount, c.receivedFallCount = 0, 0
+		}
+		c.receivedHitCount++
 	}
 	if !guarded && c.Palettes != nil {
 		c.Palettes.SetHitEffect(hit.PalFXTime, hit.PalFXMul, hit.PalFXAdd)

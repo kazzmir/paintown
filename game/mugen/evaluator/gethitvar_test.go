@@ -36,9 +36,22 @@ func TestGetHitVarRequiresBetaSelector(t *testing.T) {
 			t.Fatal(source, err)
 		}
 	}
-	for _, source := range []string{"GetHitVar(hitid)", "Enemy,GetHitVar(hitid)", "GetHitVar(unknown_hit_selector)", "GetHitVar(Var(0))"} {
+	for _, source := range []string{"GetHitVar(hitid)", "Enemy,GetHitVar(hitid)", "GetHitVar(zoff)", "Enemy,GetHitVar(zoff)", "GetHitVar(unknown_hit_selector)", "GetHitVar(Var(0))"} {
 		if _, err := ParseReference(source); err == nil {
 			t.Fatal("invalid selector accepted", source)
+		}
+	}
+}
+
+func TestGetHitMetadataValueTypes(t *testing.T) {
+	for _, field := range []string{"xveladd", "yveladd", "hitcount", "fallcount"} {
+		value := evaluate(t, "GetHitVar("+field+")", &fallShakeFixture{})
+		integer := field == "hitcount" || field == "fallcount"
+		if integer && (value.Kind() != IntKind || value.Number() != 4) {
+			t.Fatal(field, value)
+		}
+		if !integer && (value.Kind() != FloatKind || value.Number() != 4.75) {
+			t.Fatal(field, value)
 		}
 	}
 }

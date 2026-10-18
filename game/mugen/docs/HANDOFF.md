@@ -2,16 +2,27 @@
 
 ## Current allocation: M4bz → M4ca → M4cb
 
-The user authorized the next few checkpoints after pushing 0414d54e. M4bz is
-source-only: 109/127 candidate trigger routes, 18 absent; 29/36 documented
-GetHitVar selector routes, seven absent. Read TRIGGER-BINDINGS.md and run its
-inventory check. Production Go is unchanged and M4by remains the full integration
-baseline. Continue M4ca combat metadata/counters, then M4cb liedown/recovery,
-freezing new native inputs before observation. Keep recovertime in M4cb because
-its value and engine consumer must be measured together. Each gets a local
-source/text commit; full scoped races at final integration only. No push/binaries.
+M4bz is bd018c65 (source-only inventory); M4ca completes metadata/counters.
+Read GETHIT-METADATA.md and TRIGGER-BINDINGS.md. Thirteen frozen programs:
+ten accepted / 120 values, three rejected / 52 CNS/CMD/AIR/stage hashes.
+GetHitVar now has 33/36 documented routes; hitid/zoff are target load rejections,
+recovertime is the one accepted unbound selector. Family routing stays 109/127.
 
-The completed allocation below is historical; M4by is committed as 0414d54e.
+M4ca focused Match races PASS 47.322s (all 13 metadata controls, legacy HitVel,
+projectile counterexamples and recovery/sweep regressions). Full Character /
+evaluator / engine races PASS 12.195 / 1.021 / 1.494s. Fresh native combo
+reproduction passes exact values. All 348 frozen source/probe/fixture/module
+hashes and root-module guards pass. No observed original or numeric golden was
+changed; early KO all-zero captures and rejected/unobserved drafts remain
+explicit diagnostics. Artifacts: temp/m4ca-final-inputs.json,
+m4ca-final-match.log, reference-runs/m4ca-fresh-combo and m4ca-* native runs.
+The M4ca test/native clients were awaited before M4cb timer capture began.
+
+Continue M4cb liedown timer/input and recovery routing. Five new original timer
+programs are frozen before their native captures; no timer runtime change yet.
+A full scoped race suite follows final integration. The previous M4by full
+suite remains the baseline below. No pushes, binaries, agents or out-of-scope
+changes. The user authorized all three checkpoints without intermediate review.
 
 ## Completed trigger/clock allocation
 

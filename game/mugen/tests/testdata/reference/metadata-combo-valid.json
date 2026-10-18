@@ -1,0 +1,19 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "fe29b447efa51bf447ff5d4f06a3fa62841bbed725abd1d41b3d49a579ed332e",
+  "air_sha256": "55283a4205ad73a8f4bf7b93ed95b17e6242b8871ff4f12731698dd73bcf662b",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "10d9993c60726bc7602a8ac2c77996e50a9fd2420299cd9cecbfb92044731453",
+  "load_error": "Library error message: Died parsing Enemy,GetHitVar(hitid)\n\nError detected.\n\nInvalid varname hitid in: GetHitVar\nError parsing [State -3, observation 1]\nError in [Statedef -3]\nError in probe.cmd:383\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 1547052334\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...OK\n  Loading cmd state entry probe.cmd...Character kfm.def failed to load\n\n",
+  "expected_load_error": "Invalid varname hitid",
+  "expected_compile_state": -3,
+  "expected_compile_file": "metadata-combo-valid.cmd"
+}

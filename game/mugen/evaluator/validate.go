@@ -77,11 +77,11 @@ func validateConstants(expr Expression) error {
 	return nil
 }
 
-// The manual's argument summary lists hitid, but the beta rejects it. The
+// The manual's argument summary lists hitid/zoff, but the beta rejects them. The
 // detailed selector list uses chainid for the last authored HitDef ID instead.
 func knownGetHitSelector(name string) bool {
 	switch strings.ToLower(name) {
-	case "xveladd", "yveladd", "type", "animtype", "airtype", "groundtype", "damage", "hitcount", "fallcount", "hitshaketime", "hittime", "slidetime", "ctrltime", "recovertime", "xoff", "yoff", "zoff", "xvel", "yvel", "yaccel", "chainid", "guarded", "isbound", "fall", "fall.damage", "fall.xvel", "fall.yvel", "fall.recover", "fall.time", "fall.recovertime", "fall.kill", "fall.envshake.time", "fall.envshake.freq", "fall.envshake.ampl", "fall.envshake.phase":
+	case "xveladd", "yveladd", "type", "animtype", "airtype", "groundtype", "damage", "hitcount", "fallcount", "hitshaketime", "hittime", "slidetime", "ctrltime", "recovertime", "xoff", "yoff", "xvel", "yvel", "yaccel", "chainid", "guarded", "isbound", "fall", "fall.damage", "fall.xvel", "fall.yvel", "fall.recover", "fall.time", "fall.recovertime", "fall.kill", "fall.envshake.time", "fall.envshake.freq", "fall.envshake.ampl", "fall.envshake.phase":
 		return true
 	}
 	return false

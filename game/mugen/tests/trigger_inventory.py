@@ -77,6 +77,7 @@ def inventory():
     supported = cases(function(sources['evaluator/runtime.go'], 'callWithArguments'))
     supported &= cases(function((ROOT/'character/character.go').read_text(), 'GetHitVar'))
     bound = sorted(fields & supported)
+    accepted = cases(function((ROOT/'evaluator/validate.go').read_text(), 'knownGetHitSelector'))
     return {'target': 'M.U.G.E.N 1.1 beta 1', 'kind': 'source-routing-inventory',
             'manual_sha256': hashlib.sha256(document.read_bytes()).hexdigest(),
             'family_count': len(rows), 'route_present': sum(row['status'] == 'route-present' for row in rows),
@@ -84,6 +85,8 @@ def inventory():
             'triggers': rows,
             'gethitvar': {'documented_count': len(fields), 'bound_selectors': bound,
                          'unbound_selectors': sorted(fields-supported),
+                         'parser_rejected_selectors': sorted(fields-accepted),
+                         'accepted_but_unbound_selectors': sorted((fields & accepted)-supported),
                          'extra_bound_selectors': sorted(supported-fields)},
             'limits': ['Route-present does not mean native conformance or complete variants.',
                        'Context-dependent bottom is distinct from an absent runtime route.',

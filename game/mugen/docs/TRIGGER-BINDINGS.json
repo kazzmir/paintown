@@ -365,7 +365,8 @@
       "name": "hitcount",
       "status": "route-present",
       "routes": [
-        "character/context.go:LookupIdentifier"
+        "character/context.go:LookupIdentifier",
+        "evaluator/runtime.go:callWithArguments"
       ],
       "variants_complete": false
     },
@@ -1036,8 +1037,10 @@
       "fall.time",
       "fall.xvel",
       "fall.yvel",
+      "fallcount",
       "groundtype",
       "guarded",
+      "hitcount",
       "hitshaketime",
       "hittime",
       "isbound",
@@ -1045,18 +1048,23 @@
       "type",
       "xoff",
       "xvel",
+      "xveladd",
       "yaccel",
       "yoff",
-      "yvel"
+      "yvel",
+      "yveladd"
     ],
     "unbound_selectors": [
-      "fallcount",
-      "hitcount",
       "hitid",
       "recovertime",
-      "xveladd",
-      "yveladd",
       "zoff"
+    ],
+    "parser_rejected_selectors": [
+      "hitid",
+      "zoff"
+    ],
+    "accepted_but_unbound_selectors": [
+      "recovertime"
     ],
     "extra_bound_selectors": [
       "air.animtype"

@@ -4,6 +4,16 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ca: received combo/impact metadata and beta selector limits
+
+Predecessor/reversal bd018c65. Ten accepted frozen programs / 120 values and
+three rejections / 52 authored inputs. Adds received contact/fall counters,
+measured lifecycle and typed zero KO-add selectors; rejects manual-only zoff
+like beta1 and preserves existing hitid rejection. Chain ID resets on leaving H.
+GETHIT-METADATA.md records native semantics, diagnostics and interaction limits.
+Focused native-program/Character/evaluator/engine checks pass; final scoped
+integration follows M4cb. Only local source/text; no pushes/binaries.
+
 ## M4bz: remaining trigger runtime inventory
 
 Predecessor/reversal 0414d54e. Reconciles all 127 primary-manual families against
