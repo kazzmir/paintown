@@ -1,6 +1,6 @@
 # Current progress assessment
 
-Updated 2026-10-18 through verified M4bw complete-match validation.
+Updated 2026-10-18 through M4bx legacy HitVel after M4bw complete-match validation.
 The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The 27-key HitDef allocation is complete. The user subsequently authorized
 M4bu clocks, M4bv results/reset and M4bw complete input-driven matches. All authored changes stay under game/mugen/, with local
 checkpoint commits, no push and no new binaries/assets committed.
@@ -48,9 +48,12 @@ Engine-wide GameTime origin/handoff across menu and rematch boundaries remains
 open: native GameTime includes menus, while current Match timelines are local.
 The scalar trace alignment does not prove that engine integration.
 
-Three preserved native controls expose unbound legacy HitVel Y (native -24 versus
-Go bottom/0 in the measured profile); they do not establish a physical-knockback
-difference and are excluded from the passing result corpus.
+M4bx closes the legacy HitVel X/Y binding: 15 new native controls pin 180
+observations across signs, facing, guard/air/down, profiles and foreign states.
+Canonical game-space hit storage also preserves fractional float32 conversion.
+The three unchanged original projectile counterexamples now pass all 180
+integers, including legacy Y=-24. This does not close remaining GetHitVar fields,
+other runtime bindings or full physical/projectile conformance. See LEGACY-HITVEL.md.
 
 Six M4az RGB alpha comparisons still fail by at most one channel value. Two
 M4bd spark raster comparisons remain open (276 native core pixels versus 288 Go,
@@ -70,9 +73,10 @@ root-module and application/PNG/private-PCM provenance checks pass. Earlier
 failed or superseded runs remain diagnostic.
 
 M4bu, M4bv and M4bw are complete within the approved round-lifecycle allocation.
-The next small allocation should audit missing trigger bindings (including
-legacy HitVel) and wire the native cumulative GameTime origin through engine
-menus/rematches before expanding broad interactions.
+The user validated M4bw and authorized M4bx legacy HitVel, followed by M4by
+cumulative GameTime origin through production menus/rematches. HitVel is now
+implemented with native evidence; GameTime handoff is the next checkpoint.
+Remaining runtime bindings still need an explicit inventory and closure.
 Then prioritize remaining
 recovery/input behavior and projectile/reversal/team subsystems as separate deliveries.
 Modes and BGM can also be budgeted as visible end-to-end slices. Resolve strict

@@ -1,5 +1,49 @@
 # Current handoff
 
+## Active trigger/clock allocation
+
+The user validated M4bw (`218e3106`) and authorized proceeding through M4bx
+legacy HitVel and M4by cumulative engine GameTime, with separate local commits.
+M4bx is verified; commit it locally and continue M4by. No push/binaries/agents.
+
+M4bx: 15 new native controls / 180 values / 60 frozen CNS/CMD/AIR/stage inputs.
+The three unchanged original projectile counterexamples also pass all 180
+integers. HitVel X/Y returns game-space floats, current-facing X and signed Y;
+guard/air/down, retained data, Enemy/foreign contexts and 400/700 fractional
+profiles are measured. Canonical game-space hit storage and the HitVelSet
+transfer retain precision without a receiver-local round trip. General physical
+coordinate conformance and remaining trigger fields are separate gates. Read
+LEGACY-HITVEL.md before extending this path.
+
+Final Match races pass 227.327s (new controls, original counterexamples,
+HitVelocity/ContactFacing/ForcedStanding/HitLethality/HitLiteral). Character
+11.610s, System 7.072s, engine/evaluator/CNS/combat 1.453/1.022/1.012/1.011s.
+Two fresh native reproductions pass. The rendered stock-input replay shows
+two terminal wins and an intervening fresh fight, with four PNGs / 82 owned
+window events; inspected 21/26/45s captures. Private PCM: 1,943,525 stereo
+frames, peak 32767, RMS 1655.65. Binary SHA256:
+68bf49d22cae070d5102cea6cfcc9da4dccbc2ad193b9f896adedc8fe8ebb166.
+
+Artifacts: temp/m4bx-final4-inputs.json (357 source/fixture/probe/module hashes),
+m4bx-final-validation.json, m4bx-evidence-audit.json, m4bx-app-evidence-audit.json,
+m4bx-final-{core,combat,legacyhitvel-fraction,legacyhitvel-ground-mutated-valid,
+stock-app,evidence}.log and app-runs/m4bx-stock-input. All sessions were awaited;
+no UI/test clients remain. Root module/native hashes and provenance pass.
+Three earlier failing Go runs and original cached/rejected fixture preparations
+remain diagnostic, never acceptance. Do not rerun author scripts or change
+observed originals. New inert-controller replacements have distinct filenames.
+
+M4by fixtures/probe are prepared but unobserved, uncommitted and outside the
+M4bx source manifest: tests/gametime_probe.py and reference/engine-gametime.*.
+Before native observation, freeze their four input hashes and probe script.
+Keep one process across two ordinary Versus entries and intervening menus;
+record absolute timestamps as observations, not fixed wall-clock expectations.
+Then wire Engine-owned ticks through new/rematched Match timelines, preserve
+standalone local Match clocks and test actual CNS reads across the production
+flow. Final integration should cover both checkpoints.
+
+The round-lifecycle allocation below is historical and complete.
+
 Updated 2026-10-18. The user authorized completion of all 27 HitDef keys
 remaining after24b3ebd0, with local checkpoint commits and continuous iteration
 until complete or blocked. No two-checkpoint pause remains. All authored work

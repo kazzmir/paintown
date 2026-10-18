@@ -34,7 +34,20 @@ func (r *redirectEnvironment) value(v evaluator.Value) evaluator.Value {
 	return evaluator.Float(float32(v.Number()) * r.scale())
 }
 func (r *redirectEnvironment) GetPos() (float64, float64) { return r.vector(r.Character.GetPos()) }
-func (r *redirectEnvironment) GetVel() (float64, float64) { return r.vector(r.Character.GetVel()) }
+func (r *redirectEnvironment) GetVel() (float64, float64) {
+	x, y := r.Character.GetVel()
+	x, y = r.vector(x, y)
+	// HitVelSet transfers the canonical hit vector without an intermediate
+	// local round trip. Keep that precision until physics/CNS changes an axis.
+	values := [2]float64{x, y}
+	local := [2]float64{r.Character.VelX, r.Character.VelY}
+	for axis, applied := range r.Character.appliedHitVelocity {
+		if applied.valid && applied.local == local[axis] {
+			values[axis] = float64(applied.game * (float32(r.width) / float32(r.Character.hitVelocityGameWidth())))
+		}
+	}
+	return values[0], values[1]
+}
 func (r *redirectEnvironment) GetTargetPos() (float64, float64) {
 	return r.vector(r.Character.GetTargetPos())
 }
@@ -42,6 +55,9 @@ func (r *redirectEnvironment) GetOpponentBodyDistance() (float64, float64) {
 	return r.vector(r.Character.GetOpponentBodyDistance())
 }
 func (r *redirectEnvironment) GetHitVar(name string) float64 {
+	if value, ok := r.Character.hitVelocityInUnits(name, r.width); ok {
+		return float64(value)
+	}
 	value := r.Character.GetHitVar(name)
 	switch name {
 	case "xvel", "yvel", "yoff", "yaccel", "fall.xvel", "fall.yvel":

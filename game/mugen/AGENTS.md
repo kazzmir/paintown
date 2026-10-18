@@ -35,7 +35,7 @@ DOWN-BOUNCE.md and COVERAGE.md, including the corrected idle-override case.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 
-## Current round-lifecycle allocation
+## Previous round-lifecycle allocation (complete)
 
 The user approved three more checkpoints after M4bt (2026-10-18):
 M4bu KO/time-over clocks (native slowdown, timer freezing, pause interactions,
@@ -55,11 +55,30 @@ natural KOs, time draws and repeated rematches. An owned-window 2%-life replay
 also reaches two actual win/rematch screens. The final full scoped race suite
 passes: 2,707 test/subtest results, 24 tested and 12 compiled-only packages;
 Match 968.597s, total 1,037.599s. Source/config/binary/PNG/private-PCM audits and
-root module checks pass; no clients/sessions remain. Finalize the local M4bw
-commit and report the completed three-checkpoint allocation. See docs/COMPLETE-MATCHES.md, docs/ROUND-RESULTS.md and docs/HANDOFF.md. Legacy HitVel binding, engine-wide
+root module checks pass; no clients/sessions remain. M4bw is committed as
+218e3106. See docs/COMPLETE-MATCHES.md, docs/ROUND-RESULTS.md and docs/HANDOFF.md. Legacy HitVel binding, engine-wide
 GameTime handoff and other documented engine gates remain open. Typed HitDef
 coverage stays 81/81; no whole-engine completion percentage is justified.
 No pushes or binaries.
+
+## Current trigger/clock allocation
+
+The user validated M4bw and authorized proceeding. M4bx measures and binds
+legacy HitVel X/Y, preserving the three existing counterexamples and adding
+frozen native controls for units, heading, hit/guard/air/down contexts and
+redirection. M4by separately wires cumulative GameTime through production
+menus, matches and rematches. Each checkpoint requires focused regression
+checks, updated behavioral limits/evidence and a local source/text commit.
+Continue through these two bounded checkpoints unless user input is needed.
+Earlier completed allocations are historical. No pushes or new binaries.
+
+M4bx is verified: 15 controls / 180 values / 60 frozen inputs, plus three
+unchanged projectile counterexamples / 180 integers. Focused Match races
+227.327s, Character/System/core races, two fresh native runs and a four-capture
+stock input/results/rematch replay pass. Source/PNG/private-PCM/module/native
+audits pass. Commit M4bx locally, then continue M4by. See LEGACY-HITVEL.md and
+HANDOFF.md. No full-suite repeat at this intermediate boundary; final scoped
+integration follows M4by. Preserve the prepared GameTime inputs separately.
 
 ## Scope
 

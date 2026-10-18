@@ -1,5 +1,12 @@
 # Preserved native counterexamples
 
+M4bx closes the legacy HitVel difference below. The original files and goldens
+remain unchanged here for provenance; match/legacy_hitvel_test.go now requires
+all three to pass exactly. See docs/LEGACY-HITVEL.md for the wider unit/sign/
+profile controls. Other incomplete queries in these programs are not promoted.
+
+Historical M4bv finding:
+
 These text inputs and native observations track open compatibility gates. They
 are separate from the promoted passing round/result corpus. Do not regenerate
 or edit the original inputs, recipes or goldens. PNGs and executable resources

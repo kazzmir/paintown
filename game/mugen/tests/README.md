@@ -820,3 +820,11 @@ Window events, modified config/fight hashes, PNGs, binary and PCM are recorded.
 These are review artifacts; full-life numeric acceptance comes from the Go
 scenarios and native corpus, not wall-clock screenshots. No binaries/assets are
 committed. Use a fresh run name and keep private display clients serial.
+
+## Legacy hit velocity controls (M4bx)
+
+`go test ./game/mugen/match -run '^TestNativeLegacyHitVelocity'` replays 15
+frozen native controls and the three unchanged historical projectile
+counterexamples. Use the module/display setup above. Values compare exactly
+at float32 precision; the new controls include fractional 400/700 profiles.
+See [LEGACY-HITVEL.md](../docs/LEGACY-HITVEL.md) for provenance and limits.

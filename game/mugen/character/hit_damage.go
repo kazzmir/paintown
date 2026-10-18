@@ -44,7 +44,7 @@ func (c *Character) ApplyHitFallDamage() {
 
 // koHitVelocity changes the selected get-hit vector, before CNS/HitVelSet.
 // All constants are 240p quantities; the native arithmetic rounds to float32.
-func (c *Character) koHitVelocity(hit *cns.HitDef) {
+func (c *Character) koHitVelocity(hit *cns.HitDef, width int) {
 	// Native down-hit contacts retain the supplied down vector on KO.
 	if c.GetHitDown {
 		return
@@ -60,7 +60,7 @@ func (c *Character) koHitVelocity(hit *cns.HitDef) {
 	if len(*velocity) > 1 {
 		y = float32((*velocity)[1])
 	}
-	scale := float32(c.LocalCoordinateWidth()) / 320
+	scale := float32(width) / 320
 	if !c.GetHitAir && y == 0 {
 		x *= .66
 	}

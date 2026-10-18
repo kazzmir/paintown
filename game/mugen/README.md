@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bw**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bx**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -137,7 +137,10 @@ control/pose/reset clocks with focused/native/application verification. See
 [round lifecycle](docs/ROUND-LIFECYCLE.md). M4bv adds wins/draws, match completion,
 win-pose holds, late damage/double KO and persistent reset, with 26 controls /
 1,560 native integers. See [round results and remaining gates](docs/ROUND-RESULTS.md).
-The legacy HitVel trigger remains an explicit open binding. Complete input-driven
+Legacy HitVel X/Y now returns native game-space floats, including heading,
+guard/air/down, redirects and fractional profiles. The three preserved projectile
+counterexamples pass unchanged; see [legacy velocity](docs/LEGACY-HITVEL.md).
+Complete input-driven
 matches/rematches and final full scoped races now pass (2,707 test/subtest
 results). See [complete match validation](docs/COMPLETE-MATCHES.md).
 

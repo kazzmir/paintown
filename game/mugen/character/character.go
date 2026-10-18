@@ -66,7 +66,10 @@ type Character struct {
 	bindingReported     bool
 	tickMoveType        string
 	pendingHitFacing    int
-	getHitFacing        int // selected hit heading, independent of deferred physical turns
+	getHitFacing        int        // selected hit heading, independent of deferred physical turns
+	getHitVelocity      [2]float32 // world-oriented game-space velocity, before local rounding
+	hasHitVelocity      bool
+	appliedHitVelocity  [2]appliedVelocity
 	pendingHitXOffset   float64
 	pendingHitYOffset   float64
 	cornerPushVelocity  float64 // world impulse in common engine units
@@ -1332,6 +1335,9 @@ func (c *Character) HasSelfAnim(animNo int) bool {
 }
 
 func (c *Character) GetHitVar(name string) float64 {
+	if value, ok := c.hitVelocityInUnits(name, c.LocalCoordinateWidth()); ok {
+		return float64(value)
+	}
 	val := 0.0
 	switch strings.ToLower(name) {
 	case "animtype":
@@ -2135,9 +2141,10 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.GetHitAir = airHit
 	c.GetHitGuarded = guarded
 	originalHit := hit
+	c.captureHitVelocity(attacker, hit, lethal, hitFacing)
 	hit = c.hitInLocalSpace(attacker, hit)
 	if lethal {
-		c.koHitVelocity(&hit)
+		c.koHitVelocity(&hit, c.LocalCoordinateWidth())
 	}
 	if c.GetHitDown && len(hit.DownVel) > 1 && hit.DownVel[1] != 0 && !hit.DownBounce {
 		// A down-hit without bounce disables the subsequent fall velocities.

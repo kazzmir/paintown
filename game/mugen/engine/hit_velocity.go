@@ -21,6 +21,10 @@ func compileHitVelSet(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		if err != nil {
 			return err
 		}
+		if actor, ok := env.(interface{ ApplyHitVelocity(bool, bool) }); ok {
+			actor.ApplyHitVelocity(values["x"].Bool(), values["y"].Bool())
+			return nil
+		}
 		character, ok := env.(interface{ GetHitVar(string) float64 })
 		if !ok {
 			return fmt.Errorf("HitVelSet requires hit data")

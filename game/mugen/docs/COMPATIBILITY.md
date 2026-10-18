@@ -1,5 +1,12 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bx binds legacy HitVel X/Y with native game-space units, current facing,
+stored-data lifetime, guard/air/down, redirect and foreign-state behavior.
+Fifteen controls pin 180 values; all three unchanged historical projectile
+counterexamples now pass. Canonical hit storage preserves fractional float32
+conversion. See [LEGACY-HITVEL.md](LEGACY-HITVEL.md). Recognition stays 127/127;
+this closes one binding family, not all runtime variants or engine parity.
+
 M4bw completes eight full-life stock matches / 18 rounds, configured keyboard
 combat and repeated rematches, plus a rendered owned-window one-hit replay.
 Full scoped races pass with 2,707 test/subtest results across 24 tested and
@@ -10,7 +17,7 @@ M4bv adds native one-on-one result/tally boundaries, draws, rolling roundnotover
 late damage/DKO, Alive latching, persistence/cleanup/identity and stage resetBG.
 26 promoted controls pin 1,560 integers; focused/core/Character/System/Stage,
 fresh native and application provenance checks pass. Three separate native
-counterexamples preserve an unbound legacy HitVel trigger. M4bw complete
+counterexamples originally exposed an unbound legacy HitVel trigger, closed in M4bx. M4bw complete
 input-driven matches and final integration now pass. See [ROUND-RESULTS.md](ROUND-RESULTS.md).
 
 M4bu adds native KO/time-over simulation clocks, staged integer slowdown,

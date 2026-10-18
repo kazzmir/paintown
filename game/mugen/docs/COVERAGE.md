@@ -1,13 +1,13 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-18 through M4bw complete-match validation, M4bv results/reset and M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bx legacy HitVel, M4bw complete-match validation, M4bv results/reset and M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
 
 | Area | Current implementation/evidence | Remaining gate |
 | --- | --- | --- |
-| Language and compiler | Typed int32/float32/bottom, versioned expressions, assignment, tuples, redirect contexts, precompiled core parameters. `evaluator/`, `engine/parameters.go`, BOTTOM.md. | Full controller schemas, all trigger bindings/variants/errors and their interactions; preserved native legacy HitVel counterexamples return bottom/0 in Go. |
+| Language and compiler | Typed int32/float32/bottom, versioned expressions, assignment, tuples, redirect contexts, precompiled core parameters. M4bx binds legacy HitVel X/Y with 15 native controls and closes three original counterexamples. `evaluator/`, `engine/parameters.go`, BOTTOM.md, LEGACY-HITVEL.md. | Full controller schemas, remaining trigger bindings/variants/errors and their interactions. |
 | State/world scheduling | Shared executor and production world; native state entry, persistence, negative states, ordering and physics. WORLD.md, PHYSICS.md, ACTOR-ORDER.md. | All Statedef/default/version cases and broad paused/foreign/entity combinations. |
 | Input | Logical input shared with production, stock keyboard mappings, command matching. INPUT.md, `system/flow_test.go`. | Full command timing/modifier/facing cases and gamepad adapters. |
 | Identity/helpers | Match-owned IDs, ownership, spawning, retirement, root/parent/target redirects. ENTITIES.md, HELPERS.md, RETIREMENT.md. | Full projectile/team/multi-entity behavior and parameter interactions. |

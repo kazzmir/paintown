@@ -4,6 +4,23 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bx: legacy HitVel units, facing and fractional coordinates
+
+Predecessor/reversal 218e3106. Fifteen frozen native controls pin 180 values
+and 60 input hashes; three unchanged original projectile counterexamples add
+180 passing integers. Adds typed float bindings, canonical hit-vector storage,
+native division/conversion order and HitVelSet transfer precision. Measures
+guard/air/down, signed vectors, current facing, stored-data lifetime, game and
+mixed/foreign profiles. LEGACY-HITVEL.md records strict scope and diagnostics.
+
+Final focused Match races pass 227.327s; full Character/System and core races
+pass. Two fresh native runs and four rendered stock-input captures / 82 owned
+events pass provenance; viewed results/rematch/results, nonzero private PCM.
+All 357 final source/fixture/probe/module hashes and root-module/native checks
+pass. Earlier failed runs and rejected/cached preparations remain diagnostic.
+No numeric tolerance or golden edits. Full scoped integration follows M4by
+engine GameTime. Local source/text commit only; continue M4by, no push/binaries.
+
 ## M4bw: complete stock matches, rendered input and final integration
 
 Predecessor/reversal ddb48b18. Eight deterministic full-life matches / 18 rounds

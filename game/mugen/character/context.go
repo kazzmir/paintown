@@ -53,6 +53,16 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "hitvel x", "hitvel y":
+		// The legacy trigger returns game-space units, even in a redirect or
+		// foreign state. X follows the receiver's current facing; the stored
+		// GetHitVar X remains world-oriented. Y keeps its stored sign.
+		value, _ := c.hitVelocityInUnits("yvel", c.hitVelocityGameWidth())
+		if name == "hitvel x" {
+			value, _ = c.hitVelocityInUnits("xvel", c.hitVelocityGameWidth())
+			value *= float32(c.Facing)
+		}
+		return evaluator.Float(value), true
 	case "alive":
 		if c.updateActive {
 			return evaluator.Bool(c.aliveAtTickStart), true
