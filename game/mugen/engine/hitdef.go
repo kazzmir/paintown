@@ -20,9 +20,9 @@ type hitDefCue struct {
 var hitDefEvaluationOrder = []string{
 	"id", "kill", "guard.kill", "fall.kill", "hitonce", "damage", "getpower", "givepower", "pausetime", "numhits",
 	"hitsound", "guardsound", "priority", "p1stateno", "p2stateno", "p2getp1state",
-	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall.damage",
+	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall", "fall.damage", "fall.recover", "fall.recovertime",
 	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "p2facing",
-	"ground.hittime", "ground.slidetime", "ground.velocity", "ground.cornerpush.veloff", "air.hittime", "air.velocity", "air.cornerpush.veloff",
+	"ground.hittime", "ground.slidetime", "ground.velocity", "ground.cornerpush.veloff", "air.hittime", "air.fall", "air.velocity", "air.cornerpush.veloff",
 	"down.hittime", "down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.hittime", "guard.slidetime", "guard.ctrltime", "guard.pausetime", "guard.cornerpush.veloff",
 	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff",
 }
@@ -39,6 +39,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	timing, err := compileHitTiming(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
+	fall, err := compileHitFall(ctrl)
 	if err != nil {
 		return nil, true, err
 	}
@@ -121,6 +125,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	cues = append(cues, vectors...)
 	cues = append(cues, pauses...)
 	cues = append(cues, timing...)
+	cues = append(cues, fall...)
 	byKey := make(map[string]hitDefCue, len(cues))
 	for _, cue := range cues {
 		known := false
@@ -157,7 +162,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if !present {
 				continue
 			}
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || hitTimingKey(cue.key) || cue.floating)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}
@@ -172,6 +177,9 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				number := int(values[index].Number())
 				if cue.key == "pausetime" || cue.key == "guard.pausetime" || hitTimingKey(cue.key) {
 					number = max(0, number)
+				}
+				if cue.key == "fall.recovertime" && number < 0 {
+					number = 4
 				}
 				return strconv.Itoa(number)
 			}

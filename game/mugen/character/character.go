@@ -222,6 +222,7 @@ type Character struct {
 	GetHit           cns.HitDef
 	HitTime          int
 	HitFall          bool
+	fallTime         int
 	GetHitDown       bool
 	GetHitAir        bool
 	GetHitGuarded    bool
@@ -376,6 +377,11 @@ func (c *Character) startTick() bool {
 	}
 	if c.ShakeTime == 0 && c.HitTime >= 0 {
 		c.HitTime--
+	}
+	if c.GetHitFall() {
+		// Native fall.time advances during defender shake; the common CNS
+		// shake states, rather than CanRecover, delay access to recovery.
+		c.fallTime++
 	}
 	return true
 }
@@ -1372,6 +1378,10 @@ func (c *Character) GetHitVar(name string) float64 {
 		if c.GetHit.FallRecover {
 			val = 1
 		}
+	case "fall.recovertime":
+		val = float64(c.GetHit.FallRecoverTime)
+	case "fall.time":
+		val = float64(c.fallTime)
 	case "hittime":
 		val = float64(c.HitTime)
 	case "damage":
@@ -1549,7 +1559,7 @@ func (c *Character) HandleBuiltinTransitions() {
 
 	// Ground Recovery (5200, 5201)
 	if c.HitFall && st == "L" && c.Command("recovery") {
-		canRecover := c.GetHitVar("fall.recover") != 0
+		canRecover := c.GetCanRecover()
 		if canRecover {
 			c.ChangeState(5200, -1, -1)
 			return
@@ -1566,7 +1576,7 @@ func (c *Character) HandleBuiltinTransitions() {
 
 	// Air Recovery (5040, 5210)
 	if c.HitFall && st == "A" && c.Command("recovery") {
-		canRecover := c.GetHitVar("fall.recover") != 0
+		canRecover := c.GetCanRecover()
 		if canRecover {
 			// Air recovery states
 			if c.HasAnim(5210) {
@@ -2051,11 +2061,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 
 	// A subsequent unguarded hit retains an existing get-hit fall unless
 	// ForceNoFall clears it. A hit's own fall setting still takes precedence.
-	fall := hit.Fall == 1
-	if airHit {
-		fall = hit.AirFall == 1
-	}
+	fall := hit.Fall != 0 || (airHit && hit.AirFall != 0)
 	c.HitFall = lethal || fall || (!guarded && c.MoveType == "H" && c.HitFall && !hit.ForceNoFall)
+	c.fallTime = 0
 
 	// Guarding vs Normal Hit
 	// A fresh contact restores the receiver's own state definitions, including

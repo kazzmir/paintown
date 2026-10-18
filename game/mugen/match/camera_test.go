@@ -120,6 +120,10 @@ func TestNativeHitFlightTimingPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hittiming-flight-*.json", 25)
 }
 
+func TestNativeHitFallRecoveryPrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitfall-recovery-*.json", 30)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

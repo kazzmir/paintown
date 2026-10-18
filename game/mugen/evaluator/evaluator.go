@@ -183,8 +183,8 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 		}
 		return 0
 	case "canrecover":
-		if charEnv, ok := env.(CharacterEnvironment); ok {
-			if charEnv.GetHitVar("fall.recover") != 0 {
+		if charEnv, ok := env.(interface{ GetCanRecover() bool }); ok {
+			if charEnv.GetCanRecover() {
 				return 1
 			}
 		}

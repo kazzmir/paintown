@@ -149,14 +149,15 @@ type HitDef struct {
 	ForceNoFall        bool
 	ForceStand         *bool // nil: derive from the unscaled ground Y velocity
 	// Nil kill flags preserve the native true default.
-	Kill           *bool
-	GuardKill      *bool
-	FallKill       *bool
-	FallDamage     int
-	FallVel        []float64
-	FallXUnchanged bool
-	FallRecover    bool
-	YAccel         float64
+	Kill            *bool
+	GuardKill       *bool
+	FallKill        *bool
+	FallDamage      int
+	FallVel         []float64
+	FallXUnchanged  bool
+	FallRecover     bool
+	FallRecoverTime int
+	YAccel          float64
 }
 
 type StateDef struct {
@@ -613,12 +614,13 @@ func ParseFloatList(s string) []float64 {
 
 func ParseHitDef(params map[string]string) HitDef {
 	hd := HitDef{
-		ID:             0,
-		Priority:       4,
-		PriorityClass:  "Hit",
-		FallRecover:    true,
-		FallXUnchanged: true,
-		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20, DownHitTime: 20,
+		ID:              0,
+		Priority:        4,
+		PriorityClass:   "Hit",
+		FallRecover:     true,
+		FallRecoverTime: 4,
+		FallXUnchanged:  true,
+		HitFlag:         "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20, DownHitTime: 20,
 	}
 	for key, destination := range map[string]**bool{"kill": &hd.Kill, "guard.kill": &hd.GuardKill, "fall.kill": &hd.FallKill} {
 		if raw, present := params[key]; present {
@@ -821,6 +823,11 @@ func ParseHitDef(params map[string]string) HitDef {
 	if v, ok := params["fall.recover"]; ok {
 		val, _ := strconv.Atoi(v)
 		hd.FallRecover = (val != 0)
+	}
+	if v, ok := params["fall.recovertime"]; ok {
+		if value, err := strconv.Atoi(v); err == nil && value >= 0 {
+			hd.FallRecoverTime = value
+		}
 	}
 	if v, ok := params["yaccel"]; ok {
 		hd.YAccel, _ = strconv.ParseFloat(v, 64)

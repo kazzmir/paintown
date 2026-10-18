@@ -1,6 +1,6 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-17 through M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-17 through M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -15,6 +15,7 @@ does not promote an entire controller from one passing parameter/default.
 | Hit/guard selection | Native hit flags, posture, reciprocal priority, heading and draw priority. HIT-FLAGS.md, COMBAT-PRIORITY.md, CONTACT-FACING.md. | Juggle/chains, reversals, teams and remaining HitDef constraints. |
 | Damage/power/KO vectors | Typed expressions, power defaults/rules, lethal caps, fatal guard normalization, fall damage and measured KO velocities. HIT-POWER.md, HIT-LETHALITY.md. | Fall recovery, all GetHitVar selectors and absolute KO/round clocks. |
 | HitDef timing | M4be compiles pausetime/guard.pausetime with native source defaults, reversed component evaluation, truncation, bottom/negative handling and malformed-input checks. HIT-PAUSE.md. M4bg adds ground.hittime/ground.slidetime and their four dependent guard timings, including source defaults and measured order. HIT-GROUND-TIMING.md. M4bh compiles air/down timers, default 20/explicit 0 and bounded launch/down/countdown selection. HIT-AIR-DOWN-TIMING.md. | Full recovery/timing interactions, broad foreign/helper/projectile/Pause/SuperPause combinations and absolute KO/round clocks are separate batches. |
+| Fall/recovery eligibility | M4bi compiles fall/air.fall/fall.recover/fall.recovertime; native boolean selection, repeated source default, delay default/coercion and order. GetHitVar(fall.time/fall.recovertime) and CanRecover share the receiver clock, including shake and H-state continuation controls. HIT-FALL-RECOVERY.md. | Full recovery/bounce physics, HitFallSet variants, juggle/chains and broad contact/entity/pause combinations. |
 | Projectiles/reversals | Projectile currently constructs a Character-derived object; ReversalDef stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. EXPLODS.md, RGB-CONSUMERS.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
@@ -29,10 +30,11 @@ At the start of M4be: 87/89 documented controller names registered (97.8%),
 127/127 trigger names recognized (100%), 216/216 loaded stock state programs
 compile (100%), and 36/81 documented HitDef keys have expression routing
 (44.4%). M4be added the two pause keys (38/81). M4bg adds six ground/guard timing
-keys (44/81). M4bh adds the two air/down keys: **46/81 (56.8%)**, leaving 35
-keys literal or absent. The other metrics are unchanged. See
+keys (44/81). M4bh adds the two air/down keys (46/81). M4bi adds four
+fall/recovery keys: **50/81 (61.7%)**, leaving 31 keys literal or absent.
+The other metrics are unchanged. See
 [../README.md](../README.md) for numerator/denominator sources and
-[HIT-AIR-DOWN-TIMING.md](HIT-AIR-DOWN-TIMING.md) for the new native-backed scope.
+[HIT-FALL-RECOVERY.md](HIT-FALL-RECOVERY.md) for the new native-backed scope.
 Registration includes partial and empty behavior. No aggregate behavioral
 compatibility or line/branch test percentage is established by these counts.
 
@@ -45,10 +47,13 @@ distinguish missing Go behavior from operations disabled in the beta itself.
 
 ## Current allocation and stop condition
 
-The user resumed after testing M4bg (e37dd7da). M4bh implements `air.hittime`
-and `down.hittime`, including measured defaults/order/coercion and bounded
-launch/down/countdown consumers. Focused Match/Character/core races pass.
-Fresh native reproductions, three actual apps/four captures and the full scoped
-race suite pass. M4bh is the completed local checkpoint; pause for user testing.
-Do not start recovery, round clocks or renderer families. Existing strict
-alpha/spark failures remain open.
+The user pushed M4bh (ce6b7a50) and resumed the next bounded checkpoint.
+M4bi implements fall/air.fall/fall.recover/fall.recovertime expressions and
+recovery eligibility/clock consumers. Thirty native programs pin 372 numeric
+observations, five load rejections and 120 input hashes. Focused races, three
+fresh native reproductions, three actual apps/four captures and the full
+scoped race suite pass (Match 640.740s). M4bi is the completed local checkpoint;
+pause for user testing and the next allocation. Legacy recovery state routing
+and physics remain open; eligibility coverage does not close those paths.
+Juggle, bounce physics, round clocks and renderer families stay outside this
+allocation. Existing strict alpha/spark failures remain open.

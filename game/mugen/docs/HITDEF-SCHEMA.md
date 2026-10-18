@@ -4,8 +4,10 @@ The bundled 1.1 beta manual contains 81 HitDef parameter entries. A source audit
 at M4av found20 compiled keys. M4aw extended that to29; M4ba added
 Damage/GetPower/GivePower; M4bb adds kill/guard.kill/fall.kill/fall.damage;
 M4be added pausetime/guard.pausetime; M4bg adds ground hit/slide times and four
-dependent guard timing keys; M4bh adds air.hittime/down.hittime, for46 expression keys across engine/hitdef.go,
-hit_vectors.go, hit_power.go, hit_pause.go and hit_timing.go. This count measures source routing, not complete behavioral
+dependent guard timing keys; M4bh adds air.hittime/down.hittime; M4bi adds
+fall/air.fall/fall.recover/fall.recovertime, for 50 expression keys across
+engine/hitdef.go, hit_vectors.go, hit_power.go, hit_pause.go, hit_timing.go and
+hit_fall.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
 still require the native fixtures described in the checkpoint documents.
 The remaining literal-parser fields must also receive typed parameter schemas.
@@ -22,7 +24,7 @@ These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
-- Reaction: fall.animtype, air.type, fall.recovertime, down.bounce.
+- Reaction: fall.animtype, air.type, down.bounce.
 - Combat: air.juggle, chainID, nochainID.
 - Constraints: mindist, maxdist, snap.
 - Palette: palfx.time, palfx.mul, palfx.add.
@@ -34,9 +36,12 @@ and immediate contact transfer. Broad foreign/projectile/team/pause/multiple
 contexts remain open. M4be's [contact pause controls](HIT-PAUSE.md) cover the two
 pause keys. M4bg's [ground/guard timing controls](HIT-GROUND-TIMING.md) cover
 six more keys and source-default chains. M4bh's [air/down controls](HIT-AIR-DOWN-TIMING.md)
-cover both timers and the measured launch/down/countdown consumers. Fall and remaining physical
-fields still need expression/coercion/order coverage. Down
-time still lacks complete runtime consumers; corner push has the bounded M4ax
+cover both timers and the measured launch/down/countdown consumers. M4bi's
+[fall/recovery controls](HIT-FALL-RECOVERY.md) cover the four new expressions,
+fall selection and the eligibility clock. Remaining physical fields still
+need expression/coercion/order coverage. Down
+time still lacks complete runtime consumers; non-fall GetHitVar(recovertime),
+bounce and the full recovery state paths remain open. Corner push has the bounded M4ax
 consumer described above. Existing
 normal/guard/override/common-state fixtures are bounded evidence; they do not
 close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
@@ -48,10 +53,10 @@ pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
 measured KO velocity adjustments. These do not establish absolute KO/round
 timing, full fall recovery, or the broad contact combinations listed above.
 
-The refreshed audit is `temp/m4bh-hitdef-current-audit.json`; its input is the
+The refreshed audit is `temp/m4bi-hitdef-current-audit.json`; its input is the
 local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
-It records all81 documented keys,46 expression keys and35 keys that remain
-literal or absent. Those35 include compile-time enums/attributes as well as
+It records all 81 documented keys, 50 expression keys and 31 keys that remain
+literal or absent. Those 31 include compile-time enums/attributes as well as
 numeric expressions; they need appropriate schemas rather than being treated
 uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
 historical M4aw snapshot, and m4bb-hitdef-current-audit.json records the prior36.

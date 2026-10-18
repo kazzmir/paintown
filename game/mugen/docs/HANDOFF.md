@@ -1,11 +1,57 @@
 # Current handoff
 
-Updated 2026-10-17. The user's next-segment allocation is complete. M4bh covers
-air.hittime/down.hittime schemas and their bounded consumers, with predecessor/
-reversal e37dd7da (M4bg). Native, focused, application and full regression gates
-pass. M4bh is the completed local checkpoint; pause for user testing and the
-next allocation. Do not push or begin another feature family. All authored
-changes stay under game/mugen/; no new binary files are tracked.
+Updated 2026-10-17. The user's next-segment allocation is complete. M4bi
+implements fall/air.fall/fall.recover/fall.recovertime schemas and bounded
+recovery eligibility/clock consumers, after M4bh (ce6b7a50). Native, focused,
+application and full scoped race checks pass. M4bi is the completed local
+checkpoint; pause for user testing and the next allocation. Do not push or
+begin another feature family. Read HIT-FALL-RECOVERY.md and COVERAGE.md.
+All authored changes stay under game/mugen/; no new binary files are tracked.
+
+## M4bi verified checkpoint
+
+Predecessor/reversal ce6b7a50. Four new compiled fields bring expression
+routing to 50/81 (61.7%); 31 documented keys remain literal or absent. The
+other README metrics remain unchanged and do not measure engine completion.
+Native controls establish fall/air-fall boolean selection, repeated source
+defaults, runtime float truncation, bottom handling, default delay 4 and
+negative-result fallback 4. Fall time starts at 0, advances during defender
+shake and survives H-state continuation. CanRecover gates on that clock and
+the enabled flag. This is not full recovery-state/physics compatibility.
+
+Thirty original text programs pin 372 observations, five native load
+rejections and 120 source hashes. Do not rerun temp/author-m4bi-fall.py or
+derive native expectations from Go. All sources match
+temp/m4bi-prepared-inputs.json; all 12 authored Go sources match
+temp/m4bi-production-inputs.json. The first focused run found missing typed
+selectors, an order transcription error and a missing unit-fixture controller.
+They are fixed; temp/m4bi-initial-focused-race.log is retained. No expected
+values or tolerances were changed.
+
+Focused races replay all 30 new, 25 air/down, 21 ground/guard and 38
+forced-standing programs (Match 71.220s). Character recovery-command/Pause/
+SuperPause checks pass 1.386s. Three fresh native reproductions and three
+actual apps/four captures pass source/config/binary/PNG/runtime provenance
+checks in temp/m4bi-evidence-audit.json. The stock 7s image was visually
+inspected: intact fighters, stage and HUD; these are smoke checks, not raster
+parity. Shared binary SHA256:
+79ea936dec430cfdd4318ca3e7a83543421e56040af6e7e8ac224c7a561bd596.
+
+Final pipeline: temp/run-m4bi-validation.py, log temp/m4bi-validation.log;
+exit 0. Full scoped races pass in temp/m4bi-full-race.log:
+Match 640.740s, Character 11.000s, System 4.652s, storyboard 1.778s,
+stock/resources 6.510s; engine/evaluator/CNS/combat
+1.434s/1.020s/1.013s/1.012s. No native/app/test GUI client remains.
+Root module baseline temp/upstream-post-merge-module.sha256 passes; native
+executable SHA remains
+d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
+
+Next recovery work needs a new allocation: fall x/y velocity and yaccel
+schemas, down.bounce, non-fall GetHitVar(recovertime), HitFallSet reset
+variants, and removal/replacement of legacy recovery-command state heuristics
+with native common-state conditions. Juggle/chains, broad contact/entity/pause
+combinations, absolute KO clocks and full mode/asset gates remain open. The
+six alpha and two spark raster failures remain unwaived.
 
 ## M4bh verified checkpoint
 

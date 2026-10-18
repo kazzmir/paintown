@@ -13,12 +13,22 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bi adds compiled fall/air.fall/fall.recover/fall.recovertime, native nonzero
+fall selection and default/coercion/order rules, plus fall.time/recovertime
+selectors and CanRecover eligibility. Thirty native text programs pin 372
+observations, five load rejections and 120 source hashes. Routing reaches
+50/81 (61.7%), with 31 keys literal or absent. Focused and full scoped races
+pass (Match 640.740s), as do three fresh native reproductions and three actual
+apps/four captures with provenance checks.
+See [HIT-FALL-RECOVERY.md](HIT-FALL-RECOVERY.md) and HANDOFF.md. Full recovery
+physics, juggle and broad entity/pause combinations remain open.
+
 M4bh compiles air.hittime/down.hittime, preserves explicit zero versus their
 measured default 20, and corrects launch/down timer and slide-time selection.
 Twenty-five native programs pin 336 observations, three load rejections and
 100 source hashes, including bounded countdown/pause/fall/KO controls and
 full forward/reverse field order. Focused integrated races pass (Match 42.414s,
-Character 1.585s); core races pass. Routing is now 46/81 (56.8%), with 35 keys
+Character 1.585s); core races pass. At M4bh routing reached 46/81 (56.8%), with 35 keys
 literal/absent. Fresh native reproductions, three actual apps/four captures and
 the full scoped race suite pass (Match 648.043s). See
 [HIT-AIR-DOWN-TIMING.md](HIT-AIR-DOWN-TIMING.md) and HANDOFF.md.

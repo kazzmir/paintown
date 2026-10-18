@@ -4,6 +4,20 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bi: fall flags and recovery eligibility
+
+Predecessor/reversal ce6b7a50. Compiles four fall/recovery parameters, corrects
+nonzero/air fall selection and implements the measured CanRecover/fall clock,
+including shake and H-state continuation controls. Thirty original text
+programs pin 372 observations, five native load rejections and 120 source
+hashes. Expression routing is 50/81 (61.7%); 31 literal/absent keys remain.
+Focused races pass (Match 71.220s, Character 1.386s), as do three fresh native
+reproductions and three actual apps/four captures with provenance checks.
+Full scoped races pass: Match 640.740s, Character 11.000s, System 4.652s,
+storyboard 1.778s, stock/resources 6.510s. No new binary files or out-of-scope
+changes are included. Stop at the local checkpoint for user testing; see
+HIT-FALL-RECOVERY.md and HANDOFF.md for findings and remaining recovery gates.
+
 ## M4bh: air/down timing
 
 Predecessor/reversal e37dd7da. Adds compiled air/down timers, measured default 20

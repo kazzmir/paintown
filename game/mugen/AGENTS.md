@@ -7,12 +7,14 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user's next segment is complete. M4bh implements air.hittime/down.hittime
-schemas and bounded timer consumers, following M4bg (e37dd7da). Native,
-focused, application and full scoped race checks pass. M4bh is the completed
-local checkpoint; pause for user testing and the next allocation. Do not push
-or start another feature family. Storyboard scaling is b1b8864c; upstream
-integration is 99b4605c.
+The user's next allocation is complete. M4bi implements four fall/recovery
+expression fields and the bounded recovery eligibility/clock consumers, after
+M4bh (ce6b7a50). Native, focused, application and full scoped race gates pass.
+M4bi is the completed local checkpoint; pause for user testing and the next
+allocation. Do not push or start another feature family. Legacy recovery
+state routing/physics, juggle, bounce and broader contact/pause combinations
+remain open; read HIT-FALL-RECOVERY.md. Storyboard scaling is b1b8864c;
+upstream integration is 99b4605c.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 
