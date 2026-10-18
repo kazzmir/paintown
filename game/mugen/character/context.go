@@ -53,6 +53,28 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "win", "winko", "wintime", "winperfect", "lose", "loseko", "losetime", "drawgame":
+		root := c.rootPlayer()
+		var result bool
+		switch name {
+		case "win":
+			result = root.RoundWon
+		case "winko":
+			result = root.RoundWon && !root.RoundTimeOver
+		case "wintime":
+			result = root.RoundWon && root.RoundTimeOver
+		case "winperfect":
+			result = root.RoundWon && root.Life == root.MaxLife
+		case "lose":
+			result = root.RoundLost
+		case "loseko":
+			result = root.RoundLost && !root.RoundTimeOver
+		case "losetime":
+			result = root.RoundLost && root.RoundTimeOver
+		case "drawgame":
+			result = root.RoundDraw
+		}
+		return evaluator.Bool(result), true
 	case "hitcount":
 		return evaluator.Int(int32(c.HitCount)), true
 	case "uniqhitcount":

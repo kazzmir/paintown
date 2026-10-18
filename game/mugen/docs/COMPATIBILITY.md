@@ -1,5 +1,13 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bu adds native KO/time-over simulation clocks, staged integer slowdown,
+continuous GameTime, timer zero interval, pause distinctions, Win/Lose suffix
+bindings and distinct readiness/state4/pose/MatchOver/reset boundaries.29
+programs pin1,740 observations; focused/core/Character/System/intro checks,
+fresh native and rebuilt application gates pass. Results/reset breadth and
+complete matches continue in M4bv/M4bw; full integration follows M4bw. See
+[ROUND-LIFECYCLE.md](ROUND-LIFECYCLE.md). Existing renderer/mode/asset gates remain.
+
 M4bt implements the four stored fall-shake schemas, typed getters, receiver
 profile conversion and positive-duration FallEnvShake consumption, including
 fall=0 and guard exclusion. All 81 documented HitDef keys now have typed routing:

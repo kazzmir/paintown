@@ -4,6 +4,21 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bu: native KO/time-over clocks and pose entry
+
+Predecessor/reversal bbba565e.29 native programs pin1,740 observations and116
+source/recipe hashes. Adds integer slowdown/debt with continuous GameTime,
+separate simulation/HUD skips, zero timer interval, measured initial timer
+phase, pause distinctions, result suffix bindings, actor readiness/900-pass
+fallback and distinct state4/pose/MatchOver/reset boundaries. Final29 clocks
+plus time-over regression pass36.064s; intro4.719s, Character11.873s,
+System4.773s and core races pass. Two fresh native replays and three apps/six
+captures pass provenance; stock/KO captures were visually inspected.
+ROUND-LIFECYCLE.md and HANDOFF.md retain source hashes, artifacts, configuration
+startup mutation checks and failed diagnostics. Full scoped races follow M4bw.
+Continue M4bv results/reset and M4bw complete input-driven matches automatically.
+No push or binaries; previous whole-engine gates remain unwaived.
+
 ## M4bt: stored fall shake and final 27-key integration
 
 Predecessor/reversal ead79c52. Adds the four stored-fall schemas, measured family

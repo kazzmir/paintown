@@ -252,11 +252,12 @@ type Character struct {
 	AirJumpCount int
 
 	// Match state
-	RoundState  int
-	RoundNo     int
-	PaletteNo   int
-	AILevel     int
-	IsMatchOver bool
+	RoundState                                    int
+	RoundNo                                       int
+	PaletteNo                                     int
+	AILevel                                       int
+	IsMatchOver                                   bool
+	RoundWon, RoundLost, RoundDraw, RoundTimeOver bool
 }
 
 // NewCharacter returns a newly initialized character.

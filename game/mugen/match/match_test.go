@@ -54,6 +54,9 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 		}
 	}
 	m.Players[1].Character.SetLife(0)
+	// Isolate lifecycle with a valid dead pose; a standing self-KO can hold
+	// native pre-over until its 900-pass readiness timeout.
+	m.Players[1].Character.ChangeState(5150, 0, -1)
 	advanceUntil(t, m, PreOver, 2)
 	if m.Winner != 0 || m.Wins != [2]int{1, 0} || m.TimeOver {
 		t.Fatal("KO result", m.Winner, m.Wins, m.TimeOver)
@@ -72,6 +75,7 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 		t.Fatal("round reset lost selected palette")
 	}
 	m.Players[1].Character.SetLife(0)
+	m.Players[1].Character.ChangeState(5150, 0, -1)
 	advanceUntil(t, m, Finished, 500)
 	if m.Wins != [2]int{2, 0} || !m.Players[0].Character.IsMatchOver {
 		t.Fatal("match result", m.Wins)
@@ -107,7 +111,12 @@ func TestStockMatchTimeOverUsesLifeFraction(t *testing.T) {
 	m.Players[0].Character.MaxLife = 2000
 	m.Players[0].Character.Life = 1000
 	m.Players[1].Character.Life = 750
-	advanceUntil(t, m, PreOver, 61)
+	// Native counts through the displayed zero interval before time-over.
+	advanceUntil(t, m, PreOver, 121)
+	// Time-over result flags become observable one CNS pass after state 3.
+	if err := m.Update(); err != nil {
+		t.Fatal(err)
+	}
 	if m.Winner != 1 || !m.TimeOver || m.TimeLeft != 0 {
 		t.Fatal("time over must compare fractions", m.Winner, m.TimeOver, m.TimeLeft)
 	}

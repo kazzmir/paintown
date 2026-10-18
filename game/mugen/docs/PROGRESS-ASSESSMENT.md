@@ -1,9 +1,8 @@
 # Current progress assessment
 
-Updated 2026-10-18 through the verified M4bt final checkpoint.
-The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The user
-subsequently authorized all 27 HitDef keys remaining after 24b3ebd0; that allocation
-is the current scope. All authored changes stay under game/mugen/, with local
+Updated 2026-10-18 through the verified M4bu clock checkpoint.
+The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The 27-key HitDef allocation is complete. The user subsequently authorized
+M4bu clocks, M4bv results/reset and M4bw complete input-driven matches. All authored changes stay under game/mugen/, with local
 checkpoint commits, no push and no new binaries/assets committed.
 
 The connected stock one-on-one game is playable. Stock sweeps now complete
@@ -22,7 +21,8 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | Controller registration | 87/89 (97.8%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod and ExplodBindTime are unregistered. |
 | Trigger recognition | 127/127 (100%) | Vocabulary only; bindings/variants are not all complete. |
 | Loaded stock state programs | 216/216 (100%) | Both KFM variants and loaded common states compile; not all execution paths/interactions. |
-| Current 27-key native corpus | 248 programs/3,144 numeric observations | Includes 36 target load rejections and 992 frozen CNS/AIR/CMD/stage input hashes across seven batches. 19 palette color/portrait, 17 contact-shake and 16 fall-shake render comparisons provide additional bounded evidence. |
+| KO/time-over clock corpus |29 programs/1,740 observations | Native slowdown, timer/pause boundaries, readiness and pose/reset clocks; ROUND-LIFECYCLE.md. |
+| Completed 27-key native corpus | 248 programs/3,144 numeric observations | Includes 36 target load rejections and 992 frozen CNS/AIR/CMD/stage input hashes across seven batches. 19 palette color/portrait, 17 contact-shake and 16 fall-shake render comparisons provide additional bounded evidence. |
 
 The counts have different denominators and must not be averaged. The original
 ASSESSMENT.md and inventory status columns in COMPATIBILITY.md are dated
@@ -36,7 +36,7 @@ follows from the present inventory.
 | --- | --- | --- |
 | Language/state runtime (M1/M2) | Typed expressions, shared executor, ordering/persistence, negative states, ownership, pause, coordinates and stock commands have extensive native controls. | Every remaining controller/trigger schema/binding/variant, version/default/error rules, complete command/gamepad timing and broad foreign/helper/pause combinations. |
 | Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers and single-contact projectiles. | Full recovery/input/mashing/liedown behavior; remaining GetHitVar fields; full projectile lifecycle/cancellation/queries, reversals, teams and multiple-contact/entity interactions. |
-| Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. | Native KO slowdown and absolute over/win/round timing, draw/persistence/reset combinations and sustained multi-round production scenarios. |
+| Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. | M4bu establishes bounded KO/time-over/pose clocks. Draw/persistence/reset combinations (M4bv), complete input-driven matches (M4bw), exact presentation timing and broader interactions remain. |
 | Effects/rendering/audio (M6) | Sprite/background/HUD/effect drawing, hit palette/shake, sound output and owned numeric/pixel/PCM controls. | Standalone EnvShake, PalFX/AllPalFX/BGPalFX, afterimages/angles/zoom/transparency and other incomplete methods; broad camera/background behavior; BGM loading/looping/transitions. |
 | Assets/fonts (M3) | Stock SFF v1/v2/v2.01, AIR/SND, bitmap/outline fonts and relocatable resource loading work. | Full format/default/malformed-resource matrix, animation variants, resource lifecycle and platform conformance. Missing Arial/MS Gothic payloads use a visible Go Regular fallback, without native glyph/metric parity. |
 | Modes/UI/AI (M7) | Connected title → selection → versus → match → result → rematch/exit; basic opponent logic. | Arcade progression/endings, teams/simul/turns/co-op, survival/training/watch, native AI/difficulty, continue/game-over/win UI and configuration lifecycle. Several screen types retain black-screen stubs. |
@@ -53,13 +53,14 @@ not close native filtered/partial-alpha parity.
 HITDEF-REMAINING.md records the seven batches and their source/topic evidence.
 HIT-SHAKE.md and FALL-SHAKE.md describe the final families; HANDOFF.md records
 exact validation results and artifacts. CHECKPOINTS.md records local reversal
-history. The final full scoped race suite passes, including Match in 942.741s and
-Character in 11.918s. It includes corrections made after the
-earlier M4bp integration run; earlier failed or superseded runs remain diagnostic.
+history. The most recent full scoped race suite belongs to M4bt (Match942.741s), before
+the clock changes. M4bu focused/core/Character/System/intro/native/application
+gates pass; final integration of the current allocation follows M4bw. Earlier
+failed or superseded runs remain diagnostic.
 
-The requested 27-key allocation is complete, with final native/application
-checks and local checkpoint commits. A useful next functional allocation is native KO/round lifecycle,
-followed by complete projectile/reversal/team subsystems as separate deliveries.
+M4bu is complete; M4bv results/reset and M4bw complete input-driven matches
+remain in the current authorized allocation. After that, prioritize remaining
+recovery/input behavior and projectile/reversal/team subsystems as separate deliveries.
 Modes and BGM can also be budgeted as visible end-to-end slices. Resolve strict
 renderer/platform failures before claiming final conformance. This assessment
 does not silently expand the current allocation into all remaining M0–M8 work.

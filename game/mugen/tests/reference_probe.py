@@ -206,6 +206,9 @@ def read_clipboard(path, reference, page):
         glyphs[fields[0]] = (width, tuple(font.getpixel((x + dx, y)) != 0
                                        for y in range(6) for dx in range(width)))
     image = Image.open(path).convert('RGB')
+    # Clipboard glyphs occupy only the bottom 80 rows. Keep the exact matcher
+    # while avoiding a full-window pixel scan for each rotating trace page.
+    image = image.crop((0, max(0, image.height - 80), image.width, image.height))
     white = [[min(c) >= 230 and max(c) - min(c) < 5
               for c in [image.getpixel((x, y)) for x in range(image.width)]]
              for y in range(image.height)]

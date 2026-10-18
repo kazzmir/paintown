@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bt**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bu**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -131,8 +131,11 @@ lifetimes while preserving HUD portraits; see [palette effects](docs/HIT-PALETTE
 Contact shake and stored fall shake now use the shared frame clock and render
 with native rounding and profile conversion; the HUD stays fixed. See
 [contact shake](docs/HIT-SHAKE.md) and [fall shake](docs/FALL-SHAKE.md).
-The user-authorized 27-key allocation is complete. Final scoped race checks,
-native replays and production capture comparisons pass.
+The user-authorized 27-key allocation is complete; its M4bt full scoped races
+pass. M4bu adds native KO slowdown, timer/pause boundaries and separate
+control/pose/reset clocks with focused/native/application verification. See
+[round lifecycle](docs/ROUND-LIFECYCLE.md). Results/reset breadth and complete
+input-driven matches are the active M4bv/M4bw work; final full integration follows.
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |

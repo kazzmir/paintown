@@ -29,11 +29,32 @@ is complete: 72 numeric schemas plus nine literal schemas cover all 81 documente
 HitDef keys, with bounded native consumers. The final full scoped race suite
 passes (Match 942.741s), including post-M4bp corrections. All final native/app/
 render/provenance checks pass. See FALL-SHAKE.md, HITDEF-KEYS.json and HANDOFF.md.
-Whole-engine parity and broad interaction coverage remain unfinished. No next
-code batch is active after this allocation. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
+Whole-engine parity and broad interaction coverage remain unfinished. The
+subsequent round-lifecycle allocation below is active. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
 DOWN-BOUNCE.md and COVERAGE.md, including the corrected idle-override case.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
+
+## Current round-lifecycle allocation
+
+The user approved three more checkpoints after M4bt (2026-10-18):
+M4bu KO/time-over clocks (native slowdown, timer freezing, pause interactions,
+control removal and win/lose entry); M4bv results/reset (double KO/draws, wins,
+match completion, persistence and entity/effect cleanup); M4bw complete-match
+validation (actual inputs/damage, multiple rounds, results/rematch, sustained
+runs). Proceed through all three with local commits and documentation; stop
+only at completion or a concrete issue requiring user input. Keep one-on-one
+scope; other modes remain separate. The 27-key allocation above is historical.
+Freeze original fixtures/recipes before native captures and never edit them
+once observed. Use focused checks while developing and a full scoped race
+suite at the final integration boundary. Private native/app runs stay serial.
+
+M4bu is verified: 29 native clock programs/1,740 observations, focused/core/
+Character/System/intro checks, two fresh native reproductions and three apps/
+six captures pass. See ROUND-LIFECYCLE.md and HANDOFF.md for exact final source
+hashes and the preserved failed diagnostics. Continue M4bv and M4bw after the
+local M4bu commit. No full scoped suite was repeated here; final integration
+follows M4bw. Typed HitDef coverage stays 81/81 and whole-engine parity is open.
 
 ## Scope
 

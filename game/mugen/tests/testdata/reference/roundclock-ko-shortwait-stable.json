@@ -1,0 +1,115 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "fixture_sha256": {
+    ".cns": "23f5716197ef65414f98a6783fa355f22b6d9da870e87716ef1902b1b0c9bc9c",
+    ".air": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+    ".cmd": "2731efbabb49790b2bab42dae7efe6a3459987c7aad8fddcd657b95ffbda1932",
+    ".round.json": "ff7b5947b3974b54d2c46fbdaed3de008b5d48199904fef69cfd25ad6fd0eaf0"
+  },
+  "original_fight_sha256": {
+    "data/fight.def": "4215173e699fb022da39c53382effdf1bc2dd1c02daf66b5dc04369624092891",
+    "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+  },
+  "prepared_fight_sha256": {
+    "data/fight.def": "9a2518ded66cfed877c53f0a789cf5d13f786b9c77176e95501e3bc55f1d3afb",
+    "data/mugen1/fight.def": "8184b316ec32aaf3898bf0c8a1fd8ee2178c282b0daabe26e2af04063a9606db"
+  },
+  "config_sha256": "40de7001f5ef76354ba75a42258e43c06cb38800647a60c531f22227b411b62e",
+  "captures": [
+    {
+      "page": 0,
+      "path": "cycle-1.png",
+      "sha256": "b48bd1bb61c2c259ad77fe5d1aeb9d0bcd7e1a46fbdc899b0fcd5faf81aebb0f",
+      "variables": {
+        "0": 131,
+        "1": 152,
+        "2": 152,
+        "3": 181,
+        "4": 181,
+        "5": 0,
+        "6": 185,
+        "7": 242,
+        "8": 5,
+        "9": 152,
+        "10": 40,
+        "11": 175
+      }
+    },
+    {
+      "page": 12,
+      "path": "cycle-4.png",
+      "sha256": "b3af1c0a8d0c5de905d9fec346162560f8d6d683310a6c9e46a6ab8ce4f02ef5",
+      "variables": {
+        "12": 152,
+        "13": 157,
+        "14": 700,
+        "15": 5,
+        "16": 0,
+        "17": 0,
+        "18": 0,
+        "19": 0,
+        "20": 0,
+        "21": 5,
+        "22": 11,
+        "23": 17
+      }
+    },
+    {
+      "page": 24,
+      "path": "cycle-2.png",
+      "sha256": "26883bdd1bafd39225a34e13bb0692550e19f9c36c1f79062139da8c4d30a174",
+      "variables": {
+        "24": 23,
+        "25": 29,
+        "26": 30,
+        "27": 31,
+        "28": 32,
+        "29": 33,
+        "30": 34,
+        "31": 35,
+        "32": 36,
+        "33": 37,
+        "34": 38,
+        "35": 39
+      }
+    },
+    {
+      "page": 36,
+      "path": "cycle-6.png",
+      "sha256": "a9c2d46f339bd7d2602ed7fc296fca8fd783806c49b0badd74e9fc828fe10208",
+      "variables": {
+        "36": 40,
+        "37": 41,
+        "38": 42,
+        "39": 43,
+        "40": 44,
+        "41": 45,
+        "42": 46,
+        "43": 47,
+        "44": 48,
+        "45": 49,
+        "46": 50,
+        "47": 51
+      }
+    },
+    {
+      "page": 48,
+      "path": "cycle-0.png",
+      "sha256": "c60d838be11e4191bff43ae94ca255ed4e8e4372d73d07fa48ae4dfdd24ab7f3",
+      "variables": {
+        "48": 52,
+        "49": 53,
+        "50": 54,
+        "51": 55,
+        "52": 56,
+        "53": 57,
+        "54": 58,
+        "55": 59,
+        "56": 60,
+        "57": 61,
+        "58": 62,
+        "59": 63
+      }
+    }
+  ]
+}

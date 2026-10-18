@@ -67,6 +67,7 @@ type Match struct {
 	Stage                   *stage.Stage
 	Fight                   *fight.Definition
 	Phase                   Phase
+	SimulationSkipped       bool // KO skips and the reset initialization tick
 	PhaseTime, Tick, Round  int
 	Wins                    [2]int
 	Winner                  int // 0/1, or -1 for a draw
@@ -84,6 +85,10 @@ type Match struct {
 	cameraGoalX             float64
 	cameraLeft, cameraRight float32
 	introClearTicks         int
+	winPoseStarted          bool
+	initializingRound       bool
+	pendingRoundOver        bool
+	slowdown                engine.RoundSlowdown
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -167,6 +172,10 @@ func (m *Match) resetRound() error {
 		return err
 	}
 	m.Phase, m.PhaseTime, m.Winner, m.TimeOver, m.timeTicks = PreIntro, 0, -1, false, 0
+	m.winPoseStarted = false
+	m.initializingRound = m.Round > 1
+	m.pendingRoundOver = false
+	m.slowdown.Clear()
 	m.TimeLeft = m.Options.RoundTime
 	s := m.Stage
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
@@ -257,10 +266,37 @@ func (m *Match) roundState(value int) {
 }
 
 func (m *Match) Update() error {
+	m.SimulationSkipped = false
 	if m.Phase == Finished {
+		m.SimulationSkipped = true
+		return nil
+	}
+	if m.initializingRound {
+		m.SimulationSkipped = true
+		m.initializingRound = false
+		m.Timeline.SkipSimulationFrame()
+		m.Tick++
+		return nil
+	}
+	if !m.slowdown.BeginFrame() {
+		m.SimulationSkipped = true
+		m.Timeline.SkipSimulationFrame()
+		m.Tick++
 		return nil
 	}
 	paused := m.Timeline.Paused()
+	if m.pendingRoundOver {
+		m.pendingRoundOver = false
+		m.roundState(4)
+		m.enter(Over)
+		m.slowdown.Clear()
+		for _, player := range m.Players {
+			player.Character.HitDefActive = false
+		}
+	}
+	if !paused || m.Phase == PreOver {
+		m.slowdown.Advance()
+	}
 	if err := m.Effects.AdvanceWithPause(paused, m.Timeline.SuperPaused()); err != nil {
 		return fmt.Errorf("fight effects: %w", err)
 	}
@@ -284,7 +320,7 @@ func (m *Match) Update() error {
 	}
 	m.updateCamera()
 	m.Tick++
-	if paused {
+	if paused && m.Phase != PreOver && m.Phase != Over {
 		return nil
 	}
 	m.PhaseTime++
@@ -311,13 +347,13 @@ func (m *Match) Update() error {
 		if m.PhaseTime >= m.Setting("Round", "round.default.displaytime", 60) {
 			m.roundState(2)
 			m.enter(FightCall)
+			if m.Setting("Round", "ctrl.time", 30) <= 0 {
+				m.startActive()
+			}
 		}
 	case FightCall:
 		if m.PhaseTime >= m.Setting("Round", "ctrl.time", 30) {
-			m.enter(Active)
-			for _, p := range m.Players {
-				p.Character.Ctrl = true
-			}
+			m.startActive()
 		}
 	case Active:
 		frozen := false
@@ -328,22 +364,24 @@ func (m *Match) Update() error {
 			m.timeTicks++
 			if m.timeTicks >= max(1, m.Setting("Time", "framespercount", 60)) {
 				m.timeTicks = 0
-				m.TimeLeft = max(0, m.TimeLeft-1)
+				m.TimeLeft--
 			}
 		}
-		if m.Players[0].Character.Life <= 0 || m.Players[1].Character.Life <= 0 || m.TimeLeft == 0 {
+		if m.Players[0].Character.Life <= 0 || m.Players[1].Character.Life <= 0 || (m.Options.RoundTime >= 0 && m.TimeLeft < 0) {
 			m.finishRound()
 		}
 	case PreOver:
-		if m.PhaseTime >= m.Setting("Round", "over.waittime", 45) {
-			for _, p := range m.Players {
-				p.Character.Ctrl = false
-				p.Character.HitDefActive = false
-			}
+		if m.TimeOver && m.PhaseTime == 1 {
+			m.publishRoundResult()
 		}
-		if m.PhaseTime >= m.Setting("Round", "over.waittime", 45)+m.Setting("Round", "over.wintime", 45) {
-			m.roundState(4)
+		if m.PhaseTime >= m.Setting("Round", "over.waittime", 45) && (m.roundActorsReady() || m.PhaseTime >= 900) {
+			m.pendingRoundOver = true
+		}
+	case Over:
+		if !m.winPoseStarted && m.PhaseTime >= m.Setting("Round", "over.wintime", 45) {
+			m.winPoseStarted = true
 			for slot, p := range m.Players {
+				p.Character.IsMatchOver = m.matchDone
 				state := 170
 				if m.Winner < 0 {
 					state = 175
@@ -357,9 +395,7 @@ func (m *Match) Update() error {
 					return p.Character.RuntimeError
 				}
 			}
-			m.enter(Over)
 		}
-	case Over:
 		if m.PhaseTime >= m.Setting("Round", "over.time", 210) {
 			if m.matchDone {
 				m.enter(Finished)
@@ -372,9 +408,43 @@ func (m *Match) Update() error {
 	return nil
 }
 
+func (m *Match) startActive() {
+	m.enter(Active)
+	m.timeTicks = 2
+	for _, player := range m.Players {
+		player.Character.Ctrl = true
+	}
+}
+
+func (m *Match) roundActorsReady() bool {
+	for _, player := range m.Players {
+		c := player.Character
+		ready := c.Life > 0 && c.Ctrl && c.StateType == "S" && c.MoveType == "I"
+		ready = ready || (c.StateNo == 5150 && c.Time > 0)
+		if !ready {
+			return false
+		}
+	}
+	return true
+}
+
 func (m *Match) finishRound() {
 	a, b := m.Players[0].Character, m.Players[1].Character
 	m.TimeOver = a.Life > 0 && b.Life > 0
+	if m.TimeOver {
+		m.TimeLeft = 0
+	} else if !a.Specials["nokoslow"] && !b.Specials["nokoslow"] {
+		m.slowdown.Start(m.Setting("Round", "slow.time", 60))
+	}
+	if !m.TimeOver {
+		m.publishRoundResult()
+	}
+	m.roundState(3)
+	m.enter(PreOver)
+}
+
+func (m *Match) publishRoundResult() {
+	a, b := m.Players[0].Character, m.Players[1].Character
 	left, right := int64(a.Life)*int64(b.MaxLife), int64(b.Life)*int64(a.MaxLife)
 	m.Winner = -1
 	if left > right {
@@ -386,11 +456,12 @@ func (m *Match) finishRound() {
 		m.Wins[m.Winner]++
 	}
 	m.matchDone = m.Wins[0] >= max(1, m.Setting("Round", "match.wins", 2)) || m.Wins[1] >= max(1, m.Setting("Round", "match.wins", 2))
-	for _, p := range m.Players {
-		p.Character.IsMatchOver = m.matchDone
+	for slot, p := range m.Players {
+		p.Character.RoundWon = m.Winner == slot
+		p.Character.RoundLost = m.Winner >= 0 && m.Winner != slot
+		p.Character.RoundDraw = m.Winner < 0
+		p.Character.RoundTimeOver = m.TimeOver
 	}
-	m.roundState(3)
-	m.enter(PreOver)
 }
 
 func (m *Match) updateCamera() {

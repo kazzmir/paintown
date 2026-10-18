@@ -327,10 +327,19 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			if ticks < 1 || ticks > 600 {
 				t.Fatal("invalid native replay duration", ticks)
 			}
-			for tick := 0; tick < ticks; tick++ {
+			// These fixtures measure completed simulation passes. KO slowdown
+			// adds real GameTime ticks without executing another CNS pass.
+			completed := 0
+			for frame := 0; frame < ticks*8 && completed < ticks; frame++ {
 				if err := m.Update(); err != nil {
 					t.Fatal(err)
 				}
+				if !m.SimulationSkipped {
+					completed++
+				}
+			}
+			if completed != ticks {
+				t.Fatal("native replay did not complete its simulation passes", completed, ticks)
 			}
 			for _, capture := range reference.Captures {
 				for key, want := range capture.Variables {

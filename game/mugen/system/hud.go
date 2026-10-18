@@ -70,6 +70,9 @@ func (h *FightHUD) Update(previous match.Phase, round int) error {
 	if h.renderError != nil {
 		return h.renderError
 	}
+	if h.match.SimulationSkipped {
+		return nil
+	}
 	for _, clock := range h.clocks {
 		clock.Update()
 	}

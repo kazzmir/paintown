@@ -1,0 +1,14 @@
+{
+  "round_time": 99,
+  "fight": {},
+  "pages": [
+    0,
+    12,
+    24,
+    36,
+    48
+  ],
+  "replay_ticks": 1900,
+  "dense": true,
+  "capture_seconds": 29
+}

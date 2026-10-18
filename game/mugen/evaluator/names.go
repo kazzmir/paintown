@@ -30,6 +30,11 @@ func ValidateKnownTriggers(expr Expression) error {
 		if referenceTriggerNames[name] {
 			return true
 		}
+		// These are suffix variants of the documented Win/Lose entries.
+		switch name {
+		case "winko", "wintime", "winperfect", "loseko", "losetime":
+			return true
+		}
 		for _, prefix := range []string{"projhit", "projguarded", "projcontact"} {
 			if strings.HasPrefix(name, prefix) && len(name) > len(prefix) {
 				for _, digit := range name[len(prefix):] {

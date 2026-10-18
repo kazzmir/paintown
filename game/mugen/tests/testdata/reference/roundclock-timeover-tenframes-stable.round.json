@@ -1,0 +1,15 @@
+{
+  "round_time": 1,
+  "fight": {
+    "Time.framespercount": 10
+  },
+  "pages": [
+    0,
+    12,
+    24,
+    36,
+    48
+  ],
+  "replay_ticks": 1200,
+  "dense": true
+}

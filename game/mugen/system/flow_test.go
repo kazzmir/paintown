@@ -107,6 +107,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	// The same lifecycle used by gameplay must finish two rounds and retain wins.
 	for round := 0; round < 2; round++ {
 		f.match.Players[1].Character.SetLife(0)
+		f.match.Players[1].Character.ChangeState(5150, 0, -1)
 		for i := 0; i < 1000; i++ {
 			step()
 			if f.match.Phase == match.Finished || (round == 0 && f.match.Round == 2 && f.match.Phase == match.Active) {
