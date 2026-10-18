@@ -117,7 +117,7 @@ Run `python3 game/mugen/tests/app_smoke.py --name UNIQUE_NAME` for production
 startup inspection. It builds with the scoped module, copies the reference into
 temp/app-runs/, selects the KFM motif, excludes ambient YAML overrides, and
 captures its own process window at 2/6/16 seconds. Go, DISPLAY, xdotool and
-ImageMagick import are required. It sends no input or focus changes, records
+ImageMagick import are required. By default it sends no input or focus changes, records
 hashes and commit/dirty state, and terminates its own process. Use --motif or
 --seconds for other inspection points. Live keyboard/window timing can affect
 results; it does not assert native image parity or deterministic gameplay.
@@ -803,3 +803,20 @@ and recorded values unchanged.
 game/mugen/mugen.sh --check -race -p 1 -timeout=5m \
   -run '^(TestNativeHitFallSetPrograms|TestNativeDownBouncePrograms)$' -v
 ```
+
+## Complete match and owned-window input checks (M4bw)
+
+`TestStockInputDrivenCompleteMatches` uses stock full-life logical input, actual
+collision/damage, two-/three-round outcomes and three fresh rematches.
+`TestTitleSelectionVersusFightResultRematchAndExit` now wins through the stock
+keyboard adapter. See [complete match evidence](../docs/COMPLETE-MATCHES.md).
+
+The optional `app_smoke.py --stock-input` replay targets only the spawned
+window, with 2% life and one required win in its disposable copy. It requires the
+KFM/KFM720 pair and a capture at or after 45 seconds. Use
+`--seconds 3 21 26 45 --stock-input --audio` with the private display/audio setup;
+21s and 45s show results, 26s shows the rematch. Default smoke runs send no input.
+Window events, modified config/fight hashes, PNGs, binary and PCM are recorded.
+These are review artifacts; full-life numeric acceptance comes from the Go
+scenarios and native corpus, not wall-clock screenshots. No binaries/assets are
+committed. Use a fresh run name and keep private display clients serial.

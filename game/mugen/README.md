@@ -85,7 +85,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 # Build/test every MUGEN package against the stock reference corpus.
 game/mugen/mugen.sh --check -p 1 -timeout=20m
 
-# Full race checks; the growing Match corpus takes about sixteen minutes.
+# Full race checks; the last full run took about seventeen minutes.
 game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=20m
 
 # Focused stock character loading and state compilation.
@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bv**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bw**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -138,7 +138,8 @@ control/pose/reset clocks with focused/native/application verification. See
 win-pose holds, late damage/double KO and persistent reset, with 26 controls /
 1,560 native integers. See [round results and remaining gates](docs/ROUND-RESULTS.md).
 The legacy HitVel trigger remains an explicit open binding. Complete input-driven
-matches and final full integration are the active M4bw work.
+matches/rematches and final full scoped races now pass (2,707 test/subtest
+results). See [complete match validation](docs/COMPLETE-MATCHES.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |

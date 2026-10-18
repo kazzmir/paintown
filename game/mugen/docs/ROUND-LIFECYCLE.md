@@ -105,5 +105,5 @@ M4bu was committed as 7fae8ec4. Its nonterminal controls did not prove the
 terminal MatchOver timing. M4bv ordinary Versus controls correct the implementation
 to publish MatchOver at RoundState 4, before pose entry. Results/reset, late
 contact and persistence now pass 26 native controls / 1,560 observations; see
-[ROUND-RESULTS.md](ROUND-RESULTS.md). The final complete-match checkpoint M4bw
-and full scoped integration remain authorized and next.
+[ROUND-RESULTS.md](ROUND-RESULTS.md). M4bw now completes the full-life input-driven match/rematch checks and final
+full scoped integration; see [COMPLETE-MATCHES.md](COMPLETE-MATCHES.md).

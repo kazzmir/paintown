@@ -104,16 +104,34 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			t.Fatal("match sound resources were lost")
 		}
 	}
-	// The same lifecycle used by gameplay must finish two rounds and retain wins.
-	for round := 0; round < 2; round++ {
-		f.match.Players[1].Character.SetLife(0)
-		f.match.Players[1].Character.ChangeState(5150, 0, -1)
-		for i := 0; i < 1000; i++ {
+	// Win both rounds through the configured keyboard adapter and stock CNS.
+	// Keep initial positions, states, life, timer and round timing intact.
+	damagedRounds := map[int]bool{}
+	for tick := 0; tick < 12000 && f.match.Phase != match.Finished; tick++ {
+		if f.match.Phase != match.Active {
 			step()
-			if f.match.Phase == match.Finished || (round == 0 && f.match.Round == 2 && f.match.Phase == match.Active) {
-				break
-			}
+			continue
 		}
+		c := f.match.Players[0].Character
+		distance, _ := c.GetOpponentBodyDistance()
+		if distance > 16*float64(c.LocalCoordinateWidth())/320 {
+			if c.Facing == 1 {
+				step(ebiten.KeyArrowRight)
+			} else {
+				step(ebiten.KeyArrowLeft)
+			}
+		} else if f.match.Tick%40 < 2 {
+			step(ebiten.KeyL) // P1 X in the bundled keyboard configuration
+		} else {
+			step()
+		}
+		victim := f.match.Players[1].Character
+		if victim.Life < victim.MaxLife {
+			damagedRounds[f.match.Round] = true
+		}
+	}
+	if !damagedRounds[1] || !damagedRounds[2] || f.match.Wins != [2]int{2, 0} {
+		t.Fatal("configured keyboard did not win both rounds", damagedRounds, f.match.Wins)
 	}
 	if f.match.Phase != match.Finished {
 		t.Fatal("match did not reach result")

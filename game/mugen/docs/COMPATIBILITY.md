@@ -1,11 +1,17 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bw completes eight full-life stock matches / 18 rounds, configured keyboard
+combat and repeated rematches, plus a rendered owned-window one-hit replay.
+Full scoped races pass with 2,707 test/subtest results across 24 tested and
+12 compiled application packages. Source/artifact/root-module audits pass.
+See [COMPLETE-MATCHES.md](COMPLETE-MATCHES.md) for the bounded scope and open gates.
+
 M4bv adds native one-on-one result/tally boundaries, draws, rolling roundnotover,
 late damage/DKO, Alive latching, persistence/cleanup/identity and stage resetBG.
 26 promoted controls pin 1,560 integers; focused/core/Character/System/Stage,
 fresh native and application provenance checks pass. Three separate native
 counterexamples preserve an unbound legacy HitVel trigger. M4bw complete
-input-driven matches and final integration remain. See [ROUND-RESULTS.md](ROUND-RESULTS.md).
+input-driven matches and final integration now pass. See [ROUND-RESULTS.md](ROUND-RESULTS.md).
 
 M4bu adds native KO/time-over simulation clocks, staged integer slowdown,
 continuous GameTime, timer zero interval, pause distinctions, Win/Lose suffix

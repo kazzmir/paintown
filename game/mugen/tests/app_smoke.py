@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build/run the Go application in a disposable data copy; capture its own window.
 
-Requires Go, DISPLAY, xdotool, ImageMagick import and Pillow. No keyboard/pointer/focus
-operations are performed. Captures are inspection artifacts, not parity tests.
+Requires Go, DISPLAY, xdotool, ImageMagick import and Pillow. Default captures
+send no input. Optional stock input targets only the spawned window, without
+pointer/focus changes. Captures are inspection artifacts, not parity tests.
 """
 import argparse
 import array
@@ -32,12 +33,15 @@ def main():
     parser.add_argument('--seconds', type=int, nargs='+', default=[2, 6, 16])
     parser.add_argument('--match', nargs=2, help='Quick-match character DEF paths in the disposable distribution')
     parser.add_argument('--stage', default='stages/kfm.def')
+    parser.add_argument('--stock-input', action='store_true', help='Exercise stock keyboard attacks, results and rematch in the owned window (2%% life, one win)')
     parser.add_argument('--audio', action='store_true', help='Also record the task-owned private null sink, using a private ALSA configuration')
     parser.add_argument('--width',type=int,default=320)
     parser.add_argument('--height',type=int,default=240)
     args = parser.parse_args()
     if not 64<=args.width<=4096 or not 64<=args.height<=4096:
         parser.error('Smoke window dimensions must be in 64..4096')
+    if args.stock_input and (args.match != ['chars/kfm/kfm.def','chars/kfm720/kfm720.def'] or max(args.seconds)<45):
+        parser.error('Stock input requires the KFM/KFM720 pair and a capture at or after 45 seconds')
     if args.audio:
         server = os.environ.get('PULSE_SERVER', '')
         alsa = os.environ.get('ALSA_CONFIG_PATH', '')
@@ -63,6 +67,14 @@ def main():
     source = config.read_text()
     for key, value in [('motif', args.motif), ('width', str(args.width)), ('height', str(args.height))]:
         source = re.sub(r'(?im)^\s*' + key + r'\s*=.*$', lambda match: key + ' = ' + value, source)
+    prepared_fight={}
+    if args.stock_input:
+        from round_probe import override
+        source=override(source,'Options','Life',2)
+        for relative in ['data/fight.def','data/mugen1/fight.def']:
+            path=stock/relative
+            path.write_text(override(path.read_text(encoding='utf-8-sig'),'Round','match.wins',1))
+            prepared_fight[relative]=digest(path)
     config.write_text(source)
     # First readable override wins: exclude ambient user/executable settings.
     (stock / 'mugen.yaml').write_text(json.dumps({'video': {'width': args.width, 'height': args.height}}) + '\n')
@@ -81,6 +93,18 @@ def main():
                 'motif': args.motif, 'window':[args.width,args.height], 'captures': []}
     if args.match:
         metadata.update(players=args.match, stage=args.stage)
+    schedule=[(seconds,'capture',None) for seconds in args.seconds]
+    if args.stock_input:
+        metadata['stock_input']={'life_percent':2,'wins_required':1,'fight_sha256':prepared_fight,'events':[]}
+        for start in [5,28]:
+            schedule.extend([(start,'keydown','Right'),(start+.9,'keyup','Right')])
+            for stroke in range(10):
+                when=start+1+stroke*.7
+                if stroke:
+                    schedule.extend([(when-.35,'keydown','Right'),(when-.05,'keyup','Right')])
+                schedule.extend([(when,'keydown','l'),(when+.10,'keyup','l')])
+        schedule.extend([(23,'keydown','Return'),(23.10,'keyup','Return')])
+    schedule.sort(key=lambda row:row[0])
     with (work / 'run.log').open('w') as log:
         command = [str(binary), '--data-dir', str(stock)]
         if args.match:
@@ -94,7 +118,7 @@ def main():
                 recorder = subprocess.Popen(['parec', '--device=mugen_reference.monitor', '--format=s16le',
                                              '--rate=44100', '--channels=2', '--latency-msec=20'],
                                             env=env, stdout=recording, stderr=log)
-            for seconds in args.seconds:
+            for seconds,operation,key in schedule:
                 time.sleep(max(0, started + seconds - time.monotonic()))
                 if process.poll() is not None:
                     raise RuntimeError('Application exited early: ' + str(process.returncode))
@@ -104,6 +128,10 @@ def main():
                                          text=True, capture_output=True, check=False).stdout.split()
                 if len(windows) != 1:
                     raise RuntimeError('Expected exactly one visible window belonging to the spawned application')
+                if operation!='capture':
+                    subprocess.run(['xdotool',operation,'--window',windows[0],key],check=True,timeout=5,stdout=log,stderr=log)
+                    metadata['stock_input']['events'].append({'seconds':seconds,'operation':operation,'key':key,'window':windows[0],'pid':process.pid})
+                    continue
                 output = work / ('at-' + str(seconds) + 's.png')
                 subprocess.run(['import', '-window', windows[0], str(output)], check=True, timeout=5, stdout=log, stderr=log)
                 dimensions = [int(n) for n in subprocess.check_output(['identify', '-format', '%w %h', str(output)], text=True).split()]

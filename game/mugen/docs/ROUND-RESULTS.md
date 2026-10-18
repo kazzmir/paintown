@@ -116,7 +116,7 @@ ignored temp/ with their preparation manifests and logs. Never rerun authors or
 promote these diagnostic observations into passing evidence.
 
 M4bw complete input-driven matches/rematches and the final full scoped race
-suite remain next. Exact HUD/fade/audio timing, all pause/assertion interactions,
+suite now pass; see [COMPLETE-MATCHES.md](COMPLETE-MATCHES.md). Exact HUD/fade/audio timing, all pause/assertion interactions,
 other modes and broad recovery/controller/entity/asset/font/render gates remain
 open. Typed HitDef coverage remains 81/81, not whole-engine completion.
 

@@ -15,8 +15,8 @@ Read HITDEF-REMAINING.md, COVERAGE.md and the relevant topic documents.
 
 The user approved M4bu clocks, M4bv results/reset and M4bw complete input-driven
 matches after bbba565e. Continue automatically with local commits, no push or
-binaries. M4bu is committed as 7fae8ec4. M4bv is verified and ready to commit;
-M4bw is the final authorized checkpoint in this allocation. No agents or goal
+binaries. M4bu is committed as 7fae8ec4; M4bv as ddb48b18.
+M4bw completes this authorized allocation. No agents or goal
 are active. Read ROUND-LIFECYCLE.md and ROUND-RESULTS.md.
 
 M4bv: 26 promoted native controls / 1,560 integers / 104 pre-native hashes.
@@ -60,15 +60,50 @@ values and 420 initial Versus values retain exact glyph decoding. FirstRun and
 line-ending startup changes are audited; fresh menu origins can differ, but
 only explicit timestamp slots are aligned and all event durations stay exact.
 
-Next M4bw: apply the draft in temp/m4bw-complete-match-test.txt to a real Match
-test file, then exercise actual logical walk/punch damage through two-/three-
-round wins, time draws and repeated rematches without life/state/position
-injection. Extend system flow through actual keyboard combat/results/rematch.
-Inspect fresh stock application output and run the final full scoped race suite
-serially: --check -race -p 1 -count=1 -timeout=20m. Freeze source before validation
-and record findings at the local checkpoint. No permission pause is required.
-The latest full scoped run is still M4bt (Match 942.741s); none was repeated in
-M4bu/M4bv. All original whole-engine gates remain unwaived.
+M4bv is committed as ddb48b18. M4bw test allocation is verified in
+final integration: match/complete_match_test.go completes eight matches
+and 18 rounds with full life and actual walk/punch damage, both winners,
+alternating wins, time draws and three repeated rematches. system/flow_test.go
+now wins two rounds through the configured keyboard instead of injecting life
+zero. Maximum pre-over is 70 combat passes / 45 time-draw passes; no stock KO
+uses the 900-pass fallback. Focused Match cause checks pass 16.153s, the initial
+full keyboard flow passes 6.351s including race overhead.
+
+The rendered input replay uses the optional app_smoke.py --stock-input flag,
+2% life and one required win in a disposable copy. Accepted run:
+temp/app-runs/m4bw-stock-input-one-hit. Viewed captures show terminal win/rematch
+at 21s, a fresh fight at 26s and a second terminal win at 45s. Four PNGs, 82 events
+on one owned PID/window and private PCM pass source/config/fight/binary/output
+audit. No pointer/focus/global input operations. Initial held-forward and later
+20%-life runs remain diagnostic; they did not demonstrate complete matches.
+Final source manifest temp/m4bw-final3-production-inputs.json pins 278 files;
+all 154 production Go files are unchanged from M4bv. App audit:
+temp/m4bw-app-evidence-audit.json. Binary:
+8bd3896ddb04b376a4e80ca510a15b51d0320b3ce4b77fce643e32970775f034.
+PCM: 1,953,229 frames, peak 32767, RMS 1647.98.
+
+The final full scoped race suite PASSED and exec session 53987 was awaited.
+There are 2,707 passing test/subtest results, 24 tested and 12 compiled-only
+packages, no skipped individual tests or failures. Match 968.597s, Character
+11.496s, System 7.234s, Stage 1.041s, engine 1.460s and stock/resource tests
+6.738s. The complete command takes 1,037.599s. The progress monitor shortened
+package names, conflating production/test-app character and stage packages;
+final counts use all 36 full identities. Earlier 34-package progress figures
+were monitor summaries, not the final package count.
+
+Logs/results: temp/m4bw-full-scoped-race.jsonl, its stderr/result files and
+m4bw-final-evidence-audit.json. All 278 source hashes and root module checks pass
+after the run. App audit/visual review and private PCM pass. No UI/test clients
+or sessions remain. Finalize documentation and commit M4bw locally, then report
+the completed allocation for user testing; never push or add binaries. No more
+validation is needed unless source changes or an unresolved failure requires it.
+
+Current explicit gates include unbound legacy HitVel and engine-wide GameTime
+origin/handoff across menus/rematches: native GameTime includes menus, while
+new isolated Matches own local timelines. Origin-aligned scalar replays and
+fresh-object reset assertions do not prove that engine integration. Other
+original controller/recovery/projectile/team/mode/AI/BGM/asset/font/render gates
+remain unwaived. See COMPLETE-MATCHES.md and PROGRESS-ASSESSMENT.md.
 
 ## M4bq verified checkpoint
 

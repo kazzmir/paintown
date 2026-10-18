@@ -49,13 +49,17 @@ Freeze original fixtures/recipes before native captures and never edit them
 once observed. Use focused checks while developing and a full scoped race
 suite at the final integration boundary. Private native/app runs stay serial.
 
-M4bu is committed as 7fae8ec4. M4bv is verified: 26 new native controls /
-1,560 integers, focused/core/Character/System/Stage races, three fresh native
-replays and three apps/six captures/private PCM pass. Commit M4bv, then continue
-M4bw automatically. See ROUND-RESULTS.md and HANDOFF.md. Three preserved legacy
-HitVel counterexamples expose an unbound trigger; keep that gate open. Final
-full scoped races follow M4bw. Typed HitDef coverage stays 81/81; engine parity
-is unfinished. No pushes or binaries.
+M4bu is committed as 7fae8ec4; M4bv as ddb48b18. M4bw completes eight
+full-life stock matches / 18 rounds through logical/keyboard input, including
+natural KOs, time draws and repeated rematches. An owned-window 2%-life replay
+also reaches two actual win/rematch screens. The final full scoped race suite
+passes: 2,707 test/subtest results, 24 tested and 12 compiled-only packages;
+Match 968.597s, total 1,037.599s. Source/config/binary/PNG/private-PCM audits and
+root module checks pass; no clients/sessions remain. Finalize the local M4bw
+commit and report the completed three-checkpoint allocation. See docs/COMPLETE-MATCHES.md, docs/ROUND-RESULTS.md and docs/HANDOFF.md. Legacy HitVel binding, engine-wide
+GameTime handoff and other documented engine gates remain open. Typed HitDef
+coverage stays 81/81; no whole-engine completion percentage is justified.
+No pushes or binaries.
 
 ## Scope
 

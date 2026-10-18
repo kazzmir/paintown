@@ -4,6 +4,24 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bw: complete stock matches, rendered input and final integration
+
+Predecessor/reversal ddb48b18. Eight deterministic full-life matches / 18 rounds
+now cover both winners, alternating wins, time draws, natural KOs, configured
+keyboard flow and three repeated rematches. Maximum stock pre-over count is 70;
+no readiness fallback is used. Optional owned-window input smoke with 2% life
+shows two terminal win/rematch screens and a fresh intervening fight. Four PNGs,
+82 events on one owned PID/window and private PCM pass provenance/visual review.
+All 154 production Go files remain unchanged from M4bv.
+
+Final full scoped races pass: 2,707 test/subtest results, 24 tested and 12
+compiled-only packages, no failed/skipped individual tests. Match 968.597s;
+complete command 1,037.599s. All 278 source hashes and root module checks pass.
+COMPLETE-MATCHES.md and HANDOFF.md record artifacts and retained diagnostics.
+The three-checkpoint allocation is complete. Legacy HitVel, cumulative engine
+GameTime handoff and other original compatibility gates stay open. Local source/
+text commit only; no push or binaries.
+
 ## M4bv: native results, draws and round reset
 
 Predecessor/reversal 7fae8ec4. 26 frozen native controls pin 1,560 integers and
