@@ -109,6 +109,15 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 			return evaluator.Value{}, true
 		}
 		return evaluator.Int(c.Timeline.GameTime), true
+	case "tickspersecond":
+		if c.Timeline != nil && c.Timeline.TicksPerSecond > 0 {
+			return evaluator.Int(c.Timeline.TicksPerSecond), true
+		}
+		return evaluator.Int(60), true
+	case "matchno":
+		// The current production lifecycle is one-on-one Versus. Arcade
+		// progression and its increment/continue rules remain a mode gate.
+		return evaluator.Int(1), true
 	case "p2life", "p2stateno", "p2statetype", "p2movetype":
 		if len(c.Opponents) == 0 {
 			return evaluator.Value{}, true

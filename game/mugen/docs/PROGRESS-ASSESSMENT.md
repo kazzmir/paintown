@@ -1,6 +1,6 @@
 # Current progress assessment
 
-Updated 2026-10-18 through M4bx legacy HitVel after M4bw complete-match validation.
+Updated 2026-10-18 through M4by process clocks and M4bx legacy HitVel.
 The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The 27-key HitDef allocation is complete. The user subsequently authorized
 M4bu clocks, M4bv results/reset and M4bw complete input-driven matches. All authored changes stay under game/mugen/, with local
 checkpoint commits, no push and no new binaries/assets committed.
@@ -24,6 +24,7 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | KO/time-over clock corpus |29 programs/1,740 observations | Native slowdown, timer/pause boundaries, readiness and pose/reset clocks; ROUND-LIFECYCLE.md. |
 | Complete stock scenarios | Eight matches/18 rounds | Full-life logical/keyboard attacks, both winners, alternating wins, time draws and three repeated rematches. A separate rendered 2%-life replay reaches two result screens. Full scoped integration passes. COMPLETE-MATCHES.md. |
 | Results/reset corpus | 26 controls/1,560 observations | Native normal-mode results, holds, late damage/DKO, persistence and cleanup; ROUND-RESULTS.md. |
+| Process clocks and rate | Six programs/84 observations | Native same-process menu/match reentry, configured rate and one-on-one MatchNo; production CNS/keyboard handoff and wrap checks. ENGINE-CLOCK.md. |
 | Completed 27-key native corpus | 248 programs/3,144 numeric observations | Includes 36 target load rejections and 992 frozen CNS/AIR/CMD/stage input hashes across seven batches. 19 palette color/portrait, 17 contact-shake and 16 fall-shake render comparisons provide additional bounded evidence. |
 
 The counts have different denominators and must not be averaged. The original
@@ -38,15 +39,18 @@ follows from the present inventory.
 | --- | --- | --- |
 | Language/state runtime (M1/M2) | Typed expressions, shared executor, ordering/persistence, negative states, ownership, pause, coordinates and stock commands have extensive native controls. | Every remaining controller/trigger schema/binding/variant, version/default/error rules, complete command/gamepad timing and broad foreign/helper/pause combinations. |
 | Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers and single-contact projectiles. | Full recovery/input/mashing/liedown behavior; remaining GetHitVar fields; full projectile lifecycle/cancellation/queries, reversals, teams and multiple-contact/entity interactions. |
-| Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. | M4bu establishes bounded KO/time-over/pose clocks. M4bv establishes bounded draws/persistence/reset, and M4bw completes full-life stock matches/rematches. Broader assertion/pause/reset interactions, cumulative engine GameTime handoff and exact presentation timing remain. |
+| Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. M4by adds cumulative Engine GameTime and configured tick rate. | M4bu/bv establish bounded clocks/results/reset; M4bw completes full-life stock matches/rematches. Broader assertion/pause/reset interactions, exact presentation timing, extreme configuration and other mode clocks remain. |
 | Effects/rendering/audio (M6) | Sprite/background/HUD/effect drawing, hit palette/shake, sound output and owned numeric/pixel/PCM controls. | Standalone EnvShake, PalFX/AllPalFX/BGPalFX, afterimages/angles/zoom/transparency and other incomplete methods; broad camera/background behavior; BGM loading/looping/transitions. |
 | Assets/fonts (M3) | Stock SFF v1/v2/v2.01, AIR/SND, bitmap/outline fonts and relocatable resource loading work. | Full format/default/malformed-resource matrix, animation variants, resource lifecycle and platform conformance. Missing Arial/MS Gothic payloads use a visible Go Regular fallback, without native glyph/metric parity. |
 | Modes/UI/AI (M7) | Connected title → selection → versus → match → result → rematch/exit; basic opponent logic. | Arcade progression/endings, teams/simul/turns/co-op, survival/training/watch, native AI/difficulty, continue/game-over/win UI and configuration lifecycle. Several screen types retain black-screen stubs. |
 | Final conformance (M8) | Repeatable isolated native captures, scalar fixtures, production smoke/provenance, scoped races and reversal commits. | Exhaustive inventory closure, sustained reset/resource tests, malformed-input/fuzz coverage, full production scenarios and interactive review. |
 
-Engine-wide GameTime origin/handoff across menu and rematch boundaries remains
-open: native GameTime includes menus, while current Match timelines are local.
-The scalar trace alignment does not prove that engine integration.
+M4by closes production GameTime origin/handoff across menus and rematches.
+The Engine owns the process counter, while each new match retains fresh pause/
+effect ownership. Exact native-program replay advances real Engine menu updates
+instead of setting Match origins, and the full keyboard flow checks CNS reads.
+TicksPerSecond uses the measured Config.GameSpeed + 5*Options.GameSpeed formula;
+MatchNo is one for the current Versus lifecycle. Other modes remain open.
 
 M4bx closes the legacy HitVel X/Y binding: 15 new native controls pin 180
 observations across signs, facing, guard/air/down, profiles and foreign states.
@@ -66,17 +70,19 @@ not close native filtered/partial-alpha parity.
 HITDEF-REMAINING.md records the seven batches and their source/topic evidence.
 HIT-SHAKE.md and FALL-SHAKE.md describe the final families; HANDOFF.md records
 exact validation results and artifacts. CHECKPOINTS.md records local reversal
-history. The final full scoped race suite belongs to M4bw: 2,707 passing test/subtest
+history. The latest full scoped race suite belongs to M4by: 2,735 passing test/subtest
 results across 24 tested and 12 compiled application packages, no individual
-skips/failures. Match takes 968.597s and the complete command 1,037.599s. Source,
-root-module and application/PNG/private-PCM provenance checks pass. Earlier
-failed or superseded runs remain diagnostic.
+skips/failures. Match takes 956.321s and the complete command 1,028.682s. All 408
+frozen source/probe/fixture/module hashes pass. HANDOFF.md records final native,
+application/PNG/private-PCM and root-module provenance. Earlier failed or
+superseded runs remain diagnostic. Passing Go checks do not waive the explicit
+native renderer/font/platform discrepancies above.
 
 M4bu, M4bv and M4bw are complete within the approved round-lifecycle allocation.
 The user validated M4bw and authorized M4bx legacy HitVel, followed by M4by
-cumulative GameTime origin through production menus/rematches. HitVel is now
-implemented with native evidence; GameTime handoff is the next checkpoint.
-Remaining runtime bindings still need an explicit inventory and closure.
+cumulative GameTime. Both implementations now have native and production-flow
+evidence; final integration is recorded in HANDOFF.md. Remaining runtime
+bindings still need an explicit variant/consumer inventory and closure.
 Then prioritize remaining
 recovery/input behavior and projectile/reversal/team subsystems as separate deliveries.
 Modes and BGM can also be budgeted as visible end-to-end slices. Resolve strict

@@ -21,6 +21,7 @@ type pauseClock struct {
 // nested entity adapters share its frame instead of advancing GameTime again.
 type Timeline struct {
 	GameTime              int32
+	TicksPerSecond        int32 // Zero uses the standalone default of 60.
 	pause, super          pauseClock
 	pending, pendingSuper *pauseClock
 	depth                 int

@@ -26,11 +26,26 @@ type Engine struct {
 	logicalWidth  int // Game logic width (e.g. 320)
 	logicalHeight int // Game logic height (e.g. 240)
 	currentState  State
+	gameTime      int32 // Process ticks, including menus and finished-match waits.
 	sprites       map[string]*background.SpriteImages
 	sound         *engineSound
 }
 
+func (e *Engine) ticksPerSecond() int {
+	base, speed := 60, 0
+	if e.cfg != nil {
+		if e.cfg.Config.GameSpeed > 0 {
+			base = e.cfg.Config.GameSpeed
+		}
+		speed = e.cfg.Options.GameSpeed
+	}
+	return max(1, base+5*speed)
+}
+
 func (e *Engine) Update() error {
+	if fight, ok := e.currentState.(*FightState); ok && fight.match != nil {
+		fight.match.Timeline.GameTime = e.gameTime
+	}
 	if input.GlobalManager != nil {
 		input.GlobalManager.Update()
 	}
@@ -42,7 +57,16 @@ func (e *Engine) Update() error {
 		}
 		e.currentState = next
 	}
-	return e.flushSound()
+	if err := e.flushSound(); err != nil {
+		return err
+	}
+	e.gameTime++
+	// A transition may have constructed a fresh match during this update.
+	// Its first pass belongs to the next process tick, without reusing pauses.
+	if fight, ok := e.currentState.(*FightState); ok && fight.match != nil {
+		fight.match.Timeline.GameTime = e.gameTime
+	}
+	return nil
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
@@ -181,9 +205,7 @@ func main() {
 	ebiten.SetWindowTitle("MUGEN Engine")
 
 	// Set TPS based on GameSpeed config
-	if cfg.Config.GameSpeed > 0 {
-		ebiten.SetTPS(cfg.Config.GameSpeed)
-	}
+	ebiten.SetTPS(engine.ticksPerSecond())
 
 	err = ebiten.RunGame(engine)
 	if closeErr := engine.closeSound(); err == nil {

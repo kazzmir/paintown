@@ -30,7 +30,8 @@ HitDef keys, with bounded native consumers. The final full scoped race suite
 passes (Match 942.741s), including post-M4bp corrections. All final native/app/
 render/provenance checks pass. See FALL-SHAKE.md, HITDEF-KEYS.json and HANDOFF.md.
 Whole-engine parity and broad interaction coverage remain unfinished. The
-subsequent round-lifecycle allocation below is active. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
+subsequent round-lifecycle allocation below is also complete. The current
+trigger/clock allocation follows it. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
 DOWN-BOUNCE.md and COVERAGE.md, including the corrected idle-override case.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
@@ -72,13 +73,24 @@ checks, updated behavioral limits/evidence and a local source/text commit.
 Continue through these two bounded checkpoints unless user input is needed.
 Earlier completed allocations are historical. No pushes or new binaries.
 
-M4bx is verified: 15 controls / 180 values / 60 frozen inputs, plus three
+M4bx is committed as e1299891: 15 controls / 180 values / 60 frozen inputs, plus three
 unchanged projectile counterexamples / 180 integers. Focused Match races
 227.327s, Character/System/core races, two fresh native runs and a four-capture
 stock input/results/rematch replay pass. Source/PNG/private-PCM/module/native
-audits pass. Commit M4bx locally, then continue M4by. See LEGACY-HITVEL.md and
-HANDOFF.md. No full-suite repeat at this intermediate boundary; final scoped
-integration follows M4by. Preserve the prepared GameTime inputs separately.
+audits pass. See LEGACY-HITVEL.md and HANDOFF.md. M4by final integration below
+also covers this checkpoint. Preserve all native originals and diagnostics.
+
+M4by adds process-owned GameTime, native Config.GameSpeed + 5*Options.GameSpeed
+rate, typed TicksPerSecond and bounded Versus MatchNo. Six programs/84 native
+values/29 authored input hashes plus System/native-program/keyboard/wrap checks
+pass. Final scoped integration PASSED against 408 frozen hashes: 2,735 test/
+subtest results, 24 tested and 12 compiled-only packages; Match 956.321s, total
+1,028.682s. Fresh native clock and four-PNG stock win/rematch/win with private
+PCM pass source/input/config/PNG/executable/audio/root-module audits. All
+sessions were awaited; no clients remain. Finalize the local M4by commit and
+report this completed allocation for user testing; no further feature batch
+is included. Keep renderer/mode/asset/remaining binding gates explicit; no
+overall engine completion percentage is justified. No push or binaries.
 
 ## Scope
 

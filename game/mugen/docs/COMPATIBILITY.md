@@ -1,5 +1,14 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4by makes GameTime process-owned across production menus/matches/rematches,
+binds integer TicksPerSecond and one-on-one MatchNo, and applies the measured
+Config.GameSpeed + 5*Options.GameSpeed rate to the actual loop. Six frozen
+programs pin 84 native observations; exact CNS/keyboard flow and wrapping
+checks cover production handoff. See [ENGINE-CLOCK.md](ENGINE-CLOCK.md).
+Final scoped races pass 2,735 test/subtest results across 36 package identities;
+fresh native and stock input/results/rematch/PNG/private-PCM audits pass.
+Other modes/configuration/presentation gates remain open.
+
 M4bx binds legacy HitVel X/Y with native game-space units, current facing,
 stored-data lifetime, guard/air/down, redirect and foreign-state behavior.
 Fifteen controls pin 180 values; all three unchanged historical projectile

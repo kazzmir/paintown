@@ -828,3 +828,15 @@ frozen native controls and the three unchanged historical projectile
 counterexamples. Use the module/display setup above. Values compare exactly
 at float32 precision; the new controls include fractional 400/700 profiles.
 See [LEGACY-HITVEL.md](../docs/LEGACY-HITVEL.md) for provenance and limits.
+
+## Process clock controls (M4by)
+
+`system/gametime_test.go` checks native CNS observations against actual Engine
+updates, the complete keyboard match/rematch flow and 32-bit clock wrapping.
+Five rate controls cover both GameSpeed settings and integer query arithmetic.
+`python3 game/mugen/tests/gametime_probe.py --name my-fresh-clock` repeats the native same-process
+menu/match reentry control on the private display; original recording uses
+`--record` only once and refuses to overwrite an observation. Native absolute
+menu timestamps are evidence, while reproduction requires exact input hashes
+and the documented same-process relationships. See
+[ENGINE-CLOCK.md](../docs/ENGINE-CLOCK.md). Keep native/app/test clients serial.

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
@@ -44,20 +45,51 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	})
 	e.currentState = NewTitleState(e)
 	audible := false
+	var ticks int32
 	step := func(keys ...ebiten.Key) {
 		t.Helper()
 		keyboard.keys = map[ebiten.Key]bool{}
 		for _, key := range keys {
 			keyboard.keys[key] = true
 		}
+		previousFight, inFight := e.currentState.(*FightState)
+		var roots [2]*character.Character
+		var previousStates [2]int
+		if inFight {
+			for slot, player := range previousFight.match.Players {
+				roots[slot] = player.Character
+				previousStates[slot] = player.Character.StateNo
+			}
+		}
 		if err := e.Update(); err != nil {
 			t.Fatal(err)
+		}
+		if inFight && e.currentState == previousFight && !previousFight.match.SimulationSkipped {
+			for slot, root := range roots {
+				// Stock 5900 clears user variables after the negative pass.
+				if previousStates[slot] == 5900 {
+					continue
+				}
+				if root.IntVars[59] != int(ticks) {
+					t.Fatal("CNS GameTime lost the process tick", root.IntVars[59], ticks)
+				}
+			}
+		}
+		ticks++
+		if e.gameTime != ticks {
+			t.Fatal("process clock skipped or double-counted an update", e.gameTime, ticks)
+		}
+		if fight, ok := e.currentState.(*FightState); ok && fight.match.Timeline.GameTime != ticks {
+			t.Fatal("match handoff lost the next process tick", fight.match.Timeline.GameTime, ticks)
 		}
 		pcm := make([]byte, 735*4)
 		if _, err := e.sound.mixer.Read(pcm); err != nil {
 			t.Fatal(err)
 		}
 		audible = audible || !bytes.Equal(pcm, make([]byte, len(pcm)))
+	}
+	for i := 0; i < 37; i++ {
+		step()
 	}
 	step(ebiten.KeyArrowDown)
 	step(ebiten.KeyEnter)
@@ -90,6 +122,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !ok {
 		t.Fatalf("versus did not enter fight: %T", e.currentState)
 	}
+	watchGameTime(t, f)
 	for i := 0; i < 600 && f.match.Phase != match.Active; i++ {
 		step()
 	}
@@ -139,14 +172,27 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !f.hud.played["round2"] || !f.hud.played["KO"] {
 		t.Fatal("round reset lost announcement lifecycle", f.hud.played)
 	}
+	for i := 0; i < 23; i++ {
+		step() // Finished matches keep the process clock running.
+	}
 	step(ebiten.KeyEnter)
 	rematch, ok := e.currentState.(*FightState)
 	if !ok || rematch == f || rematch.match.Round != 1 || rematch.match.Wins != [2]int{} {
 		t.Fatal("rematch did not create fresh match")
 	}
+	if rematch.match.Timeline == f.match.Timeline || rematch.match.Timeline.GameTime == 0 {
+		t.Fatal("rematch must retain process time with a fresh simulation timeline")
+	}
+	watchGameTime(t, rematch)
+	for i := 0; i < 150; i++ {
+		step()
+	}
 	step(ebiten.KeyEscape)
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatalf("escape did not return to title: %T", e.currentState)
+	}
+	for i := 0; i < 41; i++ {
+		step()
 	}
 }
 

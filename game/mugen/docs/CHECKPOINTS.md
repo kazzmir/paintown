@@ -4,6 +4,24 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4by: cumulative process GameTime and configured tick rate
+
+Predecessor/reversal e1299891. Engine owns GameTime through menus, matches,
+finished waits and fresh rematches; standalone Match clocks remain local.
+Adds typed TicksPerSecond, measured Config.GameSpeed + 5*Options.GameSpeed
+loop rate and bounded Versus MatchNo=1. Six native programs pin 84 values and
+29 frozen inputs. Exact native CNS replay advances actual Engine menu updates;
+full keyboard combat/round/rematch flow checks CNS clocks, handoff and wrap.
+ENGINE-CLOCK.md records native menu evidence and remaining mode/config gates.
+
+Final scoped races pass: 2,735 test/subtest results, 24 tested and 12 compiled
+application packages, no individual skips/failures. Match 956.321s; complete
+command 1,028.682s. All 408 frozen source/probe/fixture/module hashes pass.
+Final native/application/evidence details are in HANDOFF.md. M4bx is e1299891;
+this is the second checkpoint in the bounded trigger/clock allocation.
+Only local source/text commits; no pushes or binaries. Whole-engine parity
+and the existing renderer/mode/asset/runtime-binding gates remain unfinished.
+
 ## M4bx: legacy HitVel units, facing and fractional coordinates
 
 Predecessor/reversal 218e3106. Fifteen frozen native controls pin 180 values

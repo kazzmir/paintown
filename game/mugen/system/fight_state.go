@@ -35,6 +35,8 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	if err != nil {
 		return nil, err
 	}
+	game.Timeline.GameTime = engine.gameTime
+	game.Timeline.TicksPerSecond = int32(engine.ticksPerSecond())
 	s := &FightState{engine: engine, match: game}
 	for slot, p := range game.Players {
 		p.Character.InputSource = func(playerID, facing int) []string {

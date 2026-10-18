@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bx**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4by**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -140,8 +140,11 @@ win-pose holds, late damage/double KO and persistent reset, with 26 controls /
 Legacy HitVel X/Y now returns native game-space floats, including heading,
 guard/air/down, redirects and fractional profiles. The three preserved projectile
 counterexamples pass unchanged; see [legacy velocity](docs/LEGACY-HITVEL.md).
+Production GameTime now continues through menus, results and rematches.
+TicksPerSecond and one-on-one MatchNo are bound, and configured game speed
+uses the native rate formula. See [engine clock evidence](docs/ENGINE-CLOCK.md).
 Complete input-driven
-matches/rematches and final full scoped races now pass (2,707 test/subtest
+matches/rematches and final full scoped races now pass (2,735 test/subtest
 results). See [complete match validation](docs/COMPLETE-MATCHES.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
