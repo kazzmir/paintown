@@ -24,10 +24,12 @@ now cover the measured root/own-state movement, proximity, decay, units and
 lifetime; projectile-owner and wider world combinations remain open. These controls do not establish arbitrary
 blank/malformed tuple grammar or all paused/foreign/helper/contact combinations.
 
-At M4bs, the four stored-fall shake fields remain without typed routing:
-fall.envshake.time/freq/ampl/phase. Contact shake now has schemas and a shared
-clock/render consumer; see [HIT-SHAKE.md](HIT-SHAKE.md).
-This key count does not establish all interaction combinations.
+The final M4bt source audit accounts for all 81 keys: 72 numeric schemas and
+nine literal schemas. [HITDEF-KEYS.json](HITDEF-KEYS.json) records the complete
+inventory and pinned manual hash. Contact and stored-fall shake now have shared
+clock/render consumers; see [HIT-SHAKE.md](HIT-SHAKE.md) and
+[FALL-SHAKE.md](FALL-SHAKE.md). Final scoped races and native/application checks pass. Typed routing
+and bounded native controls do not establish every interaction combination.
 
 The M4ba [power controls](HIT-POWER.md) add typed damage/power, expression
 defaults, all current typed-field order, root/helper pools, configured factors
@@ -102,3 +104,8 @@ remain. See [hit palette evidence and limits](HIT-PALETTE.md).
 M4br adds three palette keys; M4bs adds four contact-shake keys. Numeric routing
 is68/81 plus nine literal schemas =77/81 typed keys (95.1%). Four stored-fall
 keys remain. Palette evidence: [HIT-PALETTE.md](HIT-PALETTE.md).
+
+M4bt adds the final four stored-fall fields, bringing typed key coverage to
+81/81 (72 numeric plus nine literal schemas). The authorized 27-key allocation
+is complete, including final scoped races and native/application gates. Earlier counts above are dated
+checkpoint history, not the present remaining-key count.

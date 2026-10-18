@@ -164,6 +164,10 @@ func TestNativeHitShakePrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitshake-*.json", 26)
 }
 
+func TestNativeFallShakePrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "fallshake-*.json", 22)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

@@ -4,6 +4,36 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bt: stored fall shake and final 27-key integration
+
+Predecessor/reversal ead79c52. Adds the four stored-fall schemas, measured family
+order, receiver-local float payload, typed getters and positive-duration
+FallEnvShake consumption, including fall=0 and guard zeroing. 22 programs pin 336
+observations, three rejections and 88 source hashes. All 48 focused contact/fall
+Match controls pass in 32.032s; core/controller/query checks pass. Final full scoped
+races pass: Match 942.741s, Character 11.918s, System 4.808s and stock/resources
+6.936s. The full run includes post-M4bp corrections and has no skipped tests.
+Two fresh native reproductions and 17 apps/18 captures pass provenance; all 16
+rigid comparisons match 7,935 garment pixels each. Stock/fall captures were
+visually inspected. See FALL-SHAKE.md and HANDOFF.md for exact artifacts/hashes.
+
+All 27 allocated keys are complete: 72 numeric plus nine literal schemas =81/81
+typed keys. The seven batches provide 248 native programs/3,144 observations,
+36 load rejections and 992 frozen hashes. No broader engine/controller/mode/
+asset/renderer gate is waived. The updated assessment describes remaining
+original-target work. No next code batch is active; no push or binary added.
+
+## M4bs: native contact shake, global frame clock and rendering
+
+Commit ead79c52; predecessor/reversal e1833f2a. Four typed schemas retain runtime
+fractional amplitude and measured defaults/order. Shared requests reproduce
+issuing-frame duration, asymmetric base320 rounding, profiles, ScreenPosY and
+world-only rendering with fixed HUD. 26 programs pin 348 observations, three
+load rejections and 104 input hashes. Match 17.581s, Character 11.362s, core and
+related regressions pass. Two fresh native reproductions and 18 apps/19 captures
+pass provenance; all 17 rigid comparisons match 7,935 garment pixels each.
+Numeric 68/81 plus nine literals =77/81 typed keys. See HIT-SHAKE.md and HANDOFF.md.
+
 ## M4br: hit palette arithmetic, lifetime and portrait isolation
 
 Predecessor/reversal572f2eb6. Adds three strict integer schemas, native signed

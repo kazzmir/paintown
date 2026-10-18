@@ -5,7 +5,9 @@ remaining after24b3ebd0, with local checkpoint commits and continuous iteration
 until complete or blocked. No two-checkpoint pause remains. All authored work
 stays under game/mugen/. Never push or add binaries. Current completed batches:
 M4bn guard.dist, M4bo nine literal schemas, M4bp chains/juggle, M4bq
-constraints, M4br palette and M4bs contact shake. Continue M4bt fall shake automatically.
+constraints, M4br palette, M4bs contact shake and M4bt stored fall shake.
+The 27-key allocation and final integration are complete. See the current
+assessment for remaining original-target work; no next code batch is active.
 Read HITDEF-REMAINING.md, COVERAGE.md and the relevant topic documents.
 
 ## M4bq verified checkpoint
@@ -101,33 +103,54 @@ Go files plus the effect probe) are frozen in m4bs-production-inputs.json.
 Final audit: m4bs-evidence-audit.json. Application SHA256:
 c9f19f9cb7ac6a41a2656f864dd94be7b08b9f1934f3e51203916b80bd93aad8.
 run-m4bs-validation-remaining.py exited0; prior successful test/native stages
-are in m4bs-validation.log. Root module checksums pass. Commit contact family
-only; continue M4bt automatically. No push or new binary.
+are in m4bs-validation.log. Root module checksums pass. The contact family was committed as ead79c52;
+M4bt final integration is recorded below. No push or new binary.
 
-## Next M4bt
+## M4bt verified final checkpoint
 
-22 fallshake-* programs are already captured and frozen in
-m4bt-prepared-inputs.json, m4bt-prepared-lifetime.json and
-m4bt-prepared-joint.json. Both native sessions25580 and41430 completed and
-were awaited; no GUI client remains. Do not rerun source authors.
+Predecessor/reversal ead79c52. All 27 allocated keys are complete. Numeric
+routing 72/81 plus nine literals gives 81/81 typed keys (100%). The source audit
+against the immutable local manual is docs/HITDEF-KEYS.json. FALL-SHAKE.md
+records the four schemas, contact-before-fall tagged order, receiver-local
+payload, integer time/amplitude and floating frequency/phase getters, guard
+zeroing, positive-duration consumption, metadata retention and fall=0 consumer.
+Standalone EnvShake remains unfinished. Native inputs/goldens are unchanged.
 
-Implement the four stored-fall schemas with compileHitShake(prefix), after the
-contact family in time/ampl/phase/freq order. Native joint tags are contact
-11,12,13,14 then fall15,16,17,18. Store receiver-local float amplitude and
-freq/phase; GetHitVar time/ampl return integers, freq/phase floats. Defaults
-post-contact:0 time,60 freq,-4 ampl,0 phase (raw source amplitude, profile-scaled
-at contact). Guard zeroes all four fields. Frequency clamps to.001; default
-phase uses evaluated frequency once. Runtime getter amplitude truncates4.75 to4
-while physical shake still uses4.75. FallEnvShake consumes only positive stored
-time to0, retains the other metadata, and works even with fall0. Negative time
-stays negative and does not request shake, despite the manual's nonzero wording.
+22 programs pin 336 observations, three load rejections and 88 pre-native hashes.
+Manifests: m4bt-prepared-inputs.json, m4bt-prepared-lifetime.json and
+m4bt-prepared-joint.json. All 48 contact/fall Match races pass in 32.032s. Core
+engine/evaluator/CNS/combat races pass in 1.477/1.020/1.013/1.011s. A receiver-local
+fractional-amplitude controller regression and typed getter tests pass.
 
-Reuse the shared request/clock/renderer. Add meaningful schema/query/controller
-regressions plus22 native Match replays, native rigid render comparisons and
-fresh reproductions, rebuilt apps/stock. Freeze production hashes before all
-runs. Full final scoped race suite uses -p1 -count1 -timeout20m and covers the
-post-M4bp lifetime/query corrections. Finish documentation/assessment/ledger,
-commit locally and report scoped27-key completion with broader gates unwaived.
+The FINAL full scoped race suite PASSED with -p 1 -count=1 -timeout=20m:
+Match 942.741s, Character 11.918s, engine 1.466s, evaluator 1.022s, CNS 1.013s,
+combat 1.012s, palette 8.341s, System 4.808s, storyboard 1.792s, stock/resources
+6.936s. No test was skipped. This covers post-M4bp lifetime/query corrections
+and all later batches, including real stock mixed sweeps, KO/reset and
+pause/reset scenarios. Log: temp/m4bt-full-race.log. Prior full runs remain
+historically distinguished. Existing external alpha/spark failures are unwaived.
+
+All 269 source/test/probe hashes are frozen in m4bt-production-inputs.json and
+remain unchanged. Native runtime and fall=0 fresh reproductions pass. All 16
+native-only rigid render comparisons match the exact displacement/shape of
+7,935 garment pixels each. Including stock, 17 apps/18 captures pass prepared
+input/config/binary/PNG/runtime provenance. Representative fall and stock
+captures were visually inspected. The stock preview was losslessly reencoded
+with identical RGB pixels to avoid the image-viewer repeated-PNG problem.
+Original captures and goldens remain unchanged and ignored.
+
+Runner run-m4bt-validation.py exited0; all stages are in m4bt-validation.log.
+Final audit: temp/m4bt-evidence-audit.json. Application SHA256:
+1503cd01ddaefef8881484f34b5058880c7d3d3419168f28ff80b2c37a6fd43f.
+Root module and immutable native executable hashes pass. No GUI client remains.
+
+The full seven-batch allocation has 248 native programs, 3,144 numeric
+observations, 36 expected load rejections and 992 pre-native source hashes.
+It includes 19 palette color/portrait, 17 contact-shake and 16 fall-shake render
+comparisons. This completes the scoped 27-key allocation, not whole-engine
+compatibility. PROGRESS-ASSESSMENT.md and COVERAGE.md preserve remaining
+recovery/round/entity/controller/mode/audio/asset/renderer gates. No next code
+batch is active. All checkpoint commits are local; no push or new binary.
 
 ## M4bp verified checkpoint
 
@@ -193,8 +216,8 @@ Do not relabel the earlier full run as a final-tree run.
 ## Frozen inputs
 
 All palette/contact/fall source families have independent native captures.
-Never regenerate them or derive expectations from Go. M4br and M4bs are
-checkpointed; M4bt remains to implement. Only scalar source/text fixtures are
+Never regenerate them or derive expectations from Go. All seven batches through M4bt are
+checkpointed; all source families are immutable. Only scalar source/text fixtures are
 committed. The effect probe can record from native only and pins source,
 prepared character/opponent/stage/HUD resources, binaries, profile and PNGs.
 

@@ -1,136 +1,70 @@
-# Progress assessment at the M4bd pause
+# Current progress assessment
 
-Historical review snapshot, accepted by the user. After the README push, M4be
-resumed bounded work on HitDef pause expressions; see the updated
-[coverage ledger](COVERAGE.md), [README](../README.md) and
-[pause findings](HIT-PAUSE.md). The remaining milestones below stay open.
+Updated 2026-10-18 through the verified M4bt final checkpoint.
+The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The user
+subsequently authorized all 27 HitDef keys remaining after 24b3ebd0; that allocation
+is the current scope. All authored changes stay under game/mugen/, with local
+checkpoint commits, no push and no new binaries/assets committed.
 
-Assessment date: 2026-10-17. The user requested a checkpoint, an assessment and a
-pause before further token spending. Implementation is paused after M4bd until
-the user resumes it. The approved target remains full M.U.G.E.N 1.1 beta 1
-compatibility, with all changes confined to `game/mugen/`.
+The connected stock one-on-one game is playable. Stock sweeps now complete
+trip, lying down, get-up and return to control. The 27-key allocation adds literal
+mask/enum validation, guard distance, chain/juggle selection, constraints/snap,
+hit palette effects and contact/fall shake, with actual runtime consumers.
+All 81 documented HitDef keys have typed schemas: 72 numeric expressions plus
+nine literal fields. This is 100% of that key inventory, not 100% behavioral
+compatibility or a whole-engine percentage. Broad interactions remain open.
 
-The port now runs a connected stock one-on-one game and has substantial native
-evidence for language, state scheduling, combat, ownership, drawing and sound.
-It is still a partial compatibility engine. Full state-machine coverage, all
-asset behavior, all modes and final reference conformance remain unfinished.
-The recent work has concentrated on deep combat/rendering details; the long
-M4 checkpoint sequence does not imply that M5 through M8 are nearly finished.
+## Measured progress
 
-## What is working and what the evidence establishes
+| Scope | Current count | What it establishes |
+| --- | ---: | --- |
+| HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
+| Controller registration | 87/89 (97.8%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod and ExplodBindTime are unregistered. |
+| Trigger recognition | 127/127 (100%) | Vocabulary only; bindings/variants are not all complete. |
+| Loaded stock state programs | 216/216 (100%) | Both KFM variants and loaded common states compile; not all execution paths/interactions. |
+| Current 27-key native corpus | 248 programs/3,144 numeric observations | Includes 36 target load rejections and 992 frozen CNS/AIR/CMD/stage input hashes across seven batches. 19 palette color/portrait, 17 contact-shake and 16 fall-shake render comparisons provide additional bounded evidence. |
 
-| Area | Current demonstrated progress | Completion limit |
+The counts have different denominators and must not be averaged. The original
+ASSESSMENT.md and inventory status columns in COMPATIBILITY.md are dated
+baseline evidence. COVERAGE.md and topic documents describe current behavior.
+No defensible overall engine completion percentage or remaining token estimate
+follows from the present inventory.
+
+## What remains for the original target
+
+| Workstream | Current foundation | Remaining acceptance |
 | --- | --- | --- |
-| Build/reference foundation | Scoped dependency overlay, repeatable launcher/checks, isolated native Wine probes, pinned sources and capture provenance; root module unchanged. | Character/font/Match dependencies still initialize Ebitengine and require a display for many CPU-oriented tests. |
-| Language/state runtime | Typed int32/float32/bottom evaluator and native-backed expression/ordering, transitions, negative states, pause, ownership and coordinate controls. | No current all-parameter/all-trigger completion ledger proves that every documented variant is covered. |
-| Production stock flow | Title → character/stage selection → versus → real match → result → rematch/exit. Shared Match tests cover stock movement, attacks, hit/recovery, KO and time-over lifecycle. | Lifecycle tests sometimes set life at phase boundaries; they do not prove all combat or native round timing. Basic single-player opponent logic is not native-equivalent AI. |
-| Combat/entities | Native controls cover target IDs, custom states/throws, helpers, binding/retirement, contact selection/priority, guard/hit contexts, facing, velocity, corner push, damage/power, lethality and fall damage. | Full HitDef schemas, juggle/recovery, projectiles/reversals, teams and interaction combinations remain open. |
-| Assets/presentation | Stock v1/v2/v2.01 sprite loading, bitmap/outline font support, stage/HUD/effect drawing and actual sound output; many owned crops and PCM measurements match native. | Broad camera/effect/palette/background/format behavior is still incomplete. BGM is unimplemented. Font fallback is not stock Windows glyph/metric parity. Strict raster failures remain. |
-| Verification | Reusable native numeric/pixel/audio fixtures, deterministic replays, scoped/full race checks, production capture provenance and local reversal commits. | Reference coverage is focused, not exhaustive. Full modes, long-running multi-entity/multi-round behavior and platform conformance still need gates. |
+| Language/state runtime (M1/M2) | Typed expressions, shared executor, ordering/persistence, negative states, ownership, pause, coordinates and stock commands have extensive native controls. | Every remaining controller/trigger schema/binding/variant, version/default/error rules, complete command/gamepad timing and broad foreign/helper/pause combinations. |
+| Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers and single-contact projectiles. | Full recovery/input/mashing/liedown behavior; remaining GetHitVar fields; full projectile lifecycle/cancellation/queries, reversals, teams and multiple-contact/entity interactions. |
+| Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. | Native KO slowdown and absolute over/win/round timing, draw/persistence/reset combinations and sustained multi-round production scenarios. |
+| Effects/rendering/audio (M6) | Sprite/background/HUD/effect drawing, hit palette/shake, sound output and owned numeric/pixel/PCM controls. | Standalone EnvShake, PalFX/AllPalFX/BGPalFX, afterimages/angles/zoom/transparency and other incomplete methods; broad camera/background behavior; BGM loading/looping/transitions. |
+| Assets/fonts (M3) | Stock SFF v1/v2/v2.01, AIR/SND, bitmap/outline fonts and relocatable resource loading work. | Full format/default/malformed-resource matrix, animation variants, resource lifecycle and platform conformance. Missing Arial/MS Gothic payloads use a visible Go Regular fallback, without native glyph/metric parity. |
+| Modes/UI/AI (M7) | Connected title → selection → versus → match → result → rematch/exit; basic opponent logic. | Arcade progression/endings, teams/simul/turns/co-op, survival/training/watch, native AI/difficulty, continue/game-over/win UI and configuration lifecycle. Several screen types retain black-screen stubs. |
+| Final conformance (M8) | Repeatable isolated native captures, scalar fixtures, production smoke/provenance, scoped races and reversal commits. | Exhaustive inventory closure, sustained reset/resource tests, malformed-input/fuzz coverage, full production scenarios and interactive review. |
 
-The original [ASSESSMENT.md](ASSESSMENT.md) and the controller/trigger tables in
-[COMPATIBILITY.md](COMPATIBILITY.md) are the **2026-10-16 baseline**, not current
-counts of unfinished features. Progress is recorded in the checkpoint history
-and topic documents. Counting registered names, fixtures or commits would give
-a misleading whole-engine percentage. There is no defensible completion
-percentage or total remaining token estimate from the present evidence.
+Six M4az RGB alpha comparisons still fail by at most one channel value. Two
+M4bd spark raster comparisons remain open (276 native core pixels versus 288 Go,
+maximum channel difference 8). Neither is waived. Hit palette rendering evidence
+is bounded to opaque indexed KFM sprites; successful CPU alpha handling does
+not close native filtered/partial-alpha parity.
 
-## Latest revisions and checkpoint result
+## Checkpoints and next allocation
 
-- M4bb (`9ef4c313`) corrected lethal damage caps, fatal guard normalization,
-  one-shot raw fall damage, KO velocity adjustments and ordinary CNS duplicate
-  parameter precedence. Ninety native programs compare 1,080 observations and
-  four expected type rejections. The full scoped race suite passes, including
-  Match in 618.564s. See [HIT-LETHALITY.md](HIT-LETHALITY.md).
-- M4bc (`54d8c86e`) corrected stage diagnostic background fill and its integer
-  conversion rule. Eleven native programs, 88,000 exact color-region pixels
-  and 33 viewport samples pass. See [STAGE-CLEAR.md](STAGE-CLEAR.md).
-- M4bd adds 12 native cue/pause programs, 144 observations and 40 source hashes.
-  Sound, spark selection and pause semantics pass; full Character race checks
-  pass in 11.149s. Production PCM matches the selected native amplitudes.
-  Two new strict spark raster checks fail despite correct action/anchor
-  selection. This checkpoint records the failures and makes no production code
-  change. See [FATAL-GUARD-CUES.md](FATAL-GUARD-CUES.md).
+HITDEF-REMAINING.md records the seven batches and their source/topic evidence.
+HIT-SHAKE.md and FALL-SHAKE.md describe the final families; HANDOFF.md records
+exact validation results and artifacts. CHECKPOINTS.md records local reversal
+history. The final full scoped race suite passes, including Match in 942.741s and
+Character in 11.918s. It includes corrections made after the
+earlier M4bp integration run; earlier failed or superseded runs remain diagnostic.
 
-All changes and local commits stay under MUGEN. No remote push was made.
-Reference art/binaries and temporary captures remain uncommitted.
+The requested 27-key allocation is complete, with final native/application
+checks and local checkpoint commits. A useful next functional allocation is native KO/round lifecycle,
+followed by complete projectile/reversal/team subsystems as separate deliveries.
+Modes and BGM can also be budgeted as visible end-to-end slices. Resolve strict
+renderer/platform failures before claiming final conformance. This assessment
+does not silently expand the current allocation into all remaining M0–M8 work.
 
-## Work required for the original completion target
-
-| Approved milestone | Assessment now | Remaining acceptance work |
-| --- | --- | --- |
-| M0: reproducible foundation | Established for this environment. | Continue preserving provenance; finish separation from display dependencies where it materially reduces verification cost. |
-| M1: language/front end | Substantial implementation and focused native coverage. | Reconcile every controller/trigger variant, parameter type/default, error and version rule to tests; close gaps rather than promoting whole names from a single successful case. |
-| M2: scheduling/input/identity | Substantial state, world, pause, helper and ownership evidence. | Complete input/gamepad and command boundary coverage, remaining state/default rules and broad foreign/helper/pause interactions. |
-| M3: complete assets | Stock decoding/loading foundation works. | Close the format/resource/default/malformed-data matrix, animation variants and font/platform policy; CPU/GPU separation is incomplete. |
-| M4: playable stock match | Connected one-on-one path works. | Native KO slowdown and absolute round/end timing, round persistence/reset/draw rules and wider stock integration still need closure. |
-| M5: full combat/entities | Heavily developed, incomplete. | Finish HitDef schema/runtime consumers, all GetHitVar fields, recovery/juggle/chain rules, projectiles, reversals, teams and multi-contact combinations. |
-| M6: effects/audio/rendering/all language entries | Partial, with extensive narrow evidence. | Remaining controller/trigger variants, palette/afterimage/angle/zoom/camera/background/effect behavior, BGM and other audio/configuration details; resolve strict render failures. |
-| M7: complete game modes/UI | Largely open beyond one-on-one flow and some storyboard wiring. | Arcade progression/endings, team/simul/turns/co-op, survival/training/watch, AI/difficulty, win/continue/game-over UI and configuration lifecycle. Existing win/continue/game-over screen types still contain black-screen stubs. |
-| M8: final conformance | Harness active; final gate not reached. | Exhaustive inventory closure, native comparison sweep, malformed-input/fuzz work, sustained reset/resource checks, full production scenarios and final interactive review. |
-
-Specific known gaps that affect the next allocations:
-
-1. **HitDef breadth:** the current documented audit has 81 keys, of which 36
-   have expression compiler routing; 45 remain literal or absent. Those 45
-   include enums/attributes as well as numeric fields. This is a schema count,
-   not 36 fully finished features or 44% engine completion. Missing groups
-   include fall/recovery/down-bounce, air juggle/chains, distance/snap
-   constraints and palette/shake fields. Existing literal timing/fall fields
-   also need coercion/default/order tests and runtime consumers. HitFallSet's
-   optional velocity/value behavior and remaining GetHitVar selectors need
-   review. See [HITDEF-SCHEMA.md](HITDEF-SCHEMA.md).
-2. **Match clocks:** current Match phases provide lifecycle behavior, but native
-   KO slowdown and precise over/win timing remain open. Per-contact hitpause
-   passing at M4bd does not close them.
-3. **Entity/combat combinations:** complete projectile lifecycle/cancellation,
-   reversals, juggle/recovery, friendly/team targeting and multi-entity,
-   foreign-state, helper and pause combinations still need implementation or
-   native confirmation. Existing bounded controls do not cover their cross
-   product.
-4. **Rendering:** six M4az RGB alpha cases still fail by up to one channel
-   value; M4bd additionally exposes two spark raster failures (all 276 native
-   core pixels differ, maximum channel delta 8, plus a one-column core-width
-   difference). None is waived. Broader vertical camera/zoom/rotation,
-   background, effect and complete-frame behavior remains open.
-5. **Sound/fonts/assets:** BGM playback is absent. The stock Arial/MS Gothic
-   payloads are absent, so the portable outline-font fallback cannot promise
-   their metrics, glyphs, CJK coverage or Windows rasterization. Providing the
-   requested fonts or explicitly accepting a platform limitation will be a
-   later review decision. Full asset support cannot be claimed from stock
-   loading alone. See [BUILD.md](BUILD.md) and [AUDIO.md](AUDIO.md).
-6. **Modes:** the current menu exposes mode names whose full rules/progression
-   are not implemented. This is a substantial remaining workstream, not polish
-   after combat.
-
-## Suggested allocations after review
-
-For token control, replace open-ended iteration with an explicitly bounded
-feature batch and stop after its checkpoint. Before estimating a large batch,
-refresh a concise current controller/trigger/parameter ledger from existing
-implementation, tests and topic documents. The baseline inventory is too old
-to support an honest numerical burn-down. That refresh should produce statuses
-and evidence links, not a new exhaustive native probing campaign.
-
-| Suggested order | Bounded workstream | Useful stopping point | Relative uncertainty |
-| --- | --- | --- | --- |
-| 1 | Current inventory refresh, then one selected HitDef field family | Updated ledger plus implemented schema/default/runtime behavior and native controls for that family; list the next family without starting it. | Moderate; coercion and evaluation order can expose shared defects. |
-| 2 | KO/round lifecycle | Native clock traces and production stock KO/time-over/reset scenarios agree for a defined set of round settings. | High; pause, slowdown and CNS clocks interact. |
-| 3 | Projectile/reversal/juggle/team combat, split into separate batches | One subsystem's lifecycle and trigger/ownership behavior is complete with multi-entity fixtures. | High; broad new runtime behavior remains. |
-| 4 | Modes and BGM, each as separate deliveries | One named mode's start-to-finish scenario, or verified music loading/looping/transitions, works through production. | High in aggregate; these can be budgeted as visible user-facing slices. |
-| 5 | Renderer/asset conformance and final M8 sweep | Existing strict failures close without changed goldens; remaining advertised inventory rows and production scenarios have evidence. | High; exact raster/platform behavior can be costly. |
-
-I recommend prioritizing functional breadth and lifecycle before spending a
-large allocation on one-value alpha precision. The newly exposed spark raster
-failure is larger and should remain visible in the renderer ledger; its cause
-is not established. The original full-parity target still requires all of
-these gates unless the user explicitly changes scope.
-
-Use focused regression checks while developing a family, fresh native replays
-for its accepted controls, and the full scoped race suite at meaningful
-integration boundaries. A full Match race run already takes about ten minutes;
-repeating broad suites and many equivalent captures for every small change
-adds cost without closing the large outstanding areas. Keep finite original
-fixtures, source hashes and failed comparisons, while avoiding redundant prose
-and repeated investigation of settled rules. No next implementation batch has
-been started after M4bd.
+Keep feature batches bounded. Freeze original native controls before comparing
+Go, use focused checks while developing, and run full scoped races at meaningful
+integration boundaries. Preserve findings and exact limitations at each local
+checkpoint; do not push or commit generated binaries/reference art.

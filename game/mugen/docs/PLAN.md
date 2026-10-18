@@ -3,9 +3,9 @@
 Status: approved, 2026-10-16. Implementation and local checkpoint commits are
 authorized. Current progress and validation are recorded in HANDOFF.md and
 CHECKPOINTS.md; the assessment and initial inventory are dated baseline evidence.
-After M4bd, implementation is paused at the user's request for progress and
-token-budget review. See [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md) before
-resuming another bounded batch.
+The user subsequently authorized the27-key HitDef allocation through M4bt,
+with local commits at each checkpoint. The allocation and final integration are complete.
+See [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md) for the current assessment.
 
 The goal is a working Go game with full coverage of the M.U.G.E.N 1.1 beta 1
 state language and runtime assets. The stock KFM demo is an early delivery

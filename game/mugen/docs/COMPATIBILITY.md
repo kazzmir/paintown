@@ -1,5 +1,12 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bt implements the four stored fall-shake schemas, typed getters, receiver
+profile conversion and positive-duration FallEnvShake consumption, including
+fall=0 and guard exclusion. All 81 documented HitDef keys now have typed routing:
+72 numeric plus nine literal schemas. Final scoped races, native replays and production render checks pass. See
+[FALL-SHAKE.md](FALL-SHAKE.md) and [HITDEF-KEYS.json](HITDEF-KEYS.json).
+This key inventory does not close full interactions or whole-engine parity.
+
 M4bs implements four contact-shake schemas, a shared frame clock, receiver-local
 ScreenPosY and world-only rendering. Numeric routing68/81 plus nine literals
 gives77/81 typed keys (95.1%); four stored-fall keys remain. Native traces and

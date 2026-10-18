@@ -83,10 +83,10 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 
 ```bash
 # Build/test every MUGEN package against the stock reference corpus.
-game/mugen/mugen.sh --check -timeout=20m
+game/mugen/mugen.sh --check -p 1 -timeout=20m
 
-# Full race checks; the Match package alone currently takes about twelve minutes.
-game/mugen/mugen.sh --check -race -timeout=20m
+# Full race checks; the growing Match corpus takes about sixteen minutes.
+game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=20m
 
 # Focused stock character loading and state compilation.
 game/mugen/mugen.sh --check -run '^TestStockPlayerLoadAndCompilationInventory$' -v
@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bs**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bt**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -128,13 +128,19 @@ Distance limits and snap now have native timing, offset and duration consumers;
 see [distance/snap constraints](docs/HIT-CONSTRAINTS.md).
 Hit palette effects now change fighter colors with native arithmetic and
 lifetimes while preserving HUD portraits; see [palette effects](docs/HIT-PALETTE.md).
+Contact shake and stored fall shake now use the shared frame clock and render
+with native rounding and profile conversion; the HUD stays fixed. See
+[contact shake](docs/HIT-SHAKE.md) and [fall shake](docs/FALL-SHAKE.md).
+The user-authorized 27-key allocation is complete. Final scoped race checks,
+native replays and production capture comparisons pass.
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
-| Documented HitDef keys routed through the expression compiler | 68 / 81 | **84.0%** | Numeric routing; nine additional literal masks/enums give 77/81 typed keys (95.1%). Four stored-fall shake keys remain. |
+| Documented HitDef keys routed through the expression compiler | 72 / 81 | **88.9%** | Numeric expression routing; nine other documented keys are literal masks/enums. |
+| Documented HitDef keys with typed schemas | 81 / 81 | **100%** | 72 numeric and nine literal schemas with bounded native consumers; full interactions remain open. |
 
 These percentages measure the named scopes. **Whole-engine behavioral
 compatibility has not yet been quantified.** They cannot be averaged into an
@@ -153,7 +159,7 @@ fight HUD/effects and sound; mixed character coordinates; and a connected
 title → selection → versus → fight → result → rematch/exit path. Many behaviors
 have focused native numeric, pixel or audio evidence.
 
-Major remaining work includes full controller/trigger schemas, recovery/juggle,
+Major remaining work includes full controller/trigger schemas, broader recovery/juggle interactions,
 projectiles/reversals/teams, exact KO/round clocks, complete modes and AI, BGM,
 broader camera/render/effect behavior and final asset/conformance coverage.
 Six alpha precision comparisons and two spark raster comparisons remain open.

@@ -50,5 +50,10 @@ func compileHitShake(ctrl *cns.StateController, prefix string) ([]hitDefCue, err
 }
 
 func hitShakeKey(key string) bool {
-	return key == "envshake.time" || key == "envshake.freq" || key == "envshake.ampl" || key == "envshake.phase"
+	switch key {
+	case "envshake.time", "envshake.freq", "envshake.ampl", "envshake.phase",
+		"fall.envshake.time", "fall.envshake.freq", "fall.envshake.ampl", "fall.envshake.phase":
+		return true
+	}
+	return false
 }

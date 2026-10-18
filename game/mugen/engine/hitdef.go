@@ -27,6 +27,7 @@ var hitDefEvaluationOrder = []string{
 	"down.bounce", "down.hittime", "down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.hittime", "guard.slidetime", "guard.ctrltime", "guard.dist", "guard.pausetime", "guard.cornerpush.veloff",
 	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff", "yaccel", "palfx.time", "palfx.add", "palfx.mul",
 	"envshake.time", "envshake.ampl", "envshake.phase", "envshake.freq",
+	"fall.envshake.time", "fall.envshake.ampl", "fall.envshake.phase", "fall.envshake.freq",
 }
 
 // Sound, spark, custom-state and selection parameters compile here while the
@@ -61,6 +62,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	shake, err := compileHitShake(ctrl, "envshake.")
+	if err != nil {
+		return nil, true, err
+	}
+	fallShake, err := compileHitShake(ctrl, "fall.envshake.")
 	if err != nil {
 		return nil, true, err
 	}
@@ -152,6 +157,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	cues = append(cues, constraints...)
 	cues = append(cues, palette...)
 	cues = append(cues, shake...)
+	cues = append(cues, fallShake...)
 	byKey := make(map[string]hitDefCue, len(cues))
 	for _, cue := range cues {
 		known := false

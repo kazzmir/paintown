@@ -1160,9 +1160,12 @@ func (c *Character) VarRandom(id int, min, max int) {
 }
 
 func (c *Character) FallEnvShake(params map[string]string) {
-	// Logic: shake screen on fall impact
-	// Generic EnvShake for now
-	c.EnvShake(params)
+	if c.GetHit.FallEnvShake.Time > 0 {
+		c.requestHitShake(c.GetHit.FallEnvShake)
+		// Only the positive duration is consumed. The remaining metadata is
+		// still observable, even when the authored hit had fall=0.
+		c.GetHit.FallEnvShake.Time = 0
+	}
 }
 
 func (c *Character) GameMakeAnim(params map[string]string) {
@@ -1451,6 +1454,14 @@ func (c *Character) GetHitVar(name string) float64 {
 		val = float64(c.GetHit.FallRecoverTime)
 	case "fall.time":
 		val = float64(c.fallTime)
+	case "fall.envshake.time":
+		val = float64(c.GetHit.FallEnvShake.Time)
+	case "fall.envshake.ampl":
+		val = c.GetHit.FallEnvShake.Amplitude
+	case "fall.envshake.freq":
+		val = c.GetHit.FallEnvShake.Frequency
+	case "fall.envshake.phase":
+		val = c.GetHit.FallEnvShake.Phase
 	case "hittime":
 		val = float64(c.HitTime)
 	case "damage":
@@ -2125,6 +2136,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	c.selectHitAnimation(&hit, airHit, guarded, lethal)
 	if guarded {
 		hit.GroundType, hit.AirType = "None", "None"
+		hit.FallEnvShake = cns.HitShake{}
 	}
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues

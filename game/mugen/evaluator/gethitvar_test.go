@@ -13,6 +13,23 @@ func TestGetHitChainIDReturnsInteger(t *testing.T) {
 	}
 }
 
+type fallShakeFixture struct{ CharacterEnvironment }
+
+func (*fallShakeFixture) GetHitVar(string) float64 { return 4.75 }
+
+func TestGetHitFallShakeValueTypes(t *testing.T) {
+	for _, field := range []string{"time", "ampl", "freq", "phase"} {
+		value := evaluate(t, "GetHitVar(fall.envshake."+field+")", &fallShakeFixture{})
+		integer := field == "time" || field == "ampl"
+		if integer && (value.Kind() != IntKind || value.Number() != 4) {
+			t.Fatal(field, value)
+		}
+		if !integer && (value.Kind() != FloatKind || value.Number() != 4.75) {
+			t.Fatal(field, value)
+		}
+	}
+}
+
 func TestGetHitVarRequiresBetaSelector(t *testing.T) {
 	for _, source := range []string{"GetHitVar(chainid)", "Enemy,GetHitVar(chainid)", "GetHitVar(fall.envshake.phase)"} {
 		if _, err := ParseReference(source); err != nil {

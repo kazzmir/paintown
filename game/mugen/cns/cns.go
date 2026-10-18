@@ -95,6 +95,7 @@ type HitDef struct {
 	MaxDist       []float64
 	SnapTime      int
 	EnvShake      HitShake
+	FallEnvShake  HitShake
 	HitOnce       bool
 	AffectTeam    string
 	Priority      int
@@ -678,6 +679,7 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	hd.AirJuggle, _ = strconv.Atoi(params["air.juggle"])
 	hd.EnvShake = ParseHitShake(params, "envshake.")
+	hd.FallEnvShake = ParseHitShake(params, "fall.envshake.")
 	hd.PalFXTime, _ = strconv.Atoi(params["palfx.time"])
 	for key, dest := range map[string]*[3]int{"palfx.mul": &hd.PalFXMul, "palfx.add": &hd.PalFXAdd} {
 		if raw, present := params[key]; present {
