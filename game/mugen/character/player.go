@@ -192,8 +192,9 @@ func (p *Player) drawExplod(screen *ebiten.Image, ex *ExplodData, x, y, sx, sy f
 }
 
 type paletteCacheKey struct {
-	state *palette.State
-	index int
+	state     *palette.State
+	index     int
+	hitEffect bool
 }
 type cachedSprite struct {
 	revision uint64
@@ -201,6 +202,10 @@ type cachedSprite struct {
 }
 
 func (p *Player) getEbitenImage(entity *Character, g, i int) *ebiten.Image {
+	return p.getMappedSpriteImage(entity, g, i, true)
+}
+
+func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect bool) *ebiten.Image {
 	index := -1
 	for n, sprite := range p.SFF.Sprites {
 		if int(sprite.GroupNumber) == g && int(sprite.ImageNumber) == i {
@@ -212,7 +217,7 @@ func (p *Player) getEbitenImage(entity *Character, g, i int) *ebiten.Image {
 		return nil
 	}
 	state := entity.Palettes
-	key := paletteCacheKey{state, index}
+	key := paletteCacheKey{state, index, hitEffect}
 	revision := uint64(0)
 	if state != nil {
 		revision = state.Revision
@@ -230,7 +235,11 @@ func (p *Player) getEbitenImage(entity *Character, g, i int) *ebiten.Image {
 	pixels := p.SFF.Sprites[index].Image
 	if state != nil {
 		var err error
-		pixels, err = state.Image(index, true)
+		if hitEffect {
+			pixels, err = state.Image(index, true)
+		} else {
+			pixels, err = state.MappedImage(index, true)
+		}
 		if err != nil {
 			entity.RuntimeError = fmt.Errorf("%s sprite %d,%d: %w", p.DefPath, g, i, err)
 			return nil
@@ -267,13 +276,13 @@ func (p *Player) helpers() []*Character {
 	return p.Character.Helpers
 }
 
-// DrawSprite uses the entity's remapping and the same cache as its animation.
+// HUD sprites retain palette remapping without temporary combat effects.
 func (p *Player) DrawSprite(screen *ebiten.Image, entity *Character, group, item int, x, y, sx, sy float64) {
 	sprite := p.FindSprite(group, item)
 	if sprite == nil {
 		return
 	}
-	img := p.getEbitenImage(entity, group, item)
+	img := p.getMappedSpriteImage(entity, group, item, false)
 	if img == nil {
 		return
 	}

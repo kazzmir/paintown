@@ -24,9 +24,9 @@ at the enum/combat integration boundary and final integration, broadening only
 for failures or unresolved concerns. Commit each coherent batch locally;
 continue automatically. Never push or add binaries. Other engine/mode/asset/
 renderer gates remain outside this HitDef allocation unless a key depends on
-them. M4bn through M4bq have passed their gates. The pre-lifetime M4bp full
+them. M4bn through M4br have passed their gates. The pre-lifetime M4bp full
 suite passes; final lifetime/query corrections pass targeted/core/native/app
-gates. Final full integration follows M4bt. M4br native palette controls are active. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
+gates. Final full integration follows M4bt. M4bs native contact shake is captured; M4bt fall-shake captures are active. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
 DOWN-BOUNCE.md and COVERAGE.md, including the corrected idle-override case.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.

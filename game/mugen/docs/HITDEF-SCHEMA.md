@@ -28,7 +28,6 @@ These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
-- Palette: palfx.time, palfx.mul, palfx.add.
 - Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
 
 The M4ba [power controls](HIT-POWER.md) add typed damage/power, expression
@@ -94,3 +93,9 @@ M4bq adds three constraint schemas and position/offset/timed-binding consumers:
 39 programs,588 observations/seven load rejections/156 frozen source hashes.
 Numeric routing61/81 plus nine literal schemas gives70/81 typed keys; eleven
 palette/shake keys remain. See [distance/snap evidence](HIT-CONSTRAINTS.md).
+
+M4br adds three palette schemas and actual color/clock/cache consumers:
+24 programs/324 observations/three rejections/96 frozen source hashes.19 static
+production programs match228 native color samples and preserve HUD portraits.
+Numeric routing64/81 plus nine literals gives73/81 typed keys; eight shake keys
+remain. See [hit palette evidence and limits](HIT-PALETTE.md).

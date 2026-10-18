@@ -1,5 +1,11 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4br adds typed HitDef palette effects, beta arithmetic/duration semantics,
+shared palette clocks and separate body/portrait cache paths.24 programs pin324
+observations/three rejections/96 source hashes;19 rendered programs match228
+exact colors and preserve portraits. Numeric routing64/81; typed schemas73/81
+including nine literals (90.1%). See [HIT-PALETTE.md](HIT-PALETTE.md).
+
 M4bq adds mindist/maxdist/snap integer schemas, deferred contact offsets and
 timed snap binding.39 programs pin588 observations/seven rejections/156 frozen
 hashes, including the undocumented third snap duration. Numeric routing61/81;

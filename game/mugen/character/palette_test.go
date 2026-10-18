@@ -46,3 +46,18 @@ func TestInvalidPaletteMappingWarnsWithoutChangingState(t *testing.T) {
 		t.Fatal("invalid palette failed silently or changed state")
 	}
 }
+
+func TestSpriteCacheSeparatesHitEffectsFromPortraits(t *testing.T) {
+	colors := color.Palette{color.Black, color.White}
+	img := image.NewPaletted(image.Rect(0, 0, 1, 1), colors)
+	archive := &sff.SFF{Sprites: []sff.Sprite{{Image: img, PaletteIndex: 0}}, Palettes: []sff.Palette{{GroupNumber: 1, ItemNumber: 1, Colors: colors}}}
+	c := NewCharacter(&cns.CNS{}, nil, nil)
+	c.Palettes = palette.New(archive)
+	c.Palettes.SetHitEffect(-1, [3]int{}, [3]int{})
+	p := &Player{Character: c, SFF: archive}
+	body := p.getEbitenImage(c, 0, 0)
+	portrait := p.getMappedSpriteImage(c, 0, 0, false)
+	if body == nil || portrait == nil || body == portrait || len(p.spriteCache) != 2 {
+		t.Fatal("body and portrait shared a filtered cache entry")
+	}
+}

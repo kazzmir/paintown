@@ -4,6 +4,19 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4br: hit palette arithmetic, lifetime and portrait isolation
+
+Predecessor/reversal572f2eb6. Adds three strict integer schemas, native signed
+matrix/rounding/duration rules, shared palette clocks and cache invalidation.
+24 programs pin324 observations/three rejections/96 frozen input hashes. Match
+passes16.085s; core/palette races pass. Visual review caught portrait tinting;
+separate mapped/filtered cache entries fix it. Final Character11.454s and20
+apps/21 captures pass.19 programs match228 exact native body colors and19
+unchanged-portrait comparisons. Earlier body-only evidence is retained as
+pre-correction diagnostics. Numeric routing64/81 plus nine literals gives73/81
+typed keys (90.1%); eight shake keys remain. Continue M4bs/M4bt, then final full
+integration. See HIT-PALETTE.md and HANDOFF.md.
+
 ## M4bq: distance bounds, deferred snap offsets and duration
 
 Predecessor/reversal b13c22d5. Adds mindist/maxdist/snap integer schemas,

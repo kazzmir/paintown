@@ -6,6 +6,7 @@ import (
 
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/engine"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 )
 
 type contact struct {
@@ -81,6 +82,20 @@ func TickCharacters(players []*Character) error {
 		}
 		if !c.startTick() {
 			return c.RuntimeError
+		}
+	}
+	// Clock each shared palette once before new contact effects are installed.
+	// A duration-one effect therefore remains visible for its issuing frame.
+	advancedPalettes := map[*palette.State]bool{}
+	for _, c := range players {
+		if c.worldFrozen {
+			continue
+		}
+		for _, actor := range append([]*Character{c}, c.Projectiles...) {
+			if actor.Palettes != nil && !advancedPalettes[actor.Palettes] {
+				actor.Palettes.AdvanceHitEffect()
+				advancedPalettes[actor.Palettes] = true
+			}
 		}
 	}
 	var rawContacts []contact

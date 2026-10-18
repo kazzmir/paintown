@@ -15,6 +15,7 @@ type State struct {
 	Archive  *sff.SFF
 	Revision uint64
 	mappings map[ID]ID
+	hitFX    HitEffect
 }
 
 func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: map[ID]ID{}} }
@@ -22,6 +23,7 @@ func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: ma
 func (s *State) Clone() *State {
 	copy := New(s.Archive)
 	copy.Revision = s.Revision
+	copy.hitFX = s.hitFX
 	for source, dest := range s.mappings {
 		copy.mappings[source] = dest
 	}
@@ -104,6 +106,15 @@ func (s *State) Destination(source ID) ID {
 }
 
 func (s *State) Image(index int, masked bool) (image.Image, error) {
+	pixels, err := s.MappedImage(index, masked)
+	if err != nil || pixels == nil || s.hitFX.Time == 0 {
+		return pixels, err
+	}
+	return s.hitFX.Image(pixels), nil
+}
+
+// HUD portraits use palette mappings without a fighter's temporary hit effect.
+func (s *State) MappedImage(index int, masked bool) (image.Image, error) {
 	if s.Archive == nil {
 		return nil, fmt.Errorf("palette archive unavailable")
 	}

@@ -4,8 +4,8 @@ Updated 2026-10-18. The user authorized completion of all 27 HitDef keys
 remaining after24b3ebd0, with local checkpoint commits and continuous iteration
 until complete or blocked. No two-checkpoint pause remains. All authored work
 stays under game/mugen/. Never push or add binaries. Current completed batches:
-M4bn guard.dist, M4bo nine literal schemas, M4bp chains/juggle and M4bq
-constraints. Continue M4br palette, M4bs contact shake and M4bt fall shake automatically.
+M4bn guard.dist, M4bo nine literal schemas, M4bp chains/juggle, M4bq
+constraints and M4br palette. Continue M4bs contact shake and M4bt fall shake automatically.
 Read HITDEF-REMAINING.md, COVERAGE.md and the relevant topic documents.
 
 ## M4bq verified checkpoint
@@ -32,18 +32,92 @@ Native values/tolerances never changed; do not rerun authors. No full suite at
 this batch: final scoped integration follows M4bt. Stage only M4bq families;
 continue automatically, no push or binaries.
 
-## Active M4br
+## M4br verified checkpoint
 
-Native runner temp/run-m4br-native-final.py is ACTIVE, exec session26607,
-log m4br-native-batch.log. Await it and separately check processes before any
-GUI/native/app.22 hitpalette-* sources were frozen before native execution in
-m4br-prepared-inputs.json and m4br-prepared-lifetime.json. Do not regenerate.
-Schema/runtime work is pending. Inspect palette operation order/rounding,
-negative/zero/infinite duration, partial tuples, ignored fields, guard/None,
-source/default side effects and second-contact preservation/reset behavior.
-Native captures include the original KFM garment, but commit only scalar color
-measurements, never reference art/binaries. The reusable effect-probe DRAFT is
-ignored temp/hit_effect_probe.py.txt; refine/calibrate before promoting.
+Predecessor/reversal572f2eb6.64 numeric + nine literals =73/81 typed keys
+(90.1%); eight shake keys remain.24 hitpalette-* programs pin324 observations,
+three native rejections and96 pre-native source hashes. Manifests:
+m4br-prepared-inputs.json, m4br-prepared-lifetime.json and
+m4br-prepared-negative.json.19 static accepted programs have12 native-only
+color samples and a zero portrait-delta measurement each. Numeric values,
+source inputs, existing body points/colors and tolerances were never changed.
+Original body metrics remain in m4br-body-color-expectations-before-portrait.json.
+
+HIT-PALETTE.md describes strict triples/coercion/order/defaults, signed
+add-then-multiply byte rounding, time0/<-1 preservation and time-1 indefinite
+behavior, guard/None exclusion, shared palette clocks, image transforms,
+revision/cache/clone behavior and separate body/portrait rendering. Standalone
+PalFX/AllPalFX/BGPalFX remain stubs, not promoted by these HitDef consumers.
+
+Numeric Match24 races pass16.085s; engine/evaluator/CNS/combat/palette races
+1.469/1.020/1.012/1.011/8.570s pass. The initial shared-clock test missed its
+idle Null controller; test-only correction passed full Character11.422s.
+First20 apps matched all body colors, but visual review discovered that Go
+also tinted the HUD portrait while native did not. That earlier body-only run
+is NOT final proof. Its artifacts/audit are retained under original *-m4br
+names. The corrected State.MappedImage/Player HUD path and separate cache roles
+are covered by a regression and nineteen native-relative portrait comparisons.
+
+Final full Character races pass11.454s; palette recheck8.602s passes. Two fresh
+native reproductions and20 rebuilt apps/21 captures pass provenance. All19
+programs match228 exact body colors and retain unchanged portraits. Stock and
+representative palette captures were visually inspected (lossless PNG previews
+work around the image-viewer repeated-PNG display bug; original pixels/goldens
+are unchanged). Final source/config/binary/PNG/scalar audit:
+temp/m4br-final-evidence-audit.json.14 source hashes (13 Go plus Python) are
+frozen in m4br-final-production-inputs.json. Application SHA256:
+dc3b2b1da89c8d6b42a9f51f76a397f15f87c144aae3518f418376b81b859e92.
+run-m4br-portrait-validation.py exited0. New apps/reports use *-m4br-final;
+original buggy captures remain diagnostics. Root module/executable checksums
+pass. Final full scoped races follow M4bt. Commit only M4br family; continue.
+
+## Active contact/fall shake work
+
+M4bs native21 hitshake-* programs are CAPTURED. Native exec28980 was awaited.
+Manifests m4bs-prepared-inputs.json and m4bs-prepared-lifetime.json. No M4bs Go
+changes yet. NEXT implement its four schemas/global clock/render consumer and
+native replay, then focused/core/Character/apps/pixel gates and local commit.
+Do not start M4bt Go changes until M4bs checkpoint is concrete.
+
+M4bt native runner temp/run-m4bt-native-final.py is ACTIVE, exec session25580,
+log m4bt-native-batch.log, on the private display/audio server.21 fallshake
+source sets are frozen in m4bt-prepared-inputs.json and
+m4bt-prepared-lifetime.json. Await it and separately check processes before
+ANY native/app/GUI tests. Pure no-DISPLAY engine/evaluator/CNS/combat/palette
+checks may run alongside it. All M4br GUI sessions are completed (29194 awaited).
+No M4bt production source changes. Never rerun authors or derive native values
+from Go. Final full integration follows M4bt; source must be frozen throughout.
+
+Measured contact semantics: ScreenPosY includes shake NEXT receiver pass;
+CameraPosY stays0. Baseline200; explicitfreq0/phase90/ampl4 gives Time0=200 then
+196; negative amplitude gives204. freq90/phase0/time8 gives
+200,200,196,200,204,200,196,200. Default phase atfreq90 gives
+200,196,200,204,200,196,200,204. Omitted phase does NOT reevaluate frequency
+source (side-effect counter1). Thus defer newly requested shake until end of
+world frame, advance old clock before installing pending new request, start
+at supplied phase, and advance phase by freq each later frame. Logical getter
+uses current offset; render uses end-of-frame offset. Default amplitude is RAW
+-4 in author units, not scaled by source localcoord. Mixed author640/receiver320
+source default gives receiver+2 and caller redirected404, not receiver+4.
+Use normal profile conversion once. Second default contact preserves an active
+shake. Source21 also pins strict integer time/ampl, float freq/phase, bottom,
+negative duration, guard, order and fractional frequency behavior; inspect all
+JSON data before finalizing. Incoming None likely ignores, like palette, but
+explicit None shake probe is not yet present. Ordinary EnvShake controller is
+still a stub; decide its dependency scope honestly rather than promoting it.
+
+The shared tests/hit_effect_probe.py now supports palettes and static rigid
+shake displacement. Native baselines and provenance are pinned; Go cannot
+record goldens. For shake, record static active positive/negative/zero/default/
+mixed/guard cases from native before Go comparisons. It measures the entire
+pure garment mask in a bounded ROI and searches a unique integer Y displacement.
+No reference art is stored. ScreenPosY numeric programs already supply real
+frequency/phase/clock traces. Final field order is in native hitshake order JSON;
+compile four keys with correct types, defaults and side effects. Existing
+engine.Timeline owns the shared frame; system/FightState.Draw composites game
+canvas then separate HUD. Shake must move the world and ScreenPosY without
+moving the HUD or changing logical CameraPosY. Reset its state at round reset.
+Keep GetHitVar fall-shake metadata/controller work for M4bt after measuring it.
 
 ## M4bp verified checkpoint
 
@@ -122,15 +196,12 @@ rerun. Dynamic allow_reject records the actual target's classification; reject
 only when native says so. Stage explicit families at each checkpoint; keep
 future fixtures out of earlier commits.
 
-Effect render probe DRAFT is temp/hit_effect_probe.py.txt. It is untested; only
-promote after native calibration. It compares scalar palette colors or a rigid
-garment displacement without storing reference artwork. Pin/check its baseline
-PNG and prepared source/profile provenance. Native/Go captured images remain
-ignored. Palette rendering and shake clocks/consumers are still unimplemented.
-The existing Palfrm_* fields are unused placeholders. Character.EnvShake and
-PalFX controller methods remain stubs; FallEnvShake currently delegates to the
-empty EnvShake. Completing these HitDef fields must demonstrate actual runtime
-consumers and accurately distinguish controller work still open.
+The promoted tests/hit_effect_probe.py covers palette colors/portrait isolation
+and has a rigid-shake measurement mode awaiting calibration. Native/Go images
+remain ignored. Hit palette rendering is implemented; global shake remains
+pending. Character.EnvShake and PalFX controller methods remain stubs;
+FallEnvShake currently delegates to empty EnvShake. Distinguish standalone
+controller work from the HitDef consumers.
 
 ## Earlier checkpoints and remaining gates
 

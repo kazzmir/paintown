@@ -150,9 +150,9 @@ type HitDef struct {
 	DownBounce         bool
 	GetPower           []int
 	GivePower          []int
-	Palfrm_Time        int
-	Palfrm_Mul         []float64
-	Palfrm_Add         []int
+	PalFXTime          int
+	PalFXMul           [3]int
+	PalFXAdd           [3]int
 	Fall               int
 	AirFall            int
 	ForceNoFall        bool
@@ -626,6 +626,7 @@ func ParseHitDef(params map[string]string) HitDef {
 		ID:              0,
 		Priority:        4,
 		PriorityClass:   "Hit",
+		PalFXMul:        [3]int{256, 256, 256},
 		FallRecover:     true,
 		FallRecoverTime: 4,
 		FallXUnchanged:  true,
@@ -670,6 +671,13 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.NoChainID = ParseIntList(raw)
 	}
 	hd.AirJuggle, _ = strconv.Atoi(params["air.juggle"])
+	hd.PalFXTime, _ = strconv.Atoi(params["palfx.time"])
+	for key, dest := range map[string]*[3]int{"palfx.mul": &hd.PalFXMul, "palfx.add": &hd.PalFXAdd} {
+		if raw, present := params[key]; present {
+			values := ParseIntList(raw)
+			copy(dest[:], values)
+		}
+	}
 	if raw, present := params["mindist"]; present {
 		hd.MinDist = ParseFloatList(raw)
 	}

@@ -156,6 +156,10 @@ func TestNativeHitConstraintPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "hitconstraint-*.json", 39)
 }
 
+func TestNativeHitPalettePrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "hitpalette-*.json", 24)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

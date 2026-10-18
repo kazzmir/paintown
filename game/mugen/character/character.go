@@ -2047,6 +2047,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	if lethal {
 		guarded = false
 	}
+	if !guarded && c.Palettes != nil {
+		c.Palettes.SetHitEffect(hit.PalFXTime, hit.PalFXMul, hit.PalFXAdd)
+	}
 	c.binding = nil
 	if !guarded {
 		if err := c.interruptTargets(); err != nil {

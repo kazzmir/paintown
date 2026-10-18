@@ -25,7 +25,7 @@ var hitDefEvaluationOrder = []string{
 	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "mindist", "maxdist", "p2facing",
 	"ground.hittime", "ground.slidetime", "ground.velocity", "ground.cornerpush.veloff", "air.hittime", "air.fall", "air.velocity", "air.cornerpush.veloff",
 	"down.bounce", "down.hittime", "down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.hittime", "guard.slidetime", "guard.ctrltime", "guard.dist", "guard.pausetime", "guard.cornerpush.veloff",
-	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff", "yaccel",
+	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff", "yaccel", "palfx.time", "palfx.add", "palfx.mul",
 }
 
 // Sound, spark, custom-state and selection parameters compile here while the
@@ -52,6 +52,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	constraints, err := compileHitConstraints(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
+	palette, err := compileHitPalette(ctrl)
 	if err != nil {
 		return nil, true, err
 	}
@@ -141,6 +145,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	cues = append(cues, fall...)
 	cues = append(cues, physics...)
 	cues = append(cues, constraints...)
+	cues = append(cues, palette...)
 	byKey := make(map[string]hitDefCue, len(cues))
 	for _, cue := range cues {
 		known := false
@@ -178,7 +183,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if !present {
 				continue
 			}
-			values, err := evaluateArgumentsWithBottom(cue.args, env, hitConstraintKey(cue.key) || cue.key == "chainid" || cue.key == "nochainid" || cue.key == "air.juggle" || cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.key == "down.bounce" || cue.key == "guard.dist" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, hitPaletteKey(cue.key) || hitConstraintKey(cue.key) || cue.key == "chainid" || cue.key == "nochainid" || cue.key == "air.juggle" || cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.key == "down.bounce" || cue.key == "guard.dist" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}
@@ -210,8 +215,8 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if cue.key == "snap" {
 				hitConstraintDuration(params, params[cue.key])
 			}
-			if len(cue.args) == 2 {
-				params[cue.key] += "," + format("1")
+			for i := 1; i < len(cue.args); i++ {
+				params[cue.key] += "," + format(strconv.Itoa(i))
 			}
 			if cue.key == "priority" {
 				params[cue.key] += "," + priorityClass
