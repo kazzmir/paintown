@@ -1,6 +1,6 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-18 through M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -25,6 +25,7 @@ does not promote an entire controller from one passing parameter/default.
 | Distance/snap constraints | M4bq strict integer schemas, source replacement/order, per-axis intervals, deferred offsets/GetHitVar and timed binding, facing/profile/CNS-write/moving-axis controls. HIT-CONSTRAINTS.md. | Broad entity/projectile/foreign/override/pause and moving timed-bind combinations. |
 | Guard distance | M4bn compiles guard.dist with native integer/coercion/bottom/order rules, preserves omitted/negative range, resets it on state entry and verifies facing/boundary/height/profile consumers. GUARD-DISTANCE.md. | Broad input/entity/foreign/pause combinations and other AttackDist variants. |
 | Projectiles/reversals | M4bp adds a narrow single-contact projectile adapter with native parameter names, animation, retirement/removal time, owner target credit and juggle cost. ReversalDef still stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
+| Contact shake | M4bs native schemas/defaults/order, fractional amplitude, asymmetric rounding, issuing-frame duration, global clock, profile conversions, ScreenPosY and world-only rendering. HIT-SHAKE.md. | Standalone EnvShake, stored fall payload (M4bt), broad request/entity/pause/zoom combinations. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. M4br adds native HitDef palette schemas, shared clocks, cache/portrait isolation and exact opaque indexed color comparisons. EXPLODS.md, RGB-CONSUMERS.md, HIT-PALETTE.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
 | Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | All format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
@@ -46,7 +47,7 @@ fall/recovery keys (50/81). M4bk adds three fall velocity/gravity keys:
 numeric keys remaining. M4bp adds three integer expressions: **58/81 (71.6%)** numeric, plus nine
 literal schemas = **67/81 typed keys (82.7%)**. M4bq adds three constraint schemas: **61/81 numeric (75.3%)**, plus nine
 literals = **70/81 typed keys (86.4%)**. M4br adds three palette schemas: **64/81 numeric (79.0%)** plus nine
-literals = **73/81 typed keys (90.1%)**. Eight shake keys remain.
+literals = **73/81 typed keys (90.1%)**. M4bs adds four contact-shake schemas and the shared clock/render consumer: **68/81 numeric (84.0%)**, plus nine literals = **77/81 typed keys (95.1%)**. Four stored-fall shake keys remain.
 The other metrics are unchanged. See
 [../README.md](../README.md) for numerator/denominator sources and
 [GUARD-DISTANCE.md](GUARD-DISTANCE.md) for the latest native-backed scope.
@@ -70,7 +71,7 @@ shake (4), fall shake (4). Numeric routing remains a separate metric from the
 nine literal schemas. Each batch requires frozen native controls, runtime
 consumers or a demonstrated beta limitation, focused checks and documentation.
 Full scoped races follow the enum/combat and final integration boundaries.
-Prior renderer/round/mode/asset gaps remain open. M4bn through M4br are complete; contact/fall shake comparisons follow. See HITDEF-REMAINING.md for the live key ledger.
+Prior renderer/round/mode/asset gaps remain open. M4bn through M4bs are complete; stored-fall shake and final integration follow. See HITDEF-REMAINING.md for the live key ledger.
 No remote push is authorized.
 
 Prior allocation (completed):

@@ -5,7 +5,7 @@ remaining after24b3ebd0, with local checkpoint commits and continuous iteration
 until complete or blocked. No two-checkpoint pause remains. All authored work
 stays under game/mugen/. Never push or add binaries. Current completed batches:
 M4bn guard.dist, M4bo nine literal schemas, M4bp chains/juggle, M4bq
-constraints and M4br palette. Continue M4bs contact shake and M4bt fall shake automatically.
+constraints, M4br palette and M4bs contact shake. Continue M4bt fall shake automatically.
 Read HITDEF-REMAINING.md, COVERAGE.md and the relevant topic documents.
 
 ## M4bq verified checkpoint
@@ -71,53 +71,63 @@ run-m4br-portrait-validation.py exited0. New apps/reports use *-m4br-final;
 original buggy captures remain diagnostics. Root module/executable checksums
 pass. Final full scoped races follow M4bt. Commit only M4br family; continue.
 
-## Active contact/fall shake work
+## M4bs verified checkpoint
 
-M4bs native21 hitshake-* programs are CAPTURED. Native exec28980 was awaited.
-Manifests m4bs-prepared-inputs.json and m4bs-prepared-lifetime.json. No M4bs Go
-changes yet. NEXT implement its four schemas/global clock/render consumer and
-native replay, then focused/core/Character/apps/pixel gates and local commit.
-Do not start M4bt Go changes until M4bs checkpoint is concrete.
+Predecessor/reversal e1833f2a. Numeric routing68/81 + nine literals =77/81
+ typed keys (95.1%); four stored-fall keys remain. HIT-SHAKE.md records the
+strict literal/runtime types, float amplitude, default/order rules, asymmetric
+base320 rounding, issuing-frame duration, shared clock, profile conversion,
+ScreenPosY, world-only drawing and round reset. Standalone EnvShake is still
+unfinished. No native source, numeric value or tolerance changed.
 
-M4bt native runner temp/run-m4bt-native-final.py is ACTIVE, exec session25580,
-log m4bt-native-batch.log, on the private display/audio server.21 fallshake
-source sets are frozen in m4bt-prepared-inputs.json and
-m4bt-prepared-lifetime.json. Await it and separately check processes before
-ANY native/app/GUI tests. Pure no-DISPLAY engine/evaluator/CNS/combat/palette
-checks may run alongside it. All M4br GUI sessions are completed (29194 awaited).
-No M4bt production source changes. Never rerun authors or derive native values
-from Go. Final full integration follows M4bt; source must be frozen throughout.
+26 programs/348 observations/three load rejections/104 pre-native hashes pass.
+All26 native Match races pass17.581s; engine/evaluator/CNS/combat races
+1.497/1.020/1.012/1.011s pass. Full Character races11.362s and related Match
+regressions17.542s pass. Two fresh native reproductions pass, including the
+mixed half-rounding profile. An initial fresh replay omitted its pinned
+localcoord recipe and was rejected by the provenance gate; the corrected new
+run passed. Failed recipe artifacts remain diagnostic; no golden changed.
 
-Measured contact semantics: ScreenPosY includes shake NEXT receiver pass;
-CameraPosY stays0. Baseline200; explicitfreq0/phase90/ampl4 gives Time0=200 then
-196; negative amplitude gives204. freq90/phase0/time8 gives
-200,200,196,200,204,200,196,200. Default phase atfreq90 gives
-200,196,200,204,200,196,200,204. Omitted phase does NOT reevaluate frequency
-source (side-effect counter1). Thus defer newly requested shake until end of
-world frame, advance old clock before installing pending new request, start
-at supplied phase, and advance phase by freq each later frame. Logical getter
-uses current offset; render uses end-of-frame offset. Default amplitude is RAW
--4 in author units, not scaled by source localcoord. Mixed author640/receiver320
-source default gives receiver+2 and caller redirected404, not receiver+4.
-Use normal profile conversion once. Second default contact preserves an active
-shake. Source21 also pins strict integer time/ampl, float freq/phase, bottom,
-negative duration, guard, order and fractional frequency behavior; inspect all
-JSON data before finalizing. Incoming None likely ignores, like palette, but
-explicit None shake probe is not yet present. Ordinary EnvShake controller is
-still a stub; decide its dependency scope honestly rather than promoting it.
+Seventeen native-only rigid render measurements each pin7,935 garment pixels.
+All17 rebuilt production app comparisons match exact shapes/displacements.
+Including stock,18 apps/19 captures pass input/config/binary/PNG/runtime
+provenance. Stock and positive-shake captures were visually inspected; the
+stock preview was losslessly reencoded with identical RGB pixels to avoid the
+image viewer's repeated-PNG problem. Native/Go images remain ignored.
 
-The shared tests/hit_effect_probe.py now supports palettes and static rigid
-shake displacement. Native baselines and provenance are pinned; Go cannot
-record goldens. For shake, record static active positive/negative/zero/default/
-mixed/guard cases from native before Go comparisons. It measures the entire
-pure garment mask in a bounded ROI and searches a unique integer Y displacement.
-No reference art is stored. ScreenPosY numeric programs already supply real
-frequency/phase/clock traces. Final field order is in native hitshake order JSON;
-compile four keys with correct types, defaults and side effects. Existing
-engine.Timeline owns the shared frame; system/FightState.Draw composites game
-canvas then separate HUD. Shake must move the world and ScreenPosY without
-moving the HUD or changing logical CameraPosY. Reset its state at round reset.
-Keep GetHitVar fall-shake metadata/controller work for M4bt after measuring it.
+Manifests: m4bs-prepared-inputs.json, m4bs-prepared-lifetime.json,
+m4bs-prepared-runtime-profile.json. Production154 hashes (all153 production
+Go files plus the effect probe) are frozen in m4bs-production-inputs.json.
+Final audit: m4bs-evidence-audit.json. Application SHA256:
+c9f19f9cb7ac6a41a2656f864dd94be7b08b9f1934f3e51203916b80bd93aad8.
+run-m4bs-validation-remaining.py exited0; prior successful test/native stages
+are in m4bs-validation.log. Root module checksums pass. Commit contact family
+only; continue M4bt automatically. No push or new binary.
+
+## Next M4bt
+
+22 fallshake-* programs are already captured and frozen in
+m4bt-prepared-inputs.json, m4bt-prepared-lifetime.json and
+m4bt-prepared-joint.json. Both native sessions25580 and41430 completed and
+were awaited; no GUI client remains. Do not rerun source authors.
+
+Implement the four stored-fall schemas with compileHitShake(prefix), after the
+contact family in time/ampl/phase/freq order. Native joint tags are contact
+11,12,13,14 then fall15,16,17,18. Store receiver-local float amplitude and
+freq/phase; GetHitVar time/ampl return integers, freq/phase floats. Defaults
+post-contact:0 time,60 freq,-4 ampl,0 phase (raw source amplitude, profile-scaled
+at contact). Guard zeroes all four fields. Frequency clamps to.001; default
+phase uses evaluated frequency once. Runtime getter amplitude truncates4.75 to4
+while physical shake still uses4.75. FallEnvShake consumes only positive stored
+time to0, retains the other metadata, and works even with fall0. Negative time
+stays negative and does not request shake, despite the manual's nonzero wording.
+
+Reuse the shared request/clock/renderer. Add meaningful schema/query/controller
+regressions plus22 native Match replays, native rigid render comparisons and
+fresh reproductions, rebuilt apps/stock. Freeze production hashes before all
+runs. Full final scoped race suite uses -p1 -count1 -timeout20m and covers the
+post-M4bp lifetime/query corrections. Finish documentation/assessment/ledger,
+commit locally and report scoped27-key completion with broader gates unwaived.
 
 ## M4bp verified checkpoint
 
@@ -180,28 +190,13 @@ Root module and immutable native executable checksums pass. Final full scoped
 races follow M4bt, covering the lifetime/query changes and remaining fields.
 Do not relabel the earlier full run as a final-tree run.
 
-## Remaining frozen inputs
+## Frozen inputs
 
-Unexecuted future source sets are already frozen:
-- M4br:22 hitpalette-* programs; m4br-prepared-inputs.json plus
-  m4br-prepared-lifetime.json; runner run-m4br-native-final.py.
-- M4bs:21 hitshake-* programs; m4bs-prepared-inputs.json plus
-  m4bs-prepared-lifetime.json; runner run-m4bs-native-final.py.
-- M4bt:21 fallshake-* programs; m4bt-prepared-inputs.json plus
-  m4bt-prepared-lifetime.json; runner run-m4bt-native-final.py.
-
-These include positive/negative/zero/default/runtime/bottom/error, tagged order,
-guard/profile and effect-lifetime controls. Source author scripts must not be
-rerun. Dynamic allow_reject records the actual target's classification; reject
-only when native says so. Stage explicit families at each checkpoint; keep
-future fixtures out of earlier commits.
-
-The promoted tests/hit_effect_probe.py covers palette colors/portrait isolation
-and has a rigid-shake measurement mode awaiting calibration. Native/Go images
-remain ignored. Hit palette rendering is implemented; global shake remains
-pending. Character.EnvShake and PalFX controller methods remain stubs;
-FallEnvShake currently delegates to empty EnvShake. Distinguish standalone
-controller work from the HitDef consumers.
+All palette/contact/fall source families have independent native captures.
+Never regenerate them or derive expectations from Go. M4br and M4bs are
+checkpointed; M4bt remains to implement. Only scalar source/text fixtures are
+committed. The effect probe can record from native only and pins source,
+prepared character/opponent/stage/HUD resources, binaries, profile and PNGs.
 
 ## Earlier checkpoints and remaining gates
 

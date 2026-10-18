@@ -159,6 +159,7 @@ func (m *Match) Setting(section, key string, fallback int) int {
 
 func (m *Match) resetRound() error {
 	m.Timeline.ClearPauses()
+	m.Timeline.ClearShake()
 	m.Effects.Clear()
 	// A fresh round retires its voices/cache before new entry controllers emit
 	// commands. Complete native round/custom-state lifecycle remains to verify.

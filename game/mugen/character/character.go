@@ -2128,6 +2128,9 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	}
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
+	if !guarded {
+		c.requestHitShake(hit.EnvShake)
+	}
 	c.recordCornerPush(attacker, originalHit)
 	c.pendingHitXOffset = 0
 	c.pendingHitYOffset = 0

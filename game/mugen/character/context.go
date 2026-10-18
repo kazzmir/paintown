@@ -137,6 +137,9 @@ func (c *Character) lookupViewport(name string) (evaluator.Value, bool) {
 		value = float32(c.X - float64(cameraX) + float64(width)/float64(zoom)/2)
 	case "screenpos y":
 		value = float32(c.Y - float64(cameraY) + v.GroundY*float64(scale)/float64(zoom))
+		if c.Timeline != nil {
+			value += float32(c.Timeline.ShakeOffset()) * float32(c.LocalCoordinateWidth()) / 320
+		}
 	}
 	return evaluator.Float(value), true
 }

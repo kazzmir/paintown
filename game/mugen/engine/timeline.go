@@ -24,6 +24,8 @@ type Timeline struct {
 	pause, super          pauseClock
 	pending, pendingSuper *pauseClock
 	depth                 int
+	shake                 ShakeParameters
+	pendingShake          *ShakeParameters
 }
 
 func (t *Timeline) BeginFrame() { t.depth++ }
@@ -33,6 +35,7 @@ func (t *Timeline) EndFrame() {
 	if t.depth != 0 {
 		return
 	}
+	t.advanceShake()
 	clock := &t.pause
 	if t.super.Time > 0 {
 		clock = &t.super

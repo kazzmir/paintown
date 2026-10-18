@@ -17,8 +17,8 @@ consumer evidence, or a demonstrated limitation in the target executable.
 | M4bp | air.juggle, chainID, nochainID | Complete; HIT-CHAINS-JUGGLE.md, 57 programs/660 observations/eight load rejections. |
 | M4bq | mindist, maxdist, snap | Complete; HIT-CONSTRAINTS.md, 39 programs/588 observations/seven native load rejections. |
 | M4br | palfx.time, palfx.mul, palfx.add | Complete; HIT-PALETTE.md, 24 programs/324 observations/three load rejections, plus 19 rendered color/portrait comparisons. |
-| M4bs | envshake.time, envshake.freq, envshake.ampl, envshake.phase | Native controls captured; schema/global clock/render consumer next. |
-| M4bt | fall.envshake.time, fall.envshake.freq, fall.envshake.ampl, fall.envshake.phase | Native captures active; stored payload/controller consumers next. |
+| M4bs | envshake.time, envshake.freq, envshake.ampl, envshake.phase | Complete; HIT-SHAKE.md, 26 native programs and 17 rigid-pixel comparisons. |
+| M4bt | fall.envshake.time, fall.envshake.freq, fall.envshake.ampl, fall.envshake.phase | Native controls captured; stored payload/controller consumers next. |
 
 After M4bn: 55 expression keys; 26 keys remain (17 numeric, nine literal).
 Checkpoint boundaries may change if native findings require dependencies.
@@ -39,3 +39,5 @@ palette/shake keys remain. Continue automatically.
 
 After M4br:64 numeric + nine literal =73/81 typed keys (90.1%); eight
 contact/fall shake keys remain. Continue automatically through final integration.
+
+After M4bs:68 numeric + nine literal =77/81 typed keys (95.1%); four stored-fall shake keys remain.

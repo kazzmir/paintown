@@ -23,6 +23,7 @@ func (c *Character) hitInLocalSpace(attacker *Character, hit cns.HitDef) cns.Hit
 	hit.FallVel = vector(hit.FallVel)
 	hit.MinDist = vector(hit.MinDist)
 	hit.MaxDist = vector(hit.MaxDist)
+	hit.EnvShake.Amplitude = float64(float32(hit.EnvShake.Amplitude) * scale)
 	hit.YAccel = float64(float32(hit.YAccel) * scale)
 	hit.GuardVel = float64(float32(hit.GuardVel) * scale)
 	hit.GuardDist = float64(float32(hit.GuardDist) * scale)

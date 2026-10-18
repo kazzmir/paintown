@@ -1,5 +1,11 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4bs implements four contact-shake schemas, a shared frame clock, receiver-local
+ScreenPosY and world-only rendering. Numeric routing68/81 plus nine literals
+gives77/81 typed keys (95.1%); four stored-fall keys remain. Native traces and
+rigid-mask comparisons are described in [HIT-SHAKE.md](HIT-SHAKE.md).
+Standalone EnvShake remains unfinished.
+
 M4br adds typed HitDef palette effects, beta arithmetic/duration semantics,
 shared palette clocks and separate body/portrait cache paths.24 programs pin324
 observations/three rejections/96 source hashes;19 rendered programs match228

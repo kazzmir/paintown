@@ -81,6 +81,11 @@ type StateController struct {
 	Params map[string]string
 }
 
+type HitShake struct {
+	Time                        int
+	Amplitude, Frequency, Phase float64
+}
+
 type HitDef struct {
 	ID            int
 	ChainID       *int
@@ -89,6 +94,7 @@ type HitDef struct {
 	MinDist       []float64
 	MaxDist       []float64
 	SnapTime      int
+	EnvShake      HitShake
 	HitOnce       bool
 	AffectTeam    string
 	Priority      int
@@ -671,6 +677,7 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.NoChainID = ParseIntList(raw)
 	}
 	hd.AirJuggle, _ = strconv.Atoi(params["air.juggle"])
+	hd.EnvShake = ParseHitShake(params, "envshake.")
 	hd.PalFXTime, _ = strconv.Atoi(params["palfx.time"])
 	for key, dest := range map[string]*[3]int{"palfx.mul": &hd.PalFXMul, "palfx.add": &hd.PalFXAdd} {
 		if raw, present := params[key]; present {

@@ -24,11 +24,10 @@ now cover the measured root/own-state movement, proximity, decay, units and
 lifetime; projectile-owner and wider world combinations remain open. These controls do not establish arbitrary
 blank/malformed tuple grammar or all paused/foreign/helper/contact combinations.
 
-These documented keys have no direct parser/compiler field and need explicit
-implementation or measured target limitations. This is a source audit, not a
-claim that the other keys are complete:
-
-- Shake: envshake.time/freq/ampl/phase and fall.envshake.time/freq/ampl/phase.
+At M4bs, the four stored-fall shake fields remain without typed routing:
+fall.envshake.time/freq/ampl/phase. Contact shake now has schemas and a shared
+clock/render consumer; see [HIT-SHAKE.md](HIT-SHAKE.md).
+This key count does not establish all interaction combinations.
 
 The M4ba [power controls](HIT-POWER.md) add typed damage/power, expression
 defaults, all current typed-field order, root/helper pools, configured factors
@@ -99,3 +98,7 @@ M4br adds three palette schemas and actual color/clock/cache consumers:
 production programs match228 native color samples and preserve HUD portraits.
 Numeric routing64/81 plus nine literals gives73/81 typed keys; eight shake keys
 remain. See [hit palette evidence and limits](HIT-PALETTE.md).
+
+M4br adds three palette keys; M4bs adds four contact-shake keys. Numeric routing
+is68/81 plus nine literal schemas =77/81 typed keys (95.1%). Four stored-fall
+keys remain. Palette evidence: [HIT-PALETTE.md](HIT-PALETTE.md).

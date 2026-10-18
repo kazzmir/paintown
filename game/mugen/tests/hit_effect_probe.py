@@ -24,6 +24,14 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def prepared_inputs(stock):
+    names = list(PREPARED)
+    opponent = stock/'chars/probeopponent'
+    if opponent.exists():
+        names.extend(str(path.relative_to(stock)) for path in sorted(opponent.iterdir()) if path.is_file())
+    return {name: digest(stock/name) for name in names}
+
+
 def opened(path, expected):
     if digest(path) != expected['sha256']:
         raise RuntimeError('Captured window changed: ' + str(path))
@@ -106,7 +114,7 @@ def main():
     if evidence.get('error') or evidence.get('load_error') or not evidence.get('captures'):
         raise RuntimeError('Capture run failed')
     stock = run/'stock'
-    prepared = {p:digest(stock/p) for p in PREPARED}
+    prepared = prepared_inputs(stock)
     if stem.with_suffix('.cns').read_text() not in (stock/'chars/kfm/probe.cns').read_text():
         raise RuntimeError('Prepared CNS does not contain the frozen authored program')
     config = (stock/'data/mugen.cfg').read_text()
@@ -143,7 +151,7 @@ def main():
         neutral_data = json.loads((neutral/'evidence.json').read_text())
         if neutral_data['binary_sha256'] != evidence['binary_sha256'] or digest(neutral/'mugen-go') != evidence['binary_sha256']:
             raise RuntimeError('Neutral baseline uses a different application binary')
-        if {name:digest(neutral/'stock'/name) for name in PREPARED} != expected[key]['baseline_prepared_sha256']:
+        if prepared_inputs(neutral/'stock') != expected[key]['baseline_prepared_sha256']:
             raise RuntimeError('Neutral baseline prepared assets differ')
         portrait_baseline = opened(neutral/neutral_data['captures'][0]['path'], neutral_data['captures'][0])
     measurements = []
@@ -157,7 +165,7 @@ def main():
         if args.record:
             expected[key] = dict(baseline_run=baseline_name,
                                  baseline_png_sha256=baseline_data['captures'][0]['sha256'],
-                                 baseline_prepared_sha256={p:digest(baseline_run/'stock'/p) for p in PREPARED},
+                                 baseline_prepared_sha256=prepared_inputs(baseline_run/'stock'),
                                  prepared_sha256=prepared, measurement=measurement)
         elif measurement != expected[key]['measurement']:
             raise RuntimeError('Effect colors/displacement differ: '+str(measurement))

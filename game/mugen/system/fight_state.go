@@ -126,6 +126,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		}
 	}
 	world, err := coord.Project(gameSpace, target, s.engine.cfg.Video.KeepAspect)
+	world.Y += m.Timeline.ShakeOffset() * float64(gameSpace.Width) / 320 * world.ScaleY
 	drawFitted(s.gameCanvas, world, err)
 	hud, err := coord.HUDProject(gameSpace, motifSpace, target, s.engine.cfg.Video.KeepAspect)
 	drawFitted(s.hudCanvas, hud, err)
