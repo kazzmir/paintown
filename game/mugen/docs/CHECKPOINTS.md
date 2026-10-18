@@ -4,6 +4,19 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bv: native results, draws and round reset
+
+Predecessor/reversal 7fae8ec4. 26 frozen native controls pin 1,560 integers and
+104 input hashes. Adds normal-mode tally/MatchOver boundaries, draw limits,
+rolling win-pose holds, late damage cutoff/DKO, Alive latching, bare NumProj
+and stage resetBG. Persistence/cleanup/identity controls agree. Match focused
+races 71.953s; Character/System/Stage and core races pass. Three fresh native
+replays and three rebuilt apps/six captures/private PCM pass provenance.
+ROUND-RESULTS.md records artifacts and three unwaived legacy HitVel trigger
+counterexamples. M4bu's nonterminal controls did not prove terminal MatchOver
+at pose entry; this checkpoint corrects it to RoundState 4. Continue M4bw input-
+driven complete matches and final full scoped races. No push or binaries.
+
 ## M4bu: native KO/time-over clocks and pose entry
 
 Predecessor/reversal bbba565e.29 native programs pin1,740 observations and116

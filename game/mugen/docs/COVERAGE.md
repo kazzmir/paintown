@@ -1,13 +1,13 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-18 through M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bv results/reset and M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
 
 | Area | Current implementation/evidence | Remaining gate |
 | --- | --- | --- |
-| Language and compiler | Typed int32/float32/bottom, versioned expressions, assignment, tuples, redirect contexts, precompiled core parameters. `evaluator/`, `engine/parameters.go`, BOTTOM.md. | Full controller schemas, all trigger bindings/variants/errors and their interactions. |
+| Language and compiler | Typed int32/float32/bottom, versioned expressions, assignment, tuples, redirect contexts, precompiled core parameters. `evaluator/`, `engine/parameters.go`, BOTTOM.md. | Full controller schemas, all trigger bindings/variants/errors and their interactions; preserved native legacy HitVel counterexamples return bottom/0 in Go. |
 | State/world scheduling | Shared executor and production world; native state entry, persistence, negative states, ordering and physics. WORLD.md, PHYSICS.md, ACTOR-ORDER.md. | All Statedef/default/version cases and broad paused/foreign/entity combinations. |
 | Input | Logical input shared with production, stock keyboard mappings, command matching. INPUT.md, `system/flow_test.go`. | Full command timing/modifier/facing cases and gamepad adapters. |
 | Identity/helpers | Match-owned IDs, ownership, spawning, retirement, root/parent/target redirects. ENTITIES.md, HELPERS.md, RETIREMENT.md. | Full projectile/team/multi-entity behavior and parameter interactions. |
@@ -30,8 +30,9 @@ does not promote an entire controller from one passing parameter/default.
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
 | Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | All format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
 | Audio | Production command queue/mixer, channel ownership, pan/volume/voice/cues and owned native PCM controls. AUDIO.md. | BGM, broader configuration/resource/clock combinations; ForceFeedback remains an empty method. |
-| KO/time-over clocks | M4bu29 native programs, integer slowdown, continuous GameTime, zero timer interval, pause distinctions, readiness/900-pass fallback, result suffixes and separate state4/pose/MatchOver/init boundaries. ROUND-LIFECYCLE.md. | Full DKO/draw/reset/persistence rules (M4bv), complete input-driven matches (M4bw), exact HUD/fade/audio timing and broader entity/pause variants. |
-| Stock match/UI | Title/selection/versus/fight/result/rematch/exit tested through production. M4bf storyboard localcoord and game/window scaling match six native placement controls. STORYBOARD-CANVAS.md, MATCH.md, `system/flow_test.go`. | Exact KO/round persistence/draw/reset clocks. Full modes/AI/progression; win/continue/game-over types retain black-screen stubs. |
+| Results/reset | M4bv: 26 native controls / 1,560 integers; normal-mode wins/draws/MatchOver, rolling holds, late damage/DKO, Alive latching and persistent state/entity cleanup; stage resetBG state checks. ROUND-RESULTS.md. | Complete input-driven matches (M4bw), exact presentation timing, all assertion/pause and broader mode/entity combinations. |
+| KO/time-over clocks | M4bu29 native programs, integer slowdown, continuous GameTime, zero timer interval, pause distinctions, readiness/900-pass fallback, result suffixes and separate state4/pose/MatchOver/init boundaries. ROUND-LIFECYCLE.md. | Broader DKO/draw/reset/persistence interactions, complete input-driven matches (M4bw), exact HUD/fade/audio timing and broader entity/pause variants. |
+| Stock match/UI | Title/selection/versus/fight/result/rematch/exit tested through production. M4bf storyboard localcoord and game/window scaling match six native placement controls. STORYBOARD-CANVAS.md, MATCH.md, `system/flow_test.go`. | Broader KO/round combinations. Full modes/AI/progression; win/continue/game-over types retain black-screen stubs. |
 | Other explicit stubs | VarRandom, GameMakeAnim and MakeDust have empty Character methods (`character/character.go`). | Implement runtime behavior, schemas and native controls. BindToParent/Root's legacy methods are empty, but typed binding paths must be assessed through `engine/binding.go`, not those fallback bodies alone. |
 
 ## Quantitative scopes

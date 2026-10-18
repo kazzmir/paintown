@@ -49,12 +49,13 @@ Freeze original fixtures/recipes before native captures and never edit them
 once observed. Use focused checks while developing and a full scoped race
 suite at the final integration boundary. Private native/app runs stay serial.
 
-M4bu is verified: 29 native clock programs/1,740 observations, focused/core/
-Character/System/intro checks, two fresh native reproductions and three apps/
-six captures pass. See ROUND-LIFECYCLE.md and HANDOFF.md for exact final source
-hashes and the preserved failed diagnostics. Continue M4bv and M4bw after the
-local M4bu commit. No full scoped suite was repeated here; final integration
-follows M4bw. Typed HitDef coverage stays 81/81 and whole-engine parity is open.
+M4bu is committed as 7fae8ec4. M4bv is verified: 26 new native controls /
+1,560 integers, focused/core/Character/System/Stage races, three fresh native
+replays and three apps/six captures/private PCM pass. Commit M4bv, then continue
+M4bw automatically. See ROUND-RESULTS.md and HANDOFF.md. Three preserved legacy
+HitVel counterexamples expose an unbound trigger; keep that gate open. Final
+full scoped races follow M4bw. Typed HitDef coverage stays 81/81; engine parity
+is unfinished. No pushes or binaries.
 
 ## Scope
 

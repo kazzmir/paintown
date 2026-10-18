@@ -9,10 +9,10 @@ import shutil
 import subprocess
 import time
 
-from reference_probe import capture, digest, prepare, read_clipboard
+from reference_probe import capture, digest, prepare, read_clipboard, read_clipboard_lines
 
 
-def capture_cycle(run, prefix, source, pages, seconds):
+def capture_cycle(run, prefix, source, pages, seconds, mode="quick"):
     """Rotate two clipboard lines per tick; gather all pages from one process."""
     commands = run/'chars/kfm/probe.cmd'
     base = commands.read_text()
@@ -26,18 +26,40 @@ def capture_cycle(run, prefix, source, pages, seconds):
     env=os.environ.copy();env.update(WINEARCH='win32',WINEPREFIX=str(prefix),WINEDEBUG='-all')
     results={}
     with (run.parent/'animation-probe.log').open('w') as log:
-        process=subprocess.Popen(['wine','mugen.exe','kfm','kfm','-s','kfm','-nojoy'],cwd=run,env=env,stdout=log,stderr=log)
+        launch=['wine','mugen.exe']+(['kfm','kfm','-s','kfm'] if mode=='quick' else [])+['-nojoy']
+        process=subprocess.Popen(launch,cwd=run,env=env,stdout=log,stderr=log)
         try:
+            if mode=='versus':
+                time.sleep(4)
+                owned=subprocess.check_output(['xdotool','search','--onlyvisible','--pid',str(process.pid)],text=True).split()
+                if len(owned)!=1:
+                    helper=prefix.parent/'reference-tools/wintext.exe'
+                    if helper.exists():
+                        result=subprocess.run(['wine',str(helper)],env=env,capture_output=True,text=True,timeout=5)
+                        (run.parent/'load-error.txt').write_text(result.stdout+result.stderr)
+                    raise RuntimeError('Expected one owned menu window; inspect load-error.txt')
+                window=owned[0]
+                for label,keys,delay in [('welcome',['F1'],1),('title',['Down','Return'],2),('select',['comma','f'],2),('stage',['Return'],3)]:
+                    subprocess.run(['import','-window',window,str(run.parent/(label+'.png'))],check=True,stdout=log,stderr=log)
+                    subprocess.run(['xdotool','key','--window',window,'--delay','120',*keys],check=True,stdout=log,stderr=log)
+                    time.sleep(delay)
             time.sleep(seconds)
             windows=subprocess.run(['xdotool','search','--onlyvisible','--pid',str(process.pid)],capture_output=True,text=True,check=False).stdout.split()
-            if len(windows)!=1:raise RuntimeError('Expected exactly one owned native window')
+            if len(windows)!=1:
+                helper=prefix.parent/'reference-tools/wintext.exe'
+                if helper.exists():
+                    result=subprocess.run(['wine',str(helper)],env=env,capture_output=True,text=True,timeout=5)
+                    (run.parent/'load-error.txt').write_text(result.stdout+result.stderr)
+                raise RuntimeError('Expected exactly one owned native window; inspect load-error.txt')
             for attempt in range(120):
                 if process.poll() is not None:raise RuntimeError('Native process exited during round capture')
                 png=run.parent/('cycle-'+str(attempt)+'.png')
                 subprocess.run(['import','-window',windows[0],str(png)],stdout=log,stderr=log,check=True,timeout=5)
+                try:lines=read_clipboard_lines(png,run)
+                except RuntimeError:continue
                 for page in pages:
-                    try:values=read_clipboard(png,run,page)
-                    except RuntimeError:continue
+                    if page not in lines or page+6 not in lines:continue
+                    values={first+i:value for first in [page,page+6] for i,value in enumerate(lines[first])}
                     if page not in results:results[page]=(png,values)
                 if len(results)==len(pages):break
                 time.sleep(.023)
@@ -59,6 +81,11 @@ def override(source, section, key, value):
         parts[i+1], count = re.subn(r'(?im)^\s*'+re.escape(key)+r'\s*=.*$', key+' = '+str(value), parts[i+1])
         if count != 1:
             raise RuntimeError('Expected exactly one recipe field: '+section+'.'+key)
+        # The legacy whitespace matcher can consume the separator when this
+        # is a section's first attribute. Preserve every previously valid
+        # preparation while keeping the header on its own line.
+        if not parts[i].endswith(('\n','\r')) and not parts[i+1].startswith(('\n','\r')):
+            parts[i+1]='\n'+parts[i+1]
         found += 1
     if found != 1:
         raise RuntimeError('Expected exactly one recipe section: '+section)
@@ -113,8 +140,23 @@ def main():
     if expected:
         for field in ['engine_sha256','fixture_sha256','original_fight_sha256','prepared_fight_sha256','config_sha256']:
             if expected[field] != evidence[field]:raise RuntimeError('Pinned round recipe changed: '+field)
+    mode=recipe.get('native_mode','quick')
+    if mode not in ['quick','versus']:raise RuntimeError('Unsupported native launch mode')
+    if mode=='versus':
+        select=run/'data/select.def'
+        select.write_text('[Characters]\nkfm, stages/kfm.def\n[ExtraStages]\nstages/kfm.def\n[Options]\narcade.maxmatches=1\nteam.maxmatches=1\n')
+        evidence['native_mode']=mode
+        evidence['select_sha256']=digest(select)
+        if expected and any(expected.get(k)!=evidence[k] for k in ['native_mode','select_sha256']):raise RuntimeError('Pinned native mode inputs changed')
     dense = recipe.get('dense', False)
-    cycle = capture_cycle(run,project/'temp/wine-reference',source,pages,args.seconds) if dense else None
+    cycle = capture_cycle(run,project/'temp/wine-reference',source,pages,args.seconds,mode) if dense else None
+    menu_delta=0
+    if expected and mode=='versus':
+        if not dense or 0 not in cycle:raise RuntimeError('Versus verification needs the first-CNS timestamp')
+        origin=next(row['variables']['0'] for row in expected['captures'] if row['page']==0)
+        menu_delta=cycle[0][1][0]-origin
+        evidence['menu_clock_delta']=menu_delta
+    timestamp_offsets={0,1,2,3,4,5,7,8,9,10,11,12}
     for page in ([0] if dense else pages):
         idle()
         if not dense:png = capture(run,project/'temp/wine-reference',source,page,args.seconds,'var',True,'kfm',0)
@@ -126,7 +168,8 @@ def main():
             if expected:
                 raw = next(row['variables'] for row in expected['captures'] if row['page']==observed_page)
                 want = {int(index):value for index,value in raw.items()}
-                if values != want:raise RuntimeError('Native round trace changed: '+str(values))
+                comparable={index:(value-menu_delta if mode=='versus' and value>0 and index%20 in timestamp_offsets else value) for index,value in values.items()}
+                if comparable != want:raise RuntimeError('Native round trace changed: '+str(values))
             print(args.fixture, observed_page, values, flush=True)
     (work/'evidence.json').write_text(json.dumps(evidence,indent=2)+'\n')
     if args.record:fixture.with_suffix('.json').write_text(json.dumps(evidence,indent=2)+'\n')

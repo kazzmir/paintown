@@ -70,6 +70,7 @@ type Match struct {
 	SimulationSkipped       bool // KO skips and the reset initialization tick
 	PhaseTime, Tick, Round  int
 	Wins                    [2]int
+	Draws                   int // draw rounds, including draws converted to wins
 	Winner                  int // 0/1, or -1 for a draw
 	TimeOver                bool
 	TimeLeft                int     // counts; -1 means unlimited
@@ -82,6 +83,8 @@ type Match struct {
 	commonEffects           effect.Source
 	timeTicks               int
 	matchDone               bool
+	resultCommitted         bool
+	roundEndDeadline        int
 	cameraGoalX             float64
 	cameraLeft, cameraRight float32
 	introClearTicks         int
@@ -173,11 +176,15 @@ func (m *Match) resetRound() error {
 	}
 	m.Phase, m.PhaseTime, m.Winner, m.TimeOver, m.timeTicks = PreIntro, 0, -1, false, 0
 	m.winPoseStarted = false
+	m.resultCommitted = false
 	m.initializingRound = m.Round > 1
 	m.pendingRoundOver = false
 	m.slowdown.Clear()
 	m.TimeLeft = m.Options.RoundTime
 	s := m.Stage
+	if m.Round > 1 {
+		s.ResetBackground()
+	}
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
 	m.cameraGoalX = m.CameraX
@@ -287,8 +294,10 @@ func (m *Match) Update() error {
 	paused := m.Timeline.Paused()
 	if m.pendingRoundOver {
 		m.pendingRoundOver = false
+		m.commitRoundResult()
 		m.roundState(4)
 		m.enter(Over)
+		m.roundEndDeadline = m.Setting("Round", "over.time", 210)
 		m.slowdown.Clear()
 		for _, player := range m.Players {
 			player.Character.HitDefActive = false
@@ -303,8 +312,11 @@ func (m *Match) Update() error {
 	if !m.Timeline.BackgroundFrozen() {
 		m.Stage.Update()
 	}
+	// The initial KO pass counts toward the native damage grace.
+	damageDisabled := m.Phase == Over || (m.Phase == PreOver && m.PhaseTime+1 >= m.Setting("Round", "over.hittime", 10))
 	for _, p := range m.Players {
 		c := p.Character
+		c.RoundDamageDisabled = damageDisabled
 		scale, _ := m.Options.GameSpace.ScaleTo(p.LocalCoord)
 		c.CameraX = m.CameraX * scale
 		c.ScreenWidth = p.LocalCoord.Width
@@ -371,7 +383,9 @@ func (m *Match) Update() error {
 			m.finishRound()
 		}
 	case PreOver:
-		if m.TimeOver && m.PhaseTime == 1 {
+		if !m.TimeOver || m.PhaseTime == 1 {
+			// A second KO during the grace interval can replace a provisional
+			// win with a draw before RoundState 4 commits either tally.
 			m.publishRoundResult()
 		}
 		if m.PhaseTime >= m.Setting("Round", "over.waittime", 45) && (m.roundActorsReady() || m.PhaseTime >= 900) {
@@ -381,7 +395,9 @@ func (m *Match) Update() error {
 		if !m.winPoseStarted && m.PhaseTime >= m.Setting("Round", "over.wintime", 45) {
 			m.winPoseStarted = true
 			for slot, p := range m.Players {
-				p.Character.IsMatchOver = m.matchDone
+				if p.Character.Life <= 0 {
+					continue
+				}
 				state := 170
 				if m.Winner < 0 {
 					state = 175
@@ -396,7 +412,16 @@ func (m *Match) Update() error {
 				}
 			}
 		}
-		if m.PhaseTime >= m.Setting("Round", "over.time", 210) {
+		held := false
+		for _, p := range m.Players {
+			held = held || p.Character.Specials["roundnotover"]
+		}
+		// The beta keeps a rolling 19-pass deadline while a win pose is
+		// asserted, rather than simply testing the flag at over.time.
+		if held {
+			m.roundEndDeadline = m.PhaseTime + 19
+		}
+		if m.PhaseTime >= m.roundEndDeadline {
 			if m.matchDone {
 				m.enter(Finished)
 			} else {
@@ -452,15 +477,35 @@ func (m *Match) publishRoundResult() {
 	} else if right > left {
 		m.Winner = 1
 	}
-	if m.Winner >= 0 {
-		m.Wins[m.Winner]++
-	}
-	m.matchDone = m.Wins[0] >= max(1, m.Setting("Round", "match.wins", 2)) || m.Wins[1] >= max(1, m.Setting("Round", "match.wins", 2))
 	for slot, p := range m.Players {
 		p.Character.RoundWon = m.Winner == slot
 		p.Character.RoundLost = m.Winner >= 0 && m.Winner != slot
 		p.Character.RoundDraw = m.Winner < 0
 		p.Character.RoundTimeOver = m.TimeOver
+	}
+}
+
+// RoundState 4 commits the result; Win/Lose may already have reported it during
+// the KO wait. Native Quick-VS is intentionally a different, unlimited mode.
+func (m *Match) commitRoundResult() {
+	if m.resultCommitted {
+		return
+	}
+	m.resultCommitted = true
+	if m.Winner >= 0 {
+		m.Wins[m.Winner]++
+	} else {
+		m.Draws++
+		limit := m.Setting("Round", "match.maxdrawgames", 1)
+		if m.Draws > limit {
+			m.Wins[0]++
+			m.Wins[1]++
+		}
+	}
+	target := max(1, m.Setting("Round", "match.wins", 2))
+	m.matchDone = m.Wins[0] >= target || m.Wins[1] >= target
+	for _, p := range m.Players {
+		p.Character.IsMatchOver = m.matchDone
 	}
 }
 

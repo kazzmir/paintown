@@ -58,8 +58,12 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 	// native pre-over until its 900-pass readiness timeout.
 	m.Players[1].Character.ChangeState(5150, 0, -1)
 	advanceUntil(t, m, PreOver, 2)
-	if m.Winner != 0 || m.Wins != [2]int{1, 0} || m.TimeOver {
+	if m.Winner != 0 || m.Wins != [2]int{} || m.TimeOver {
 		t.Fatal("KO result", m.Winner, m.Wins, m.TimeOver)
+	}
+	advanceUntil(t, m, Over, 300)
+	if m.Wins != [2]int{1, 0} {
+		t.Fatal("round-state 4 did not commit win", m.Wins)
 	}
 	advanceUntil(t, m, PreIntro, 500)
 	if m.Round != 2 || m.TimeLeft != 99 {

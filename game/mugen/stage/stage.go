@@ -66,9 +66,10 @@ type Stage struct {
 		Intensity int
 	}
 
-	Background   background.Background
-	SpriteData   *sff.SFF
-	SpriteImages map[string]*background.SpriteImages
+	Background      background.Background
+	SpriteData      *sff.SFF
+	SpriteImages    map[string]*background.SpriteImages
+	resetBackground func()
 }
 
 func (s *Stage) Update() {
@@ -84,4 +85,12 @@ func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
 	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
+}
+
+// ResetBackground restores authored element/controller clocks between rounds.
+// Sprite archives and GPU caches remain owned by the loaded stage.
+func (s *Stage) ResetBackground() {
+	if s.StageInfo.ResetBG && s.resetBackground != nil {
+		s.resetBackground()
+	}
 }

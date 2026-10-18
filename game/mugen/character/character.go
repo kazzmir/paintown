@@ -36,6 +36,7 @@ type Character struct {
 	JuggleCost            int
 	HitDefActive          bool
 	stateSerial           uint64
+	aliveAtTickStart      bool
 	statePassBudget       engine.StatePassBudget
 	hitTargets            map[*Character]hitTarget
 	targetOrder           []*Character
@@ -258,6 +259,7 @@ type Character struct {
 	AILevel                                       int
 	IsMatchOver                                   bool
 	RoundWon, RoundLost, RoundDraw, RoundTimeOver bool
+	RoundDamageDisabled                           bool // contact still enters get-hit states after the KO grace
 }
 
 // NewCharacter returns a newly initialized character.
@@ -346,6 +348,7 @@ func (c *Character) Update() {
 }
 
 func (c *Character) startTick() bool {
+	c.aliveAtTickStart = c.Life > 0
 	c.boundThisTick = false
 	c.tickMoveType = c.MoveType
 	if c.Viewport != nil && c.Viewport.Space.Width > 0 {
@@ -451,7 +454,17 @@ func (c *Character) runStateTick() bool {
 	// Engine transitions enter their positive state in this same tick.
 	generation := c.stateSerial
 	if !isPaused {
-		c.HandleBuiltinTransitions()
+		// Alive is latched for the CNS pass. A controller self-KO enters the
+		// native airborne death state after that pass; contact damage already
+		// has its own H-state entry and is applied separately by TickCharacters.
+		if c.Parent == nil && c.aliveAtTickStart && c.Life <= 0 && c.MoveType != "H" {
+			c.stateOwner = nil
+			c.changeStateWithEntry(5030, engine.EntryOverrides{HasCtrl: true, Ctrl: false}, true)
+			c.SetMoveType("H")
+			c.SetCtrl(false)
+		} else {
+			c.HandleBuiltinTransitions()
+		}
 	}
 	if c.RuntimeError == nil && generation != c.stateSerial {
 		c.RuntimeError = c.SM.RunPositivePassWithBudget(c.StateFile.States, c, &c.statePassBudget)
@@ -2019,7 +2032,7 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 func (c *Character) applyHitDamage(damage int) {
 	// This variable exposes pending damage during entry/state execution only.
 	c.GetHitDamage = 0
-	if c.MoveType != "H" {
+	if c.MoveType != "H" || c.rootPlayer().RoundDamageDisabled {
 		return
 	}
 	c.SetLife(c.Life - damage)

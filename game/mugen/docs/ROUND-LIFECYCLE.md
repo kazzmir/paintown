@@ -98,3 +98,12 @@ Continue M4bv and M4bw automatically, with local commits and no push/binaries.
 The staged whitespace audit retains trailing blank lines in the frozen native
 CNS inputs and source snapshot rather than changing their verified hashes.
 All other whitespace checks pass (blank-at-eof excluded for this checkpoint).
+
+## M4bv correction and continuation
+
+M4bu was committed as 7fae8ec4. Its nonterminal controls did not prove the
+terminal MatchOver timing. M4bv ordinary Versus controls correct the implementation
+to publish MatchOver at RoundState 4, before pose entry. Results/reset, late
+contact and persistence now pass 26 native controls / 1,560 observations; see
+[ROUND-RESULTS.md](ROUND-RESULTS.md). The final complete-match checkpoint M4bw
+and full scoped integration remain authorized and next.

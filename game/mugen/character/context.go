@@ -53,6 +53,11 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "alive":
+		if c.updateActive {
+			return evaluator.Bool(c.aliveAtTickStart), true
+		}
+		return evaluator.Bool(c.Life > 0), true
 	case "win", "winko", "wintime", "winperfect", "lose", "loseko", "losetime", "drawgame":
 		root := c.rootPlayer()
 		var result bool
@@ -109,6 +114,8 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		default:
 			return evaluator.EvaluateValue(&evaluator.Identifier{Name: "movetype"}, other), true
 		}
+	case "numproj":
+		return evaluator.Int(int32(len(c.Projectiles))), true
 	case "palno":
 		return evaluator.Int(int32(c.PaletteNo)), true
 	case "ailevel":

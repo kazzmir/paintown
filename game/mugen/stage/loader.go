@@ -36,6 +36,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 		SpriteImages: make(map[string]*background.SpriteImages),
 	}
 	stage.StageInfo.LocalCoord = coord.Default()
+	stage.StageInfo.ResetBG = true
 	stageDir := filepath.Dir(absPath)
 
 	var currentDef *background.BGCtrlDef
@@ -269,7 +270,18 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	// Load background elements
 	stage.Background.LocalCoord = stage.StageInfo.LocalCoord
 	stage.Background.SpriteData = stage.SpriteData
-	stage.Background.LoadFromAST(ast, "bg", stage.SpriteData, airData)
+	definitions := append([]*background.BGCtrlDef(nil), stage.Background.Controllers...)
+	stage.resetBackground = func() {
+		stage.Background.Elements = nil
+		stage.Background.Controllers = nil
+		for _, definition := range definitions {
+			copy := *definition
+			copy.Time = 0
+			stage.Background.Controllers = append(stage.Background.Controllers, &copy)
+		}
+		stage.Background.LoadFromAST(ast, "bg", stage.SpriteData, airData)
+	}
+	stage.resetBackground()
 
 	return stage, nil
 }

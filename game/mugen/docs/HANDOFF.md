@@ -13,63 +13,62 @@ Read HITDEF-REMAINING.md, COVERAGE.md and the relevant topic documents.
 
 ## Current round-lifecycle allocation
 
-The user approved M4bu KO/time-over clocks, M4bv results/reset and M4bw complete
-input-driven matches after bbba565e. Continue through all three with local
-commits; no approval pause between checkpoints. No agents or goal active.
-M4bu is verified and ready for its local commit; M4bv/M4bw remain active scope.
-The earlier27-key allocation is historical. Read ROUND-LIFECYCLE.md.
+The user approved M4bu clocks, M4bv results/reset and M4bw complete input-driven
+matches after bbba565e. Continue automatically with local commits, no push or
+binaries. M4bu is committed as 7fae8ec4. M4bv is verified and ready to commit;
+M4bw is the final authorized checkpoint in this allocation. No agents or goal
+are active. Read ROUND-LIFECYCLE.md and ROUND-RESULTS.md.
 
-M4bu29 native programs/1,740 observations/116 source hashes pass. Final29 plus
-old time-over regression pass36.064s; intro controls4.719s; Character11.873s,
-System4.773s and engine/evaluator/CNS/combat races1.528/1.022/1.015/1.012s pass.
-Lethality/fatal-guard/stock/pause checks passed in the initial focused run, whose
-sole obsolete time-over assertion was corrected and retested. The full failed
-package log is diagnostic, not a pass. New skip-flag default initially broke two
-HUD cue/PCM tests; explicit SimulationSkipped fixes them. Final full scoped
-races follow M4bw, not M4bu. Historical M4bt full942.741s remains distinguished.
+M4bv: 26 promoted native controls / 1,560 integers / 104 pre-native hashes.
+Sixteen ordinary Versus cases cover win limits, draws, time wins, MatchOver,
+perfect outcomes and rolling roundnotover deadlines. Seven recovering late
+projectile cases pin provisional-win-to-DKO and the damage cutoff. Two self-KO
+cases pin Alive latching and 5030 entry. One reset case pins persistent power,
+integer/float ranges, entity/effect cleanup, root IDs and stale helper handles.
+Stage resetBG is implemented and tested against the bundled specification.
 
-Two fresh native reproductions and three rebuilt apps/six captures pass. Stock
-and KO captures were visually inspected; PNG previews were losslessly reencoded
-with identical RGB pixels to avoid the repeated-PNG viewer issue. Final audit:
-temp/m4bu-final-evidence-audit.json.274 source/test/probe hashes are frozen in
-m4bu-final3-production-inputs.json. Application SHA256:
-5bd9bd3d5ba6527641645d23f4b44e01bb75952e21a52a4ff1a546115b98baef.
-Native and root module hashes pass. No clients/sessions remain.
+Three additional preserved counterexamples expose an unbound legacy HitVel Y
+trigger: native -24 versus Go bottom/0, with all other 59 integers agreeing per
+case. They do not establish a physical-knockback difference. See the text inputs
+and goldens in tests/testdata/reference/known-divergences. The existing trigger/
+projectile gate stays open. Do not silently promote registration or key counts.
 
-Preparation manifests: m4bu-prepared-stable.json(6), extra.json(use8, exclude
-held timeover-hitpause-stable), clock-boundaries.json(5), integrated-clocks.json(6),
-readiness.json(use3, exclude held timeover-hitpause-ready-stable), single-hit.json(1).
-Names share the m4bu-prepared- prefix. All authored source/numeric goldens are
-unchanged. Initial rejected constants and v2/non-stable/held prototypes remain
-in ignored m4bu-rejected-data-draft and m4bu-unpromoted-clock-drafts. Do not rerun
-authors or promote diagnostics. The final verifier initially mishandled integer
-JSON keys; all60 diagnostic values matched independently and two fresh v2 runs
-pass. Native startup changes only FirstRun/line endings, verified against the
-exact reconstructed prelaunch hash and preserved postlaunch file.
+Final focused races pass: Match 71.953s includes all 26 new controls, the 29 old
+clock controls, the corrected idle HitOverride regression and stock KO/time/
+pause/sweep/reset checks. Full Character/System/Stage 11.504/4.694/1.039s; core
+engine/evaluator/combat/CNS 1.452/1.020/1.011/1.012s. The first integrated run
+failed one unnecessary fall flag; the exact old golden passes after its removal.
+The independent HitVel diagnostic fails exactly Var(22) and is not acceptance.
 
-ROUND-LIFECYCLE.md describes integer slowdown debt/thresholds, continuous
-GameTime and skipped simulation, zero timer interval/initial offset2, pause
-clock distinctions, delayed time-over results, phase4 versus pose timing,
-readiness/900-pass fallback and the reset initialization tick. Legacy scalar
-fixtures now count completed simulation passes. Artificial stock KO test
-setups include a valid5150 dead pose; M4bw will validate actual damage/inputs.
-HUD exact component/fade/audio timing and broader cases are unclaimed.
+Three fresh native reproductions and three apps/six captures pass provenance;
+all three final application captures were inspected. Private stock PCM is
+nonzero (300,249 stereo frames, peak 32768). Source manifest:
+temp/m4bv-final-production-inputs.json, 277 hashes. Audit:
+temp/m4bv-final-evidence-audit.json. Binary:
+f12ca932c50bdc7e4a2b845a26f21b47f0d5038fc1dc74e6e25b9d14a31418a7.
+Native/root-module hashes pass. All sessions were awaited; no UI clients remain.
 
-Next M4bv: two original roundresult-straight/alternate sources/recipes are
-ALREADY AUTHORED but NOT CAPTURED. Frozen hashes:
-temp/m4bv-prepared-initial.json. They use20 integer slots per round for three
-rounds, preserve all variables and hold final MatchOver via roundnotover.
-Recipes keep stock intros, disable slowdown and shorten over waits to3/2/10.
-First capture these before implementing results/reset changes; new findings
-need new filenames, never edited native inputs. Use tests/round_probe.py with
---fixture roundresult-NAME --name ... --record --seconds13. The new tool's
-rotating capture works with arbitrary simple fixture names and var-bank pages.
-Need dedicated result replay/helper; existing TestNativeRoundClockPrograms
-expects exactly29 clock JSONs, and the roundresult family must remain separate.
-Then measure draws/maxdrawgames, DKO grace window, persistent power/variables,
-reset IDs/helpers/effects/backgrounds and roundnotover. Finish M4bw real input/
-damage multi-round/rematch validation and full scoped races -p1 -count1 -timeout20m.
-All previous renderer/recovery/controller/mode/audio/asset gates stay unwaived.
+Native originals remain frozen. The manifests m4bv-prepared-{versus,edges,
+perfect-witness,holds,wins-valid,persistence-v2,lifeko,lifeko-latch,
+projectile-recover,final-boundaries}.json contain the promoted input hashes.
+The last manifest also contains archived malformed wins drafts. Do not rerun
+author scripts. m4bv-unpromoted-diagnostics preserves 29 Quick-VS/missing-spawn/
+held-hit/rejected-max programs; other initial range, empty-helper and malformed
+first-field inputs have separate archive directories and logs. Preparation's
+header-separator fix retains 43 earlier preparation hashes; all 1,740 old clock
+values and 420 initial Versus values retain exact glyph decoding. FirstRun and
+line-ending startup changes are audited; fresh menu origins can differ, but
+only explicit timestamp slots are aligned and all event durations stay exact.
+
+Next M4bw: apply the draft in temp/m4bw-complete-match-test.txt to a real Match
+test file, then exercise actual logical walk/punch damage through two-/three-
+round wins, time draws and repeated rematches without life/state/position
+injection. Extend system flow through actual keyboard combat/results/rematch.
+Inspect fresh stock application output and run the final full scoped race suite
+serially: --check -race -p 1 -count=1 -timeout=20m. Freeze source before validation
+and record findings at the local checkpoint. No permission pause is required.
+The latest full scoped run is still M4bt (Match 942.741s); none was repeated in
+M4bu/M4bv. All original whole-engine gates remain unwaived.
 
 ## M4bq verified checkpoint
 

@@ -186,7 +186,7 @@ def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=Fal
     return output
 
 
-def read_clipboard(path, reference, page):
+def read_clipboard_lines(path, reference):
     """Read exact debug glyph masks, failing closed on any ambiguous capture.
 
     This is template matching against the bundled bitmap, not approximate OCR.
@@ -209,8 +209,9 @@ def read_clipboard(path, reference, page):
     # Clipboard glyphs occupy only the bottom 80 rows. Keep the exact matcher
     # while avoiding a full-window pixel scan for each rotating trace page.
     image = image.crop((0, max(0, image.height - 80), image.width, image.height))
+    pixels = list(image.getdata())
     white = [[min(c) >= 230 and max(c) - min(c) < 5
-              for c in [image.getpixel((x, y)) for x in range(image.width)]]
+              for c in pixels[y*image.width:(y+1)*image.width]]
              for y in range(image.height)]
 
     def matches(char, x, y):
@@ -232,17 +233,23 @@ def read_clipboard(path, reference, page):
                 column += glyphs[char][0] + 1
                 if column + 5 >= image.width:
                     break
-            for first in [page, page + 6]:
-                number = r'(?:[+-]?\d+(?:\.\d+)?(?:E[+-]?\d+)?|[+-]?1\.#INF)'
-                if re.fullmatch('P' + str(first) + ':' + number + '(' + ',' + number + '){5}', text):
-                    if first in lines:
-                        raise RuntimeError('Ambiguous duplicate clipboard line')
-                    lines[first] = [('negative_infinity' if n.startswith('-') else 'positive_infinity') if '#INF' in n
-                                    else float(n) if any(c in n for c in '.E') else int(n)
-                                    for n in text.split(':')[1].split(',')]
-    if len(lines) != 2:
+            number = r'(?:[+-]?\d+(?:\.\d+)?(?:E[+-]?\d+)?|[+-]?1\.#INF)'
+            match = re.fullmatch(r'P(\d+):' + number + '(' + ',' + number + '){5}', text)
+            if match:
+                first = int(match.group(1))
+                if first in lines:
+                    raise RuntimeError('Ambiguous duplicate clipboard line')
+                lines[first] = [('negative_infinity' if n.startswith('-') else 'positive_infinity') if '#INF' in n
+                                else float(n) if any(c in n for c in '.E') else int(n)
+                                for n in text.split(':')[1].split(',')]
+    return lines
+
+
+def read_clipboard(path, reference, page):
+    lines = read_clipboard_lines(path, reference)
+    if page not in lines or page + 6 not in lines:
         raise RuntimeError('Could not read both numeric clipboard lines exactly; inspect capture')
-    return {first + i: value for first, values in lines.items() for i, value in enumerate(values)}
+    return {first + i: value for first in [page, page + 6] for i, value in enumerate(lines[first])}
 
 
 def main():
