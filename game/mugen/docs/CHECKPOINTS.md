@@ -4,6 +4,22 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bm: downed-hit bounce and stock phase consumers
+
+Predecessor/reversal 8779869a. Adds compiled down.bounce and measured contact
+fall-vector reset/preserve selection, including zero-launch and nonfall
+boundaries. Fixes PosFreeze retention across a same-tick transition and the
+first idle heading observation. Twenty-one text programs pin 324 native
+observations, two rejections and 84 pre-native hashes. Routing is 54/81 (66.7%).
+Refined Match races pass 16.775s; physics/landing/recovery/SuperPause and core
+races pass. Three fresh native reproductions and three apps/six captures pass
+provenance. The full run found one earlier
+idle-override fall-query regression; all other checks passed. After its narrow
+contact fix, affected Match races pass 136.768s (196 native programs plus both
+stock sweeps), full Character races pass 11.907s, and fresh native/final rebuilt
+app checks pass. The full log retains its single failure; it was not rerun
+wholesale. Pause for user testing after this local checkpoint. See DOWN-BOUNCE.md and HANDOFF.md.
+
 ## M4bl: HitFallSet value and beta velocity limitation
 
 Predecessor/reversal 915f40d7. Implements optional value/preserve/raw int32

@@ -140,6 +140,7 @@ type HitDef struct {
 	AirGuardCornerPush float64
 	DownVel            []float64
 	DownHitTime        int
+	DownBounce         bool
 	GetPower           []int
 	GivePower          []int
 	Palfrm_Time        int
@@ -782,6 +783,10 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["down.hittime"]; ok {
 		hd.DownHitTime, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["down.bounce"]; ok {
+		value, _ := strconv.Atoi(v)
+		hd.DownBounce = value != 0
 	}
 	if v, ok := params["getpower"]; ok {
 		hd.GetPower = ParseIntList(v)

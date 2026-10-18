@@ -488,7 +488,7 @@ func (c *Character) finishTick() {
 
 				// Engine turning belongs to the common idle/crouch/walk states;
 				// custom states retain their facing. Preserve world momentum on flip.
-				if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Opponents) > 0 {
+				if c.Time > 0 && (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Opponents) > 0 {
 					opponent := c.Opponents[0]
 					newFacing := c.Facing
 					opponentX, _ := c.PositionOf(opponent)
@@ -1762,7 +1762,8 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 	c.stateSerial++
 	c.Time = 0
 	c.HitFallVelActive = false
-	c.PosFrozen = false
+	// PosFreeze is a tick latch: a CNS transition in the same tick retains it.
+	// runStateTick clears it at the next active tick, including bounce entry.
 	c.pendingStateEntry = nil
 	c.pendingMissingEntry = false
 	c.allowMissingState = !found
@@ -2041,6 +2042,12 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	if lethal {
 		c.koHitVelocity(&hit)
 	}
+	if c.GetHitDown && len(hit.DownVel) > 1 && hit.DownVel[1] != 0 && !hit.DownBounce {
+		// A down-hit without bounce disables the subsequent fall velocities.
+		// Restore the preserve-X sentinel rather than assigning horizontal zero.
+		hit.FallXUnchanged = true
+		hit.FallVel = []float64{0, 0}
+	}
 	c.getHitFacing = hitFacing
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 	c.recordCornerPush(attacker, originalHit)
@@ -2100,6 +2107,11 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 		}
 		c.ChangeState(standard, 0, -1)
 		c.ChangeState(override.StateNo, 0, -1)
+		if c.MoveType != "H" {
+			// An idle override does not establish a falling hit context. This
+			// differs from StateTypeSet changing an existing hit state's type.
+			c.SetHitFall(false)
+		}
 	} else if guarded {
 		// Guard Hit States (150-155)
 		if c.StateType == "S" {

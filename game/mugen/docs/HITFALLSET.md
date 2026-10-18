@@ -59,6 +59,9 @@ to M4bm, the second checkpoint's integration boundary.
 
 This is bounded own-state/root evidence. Foreign-state coordinate execution,
 helpers/projectiles/teams, repeated contacts and broad Pause/SuperPause
-combinations remain open. Full recovery-command routing, down.bounce,
-liedown/mashing clocks, juggle/chains and absolute round clocks are separate
-obligations. Existing six alpha and two spark raster failures remain unwaived.
+combinations remain open. M4bm adds bounded [downed-hit bounce](DOWN-BOUNCE.md) coverage and corrects
+contact initialization for an idle HitOverride: it has no fall flag, whereas
+StateTypeSet changing an existing hit state to I retains the stored flag.
+The earlier native hitkill-fall-override-idle control pins that distinction. Full
+recovery-command routing, liedown/mashing clocks, juggle/chains and absolute
+round clocks remain separate obligations. Existing six alpha and two spark raster failures remain unwaived.

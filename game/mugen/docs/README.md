@@ -3,13 +3,14 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4bl fixes HitFallSet value/default behavior and records the
-beta's ignored velocity fields after M4bk's fall-vector work. Read the
+Current status: M4bm adds downed-hit bounce and stock phase/clock fixes after
+M4bl's native HitFallSet value/default and ignored-velocity findings. Read the
 [current coverage ledger](COVERAGE.md),
 [fall/recovery evidence](HIT-FALL-RECOVERY.md),
 [trip recovery findings](TRIP-RECOVERY.md),
 [fall vector evidence](FALL-VECTORS.md),
-[HitFallSet findings](HITFALLSET.md), and
+[HitFallSet findings](HITFALLSET.md),
+[downed-hit bounce](DOWN-BOUNCE.md), and
 [progress assessment](PROGRESS-ASSESSMENT.md) for working behavior, remaining
 gates and bounded allocations. The [checkpoint history](CHECKPOINTS.md) and
 [handoff](HANDOFF.md) record verification and authorization; the original

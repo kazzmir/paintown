@@ -783,3 +783,23 @@ Use BUILD.md's private environment and run native/application/GUI tests
 sequentially. Do not regenerate frozen sources or record expectations from Go.
 [Air/down evidence](../docs/HIT-AIR-DOWN-TIMING.md) records measured behavior,
 verification and remaining recovery/KO/round/combination gates.
+
+
+### HitFallSet and downed-hit bounce (M4bl/M4bm)
+
+`fallset-*` has 22 native programs (240 observations/two load rejections);
+`downbounce-*` has 21 (324 observations/two load rejections), including full
+stock recovery and a bounce/idle phase trace. The shared Match replay checks
+all frozen source hashes and exact native float32 results. See
+[HitFallSet findings](../docs/HITFALLSET.md) and
+[downed-hit bounce](../docs/DOWN-BOUNCE.md) for ignored native parameters,
+metadata, measured timing, provenance and limits. Native expectations come
+from the immutable beta executable, never the Go replay. The stock trace uses
+pages 0/12/24; full parameter-order controls use 0/12/24/28. Native/app/display
+checks run sequentially. Reproduce with a fresh run name; leave frozen inputs
+and recorded values unchanged.
+
+```bash
+game/mugen/mugen.sh --check -race -p 1 -timeout=5m \
+  -run '^(TestNativeHitFallSetPrograms|TestNativeDownBouncePrograms)$' -v
+```

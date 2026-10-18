@@ -7,19 +7,19 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user authorized the next two checkpoints after M4bk (915f40d7).
-M4bl completes native HitFallSet value/default/raw integer behavior and
-records that the beta ignores its documented velocities; focused/core/native/
-application checks pass.
-M4bm is active and covers down.bounce's schema and native down-hit consumers. Freeze original
-text controls before native capture, implement only demonstrated behavior and
-record remaining differences. Use focused checks for M4bl and one full scoped
-race run at the M4bm integration boundary. Commit each checkpoint locally, then
-pause for user testing. Do not push or start a third feature family. Full
-recovery-command routing, liedown/mashing clocks, juggle, broad entity/pause/
-contact combinations, round clocks and renderer gates remain open. Read
-TRIP-RECOVERY.md, FALL-VECTORS.md and COVERAGE.md. Storyboard scaling is
-b1b8864c; upstream integration is 99b4605c.
+The user's two-checkpoint allocation is complete. M4bl (8779869a) implements
+native HitFallSet value/default/raw integer behavior and records the beta's
+ignored velocity fields. M4bm adds down.bounce and stock recovery phase fixes.
+The one full scoped race run found one idle-override fall-query regression;
+the narrow contact fix passes all 196 affected native programs, both stock
+sweeps, the full Character suite, fresh native comparison and rebuilt apps.
+All other checks passed in the full run; that original log retains its single
+failure and was not rerun wholesale. Final source/provenance audits pass.
+Commit the completed M4bm checkpoint locally and pause for user testing. Do
+not push or begin a third family. Full recovery-command routing, liedown/
+mashing clocks, juggle, broad entity/pause/contact combinations, round clocks
+and renderer gates remain open. Read HITFALLSET.md, DOWN-BOUNCE.md and
+COVERAGE.md. Storyboard scaling is b1b8864c; upstream integration is 99b4605c.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 

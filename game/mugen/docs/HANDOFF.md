@@ -1,11 +1,78 @@
 # Current handoff
 
-Updated 2026-10-18. The user authorized two more checkpoints after 915f40d7.
-M4bl is complete; M4bm down.bounce is active. Continue through M4bm's native,
-focused, application and one full scoped race integration gate, commit locally
-and pause for user testing. No third feature family or push is authorized.
-All authored changes stay under game/mugen/; no new binaries are tracked.
-Read HITFALLSET.md and COVERAGE.md.
+Updated 2026-10-18. The user's two-checkpoint allocation is complete: M4bl
+(8779869a) implements native HitFallSet semantics; M4bm adds downed-hit bounce
+and stock recovery phase fixes, including a corrected idle-override regression.
+Final affected replays, Character races, native/app checks and source audits
+pass. The original full run retains its one now-corrected failure; all other
+full-run checks passed. Pause after the local M4bm commit for user testing.
+No third family or push is authorized. All authored changes stay under
+game/mugen/; no new binaries are tracked. Read HITFALLSET.md, DOWN-BOUNCE.md
+and COVERAGE.md.
+
+## M4bm verified checkpoint
+
+Predecessor/reversal 8779869a. Compiles down.bounce as a native integer flag,
+with default/coercion/bottom/error and full relative order. Nonzero down Y
+with bounce disabled resets fall X to its preserve sentinel and fall Y to
+zero, for both fall flags. Zero down Y and standing/airborne controls retain
+fall vectors. Mixed-profile vectors convert once. Stock common bounce and
+get-up paths now match. PosFreeze is retained across same-tick transitions;
+common idle turning preserves the first negative-state heading observation.
+Other auto-turn/PosFreeze edge cases remain open. Routing is 54/81 (66.7%);
+27 keys are literal or absent, not a whole-engine completion count.
+
+Twenty-one programs pin 324 native observations, two load rejections and 84
+pre-native hashes. Manifests: temp/m4bm-prepared-inputs.json,
+m4bm-prepared-extra.json, m4bm-prepared-last.json and m4bm-prepared-trace.json.
+Do not rerun author-m4bm-downbounce.py or derive expectations from Go. Five pre-integration Go hashes are frozen in
+temp/m4bm-production-inputs.json; final hashes are in
+temp/m4bm-final-production-inputs.json. The only final source delta is Character
+contact initialization.
+The evidence audit also verifies M4bl's six authored source hashes against
+commit 8779869a and both native families: 43 programs/564 observations/172
+source hashes. No native expected values or tolerances changed.
+
+The predecessor source overlay reproduces the default-vector and stock
+no-bounce failures (temp/m4bm-before-fix.log). Initial focused replays found
+bottom handling and the stock PosFreeze/idle phase differences. The additional
+native trace was frozen before capture. Refined races pass all 21 programs
+and both stock sweeps (Match 16.775s). Separate physics/landing/recovery/
+SuperPause races pass Character 1.450s/Match 1.871s. Core races engine/
+evaluator/CNS/combat pass 1.465s/1.025s/1.013s/1.013s.
+
+Before the final correction, three fresh native reproductions and three
+apps/six captures passed provenance in temp/m4bm-evidence-audit.json.
+The recovered bounce 7s capture was visually inspected; magenta fixture stage
+fill is intentional. These are smoke checks, not full raster parity. Shared
+application binary SHA256:
+fe85074f062eb5d505372c617d47473e9fcb894f5d7cc2fc567ceb8e3cfb9040.
+The one full scoped race run completed with exactly one failed subtest:
+hitkill-fall-override-idle reported fall=1 rather than native 0. All other
+Match cases and packages passed. Match took 719.837s; Character 11.686s,
+System 4.693s, storyboard 1.786s and stock/resources 6.677s; core engine/
+evaluator/CNS/combat 1.443s/1.021s/1.012s/1.011s. The initial full log remains
+at temp/m4bm-full-race.log with its failure; it is not a passing full run.
+
+The narrow correction clears fall when contact enters a non-H override;
+StateTypeSet changing an existing hit state to I still retains its flag, as
+measured by M4bl. No native value or tolerance changes. Final affected Match
+replays pass 136.768s (196 native programs plus both stock sweeps); full
+Character races pass 11.907s. The fresh native idle-override reproduction and
+three rebuilt apps/six captures pass. temp/run-m4bm-final-validation.py exited
+0; logs are temp/m4bm-final-validation.log and m4bm-final-match-race.log.
+Final source/config/binary/PNG/runtime audit passes in
+temp/m4bm-final-evidence-audit.json; five final Go hashes and M4bl's six
+committed hashes match. Final application binary SHA256:
+3a89203832ebf5662566a567600499f4d75db84595b90bd75d36d9c5e7d7dc91.
+The final recovered bounce and mixed-stock 7s captures were visually inspected.
+No GUI client remains; root module and original executable checksums pass.
+The full suite was not repeated after this isolated correction: the combined
+record is one full run with a single diagnosed failure, then passing affected
+Match/full Character/native/application checks. No third family or push is
+authorized. Full recovery-command routing, non-fall
+recovertime/liedown/mashing, juggle/chains, broad foreign/entity/contact/pause,
+absolute KO/round clocks, modes/assets and strict alpha/spark gates remain open.
 
 ## M4bl verified checkpoint
 

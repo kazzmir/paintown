@@ -24,7 +24,7 @@ var hitDefEvaluationOrder = []string{
 	"p1sprpriority", "p2sprpriority", "forcestand", "forcenofall", "fall", "fall.damage", "fall.xvelocity", "fall.yvelocity", "fall.recover", "fall.recovertime",
 	"sparkno", "guard.sparkno", "sparkxy", "p1facing", "p1getp2facing", "p2facing",
 	"ground.hittime", "ground.slidetime", "ground.velocity", "ground.cornerpush.veloff", "air.hittime", "air.fall", "air.velocity", "air.cornerpush.veloff",
-	"down.hittime", "down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.hittime", "guard.slidetime", "guard.ctrltime", "guard.pausetime", "guard.cornerpush.veloff",
+	"down.bounce", "down.hittime", "down.velocity", "down.cornerpush.veloff", "guard.velocity", "guard.hittime", "guard.slidetime", "guard.ctrltime", "guard.pausetime", "guard.cornerpush.veloff",
 	"airguard.velocity", "airguard.ctrltime", "airguard.cornerpush.veloff", "yaccel",
 }
 
@@ -53,7 +53,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	}
 	var cues []hitDefCue
 	priorityClass := "Hit"
-	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "kill", "guard.kill", "fall.kill", "fall.damage"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy", "id", "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "kill", "guard.kill", "fall.kill", "fall.damage", "down.bounce"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
@@ -109,7 +109,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		entry := hitDefCue{key: key, own: own}
 		strictInteger := false
 		switch key {
-		case "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "kill", "guard.kill", "fall.kill", "fall.damage":
+		case "p1stateno", "p2stateno", "p2getp1state", "p1facing", "p1getp2facing", "p2facing", "hitonce", "priority", "numhits", "p1sprpriority", "p2sprpriority", "forcenofall", "forcestand", "kill", "guard.kill", "fall.kill", "fall.damage", "down.bounce":
 			strictInteger = true
 		}
 		for i, expr := range expressions {
@@ -168,7 +168,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if !present {
 				continue
 			}
-			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
+			values, err := evaluateArgumentsWithBottom(cue.args, env, cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.key == "down.bounce" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
 			if err != nil {
 				return fmt.Errorf("%s: %w", cue.key, err)
 			}

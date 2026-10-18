@@ -6,7 +6,7 @@ Damage/GetPower/GivePower; M4bb adds kill/guard.kill/fall.kill/fall.damage;
 M4be added pausetime/guard.pausetime; M4bg adds ground hit/slide times and four
 dependent guard timing keys; M4bh adds air.hittime/down.hittime; M4bi adds
 fall/air.fall/fall.recover/fall.recovertime; M4bk adds fall x/y velocity and
-yaccel, for 53 expression keys across
+yaccel; M4bm adds down.bounce, for 54 expression keys across
 engine/hitdef.go, hit_vectors.go, hit_power.go, hit_pause.go, hit_timing.go and
 hit_fall.go and hit_fall_vectors.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
@@ -25,7 +25,7 @@ These documented keys have no direct parser/compiler field and need explicit
 implementation or measured target limitations. This is a source audit, not a
 claim that the other keys are complete:
 
-- Reaction: fall.animtype, down.bounce.
+- Reaction: fall.animtype.
 - Combat: air.juggle, chainID, nochainID.
 - Constraints: mindist, maxdist, snap.
 - Palette: palfx.time, palfx.mul, palfx.add.
@@ -40,11 +40,11 @@ six more keys and source-default chains. M4bh's [air/down controls](HIT-AIR-DOWN
 cover both timers and the measured launch/down/countdown consumers. M4bi's
 [fall/recovery controls](HIT-FALL-RECOVERY.md) cover the four new expressions,
 fall selection and the eligibility clock. Remaining physical fields still
-need expression/coercion/order coverage. Down
-time still lacks complete runtime consumers; non-fall GetHitVar(recovertime),
-bounce and the full recovery state paths remain open. Corner push has the bounded M4ax
-consumer described above. Existing
-normal/guard/override/common-state fixtures are bounded evidence; they do not
+need expression/coercion/order coverage. Non-fall GetHitVar(recovertime),
+liedown/mashing clocks and full recovery state paths remain open; M4bm adds
+bounded downed-hit bounce consumers. Corner push has the bounded M4ax consumer
+described above. Existing normal/guard/override/common-state fixtures are
+bounded evidence; they do not
 close these parameter groups. Complete GetHitVar selectors, juggle/recovery/KO,
 projectile/reversal/team interactions and whole-engine/asset/mode gates remain
 open in COMPATIBILITY.md and PLAN.md.
@@ -63,11 +63,16 @@ pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
 measured KO velocity adjustments. These do not establish absolute KO/round
 timing, full fall recovery, or the broad contact combinations listed above.
 
-The refreshed audit is `temp/m4bk-hitdef-current-audit.json`; its input is the
+The refreshed audit is `temp/m4bm-hitdef-current-audit.json`; its input is the
 local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
-It records all 81 documented keys, 53 expression keys and 28 keys that remain
-literal or absent. Those 28 include compile-time enums/attributes as well as
+It records all 81 documented keys, 54 expression keys and 27 keys that remain
+literal or absent. Those 27 include compile-time enums/attributes as well as
 numeric expressions; they need appropriate schemas rather than being treated
 uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
 historical M4aw snapshot, and m4bb-hitdef-current-audit.json records the prior36.
 No original reference files are modified or committed.
+
+M4bm's [downed-hit bounce](DOWN-BOUNCE.md) adds expression/coercion/order
+coverage, contact fall-vector selection and stock bounce/get-up phase controls.
+M4bl's [HitFallSet findings](HITFALLSET.md) close the bounded value/default
+consumer gap and record the beta's ignored documented velocity parameters.

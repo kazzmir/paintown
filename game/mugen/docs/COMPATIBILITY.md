@@ -13,6 +13,18 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bm adds compiled down.bounce and native downed-hit fall-vector/stock bounce
+consumers, including PosFreeze transition retention and the first idle heading
+observation. Twenty-one native programs pin 324 observations, two rejections
+and 84 input hashes. Routing reaches 54/81 (66.7%), with 27 literal/absent keys.
+See [DOWN-BOUNCE.md](DOWN-BOUNCE.md) and HANDOFF.md for final validation.
+
+M4bl fixes HitFallSet optional value/preserve/raw integer/default behavior and
+records native ignoring the documented velocity fields, including malformed
+expressions. Twenty-two native programs pin 240 observations, two rejections
+and 88 input hashes. Focused/core/native/app checks pass. Routing stayed 53/81.
+See [HITFALLSET.md](HITFALLSET.md).
+
 M4bk compiles fall.xvelocity/fall.yvelocity/yaccel with measured float, bottom,
 default/profile and evaluation-order rules and actual velocity consumers.
 Twenty native programs pin 276 observations, three tuple rejections and 80

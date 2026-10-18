@@ -85,7 +85,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 # Build/test every MUGEN package against the stock reference corpus.
 game/mugen/mugen.sh --check -timeout=20m
 
-# Full race checks; the Match package alone currently takes about ten minutes.
+# Full race checks; the Match package alone currently takes about twelve minutes.
 game/mugen/mugen.sh --check -race -timeout=20m
 
 # Focused stock character loading and state compilation.
@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bl**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bm**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -116,13 +116,15 @@ Fall X/Y velocity and hit gravity now compile as expressions, with verified
 defaults, profile conversion and consumers; see [fall vectors](docs/FALL-VECTORS.md).
 HitFallSet now follows native value/default rules, including the beta ignoring
 its documented velocity fields; see [HitFallSet](docs/HITFALLSET.md).
+Downed hits now respect `down.bounce`, including stock bounce/get-up timing;
+see [downed-hit bounce](docs/DOWN-BOUNCE.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
-| Documented HitDef keys routed through the expression compiler | 53 / 81 | **65.4%** | The other 28 keys are literal or absent, including enum/attribute fields that need appropriate schemas. |
+| Documented HitDef keys routed through the expression compiler | 54 / 81 | **66.7%** | The other 27 keys are literal or absent, including enum/attribute fields that need appropriate schemas. |
 
 These percentages measure the named scopes. **Whole-engine behavioral
 compatibility has not yet been quantified.** They cannot be averaged into an
