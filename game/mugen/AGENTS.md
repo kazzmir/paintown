@@ -7,19 +7,26 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
-The user's two-checkpoint allocation is complete. M4bl (8779869a) implements
-native HitFallSet value/default/raw integer behavior and records the beta's
-ignored velocity fields. M4bm adds down.bounce and stock recovery phase fixes.
-The one full scoped race run found one idle-override fall-query regression;
-the narrow contact fix passes all 196 affected native programs, both stock
-sweeps, the full Character suite, fresh native comparison and rebuilt apps.
-All other checks passed in the full run; that original log retains its single
-failure and was not rerun wholesale. Final source/provenance audits pass.
-Commit the completed M4bm checkpoint locally and pause for user testing. Do
-not push or begin a third family. Full recovery-command routing, liedown/
-mashing clocks, juggle, broad entity/pause/contact combinations, round clocks
-and renderer gates remain open. Read HITFALLSET.md, DOWN-BOUNCE.md and
-COVERAGE.md. Storyboard scaling is b1b8864c; upstream integration is 99b4605c.
+The user authorized completion of all 27 remaining documented HitDef keys
+from the M4bm audit, with local checkpoint commits and continuous iteration
+until complete or blocked. No two-checkpoint stop remains. Planned batches:
+M4bn guard.dist (1), M4bo literal enums/flags (9), M4bp juggle/chains (3),
+M4bq minimum/maximum/snap constraints (3), M4br hit palette effects (3),
+M4bs contact shake (4), M4bt fall shake (4). Adjust boundaries if native
+findings require it; document dependencies and actual behavioral limits.
+Numeric expression routing and literal schema coverage are separate counts:
+there are 54 expression keys initially, 18 remaining numeric and nine literal
+keys. Do not force literal fields through numeric evaluation to report 81/81.
+Acceptance for each batch requires typed schemas/defaults/errors, demonstrated
+runtime consumers or measured beta limitations, frozen native controls,
+focused regression checks and updated handoff/ledger. Use full scoped races
+at the enum/combat integration boundary and final integration, broadening only
+for failures or unresolved concerns. Commit each coherent batch locally;
+continue automatically. Never push or add binaries. Other engine/mode/asset/
+renderer gates remain outside this HitDef allocation unless a key depends on
+them. M4bn guard.dist has passed native/focused/Character/core/app gates; M4bo
+literal probes are active. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
+DOWN-BOUNCE.md and COVERAGE.md, including the corrected idle-override case.
 Read `README.md`,
 `docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
 

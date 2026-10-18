@@ -6,7 +6,7 @@ Damage/GetPower/GivePower; M4bb adds kill/guard.kill/fall.kill/fall.damage;
 M4be added pausetime/guard.pausetime; M4bg adds ground hit/slide times and four
 dependent guard timing keys; M4bh adds air.hittime/down.hittime; M4bi adds
 fall/air.fall/fall.recover/fall.recovertime; M4bk adds fall x/y velocity and
-yaccel; M4bm adds down.bounce, for 54 expression keys across
+yaccel; M4bm adds down.bounce and M4bn adds guard.dist, for 55 expression keys across
 engine/hitdef.go, hit_vectors.go, hit_power.go, hit_pause.go, hit_timing.go and
 hit_fall.go and hit_fall_vectors.go. This count measures source routing, not complete behavioral
 coverage: enums, defaults, coercion, timing, ownership, units and interactions
@@ -63,10 +63,10 @@ pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
 measured KO velocity adjustments. These do not establish absolute KO/round
 timing, full fall recovery, or the broad contact combinations listed above.
 
-The refreshed audit is `temp/m4bm-hitdef-current-audit.json`; its input is the
+The refreshed audit is `temp/m4bn-hitdef-current-audit.json`; its input is the
 local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
-It records all 81 documented keys, 54 expression keys and 27 keys that remain
-literal or absent. Those 27 include compile-time enums/attributes as well as
+It records all 81 documented keys, 55 expression keys and 26 keys that remain
+literal or absent. Those 26 include compile-time enums/attributes as well as
 numeric expressions; they need appropriate schemas rather than being treated
 uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
 historical M4aw snapshot, and m4bb-hitdef-current-audit.json records the prior36.
@@ -76,3 +76,7 @@ M4bm's [downed-hit bounce](DOWN-BOUNCE.md) adds expression/coercion/order
 coverage, contact fall-vector selection and stock bounce/get-up phase controls.
 M4bl's [HitFallSet findings](HITFALLSET.md) close the bounded value/default
 consumer gap and record the beta's ignored documented velocity parameters.
+
+M4bn's [guard distance](GUARD-DISTANCE.md) closes the bounded integer/range
+schema and consumers. [HITDEF-REMAINING.md](HITDEF-REMAINING.md) tracks the
+user-authorized 27-key allocation, including the nine literal schemas.

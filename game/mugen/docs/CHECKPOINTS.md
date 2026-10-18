@@ -4,6 +4,16 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bn: integer guard-distance expressions and range updates
+
+Predecessor/reversal 24b3ebd0. Adds guard.dist schema and measured range
+consumers, including omitted/negative preservation, zero and state reset.
+Fifteen programs pin 204 observations, four rejections and 60 frozen hashes.
+Focused Match races pass 41.153s; full Character 12.156s and core races pass.
+Two fresh native reproductions and two apps/three captures pass provenance.
+Routing is 55/81 (67.9%); 26 keys remain in the continuous authorized allocation.
+Continue M4bo rather than pausing. See GUARD-DISTANCE.md and HANDOFF.md.
+
 ## M4bm: downed-hit bounce and stock phase consumers
 
 Predecessor/reversal 8779869a. Adds compiled down.bounce and measured contact

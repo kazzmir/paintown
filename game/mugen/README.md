@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bm**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bn**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -118,13 +118,15 @@ HitFallSet now follows native value/default rules, including the beta ignoring
 its documented velocity fields; see [HitFallSet](docs/HITFALLSET.md).
 Downed hits now respect `down.bounce`, including stock bounce/get-up timing;
 see [downed-hit bounce](docs/DOWN-BOUNCE.md).
+Guard distance now uses native integer expressions and preserves omitted/negative
+range updates; see [guard distance](docs/GUARD-DISTANCE.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
-| Documented HitDef keys routed through the expression compiler | 54 / 81 | **66.7%** | The other 27 keys are literal or absent, including enum/attribute fields that need appropriate schemas. |
+| Documented HitDef keys routed through the expression compiler | 55 / 81 | **67.9%** | The other 26 keys are literal or absent, including enum/attribute fields that need appropriate schemas. |
 
 These percentages measure the named scopes. **Whole-engine behavioral
 compatibility has not yet been quantified.** They cannot be averaged into an

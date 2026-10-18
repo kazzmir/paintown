@@ -1,14 +1,44 @@
 # Current handoff
 
-Updated 2026-10-18. The user's two-checkpoint allocation is complete: M4bl
-(8779869a) implements native HitFallSet semantics; M4bm adds downed-hit bounce
-and stock recovery phase fixes, including a corrected idle-override regression.
-Final affected replays, Character races, native/app checks and source audits
-pass. The original full run retains its one now-corrected failure; all other
-full-run checks passed. Pause after the local M4bm commit for user testing.
-No third family or push is authorized. All authored changes stay under
-game/mugen/; no new binaries are tracked. Read HITFALLSET.md, DOWN-BOUNCE.md
-and COVERAGE.md.
+Updated 2026-10-18. The user authorized completion of all 27 HitDef keys
+remaining after 24b3ebd0, with local checkpoint commits and continuous work
+until complete or blocked. M4bn guard.dist is complete; M4bo literal enum/flag
+probes are active. Read HITDEF-REMAINING.md, GUARD-DISTANCE.md and COVERAGE.md.
+Continue the authorized batches without waiting for review. No push or binaries;
+all authored work stays under game/mugen/. Full suites follow the enum/combat
+and final integration boundaries, with focused checks per checkpoint.
+
+## M4bn verified checkpoint
+
+Predecessor/reversal 24b3ebd0. guard.dist is a strict int32 expression. Native
+omitted/negative updates preserve the current range, zero disables and state
+entry resets to configured attack distance. Facing, strict edge, vertical
+independence, mixed coordinates and tagged order are measured. Routing is
+55/81 (67.9%); 26 keys remain in this allocation (17 numeric, nine literal).
+
+Fifteen guardrange-* programs pin 204 observations, four load rejections and
+60 pre-native hashes in temp/m4bn-final-prepared-inputs.json. Four Go hashes
+are frozen in temp/m4bn-production-inputs.json. Do not rerun the author script
+or derive expectations from Go. The earlier contact-contaminated guarddist-*
+draft is archived, unpromoted, under temp/m4bn-draft-fixtures. Corrected inputs
+were frozen before their native execution; no native values/tolerances changed.
+
+Focused Match races pass 41.153s (15 new plus 43 recent fall/bounce programs);
+full Character 12.156s and core engine/evaluator/CNS/combat races
+1.503s/1.022s/1.013s/1.013s pass. Two native reproductions and two apps/three
+captures pass source/config/binary/PNG/runtime provenance in
+temp/m4bn-evidence-audit.json. The stock 7s capture was visually inspected.
+Binary SHA256: 70191f00bcd89cadb8a963794fb03e24a2c2f9889892983fe242fb57d2d56e5c.
+temp/run-m4bn-validation.py exited 0. Root module/executable checksums pass.
+Full scoped races are intentionally deferred to the planned integration gate.
+
+M4bo: 32 hitliteral-* source sets/128 hashes frozen in
+temp/m4bo-prepared-inputs.json. Native runner temp/run-m4bo-native.py is active
+on the private display. Await that session and make a separate process check
+before launching another native/app/display-dependent test. Source inputs are
+frozen; accepted/rejected classification follows native evidence. Numeric and
+literal-schema accounting must remain separate. Other engine/mode/asset/
+renderer gates remain open; continue until all 27 keys are handled or blocked.
 
 ## M4bm verified checkpoint
 

@@ -140,6 +140,10 @@ func TestNativeDownBouncePrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "downbounce-*.json", 21)
 }
 
+func TestNativeGuardDistancePrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "guardrange-*.json", 15)
+}
+
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))

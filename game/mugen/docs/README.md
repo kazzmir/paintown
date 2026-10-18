@@ -3,14 +3,16 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4bm adds downed-hit bounce and stock phase/clock fixes after
-M4bl's native HitFallSet value/default and ignored-velocity findings. Read the
+Current status: M4bn closes guard-distance expressions/consumers; the user
+authorized all remaining 27 HitDef keys, tracked in
+[the allocation ledger](HITDEF-REMAINING.md). Read the
 [current coverage ledger](COVERAGE.md),
 [fall/recovery evidence](HIT-FALL-RECOVERY.md),
 [trip recovery findings](TRIP-RECOVERY.md),
 [fall vector evidence](FALL-VECTORS.md),
 [HitFallSet findings](HITFALLSET.md),
-[downed-hit bounce](DOWN-BOUNCE.md), and
+[downed-hit bounce](DOWN-BOUNCE.md),
+[guard distance](GUARD-DISTANCE.md), and
 [progress assessment](PROGRESS-ASSESSMENT.md) for working behavior, remaining
 gates and bounded allocations. The [checkpoint history](CHECKPOINTS.md) and
 [handoff](HANDOFF.md) record verification and authorization; the original

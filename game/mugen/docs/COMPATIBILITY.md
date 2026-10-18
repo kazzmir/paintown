@@ -13,6 +13,13 @@ current completion ledger or a whole-engine coverage percentage.
 
 ## Implementation progress
 
+M4bn compiles guard.dist and verifies negative/omitted preservation, explicit
+zero, state reset, strict boundary/facing/height/profile consumers. Fifteen
+programs pin 204 observations/four native rejections/60 source hashes; focused,
+Character/core races, two native reproductions and two apps/three captures pass.
+Routing reaches 55/81 (67.9%). See [GUARD-DISTANCE.md](GUARD-DISTANCE.md).
+
+
 M4bm adds compiled down.bounce and native downed-hit fall-vector/stock bounce
 consumers, including PosFreeze transition retention and the first idle heading
 observation. Twenty-one native programs pin 324 observations, two rejections

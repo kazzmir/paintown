@@ -781,7 +781,7 @@ func (c *Character) HitDef(params map[string]string) {
 	if _, specified := params["guard.sparkno"]; !specified {
 		c.CurrentHitDef.GuardSparkNo = c.StateFile.Data.GuardSparkNo
 	}
-	if _, specified := params["guard.dist"]; specified {
+	if _, specified := params["guard.dist"]; specified && c.CurrentHitDef.GuardDist >= 0 {
 		c.GuardDistance = c.CurrentHitDef.GuardDist
 	}
 	c.CurrentHitDef.GuardDist = c.GuardDistance

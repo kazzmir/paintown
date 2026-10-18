@@ -1,6 +1,6 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-18 through M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -20,6 +20,7 @@ does not promote an entire controller from one passing parameter/default.
 | Fall velocity/gravity | M4bk compiles fall.xvelocity/fall.yvelocity/yaccel; native omission versus zero, float/bottom/order/default/profile rules, plus actual HitFallVel and scripted gravity consumers. FALL-VECTORS.md. | Full recovery and broader bounce/HitFallSet/foreign/helper/projectile/team/contact/pause combinations. |
 | HitFallSet | M4bl compiles optional value with native preserve/raw integer/coercion rules and retained clock/query/velocity consumers. The beta ignores documented velocity fields, including invalid expressions. HITFALLSET.md. | Broad foreign/entity/contact/pause combinations and full recovery remain open. |
 | Downed-hit bounce | M4bm compiles down.bounce; native zero/nonzero/float/bottom/order rules, zero-launch boundary, contact fall-vector reset and stock bounce/get-up consumers. PosFreeze survives same-tick transitions; first idle observation retains facing. DOWN-BOUNCE.md. | Full recovery, all auto-turn/PosFreeze edges and broad entity/contact/pause/foreign combinations. |
+| Guard distance | M4bn compiles guard.dist with native integer/coercion/bottom/order rules, preserves omitted/negative range, resets it on state entry and verifies facing/boundary/height/profile consumers. GUARD-DISTANCE.md. | Broad input/entity/foreign/pause combinations and other AttackDist variants. |
 | Projectiles/reversals | Projectile currently constructs a Character-derived object; ReversalDef stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. EXPLODS.md, RGB-CONSUMERS.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
@@ -36,11 +37,11 @@ compile (100%), and 36/81 documented HitDef keys have expression routing
 (44.4%). M4be added the two pause keys (38/81). M4bg adds six ground/guard timing
 keys (44/81). M4bh adds the two air/down keys (46/81). M4bi adds four
 fall/recovery keys (50/81). M4bk adds three fall velocity/gravity keys:
-53/81 (65.4%). M4bm adds down.bounce: **54/81 (66.7%)**,
-leaving 27 keys literal or absent.
+53/81 (65.4%). M4bm adds down.bounce (54/81). M4bn adds guard.dist:
+**55/81 (67.9%)**, leaving 26 keys literal or absent.
 The other metrics are unchanged. See
 [../README.md](../README.md) for numerator/denominator sources and
-[DOWN-BOUNCE.md](DOWN-BOUNCE.md) for the latest native-backed scope.
+[GUARD-DISTANCE.md](GUARD-DISTANCE.md) for the latest native-backed scope.
 Registration includes partial and empty behavior. No aggregate behavioral
 compatibility or line/branch test percentage is established by these counts.
 
@@ -53,17 +54,22 @@ distinguish missing Go behavior from operations disabled in the beta itself.
 
 ## Current allocation and stop condition
 
-The user authorized two checkpoints after M4bk (915f40d7). M4bl (8779869a)
-completes bounded native HitFallSet value/default behavior and records ignored
-velocity parameters. M4bm adds down.bounce and stock phase consumers. The one
-full scoped race run found a single idle-override fall-query regression; the
-contact initialization correction passes 196 affected native programs plus
-both stock sweeps, full Character races, fresh native comparison and three
-rebuilt apps/six captures. Every other full-run check passed; the full log
-retains its single failure and was not rerun wholesale. See DOWN-BOUNCE.md and
-HANDOFF.md for exact results, source hashes and limits. Both checkpoints are
-complete. Commit M4bm locally, then pause for user testing; no third family or
-push is authorized. Existing strict alpha/spark gates remain open.
+The user has now authorized all 27 remaining HitDef keys after 24b3ebd0,
+with a local checkpoint for each coherent batch and continued iteration until
+complete or blocked. Batches: guard.dist (1), literal enums/flags (9), juggle/
+chains (3), minimum/maximum/snap constraints (3), palette effects (3), contact
+shake (4), fall shake (4). Numeric routing remains a separate metric from the
+nine literal schemas. Each batch requires frozen native controls, runtime
+consumers or a demonstrated beta limitation, focused checks and documentation.
+Full scoped races follow the enum/combat and final integration boundaries.
+Prior renderer/round/mode/asset gaps remain open. M4bn is complete; M4bo is active. See HITDEF-REMAINING.md for the live key ledger.
+No remote push is authorized.
+
+Prior allocation (completed):
+
+The previous two checkpoints were 8779869a and 24b3ebd0. M4bm's full run
+identified one idle-override regression, corrected and verified by affected
+Match/full Character/native/app checks; see DOWN-BOUNCE.md and HANDOFF.md.
 
 Prior allocation (completed):
 
