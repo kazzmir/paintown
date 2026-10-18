@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4bk**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4bl**. Recent changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -114,6 +114,8 @@ The stock sweep loop is fixed by choosing Trip at contact and allowing CNS
 recovery to finish; see [trip recovery](docs/TRIP-RECOVERY.md).
 Fall X/Y velocity and hit gravity now compile as expressions, with verified
 defaults, profile conversion and consumers; see [fall vectors](docs/FALL-VECTORS.md).
+HitFallSet now follows native value/default rules, including the beta ignoring
+its documented velocity fields; see [HitFallSet](docs/HITFALLSET.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |

@@ -688,16 +688,11 @@ func handleHitFallDamage(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleHitFallSet(ctrl *cns.StateController, env Environment) error {
-	val := 0.0
-	if v, ok := ctrl.Params["value"]; ok {
-		if expr, err := evaluator.Parse(v); err == nil {
-			val = evaluator.Evaluate(expr, env)
-		} else {
-			val, _ = strconv.ParseFloat(v, 64)
-		}
+	handler, _, err := compileHitFallSet(ctrl)
+	if err != nil {
+		return err
 	}
-	env.SetHitFall(val != 0)
-	return nil
+	return handler(ctrl, env)
 }
 
 func handleHitFallVel(ctrl *cns.StateController, env Environment) error {

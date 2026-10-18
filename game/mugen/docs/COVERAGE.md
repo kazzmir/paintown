@@ -1,6 +1,6 @@
 # Current behavior coverage ledger
 
-Updated 2026-10-18 through M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -18,6 +18,7 @@ does not promote an entire controller from one passing parameter/default.
 | Fall/recovery eligibility | M4bi compiles fall/air.fall/fall.recover/fall.recovertime; native boolean selection, repeated source default, delay default/coercion and order. GetHitVar(fall.time/fall.recovertime) and CanRecover share the receiver clock, including shake and H-state continuation controls. HIT-FALL-RECOVERY.md. | Full recovery/bounce physics, HitFallSet variants, juggle/chains and broad contact/entity/pause combinations. |
 | Trip recovery | M4bj removes the recurring trip-state heuristic, chooses native Trip entry at contact, stores air.type and corrects groundtype/airtype values. Thirteen native programs and real mixed-profile down+B sweeps complete lying down, get-up and idle/control. TRIP-RECOVERY.md. | Full enum validation, other recovery-command routing, liedown/mashing clocks and broad entity/contact/pause combinations. |
 | Fall velocity/gravity | M4bk compiles fall.xvelocity/fall.yvelocity/yaccel; native omission versus zero, float/bottom/order/default/profile rules, plus actual HitFallVel and scripted gravity consumers. FALL-VECTORS.md. | Full recovery/bounce/HitFallSet rules and broad foreign/helper/projectile/team/contact/pause combinations. |
+| HitFallSet | M4bl compiles optional value with native preserve/raw integer/coercion rules and retained clock/query/velocity consumers. The beta ignores documented velocity fields, including invalid expressions. HITFALLSET.md. | Broad foreign/entity/contact/pause combinations and full recovery remain open. |
 | Projectiles/reversals | Projectile currently constructs a Character-derived object; ReversalDef stores parameter data (`character/character.go`). | Dedicated lifecycle/cancellation/contact queries and consumed reversal rules with native evidence. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. EXPLODS.md, RGB-CONSUMERS.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. FallEnvShake delegates to empty EnvShake. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
@@ -49,6 +50,16 @@ Empty runtime methods are source-audit findings. Native comparison must still
 distinguish missing Go behavior from operations disabled in the beta itself.
 
 ## Current allocation and stop condition
+
+The user has authorized two more checkpoints after M4bk (915f40d7): M4bl
+HitFallSet optional value/velocities and bounded consumers, then M4bm
+down.bounce schema and down-hit consumers. Acceptance requires frozen native
+controls, focused race checks, actual application smoke checks and documented
+limits. Run one full scoped race suite at the second integration boundary,
+commit both checkpoints locally and pause. No third family or push is authorized. M4bl has passed its native/focused/core/
+application gates; see HITFALLSET.md and HANDOFF.md. M4bm is active.
+
+Prior allocation (completed):
 
 The user resumed on 2026-10-18 with a stock KFM sweep-loop report and authorized
 two checkpoints. M4bj establishes native trip entry and fixes the recurring

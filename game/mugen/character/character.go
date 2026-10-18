@@ -222,6 +222,7 @@ type Character struct {
 	GetHit           cns.HitDef
 	HitTime          int
 	HitFall          bool
+	hitFallValue     int32
 	fallTime         int
 	GetHitDown       bool
 	GetHitAir        bool
@@ -1183,7 +1184,21 @@ func (c *Character) GetHitFall() bool {
 }
 
 func (c *Character) SetHitFall(fall bool) {
-	c.HitFall = fall
+	value := int32(0)
+	if fall {
+		value = 1
+	}
+	c.SetHitFallValue(value)
+}
+
+// HitFallSet uses -1 as the preserve sentinel. Other integers are observable
+// through GetHitVar(fall), rather than being normalized to a boolean.
+func (c *Character) SetHitFallValue(value int32) {
+	if value == -1 {
+		return
+	}
+	c.HitFall = value != 0
+	c.hitFallValue = value
 }
 
 func (c *Character) SetHitFallDamage(damage int) {
@@ -1357,8 +1372,12 @@ func (c *Character) GetHitVar(name string) float64 {
 	case "yaccel":
 		val = c.GetHit.YAccel
 	case "fall":
-		if c.GetHitFall() {
-			val = 1
+		if c.HitFall {
+			val = float64(c.hitFallValue)
+			if c.hitFallValue == 0 {
+				// Programmatic callers may still initialize the public flag.
+				val = 1
+			}
 		}
 	case "fall.kill":
 		if c.GetHit.FallKill == nil || *c.GetHit.FallKill {
@@ -2062,7 +2081,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	// A subsequent unguarded hit retains an existing get-hit fall unless
 	// ForceNoFall clears it. A hit's own fall setting still takes precedence.
 	fall := hit.Fall != 0 || (airHit && hit.AirFall != 0)
-	c.HitFall = lethal || fall || (!guarded && c.MoveType == "H" && c.HitFall && !hit.ForceNoFall)
+	c.SetHitFall(lethal || fall || (!guarded && c.MoveType == "H" && c.HitFall && !hit.ForceNoFall))
 	c.fallTime = 0
 
 	// Guarding vs Normal Hit

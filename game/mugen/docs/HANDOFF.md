@@ -1,13 +1,43 @@
 # Current handoff
 
-Updated 2026-10-18. The user's two-checkpoint allocation is complete. M4bj
-(3db8b057) fixes the sweep loop and trip routing; M4bk compiles fall velocity
-and yaccel expressions/defaults with bounded native consumers. Native, focused,
-core, application and combined full scoped race gates pass. M4bk is the
-completed local checkpoint; pause for user testing and the next allocation.
-Do not push or start further families. Read FALL-VECTORS.md, TRIP-RECOVERY.md,
-HIT-FALL-RECOVERY.md and COVERAGE.md.
-All authored changes stay under game/mugen/; no new binary files are tracked.
+Updated 2026-10-18. The user authorized two more checkpoints after 915f40d7.
+M4bl is complete; M4bm down.bounce is active. Continue through M4bm's native,
+focused, application and one full scoped race integration gate, commit locally
+and pause for user testing. No third feature family or push is authorized.
+All authored changes stay under game/mugen/; no new binaries are tracked.
+Read HITFALLSET.md and COVERAGE.md.
+
+## M4bl verified checkpoint
+
+Predecessor/reversal 915f40d7. HitFallSet now preserves omitted/-1 value,
+retains other raw int32 values and the fall clock, and compiles supported value
+expressions before effects. Native beta ignores documented xvel/yvel (including
+invalid/side-effect expressions); alternate spelling controls also do nothing.
+This is a documented target limitation, not a missing velocity implementation.
+GetHitVar(fall) exposes retained/raw flags even outside MoveType H in the
+measured control. Existing HitFallVel consumers agree. Routing stays 53/81.
+
+Twenty-two programs pin 240 observations, two native load rejections and 88
+pre-native input hashes in temp/m4bl-prepared-inputs.json and
+m4bl-prepared-extra.json. Do not rerun author-m4bl-hitfallset.py or derive
+native expectations from Go. Six authored Go hashes are frozen in
+temp/m4bl-production-inputs.json. Initial native velocity-tuple acceptance
+changed rejection classification only. The initial broad Go replay matched
+all numbers; two rejection metadata state numbers were corrected to native
+5000. No source input, native observation or tolerance changed.
+
+Focused races pass Match 17.114s/Character 1.041s (22 new programs, both stock
+sweep directions and recovery eligibility); initial broader replay also passed
+all fall/vector/trip numbers. Core races engine/evaluator/CNS/combat pass
+1.435s/1.021s/1.012s/1.011s. Two fresh native reproductions and two apps/three
+captures pass input/config/binary/PNG/runtime provenance; stock 7s visually
+inspected with intact fighters/stage/HUD. Binary SHA256:
+3ed21faaf78458bc458af6029f8c9e267c736ef3fe4f2295dbd30528f0ded023.
+temp/run-m4bl-validation.py exited 0; audit temp/m4bl-evidence-audit.json.
+Full scoped races are deferred to the authorized M4bm boundary. Full recovery,
+liedown/mashing, juggle, broad entity/contact/pause cases, round clocks and
+strict alpha/spark gates remain open. M4bm native probes run sequentially on
+the private display; await their session before launching any other GUI client.
 
 ## M4bk verified checkpoint
 

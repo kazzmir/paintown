@@ -4,6 +4,17 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bl: HitFallSet value and beta velocity limitation
+
+Predecessor/reversal 915f40d7. Implements optional value/preserve/raw int32
+semantics, retained clock/query behavior and precompiled validation. Native
+ignores documented velocities, including invalid expressions; this limitation
+is explicit. Twenty-two text programs pin 240 observations, two rejections and
+88 pre-native hashes. Focused races pass Match 17.114s/Character 1.041s; core
+races, two fresh native reproductions and two apps/three captures pass.
+Expression routing remains 53/81 (65.4%). Full scoped races follow at M4bm's
+integration boundary. See HITFALLSET.md and HANDOFF.md.
+
 ## M4bk: fall velocity and hit gravity expressions
 
 Predecessor/reversal 3db8b057. Compiles fall X/Y and yaccel with per-host

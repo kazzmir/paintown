@@ -767,7 +767,7 @@ The reference documents 89 controllers. The port registers 84 names: 81 document
 | HitBy | Present | 0 | Records masks/timers; collision does not enforce them. |
 | HitDef | Partial | 82 | Typed cue/ID/custom-state/P2-facing subset with native timing/ownership controls; full dynamic hit/guard/priority/juggle/accounting schema remains open. |
 | HitFallDamage | Present | 2 | Adds damage to life; complete fall/KO/defence behavior unverified. |
-| HitFallSet | Present | 1 | Boolean fall value only; velocity parameters and complete semantics missing. |
+| HitFallSet | Present | 1 | M4bl: native optional value/preserve/raw integer rules and bounded consumers; beta ignores documented velocity fields. See HITFALLSET.md; broader contexts remain open. |
 | HitFallVel | Present | 1 | Basic flag/velocity application; fall lifecycle unverified. |
 | HitOverride | Missing | 8 | No dispatcher entry; stock characters use this. |
 | HitVelSet | Present | 10 | Interprets selectors as multipliers; typed arguments and hit velocity semantics incomplete. |

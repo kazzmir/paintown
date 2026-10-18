@@ -103,6 +103,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileHitDef(ctrl)
 	case "hitvelset":
 		return compileHitVelSet(ctrl)
+	case "hitfallset":
+		return compileHitFallSet(ctrl)
 	case "targetbind":
 		return compileTargetBind(ctrl)
 	case "explod":
