@@ -188,6 +188,7 @@ func TickCharacters(players []*Character) error {
 			// None reactions still consume projectile hits/miss time, while
 			// ordinary hit metadata has no damage, power or move counters.
 			if event.projectile {
+				event.attacker.recordProjectileEvent("hit")
 				event.attacker.projectileContact()
 			}
 			continue
@@ -212,6 +213,11 @@ func TickCharacters(players []*Character) error {
 		event.defender.pendingHitDamage += amount
 		event.defender.hasPendingHitDamage = true
 		if event.projectile {
+			kind := "hit"
+			if event.defender.GetHitGuarded {
+				kind = "guard"
+			}
+			event.attacker.recordProjectileEvent(kind)
 			event.attacker.projectileContact()
 		}
 	}

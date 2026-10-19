@@ -1,5 +1,18 @@
 # Implementation checkpoints
 
+## M4cg: projectile event queries
+
+Final checks PASS:51 native programs/456 values/13 rejections/204 authored
+hashes. Core races: Character11.445s, engine1.445s, evaluator1.019s, System9.768s.
+Selected query/cancellation/coordinate/clock/phase/Random/HitPauseTime Match races
+pass88.019s. Fresh hit-then-cancel reproduces the immutable observation. Four-PNG
+stock win/rematch/win/82 balanced owned events/private PCM, all556 final frozen
+hashes and module guards pass. Sessions39895/59309 were awaited; separate client
+check is clear. Artifacts: temp/m4cg-{focused,corrected-focused,final}.log,
+m4cg-final-inputs.json, m4cg-final-validation.json, m4cg-native-audit.json and
+m4cg-app-evidence-audit.json. Full scoped races follow final reversal integration.
+See PROJECTILE-QUERIES.md. Source routes119/127; reversals follow.
+
 ## M4cf coordinate: foreign-state projectile profiles
 
 M4cf coordinate checkpoint completes foreign-state projectile units and per-actor

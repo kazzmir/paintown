@@ -25,13 +25,20 @@ func validateConstants(expr Expression) error {
 	var children []Expression
 	switch e := expr.(type) {
 	case *Identifier:
-		if strings.EqualFold(e.Name, "numprojid") {
-			return fmt.Errorf("NumProjID requires one expression")
+		name := strings.ToLower(e.Name)
+		if projectileIDFunction(name) {
+			return fmt.Errorf("%s requires one expression", e.Name)
+		}
+		if legacyProjectileName(name) {
+			return fmt.Errorf("%s requires a literal boolean comparison", e.Name)
 		}
 	case *Call:
 		name := strings.ToLower(e.Name)
-		if name == "numprojid" && len(e.Arguments) != 1 {
-			return fmt.Errorf("NumProjID requires one expression")
+		if projectileIDFunction(name) && len(e.Arguments) != 1 {
+			return fmt.Errorf("%s requires one expression", e.Name)
+		}
+		if legacyProjectileName(name) {
+			return fmt.Errorf("%s requires a literal boolean comparison", e.Name)
 		}
 		if name == "gethitvar" {
 			if len(e.Arguments) != 1 {
@@ -74,6 +81,11 @@ func validateConstants(expr Expression) error {
 	case *Redirect:
 		children = []Expression{e.Selector, e.Trigger}
 	case *Legacy:
+		if legacyProjectileName(strings.ToLower(e.Name)) && len(e.Arguments) > 0 {
+			if literal, ok := e.Arguments[0].(*Number); ok && literal.Value < 0 {
+				return fmt.Errorf("%s requires a nonnegative boolean literal", e.Name)
+			}
+		}
 		children = e.Arguments
 	}
 	for _, child := range children {
@@ -82,6 +94,18 @@ func validateConstants(expr Expression) error {
 		}
 	}
 	return nil
+}
+
+func projectileIDFunction(name string) bool {
+	switch name {
+	case "numprojid", "projhittime", "projguardedtime", "projcontacttime", "projcanceltime":
+		return true
+	}
+	return false
+}
+
+func legacyProjectileName(name string) bool {
+	return isLegacy(name) && (strings.HasPrefix(name, "projhit") || strings.HasPrefix(name, "projguarded") || strings.HasPrefix(name, "projcontact"))
 }
 
 // The manual's argument summary lists hitid/zoff, but the beta rejects them. The

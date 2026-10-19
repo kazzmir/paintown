@@ -228,9 +228,10 @@ type Character struct {
 	VictoryQuoteIndex int
 
 	// Combat status for triggers
-	MoveHit     int
-	MoveContact int
-	MoveGuarded int
+	MoveHit             int
+	MoveContact         int
+	lastProjectileEvent *projectileEvent
+	MoveGuarded         int
 
 	// HitGuard tracks world EntityIDs already hit by the current HitDef.
 	// activation, preventing the same attack from landing multiple times per swing.
@@ -488,6 +489,9 @@ func (c *Character) runStateTick() bool {
 
 func (c *Character) finishTick() {
 	defer func() {
+		if c.RuntimeError == nil && !c.worldFrozen && c.lastProjectileEvent != nil {
+			c.lastProjectileEvent.age++
+		}
 		if c.RuntimeError == nil {
 			if c.pendingHitFacing != 0 {
 				if c.Facing != c.pendingHitFacing {

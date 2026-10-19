@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-19, through M4cf coordinate checkpoint**. Foreign-state projectile units and three exact sprite render controls now pass; see [coordinate evidence](docs/PROJECTILE-COORDINATES.md). Projectile setup/motion/pause/ownership now has native controls and actual
+Snapshot: **2026-10-19, through M4cg**. Foreign-state projectile units and three exact sprite render controls now pass; see [coordinate evidence](docs/PROJECTILE-COORDINATES.md). Projectile setup/motion/pause/ownership now has native controls and actual Projectile event queries now have native controls; see [query evidence](docs/PROJECTILE-QUERIES.md).
 app rendering checks. Hit/miss clocks, visual tails, cancellation and capacity
 now have native consumers; coordinate/query/reversal work continues. See
 [projectile progress](docs/PROJECTILES.md). Random/VarRandom now share the native match RNG, with deterministic seed replay
@@ -163,7 +163,7 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
-| Trigger families with candidate runtime routes | 112 / 127 | **88.2%** | Source routing only; 15 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
+| Trigger families with candidate runtime routes | 112 / 127 | **93.7%** | Source routing only; 15 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
 | Documented HitDef keys routed through the expression compiler | 72 / 81 | **88.9%** | Numeric expression routing; nine other documented keys are literal masks/enums. |

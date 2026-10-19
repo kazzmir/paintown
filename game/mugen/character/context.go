@@ -8,6 +8,9 @@ import (
 )
 
 func (c *Character) LookupLegacy(name, operator string, args []evaluator.Value, extra string) (evaluator.Value, bool) {
+	if value, known := c.lookupLegacyProjectile(name, operator, args, extra); known {
+		return value, true
+	}
 	if name != "hitdefattr" {
 		return evaluator.Value{}, false
 	}

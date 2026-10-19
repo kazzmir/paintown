@@ -2,42 +2,32 @@
 
 ## Current scalar/projectile/reversal allocation
 
-The user validated/pushed d251549d and authorized assessment items 1–2 on
-2026-10-19. M4cc HitPauseTime is committed as 750f0076. M4cd Random/VarRandom
-is complete: 21 frozen native programs / 192 values / five rejections / 84
-original input hashes. The beta Park–Miller match stream is proven from logged
-seeds, including helper/redirect sharing, range semantics and draw order. Read
-RANDOM.md. Source routing is 111/127 (87.4%), 16 unbound; no whole-engine percent.
+M4cc750f0076, M4cdded53de8, M4ce4b3ab498, M4cf40d1b25b and coordinate2e6195de
+are committed locally. M4cg is complete and ready for local commit.
+Final checks PASS:51 native programs/456 values/13 rejections/204 authored
+hashes. Core races: Character11.445s, engine1.445s, evaluator1.019s, System9.768s.
+Selected query/cancellation/coordinate/clock/phase/Random/HitPauseTime Match races
+pass88.019s. Fresh hit-then-cancel reproduces the immutable observation. Four-PNG
+stock win/rematch/win/82 balanced owned events/private PCM, all556 final frozen
+hashes and module guards pass. Sessions39895/59309 were awaited; separate client
+check is clear. Artifacts: temp/m4cg-{focused,corrected-focused,final}.log,
+m4cg-final-inputs.json, m4cg-final-validation.json, m4cg-native-audit.json and
+m4cg-app-evidence-audit.json. Full scoped races follow final reversal integration.
 
-Core races PASS: engine 1.462s, evaluator 1.022s, Character 11.401s, System
-9.575s. Native Random + HitPauseTime Match races PASS 17.260s; all 57 historical
-projectile/chain/juggle controls pass 36.175s. Two fresh independently seeded
-native sequence/helper controls match all 24 algorithmic draw observations.
-Four stock input app captures visually show intro, win, rematch fight and second
-win; 82 owned balanced events and private PCM pass binary/config/PNG/input/audio
-provenance audit. All 436 frozen Go/probe/fixture/module hashes and root module
-guards pass. Logs/manifests: temp/m4cd-{core,focused-match,final}.log,
-m4cd-final-inputs.json, m4cd-final-validation.json, m4cd-native-audit.json and
-m4cd-app-evidence-audit.json. No sessions or native/app/test clients remain at
-this checkpoint. Prior complete scoped race baseline is M4cb; the allocated
-final projectile/reversal integration will rerun it. Only source/text is staged;
-no pushes or binaries.
+Next M4ch:40 original programs plus17 valid follow/order controls are promoted.
+Eleven invalid renderer/empty-state drafts remain unchanged in their original
+paths, with frozen hashes/native load errors; no JSON is promoted. Automatic
+review rejected deleting/moving those originals, so the safe correction leaves
+them intact and creates separately named -valid controls. No blocker remains.
+Twenty additional frozen controls await native capture: manifest
+m4ch-final-native-inputs.json combines11 corrected, four final and five consumer
+programs. Runner run-m4ch-final-native.py captures serially, positive-CNS dump
+for spark/tail programs. All other native originals remain immutable. No reversal
+Go code is added yet. Query source is frozen by final556-hash manifest.
 
-M4cd is ded53de8; M4ce is4b3ab498; M4cf contacts is40d1b25b. The dependent
-coordinate checkpoint is complete and ready for local commit. Read
-PROJECTILE-COORDINATES.md:11 native programs/132 values/44 hashes, three exact
-actual-app masks, full core and selected Match races192.297s, fresh native and
-stock win/rematch/win/82 events/PCM pass. All355 frozen final hashes/module
-guards pass; session37725 awaited and separate process check finds no clients.
-
-Next M4cg:37 projevent-* originals are frozen but unobserved and EXCLUDED from
-the coordinate commit. Manifests temp/m4cg-native-inputs.json (33programs) and
-m4cg-extra-inputs.json (4) total148 hashes. Capture serially before implementation;
-never rerun author scripts or edit observed originals. Cover event kinds/IDs,
-legacy comparison forms, pause clocks, helper/root ownership, syntax/errors and
-state history. Then M4ch ReversalDef/MoveReversed. No query/reversal code yet.
-Full scoped races at final integration with a larger deadline for corpus growth.
-Items3–4 await allocation; no agents/goals/pushes/binaries/out-of-scope edits.
+Then implement ReversalDef/MoveReversed, focused checks, actual spark/tail masks
+and full scoped races with30m package timeout. Stop after item2; items3–4 await
+user allocation. No agents/goals/pushes/binaries/out-of-scope edits.
 
 All prior allocations below are historical; their stop condition is superseded
 by the new user authorization. No agents/goals. No authored changes outside

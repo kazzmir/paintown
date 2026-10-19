@@ -18,6 +18,7 @@ ROUTES = {
     'character/context.go': ['LookupIdentifier', 'lookupViewport'],
     'character/world.go': ['lookupEntity', 'LookupFunction'],
     'character/width.go': ['lookupEdges'],
+    'character/projectile_event.go': ['lookupProjectileEvent'],
 }
 SPECIAL = {
     'command': ('evaluator/runtime.go', 'binary', 'id.Name, "command"'),
@@ -31,6 +32,9 @@ SPECIAL = {
     'log': ('evaluator/runtime.go', 'callWithArguments', 'name == "log"'),
     'hitdefattr': ('character/context.go', 'LookupLegacy', 'name != "hitdefattr"'),
     'numprojid': ('character/projectile.go', 'lookupProjectileCount', 'name != "numprojid"'),
+    'projhit': ('character/projectile_event.go', 'lookupLegacyProjectile', 'strings.HasPrefix(name, "projhit")'),
+    'projguarded': ('character/projectile_event.go', 'lookupLegacyProjectile', 'strings.HasPrefix(name, "projguarded")'),
+    'projcontact': ('character/projectile_event.go', 'lookupLegacyProjectile', 'strings.HasPrefix(name, "projcontact")'),
 }
 
 

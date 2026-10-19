@@ -1,5 +1,13 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cg binds four typed projectile elapsed-time functions and three legacy indexed
+comparison families.51 frozen native programs pin456 values and13 rejections
+with204 authored input hashes. Source routes are119/127 (93.7%), eight unbound;
+this is not a whole-engine coverage percentage. Native cancellation uses only
+wildcard ID0 and excludes ProjContact; history ages at owner completion. Read
+[PROJECTILE-QUERIES.md](PROJECTILE-QUERIES.md). Reversal implementation follows.
+
+
 M4cf coordinate checkpoint completes foreign-state projectile units and per-actor
 render scaling. Eleven native programs /132 values /44 original hashes, three
 exact actual-app sprite masks, selected Match races192.297s, full core races,

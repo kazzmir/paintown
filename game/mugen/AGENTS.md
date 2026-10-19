@@ -172,6 +172,15 @@ originals (148 hashes in m4cg-native-inputs/m4cg-extra-inputs.json), then M4ch.
 Do not stage those originals in the coordinate commit. Final full scoped races
 need a larger package timeout for corpus growth. No pushes/binaries/agents.
 
+M4cf coordinate is2e6195de. M4cg completes51 event query programs/456 values/
+13 rejections/204 original hashes. Core/selected Match races88.019s, fresh history,
+stock replay/input/PCM and all556 hashes/module guards pass. Read
+PROJECTILE-QUERIES.md/HANDOFF.md. No clients/sessions remain. Continue M4ch with
+20 frozen unobserved controls in m4ch-final-native-inputs.json, then implement
+reversals and final full scoped races30m. Preserve11 invalid drafts in place;
+review rejected deleting them, so corrected -valid originals are separate. Do not
+stage invalid drafts. Stop after item2; items3–4 remain unallocated.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify

@@ -360,6 +360,9 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 }
 
 func (c *Character) LookupFunction(name string, args []evaluator.Value) (evaluator.Value, bool) {
+	if value, known := c.lookupProjectileEvent(name, args); known {
+		return value, true
+	}
 	if value, known := c.lookupProjectileCount(name, args); known {
 		return value, true
 	}

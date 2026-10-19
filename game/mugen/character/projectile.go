@@ -207,6 +207,9 @@ func (p *Character) removeProjectile(reason string) {
 		action = s.parameters.HitAnimation
 	}
 	if reason == "cancel" {
+		// Cancellation replaces hit/guard history, but only its wildcard ID
+		// matches. ProjContactTime excludes this cancellation event.
+		p.rootPlayer().lastProjectileEvent = &projectileEvent{kind: "cancel"}
 		action = s.parameters.CancelAnimation
 	}
 	if action < 0 || p.AirFile == nil || p.AirFile.Actions[action] == nil {
