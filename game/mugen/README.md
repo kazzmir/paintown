@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4cb**. The latest group audits runtime trigger
+Snapshot: **2026-10-18, through M4cc**. The latest group audits runtime trigger
 gaps, adds received hit/fall metadata, and implements the liedown timer and
 input mashing. Recovery follows character-authored CNS conditions. All 34
 beta-accepted documented GetHitVar selectors have routes; two manual-only
@@ -158,7 +158,7 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
-| Trigger families with candidate runtime routes | 109 / 127 | **85.8%** | Source routing only; 18 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
+| Trigger families with candidate runtime routes | 110 / 127 | **86.6%** | Source routing only; 17 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
 | Documented HitDef keys routed through the expression compiler | 72 / 81 | **88.9%** | Numeric expression routing; nine other documented keys are literal masks/enums. |

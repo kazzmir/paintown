@@ -1,5 +1,11 @@
 # Current progress assessment
 
+M4cc binds integer HitPauseTime with seven native programs / 84 values and
+helper/guard/Pause/negative controls. Candidate runtime routes are now 110/127
+(86.6%), with 17 unbound. Read [HITPAUSETIME.md](HITPAUSETIME.md). The user
+validated/pushed M4cb and authorized scalar/random then projectile/reversal work;
+that allocation is active. Older completed allocations below are historical.
+
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
 94.4%); the other two are native load rejections. This is routing, not exhaustive

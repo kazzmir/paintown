@@ -114,6 +114,26 @@ applied only until these three checkpoints completed.
 Continue automatically through these three; stop at completion or an issue
 requiring user input. No pushes, binaries, changes outside game/mugen or agents.
 
+## Current scalar/projectile/reversal allocation
+
+The user tested/pushed d251549d and on 2026-10-19 authorized items 1–2 of the
+assessment, with checkpoints and local commits throughout. Proceed automatically
+through HitPauseTime, Random/VarRandom, projectile lifecycle/cancellation/contact
+queries, then ReversalDef/MoveReversed. Suggested coherent checkpoints: M4cc
+HitPauseTime; M4cd random stream/controller; M4ce projectile schema/spawn/motion/
+lifetime/ownership; M4cf multi-hit/removal/cancellation; M4cg projectile query
+families and legacy forms; M4ch reversals. Split or reorder dependent slices if
+native evidence requires it and document the actual boundary. Each gets frozen
+native originals, focused checks, evidence/limits and a local source/text commit.
+Use full scoped races at meaningful integration boundaries, including final
+integration; do not repeat the entire suite for every small correction. Complete
+these items without asking for routine approval. Stop after their final checkpoint
+or a concrete issue needing user input. Items 3–4 (other controller/effect stubs,
+assets/modes/AI/BGM and final renderer/font conformance) await later allocation;
+record dependencies rather than silently expanding into those workstreams.
+Keep projectile/reversal-specific consumers in scope, with honest variant limits.
+No pushes, binaries, sub-agents or authored changes outside game/mugen/.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify

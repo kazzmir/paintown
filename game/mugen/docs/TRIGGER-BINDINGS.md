@@ -55,3 +55,7 @@ runtime/Character routes, including recovertime and its liedown/input consumer.
 The two other manual entries remain target load rejections. See
 [LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md). No family count changes; 18 complete
 families and broader variants remain unbound/unverified.
+
+M4cc update: HitPauseTime has an integer binding and native controls for own,
+guard, Enemy/helper, negative, ordinary and globally paused contexts. Routing
+is now 110/127 (86.6%), 17 unbound. See [HITPAUSETIME.md](HITPAUSETIME.md).

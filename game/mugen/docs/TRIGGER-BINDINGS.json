@@ -3,10 +3,9 @@
   "kind": "source-routing-inventory",
   "manual_sha256": "9a6636b9e14edc1c91b38de7357aae43049d2a612313d10be55f6e6117ab121c",
   "family_count": 127,
-  "route_present": 109,
+  "route_present": 110,
   "unbound": [
     "bottomedge",
-    "hitpausetime",
     "ishometeam",
     "movereversed",
     "numprojid",
@@ -396,8 +395,10 @@
     },
     {
       "name": "hitpausetime",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
       "variants_complete": false
     },
     {

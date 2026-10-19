@@ -53,6 +53,8 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "hitpausetime":
+		return evaluator.Int(int32(max(0, c.HitPauseTime))), true
 	case "hitvel x", "hitvel y":
 		// The legacy trigger returns game-space units, even in a redirect or
 		// foreign state. X follows the receiver's current facing; the stored

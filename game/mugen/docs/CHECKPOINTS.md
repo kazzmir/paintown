@@ -4,6 +4,16 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4cc: HitPauseTime attack-clock binding
+
+Predecessor/reversal d251549d. Seven frozen controls / 84 values / 28 authored
+hashes. Integer own-hitpause binding, zero-clamped negative values and explicit
+defender-shake/helper ownership separation. Focused Match races PASS 19.970s;
+Character/evaluator 11.615/1.021s. Fresh helper and 321 frozen source hashes pass.
+HITPAUSETIME.md records native scope and remaining interactions. Continue
+Random/VarRandom and the authorized projectile/reversal checkpoints. Local
+source/text only; no pushes/binaries.
+
 ## M4cb: liedown/input timer and authored recovery routes
 
 Predecessor/reversal b258eaf3. Twenty-one frozen programs / 252 observations /

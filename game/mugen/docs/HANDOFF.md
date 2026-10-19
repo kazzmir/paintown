@@ -1,5 +1,30 @@
 # Current handoff
 
+## Current scalar/projectile/reversal allocation
+
+The user validated/pushed d251549d and authorized assessment items 1–2 on
+2026-10-19. M4cc HitPauseTime is complete: seven native programs / 84 values /
+28 original hashes; Match focused races 19.970s, Character/evaluator races
+11.615/1.021s. Fresh helper reproduces all 12 values; all 321 frozen source/
+probe/fixture/module hashes pass. Source routing now 110/127; 17 unbound.
+Read HITPAUSETIME.md. No app/full-suite rerun is needed for this isolated
+binding; full integration follows the allocated boundaries. Only source/text
+is committed locally; never push or add binaries.
+
+Continue M4cd Random/VarRandom, then projectile schema/lifecycle/cancellation/
+queries and ReversalDef/MoveReversed, with local checkpoints and frozen native
+controls throughout. New randomdraw-* originals are frozen before capture;
+active native runner/log are temp/run-m4cd-native.py and m4cd-native.log.
+Await its exec session 64483 before Go/display-dependent checks. Native analysis
+shows separate session/match Park–Miller streams (16807 modulo 2147483647);
+use captured seeds and controlled programs to prove the actual trigger/controller
+sequence before implementation. Disassembly is ignored temp/native-disassembly.txt.
+Do not modify observed inputs/goldens. Items 3–4 await a later allocation.
+
+All prior allocations below are historical; their stop condition is superseded
+by the new user authorization. No agents/goals. No authored changes outside
+game/mugen/. Preserve unrelated untracked files and root module baselines.
+
 ## Completed binding/recovery allocation: M4bz → M4ca → M4cb
 
 All three authorized checkpoints are complete. M4bz is bd018c65; M4ca is
