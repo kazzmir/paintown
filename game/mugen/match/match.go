@@ -196,6 +196,8 @@ func (m *Match) resetRound() error {
 	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
 	m.cameraGoalX = m.CameraX
 	half := float64(m.Options.GameSpace.Width) / 2
+	m.World.ProjectileStageBounds = [2]float64{s.Camera.BoundLeft*stageScale - half, s.Camera.BoundRight*stageScale + half}
+	m.World.ProjectileStageBoundsKnown = true
 	m.cameraLeft, m.cameraRight = float32(m.CameraX-half), float32(m.CameraX+half)
 	m.Viewport.Zoom = 1
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY

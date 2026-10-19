@@ -48,6 +48,7 @@ type Character struct {
 	lastHitOwner          *Character
 	lastHitID             int
 	projectileLifetime    int
+	projectile            *projectileState
 	superDefenceMul       float64
 	SuperTargetDefenceMul float64
 	pendingHitDamage      int
@@ -856,89 +857,13 @@ func (c *Character) Helper(params map[string]string) {
 }
 
 func (c *Character) Projectile(params map[string]string) {
-	// Projectile(id, anim, hitdef, pos, vel, ...)
-	anim := 0
-	if v, ok := params["anim"]; ok {
-		anim, _ = strconv.Atoi(v)
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
 	}
-	if v, ok := params["projanim"]; ok {
-		anim, _ = strconv.Atoi(v)
+	if err := engine.ExecuteProjectileParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("Projectile: %w", err)
 	}
-
-	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
-	p.isProjectile = true
-	p.World = c.World
-	p.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
-	p.BindEffects(c.EffectQueue, c.CommonEffects)
-	p.LocalCoord = c.LocalCoord
-	p.GameCoord = c.GameCoord
-	p.Viewport = c.Viewport
-	p.Timeline = c.Timeline
-	p.SuperTargetDefenceMul = c.SuperTargetDefenceMul
-	p.Palettes = c.Palettes
-	if c.Palettes != nil && params["ownpal"] == "1" {
-		p.Palettes = c.Palettes.Clone()
-	}
-	p.Parent = c
-	p.Root = c.Root
-	if p.Root == nil {
-		p.Root = c
-	}
-	p.InputSlot = c.InputSlot
-	p.Facing = c.Facing
-	p.Anim = anim
-	p.ChangeAnim(anim)
-	p.X = c.X
-	p.Y = c.Y
-	p.Opponents = c.Opponents
-	p.projectileLifetime = -1
-	if raw, ok := params["projremovetime"]; ok {
-		p.projectileLifetime, _ = strconv.Atoi(raw)
-	}
-	p.HitDef(params)
-
-	if v, ok := params["pos"]; ok {
-		pos := cns.ParseFloatList(v)
-		if len(pos) >= 1 {
-			p.X += pos[0] * float64(c.Facing)
-		}
-		if len(pos) >= 2 {
-			p.Y += pos[1]
-		}
-	}
-
-	if v, ok := params["vel"]; ok {
-		vel := cns.ParseFloatList(v)
-		if len(vel) >= 1 {
-			// VelX is in local space. DO NOT multiply by Facing here because
-			// the physics update (which projectiles share) will multiply VelX by Facing.
-			p.VelX = vel[0]
-		}
-		if len(vel) >= 2 {
-			p.VelY = vel[1]
-		}
-	}
-	if v, ok := params["offset"]; ok {
-		pos := cns.ParseFloatList(v)
-		if len(pos) > 0 {
-			p.X = c.X + pos[0]*float64(c.Facing)
-		}
-		if len(pos) > 1 {
-			p.Y = c.Y + pos[1]
-		}
-	}
-	if v, ok := params["velocity"]; ok {
-		vel := cns.ParseFloatList(v)
-		if len(vel) > 0 {
-			p.VelX = vel[0]
-		}
-		if len(vel) > 1 {
-			p.VelY = vel[1]
-		}
-	}
-
-	// Projectiles are like constant-motion helpers with a specific anim
-	c.Projectiles = append(c.Projectiles, p)
 }
 
 func (c *Character) AssertSpecial(flag string) {

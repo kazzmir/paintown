@@ -12,11 +12,14 @@ import (
 // World owns entity identity and root relationships. TickCharacters schedules
 // roots/helpers; projectiles still use legacy child adapters.
 type World struct {
-	Registry           *engine.Registry[*Character]
-	Roots              []*Character
-	Helpers            []*Character
-	HelperMax          int
-	orphanEffectOwners []*Character
+	Registry  *engine.Registry[*Character]
+	Roots     []*Character
+	Helpers   []*Character
+	HelperMax int
+	// Fixed camera travel limits plus half the viewport, in game units.
+	ProjectileStageBounds      [2]float64
+	ProjectileStageBoundsKnown bool
+	orphanEffectOwners         []*Character
 
 	// AfterEntityUpdate observes completed root/helper CNS and physics. Match
 	// uses this for camera easing; state-only worlds leave it nil.
@@ -356,6 +359,9 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 }
 
 func (c *Character) LookupFunction(name string, args []evaluator.Value) (evaluator.Value, bool) {
+	if value, known := c.lookupProjectileCount(name, args); known {
+		return value, true
+	}
 	switch name {
 	case "ishelper", "numhelper", "numtarget", "numexplod", "playeridexist":
 	default:

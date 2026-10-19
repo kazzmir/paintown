@@ -30,6 +30,7 @@ SPECIAL = {
     'gethitvar': ('evaluator/runtime.go', 'callWithArguments', 'name == "gethitvar"'),
     'log': ('evaluator/runtime.go', 'callWithArguments', 'name == "log"'),
     'hitdefattr': ('character/context.go', 'LookupLegacy', 'name != "hitdefattr"'),
+    'numprojid': ('character/projectile.go', 'lookupProjectileCount', 'name != "numprojid"'),
 }
 
 

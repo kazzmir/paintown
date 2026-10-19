@@ -33,6 +33,23 @@ var hitDefEvaluationOrder = []string{
 // Sound, spark, custom-state and selection parameters compile here while the
 // remaining legacy schema is replaced. Never mutate the shared source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
+	evaluate, handled, err := compileHitDefValues(ctrl)
+	if err != nil {
+		return nil, handled, err
+	}
+	return func(_ *cns.StateController, env Environment) error {
+		params, err := evaluate(env)
+		if err != nil {
+			return err
+		}
+		env.HitDef(params)
+		return nil
+	}, true, nil
+}
+
+// Projectiles reuse all HitDef schemas and defaults without replacing the
+// evaluation environment or losing its optional redirect/coordinate interfaces.
+func compileHitDefValues(ctrl *cns.StateController) (func(Environment) (map[string]string, error), bool, error) {
 	power, err := compileHitPower(ctrl)
 	if err != nil {
 		return nil, true, err
@@ -173,7 +190,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	if err != nil {
 		return nil, true, err
 	}
-	return func(_ *cns.StateController, env Environment) error {
+	return func(env Environment) (map[string]string, error) {
 		params := make(map[string]string, len(ctrl.Params))
 		for key, value := range ctrl.Params {
 			params[key] = value
@@ -197,7 +214,7 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 			values, err := evaluateArgumentsWithBottom(cue.args, env, hitShakeKey(cue.key) || hitPaletteKey(cue.key) || hitConstraintKey(cue.key) || cue.key == "chainid" || cue.key == "nochainid" || cue.key == "air.juggle" || cue.key == "damage" || cue.key == "getpower" || cue.key == "givepower" || cue.key == "pausetime" || cue.key == "guard.pausetime" || cue.key == "hitonce" || cue.key == "priority" || cue.key == "numhits" || cue.key == "p1sprpriority" || cue.key == "p2sprpriority" || cue.key == "p1facing" || cue.key == "p1getp2facing" || cue.key == "forcenofall" || cue.key == "forcestand" || cue.key == "kill" || cue.key == "guard.kill" || cue.key == "fall.kill" || cue.key == "fall.damage" || cue.key == "down.bounce" || cue.key == "guard.dist" || hitTimingKey(cue.key) || hitFallKey(cue.key) || cue.floating)
 			if err != nil {
-				return fmt.Errorf("%s: %w", cue.key, err)
+				return nil, fmt.Errorf("%s: %w", cue.key, err)
 			}
 			if cue.coordinateDefault {
 				width := 320
@@ -234,7 +251,6 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				params[cue.key] += "," + priorityClass
 			}
 		}
-		env.HitDef(params)
-		return nil
+		return params, nil
 	}, true, nil
 }

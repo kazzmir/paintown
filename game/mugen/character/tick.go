@@ -98,6 +98,11 @@ func TickCharacters(players []*Character) error {
 			}
 		}
 	}
+	for _, c := range players {
+		for _, p := range c.Projectiles {
+			p.prepareProjectileTick()
+		}
+	}
 	var rawContacts []contact
 	projectileHits := map[*Character]bool{}
 	for _, c := range players {

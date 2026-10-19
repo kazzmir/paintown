@@ -3,6 +3,9 @@ package character
 import "strings"
 
 func (c *Character) spriteScale() (x, y float64) {
+	if c.projectile != nil {
+		return c.projectile.scale[0], c.projectile.scale[1]
+	}
 	if c.StateFile == nil {
 		return 1, 1
 	}

@@ -1,12 +1,13 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
-M4cd binds integer Random and compiled VarRandom to the native shared match
-stream. Twenty-one frozen controls establish 192 values, five load rejections,
-seed replay, ranges, draw order and helper/redirect ownership. Candidate runtime
-routes are now 111/127 (87.4%), with 16 unbound. Read [RANDOM.md](RANDOM.md).
-M4cc HitPauseTime is committed as 750f0076. The authorized projectile/reversal
-allocation continues; items 3–4 remain deferred. Earlier allocation summaries
-below are historical and do not override this current scope.
+M4ce adds typed projectile setup, independent motion/animation/pause clocks,
+native lifetime/bounds, root ownership and basic NumProjID. Its 104 frozen
+programs pin 1,192 distinct variable slots, nine load rejections and 12 native
+sprite positions; three actual projectile apps match opaque body masks exactly.
+Source routing is now 112/127 (88.2%), 15 unbound. [PROJECTILES.md](PROJECTILES.md)
+records limits. Contacts/multi-hit/removal/cancellation/queries/reversals remain
+active in this allocation; effects/modes/final rendering await items 3–4.
+Earlier allocation summaries below are historical.
 
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,

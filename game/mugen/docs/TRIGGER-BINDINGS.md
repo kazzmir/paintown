@@ -8,7 +8,7 @@ After reviewing an intentional routing change, `--write` regenerates
 functions; parser/validation switches are excluded. Explicit conditional routes
 include Command, Const variants, IfElse/Cond, Log, GetHitVar and HitDefAttr.
 
-111/127 families (87.4%) have a candidate runtime route; 16 have none. This is a
+112/127 families (88.2%) have a candidate runtime route; 15 have none. This is a
 source-routing percentage, not behavioral coverage. A route can return bottom
 in an unsupported context, implement only some variants, or call partial code.
 No row is marked variant-complete. The original compatibility table is historical.
@@ -16,7 +16,7 @@ No row is marked variant-complete. The original compatibility table is historica
 | Unbound families | Dependency / next obligation |
 | --- | --- |
 | MoveReversed | Actual reversal acceptance and contact bookkeeping. |
-| NumProjID, ProjCancelTime, ProjContact, ProjContactTime, ProjGuarded, ProjGuardedTime, ProjHit, ProjHitTime | Projectile identity, lifecycle and owner credit; legacy indexed comparison forms. |
+| ProjCancelTime, ProjContact, ProjContactTime, ProjGuarded, ProjGuardedTime, ProjHit, ProjHitTime | Projectile identity, lifecycle and owner credit; legacy indexed comparison forms. |
 | IsHomeTeam, TeamMode, P3Name, P4Name | Match mode, teams and available-player context. |
 | TopEdge, BottomEdge, StageVar | Vertical/zoom camera and typed stage selectors. |
 
@@ -62,3 +62,8 @@ is now 110/127 (86.6%), 17 unbound. See [HITPAUSETIME.md](HITPAUSETIME.md).
 M4cd update: Random is a typed match-owned binding; compiled VarRandom uses the
 same native stream. Twenty-one controls pin 192 values and five rejections.
 Routing is 111/127 (87.4%), 16 unbound. See [RANDOM.md](RANDOM.md).
+
+M4ce update: NumProjID has typed counts, ID/default/type/bottom/arity and root/
+helper ownership controls. Basic counts moved ahead of other query families to
+measure native lifetime. Routing is 112/127 (88.2%), 15 unbound. The source audit
+explicitly records the named conditional production handler. See PROJECTILES.md.

@@ -23,14 +23,33 @@ this checkpoint. Prior complete scoped race baseline is M4cb; the allocated
 final projectile/reversal integration will rerun it. Only source/text is staged;
 no pushes or binaries.
 
-Continue M4ce projectile schema/spawn/motion/lifetime/ownership, M4cf contacts/
-cancellation, M4cg query forms and M4ch reversals. Basic NumProjID counts may
-move into M4ce as a prerequisite for native lifetime controls. Forty-two
-projspawn-* CNS/CMD/AIR/stage programs (168 hashes) are already frozen BEFORE
-capture in temp/m4ce-native-inputs.json. They are untracked preparation and
-are NOT part of the M4cd commit. Native capture is the next step; no projectile
-Go changes have been made. Keep native observations immutable and private
-native/app/display-dependent tests serial. Items 3–4 await a later allocation.
+M4cd is committed as ded53de8. M4ce is COMPLETE and ready for its local
+source/text commit. Read PROJECTILES.md. Typed setup, split HitDef evaluation,
+source defaults, independent motion/animation/pause, native lifetime/directional
+bounds, center postypes, root ownership and NumProjID counts match 104 native
+programs: 95 accepted / nine rejections / 1,192 distinct slots / 416 authored
+hashes / 12 sprite calibrations. Source routing is 112/127 (88.2%), 15 unbound.
+
+Match races PASS 135.338s (new programs plus chain/juggle/legacy velocity/RNG/
+HitPauseTime). Core races PASS: Character 11.450s, System 9.636s, engine 1.476s,
+evaluator 1.023s, CNS 1.013s, combat 1.011s. Fresh reverse-order native reproduces
+48 readings; three actual projectile apps match opaque body masks exactly.
+Stock four-PNG win/rematch/win, 82 balanced owned events, private PCM and source/
+config/binary/PNG/input/audio provenance audits pass. All 819 frozen source/
+probe/fixture/module hashes and root module guards pass. All sessions, including
+88753, were awaited; no native/app/test clients remain. Artifacts and preparation
+diagnostics are listed in PROJECTILES.md. Last entire scoped race suite: M4cb;
+repeat at final allocated integration with adequate timeout for corpus growth.
+
+Next: commit M4ce locally, then proceed automatically through M4cf contacts/
+multi-hit/miss/removal/cancellation, M4cg event/legacy queries and M4ch reversals.
+Measure PlayerProjectileMax capacity (parsed but not passed into World), helper
+birth-pass movement/lifetime and cross-owner observation order. Do not guess a
+world-wide phase reordering. Source multiplier/state/target and paused/retiring
+pool rules need controls. No M4cf fixture or implementation has started yet.
+M4ce source snapshots are now frozen; preserve originals and numeric goldens.
+All native/app/display-dependent work stays serial. No agents/goals, pushes,
+binaries or authored edits outside game/mugen/. Items 3–4 remain unallocated.
 
 All prior allocations below are historical; their stop condition is superseded
 by the new user authorization. No agents/goals. No authored changes outside

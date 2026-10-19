@@ -4,6 +4,19 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4ce: typed projectile setup, motion, lifetime and root ownership
+
+Predecessor/reversal ded53de8. 104 frozen programs / 1,192 distinct scalar slots /
+nine rejections / 416 authored hashes, plus 12 calibrated native sprite positions.
+Shares HitDef schemas and preserves measured property/HitDef evaluation order,
+source defaults and native center postypes/directional bounds. Basic NumProjID
+moves forward as a lifetime-measurement prerequisite. Focused Match races PASS
+135.338s; core races pass. Fresh native tagged control, three actual projectile
+apps/exact opaque masks, stock four-PNG win/rematch/win/82 events/private PCM,
+all 819 frozen hashes and module/provenance audits pass. PROJECTILES.md records
+preparation diagnostics and all remaining gates. Continue M4cf/M4cg/M4ch; full
+scoped integration follows. Local source/text only; no pushes/binaries.
+
 ## M4cd: match-owned native Random and compiled VarRandom
 
 Predecessor/reversal 750f0076. Twenty-one frozen programs / 192 values / five

@@ -72,22 +72,40 @@ func (c *Character) juggleRelevant(hit cns.HitDef) bool {
 	return c.GetHitFall() || c.StateType == "L" || hit.Fall != 0 || (c.StateType == "A" && hit.AirFall != 0)
 }
 
-// Projectiles advance without executing the owner's CNS or starting another
-// world frame. This adapter covers ordinary single-contact projectiles;
-// cancellation, removal animations and projectile query/lifecycle rules remain.
+// Projectiles have independent motion and pause clocks; they execute no CNS.
 func (c *Character) advanceProjectiles() {
 	active := c.Projectiles[:0]
 	for _, p := range c.Projectiles {
 		if p.projectileLifetime == 0 {
 			continue
 		}
-		if !c.worldFrozen {
-			p.X += p.VelX * float64(p.Facing)
-			p.Y += p.VelY
+		if !p.worldFrozen && !p.pausedThisTick {
+			p.X = float64(float32(p.X) + float32(p.VelX)*float32(p.Facing))
+			p.Y = float64(float32(p.Y) + float32(p.VelY))
+			if state := p.projectile; state != nil {
+				v := state.parameters
+				p.VelX = float64(float32(p.VelX)*float32(v.VelocityMultiplier[0]) + float32(v.Accel[0]))
+				p.VelY = float64(float32(p.VelY)*float32(v.VelocityMultiplier[1]) + float32(v.Accel[1]))
+				left := p.cameraPositionX() - float64(p.LocalCoordinateWidth())/2
+				right := left + float64(p.LocalCoordinateWidth())
+				if p.X < left-float64(v.EdgeBound) || p.X > right+float64(v.EdgeBound) || p.VelY < 0 && p.Y < v.HeightBound[0] || p.VelY > 0 && p.Y > v.HeightBound[1] {
+					continue
+				}
+				if p.World != nil && p.World.ProjectileStageBoundsKnown {
+					scale := float64(p.LocalCoordinateWidth()) / float64(p.GameCoord.Width)
+					bounds := p.World.ProjectileStageBounds
+					direction := p.VelX * float64(p.Facing)
+					if direction < 0 && p.X < bounds[0]*scale-float64(v.StageBound) || direction > 0 && p.X > bounds[1]*scale+float64(v.StageBound) {
+						continue
+					}
+				}
+			}
 			p.Time++
 			if p.projectileLifetime > 0 {
 				p.projectileLifetime--
 			}
+			p.contactFrame, p.contactFrameReady = p.CurrentElement(), true
+			p.UpdateAnimation()
 		}
 		active = append(active, p)
 	}

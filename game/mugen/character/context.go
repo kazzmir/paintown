@@ -142,7 +142,7 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 			return evaluator.EvaluateValue(&evaluator.Identifier{Name: "movetype"}, other), true
 		}
 	case "numproj":
-		return evaluator.Int(int32(len(c.Projectiles))), true
+		return evaluator.Int(int32(c.numProjectiles(0, false))), true
 	case "palno":
 		return evaluator.Int(int32(c.PaletteNo)), true
 	case "ailevel":

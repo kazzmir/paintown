@@ -188,24 +188,28 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				FixtureConstants bool               `json:"fixture_constants"`
-				RandomSeed       *int64             `json:"random_seed"`
-				CNSHash          string             `json:"cns_sha256"`
-				AIRHash          string             `json:"air_sha256"`
-				StageHash        string             `json:"stage_fixture_sha256"`
-				CMDHash          string             `json:"cmd_sha256"`
-				Local            string             `json:"localcoord"`
-				P2Local          string             `json:"p2_localcoord"`
-				StageError       string             `json:"expected_stage_error"`
-				LoadError        string             `json:"expected_load_error"`
-				ErrorState       int                `json:"expected_compile_state"`
-				ErrorFile        string             `json:"expected_compile_file"`
-				ReplayTicks      int                `json:"replay_ticks"`
-				RecipeHash       string             `json:"recipe_sha256"`
-				GameWidth        int                `json:"game_width"`
-				Rules            map[string]float64 `json:"rules"`
-				ExtraHashes      map[string]string  `json:"extra_sha256"`
-				ActorRender      *struct {
+				FixtureConstants   bool               `json:"fixture_constants"`
+				RandomSeed         *int64             `json:"random_seed"`
+				CNSHash            string             `json:"cns_sha256"`
+				AIRHash            string             `json:"air_sha256"`
+				StageHash          string             `json:"stage_fixture_sha256"`
+				CMDHash            string             `json:"cmd_sha256"`
+				Local              string             `json:"localcoord"`
+				P2Local            string             `json:"p2_localcoord"`
+				StageError         string             `json:"expected_stage_error"`
+				LoadError          string             `json:"expected_load_error"`
+				ErrorState         int                `json:"expected_compile_state"`
+				ErrorFile          string             `json:"expected_compile_file"`
+				ReplayTicks        int                `json:"replay_ticks"`
+				RecipeHash         string             `json:"recipe_sha256"`
+				GameWidth          int                `json:"game_width"`
+				Rules              map[string]float64 `json:"rules"`
+				ExtraHashes        map[string]string  `json:"extra_sha256"`
+				ProjectilePosition *struct {
+					Offset [2]float64 `json:"offset_from_owner"`
+					Facing int        `json:"facing"`
+				} `json:"projectile_position"`
+				ActorRender *struct {
 					FrontID int `json:"front_entity_id"`
 				} `json:"actor_render"`
 				Captures []struct{ Variables map[string]float64 }
@@ -400,6 +404,17 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					if got := m.Players[0].Character.FloatVars[index]; float32(got) != float32(want) {
 						t.Errorf("fvar(%d)=%v native=%v", index, got, want)
 					}
+				}
+			}
+			if reference.ProjectilePosition != nil {
+				owner := m.Players[0].Character
+				if len(owner.Projectiles) != 1 {
+					t.Fatal("native isolated projectile missing", len(owner.Projectiles))
+				}
+				p := owner.Projectiles[0]
+				got := [2]float64{p.X - owner.X, p.Y - owner.Y}
+				if got != reference.ProjectilePosition.Offset || p.Facing != reference.ProjectilePosition.Facing {
+					t.Error("native sprite position/facing differs", got, p.Facing, reference.ProjectilePosition)
 				}
 			}
 			if reference.ActorRender != nil {

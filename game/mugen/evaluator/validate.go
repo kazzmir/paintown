@@ -24,8 +24,15 @@ func ParseReference(source string) (Expression, error) {
 func validateConstants(expr Expression) error {
 	var children []Expression
 	switch e := expr.(type) {
+	case *Identifier:
+		if strings.EqualFold(e.Name, "numprojid") {
+			return fmt.Errorf("NumProjID requires one expression")
+		}
 	case *Call:
 		name := strings.ToLower(e.Name)
+		if name == "numprojid" && len(e.Arguments) != 1 {
+			return fmt.Errorf("NumProjID requires one expression")
+		}
 		if name == "gethitvar" {
 			if len(e.Arguments) != 1 {
 				return fmt.Errorf("GetHitVar requires one literal selector")

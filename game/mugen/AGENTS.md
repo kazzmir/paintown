@@ -143,6 +143,16 @@ programs / 168 hashes are frozen but not yet observed and not in M4cd's commit.
 Move basic NumProjID counting into M4ce as needed for native lifetime controls;
 keep the remaining query forms in M4cg. No clients/sessions remain at M4cd.
 
+M4ce completes typed projectile setup/motion/lifetime/bounds/root ownership:
+104 native programs, 1,192 distinct slots, nine load rejections, 416 authored
+hashes and 12 sprite calibrations. Match races PASS 135.338s, core races pass;
+fresh tagged native, three actual projectile apps/exact body masks, four-PNG
+stock win/rematch/win with 82 owned events/private PCM, 819 frozen hashes and
+module audits pass. Read PROJECTILES.md and HANDOFF.md. Continue M4cf contact/
+multi-hit/removal/cancellation, including capacity/config and helper birth
+ordering, then M4cg queries and M4ch reversals. No sessions/clients remain at
+M4ce; no further implementation has started. Full suite at final integration.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify
