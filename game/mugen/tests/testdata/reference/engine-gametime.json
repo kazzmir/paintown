@@ -1,0 +1,153 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "fixture_sha256": {
+    ".cns": "1e8536f413c1625f1a837d25afed8c749ecab029bcac358f8659fb9f895dc63e",
+    ".cmd": "8a740c1fc55f133f91421262dc1294cb12aa7ab17ce813f818e64fc35f086666",
+    ".air": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+    ".clock.json": "cc300741a81117136a61971fd3d5f76e7c27c801aa430de559eb10e8ba23241c"
+  },
+  "probe_sha256": "f1e9640d277d1efdb7d084c53dc5f55abb1ba97cdad17d3bf51c998967a57422",
+  "select_sha256": "b248568ddb8f5e490aa54c25f6d3f7c08bbb6747ba267e286a9ab358d9579aa2",
+  "prepared_sha256": {
+    "chars/kfm/kfm.def": "a14bee1914995481f7cbc065cbf4a6d07ca2176f6dd9bffeb5795cd46898aa1b",
+    "chars/kfm/probe.cns": "89b340124a4e5fbe606b0c953eeaaaa8814bb53f704f2addc6d7aa7cbd9f3ddf",
+    "chars/kfm/probe.cmd": "bb3a8f60039d82d537f6ab12688143af8bafd698f15283d9a8000bae1fa03adc",
+    "chars/kfm/probe.air": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+    "data/mugen.cfg": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492"
+  },
+  "events": [
+    {
+      "phase": "entry",
+      "index": 0,
+      "keys": [
+        "F1"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "20036d064ed7ab2108da0f3d7f6fb0bbeeb43c2ee978915d20fced4eae68aaf2"
+    },
+    {
+      "phase": "entry",
+      "index": 1,
+      "keys": [
+        "Down",
+        "Return"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "48c4f5c3e88108b96c2cdd5c07da25e04021e956290e441091cea77399b385b5"
+    },
+    {
+      "phase": "entry",
+      "index": 2,
+      "keys": [
+        "comma",
+        "f"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "fec0f5f6893fbbe38640e75a6dab27d8ee79d1151b6eeb74265bf3b3a0f00e96"
+    },
+    {
+      "phase": "entry",
+      "index": 3,
+      "keys": [
+        "Return"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "0db364894ac1e5bce3d165cbf58494f7286215d012035378c28d133a119b2dea"
+    },
+    {
+      "phase": "reentry",
+      "index": 0,
+      "keys": [
+        "Escape"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "0d8cd8b2c83f59b842a41580c20ee44d10101d2ea807786f4d02dbe0e6e32cc7"
+    },
+    {
+      "phase": "reentry",
+      "index": 1,
+      "keys": [
+        "Escape"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "95d974d48eb6614555cc468fd3f702b2f84bfb21a92b64babd1cb74ade085182"
+    },
+    {
+      "phase": "reentry",
+      "index": 2,
+      "keys": [
+        "Return"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "93c42e68e62796ca84817a9bda058a4135b012c97df16a7443f587fbb0134c6a"
+    },
+    {
+      "phase": "reentry",
+      "index": 3,
+      "keys": [
+        "comma",
+        "f"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "5f4762fe5d22c2cdada5beafbd7fd58399d0386e6db28f916ff6a3b064ca4bbf"
+    },
+    {
+      "phase": "reentry",
+      "index": 4,
+      "keys": [
+        "Return"
+      ],
+      "pid": 3786516,
+      "window": "10485761",
+      "before_sha256": "e66cbbc4ebcf0678c13da3ab72ab74bc4fe6143e45528cc839d54fb6de102e64"
+    }
+  ],
+  "captures": [
+    {
+      "phase": "entry",
+      "path": "entry.png",
+      "sha256": "00f35a2b59c8c342498cbfe0a132fb4230b0c2b0366fc6791da1dece6a8de756",
+      "variables": {
+        "0": 751,
+        "1": 928,
+        "2": 177,
+        "3": 1,
+        "4": 2,
+        "5": 1,
+        "6": 928,
+        "7": 177,
+        "8": 60,
+        "9": 0,
+        "10": 1,
+        "11": 0
+      }
+    },
+    {
+      "phase": "reentry",
+      "path": "reentry.png",
+      "sha256": "1c8d53d52af7baf3a3a97d7814fe590e1be1f597f8645136ccad44dfb1e0571d",
+      "variables": {
+        "0": 1655,
+        "1": 1834,
+        "2": 179,
+        "3": 1,
+        "4": 2,
+        "5": 1,
+        "6": 1834,
+        "7": 179,
+        "8": 60,
+        "9": 0,
+        "10": 1,
+        "11": 0
+      }
+    }
+  ]
+}

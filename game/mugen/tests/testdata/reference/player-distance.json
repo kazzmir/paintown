@@ -1,0 +1,68 @@
+{
+  "cases": {
+    "720-240": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "b09ed45843ef5f4cd43fcf20eb660f601d53f133dd19eb75e52860feed42a2f6",
+      "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "944f85dfaf9a603963424ecfcee14eee9bda0ad41610ecc9a5c1be9f826e8eb5",
+          "variables": {
+            "0": -280,
+            "1": 0,
+            "2": 1,
+            "3": 560,
+            "4": 0,
+            "5": 480,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "1280,720",
+      "p2_localcoord": "320,240"
+    },
+    "240-720": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "b09ed45843ef5f4cd43fcf20eb660f601d53f133dd19eb75e52860feed42a2f6",
+      "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "805ccadabbcaefbde50a96ad1a53b4ad942e7cae44225761e2cc02655169440a",
+          "variables": {
+            "0": -70,
+            "1": 0,
+            "2": 1,
+            "3": 140,
+            "4": 0,
+            "5": 120,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "320,240",
+      "p2_localcoord": "1280,720"
+    }
+  }
+}

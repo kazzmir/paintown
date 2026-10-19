@@ -1,0 +1,137 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "b1d02362a4ea256241e78bf8031149d9edeafab40bda510565d5a0cb61a1cfce",
+  "cmd_sha256": "1ffabe575e8dd33ea74304760aa16496807f889d664abf41fdfbaf43dbdaa9b6",
+  "air_sha256": "55283a4205ad73a8f4bf7b93ed95b17e6242b8871ff4f12731698dd73bcf662b",
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "recipe_sha256": "874f039672562456369973d674ae154653dd4e06821d9777c6e7b536f67e8461",
+  "probe_sha256": "4237ae4482fd2c67450b7ad5e2e8344152f54bb2b7a4012b370b181d2a612e2f",
+  "reference_probe_sha256": "7ca5409ed4798e5901bce937b33f6bc306740e18afb53625aecec21d7e543eb5",
+  "fixture_constants": true,
+  "bank": "fvar",
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "owned_pid": 4186726,
+  "owned_window": "10485761",
+  "events": [
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "l"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "l"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "semicolon"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "semicolon"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "apostrophe"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "apostrophe"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "comma"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "comma"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "period"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "period"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "slash"
+      ]
+    },
+    {
+      "pid": 4186726,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "slash"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "page": 0,
+      "path": "recovery.png",
+      "sha256": "dcba723da00c3e170bbb05992d26ddf02584c0c48cbe211dd2772ce13c831d8c",
+      "variables": {
+        "0": 0,
+        "1": 12,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "replay_ticks": 240
+}

@@ -1,0 +1,254 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,130)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 130]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 130, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 130, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 150, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(hittime)
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(slidetime)
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(ctrltime)
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=HitOver
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5000, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(hittime)
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(slidetime)
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(ctrltime)
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=HitOver
+[Statedef 180]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 180, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 180, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef -3]
+[State -3, hold]
+type=Null
+trigger1=0
+
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, seed]
+type=VarSet
+trigger1=Time=0
+v=10
+value=7
+[State 700, seed]
+type=VarSet
+trigger1=Time=0
+v=11
+value=11
+[State 700, seed float]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=3.9
+[State 700, seed float]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=4.9
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+guardflag=MA
+damage=10,1
+ground.type=High
+air.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=7
+ground.velocity=0,0
+air.velocity=0,0
+down.velocity=0,0
+guard.velocity=0
+airguard.velocity=0,0
+pausetime=0,0
+guard.pausetime=0,0
+ground.hittime=Var(10)+16
+ground.slidetime=Var(11)+18
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=0
+value=Enemy,FVar(24)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=1
+value=Enemy,FVar(25)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=2
+value=Enemy,FVar(26)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=3
+value=Enemy,FVar(27)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=4
+value=Enemy,GetHitVar(guarded)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=5
+value=Enemy,GetHitVar(damage)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=6
+value=Enemy,Life
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=7
+value=MoveContact
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=8
+value=100000
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=9
+value=Var(10)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=10
+value=Var(11)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=11
+value=Var(58)
+[State 700, latch]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+v=59
+value=1

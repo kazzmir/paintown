@@ -1,0 +1,44 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, scaled value 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Const240p(3)
+[State 0, scaled value 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Const480p(6)
+[State 0, scaled value 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Const720p(12)
+[State 0, scaled value 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Const240p(5)/2
+[State 0, scaled value 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Const480p(-1.5)
+[State 0, scaled value 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Const720p(0.1)

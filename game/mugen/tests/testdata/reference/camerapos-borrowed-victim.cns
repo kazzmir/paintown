@@ -1,0 +1,79 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, wait]
+type=Null
+trigger1=1
+[State 701, reset counts]
+type=VarRangeSet
+trigger1=Time=0
+first=30
+last=32
+value=0
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, wait]
+type=Null
+trigger1=1
+
+[Statedef 902]
+movetype=H
+physics=N
+
+[State 902, record 18]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=Pos X
+
+[State 902, record 19]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=Pos Y
+
+[State 902, record 20]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=CameraPos X
+
+[State 902, record 21]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=CameraPos Y
+
+[State 902, record 22]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=ScreenPos X
+
+[State 902, record 23]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=ScreenPos Y

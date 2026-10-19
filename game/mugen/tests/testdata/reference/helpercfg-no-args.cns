@@ -1,0 +1,211 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+[State 700, control]
+type=PosSet
+trigger1=Time=0
+x=30
+y=-20
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+
+
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=0
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=1
+value=Helper(0),StateNo
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=2
+value=Helper(0),Ctrl
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=3
+value=Helper(0),Pos X
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=4
+value=Helper(0),Pos Y
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=5
+value=Helper(0),Anim
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=6
+value=Helper(0),Life
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=7
+value=Helper(0),Var(5)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=8
+value=Helper(0),Facing
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=9
+value=Helper(0),Time
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=10
+value=Helper(0),IsHelper(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=11
+value=Helper(0),NumEnemy
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=PosSet
+trigger1=Time=0
+x=40
+y=-40
+
+[Statedef -3]
+
+[State -3, control]
+type=VarAdd
+trigger1=IsHelper
+v=0
+value=1
+
+[Statedef -2]
+
+[State -2, control]
+type=VarAdd
+trigger1=IsHelper
+v=1
+value=1
+
+[Statedef 800]
+physics=N
+anim=9990
+ctrl=1
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Pos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Pos Y
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Facing
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Ctrl
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Var(0)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Var(1)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Var(2)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Parent,Time
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Enemy,Time
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=Var(0)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=Var(1)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=Var(2)

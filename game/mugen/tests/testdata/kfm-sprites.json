@@ -1,0 +1,2820 @@
+{
+  "source": "chars/kfm/kfm.sff",
+  "source_sha256": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746",
+  "tool": "sff2png.exe",
+  "tool_sha256": "1bda8d94f0345df1bc7a872911ae9086f5f08aedc7f2a3c8ccd5ca18a23337ea",
+  "tool_version": "SFF2PNG v0.2 (2010-07-12)",
+  "comparison": "Opaque RGBA8 bytes in row-major order, as exported by Elecbyte; masking is tested separately. Axes from source table.",
+  "sprites": [
+    {
+      "index": 0,
+      "group": 9000,
+      "item": 1,
+      "x": 0,
+      "y": 0,
+      "width": 120,
+      "height": 140,
+      "rgba_sha256": "9eb0cdf3e32381205ee822281194de0e11691d4059ac6200e5fc2a2d6a6c0074"
+    },
+    {
+      "index": 1,
+      "group": 9000,
+      "item": 0,
+      "x": 0,
+      "y": 0,
+      "width": 25,
+      "height": 25,
+      "rgba_sha256": "b61ad012e2173ed895247976131da6e49e1fa7a637c07a4df0cadb41e9c26469"
+    },
+    {
+      "index": 2,
+      "group": 0,
+      "item": 0,
+      "x": 18,
+      "y": 105,
+      "width": 47,
+      "height": 106,
+      "rgba_sha256": "ff8ce301dfb3146603df09a220e52789a0bb291b984073b2b25d043cba040c86"
+    },
+    {
+      "index": 3,
+      "group": 0,
+      "item": 1,
+      "x": 18,
+      "y": 104,
+      "width": 48,
+      "height": 105,
+      "rgba_sha256": "a1a2aa12440eec65e3e42e7bb82c7da16b1af70c9c0796ff6b02d18c974bd2d3"
+    },
+    {
+      "index": 4,
+      "group": 0,
+      "item": 2,
+      "x": 18,
+      "y": 104,
+      "width": 49,
+      "height": 105,
+      "rgba_sha256": "20ae3f699ed1f6f8677e536061989ad4702e35a3dbe8c2cbc0f92f20fac1ae03"
+    },
+    {
+      "index": 5,
+      "group": 0,
+      "item": 3,
+      "x": 18,
+      "y": 104,
+      "width": 50,
+      "height": 105,
+      "rgba_sha256": "22d9d3a2b664b6f07d096ce3d549d52af728f98adc517cc63c84b05691a4ee87"
+    },
+    {
+      "index": 6,
+      "group": 0,
+      "item": 4,
+      "x": 18,
+      "y": 104,
+      "width": 51,
+      "height": 105,
+      "rgba_sha256": "1d8dc0b11981ca1de29b214417266262a82ae0fd5d6bfdfd381f25742deff1be"
+    },
+    {
+      "index": 7,
+      "group": 0,
+      "item": 5,
+      "x": 18,
+      "y": 104,
+      "width": 51,
+      "height": 105,
+      "rgba_sha256": "3b1d0316d2b997bd03da74c98b84488cab891bc5d7b30bcc18604b7b63b4fd25"
+    },
+    {
+      "index": 8,
+      "group": 5,
+      "item": 0,
+      "x": 16,
+      "y": 105,
+      "width": 42,
+      "height": 106,
+      "rgba_sha256": "e909a9a96d001c4bdc11e42702e120c5d51c0856559246b60cd139e585d12af4"
+    },
+    {
+      "index": 9,
+      "group": 6,
+      "item": 0,
+      "x": 19,
+      "y": 73,
+      "width": 44,
+      "height": 74,
+      "rgba_sha256": "13c7dee13afd8883427afaede69f1cec652a6ea0c1b13c98841ff143fc1d01df"
+    },
+    {
+      "index": 10,
+      "group": 11,
+      "item": 0,
+      "x": 17,
+      "y": 91,
+      "width": 49,
+      "height": 92,
+      "rgba_sha256": "71881364295dd9269172acd587d4d4e2a3507e0f7bca62beeb47b9e9ff40c213"
+    },
+    {
+      "index": 11,
+      "group": 11,
+      "item": 1,
+      "x": 17,
+      "y": 79,
+      "width": 49,
+      "height": 80,
+      "rgba_sha256": "41f5fe3b801f559595bfa60a4319d71fa9f035d79e0ef8a8fe8c22b8c9c09f5f"
+    },
+    {
+      "index": 12,
+      "group": 11,
+      "item": 2,
+      "x": 18,
+      "y": 73,
+      "width": 50,
+      "height": 75,
+      "rgba_sha256": "1df1575f34ba085f93e7cee8d08842180ee51865c75ab50d2889e0b2af765356"
+    },
+    {
+      "index": 13,
+      "group": 20,
+      "item": 0,
+      "x": 22,
+      "y": 108,
+      "width": 49,
+      "height": 109,
+      "rgba_sha256": "a74a551d718299fde7cbb0ee9e5c8c096b89708ef0948f6045707d4235f31396"
+    },
+    {
+      "index": 14,
+      "group": 20,
+      "item": 1,
+      "x": 16,
+      "y": 109,
+      "width": 43,
+      "height": 110,
+      "rgba_sha256": "38ac77ce5a647e65053187c500249f19bbdfc4a0ff3de5606a300ffd39c197ce"
+    },
+    {
+      "index": 15,
+      "group": 20,
+      "item": 2,
+      "x": 11,
+      "y": 109,
+      "width": 38,
+      "height": 110,
+      "rgba_sha256": "72f14903bd69b939b46774d53b801cbe0e20a790d7863cd1d0879c3ead0e7e95"
+    },
+    {
+      "index": 16,
+      "group": 20,
+      "item": 3,
+      "x": 12,
+      "y": 108,
+      "width": 39,
+      "height": 109,
+      "rgba_sha256": "0efd6f2f1912264b8071439132268497c2da0c052d2d577e2bb92939ac0a6d40"
+    },
+    {
+      "index": 17,
+      "group": 20,
+      "item": 4,
+      "x": 17,
+      "y": 107,
+      "width": 44,
+      "height": 108,
+      "rgba_sha256": "580a4b21cff58b0518218953889a2f94bada0135b35655dc7e213cd7e7b3e8ea"
+    },
+    {
+      "index": 18,
+      "group": 20,
+      "item": 5,
+      "x": 20,
+      "y": 105,
+      "width": 47,
+      "height": 106,
+      "rgba_sha256": "c7d6c50b02c48c83b241ec84ef96f302282ffd1b914ee5cf11271a6d8f8cfcb0"
+    },
+    {
+      "index": 19,
+      "group": 20,
+      "item": 6,
+      "x": 22,
+      "y": 104,
+      "width": 51,
+      "height": 105,
+      "rgba_sha256": "9d6d441b432e19dfd29c32b4e404317714baec9e2684f12104faecaef2013aef"
+    },
+    {
+      "index": 20,
+      "group": 20,
+      "item": 7,
+      "x": 22,
+      "y": 106,
+      "width": 49,
+      "height": 107,
+      "rgba_sha256": "fe691f3c781cf2c2d255d450a2546816278453468a82c57bdb5d65b1632226f3"
+    },
+    {
+      "index": 21,
+      "group": 20,
+      "item": 8,
+      "x": 22,
+      "y": 108,
+      "width": 49,
+      "height": 109,
+      "rgba_sha256": "e6bc7944f5dee6753416561cc6404ad11387b5c151486ed9a66b565bb622f6d3"
+    },
+    {
+      "index": 22,
+      "group": 20,
+      "item": 9,
+      "x": 16,
+      "y": 109,
+      "width": 43,
+      "height": 110,
+      "rgba_sha256": "b19e7947119b04c1dcd7218815ef563e08101e6bb93b77f60b4606146ee51877"
+    },
+    {
+      "index": 23,
+      "group": 20,
+      "item": 10,
+      "x": 11,
+      "y": 109,
+      "width": 38,
+      "height": 110,
+      "rgba_sha256": "fd35780a19c5930fd5f5e97c3e7da7d2f354b071b87c701de0b1bdf6e18a2a98"
+    },
+    {
+      "index": 24,
+      "group": 20,
+      "item": 11,
+      "x": 12,
+      "y": 108,
+      "width": 39,
+      "height": 109,
+      "rgba_sha256": "4e090df3f82f2a4a4eeeb457dbe0fab354f3f209b85336286add49b6095df78e"
+    },
+    {
+      "index": 25,
+      "group": 20,
+      "item": 12,
+      "x": 17,
+      "y": 107,
+      "width": 44,
+      "height": 108,
+      "rgba_sha256": "62d98d09e7d0648e6c1e0c653f22c4d93a56a0bac304df6ddcd97bdaa1b5325a"
+    },
+    {
+      "index": 26,
+      "group": 20,
+      "item": 13,
+      "x": 20,
+      "y": 105,
+      "width": 47,
+      "height": 106,
+      "rgba_sha256": "d9bc828f15d141dc3299d0a5e214a7674363640aed0cce11570de771a23632a8"
+    },
+    {
+      "index": 27,
+      "group": 20,
+      "item": 14,
+      "x": 22,
+      "y": 104,
+      "width": 51,
+      "height": 105,
+      "rgba_sha256": "5460b6e9db68b0cedc340b32151df90815e2361d76887e3a6c99c61e171a5429"
+    },
+    {
+      "index": 28,
+      "group": 20,
+      "item": 15,
+      "x": 22,
+      "y": 106,
+      "width": 49,
+      "height": 107,
+      "rgba_sha256": "f49fde7a52294e525ad9c5b3d34f40aadb39ee69d79531fad156fc049f82c73c"
+    },
+    {
+      "index": 29,
+      "group": 21,
+      "item": 0,
+      "x": 22,
+      "y": 110,
+      "width": 56,
+      "height": 111,
+      "rgba_sha256": "27a566a30864ab45fe815d10727b7b51af74c39a2f2afc7fdf946879de91e7e7"
+    },
+    {
+      "index": 30,
+      "group": 21,
+      "item": 1,
+      "x": 17,
+      "y": 111,
+      "width": 51,
+      "height": 112,
+      "rgba_sha256": "490d61506c4d89f092267002cd1e7276a30e48acbb0478ffe8fc6447dab194f3"
+    },
+    {
+      "index": 31,
+      "group": 21,
+      "item": 2,
+      "x": 17,
+      "y": 111,
+      "width": 51,
+      "height": 112,
+      "rgba_sha256": "ec31a2182a84cd70e34ead11aed7ed9ede14926a798c6adca84841215c44c609"
+    },
+    {
+      "index": 32,
+      "group": 21,
+      "item": 3,
+      "x": 17,
+      "y": 110,
+      "width": 51,
+      "height": 111,
+      "rgba_sha256": "c48e3abf1d919c4e665f9240b77b7f0791f41e29a5d5dfd7fa2018d94f8932e6"
+    },
+    {
+      "index": 33,
+      "group": 21,
+      "item": 4,
+      "x": 17,
+      "y": 109,
+      "width": 51,
+      "height": 110,
+      "rgba_sha256": "953942e9b98776c83695e66a1484bc94c0efb3c9b854eda25393f45c5df329e0"
+    },
+    {
+      "index": 34,
+      "group": 21,
+      "item": 5,
+      "x": 20,
+      "y": 107,
+      "width": 54,
+      "height": 108,
+      "rgba_sha256": "fe6129a286ae13dfcdfaf089cfbacee10b26e1b0334177bfa08dbe014755ac16"
+    },
+    {
+      "index": 35,
+      "group": 21,
+      "item": 6,
+      "x": 22,
+      "y": 106,
+      "width": 56,
+      "height": 107,
+      "rgba_sha256": "0b95f4eee0e4e6f0d3ab35d816d34e852810305093bcc56646d57b8d8766a29e"
+    },
+    {
+      "index": 36,
+      "group": 21,
+      "item": 7,
+      "x": 22,
+      "y": 108,
+      "width": 56,
+      "height": 109,
+      "rgba_sha256": "6d66fcef537aa1123831eed98fe5c950c1e9f95005c5be3b662ec4f1e26c9d94"
+    },
+    {
+      "index": 37,
+      "group": 21,
+      "item": 8,
+      "x": 22,
+      "y": 110,
+      "width": 56,
+      "height": 111,
+      "rgba_sha256": "c420b40598091d404979841256a7747d8c415a1ba74c21e69c72421959df36e5"
+    },
+    {
+      "index": 38,
+      "group": 21,
+      "item": 9,
+      "x": 17,
+      "y": 111,
+      "width": 51,
+      "height": 112,
+      "rgba_sha256": "e1fc3e0c38fa6f9452946ec050637ca374b5f9e86ba688e2d69a6c4df5df6e44"
+    },
+    {
+      "index": 39,
+      "group": 21,
+      "item": 10,
+      "x": 17,
+      "y": 111,
+      "width": 51,
+      "height": 112,
+      "rgba_sha256": "12e7450bd3cbe7d57b8219013d7328def046434c3770ed175f41ae5a58fa6d92"
+    },
+    {
+      "index": 40,
+      "group": 21,
+      "item": 11,
+      "x": 17,
+      "y": 110,
+      "width": 51,
+      "height": 111,
+      "rgba_sha256": "154fa0d7e2ff28b26ae5e5ed9c2b9f0cecd9175396e7fe67ca6d23f90bfb68bf"
+    },
+    {
+      "index": 41,
+      "group": 21,
+      "item": 12,
+      "x": 17,
+      "y": 109,
+      "width": 51,
+      "height": 110,
+      "rgba_sha256": "200bfccda665d5c102e88a15995f3ee64394a58d4445662c1ef1844409e7f1f9"
+    },
+    {
+      "index": 42,
+      "group": 21,
+      "item": 13,
+      "x": 20,
+      "y": 107,
+      "width": 54,
+      "height": 108,
+      "rgba_sha256": "9bf6b42dfa8b4b762a45e9f6af1e8a3de8e6155052b9304e8e042a67a12c8a9d"
+    },
+    {
+      "index": 43,
+      "group": 21,
+      "item": 14,
+      "x": 22,
+      "y": 106,
+      "width": 56,
+      "height": 107,
+      "rgba_sha256": "0d15e124108ae9a03a0db8e7dbd98cd8ccc47c86d15dda21a73d6e3530e3d17a"
+    },
+    {
+      "index": 44,
+      "group": 21,
+      "item": 15,
+      "x": 22,
+      "y": 108,
+      "width": 56,
+      "height": 109,
+      "rgba_sha256": "0d8663dfa25367b66a02359223c7b91af21b56dffdbd1ccde5e04f23418fda0c"
+    },
+    {
+      "index": 45,
+      "group": 41,
+      "item": 0,
+      "x": 18,
+      "y": 117,
+      "width": 48,
+      "height": 118,
+      "rgba_sha256": "68c862caf30c8594e97cedaf49af0bce8c44b3df2c91cb601787bc33ab4929a5"
+    },
+    {
+      "index": 46,
+      "group": 41,
+      "item": 1,
+      "x": 17,
+      "y": 110,
+      "width": 44,
+      "height": 107,
+      "rgba_sha256": "21e3fd98b05516d5f69d7af5b7801c49e392e01cf8eaf12424aff6564923487e"
+    },
+    {
+      "index": 47,
+      "group": 41,
+      "item": 2,
+      "x": 17,
+      "y": 102,
+      "width": 39,
+      "height": 94,
+      "rgba_sha256": "b5cdd2950f6394ff66c89df9934c93ab1e1dd1c71c3884feaa6eb963e01fccca"
+    },
+    {
+      "index": 48,
+      "group": 41,
+      "item": 3,
+      "x": 17,
+      "y": 95,
+      "width": 39,
+      "height": 81,
+      "rgba_sha256": "5ae427a71d100a880084aa67dd58e2753c72cdcd71e5e460aa011ba76ddb92c4"
+    },
+    {
+      "index": 49,
+      "group": 41,
+      "item": 4,
+      "x": 16,
+      "y": 93,
+      "width": 39,
+      "height": 76,
+      "rgba_sha256": "8297f2cd0bf428fcd8e631ea4741c0f7707f1000c92b64ea4e135d509d9d34a9"
+    },
+    {
+      "index": 50,
+      "group": 41,
+      "item": 5,
+      "x": 17,
+      "y": 102,
+      "width": 44,
+      "height": 94,
+      "rgba_sha256": "4a58bd24d0c6f39bf40ea5a2a91849f84b2a2b409dae2ac452aed67791045e57"
+    },
+    {
+      "index": 51,
+      "group": 41,
+      "item": 6,
+      "x": 17,
+      "y": 110,
+      "width": 51,
+      "height": 107,
+      "rgba_sha256": "14056516f61482c79ca45f8f1c6ed2bdc04387f9c560651203211b5850e0d9b2"
+    },
+    {
+      "index": 52,
+      "group": 41,
+      "item": 7,
+      "x": 17,
+      "y": 116,
+      "width": 51,
+      "height": 117,
+      "rgba_sha256": "f39daecb5736eb7c085e1ab017000e8be109ede4048ef4950261ab34f01c838a"
+    },
+    {
+      "index": 53,
+      "group": 41,
+      "item": 8,
+      "x": 17,
+      "y": 116,
+      "width": 51,
+      "height": 117,
+      "rgba_sha256": "1d1fc5a22b0111646d57bc9838b79acf4aca75891596bf01e73c38b18d4add22"
+    },
+    {
+      "index": 54,
+      "group": 42,
+      "item": 0,
+      "x": 21,
+      "y": 116,
+      "width": 54,
+      "height": 116,
+      "rgba_sha256": "c3a5e56d05b71400ce97358511a878a09941c36b8d1588a7819151c3baf4256d"
+    },
+    {
+      "index": 55,
+      "group": 42,
+      "item": 1,
+      "x": 20,
+      "y": 109,
+      "width": 53,
+      "height": 104,
+      "rgba_sha256": "a814591e9e77bad115bad767fcba7d4ed93cdea9c9df9746bcbe6c43dec3253a"
+    },
+    {
+      "index": 56,
+      "group": 42,
+      "item": 2,
+      "x": 18,
+      "y": 90,
+      "width": 37,
+      "height": 58,
+      "rgba_sha256": "de20c3841a0a96653418afdab85cfaeffc316df6cc1ce6605cc36764eee2c108"
+    },
+    {
+      "index": 57,
+      "group": 42,
+      "item": 3,
+      "x": 27,
+      "y": 77,
+      "width": 58,
+      "height": 37,
+      "rgba_sha256": "518738a62a50a302f0fb4d4f155bd21e05df2419ddf9dfcc634af9fe2b1d3560"
+    },
+    {
+      "index": 58,
+      "group": 42,
+      "item": 4,
+      "x": 19,
+      "y": 85,
+      "width": 37,
+      "height": 58,
+      "rgba_sha256": "2d8984ac8e4253f692fc9c6b4962ccaeb2e21c838df95a7697934c5925259db7"
+    },
+    {
+      "index": 59,
+      "group": 42,
+      "item": 5,
+      "x": 31,
+      "y": 79,
+      "width": 58,
+      "height": 37,
+      "rgba_sha256": "de9c5ce89d71a6a1163828a95555b3dfcdc73f2bf9b1bce83ae29562434494bd"
+    },
+    {
+      "index": 60,
+      "group": 43,
+      "item": 0,
+      "x": 18,
+      "y": 116,
+      "width": 48,
+      "height": 115,
+      "rgba_sha256": "5b0cabd935f3f09b68791415e322d1c870edbede40234a380e58ba262b5d32a4"
+    },
+    {
+      "index": 61,
+      "group": 43,
+      "item": 1,
+      "x": 17,
+      "y": 110,
+      "width": 46,
+      "height": 107,
+      "rgba_sha256": "f0d54f3127a4e388dad19ca7559dfeab41ef7ca4d183c79a4ea0535627d73d83"
+    },
+    {
+      "index": 62,
+      "group": 100,
+      "item": 0,
+      "x": 38,
+      "y": 99,
+      "width": 72,
+      "height": 100,
+      "rgba_sha256": "618dac9b85ef1362be0cfa9cd54d6ca102cf55ed6adfcaab09ca1442ed92250f"
+    },
+    {
+      "index": 63,
+      "group": 100,
+      "item": 1,
+      "x": 55,
+      "y": 101,
+      "width": 90,
+      "height": 102,
+      "rgba_sha256": "33c0c5200bdd4c2f06baf6720e86d032f5cc9ca0c6a644088d89bcb7acef36b3"
+    },
+    {
+      "index": 64,
+      "group": 100,
+      "item": 2,
+      "x": 36,
+      "y": 106,
+      "width": 73,
+      "height": 107,
+      "rgba_sha256": "aea1fc72ac3e090a5bd0596d4f9273fff453b1a07f8502f831ff9eaabf7750e1"
+    },
+    {
+      "index": 65,
+      "group": 100,
+      "item": 3,
+      "x": 37,
+      "y": 99,
+      "width": 71,
+      "height": 100,
+      "rgba_sha256": "cccbc898e41d7b0b4f52522e1f9dd26d78e1d020bb2b34c806f1b5491cb2a476"
+    },
+    {
+      "index": 66,
+      "group": 100,
+      "item": 4,
+      "x": 55,
+      "y": 101,
+      "width": 91,
+      "height": 100,
+      "rgba_sha256": "40ec2309f67f408370e6453c1cfa432541b6580afdcb4c972a497acb2aeb6b2b"
+    },
+    {
+      "index": 67,
+      "group": 100,
+      "item": 5,
+      "x": 33,
+      "y": 106,
+      "width": 69,
+      "height": 107,
+      "rgba_sha256": "7921dbe4d58247f44e8a1cd081c2a7821d6c40727c8708a3b385e17d3885edab"
+    },
+    {
+      "index": 68,
+      "group": 181,
+      "item": 0,
+      "x": 16,
+      "y": 108,
+      "width": 35,
+      "height": 110,
+      "rgba_sha256": "22c416f7ebb4db24a79b502dd461613c6913ba164db9adb1d34845bcfaa2f653"
+    },
+    {
+      "index": 69,
+      "group": 181,
+      "item": 1,
+      "x": 12,
+      "y": 113,
+      "width": 27,
+      "height": 115,
+      "rgba_sha256": "52d248a9a3b6048afec7abea9b69174b27c255b5218843d21f885199109d06f5"
+    },
+    {
+      "index": 70,
+      "group": 181,
+      "item": 2,
+      "x": 13,
+      "y": 113,
+      "width": 25,
+      "height": 115,
+      "rgba_sha256": "b40b47992d3e4a5eb1ece21ded6033f64b2cc498588f14320f0b8241832391f5"
+    },
+    {
+      "index": 71,
+      "group": 181,
+      "item": 3,
+      "x": 12,
+      "y": 112,
+      "width": 38,
+      "height": 114,
+      "rgba_sha256": "6a2413b522b2f05dc0a93539de07a1ddcef0e415c9dba79c3f5ea4dba4a00cde"
+    },
+    {
+      "index": 72,
+      "group": 181,
+      "item": 4,
+      "x": 13,
+      "y": 104,
+      "width": 51,
+      "height": 106,
+      "rgba_sha256": "788062f76665f58d12637b5e5b28fd7356338f541b737244b96d31537cf8c794"
+    },
+    {
+      "index": 73,
+      "group": 181,
+      "item": 5,
+      "x": 13,
+      "y": 89,
+      "width": 63,
+      "height": 91,
+      "rgba_sha256": "392aa3d56c1f1ad1b8540cd126cd3af231fbd2e4dae3d3b8e7b46588386e5865"
+    },
+    {
+      "index": 74,
+      "group": 181,
+      "item": 6,
+      "x": 13,
+      "y": 85,
+      "width": 64,
+      "height": 87,
+      "rgba_sha256": "d3cdc5b9a1706baa918aeb2076868bb497b9ba803cdcb67d6d6256f5918b7be4"
+    },
+    {
+      "index": 75,
+      "group": 191,
+      "item": 0,
+      "x": 14,
+      "y": 13,
+      "width": 30,
+      "height": 28,
+      "rgba_sha256": "776be96667df76b68813775248fef99f174977c83745845802e129c959198413"
+    },
+    {
+      "index": 76,
+      "group": 191,
+      "item": 1,
+      "x": 18,
+      "y": 8,
+      "width": 35,
+      "height": 17,
+      "rgba_sha256": "f664a92637a0272415cf77d13733d39c25aa4b3e6d637dac155441e71adf613e"
+    },
+    {
+      "index": 77,
+      "group": 191,
+      "item": 2,
+      "x": 14,
+      "y": 12,
+      "width": 27,
+      "height": 26,
+      "rgba_sha256": "8052357dc91d4715cd21e43a4e0814be1d662f3321fd47266b0fb67403288072"
+    },
+    {
+      "index": 78,
+      "group": 191,
+      "item": 3,
+      "x": 8,
+      "y": 18,
+      "width": 15,
+      "height": 35,
+      "rgba_sha256": "731af1ac9407d88b727758f9a34de28b4d70193700a9714dcaf13ce64b16406e"
+    },
+    {
+      "index": 79,
+      "group": 192,
+      "item": 0,
+      "x": 17,
+      "y": 14,
+      "width": 32,
+      "height": 30,
+      "rgba_sha256": "b0fd07445875468bd0db7b2cbf8328d4185ab4ca840da744cb99fa077040458f"
+    },
+    {
+      "index": 80,
+      "group": 192,
+      "item": 1,
+      "x": 15,
+      "y": 16,
+      "width": 35,
+      "height": 31,
+      "rgba_sha256": "df4e5ede7f6fabfcf97c8bef4c61688692b0be9f590a7e6769fd118fa12e72ac"
+    },
+    {
+      "index": 81,
+      "group": 120,
+      "item": 0,
+      "x": 22,
+      "y": 104,
+      "width": 45,
+      "height": 105,
+      "rgba_sha256": "de06845ec9d224899081315a58d2b983b582fca41bc99388a9642e42a2742bff"
+    },
+    {
+      "index": 82,
+      "group": 120,
+      "item": 1,
+      "x": 26,
+      "y": 104,
+      "width": 49,
+      "height": 105,
+      "rgba_sha256": "e5328bcbe12405c3f569213c0b4d006733a2720bb74d00f693cdd1d7ee23e7f9"
+    },
+    {
+      "index": 83,
+      "group": 120,
+      "item": 2,
+      "x": 30,
+      "y": 104,
+      "width": 53,
+      "height": 105,
+      "rgba_sha256": "a7f8e4082d4f6f7acc4d9b8201036f32c3a895dd35f5868d6442976870b4d8ce"
+    },
+    {
+      "index": 84,
+      "group": 121,
+      "item": 0,
+      "x": 19,
+      "y": 72,
+      "width": 48,
+      "height": 74,
+      "rgba_sha256": "436f0e7b792fb63aafb2bf24596f36a71a0382fcbbbf1c94f21ba37ccf605b58"
+    },
+    {
+      "index": 85,
+      "group": 122,
+      "item": 0,
+      "x": 16,
+      "y": 100,
+      "width": 37,
+      "height": 74,
+      "rgba_sha256": "d8ba732b441cc42508f7d1aaf797094912e0f198aab3754c7cb53ec6a2e86059"
+    },
+    {
+      "index": 86,
+      "group": 5000,
+      "item": 0,
+      "x": 23,
+      "y": 105,
+      "width": 53,
+      "height": 106,
+      "rgba_sha256": "f77af999c08c51acee2507f4665c2f5c9930ce22741a1565b81df7379a63778a"
+    },
+    {
+      "index": 87,
+      "group": 5001,
+      "item": 0,
+      "x": 20,
+      "y": 50,
+      "width": 53,
+      "height": 106,
+      "rgba_sha256": "f77af999c08c51acee2507f4665c2f5c9930ce22741a1565b81df7379a63778a"
+    },
+    {
+      "index": 88,
+      "group": 5002,
+      "item": 0,
+      "x": 16,
+      "y": 20,
+      "width": 53,
+      "height": 106,
+      "rgba_sha256": "f77af999c08c51acee2507f4665c2f5c9930ce22741a1565b81df7379a63778a"
+    },
+    {
+      "index": 89,
+      "group": 5000,
+      "item": 10,
+      "x": 31,
+      "y": 104,
+      "width": 63,
+      "height": 105,
+      "rgba_sha256": "3c6ff8fc8a28dbd851583314f9c2ddef900f05a7b7ee234e54e1ce1fb1cb00b3"
+    },
+    {
+      "index": 90,
+      "group": 5001,
+      "item": 10,
+      "x": 27,
+      "y": 50,
+      "width": 63,
+      "height": 105,
+      "rgba_sha256": "3c6ff8fc8a28dbd851583314f9c2ddef900f05a7b7ee234e54e1ce1fb1cb00b3"
+    },
+    {
+      "index": 91,
+      "group": 5002,
+      "item": 10,
+      "x": 15,
+      "y": 20,
+      "width": 63,
+      "height": 105,
+      "rgba_sha256": "3c6ff8fc8a28dbd851583314f9c2ddef900f05a7b7ee234e54e1ce1fb1cb00b3"
+    },
+    {
+      "index": 92,
+      "group": 5000,
+      "item": 11,
+      "x": 38,
+      "y": 94,
+      "width": 70,
+      "height": 95,
+      "rgba_sha256": "6f043e7bae97d879d2a2f08a4982f97a3f35006866e1f8cd6742b283cbbaef53"
+    },
+    {
+      "index": 93,
+      "group": 5000,
+      "item": 20,
+      "x": 53,
+      "y": 88,
+      "width": 83,
+      "height": 89,
+      "rgba_sha256": "f3ec98f97365d8217eb8d0db3d65e0857b437d35fef78c30d596f9366d4d2018"
+    },
+    {
+      "index": 94,
+      "group": 5001,
+      "item": 20,
+      "x": 40,
+      "y": 34,
+      "width": 83,
+      "height": 89,
+      "rgba_sha256": "f3ec98f97365d8217eb8d0db3d65e0857b437d35fef78c30d596f9366d4d2018"
+    },
+    {
+      "index": 95,
+      "group": 5002,
+      "item": 20,
+      "x": 18,
+      "y": 17,
+      "width": 83,
+      "height": 89,
+      "rgba_sha256": "f3ec98f97365d8217eb8d0db3d65e0857b437d35fef78c30d596f9366d4d2018"
+    },
+    {
+      "index": 96,
+      "group": 5000,
+      "item": 21,
+      "x": 53,
+      "y": 89,
+      "width": 83,
+      "height": 90,
+      "rgba_sha256": "d40b11187c7325ebc9dfef7b2baaedd621c25655f55d27bb45f425f540995d72"
+    },
+    {
+      "index": 97,
+      "group": 5010,
+      "item": 0,
+      "x": 31,
+      "y": 96,
+      "width": 58,
+      "height": 97,
+      "rgba_sha256": "5022ff3a00fa0d291184293263a9a3c23955d79caaeeba17242c203cce3d3eed"
+    },
+    {
+      "index": 98,
+      "group": 5011,
+      "item": 0,
+      "x": 15,
+      "y": 43,
+      "width": 58,
+      "height": 97,
+      "rgba_sha256": "5022ff3a00fa0d291184293263a9a3c23955d79caaeeba17242c203cce3d3eed"
+    },
+    {
+      "index": 99,
+      "group": 5012,
+      "item": 0,
+      "x": 24,
+      "y": 18,
+      "width": 58,
+      "height": 97,
+      "rgba_sha256": "5022ff3a00fa0d291184293263a9a3c23955d79caaeeba17242c203cce3d3eed"
+    },
+    {
+      "index": 100,
+      "group": 5010,
+      "item": 10,
+      "x": 34,
+      "y": 87,
+      "width": 58,
+      "height": 88,
+      "rgba_sha256": "016044cc0453f616fd2b665eec484f9f85676d111b2cc5b9f9beed1d48efa9c3"
+    },
+    {
+      "index": 101,
+      "group": 5011,
+      "item": 10,
+      "x": 17,
+      "y": 39,
+      "width": 58,
+      "height": 88,
+      "rgba_sha256": "016044cc0453f616fd2b665eec484f9f85676d111b2cc5b9f9beed1d48efa9c3"
+    },
+    {
+      "index": 102,
+      "group": 5012,
+      "item": 10,
+      "x": 28,
+      "y": 16,
+      "width": 58,
+      "height": 88,
+      "rgba_sha256": "016044cc0453f616fd2b665eec484f9f85676d111b2cc5b9f9beed1d48efa9c3"
+    },
+    {
+      "index": 103,
+      "group": 5010,
+      "item": 20,
+      "x": 35,
+      "y": 80,
+      "width": 53,
+      "height": 81,
+      "rgba_sha256": "05856921ecd59a19d1cd3017698436b3fe9ee1b8a7bb71735e5a4a200b6120fb"
+    },
+    {
+      "index": 104,
+      "group": 5011,
+      "item": 20,
+      "x": 15,
+      "y": 31,
+      "width": 53,
+      "height": 81,
+      "rgba_sha256": "05856921ecd59a19d1cd3017698436b3fe9ee1b8a7bb71735e5a4a200b6120fb"
+    },
+    {
+      "index": 105,
+      "group": 5012,
+      "item": 20,
+      "x": 30,
+      "y": 14,
+      "width": 53,
+      "height": 81,
+      "rgba_sha256": "05856921ecd59a19d1cd3017698436b3fe9ee1b8a7bb71735e5a4a200b6120fb"
+    },
+    {
+      "index": 106,
+      "group": 5010,
+      "item": 21,
+      "x": 35,
+      "y": 81,
+      "width": 53,
+      "height": 82,
+      "rgba_sha256": "8737a48ebd529c824ca825436bd355187dfb9c598ff327cf43e96bf0427dedf0"
+    },
+    {
+      "index": 107,
+      "group": 5020,
+      "item": 0,
+      "x": 20,
+      "y": 74,
+      "width": 52,
+      "height": 76,
+      "rgba_sha256": "ec7aa41ffe9e1365cdf3ac294ff1184233098ed97bc3007b74d26b45e468d2d5"
+    },
+    {
+      "index": 108,
+      "group": 5020,
+      "item": 10,
+      "x": 28,
+      "y": 72,
+      "width": 60,
+      "height": 74,
+      "rgba_sha256": "02169b3dfc56b0cc8faf0baf8ee9c5e69f32c5d928081cfaf11fdbab11b36ff1"
+    },
+    {
+      "index": 109,
+      "group": 5020,
+      "item": 20,
+      "x": 39,
+      "y": 60,
+      "width": 72,
+      "height": 62,
+      "rgba_sha256": "b034f6b6c7ecb303fc376d4951b8f345b3a97ba27dd92c8fcd7211c694821ef1"
+    },
+    {
+      "index": 110,
+      "group": 5030,
+      "item": 0,
+      "x": 38,
+      "y": 107,
+      "width": 75,
+      "height": 100,
+      "rgba_sha256": "b7e85f4da57acd76e775932057decf25440ff50a505b6a9f4b0338a404b94b4b"
+    },
+    {
+      "index": 111,
+      "group": 5031,
+      "item": 0,
+      "x": 38,
+      "y": 44,
+      "width": 75,
+      "height": 100,
+      "rgba_sha256": "b7e85f4da57acd76e775932057decf25440ff50a505b6a9f4b0338a404b94b4b"
+    },
+    {
+      "index": 112,
+      "group": 5032,
+      "item": 0,
+      "x": 17,
+      "y": 16,
+      "width": 75,
+      "height": 100,
+      "rgba_sha256": "b7e85f4da57acd76e775932057decf25440ff50a505b6a9f4b0338a404b94b4b"
+    },
+    {
+      "index": 113,
+      "group": 5030,
+      "item": 10,
+      "x": 49,
+      "y": 98,
+      "width": 99,
+      "height": 86,
+      "rgba_sha256": "d01bee391435fab6eec5b24ccea7b512a4110ace1e6900631bbd40cfef02f299"
+    },
+    {
+      "index": 114,
+      "group": 5031,
+      "item": 10,
+      "x": 48,
+      "y": 37,
+      "width": 99,
+      "height": 86,
+      "rgba_sha256": "d01bee391435fab6eec5b24ccea7b512a4110ace1e6900631bbd40cfef02f299"
+    },
+    {
+      "index": 115,
+      "group": 5032,
+      "item": 10,
+      "x": 19,
+      "y": 20,
+      "width": 99,
+      "height": 86,
+      "rgba_sha256": "d01bee391435fab6eec5b24ccea7b512a4110ace1e6900631bbd40cfef02f299"
+    },
+    {
+      "index": 116,
+      "group": 5030,
+      "item": 20,
+      "x": 49,
+      "y": 80,
+      "width": 99,
+      "height": 52,
+      "rgba_sha256": "ea8bc3ac2ef83268f5f44647f6f483f2d5b7f90d0143d849c4464b80b0cd2b01"
+    },
+    {
+      "index": 117,
+      "group": 5031,
+      "item": 20,
+      "x": 44,
+      "y": 37,
+      "width": 99,
+      "height": 52,
+      "rgba_sha256": "ea8bc3ac2ef83268f5f44647f6f483f2d5b7f90d0143d849c4464b80b0cd2b01"
+    },
+    {
+      "index": 118,
+      "group": 5032,
+      "item": 20,
+      "x": 18,
+      "y": 29,
+      "width": 99,
+      "height": 52,
+      "rgba_sha256": "ea8bc3ac2ef83268f5f44647f6f483f2d5b7f90d0143d849c4464b80b0cd2b01"
+    },
+    {
+      "index": 119,
+      "group": 5030,
+      "item": 30,
+      "x": 58,
+      "y": 90,
+      "width": 111,
+      "height": 53,
+      "rgba_sha256": "b8633f7f227c169e6847b1c122cfa6eddbe5f593046f5b73d07a8ca56a28f3ac"
+    },
+    {
+      "index": 120,
+      "group": 5031,
+      "item": 30,
+      "x": 52,
+      "y": 34,
+      "width": 111,
+      "height": 53,
+      "rgba_sha256": "b8633f7f227c169e6847b1c122cfa6eddbe5f593046f5b73d07a8ca56a28f3ac"
+    },
+    {
+      "index": 121,
+      "group": 5032,
+      "item": 30,
+      "x": 20,
+      "y": 40,
+      "width": 111,
+      "height": 53,
+      "rgba_sha256": "b8633f7f227c169e6847b1c122cfa6eddbe5f593046f5b73d07a8ca56a28f3ac"
+    },
+    {
+      "index": 122,
+      "group": 5030,
+      "item": 31,
+      "x": 58,
+      "y": 90,
+      "width": 111,
+      "height": 53,
+      "rgba_sha256": "8f04b5587b4e9e09503ce2862a9091d338c87a3dbd34d0cba6a8acdc0a3ebaab"
+    },
+    {
+      "index": 123,
+      "group": 5030,
+      "item": 40,
+      "x": 47,
+      "y": 103,
+      "width": 97,
+      "height": 81,
+      "rgba_sha256": "76a1c5411be8f5f9ba84ab7580684cdc5bcae7e381847ce6aab4249fd67087b0"
+    },
+    {
+      "index": 124,
+      "group": 5031,
+      "item": 40,
+      "x": 43,
+      "y": 42,
+      "width": 97,
+      "height": 81,
+      "rgba_sha256": "76a1c5411be8f5f9ba84ab7580684cdc5bcae7e381847ce6aab4249fd67087b0"
+    },
+    {
+      "index": 125,
+      "group": 5032,
+      "item": 40,
+      "x": 18,
+      "y": 62,
+      "width": 97,
+      "height": 81,
+      "rgba_sha256": "76a1c5411be8f5f9ba84ab7580684cdc5bcae7e381847ce6aab4249fd67087b0"
+    },
+    {
+      "index": 126,
+      "group": 5030,
+      "item": 50,
+      "x": 35,
+      "y": 120,
+      "width": 73,
+      "height": 108,
+      "rgba_sha256": "0490980f6caa08c4ab8dd34ccc62b6f9fe95cb5cf5dc25b7288c6ad910e363ce"
+    },
+    {
+      "index": 127,
+      "group": 5031,
+      "item": 50,
+      "x": 33,
+      "y": 58,
+      "width": 73,
+      "height": 108,
+      "rgba_sha256": "0490980f6caa08c4ab8dd34ccc62b6f9fe95cb5cf5dc25b7288c6ad910e363ce"
+    },
+    {
+      "index": 128,
+      "group": 5032,
+      "item": 50,
+      "x": 15,
+      "y": 88,
+      "width": 73,
+      "height": 108,
+      "rgba_sha256": "0490980f6caa08c4ab8dd34ccc62b6f9fe95cb5cf5dc25b7288c6ad910e363ce"
+    },
+    {
+      "index": 129,
+      "group": 5040,
+      "item": 0,
+      "x": 49,
+      "y": 45,
+      "width": 99,
+      "height": 52,
+      "rgba_sha256": "ea8bc3ac2ef83268f5f44647f6f483f2d5b7f90d0143d849c4464b80b0cd2b01"
+    },
+    {
+      "index": 130,
+      "group": 5041,
+      "item": 0,
+      "x": 44,
+      "y": 37,
+      "width": 99,
+      "height": 52,
+      "rgba_sha256": "ea8bc3ac2ef83268f5f44647f6f483f2d5b7f90d0143d849c4464b80b0cd2b01"
+    },
+    {
+      "index": 131,
+      "group": 5042,
+      "item": 0,
+      "x": 18,
+      "y": 29,
+      "width": 99,
+      "height": 52,
+      "rgba_sha256": "ea8bc3ac2ef83268f5f44647f6f483f2d5b7f90d0143d849c4464b80b0cd2b01"
+    },
+    {
+      "index": 132,
+      "group": 5040,
+      "item": 1,
+      "x": 49,
+      "y": 63,
+      "width": 83,
+      "height": 69,
+      "rgba_sha256": "982200c358a740f8ec91a939360d6a576acc364bdc7a8bde3ce4d851f99dcb08"
+    },
+    {
+      "index": 133,
+      "group": 5040,
+      "item": 10,
+      "x": 50,
+      "y": 33,
+      "width": 108,
+      "height": 42,
+      "rgba_sha256": "2a175be8c683278ba335f9a8e300bc29d8619444010592dbdb7336c88d517f0c"
+    },
+    {
+      "index": 134,
+      "group": 5041,
+      "item": 10,
+      "x": 51,
+      "y": 22,
+      "width": 108,
+      "height": 42,
+      "rgba_sha256": "2a175be8c683278ba335f9a8e300bc29d8619444010592dbdb7336c88d517f0c"
+    },
+    {
+      "index": 135,
+      "group": 5042,
+      "item": 10,
+      "x": 19,
+      "y": 30,
+      "width": 108,
+      "height": 42,
+      "rgba_sha256": "2a175be8c683278ba335f9a8e300bc29d8619444010592dbdb7336c88d517f0c"
+    },
+    {
+      "index": 136,
+      "group": 5040,
+      "item": 11,
+      "x": 18,
+      "y": 67,
+      "width": 74,
+      "height": 74,
+      "rgba_sha256": "7cdbfff5ddaadae40d56815f0783f537e15b0ce5385415a11ad62e314dd35d56"
+    },
+    {
+      "index": 137,
+      "group": 5040,
+      "item": 20,
+      "x": 49,
+      "y": 55,
+      "width": 104,
+      "height": 62,
+      "rgba_sha256": "b0360ec2570a94ae34a69b92975915a9aeacab4cd080d86597eee5957324e948"
+    },
+    {
+      "index": 138,
+      "group": 5041,
+      "item": 20,
+      "x": 44,
+      "y": 45,
+      "width": 104,
+      "height": 62,
+      "rgba_sha256": "b0360ec2570a94ae34a69b92975915a9aeacab4cd080d86597eee5957324e948"
+    },
+    {
+      "index": 139,
+      "group": 5042,
+      "item": 20,
+      "x": 17,
+      "y": 39,
+      "width": 104,
+      "height": 62,
+      "rgba_sha256": "b0360ec2570a94ae34a69b92975915a9aeacab4cd080d86597eee5957324e948"
+    },
+    {
+      "index": 140,
+      "group": 5060,
+      "item": 0,
+      "x": 23,
+      "y": 107,
+      "width": 55,
+      "height": 107,
+      "rgba_sha256": "273f45b49fc15a996abc84d1773ecc77af207e7d227cc5b6a6156600d00c3a05"
+    },
+    {
+      "index": 141,
+      "group": 5061,
+      "item": 0,
+      "x": 25,
+      "y": 40,
+      "width": 55,
+      "height": 107,
+      "rgba_sha256": "273f45b49fc15a996abc84d1773ecc77af207e7d227cc5b6a6156600d00c3a05"
+    },
+    {
+      "index": 142,
+      "group": 5062,
+      "item": 0,
+      "x": 20,
+      "y": 7,
+      "width": 55,
+      "height": 107,
+      "rgba_sha256": "273f45b49fc15a996abc84d1773ecc77af207e7d227cc5b6a6156600d00c3a05"
+    },
+    {
+      "index": 143,
+      "group": 5060,
+      "item": 1,
+      "x": 23,
+      "y": 107,
+      "width": 55,
+      "height": 107,
+      "rgba_sha256": "f4fd91ba1692433ada9da35656ead8998843bcf5b98488b53aed24731aab3db3"
+    },
+    {
+      "index": 144,
+      "group": 5060,
+      "item": 10,
+      "x": 19,
+      "y": 113,
+      "width": 34,
+      "height": 115,
+      "rgba_sha256": "3dcec2d771c6b9f8e8b6e1cde69d17629013ee913c15ace96e3b87eabd24a11c"
+    },
+    {
+      "index": 145,
+      "group": 5061,
+      "item": 10,
+      "x": 13,
+      "y": 63,
+      "width": 34,
+      "height": 115,
+      "rgba_sha256": "3dcec2d771c6b9f8e8b6e1cde69d17629013ee913c15ace96e3b87eabd24a11c"
+    },
+    {
+      "index": 146,
+      "group": 5062,
+      "item": 10,
+      "x": 11,
+      "y": 95,
+      "width": 34,
+      "height": 115,
+      "rgba_sha256": "3dcec2d771c6b9f8e8b6e1cde69d17629013ee913c15ace96e3b87eabd24a11c"
+    },
+    {
+      "index": 147,
+      "group": 5070,
+      "item": 0,
+      "x": 41,
+      "y": 115,
+      "width": 73,
+      "height": 108,
+      "rgba_sha256": "4a85e21619dfa66ad710ae83ae959a2cdb669814f64ad5a91140fe5d40e0a157"
+    },
+    {
+      "index": 148,
+      "group": 5071,
+      "item": 0,
+      "x": 42,
+      "y": 47,
+      "width": 73,
+      "height": 108,
+      "rgba_sha256": "4a85e21619dfa66ad710ae83ae959a2cdb669814f64ad5a91140fe5d40e0a157"
+    },
+    {
+      "index": 149,
+      "group": 5072,
+      "item": 0,
+      "x": 57,
+      "y": 20,
+      "width": 73,
+      "height": 108,
+      "rgba_sha256": "4a85e21619dfa66ad710ae83ae959a2cdb669814f64ad5a91140fe5d40e0a157"
+    },
+    {
+      "index": 150,
+      "group": 5070,
+      "item": 10,
+      "x": 58,
+      "y": 105,
+      "width": 97,
+      "height": 81,
+      "rgba_sha256": "82c5d5826127bf5285304c66d1c365db76eda6604f966cbac8dcc489a600d9ba"
+    },
+    {
+      "index": 151,
+      "group": 5071,
+      "item": 10,
+      "x": 56,
+      "y": 39,
+      "width": 97,
+      "height": 81,
+      "rgba_sha256": "82c5d5826127bf5285304c66d1c365db76eda6604f966cbac8dcc489a600d9ba"
+    },
+    {
+      "index": 152,
+      "group": 5072,
+      "item": 10,
+      "x": 78,
+      "y": 19,
+      "width": 97,
+      "height": 81,
+      "rgba_sha256": "82c5d5826127bf5285304c66d1c365db76eda6604f966cbac8dcc489a600d9ba"
+    },
+    {
+      "index": 153,
+      "group": 5070,
+      "item": 20,
+      "x": 60,
+      "y": 92,
+      "width": 111,
+      "height": 45,
+      "rgba_sha256": "65031a7278ff8b0052e500959ec73236277d800095fff17c88ed880b1715a616"
+    },
+    {
+      "index": 154,
+      "group": 5071,
+      "item": 20,
+      "x": 60,
+      "y": 18,
+      "width": 111,
+      "height": 45,
+      "rgba_sha256": "65031a7278ff8b0052e500959ec73236277d800095fff17c88ed880b1715a616"
+    },
+    {
+      "index": 155,
+      "group": 5072,
+      "item": 20,
+      "x": 91,
+      "y": 12,
+      "width": 111,
+      "height": 45,
+      "rgba_sha256": "65031a7278ff8b0052e500959ec73236277d800095fff17c88ed880b1715a616"
+    },
+    {
+      "index": 156,
+      "group": 5300,
+      "item": 0,
+      "x": 31,
+      "y": 82,
+      "width": 68,
+      "height": 84,
+      "rgba_sha256": "eec437cacef2e0c851a207916ff8287072a069ec984fb36605c3f5ba4014e9f2"
+    },
+    {
+      "index": 157,
+      "group": 5300,
+      "item": 1,
+      "x": 31,
+      "y": 81,
+      "width": 69,
+      "height": 83,
+      "rgba_sha256": "7871737e6857abade02c449e02a0aa31c65ce25f44880ff9cc501f5d96011b18"
+    },
+    {
+      "index": 158,
+      "group": 5300,
+      "item": 2,
+      "x": 31,
+      "y": 79,
+      "width": 70,
+      "height": 81,
+      "rgba_sha256": "3ccd7328aafc46cbbfc7d64f0fa009a527b0c2583745864e710991bafc60fdb2"
+    },
+    {
+      "index": 159,
+      "group": 5300,
+      "item": 3,
+      "x": 31,
+      "y": 78,
+      "width": 71,
+      "height": 80,
+      "rgba_sha256": "0f29521d1403430f0c9b5a675a3f2d81f77f520a7f2dd79eec4d4011e89b7ae0"
+    },
+    {
+      "index": 160,
+      "group": 200,
+      "item": 0,
+      "x": 16,
+      "y": 105,
+      "width": 46,
+      "height": 106,
+      "rgba_sha256": "890d50866b38b3c688189e03f4d5b209f7e135b96cf3b6a05484bd61727f1d3a"
+    },
+    {
+      "index": 161,
+      "group": 200,
+      "item": 1,
+      "x": 14,
+      "y": 105,
+      "width": 61,
+      "height": 106,
+      "rgba_sha256": "171480c27f9586022b0ccb4883353bd34f1072ab23fd2b155d926fa3465cce67"
+    },
+    {
+      "index": 162,
+      "group": 200,
+      "item": 2,
+      "x": 14,
+      "y": 105,
+      "width": 76,
+      "height": 106,
+      "rgba_sha256": "cae2164c9e12727bc8b8d3308a4fb278720e429eec2e3e418395040ba4809190"
+    },
+    {
+      "index": 163,
+      "group": 210,
+      "item": 0,
+      "x": 11,
+      "y": 100,
+      "width": 65,
+      "height": 101,
+      "rgba_sha256": "12ffb18c6ce9b143eb39e1465b54155d5fc47370a9a290ad7c3fef1fb3977f50"
+    },
+    {
+      "index": 164,
+      "group": 210,
+      "item": 1,
+      "x": 7,
+      "y": 97,
+      "width": 70,
+      "height": 98,
+      "rgba_sha256": "6c8b40cf7612867c029cc571761ffca5c7561c4d377ea813df75796af05a5462"
+    },
+    {
+      "index": 165,
+      "group": 210,
+      "item": 2,
+      "x": 6,
+      "y": 101,
+      "width": 64,
+      "height": 102,
+      "rgba_sha256": "9cd679e2b2738bd1a0466a51a49a96da80e057e2db41cc7d3afde713d854ac17"
+    },
+    {
+      "index": 166,
+      "group": 210,
+      "item": 3,
+      "x": 13,
+      "y": 103,
+      "width": 95,
+      "height": 104,
+      "rgba_sha256": "8e71b05c8ba4cf3f8517a8f0a79ca3360a54d0b3f48e602ab8baad4e5ce6fed4"
+    },
+    {
+      "index": 167,
+      "group": 210,
+      "item": 4,
+      "x": 13,
+      "y": 103,
+      "width": 60,
+      "height": 104,
+      "rgba_sha256": "e47a7af7e5f536d0078fad9c808014e0f90e96e4c74a5d9b4bac43c4e4065d41"
+    },
+    {
+      "index": 168,
+      "group": 210,
+      "item": 5,
+      "x": 14,
+      "y": 104,
+      "width": 52,
+      "height": 105,
+      "rgba_sha256": "6861d09c6d89026914ae9f9242a74e01fc778f36cd5fda7d2b19a02b8c1cc1da"
+    },
+    {
+      "index": 169,
+      "group": 230,
+      "item": 0,
+      "x": 18,
+      "y": 108,
+      "width": 53,
+      "height": 109,
+      "rgba_sha256": "d4f35935db1284c94444c3ce9ef9037cc129848d87a8af332ca25a5befa42ec6"
+    },
+    {
+      "index": 170,
+      "group": 230,
+      "item": 1,
+      "x": 11,
+      "y": 106,
+      "width": 83,
+      "height": 107,
+      "rgba_sha256": "023ec18066f4e18ab54e85e27545cc18cc9af6b05921c4013c7c80447f14e6da"
+    },
+    {
+      "index": 171,
+      "group": 230,
+      "item": 2,
+      "x": 11,
+      "y": 107,
+      "width": 78,
+      "height": 108,
+      "rgba_sha256": "7594bcb779cd748574e15137c7da33c3fd4b5e2cd1004353260dd1359f42a755"
+    },
+    {
+      "index": 172,
+      "group": 240,
+      "item": 0,
+      "x": 21,
+      "y": 106,
+      "width": 48,
+      "height": 107,
+      "rgba_sha256": "4da79bcb546b08c3e2966585ac20367303b035b42dd1fe58cb7f8284f6827cf3"
+    },
+    {
+      "index": 173,
+      "group": 240,
+      "item": 1,
+      "x": 19,
+      "y": 106,
+      "width": 51,
+      "height": 107,
+      "rgba_sha256": "23bc104d729d35120e5906cb765977a0081028b6bacd5636aeb22dedecc963b5"
+    },
+    {
+      "index": 174,
+      "group": 240,
+      "item": 2,
+      "x": 26,
+      "y": 104,
+      "width": 94,
+      "height": 105,
+      "rgba_sha256": "96209bd694b7d884ad205dbaf99b4d8f0e9327b90e28e279e5fba5eebe028f84"
+    },
+    {
+      "index": 175,
+      "group": 240,
+      "item": 3,
+      "x": 22,
+      "y": 104,
+      "width": 93,
+      "height": 105,
+      "rgba_sha256": "b85d53def4b5153602dcb1a9910d4921502c19a50c9c25981fce7c1079654345"
+    },
+    {
+      "index": 176,
+      "group": 240,
+      "item": 4,
+      "x": 14,
+      "y": 104,
+      "width": 81,
+      "height": 105,
+      "rgba_sha256": "da262e7173ebbcd33030192e60c213fe6e575b04b3dafb6b8b4613f6a7e9fcfa"
+    },
+    {
+      "index": 177,
+      "group": 240,
+      "item": 5,
+      "x": 6,
+      "y": 104,
+      "width": 56,
+      "height": 105,
+      "rgba_sha256": "6a06503cb13d2fa9fb7511755dddd9da74d538739dbf7611cebc3b1d4fd3321c"
+    },
+    {
+      "index": 178,
+      "group": 400,
+      "item": 0,
+      "x": 19,
+      "y": 73,
+      "width": 59,
+      "height": 75,
+      "rgba_sha256": "5b0ac5004b5860eb21da516b49cc224d73dfe429958d009a518e95e1d772a6e5"
+    },
+    {
+      "index": 179,
+      "group": 400,
+      "item": 1,
+      "x": 18,
+      "y": 73,
+      "width": 73,
+      "height": 75,
+      "rgba_sha256": "1f8b9d17735c526362fafcac6a1b0012dadb94efb09775d813d3e279263122e7"
+    },
+    {
+      "index": 180,
+      "group": 410,
+      "item": 0,
+      "x": 12,
+      "y": 83,
+      "width": 51,
+      "height": 84,
+      "rgba_sha256": "f48494b36853e77dd0765bc3619402faad43b733db8404f1c4ade295886ded11"
+    },
+    {
+      "index": 181,
+      "group": 410,
+      "item": 1,
+      "x": 12,
+      "y": 83,
+      "width": 52,
+      "height": 84,
+      "rgba_sha256": "e70aeda5b4872b2aff544dd71b03a264833f8e290e45ef153f9d88c1794f112e"
+    },
+    {
+      "index": 182,
+      "group": 410,
+      "item": 2,
+      "x": 12,
+      "y": 84,
+      "width": 61,
+      "height": 85,
+      "rgba_sha256": "debacc950e0711da78a03effc81b9b750857fc6bf9ecb0df715bc088414751f5"
+    },
+    {
+      "index": 183,
+      "group": 410,
+      "item": 3,
+      "x": 11,
+      "y": 94,
+      "width": 69,
+      "height": 95,
+      "rgba_sha256": "a4d4f003e1678df6a4b05977ad95831b1c2cf11b4b25bedccc0ee6a97680d036"
+    },
+    {
+      "index": 184,
+      "group": 410,
+      "item": 4,
+      "x": 12,
+      "y": 88,
+      "width": 62,
+      "height": 89,
+      "rgba_sha256": "e695de4fc2e1fc4d89e2d88e05a06ea732c3ff87e86bc52d9f53b9803d04d400"
+    },
+    {
+      "index": 185,
+      "group": 430,
+      "item": 0,
+      "x": 20,
+      "y": 72,
+      "width": 49,
+      "height": 74,
+      "rgba_sha256": "85b82b4fdada7b43b067e3732c6062ddf2d2e8ae5860c6c72ef71e9804b121d3"
+    },
+    {
+      "index": 186,
+      "group": 430,
+      "item": 1,
+      "x": 28,
+      "y": 64,
+      "width": 63,
+      "height": 66,
+      "rgba_sha256": "f980cda152630495a35bde5386d968b3e4ac22ce3c11a4d42bdaed4beab2dd1a"
+    },
+    {
+      "index": 187,
+      "group": 430,
+      "item": 2,
+      "x": 32,
+      "y": 60,
+      "width": 103,
+      "height": 62,
+      "rgba_sha256": "6580af8e0acdd1c73ce66a19f37cf76fd59a2f7dd098b7b9512130568cb2a70e"
+    },
+    {
+      "index": 188,
+      "group": 430,
+      "item": 3,
+      "x": 31,
+      "y": 60,
+      "width": 98,
+      "height": 62,
+      "rgba_sha256": "ef84e9b2873fe62ac3c7823cf3e047165602faee972161cc499c70ae08342294"
+    },
+    {
+      "index": 189,
+      "group": 440,
+      "item": 0,
+      "x": 14,
+      "y": 71,
+      "width": 51,
+      "height": 73,
+      "rgba_sha256": "8cdf80c61d1c675a6f78ec79674184e226e6ea4609f6b5ad7e9eeafde92f7f22"
+    },
+    {
+      "index": 190,
+      "group": 440,
+      "item": 1,
+      "x": 19,
+      "y": 62,
+      "width": 64,
+      "height": 68,
+      "rgba_sha256": "5b82e285e5167b6bbd04b0eafb1e3b6fab1a9ec7786529ec4e128def3b4f60fc"
+    },
+    {
+      "index": 191,
+      "group": 440,
+      "item": 2,
+      "x": 11,
+      "y": 62,
+      "width": 52,
+      "height": 73,
+      "rgba_sha256": "a11966a1034b3bc30bdb1ef44843ba61e76da9e5038cb2f644b9d73fc43ef9c9"
+    },
+    {
+      "index": 192,
+      "group": 440,
+      "item": 3,
+      "x": 22,
+      "y": 65,
+      "width": 104,
+      "height": 67,
+      "rgba_sha256": "10f7293545f259657239573c93b958b9868db90b0af1fe647fe038472e198cd0"
+    },
+    {
+      "index": 193,
+      "group": 440,
+      "item": 4,
+      "x": 18,
+      "y": 65,
+      "width": 96,
+      "height": 69,
+      "rgba_sha256": "b8a78240366fbee3b097f3bfa55e31c7e017c35a3e295b9c3fdb51c522d94bea"
+    },
+    {
+      "index": 194,
+      "group": 440,
+      "item": 5,
+      "x": 14,
+      "y": 64,
+      "width": 83,
+      "height": 73,
+      "rgba_sha256": "6b0e76f8ad98cb3bef4365b658d79c969f189ebd44574d16789f0e854ebe5fe1"
+    },
+    {
+      "index": 195,
+      "group": 440,
+      "item": 6,
+      "x": 19,
+      "y": 63,
+      "width": 53,
+      "height": 69,
+      "rgba_sha256": "49925e07be577340487f83c43761f2e9410db0f77a3dc1b4d7e091885cc29498"
+    },
+    {
+      "index": 196,
+      "group": 600,
+      "item": 0,
+      "x": 19,
+      "y": 97,
+      "width": 61,
+      "height": 87,
+      "rgba_sha256": "e49c887acd60e9590586f927c661db92024a9fe843715e0bff9928a2b9135105"
+    },
+    {
+      "index": 197,
+      "group": 600,
+      "item": 1,
+      "x": 17,
+      "y": 97,
+      "width": 68,
+      "height": 87,
+      "rgba_sha256": "c5efda7a6222d5cd3634c42a9b3235037490b772d101ff240ac62435b8491af3"
+    },
+    {
+      "index": 198,
+      "group": 610,
+      "item": 0,
+      "x": 30,
+      "y": 102,
+      "width": 76,
+      "height": 96,
+      "rgba_sha256": "8ef5f87f578cf6c23bdd6fe97e5aab9d82c43ffea3a7d469163e0f96cd194d42"
+    },
+    {
+      "index": 199,
+      "group": 610,
+      "item": 1,
+      "x": 12,
+      "y": 98,
+      "width": 51,
+      "height": 87,
+      "rgba_sha256": "ae6cbe18abaf0c5591c26dc9b83b5efc0cc23115909307761ce4172660947a45"
+    },
+    {
+      "index": 200,
+      "group": 610,
+      "item": 2,
+      "x": 17,
+      "y": 94,
+      "width": 75,
+      "height": 81,
+      "rgba_sha256": "4e4f0f72360c0a7752972f942282ea750005ace6e6d412e7a87f870a23e9954b"
+    },
+    {
+      "index": 201,
+      "group": 610,
+      "item": 3,
+      "x": 13,
+      "y": 97,
+      "width": 63,
+      "height": 86,
+      "rgba_sha256": "13f7c8653e415791bbefec5ac1f95779304fa4b747051b45bbbabcd2dd61977f"
+    },
+    {
+      "index": 202,
+      "group": 630,
+      "item": 1,
+      "x": 27,
+      "y": 97,
+      "width": 71,
+      "height": 71,
+      "rgba_sha256": "c7b4a91df9eda1b499429412f6a2246ed885a1dd310825d98dd19553f6bf5e58"
+    },
+    {
+      "index": 203,
+      "group": 630,
+      "item": 2,
+      "x": 25,
+      "y": 97,
+      "width": 67,
+      "height": 68,
+      "rgba_sha256": "0b51f6d121dc760bfee5311ad767d0e149fcf73e33ca35710db3e96608957a52"
+    },
+    {
+      "index": 204,
+      "group": 640,
+      "item": 0,
+      "x": 19,
+      "y": 99,
+      "width": 60,
+      "height": 90,
+      "rgba_sha256": "4c50dc6f5ff17fc4a45b5f70aad8d8676e61caafd7bfe2f2347487e8b6acb890"
+    },
+    {
+      "index": 205,
+      "group": 640,
+      "item": 1,
+      "x": 30,
+      "y": 97,
+      "width": 102,
+      "height": 73,
+      "rgba_sha256": "8051b8cb6abb00858651a6fdb8569c1244ec322f2b02f11135c3abd273c29d27"
+    },
+    {
+      "index": 206,
+      "group": 640,
+      "item": 2,
+      "x": 28,
+      "y": 97,
+      "width": 97,
+      "height": 73,
+      "rgba_sha256": "4dc16bc886206c71d0e2f5937777e9317437f189ec9a90d03a46af3f64789a82"
+    },
+    {
+      "index": 207,
+      "group": 800,
+      "item": 0,
+      "x": 14,
+      "y": 103,
+      "width": 47,
+      "height": 104,
+      "rgba_sha256": "98db519801783ce37a0028bfc2dfa1c54f3a807f5e321c8422b36f78a416dfb7"
+    },
+    {
+      "index": 208,
+      "group": 800,
+      "item": 1,
+      "x": 14,
+      "y": 97,
+      "width": 82,
+      "height": 98,
+      "rgba_sha256": "dfff79615c96bddf1cd9f9a4230ae40792faf88bea01ff174d02ba3168ca1c49"
+    },
+    {
+      "index": 209,
+      "group": 800,
+      "item": 2,
+      "x": 13,
+      "y": 92,
+      "width": 87,
+      "height": 93,
+      "rgba_sha256": "6c9229f0e9bb295d4f02bd1aa17ed9613ae8e7da660f16a7eed83ed7f1e44711"
+    },
+    {
+      "index": 210,
+      "group": 800,
+      "item": 3,
+      "x": 13,
+      "y": 88,
+      "width": 88,
+      "height": 89,
+      "rgba_sha256": "c844fddb15ac5e61230714578f1f1ae8b79833fed2ba88823697ab38fbf191f3"
+    },
+    {
+      "index": 211,
+      "group": 800,
+      "item": 4,
+      "x": 15,
+      "y": 90,
+      "width": 75,
+      "height": 91,
+      "rgba_sha256": "558ea9457af7502e94d17749924f811196816ae91d15015ebe74065337ed63fe"
+    },
+    {
+      "index": 212,
+      "group": 800,
+      "item": 5,
+      "x": 12,
+      "y": 104,
+      "width": 67,
+      "height": 105,
+      "rgba_sha256": "8ea7a75bb12809dfa894ed642c774c1ade7285e3290ebda72210a0efb21b1639"
+    },
+    {
+      "index": 213,
+      "group": 800,
+      "item": 6,
+      "x": 12,
+      "y": 100,
+      "width": 68,
+      "height": 101,
+      "rgba_sha256": "c749df98dc4cb96d586bb73a4879d6912a7eca844fbda43c457d5b411386da15"
+    },
+    {
+      "index": 214,
+      "group": 800,
+      "item": 7,
+      "x": 15,
+      "y": 100,
+      "width": 72,
+      "height": 101,
+      "rgba_sha256": "c2ee5a5cf989e0397ccd389dda52313fc1d1be18cf9bec5362641ea4f482061d"
+    },
+    {
+      "index": 215,
+      "group": 800,
+      "item": 8,
+      "x": 24,
+      "y": 95,
+      "width": 81,
+      "height": 96,
+      "rgba_sha256": "b4f92d9eb20e088305d3b53e1b562819ce308387db38e984402983a04c5a1653"
+    },
+    {
+      "index": 216,
+      "group": 800,
+      "item": 9,
+      "x": 29,
+      "y": 111,
+      "width": 86,
+      "height": 112,
+      "rgba_sha256": "5cd9c56213c1dbd2dd75461532a97404ed6075a4fb539708d1916f4082539cd6"
+    },
+    {
+      "index": 217,
+      "group": 800,
+      "item": 10,
+      "x": 49,
+      "y": 88,
+      "width": 106,
+      "height": 89,
+      "rgba_sha256": "e356ba2ce2c38c4f9181a9943b999da8aa6a39bab54092c1d33e667917f5a867"
+    },
+    {
+      "index": 218,
+      "group": 800,
+      "item": 11,
+      "x": 39,
+      "y": 86,
+      "width": 96,
+      "height": 87,
+      "rgba_sha256": "b90f27f2d6616774c304f6165cd4e97426810cfeb6412a561b2e5c4e4f7b28e7"
+    },
+    {
+      "index": 219,
+      "group": 800,
+      "item": 12,
+      "x": 37,
+      "y": 86,
+      "width": 94,
+      "height": 87,
+      "rgba_sha256": "f48bbedee3a54f8f64db2167a26f25188abbcc0a0b7249d64e5a1543e63d2f03"
+    },
+    {
+      "index": 220,
+      "group": 1000,
+      "item": 0,
+      "x": 39,
+      "y": 94,
+      "width": 74,
+      "height": 95,
+      "rgba_sha256": "3b65b16de10f6c50100d6c6b58378668c720c35a9736c45895ae8a1c035ce617"
+    },
+    {
+      "index": 221,
+      "group": 1000,
+      "item": 1,
+      "x": 49,
+      "y": 89,
+      "width": 85,
+      "height": 90,
+      "rgba_sha256": "c0e950570eb55c70c4dcbbfda8fbb53151f50c3d805da62e0a08689c7ffec43c"
+    },
+    {
+      "index": 222,
+      "group": 1000,
+      "item": 2,
+      "x": 49,
+      "y": 89,
+      "width": 85,
+      "height": 90,
+      "rgba_sha256": "191d7fadbab79a512eb366163b001965cfef140b451652cc7a86bfa7e1a4c47f"
+    },
+    {
+      "index": 223,
+      "group": 1000,
+      "item": 3,
+      "x": 54,
+      "y": 83,
+      "width": 117,
+      "height": 84,
+      "rgba_sha256": "f0b9418c24efefac6f399ecc041fc727e8f97bc6216ab0275a878a00100f3dfe"
+    },
+    {
+      "index": 224,
+      "group": 1000,
+      "item": 4,
+      "x": 54,
+      "y": 83,
+      "width": 123,
+      "height": 84,
+      "rgba_sha256": "71c55347a79a234b37423ae5fb0f58a5c3b72dae513c75195c6c4cef2f725b9b"
+    },
+    {
+      "index": 225,
+      "group": 1000,
+      "item": 5,
+      "x": 54,
+      "y": 83,
+      "width": 121,
+      "height": 84,
+      "rgba_sha256": "2aa8130809b2a3a2f6fd8ee0fc5f73cac724158befd4e94a1ca37aaf840205b0"
+    },
+    {
+      "index": 226,
+      "group": 1000,
+      "item": 6,
+      "x": 54,
+      "y": 83,
+      "width": 121,
+      "height": 84,
+      "rgba_sha256": "f9db71d62353ad4e71be05c1b9278f00075b165ad95cfd35b8d4063662c9ac50"
+    },
+    {
+      "index": 227,
+      "group": 1000,
+      "item": 7,
+      "x": 53,
+      "y": 86,
+      "width": 110,
+      "height": 87,
+      "rgba_sha256": "246274c4e9d91ede2fd8baf93e46bec7c815f00fc0094d51a267d080877479ac"
+    },
+    {
+      "index": 228,
+      "group": 1050,
+      "item": 0,
+      "x": 19,
+      "y": 99,
+      "width": 48,
+      "height": 100,
+      "rgba_sha256": "a3c58b49764032309e47bf66c9d06121e5eb6bc1a76d7502e606dc35f1e0c30d"
+    },
+    {
+      "index": 229,
+      "group": 1050,
+      "item": 1,
+      "x": 18,
+      "y": 102,
+      "width": 43,
+      "height": 103,
+      "rgba_sha256": "8afda872a80eb4f838c54db55f7fecfe1aae00485dd0c7aa1106cc73e49e78ff"
+    },
+    {
+      "index": 230,
+      "group": 1050,
+      "item": 2,
+      "x": 24,
+      "y": 114,
+      "width": 53,
+      "height": 115,
+      "rgba_sha256": "b3b61af96b9f81ad069f331994bc75af2c2fdb59b82007273b15fefc77149fa4"
+    },
+    {
+      "index": 231,
+      "group": 1050,
+      "item": 3,
+      "x": 27,
+      "y": 115,
+      "width": 60,
+      "height": 114,
+      "rgba_sha256": "1c5c5f4b3880060f68ff00dfa6543da4efb8e39a984f2db18d795278bc79b4c9"
+    },
+    {
+      "index": 232,
+      "group": 1050,
+      "item": 4,
+      "x": 27,
+      "y": 115,
+      "width": 60,
+      "height": 114,
+      "rgba_sha256": "491dd59d63585c63b2f8138b014002ce1e05e49c8f862341868f47ac8ab0c22f"
+    },
+    {
+      "index": 233,
+      "group": 1050,
+      "item": 5,
+      "x": 23,
+      "y": 113,
+      "width": 59,
+      "height": 113,
+      "rgba_sha256": "7b2fb72dd3b8528a22735ca150fbbdea31fe6ba741afee2d4a3262a51dac09fa"
+    },
+    {
+      "index": 234,
+      "group": 1050,
+      "item": 6,
+      "x": 18,
+      "y": 113,
+      "width": 52,
+      "height": 113,
+      "rgba_sha256": "6c920a765beb3b450d26d0953962254ef16e2991ab63f0cb25a24ca5b2f81552"
+    },
+    {
+      "index": 235,
+      "group": 1050,
+      "item": 7,
+      "x": 16,
+      "y": 115,
+      "width": 49,
+      "height": 114,
+      "rgba_sha256": "5b60f965cd0df9650e5b0b1755448620a1b84b94a33e0163fc443359e6b31252"
+    },
+    {
+      "index": 236,
+      "group": 1052,
+      "item": 0,
+      "x": 19,
+      "y": 99,
+      "width": 53,
+      "height": 100,
+      "rgba_sha256": "be3d9c4918ad79b1ee2f44aeec33dbf354b3e8bcd563006d1fd70867244089ce"
+    },
+    {
+      "index": 237,
+      "group": 1052,
+      "item": 1,
+      "x": 15,
+      "y": 85,
+      "width": 48,
+      "height": 86,
+      "rgba_sha256": "3d37157a3b0918407b6b08e6310896aeae857b7bfc2fab306b5ebdf112dd42d5"
+    },
+    {
+      "index": 238,
+      "group": 1052,
+      "item": 2,
+      "x": 15,
+      "y": 91,
+      "width": 39,
+      "height": 92,
+      "rgba_sha256": "7dc1cc4f14bfd4e7567aa046350fe21655dde6f13585b8613e7fc12ddbc81d99"
+    },
+    {
+      "index": 239,
+      "group": 1052,
+      "item": 3,
+      "x": 18,
+      "y": 106,
+      "width": 36,
+      "height": 107,
+      "rgba_sha256": "37b2eae039418d0a3ede73bcf1f16eb1747dae197a4fee7d16fec59844990e46"
+    },
+    {
+      "index": 240,
+      "group": 1055,
+      "item": 0,
+      "x": 36,
+      "y": 107,
+      "width": 79,
+      "height": 87,
+      "rgba_sha256": "0a2bf06e5f9289382e9434ea30a1ccb33dd50ecb986dc9befae2d8282c65b6a4"
+    },
+    {
+      "index": 241,
+      "group": 1055,
+      "item": 1,
+      "x": 29,
+      "y": 108,
+      "width": 69,
+      "height": 94,
+      "rgba_sha256": "158af411136e4696b087bbc0f6118a618e823a69f9e94e355033906e2a4790d4"
+    },
+    {
+      "index": 242,
+      "group": 1055,
+      "item": 2,
+      "x": 26,
+      "y": 109,
+      "width": 56,
+      "height": 110,
+      "rgba_sha256": "4b63c01ff686600ef9a1f3db7d9bed9c30861578128bfe45cf29f88a34eef4e1"
+    },
+    {
+      "index": 243,
+      "group": 1055,
+      "item": 3,
+      "x": 20,
+      "y": 118,
+      "width": 69,
+      "height": 124,
+      "rgba_sha256": "410040f8b207e504269de06a8c83d060ea51a2392ff03b8ec5f9b3fe2c83407e"
+    },
+    {
+      "index": 244,
+      "group": 1055,
+      "item": 4,
+      "x": 18,
+      "y": 110,
+      "width": 60,
+      "height": 116,
+      "rgba_sha256": "517acd0ed3f2f96dfa8df9af65e995c02bdbe5b2473dc82fe78ab07a52ea9b9b"
+    },
+    {
+      "index": 245,
+      "group": 1055,
+      "item": 5,
+      "x": 18,
+      "y": 113,
+      "width": 64,
+      "height": 118,
+      "rgba_sha256": "826b7f846549760138906f777aaedd5aa440457f20f4a23b75d9db140eaafa57"
+    },
+    {
+      "index": 246,
+      "group": 1055,
+      "item": 6,
+      "x": 19,
+      "y": 113,
+      "width": 77,
+      "height": 115,
+      "rgba_sha256": "3821032991c4255626da2d9fd257e5c0014bbdab248c5992da36034cb2f16aa4"
+    },
+    {
+      "index": 247,
+      "group": 1055,
+      "item": 7,
+      "x": 19,
+      "y": 112,
+      "width": 64,
+      "height": 109,
+      "rgba_sha256": "296688e662ba12e8aad19bb5bd3d66bc511bf4bc2f01c02f1cb43eb815c50a4c"
+    },
+    {
+      "index": 248,
+      "group": 1100,
+      "item": 0,
+      "x": 14,
+      "y": 103,
+      "width": 37,
+      "height": 104,
+      "rgba_sha256": "486540aac2ef97336e0f6e6ccf9f555615a6198fefc404fcae3e412496d9776d"
+    },
+    {
+      "index": 249,
+      "group": 1100,
+      "item": 1,
+      "x": 14,
+      "y": 103,
+      "width": 38,
+      "height": 104,
+      "rgba_sha256": "e6e152d58bd56ac1ea1c456fe9cacf8317ec8ba0dde34eec3e7d4bd7de0917ad"
+    },
+    {
+      "index": 250,
+      "group": 1100,
+      "item": 2,
+      "x": 12,
+      "y": 102,
+      "width": 54,
+      "height": 104,
+      "rgba_sha256": "10acb3af9890df2e2a82350a5d1d48dad91232a783b1179a98488429f6aef207"
+    },
+    {
+      "index": 251,
+      "group": 1100,
+      "item": 3,
+      "x": 11,
+      "y": 102,
+      "width": 55,
+      "height": 104,
+      "rgba_sha256": "24fe2f1f4cef4e5e9db12378ddd4838fced7c922ae03716a9fd5a0329b2da54a"
+    },
+    {
+      "index": 252,
+      "group": 1100,
+      "item": 4,
+      "x": 10,
+      "y": 104,
+      "width": 56,
+      "height": 106,
+      "rgba_sha256": "93d3c2eb3523bda06b8c26536d87747738ecd1fdd212536bdf00193192bd5152"
+    },
+    {
+      "index": 253,
+      "group": 1100,
+      "item": 5,
+      "x": 7,
+      "y": 139,
+      "width": 56,
+      "height": 141,
+      "rgba_sha256": "78b5dffabdf148cae83e24d2e48bc1c78da8fce567a526f08c84e72ea0df18c8"
+    },
+    {
+      "index": 254,
+      "group": 1100,
+      "item": 6,
+      "x": 7,
+      "y": 132,
+      "width": 54,
+      "height": 134,
+      "rgba_sha256": "436e954cf914c3100ff82edf33bf5aa41a254c1ff851cd678f624d0b1a9712f4"
+    },
+    {
+      "index": 255,
+      "group": 1100,
+      "item": 7,
+      "x": 7,
+      "y": 132,
+      "width": 54,
+      "height": 134,
+      "rgba_sha256": "dc963508d74ae686360bedf45818d42772133b46802bee7862418dc71827344f"
+    },
+    {
+      "index": 256,
+      "group": 1100,
+      "item": 8,
+      "x": 7,
+      "y": 128,
+      "width": 54,
+      "height": 130,
+      "rgba_sha256": "b72a3891fd93ac7485876eb1c38a12dd7e8884da026632e5d4cfedf9b09d74e7"
+    },
+    {
+      "index": 257,
+      "group": 1100,
+      "item": 9,
+      "x": 8,
+      "y": 113,
+      "width": 57,
+      "height": 115,
+      "rgba_sha256": "9a8a674d00cb1f66930cf8fb0b483dd2ba00ef4b1f306950f09457cdb20fd47e"
+    },
+    {
+      "index": 258,
+      "group": 1210,
+      "item": 0,
+      "x": 20,
+      "y": 106,
+      "width": 42,
+      "height": 107,
+      "rgba_sha256": "952a702191b4bb73e952800493c180183a296d2903240ea3353fc9b0e8c80a89"
+    },
+    {
+      "index": 259,
+      "group": 1210,
+      "item": 1,
+      "x": 21,
+      "y": 107,
+      "width": 41,
+      "height": 108,
+      "rgba_sha256": "252113d3789fb76469dc66459696bf4e2963cf590db11ce69274ad0f66688c4e"
+    },
+    {
+      "index": 260,
+      "group": 1210,
+      "item": 2,
+      "x": 18,
+      "y": 105,
+      "width": 48,
+      "height": 106,
+      "rgba_sha256": "5098d8c82f7a638eb2d1c085d7d6dde6f96776e03f6435ba523e1e845f017ce6"
+    },
+    {
+      "index": 261,
+      "group": 1210,
+      "item": 3,
+      "x": 15,
+      "y": 104,
+      "width": 69,
+      "height": 105,
+      "rgba_sha256": "49680f04a6eedf004061b41c5ba77ba22a53a3f8d97b9cb1629c4a2359ce4007"
+    },
+    {
+      "index": 262,
+      "group": 1210,
+      "item": 4,
+      "x": 13,
+      "y": 93,
+      "width": 105,
+      "height": 94,
+      "rgba_sha256": "763c62227fe0a20cff39881eb0b1f766879c8bbc07be53fef3b6536831fc5a23"
+    },
+    {
+      "index": 263,
+      "group": 1210,
+      "item": 5,
+      "x": 15,
+      "y": 93,
+      "width": 103,
+      "height": 94,
+      "rgba_sha256": "96bcd077a977ee6f7552cc4a175eb2e590d52e73f55012136d510a1995fc3c16"
+    },
+    {
+      "index": 264,
+      "group": 1210,
+      "item": 6,
+      "x": 18,
+      "y": 95,
+      "width": 94,
+      "height": 97,
+      "rgba_sha256": "6a783c5adc6adb02becf21df64a8d05616e6eb012043ded4ef648f58cc1c5f95"
+    },
+    {
+      "index": 265,
+      "group": 1300,
+      "item": 0,
+      "x": 17,
+      "y": 105,
+      "width": 67,
+      "height": 107,
+      "rgba_sha256": "b8dabf3903306024f57455e573cdae6cd59a3ab7f9b6127306ddb57fe3fb05e8"
+    },
+    {
+      "index": 266,
+      "group": 1300,
+      "item": 1,
+      "x": 17,
+      "y": 105,
+      "width": 63,
+      "height": 107,
+      "rgba_sha256": "ca1b0a59634e85fe19b6e3672bebbddd71d4d67c45fc77a0e7caab3b74a68d7b"
+    },
+    {
+      "index": 267,
+      "group": 1300,
+      "item": 2,
+      "x": 17,
+      "y": 105,
+      "width": 55,
+      "height": 107,
+      "rgba_sha256": "4871a0958bab23a7dba3ef409de4b9866cd49ca7fca44e6ee91b29971c4f071d"
+    },
+    {
+      "index": 268,
+      "group": 1320,
+      "item": 0,
+      "x": 16,
+      "y": 71,
+      "width": 55,
+      "height": 73,
+      "rgba_sha256": "74eb347e0f17e7b99e528084a2823de2c0d37a315c063677900bb3761bfc50fc"
+    },
+    {
+      "index": 269,
+      "group": 1320,
+      "item": 1,
+      "x": 16,
+      "y": 71,
+      "width": 52,
+      "height": 73,
+      "rgba_sha256": "067ca8f8c4d2deaac76e60ca39f0fb60df3467ba0fd8dd0a4eda381d012f2fb6"
+    },
+    {
+      "index": 270,
+      "group": 1320,
+      "item": 2,
+      "x": 19,
+      "y": 71,
+      "width": 51,
+      "height": 73,
+      "rgba_sha256": "8b6bf5c43875c96d3383fbdeb55f40528f3092c4a50cac7fefdfca4998e7c9d3"
+    },
+    {
+      "index": 271,
+      "group": 1340,
+      "item": 0,
+      "x": 16,
+      "y": 101,
+      "width": 45,
+      "height": 84,
+      "rgba_sha256": "5f3cefd733bfdc66f0dad8e8ad604899b97dcb5f269c0f627e999196f2d9da9c"
+    },
+    {
+      "index": 272,
+      "group": 1340,
+      "item": 1,
+      "x": 16,
+      "y": 101,
+      "width": 42,
+      "height": 84,
+      "rgba_sha256": "b3a180a6165bdc27510cd389220247e0a72f0927b3e3b03675ebd5f740371784"
+    },
+    {
+      "index": 273,
+      "group": 1400,
+      "item": 0,
+      "x": 16,
+      "y": 78,
+      "width": 48,
+      "height": 79,
+      "rgba_sha256": "74818de7e74191b94b68a0f7a606cf6bba37a809200f1a21a892ac06cda4007c"
+    },
+    {
+      "index": 274,
+      "group": 1400,
+      "item": 1,
+      "x": 15,
+      "y": 78,
+      "width": 57,
+      "height": 79,
+      "rgba_sha256": "51286e6c2aedc49791eeb7a20dac7874b3faafc7df986cd95c950948b41d156d"
+    },
+    {
+      "index": 275,
+      "group": 1400,
+      "item": 2,
+      "x": 35,
+      "y": 76,
+      "width": 82,
+      "height": 78,
+      "rgba_sha256": "81396d96af8ca7ed0a5996b2bc379d00f0a09b16be01a8f580890c89b6a7b0e1"
+    },
+    {
+      "index": 276,
+      "group": 1400,
+      "item": 3,
+      "x": 26,
+      "y": 106,
+      "width": 64,
+      "height": 108,
+      "rgba_sha256": "453b43004b85094d90490ace932b339c2760854b9808f43ff1f3b76f9e196f01"
+    },
+    {
+      "index": 277,
+      "group": 1400,
+      "item": 4,
+      "x": 26,
+      "y": 106,
+      "width": 63,
+      "height": 108,
+      "rgba_sha256": "96269c38a8b91b1e24c37259a9a542097805dddc9cb415d72305da9c3068661e"
+    },
+    {
+      "index": 278,
+      "group": 1400,
+      "item": 5,
+      "x": 26,
+      "y": 106,
+      "width": 64,
+      "height": 108,
+      "rgba_sha256": "1b97cb9b19ab0822766f5dc1adc989db00fa47fa963c4c8ae50634049ce986e2"
+    },
+    {
+      "index": 279,
+      "group": 1400,
+      "item": 6,
+      "x": 23,
+      "y": 104,
+      "width": 59,
+      "height": 106,
+      "rgba_sha256": "cb382524810503706a6dc5110eae24cc263d0a56c8ffba0e26951dd156fa3139"
+    },
+    {
+      "index": 280,
+      "group": 1400,
+      "item": 7,
+      "x": 29,
+      "y": 101,
+      "width": 56,
+      "height": 103,
+      "rgba_sha256": "c7c107ece86143b91b773ed9fb9e8e821528b8855b4c96d6ccd1474274551ac5"
+    }
+  ]
+}

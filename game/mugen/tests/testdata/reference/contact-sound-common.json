@@ -1,0 +1,235 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "0cb4aea87c25f073b7d49064979df14794ec2d28ded91e4b8cd4afab5b752e69",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4a5d91fcc50f0d389da0998033fa7634a3e5f2609897a1a9e490a54b404849b6",
+          "variables": {
+            "0": 1,
+            "1": 5000,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "common-probe.snd": "a8677ce5010d777ad22e1b48811e69e026ca6e11870c4b3cebec7a4e2cafd325",
+        "probe.snd": "a211f342605a2c0c8166faf119f329c76400386b5f9384dd091a41071fc4b315"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441.0,
+          882.0,
+          1323.0,
+          1764.0,
+          2205.0,
+          2646.0,
+          3087.0
+        ],
+        "pcm_sha256": "e4149acf430f5dd88119c9276989d4007ad084c880bbef1ad94019b3fdf0cfe5",
+        "segments": [
+          {
+            "start": 3.3,
+            "end": 5.2,
+            "levels": {
+              "441": [
+                3998.8,
+                3967.8
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0.0,
+                0.0
+              ],
+              "1764": [
+                0.0,
+                0.0
+              ],
+              "2205": [
+                0.0,
+                0.0
+              ],
+              "2646": [
+                0.0,
+                0.0
+              ],
+              "3087": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "start": 5.3,
+            "end": 6.2,
+            "levels": {
+              "441": [
+                0.0,
+                0.0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0.0,
+                0.0
+              ],
+              "1764": [
+                0.0,
+                0.0
+              ],
+              "2205": [
+                0.0,
+                0.0
+              ],
+              "2646": [
+                3092.6,
+                4873.6
+              ],
+              "3087": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "start": 6.3,
+            "end": 8.3,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "1764": [
+                0,
+                0
+              ],
+              "2205": [
+                0,
+                0
+              ],
+              "2646": [
+                0,
+                0
+              ],
+              "3087": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 8.3,
+            "end": 12.0,
+            "levels": {
+              "441": [
+                0.0,
+                0.0
+              ],
+              "882": [
+                0.0,
+                0.0
+              ],
+              "1323": [
+                0.0,
+                0.0
+              ],
+              "1764": [
+                0.0,
+                0.0
+              ],
+              "2205": [
+                0.0,
+                0.0
+              ],
+              "2646": [
+                0.0,
+                0.0
+              ],
+              "3087": [
+                0.0,
+                0.0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "common_tone": true,
+        "common_fight_sha256": {
+          "data/fight.def": "60bd102e5dfaa3b480293789fcc06281f72edc50fb59afcae104974d2215b11b",
+          "data/mugen1/fight.def": "9fe5394cc05d13b733633d6d65a8cd2cfe1575f6a258fdffe7e3274258bd0479"
+        },
+        "checks": [
+          {
+            "Tick": 30,
+            "Segment": 0
+          },
+          {
+            "Tick": 100,
+            "Segment": 0
+          },
+          {
+            "Tick": 150,
+            "Segment": 1
+          },
+          {
+            "Tick": 210,
+            "Segment": 2
+          },
+          {
+            "Tick": 330,
+            "Segment": 3
+          }
+        ]
+      }
+    }
+  }
+}

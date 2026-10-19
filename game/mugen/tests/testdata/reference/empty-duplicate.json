@@ -1,0 +1,31 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "75a25c43ef3c800f5e0c45cf31e5406db8522dafcb3ff632746e42f93afb6a6c",
+  "air_sha256": "c90460b3a57b3d384cc6ddba0adc34c85c8588b53cb142d8b99514934120d1dc",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "24ff952fe28e3ba18521e466df7d449369156225b45fe04aedce92c5bc344d0a",
+      "variables": {
+        "0": 111,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "var",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1"
+}

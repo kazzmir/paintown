@@ -1,0 +1,74 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "8ecfba5573d2a76bb46573e293a6ba995369e665f5ce8333c638d8bf8aa628bc",
+  "air_sha256": "b7ac5eef13c232fce5053b9925d50879809dbe1609b865756fdfffe96d229610",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "f1d4656fc507d67f13dab8a3967bd5d9032b79993ea409e37f06ba8dfbbafccb",
+      "variables": {
+        "0": 14,
+        "1": 20,
+        "2": 2,
+        "3": -3.5999999,
+        "4": 14,
+        "5": 20,
+        "6": 2,
+        "7": -3.20000005,
+        "8": 100990,
+        "9": 12,
+        "10": 16.7999992,
+        "11": 2
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "bb4698ae85f0496ebe65228fe504c9f608783bca588a324d5df7e1f5c6292b82",
+      "variables": {
+        "12": -2.79999995,
+        "13": 10,
+        "14": 14,
+        "15": 2,
+        "16": -2.4000001,
+        "17": -12,
+        "18": 9.60000038,
+        "19": 2,
+        "20": 2,
+        "21": -14,
+        "22": 11.6000004,
+        "23": 2
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "118f64665f8d2cb95b1889f5013e8c38ec418d806825e0e02a9139dcaa284180",
+      "variables": {
+        "24": 2.4000001,
+        "25": -16,
+        "26": 14.000001,
+        "27": 2,
+        "28": 2.80000019,
+        "29": -99,
+        "30": -99,
+        "31": -99,
+        "32": -99,
+        "33": -1,
+        "34": -1,
+        "35": -27.0159588
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "replay_ticks": 260
+}

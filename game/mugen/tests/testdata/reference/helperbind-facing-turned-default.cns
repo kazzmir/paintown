@@ -1,0 +1,302 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+[State 700, control]
+type=PosSet
+trigger1=Time=0
+x=-30
+y=0
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+pos=60,0
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=0
+value=Enemy,FVar(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=1
+value=Enemy,FVar(1)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=2
+value=Enemy,FVar(2)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=3
+value=Enemy,FVar(3)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=4
+value=Enemy,FVar(4)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=5
+value=Enemy,FVar(5)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=6
+value=Enemy,FVar(6)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=7
+value=Enemy,FVar(7)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=8
+value=Enemy,FVar(8)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=9
+value=Enemy,FVar(9)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=10
+value=Enemy,FVar(10)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=11
+value=Enemy,FVar(11)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=12
+value=Enemy,FVar(12)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=13
+value=Enemy,FVar(13)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=14
+value=Enemy,FVar(14)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=15
+value=Enemy,FVar(15)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=16
+value=Enemy,FVar(16)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=17
+value=Enemy,FVar(17)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=18
+value=Enemy,FVar(18)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=19
+value=Enemy,FVar(19)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=20
+value=Enemy,FVar(20)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=21
+value=Enemy,FVar(21)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=22
+value=Enemy,FVar(22)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=23
+value=Enemy,FVar(23)
+
+[State 700, control]
+type=VarSet
+trigger1=Time<8
+fv=24+Time
+value=Enemy,GetHitVar(isbound)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=32
+value=Enemy,Pos Y
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=33
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=34
+value=PlayerIDExist(58)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=12
+fv=35
+value=Enemy,StateNo
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=Turn
+trigger1=Time=0
+
+
+
+[State 701, control]
+type=PosSet
+trigger1=Time=0
+x=30
+y=0
+
+[State 701, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[Statedef 800]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+
+[State 800, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[State 800, control]
+type=VelSet
+trigger1=Time=0
+x=2
+y=0
+
+[State 800, control]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=0
+pausetime=0,0
+ground.type=High
+ground.velocity=0,0
+ground.hittime=30
+p2stateno=810
+p2getp1state=1
+sparkno=-1
+hitsound=-1,0
+
+[State 800, control]
+type=TargetBind
+trigger1=Time=1 && NumTarget
+time=-1
+pos=20,-5
+
+[Statedef 810]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+
+[State 810, control]
+type=PlayerPush
+trigger1=1
+value=0
+
+[State 810, control]
+type=VarSet
+trigger1=Time<6
+fv=4*Time+0
+value=GetHitVar(isbound)
+
+[State 810, control]
+type=VarSet
+trigger1=Time<6
+fv=4*Time+1
+value=Pos X
+
+[State 810, control]
+type=VarSet
+trigger1=Time<6
+fv=4*Time+2
+value=Vel X
+
+[State 810, control]
+type=VarSet
+trigger1=Time<6
+fv=4*Time+3
+value=Facing

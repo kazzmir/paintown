@@ -1,0 +1,428 @@
+[Statedef 5900]
+[State 5900, down bounce probe]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+[State 0, down bounce probe]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl && Var(57)=0
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+type=L
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+v=57
+value=1
+[State 701, down bounce probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, down bounce probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=-99
+[State 701, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=-99
+[Statedef -2]
+[State -2, down bounce probe]
+type=Null
+trigger1=0
+
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, down bounce probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=StateNo
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=GetHitVar(fall)
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=ifelse(GetHitVar(fall.xvel)<-1000000,-99999,GetHitVar(fall.xvel))
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=GetHitVar(fall.yvel)
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(yvel)
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(yaccel)
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(fall.recover)
+[State 5000, down bounce probe]
+type=VelSet
+trigger1=Time=1
+x=5
+y=7
+[State 5000, down bounce probe]
+type=HitFallVel
+trigger1=Time=1
+
+[State 5000, down bounce probe]
+type=VarSet
+trigger1=Time=1
+fv=27
+value=Vel Y
+[Statedef 5010]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, down bounce probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=StateNo
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=GetHitVar(fall)
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=ifelse(GetHitVar(fall.xvel)<-1000000,-99999,GetHitVar(fall.xvel))
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=GetHitVar(fall.yvel)
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(yvel)
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(yaccel)
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(fall.recover)
+[State 5010, down bounce probe]
+type=VelSet
+trigger1=Time=1
+x=5
+y=7
+[State 5010, down bounce probe]
+type=HitFallVel
+trigger1=Time=1
+
+[State 5010, down bounce probe]
+type=VarSet
+trigger1=Time=1
+fv=27
+value=Vel Y
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, down bounce probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=StateNo
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=GetHitVar(fall)
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=ifelse(GetHitVar(fall.xvel)<-1000000,-99999,GetHitVar(fall.xvel))
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=GetHitVar(fall.yvel)
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(yvel)
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(yaccel)
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(fall.recover)
+[State 5020, down bounce probe]
+type=VelSet
+trigger1=Time=1
+x=5
+y=7
+[State 5020, down bounce probe]
+type=HitFallVel
+trigger1=Time=1
+
+[State 5020, down bounce probe]
+type=VarSet
+trigger1=Time=1
+fv=27
+value=Vel Y
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, down bounce probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=StateNo
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=GetHitVar(fall)
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=ifelse(GetHitVar(fall.xvel)<-1000000,-99999,GetHitVar(fall.xvel))
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=GetHitVar(fall.yvel)
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(yvel)
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(yaccel)
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(fall.recover)
+[State 5080, down bounce probe]
+type=VelSet
+trigger1=Time=1
+x=5
+y=7
+[State 5080, down bounce probe]
+type=HitFallVel
+trigger1=Time=1
+
+[State 5080, down bounce probe]
+type=VarSet
+trigger1=Time=1
+fv=27
+value=Vel Y
+[Statedef -3]
+[State -3, down bounce probe]
+type=Null
+trigger1=0
+
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time=0
+v=57
+value=1
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=0.75
+[State 700, down bounce probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, down bounce probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, down bounce probe]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAFD
+guardflag=
+damage=10
+sparkno=-1
+hitsound=-1,0
+pausetime=0,0
+fall=1
+air.velocity=0,-3
+ground.velocity=0,-3
+down.velocity=-1,-3
+fall.xvelocity=2
+fall.yvelocity=-4
+yaccel=0.5
+down.bounce=-2
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=0
+value=Enemy,FVar(20)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=1
+value=Enemy,FVar(21)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=2
+value=Enemy,FVar(22)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=3
+value=Enemy,FVar(23)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=4
+value=Enemy,FVar(24)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=5
+value=Enemy,FVar(25)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=6
+value=Enemy,FVar(26)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=7
+value=Enemy,FVar(27)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=8
+value=100000+(Enemy,Life)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=9
+value=Var(10)
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=10
+value=Enemy,StateNo
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=11
+value=Enemy,Ctrl
+[State 700, down bounce probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+v=59
+value=1

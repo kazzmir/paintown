@@ -1,0 +1,201 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 700, hold round]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State 700, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=100,0
+pausetime=0,0
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+id=1234
+[State 700, copy receiver phase 0]
+type=VarSet
+trigger1=Time=3
+fv=0
+value=Enemy,FVar(0)
+[State 700, copy receiver phase 1]
+type=VarSet
+trigger1=Time=3
+fv=1
+value=Enemy,FVar(1)
+[State 700, copy receiver phase 2]
+type=VarSet
+trigger1=Time=3
+fv=2
+value=Enemy,FVar(2)
+[State 700, copy receiver phase 3]
+type=VarSet
+trigger1=Time=3
+fv=3
+value=Enemy,FVar(3)
+[State 700, copy receiver phase 4]
+type=VarSet
+trigger1=Time=3
+fv=4
+value=Enemy,FVar(4)
+[State 700, copy receiver phase 5]
+type=VarSet
+trigger1=Time=3
+fv=5
+value=Enemy,FVar(5)
+[State 700, copy receiver phase 6]
+type=VarSet
+trigger1=Time=3
+fv=6
+value=Enemy,FVar(6)
+[State 700, copy receiver phase 7]
+type=VarSet
+trigger1=Time=3
+fv=7
+value=Enemy,FVar(7)
+[State 700, copy receiver phase 8]
+type=VarSet
+trigger1=Time=3
+fv=8
+value=Enemy,FVar(8)
+[State 700, copy receiver phase 9]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=Enemy,FVar(9)
+[State 700, copy receiver phase 10]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=Enemy,FVar(10)
+[State 700, copy receiver phase 11]
+type=VarSet
+trigger1=Time=3
+fv=11
+value=Enemy,FVar(11)
+[State 700, copy receiver phase 12]
+type=VarSet
+trigger1=Time=3
+fv=12
+value=Enemy,FVar(12)
+[State 700, copy receiver phase 13]
+type=VarSet
+trigger1=Time=3
+fv=13
+value=Enemy,FVar(13)
+[State 700, copy receiver phase 14]
+type=VarSet
+trigger1=Time=3
+fv=14
+value=Enemy,FVar(14)
+[State 700, copy receiver phase 15]
+type=VarSet
+trigger1=Time=3
+fv=15
+value=Enemy,FVar(15)
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, frame origin]
+type=VarSet
+trigger1=Time=0
+v=50
+value=GameTime
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, positive phase]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=StateNo
+[State 5000, positive phase]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=GetHitVar(damage)
+[State 5000, positive phase]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Life
+[State 5000, positive phase]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Time
+[Statedef -3]
+[State -3, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=12
+value=StateNo
+[State -3, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=13
+value=GetHitVar(damage)
+[State -3, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=14
+value=Life
+[State -3, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=15
+value=Time
+[Statedef -2]
+[State -2, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=0
+value=StateNo
+[State -2, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=1
+value=GetHitVar(damage)
+[State -2, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=2
+value=Life
+[State -2, contact phase]
+type=VarSet
+trigger1=Facing=-1 && GameTime=Var(50)+1
+fv=3
+value=Time

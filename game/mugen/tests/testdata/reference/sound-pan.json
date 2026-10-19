@@ -1,0 +1,178 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "145710a8e046c6f3584098a96c3270e268003d32321f0d232ba8ee88bd739f6b",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ba6d3a1b2560b14bb31c3e89668635051c988283e0a5e362a7c487a0e38293e7",
+          "variables": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.snd": "58b6beecae0ad5b26566d89fee1fc53ef1b0f0e9cc453b8f81899ee55d41b543"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441,
+          882,
+          1323
+        ],
+        "pcm_sha256": "21312fdb77993bd8f6f621fb320e4ba4f31a299fc5597960be27d16bfee259f1",
+        "segments": [
+          {
+            "start": 2.5,
+            "end": 3.5,
+            "levels": {
+              "441": [
+                3998.8,
+                3967.8
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 3.5,
+            "end": 4.5,
+            "levels": {
+              "441": [
+                2561.2,
+                5405.1
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 4.5,
+            "end": 5.4,
+            "levels": {
+              "441": [
+                5436.3,
+                2530.2
+              ],
+              "882": [
+                0.0,
+                0.0
+              ],
+              "1323": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "start": 5.5,
+            "end": 6.5,
+            "levels": {
+              "441": [
+                1999.0,
+                1983.7
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 6.5,
+            "end": 14.1,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "checks": [
+          {
+            "tick": 30,
+            "segment": 0
+          },
+          {
+            "tick": 90,
+            "segment": 1
+          },
+          {
+            "tick": 150,
+            "segment": 2
+          },
+          {
+            "tick": 210,
+            "segment": 3
+          },
+          {
+            "tick": 270,
+            "segment": 4
+          }
+        ]
+      }
+    }
+  }
+}

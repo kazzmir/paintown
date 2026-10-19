@@ -1,0 +1,56 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, legacy 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=GameWidth
+[State 700, legacy 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=GameHeight
+[State 700, legacy 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=ScreenPos X
+[State 700, legacy 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=ScreenPos Y
+[State 700, legacy 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=CameraPos X
+[State 700, legacy 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=CameraPos Y

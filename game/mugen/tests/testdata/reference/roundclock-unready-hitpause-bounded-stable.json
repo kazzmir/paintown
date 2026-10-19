@@ -1,0 +1,115 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "fixture_sha256": {
+    ".cns": "8b361206a7d00f3fdab98a59564ef0d91ae873e9c36ec62bf9c4be18304c4170",
+    ".air": "b911f5e56eda2aa4328094f7d198d53cf227c410aac4e0676ec5b8b02e3f7a1a",
+    ".cmd": "e431303fc6b4e38da133979a093e9d2b0ae88d9bbed1b45ce97f25d3dc792f44",
+    ".round.json": "030a0a1bd10abec0d64f9a6d74cd98c1d78ff12fdb228dd8b113532f5b77ce78"
+  },
+  "original_fight_sha256": {
+    "data/fight.def": "4215173e699fb022da39c53382effdf1bc2dd1c02daf66b5dc04369624092891",
+    "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+  },
+  "prepared_fight_sha256": {
+    "data/fight.def": "d4e66c002810162de86c4288f7d2fb61d7adb9ab48d5bdaedd2377c30e4f58b2",
+    "data/mugen1/fight.def": "1e296b146736db304487b15bf390b4ac8a15d1480ceb27cd7df18edf60272c1e"
+  },
+  "config_sha256": "f0e5b3e79a89e862f37174d8118516a22de1281f6d3e82deba73e4ba87f0ee24",
+  "captures": [
+    {
+      "page": 0,
+      "path": "cycle-2.png",
+      "sha256": "622a7867fdec65e5277ca17ec958fcfd46cb0af6aea8b1da402aee85bdb97b9f",
+      "variables": {
+        "0": 131,
+        "1": 249,
+        "2": 249,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 153,
+        "9": 250,
+        "10": 40,
+        "11": 401
+      }
+    },
+    {
+      "page": 12,
+      "path": "cycle-10.png",
+      "sha256": "1c0d83b5825ddeb1619d0856a1561e45445494e9f461d1af0886aae3f73ed924",
+      "variables": {
+        "12": 250,
+        "13": 0,
+        "14": 0,
+        "15": 6,
+        "16": 142,
+        "17": 0,
+        "18": 0,
+        "19": 0,
+        "20": 0,
+        "21": 1,
+        "22": 2,
+        "23": 3
+      }
+    },
+    {
+      "page": 24,
+      "path": "cycle-1.png",
+      "sha256": "68fc2530185c0099b781820c9a299b0b925e5bb55d60ce8e6e8f7b563d1d3b23",
+      "variables": {
+        "24": 4,
+        "25": 5,
+        "26": 6,
+        "27": 7,
+        "28": 8,
+        "29": 9,
+        "30": 10,
+        "31": 11,
+        "32": 12,
+        "33": 13,
+        "34": 14,
+        "35": 15
+      }
+    },
+    {
+      "page": 36,
+      "path": "cycle-0.png",
+      "sha256": "d5a857b275b06e0bb1e7e5a0a736be37bf211765cdd6037c8fd90fdf35856e71",
+      "variables": {
+        "36": 16,
+        "37": 17,
+        "38": 18,
+        "39": 19,
+        "40": 20,
+        "41": 21,
+        "42": 22,
+        "43": 23,
+        "44": 24,
+        "45": 25,
+        "46": 26,
+        "47": 27
+      }
+    },
+    {
+      "page": 48,
+      "path": "cycle-4.png",
+      "sha256": "c35a9a30a55a74d9027f8affcda4ef69e6afc6d965ac9c10bc9e50f242fbf1e5",
+      "variables": {
+        "48": 28,
+        "49": 29,
+        "50": 30,
+        "51": 31,
+        "52": 32,
+        "53": 33,
+        "54": 34,
+        "55": 35,
+        "56": 36,
+        "57": 37,
+        "58": 38,
+        "59": 39
+      }
+    }
+  ]
+}

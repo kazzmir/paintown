@@ -1,0 +1,57 @@
+# Extended Configuration for MUGEN Go Engine
+# This file overrides legacy settings in mugen.cfg
+
+input:
+  p1:
+    keyboard:
+      jump: KeyArrowUp
+      crouch: KeyArrowDown
+      left: KeyArrowLeft
+      right: KeyArrowRight
+      a: KeyA
+      b: KeyS
+      c: KeyD
+      x: KeyZ
+      y: KeyX
+      z: KeyC
+      #a: KeyA
+      #b: KeyO
+      #c: KeyE
+      #x: KeySemicolon
+      #y: KeyQ
+      #z: KeyJ
+      start: KeyEnter
+      escape: KeyEscape
+    joy:
+      # Future joystick mappings
+      # a: 1
+      # b: 2
+
+  p2:
+    keyboard:
+      jump: KeyT
+      crouch: KeyG
+      left: KeyF
+      right: KeyH
+      a: KeyU
+      b: KeyI
+      c: KeyO
+      x: KeyJ
+      y: KeyK
+      z: KeyL
+      #a: KeyV
+      #b: KeyB
+      #c: KeyN
+      #x: KeyR
+      #y: KeyT
+      #z: KeyY
+      start: KeyBackspace
+      escape: KeyEscape
+    joy:
+      # Future joystick mappings
+
+video:
+  width: 640
+  height: 480
+  fullscreen: false
+  vsync: true

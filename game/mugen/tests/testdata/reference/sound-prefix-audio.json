@@ -1,0 +1,140 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e697854555d26c06b76eb5dc8c396ca443fde7f29a6bf7045c6b7b7a38bf95c7",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "3061e501d88bf0175963f0115f1bb520a3755af03155d1ff596e3759e81da9e4",
+          "variables": {
+            "0": 1,
+            "1": 5,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.snd": "58b6beecae0ad5b26566d89fee1fc53ef1b0f0e9cc453b8f81899ee55d41b543"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441,
+          882,
+          1323
+        ],
+        "pcm_sha256": "29fb8f7cf358640e890b5243213fd875d32f5a3447517a251bc1d1da454fca56",
+        "segments": [
+          {
+            "start": 2.0,
+            "end": 2.9,
+            "levels": {
+              "441": [
+                0.0,
+                0.0
+              ],
+              "882": [
+                0.0,
+                0.0
+              ],
+              "1323": [
+                979.5,
+                972.1
+              ]
+            }
+          },
+          {
+            "start": 3.0,
+            "end": 4.9,
+            "levels": {
+              "441": [
+                3998.7,
+                0.0
+              ],
+              "882": [
+                0.0,
+                3967.7
+              ],
+              "1323": [
+                979.3,
+                972.1
+              ]
+            }
+          },
+          {
+            "start": 5.0,
+            "end": 11.6,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "checks": [
+          {
+            "tick": 30,
+            "segment": 0
+          },
+          {
+            "tick": 90,
+            "segment": 1
+          },
+          {
+            "tick": 150,
+            "segment": 1
+          },
+          {
+            "tick": 210,
+            "segment": 2
+          }
+        ],
+        "missing_resources": 1
+      }
+    }
+  }
+}

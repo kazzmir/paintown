@@ -1,0 +1,147 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, wait]
+type=Null
+trigger1=1
+[State 701, reset counts]
+type=VarRangeSet
+trigger1=Time=0
+first=30
+last=32
+value=0
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, wait]
+type=Null
+trigger1=1
+[Statedef 900]
+movetype=H
+physics=N
+ctrl=1
+
+[State 900, record 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=222
+
+[State 900, record 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Time
+
+[State 900, record 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Life
+
+[State 900, record 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Const(size.height)
+
+[State 900, record 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Pos X
+
+[State 900, record 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=AnimExist(9100)
+
+[State 900, record 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=SelfAnimExist(9200)
+
+[State 900, record 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=PrevStateNo
+
+[State 900, record 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Ctrl
+
+[State 900, record 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=AnimTime
+
+[State 900, record 12]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Var(30)
+
+[State 900, record 13]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=Var(31)
+
+[State 900, record 14]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Var(32)
+[Statedef -3]
+[State -3, counter]
+type=VarAdd
+trigger1=1
+v=30
+value=1
+[Statedef -2]
+[State -2, counter]
+type=VarAdd
+trigger1=1
+v=31
+value=1
+
+[State -2, record 10]
+type=VarSet
+trigger1=Time=0
+triggerall=StateNo=900
+fv=10
+value=Anim
+
+[State -2, record 11]
+type=VarSet
+trigger1=Time=0
+triggerall=StateNo=900
+fv=11
+value=Ctrl

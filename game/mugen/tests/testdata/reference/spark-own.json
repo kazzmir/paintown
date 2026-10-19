@@ -1,0 +1,61 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "9cf6cb850bc20632fca1da86d90da2703adfdcef15a744dde8d8615b0920eaf8",
+  "air_sha256": "ab587d21408871481dfb3f44d77385bdc42aed0f8ac5e5fee974abb05d9cfd7c",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "cf426c9b50d5facd5258c461a400fc7e912951577605834479c3a2663c655354",
+      "variables": {
+        "0": -70,
+        "1": 0,
+        "2": 1,
+        "3": 5000,
+        "4": 10,
+        "5": 140,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "fixture_constants": true,
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+  },
+  "mugenversion": "1.1",
+  "spark": {
+    "window": [
+      1280,
+      720
+    ],
+    "core": [
+      467,
+      450,
+      490,
+      462
+    ],
+    "facing": -1,
+    "core_sha256": "5b077cf1947ce2dbe811076af1f3549be4013f1becd5a8148108fc8237a1c238",
+    "pixel_scale": 3.0,
+    "frame_anchor_240p": [
+      -50.0,
+      -50.0
+    ],
+    "action": 9992,
+    "common": false,
+    "recipe_sha256": {},
+    "visible": true
+  }
+}

@@ -1,0 +1,11 @@
+[Statedef 5900]
+ctrl=0
+[State 5900, entry control]
+type=VarSet
+trigger1=1
+v=4
+value=ctrl
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0

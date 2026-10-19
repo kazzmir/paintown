@@ -1,0 +1,352 @@
+[Statedef 5900]
+[State 5900, literal schema probe]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, literal schema probe]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(TeamSide=1,700,701)
+[Statedef 701]
+type=A
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, literal schema probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, literal schema probe]
+type=VarSet
+trigger1=Time=0
+v=0
+value=0
+[State 701, literal schema probe]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=-99
+[State 701, literal schema probe]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=-99
+[Statedef 5000]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5000, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5000, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5000, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 5010]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5010, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5010, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5010, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5020, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5020, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5020, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 5070]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5070, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5070, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5070, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5070, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 5080]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 5080, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5080, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 5080, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 150]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 150, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 150, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 150, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 152]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 152, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 152, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 152, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 152, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef 154]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 154, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 154, literal schema probe]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 154, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=1
+fv=20
+value=GetHitVar(animtype)
+[State 154, literal schema probe]
+type=VarSet
+trigger1=Time=0 && Var(0)=2
+fv=21
+value=GetHitVar(animtype)
+[Statedef -3]
+[State -3, literal schema probe]
+type=Null
+trigger1=0
+
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, literal schema probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, literal schema probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, literal schema probe]
+type=HitDef
+trigger1=Time=3 || Time=15
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=10,2
+fall=0
+ground.velocity=0,0
+air.velocity=0,0
+pausetime=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1,0
+guardsound=-1,0
+air.animtype=DiagUp
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=0
+value=Enemy,FVar(20)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=1
+value=Enemy,FVar(21)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=2
+value=Enemy,GetHitVar(animtype)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=3
+value=Enemy,GetHitVar(groundtype)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=4
+value=Enemy,GetHitVar(airtype)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=5
+value=Enemy,GetHitVar(guarded)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=6
+value=Enemy,StateNo
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=7
+value=Enemy,Var(0)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=8
+value=100000+(Enemy,Life)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=9
+value=HitDefAttr=S,NA
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=10
+value=HitDefAttr=SCA,SP
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+fv=11
+value=Enemy,GetHitVar(fall)
+[State 700, literal schema probe]
+type=VarSet
+trigger1=Time>=45 && Var(59)=0
+v=59
+value=1

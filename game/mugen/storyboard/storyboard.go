@@ -1,0 +1,452 @@
+package storyboard
+
+import (
+	"fmt"
+	"image"
+	"image/color"
+	"strings"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/sff"
+	"github.com/kazzmir/paintown/game/mugen/snd"
+)
+
+// FadeTool handles fade-in and fade-out transitions.
+type FadeTool struct {
+	FadeInTime   int
+	FadeOutTime  int
+	FadeInColor  color.RGBA
+	FadeOutColor color.RGBA
+	Ticker       int
+	State        int // 0=fadein, 1=normal, 2=fadeout, 3=done
+}
+
+const (
+	FadeStateIn   = 0
+	FadeStateNorm = 1
+	FadeStateOut  = 2
+	FadeStateDone = 3
+)
+
+func (f *FadeTool) Update() {
+	f.Ticker++
+	switch f.State {
+	case FadeStateIn:
+		if f.Ticker >= f.FadeInTime {
+			f.State = FadeStateNorm
+			f.Ticker = 0
+		}
+	case FadeStateOut:
+		if f.Ticker >= f.FadeOutTime {
+			f.State = FadeStateDone
+		}
+	}
+}
+
+func (f *FadeTool) StartFadeOut() {
+	if f.State == FadeStateNorm {
+		f.State = FadeStateOut
+		f.Ticker = 0
+	}
+}
+
+func (f *FadeTool) Draw(screen *ebiten.Image) {
+	var alpha float64
+	var c color.RGBA
+	switch f.State {
+	case FadeStateIn:
+		if f.FadeInTime > 0 {
+			alpha = 1.0 - float64(f.Ticker)/float64(f.FadeInTime)
+		}
+		c = f.FadeInColor
+	case FadeStateOut:
+		if f.FadeOutTime > 0 {
+			alpha = float64(f.Ticker) / float64(f.FadeOutTime)
+		}
+		c = f.FadeOutColor
+	default:
+		return
+	}
+	if alpha <= 0 {
+		return
+	}
+
+	w, h := screen.Bounds().Dx(), screen.Bounds().Dy()
+	overlay := ebiten.NewImage(w, h)
+	overlay.Fill(color.RGBA{R: c.R, G: c.G, B: c.B, A: uint8(alpha * 255)})
+	op := &ebiten.DrawImageOptions{}
+	op.Blend = ebiten.BlendSourceOver
+	screen.DrawImage(overlay, op)
+}
+
+// Layer is an animated element displayed at a specific time in a scene.
+type Layer struct {
+	Index     int
+	Offset    [2]float64
+	StartTime int
+	Player    *air.Player
+	Enabled   bool
+
+	// Sprite data for drawing
+	Sprites    map[string]*background.SpriteImages
+	RawSprites map[string]*sff.Sprite
+	Screen     [2]float64 // [screenW, screenH]
+}
+
+func (l *Layer) Update(ticker int) {
+	if ticker >= l.StartTime && !l.Enabled {
+		l.Enabled = true
+	}
+	if l.Enabled && l.Player != nil {
+		l.Player.Update()
+	}
+}
+
+func (l *Layer) Draw(screen *ebiten.Image, defaultX, defaultY float64) {
+	if !l.Enabled || l.Player == nil {
+		return
+	}
+	el := l.Player.CurrentElement()
+	if el == nil {
+		return
+	}
+	key := fmt.Sprintf("%d-%d", el.Group, el.Image)
+	si, ok := l.Sprites[key]
+	if !ok {
+		return
+	}
+	img := si.Masked
+	if img == nil {
+		return
+	}
+
+	pivotX, pivotY := 0, 0
+	if l.RawSprites != nil {
+		if spr, ok := l.RawSprites[key]; ok {
+			pivotX = int(spr.XAxis)
+			pivotY = int(spr.YAxis)
+		}
+	}
+
+	x := defaultX + l.Offset[0] + float64(el.XOffset) - float64(pivotX)
+	y := defaultY + l.Offset[1] + float64(el.YOffset) - float64(pivotY)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(x, y)
+	op.Filter = ebiten.FilterNearest
+
+	// Optional additive blend based on action
+	if el.Flags != "" {
+		f := strings.ToLower(el.Flags)
+		if strings.Contains(f, "a") {
+			op.Blend = ebiten.BlendLighter
+		}
+	}
+
+	screen.DrawImage(img, op)
+}
+
+// Scene is a single scene in a storyboard.
+type Scene struct {
+	Name            string
+	EndTime         int
+	Fader           FadeTool
+	Background      *background.Background
+	Layers          []*Layer
+	DefaultPosition [2]float64
+	MusicFile       string
+	MusicLoop       bool
+	ClearColor      color.RGBA
+	ClearColorSet   bool
+
+	ticker int
+
+	// Sprite images keyed "group-image"
+	SpriteImages map[string]*background.SpriteImages
+	RawSprites   map[string]*sff.Sprite
+}
+
+func (s *Scene) Reset() {
+	s.ticker = 0
+	s.Fader.State = FadeStateIn
+	s.Fader.Ticker = 0
+	for _, l := range s.Layers {
+		l.Enabled = false
+		if l.Player != nil {
+			l.Player.Reset(1)
+		}
+	}
+}
+
+// Update advances the scene by one tick. Returns true when the scene is finished.
+func (s *Scene) Update() bool {
+	if s.Background != nil {
+		s.Background.Update()
+	}
+	for _, l := range s.Layers {
+		l.Update(s.ticker)
+	}
+	s.Fader.Update()
+
+	// Trigger fade-out at the right time
+	if s.ticker == s.EndTime-s.Fader.FadeOutTime {
+		s.Fader.StartFadeOut()
+	}
+
+	s.ticker++
+	return s.ticker >= s.EndTime
+}
+
+// Draw renders the scene to the screen.
+func (s *Scene) Draw(screen *ebiten.Image) {
+	s.drawContent(screen)
+	s.Fader.Draw(screen)
+}
+
+func (s *Scene) drawContent(screen *ebiten.Image) {
+	if s.ClearColorSet {
+		screen.Fill(s.ClearColor)
+	}
+
+	// Build sprite map for background rendering
+	if s.Background != nil {
+		spriteMap := s.buildSpriteMap(screen)
+		s.Background.DrawLayer(screen, 0, 0, 0, 0, spriteMap)
+	}
+
+	// Draw layers
+	for _, l := range s.Layers {
+		l.Draw(screen, s.DefaultPosition[0], s.DefaultPosition[1])
+	}
+
+	// Foreground
+	if s.Background != nil {
+		spriteMap := s.buildSpriteMap(screen)
+		s.Background.DrawLayer(screen, 1, 0, 0, 0, spriteMap)
+	}
+
+}
+
+func (s *Scene) buildSpriteMap(screen *ebiten.Image) map[string]*background.SpriteImages {
+	return s.SpriteImages
+}
+
+// Storyboard holds all scenes and sprite data for a cutscene.
+type Storyboard struct {
+	Source     string
+	LocalCoord coord.Space
+	SpriteData *sff.SFF
+	SoundBank  *snd.SoundBank
+	Fonts      [10]*font.Font
+	AIR        *air.Data
+	StartScene int
+	Scenes     []*Scene
+
+	// Raw sprites from the SFF used by this storyboard
+	Sprites    []*sff.Sprite
+	SpriteMap  map[string]*background.SpriteImages
+	RawSprites map[string]*sff.Sprite
+	prepared   bool
+}
+
+func (s *Storyboard) prepareImages() {
+	if s.prepared {
+		return
+	}
+	if s.SpriteMap == nil {
+		s.SpriteMap = make(map[string]*background.SpriteImages)
+		for _, sprite := range s.Sprites {
+			if sprite.Image == nil {
+				continue
+			}
+			pair := &background.SpriteImages{Masked: ebiten.NewImageFromImage(sprite.Image)}
+			if sprite.ImageOpaque != nil {
+				pair.Opaque = ebiten.NewImageFromImage(sprite.ImageOpaque)
+			} else {
+				pair.Opaque = pair.Masked
+			}
+			s.SpriteMap[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = pair
+		}
+	}
+	for _, scene := range s.Scenes {
+		if scene.SpriteImages == nil {
+			scene.SpriteImages = s.SpriteMap
+		}
+		for _, layer := range scene.Layers {
+			if layer.Sprites == nil {
+				layer.Sprites = s.SpriteMap
+			}
+		}
+	}
+	s.prepared = true
+}
+
+// NewStoryboard creates a Storyboard from parsed data.
+// sprites is the SFF sprite list, images is a pre-built ebiten image map.
+func NewStoryboard(sprites []*sff.Sprite, images map[string]*ebiten.Image) *Storyboard {
+	sb := &Storyboard{
+		LocalCoord: coord.Default(),
+		Sprites:    sprites,
+		SpriteMap:  make(map[string]*background.SpriteImages),
+		RawSprites: make(map[string]*sff.Sprite),
+	}
+	for key, img := range images {
+		sb.SpriteMap[key] = &background.SpriteImages{
+			Masked: img,
+			Opaque: img,
+		}
+	}
+	for _, sp := range sprites {
+		key := fmt.Sprintf("%d-%d", sp.GroupNumber, sp.ImageNumber)
+		sb.RawSprites[key] = sp
+	}
+	return sb
+}
+
+// Run executes the storyboard, advancing through scenes.
+// Returns true if it should transition to the next screen, false if interrupted.
+func (sb *Storyboard) Run(screen *ebiten.Image, input InputState) bool {
+	return false // will be called frame by frame externally
+}
+
+// InputState allows the storyboard to check if the player wants to skip.
+type InputState struct {
+	Skip bool
+}
+
+// IsSkipRequested returns true if input requests a skip.
+func (s InputState) IsSkipRequested() bool { return s.Skip }
+
+// Player manages playback of a storyboard frame-by-frame.
+type Player struct {
+	sb         *Storyboard
+	currentIdx int
+	done       bool
+	Error      error
+	canvas     *ebiten.Image
+	gameCanvas *ebiten.Image
+}
+
+func NewPlayer(sb *Storyboard) *Player {
+	p := &Player{sb: sb}
+	if sb == nil || len(sb.Scenes) == 0 {
+		p.Error, p.done = fmt.Errorf("storyboard has no scenes"), true
+		return p
+	}
+	p.currentIdx = sb.StartScene
+	if p.currentIdx < 0 || p.currentIdx >= len(sb.Scenes) {
+		p.Error, p.done = fmt.Errorf("startscene %d invalid for %d scenes", p.currentIdx, len(sb.Scenes)), true
+		return p
+	}
+	for i, scene := range sb.Scenes {
+		if scene == nil {
+			p.Error, p.done = fmt.Errorf("scene %d is nil", i), true
+			return p
+		}
+	}
+	sb.Scenes[p.currentIdx].Reset()
+	return p
+}
+
+// Update advances the storyboard by one tick. Returns true when done.
+func (p *Player) Update(input InputState) bool {
+	if p.done || len(p.sb.Scenes) == 0 {
+		return true
+	}
+
+	if input.IsSkipRequested() {
+		p.currentIdx++
+		if p.currentIdx >= len(p.sb.Scenes) {
+			p.done = true
+			return true
+		}
+		p.sb.Scenes[p.currentIdx].Reset()
+		return false
+	}
+
+	scene := p.sb.Scenes[p.currentIdx]
+	finished := scene.Update()
+	for _, layer := range scene.Layers {
+		if layer.Player != nil && layer.Player.Error != nil {
+			p.Error, p.done = fmt.Errorf("%s [%s] layer%d: %w", p.sb.Source, scene.Name, layer.Index, layer.Player.Error), true
+			return true
+		}
+	}
+	if finished {
+		p.currentIdx++
+		if p.currentIdx >= len(p.sb.Scenes) {
+			p.done = true
+			return true
+		}
+		p.sb.Scenes[p.currentIdx].Reset()
+	}
+	return false
+}
+
+// Draw renders the current scene.
+func (p *Player) Draw(screen *ebiten.Image) {
+	if p.done {
+		return
+	}
+	p.DrawToWindow(screen, coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}, true)
+}
+
+// DrawToWindow first fits the storyboard inside the configured game canvas,
+// then presents that canvas using the window's KeepAspect setting. Clear color
+// and fades cover the game canvas, including the storyboard's fitted margins.
+func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect bool) {
+	if p.done || len(p.sb.Scenes) == 0 {
+		return
+	}
+	space := p.sb.LocalCoord
+	if space == (coord.Space{}) {
+		space = coord.Default()
+	}
+	storyTransform, err := coord.Project(space, game, true)
+	if err != nil {
+		p.Error = fmt.Errorf("%s storyboard canvas: %w", p.sb.Source, err)
+		return
+	}
+	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
+	transform, err := coord.Project(game, target, keepAspect)
+	if err != nil {
+		p.Error = fmt.Errorf("%s storyboard canvas: %w", p.sb.Source, err)
+		return
+	}
+	if p.canvas == nil {
+		p.canvas = ebiten.NewImage(space.Width, space.Height)
+	}
+	if p.gameCanvas == nil || p.gameCanvas.Bounds().Dx() != game.Width || p.gameCanvas.Bounds().Dy() != game.Height {
+		if p.gameCanvas != nil {
+			p.gameCanvas.Deallocate()
+		}
+		p.gameCanvas = ebiten.NewImage(game.Width, game.Height)
+	}
+	p.sb.prepareImages()
+	scene := p.sb.Scenes[p.currentIdx]
+	p.canvas.Fill(color.Black)
+	p.gameCanvas.Fill(color.Black)
+	if scene.ClearColorSet {
+		p.gameCanvas.Fill(scene.ClearColor)
+	}
+	scene.drawContent(p.canvas)
+	options := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
+	options.GeoM.Scale(storyTransform.ScaleX, storyTransform.ScaleY)
+	options.GeoM.Translate(storyTransform.X, storyTransform.Y)
+	p.gameCanvas.DrawImage(p.canvas, options)
+	scene.Fader.Draw(p.gameCanvas)
+	screen.Fill(color.Black)
+	options.GeoM.Reset()
+	options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
+	options.GeoM.Translate(transform.X, transform.Y)
+	screen.DrawImage(p.gameCanvas, options)
+}
+
+// SubImage helper
+func SubImage(img *ebiten.Image, r image.Rectangle) *ebiten.Image {
+	return img.SubImage(r).(*ebiten.Image)
+}

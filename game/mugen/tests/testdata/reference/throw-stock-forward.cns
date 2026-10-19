@@ -1,0 +1,253 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=0
+ctrl=0
+[State 0, place]
+type=PosSet
+triggerall=RoundState=2 && Ctrl
+trigger1=Var(50)=0
+x=ifelse(Facing=1,-15,15)
+y=0
+[State 0, start]
+type=ChangeState
+triggerall=RoundState=2 && Ctrl
+trigger1=Var(50)=0
+value=ifelse(Facing=1,800,701)
+[Statedef 701]
+physics=N
+anim=0
+ctrl=0
+[State 701, hold]
+type=Null
+trigger1=1
+[Statedef -2]
+[State -2, exercise forward branch]
+type=VarSet
+trigger1=StateNo=810 && Time>=1
+v=2
+value=1
+[State -2, seen throw]
+type=VarSet
+trigger1=StateNo=810
+v=50
+value=1
+[State -2, stock sample 0]
+type=VarSet
+trigger1=StateNo=810 && Time=0
+fv=0
+value=Enemy,StateNo
+[State -2, stock sample 1]
+type=VarSet
+trigger1=StateNo=810 && Time=0
+fv=1
+value=Enemy,PrevStateNo
+[State -2, stock sample 2]
+type=VarSet
+trigger1=StateNo=810 && Time=0
+fv=2
+value=Enemy,Anim
+[State -2, stock sample 3]
+type=VarSet
+trigger1=StateNo=810 && Time=0
+fv=3
+value=NumTarget
+[State -2, stock sample 4]
+type=VarSet
+trigger1=StateNo=810 && Time=0
+fv=4
+value=Enemy,GetHitVar(isbound)
+[State -2, stock sample 5]
+type=VarSet
+trigger1=StateNo=810 && Time=0
+fv=5
+value=Time
+[State -2, stock sample 6]
+type=VarSet
+trigger1=StateNo=810 && Time=1
+fv=6
+value=Enemy,StateNo
+[State -2, stock sample 7]
+type=VarSet
+trigger1=StateNo=810 && Time=1
+fv=7
+value=Enemy,Anim
+[State -2, stock sample 8]
+type=VarSet
+trigger1=StateNo=810 && Time=1
+fv=8
+value=Enemy,GetHitVar(isbound)
+[State -2, stock sample 9]
+type=VarSet
+trigger1=StateNo=810 && Time=1
+fv=9
+value=Enemy,Pos X
+[State -2, stock sample 10]
+type=VarSet
+trigger1=StateNo=810 && Time=1
+fv=10
+value=Pos X
+[State -2, stock sample 11]
+type=VarSet
+trigger1=StateNo=810 && Time=1
+fv=11
+value=Enemy,Facing
+[State -2, stock sample 12]
+type=VarSet
+trigger1=StateNo=810 && Time=40
+fv=12
+value=Enemy,Life
+[State -2, stock sample 13]
+type=VarSet
+trigger1=StateNo=810 && Time=40
+fv=13
+value=Enemy,StateNo
+[State -2, stock sample 14]
+type=VarSet
+trigger1=StateNo=810 && Time=40
+fv=14
+value=Enemy,GetHitVar(isbound)
+[State -2, stock sample 15]
+type=VarSet
+trigger1=StateNo=810 && Time=40
+fv=15
+value=Enemy,Pos X
+[State -2, stock sample 16]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=16
+value=Enemy,Life
+[State -2, stock sample 17]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=17
+value=Enemy,StateNo
+[State -2, stock sample 18]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=18
+value=Enemy,GetHitVar(isbound)
+[State -2, stock sample 19]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=19
+value=Enemy,Pos X
+[State -2, stock sample 20]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=20
+value=Enemy,Pos Y
+[State -2, stock sample 21]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=21
+value=Enemy,Vel X
+[State -2, stock sample 22]
+type=VarSet
+trigger1=StateNo=810 && Time=41
+fv=22
+value=Enemy,Vel Y
+[State -2, stock sample 23]
+type=VarSet
+trigger1=StateNo=810 && Time=42
+fv=23
+value=Enemy,Life
+[State -2, stock sample 24]
+type=VarSet
+trigger1=StateNo=810 && Time=42
+fv=24
+value=Enemy,StateNo
+[State -2, stock sample 25]
+type=VarSet
+trigger1=StateNo=810 && Time=42
+fv=25
+value=Enemy,Pos X
+[State -2, stock sample 26]
+type=VarSet
+trigger1=StateNo=810 && Time=42
+fv=26
+value=Enemy,Pos Y
+[State -2, stock sample 27]
+type=VarSet
+trigger1=StateNo=810 && Time=42
+fv=27
+value=Enemy,Vel Y
+[State -2, stock sample 28]
+type=VarSet
+trigger1=StateNo=810 && Time=42
+fv=28
+value=Enemy,GetHitVar(isbound)
+[State -2, stock sample 29]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100 && Var(51)=0
+fv=29
+value=Enemy,Life
+[State -2, stock sample 30]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100 && Var(51)=0
+fv=30
+value=Enemy,StateNo
+[State -2, stock sample 31]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100 && Var(51)=0
+fv=31
+value=Enemy,PrevStateNo
+[State -2, stock sample 32]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100 && Var(51)=0
+fv=32
+value=Enemy,Anim
+[State -2, stock sample 33]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100 && Var(51)=0
+fv=33
+value=Enemy,GetHitVar(isbound)
+[State -2, stock sample 34]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100 && Var(51)=0
+fv=34
+value=NumTarget
+[State -2, landed]
+type=VarSet
+trigger1=Var(50)=1 && (Enemy,StateNo)=5100
+v=51
+value=1
+[State -2, stock sample 35]
+type=VarSet
+trigger1=Var(51)=1 && (Enemy,StateNo)=0 && Var(52)=0
+fv=35
+value=Enemy,Life
+[State -2, stock sample 36]
+type=VarSet
+trigger1=Var(51)=1 && (Enemy,StateNo)=0 && Var(52)=0
+fv=36
+value=Enemy,StateNo
+[State -2, stock sample 37]
+type=VarSet
+trigger1=Var(51)=1 && (Enemy,StateNo)=0 && Var(52)=0
+fv=37
+value=Enemy,PrevStateNo
+[State -2, stock sample 38]
+type=VarSet
+trigger1=Var(51)=1 && (Enemy,StateNo)=0 && Var(52)=0
+fv=38
+value=NumTarget
+[State -2, stock sample 39]
+type=VarSet
+trigger1=Var(51)=1 && (Enemy,StateNo)=0 && Var(52)=0
+fv=39
+value=Var(51)
+[State -2, recovered]
+type=VarSet
+trigger1=Var(51)=1 && (Enemy,StateNo)=0
+v=52
+value=1

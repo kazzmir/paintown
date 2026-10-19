@@ -1,0 +1,177 @@
+{
+  "cases": {
+    "merge-primary-first": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1b3572d5817ae20a06af42b470033cbf5746c713d74cbb8f89e0c695d22622ce",
+      "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "498df8a0160c70c618dfe0e4574f81cbdafd18d3e9800d2a687014a44b86e649",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st": "first.cns",
+        "st0": "second.cns"
+      },
+      "clipboard_in_cmd": true,
+      "state_file_order": [
+        "st",
+        "st0"
+      ],
+      "extra_sha256": {
+        "first.cns": "7ed7aebd355ee2d256dd4f608442f0936c89123d6fca7cdfa1ff9dc4a834990c",
+        "nostance.cns": "d0b0e748cfb84483d23512b1b8a9b1d7a4f6b270d2c0e85d9dac36e56657e57e",
+        "second.cns": "710ba2fe20315f848d3c49d1de60797e5e3b372f3edb961aa1dd48a5bbe76169"
+      },
+      "mugenversion": "1.1"
+    },
+    "merge-numbered-first": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1b3572d5817ae20a06af42b470033cbf5746c713d74cbb8f89e0c695d22622ce",
+      "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "498df8a0160c70c618dfe0e4574f81cbdafd18d3e9800d2a687014a44b86e649",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st": "first.cns",
+        "st0": "second.cns"
+      },
+      "clipboard_in_cmd": true,
+      "state_file_order": [
+        "st0",
+        "st"
+      ],
+      "extra_sha256": {
+        "first.cns": "7ed7aebd355ee2d256dd4f608442f0936c89123d6fca7cdfa1ff9dc4a834990c",
+        "nostance.cns": "d0b0e748cfb84483d23512b1b8a9b1d7a4f6b270d2c0e85d9dac36e56657e57e",
+        "second.cns": "710ba2fe20315f848d3c49d1de60797e5e3b372f3edb961aa1dd48a5bbe76169"
+      },
+      "mugenversion": "1.1"
+    },
+    "merge-constants-only": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1b3572d5817ae20a06af42b470033cbf5746c713d74cbb8f89e0c695d22622ce",
+      "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d83ff02db64acc82a0b31e7d409d652f85c33136d13e119aa50ed129d1b9f2d0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st": "nostance.cns"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "first.cns": "7ed7aebd355ee2d256dd4f608442f0936c89123d6fca7cdfa1ff9dc4a834990c",
+        "nostance.cns": "d0b0e748cfb84483d23512b1b8a9b1d7a4f6b270d2c0e85d9dac36e56657e57e",
+        "second.cns": "710ba2fe20315f848d3c49d1de60797e5e3b372f3edb961aa1dd48a5bbe76169"
+      },
+      "mugenversion": "1.1"
+    },
+    "merge-numbered-slot-priority": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1b3572d5817ae20a06af42b470033cbf5746c713d74cbb8f89e0c695d22622ce",
+      "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "bb461d105349e132e9779a3580b14a57b36ec7b96ad75e35d22d35c8c66bb6bc",
+          "variables": {
+            "0": 222,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st": "nostance.cns",
+        "st0": "second.cns",
+        "st9": "first.cns"
+      },
+      "clipboard_in_cmd": true,
+      "state_file_order": [
+        "st9",
+        "st0",
+        "st"
+      ],
+      "extra_sha256": {
+        "first.cns": "7ed7aebd355ee2d256dd4f608442f0936c89123d6fca7cdfa1ff9dc4a834990c",
+        "nostance.cns": "d0b0e748cfb84483d23512b1b8a9b1d7a4f6b270d2c0e85d9dac36e56657e57e",
+        "second.cns": "710ba2fe20315f848d3c49d1de60797e5e3b372f3edb961aa1dd48a5bbe76169"
+      },
+      "mugenversion": "1.1"
+    }
+  }
+}

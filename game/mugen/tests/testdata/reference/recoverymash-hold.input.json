@@ -1,0 +1,22 @@
+{
+  "settle_seconds": 6,
+  "events": [
+    {
+      "keys": [
+        "l"
+      ],
+      "hold_seconds": 0.6,
+      "gap_seconds": 0.2
+    }
+  ],
+  "tail_seconds": 0.5,
+  "go_inputs": [
+    {
+      "at": 10,
+      "duration": 36,
+      "inputs": [
+        "ButtonX"
+      ]
+    }
+  ]
+}

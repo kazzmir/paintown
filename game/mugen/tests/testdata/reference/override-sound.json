@@ -1,0 +1,178 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "9054adc564f60aea577a4597967e88f39a5eec293920a26b71afcb0d080e3c8a",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "779c149c999cc95b908562c0fddc98b85c370e381c27e3c3f5806be8dd21e95e",
+          "variables": {
+            "0": 1,
+            "1": 900,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.snd": "a211f342605a2c0c8166faf119f329c76400386b5f9384dd091a41071fc4b315"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441.0,
+          882.0,
+          1323.0,
+          1764.0
+        ],
+        "pcm_sha256": "f5d5aad6c46d8fb10764c18448f3501c6560668a192b6f932da02f619b0fbd3e",
+        "segments": [
+          {
+            "start": 2.3,
+            "end": 4.2,
+            "levels": {
+              "441": [
+                3998.8,
+                3967.8
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "1764": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 4.3,
+            "end": 5.2,
+            "levels": {
+              "441": [
+                0.0,
+                0.0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                3092.7,
+                4873.9
+              ],
+              "1764": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "start": 5.3,
+            "end": 7.3,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "1764": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 7.3,
+            "end": 10.9,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "1764": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "checks": [
+          {
+            "Tick": 30,
+            "Segment": 0
+          },
+          {
+            "Tick": 100,
+            "Segment": 0
+          },
+          {
+            "Tick": 150,
+            "Segment": 1
+          },
+          {
+            "Tick": 210,
+            "Segment": 2
+          },
+          {
+            "Tick": 330,
+            "Segment": 3
+          }
+        ]
+      }
+    }
+  }
+}

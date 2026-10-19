@@ -1,0 +1,11 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "bb453e6245a6440538db0ed67c1b16273c1492e5f7217c2d1a017c55ed08d84a",
+  "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [],
+  "bank": "var",
+  "bare_constants": false,
+  "mugenversion": "1.1",
+  "expected_load_error": "Invalid cnstname movement.jump.changeanim.threshold in: Const"
+}

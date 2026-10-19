@@ -1,0 +1,182 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "81f80d8cfba3c0a086fe097faa3688d8a2a5a55f9d5236d68e9cecc51ad18f66",
+  "air_sha256": "e7a5a85a5b3947208c5acdda46e9ffd77602cf4c5351282b120e20ff3024e3e4",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "bef81d11a3133ff80ff0b57da6c05078112fb43e09085cb50e779e3033b8e956",
+      "variables": {
+        "0": 60,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 1,
+        "6": 5000,
+        "7": 1,
+        "8": 101000,
+        "9": 0,
+        "10": 45,
+        "11": 41
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "hit_effect_render": {
+    "baseline_run": "hitpalette-defaults-native",
+    "baseline_png_sha256": "a681c1bd83764b6421170d62cf1b2094b840735481c7e8d663dc212f2aa88425",
+    "baseline_prepared_sha256": {
+      "chars/kfm/kfm.def": "a14bee1914995481f7cbc065cbf4a6d07ca2176f6dd9bffeb5795cd46898aa1b",
+      "chars/kfm/kfm.cns": "af4c90afdfc664dcff9108185ff80ece9cafa31f3bbc15b4bbea9c9d481a97c2",
+      "chars/kfm/kfm.sff": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746",
+      "chars/kfm/probe.cns": "285f41c99e4d7875b7e7a2fb96e59d5bd454384560e371e6e8079621a740db26",
+      "chars/kfm/probe.air": "e7a5a85a5b3947208c5acdda46e9ffd77602cf4c5351282b120e20ff3024e3e4",
+      "chars/kfm/probe.cmd": "8a7beba647cb7bfc2299622eeb32bcfff3c61c0a6c6ca507a108c808a3e076ed",
+      "stages/probe-stage.def": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+      "stages/kfm.sff": "f5ddfc6e52e3f8de8cf731b924ba4f241450bfe56c51e61c45a04ee72e981fff",
+      "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+    },
+    "prepared_sha256": {
+      "chars/kfm/kfm.def": "a14bee1914995481f7cbc065cbf4a6d07ca2176f6dd9bffeb5795cd46898aa1b",
+      "chars/kfm/kfm.cns": "af4c90afdfc664dcff9108185ff80ece9cafa31f3bbc15b4bbea9c9d481a97c2",
+      "chars/kfm/kfm.sff": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746",
+      "chars/kfm/probe.cns": "68cb3ab49a1570373f27c216bd1903f9e3f770b6e4b7484cd8eee1bc6474490c",
+      "chars/kfm/probe.air": "e7a5a85a5b3947208c5acdda46e9ffd77602cf4c5351282b120e20ff3024e3e4",
+      "chars/kfm/probe.cmd": "8a7beba647cb7bfc2299622eeb32bcfff3c61c0a6c6ca507a108c808a3e076ed",
+      "stages/probe-stage.def": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+      "stages/kfm.sff": "f5ddfc6e52e3f8de8cf731b924ba4f241450bfe56c51e61c45a04ee72e981fff",
+      "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+    },
+    "measurement": {
+      "points": [
+        [
+          750,
+          382
+        ],
+        [
+          764,
+          403
+        ],
+        [
+          771,
+          508
+        ],
+        [
+          778,
+          524
+        ],
+        [
+          785,
+          469
+        ],
+        [
+          791,
+          464
+        ],
+        [
+          822,
+          409
+        ],
+        [
+          836,
+          385
+        ],
+        [
+          842,
+          408
+        ],
+        [
+          847,
+          476
+        ],
+        [
+          854,
+          368
+        ],
+        [
+          866,
+          412
+        ]
+      ],
+      "rgb": [
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ],
+        [
+          255,
+          199,
+          236
+        ]
+      ],
+      "portrait_region": [
+        1028,
+        14,
+        1108,
+        89
+      ],
+      "portrait_delta_pixels": 0
+    }
+  }
+}

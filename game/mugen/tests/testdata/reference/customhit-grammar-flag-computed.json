@@ -1,0 +1,78 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "5c4fd3e6cb1c17d96b9ccfeac4d2e803a30bb10f6a0ed5c4f8c5525a632bdd1e",
+  "air_sha256": "a19979ed08a7422603ce6b70034137a738e5456f0eff4873f814240f76a5d39e",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "79246ffdec488ac05d85fb4079ae8d19e5530da146a5e47c56c6fc7b46541cb9",
+      "variables": {
+        "0": 710,
+        "1": 0,
+        "2": 9991,
+        "3": 0,
+        "4": 700,
+        "5": 1,
+        "6": 9100,
+        "7": 1,
+        "8": 0,
+        "9": 900,
+        "10": 5000,
+        "11": 9990
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "9b226ad64cf210c65de8180c693b786beec6a0f1cc9a5c12e1aee19ec041523b",
+      "variables": {
+        "12": 222,
+        "13": 0,
+        "14": 1000,
+        "15": 60,
+        "16": 280,
+        "17": 0,
+        "18": 1,
+        "19": 5000,
+        "20": 1,
+        "21": 2,
+        "22": 9990,
+        "23": 0
+      },
+      "run": "customhit-grammar-flag-computed-details-native"
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "605fb2e659e59ab5a8fdafc2478297bd4a45cb8b60ff77d53eb46416b132b2bc",
+      "variables": {
+        "24": 900,
+        "25": 900,
+        "26": 1,
+        "27": 1,
+        "28": 1,
+        "29": 1,
+        "30": 1,
+        "31": 0,
+        "32": 2,
+        "33": 2,
+        "34": 700,
+        "35": 5000
+      },
+      "run": "customhit-grammar-flag-computed-details-native"
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_localcoord": "1280,960",
+  "p2_fixture": "customhit-victim",
+  "p2_sha256": {
+    "cns": "3e2288cd6c8c42eae7228f69d388da0f1596f7c4dcb638631cd0a3782760aa7c",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e",
+    "cmd": "0dbbc4cc9cd05bcd9ab08cd951afffe46f3b1af229304ca91042dc2ed7c4b60a"
+  }
+}

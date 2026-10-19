@@ -1,0 +1,1087 @@
+{
+  "target": "M.U.G.E.N 1.1 beta 1",
+  "kind": "source-routing-inventory",
+  "manual_sha256": "9a6636b9e14edc1c91b38de7357aae43049d2a612313d10be55f6e6117ab121c",
+  "family_count": 127,
+  "route_present": 120,
+  "unbound": [
+    "bottomedge",
+    "ishometeam",
+    "p3name",
+    "p4name",
+    "stagevar",
+    "teammode",
+    "topedge"
+  ],
+  "triggers": [
+    {
+      "name": "abs",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "acos",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ailevel",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "alive",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier",
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "anim",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "animelem",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier",
+        "evaluator/runtime.go:legacyWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "animelemno",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "animelemtime",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "animexist",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "animtime",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "asin",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "atan",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "authorname",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "backedge",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "backedgebodydist",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "backedgedist",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bottomedge",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "camerapos",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "camerazoom",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "canrecover",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ceil",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "command",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:binary"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "cond",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "const",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "const240p",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "const480p",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "const720p",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "cos",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ctrl",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "drawgame",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "e",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:identifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "exp",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "facing",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "floor",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "frontedge",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "frontedgebodydist",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "frontedgedist",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "fvar",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gameheight",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gametime",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gamewidth",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gethitvar",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitcount",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier",
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitdefattr",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupLegacy"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfall",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitover",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitpausetime",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitshakeover",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitvel",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "id",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ifelse",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "inguarddist",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ishelper",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:LookupFunction",
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ishometeam",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "leftedge",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "life",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "lifemax",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "ln",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "log",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "lose",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "matchno",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "matchover",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "movecontact",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "moveguarded",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "movehit",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "movereversed",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "movetype",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "name",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numenemy",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numexplod",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:LookupFunction",
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numhelper",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:LookupFunction",
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numpartner",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numproj",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numprojid",
+      "status": "route-present",
+      "routes": [
+        "character/projectile.go:lookupProjectileCount"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "numtarget",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:LookupFunction",
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p1name",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2bodydist",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier",
+        "evaluator/runtime.go:identifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2dist",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier",
+        "evaluator/runtime.go:identifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2life",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2movetype",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2name",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2stateno",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p2statetype",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "p3name",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "p4name",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "palno",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "parentdist",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "pi",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:identifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "playeridexist",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:LookupFunction"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "pos",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier",
+        "evaluator/runtime.go:identifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "power",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "powermax",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "prevstateno",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projcanceltime",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupProjectileEvent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projcontact",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupLegacyProjectile"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projcontacttime",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupProjectileEvent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projguarded",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupLegacyProjectile"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projguardedtime",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupProjectileEvent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projhit",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupLegacyProjectile"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "projhittime",
+      "status": "route-present",
+      "routes": [
+        "character/projectile_event.go:lookupProjectileEvent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "random",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "rightedge",
+      "status": "route-present",
+      "routes": [
+        "character/width.go:lookupEdges"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "rootdist",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "roundno",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "roundsexisted",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "roundstate",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "screenheight",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "screenpos",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "screenwidth",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "selfanimexist",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "sin",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "stagevar",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "stateno",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "statetype",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "sysfvar",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "sysvar",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "tan",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "teammode",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "teamside",
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "tickspersecond",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "time",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "timemod",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:legacyWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "topedge",
+      "status": "unbound",
+      "routes": [],
+      "variants_complete": false
+    },
+    {
+      "name": "uniqhitcount",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "var",
+      "status": "route-present",
+      "routes": [
+        "evaluator/runtime.go:callWithArguments"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "vel",
+      "status": "route-present",
+      "routes": [
+        "evaluator/evaluator.go:evaluateIdentifier",
+        "evaluator/runtime.go:identifier"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "win",
+      "status": "route-present",
+      "routes": [
+        "character/context.go:LookupIdentifier"
+      ],
+      "variants_complete": false
+    }
+  ],
+  "gethitvar": {
+    "documented_count": 36,
+    "bound_selectors": [
+      "airtype",
+      "animtype",
+      "chainid",
+      "ctrltime",
+      "damage",
+      "fall",
+      "fall.damage",
+      "fall.envshake.ampl",
+      "fall.envshake.freq",
+      "fall.envshake.phase",
+      "fall.envshake.time",
+      "fall.kill",
+      "fall.recover",
+      "fall.recovertime",
+      "fall.time",
+      "fall.xvel",
+      "fall.yvel",
+      "fallcount",
+      "groundtype",
+      "guarded",
+      "hitcount",
+      "hitshaketime",
+      "hittime",
+      "isbound",
+      "recovertime",
+      "slidetime",
+      "type",
+      "xoff",
+      "xvel",
+      "xveladd",
+      "yaccel",
+      "yoff",
+      "yvel",
+      "yveladd"
+    ],
+    "unbound_selectors": [
+      "hitid",
+      "zoff"
+    ],
+    "parser_rejected_selectors": [
+      "hitid",
+      "zoff"
+    ],
+    "accepted_but_unbound_selectors": [],
+    "extra_bound_selectors": [
+      "air.animtype"
+    ]
+  },
+  "limits": [
+    "Route-present does not mean native conformance or complete variants.",
+    "Context-dependent bottom is distinct from an absent runtime route.",
+    "Controller registration/stub and asset/mode coverage are separate inventories."
+  ]
+}

@@ -1,0 +1,146 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 700, hold round]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State 700, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=100,0
+pausetime=0,0
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+id=1234
+[State 700, before 0]
+type=VarSet
+trigger1=Time=1
+fv=0
+value=Target,Life
+[State 700, before 1]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=Target,GetHitVar(damage)
+[State 700, before 2]
+type=VarSet
+trigger1=Time=2
+fv=2
+value=Target,Life
+[State 700, before 3]
+type=VarSet
+trigger1=Time=2
+fv=3
+value=Target,Power
+[State 700, target operation]
+type=TargetLifeAdd
+trigger1=Time=2
+value=-100
+absolute=1
+[State 700, after 4]
+type=VarSet
+trigger1=Time=2
+fv=4
+value=Target,Life
+[State 700, after 5]
+type=VarSet
+trigger1=Time=2
+fv=5
+value=Target,Power
+[State 700, after 6]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=Target,Vel X
+[State 700, after 7]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=Target,Vel Y
+[State 700, after 8]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=Target,Facing
+[State 700, after 9]
+type=VarSet
+trigger1=Time=2
+fv=9
+value=NumTarget
+[State 700, after 10]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=Target,Life
+[State 700, after 11]
+type=VarSet
+trigger1=Time=3
+fv=11
+value=Target,Power
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, initial power]
+type=PowerSet
+trigger1=Time=0
+value=200
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, initial local velocity]
+type=VelSet
+trigger1=Time=0
+x=3
+y=5
+[State 5000, defence multiplier]
+type=DefenceMulSet
+trigger1=Time=0
+value=2
+[Statedef 5150]
+movetype=H
+physics=N
+anim=9990
+[State 5150, wait]
+type=Null
+trigger1=1
+[Statedef 180]
+movetype=I
+physics=N
+anim=9990
+[State 180, wait]
+type=Null
+trigger1=1

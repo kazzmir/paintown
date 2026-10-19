@@ -1,0 +1,9 @@
+; States in the constants file must not participate unless it is also a st file.
+[Statedef 0]
+physics=N
+anim=9990
+[State 0, constants-file marker]
+type=VarSet
+trigger1=1
+v=0
+value=900

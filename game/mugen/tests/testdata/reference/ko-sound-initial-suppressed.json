@@ -1,0 +1,268 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "ff1da4314d0734b369e9d7f007ce2a3a8e96298934e62262aa10efd507661ec0",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "266efaa68e45dedde0c030c3e598e263fbaa70f20d7cb67dd6410b1c27a9173c",
+          "variables": {
+            "0": 1,
+            "1": 5000,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "fixture_constants": true,
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.snd": "81f366476130ee7ebaa1c262c219226ac7cf1cc00f084e7d8ff373dfa0ec265b"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441.0,
+          882.0,
+          1323.0,
+          3528.0
+        ],
+        "pcm_sha256": "44b7b0a8fe33781cf11177a5eee943565ef91b8aff8ccbcf478ce6c65198a8e7",
+        "segments": [
+          {
+            "start": 2.3,
+            "end": 4.3,
+            "levels": {
+              "441": [
+                3998.8,
+                3967.8
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 4.3,
+            "end": 4.6,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 4.65,
+            "end": 4.85,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                1546.1,
+                2436.7
+              ]
+            }
+          },
+          {
+            "start": 4.9,
+            "end": 5.1,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 5.15,
+            "end": 5.35,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                757.5,
+                1194.1
+              ]
+            }
+          },
+          {
+            "start": 5.4,
+            "end": 7.25,
+            "levels": {
+              "441": [
+                0.0,
+                0.0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0.0,
+                0.0
+              ],
+              "3528": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "start": 7.3,
+            "end": 11.0,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "analysis_window_ms": 100,
+        "analysis_step_ms": 50,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "quiet_hud": true,
+        "quiet_fight_sha256": {
+          "data/fight.def": "7f663bc253d0cabac1283dd1c0d56e0310ade608a6767c5717ff2f5eef4db048",
+          "data/mugen1/fight.def": "44d450008fe7f1a9a88e4849dd3aa56c4c7bb5a8954d9528060cc6e394bea63d"
+        },
+        "quiet_hud_bank_sha256": "be7bdf1c91d70abb098a4b416115fcbcefbda09e4372ef0d5d9474bfab96cf17",
+        "checks": [
+          {
+            "Tick": 30,
+            "Segment": 0,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 124,
+            "Segment": 1,
+            "WindowTicks": 6
+          },
+          {
+            "Tick": 143,
+            "Segment": 2,
+            "WindowTicks": 6
+          },
+          {
+            "Tick": 158,
+            "Segment": 3,
+            "WindowTicks": 6
+          },
+          {
+            "Tick": 173,
+            "Segment": 4,
+            "WindowTicks": 6
+          },
+          {
+            "Tick": 210,
+            "Segment": 5,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 330,
+            "Segment": 6,
+            "WindowTicks": 12
+          }
+        ]
+      }
+    }
+  }
+}

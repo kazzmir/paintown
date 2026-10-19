@@ -1,0 +1,95 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "c489c6a83918e2bde174e793ae875880649238e713ea9927a87437ea07b94691",
+  "air_sha256": "a19979ed08a7422603ce6b70034137a738e5456f0eff4873f814240f76a5d39e",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "1a11e2a0036d762ab6d315572ccd3120a7259d8f3c9553972513e5f19e22c544",
+      "variables": {
+        "0": 0,
+        "1": 9990,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 1,
+        "6": 70,
+        "7": 15,
+        "8": 320,
+        "9": 1,
+        "10": 2,
+        "11": 1
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "eb5f5f12e6210b021f625bc7c5620cd8e4fb9f55c7bd81101f671e33997acb92",
+      "variables": {
+        "12": 9101,
+        "13": -19,
+        "14": 1,
+        "15": 10,
+        "16": 1,
+        "17": 3,
+        "18": 1,
+        "19": 9101,
+        "20": -18,
+        "21": 111,
+        "22": 9101,
+        "23": 10
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "5d417c8b82fa459de5f6b3d63daf7e7e88e411cf5c6f2da63f2da8a34e2ac40e",
+      "variables": {
+        "24": 333,
+        "25": 222,
+        "26": 9101,
+        "27": 1,
+        "28": 0,
+        "29": 40,
+        "30": 60,
+        "31": 1,
+        "32": 5,
+        "33": 1,
+        "34": 3,
+        "35": 1
+      }
+    },
+    {
+      "page": 28,
+      "path": "animation-page28.png",
+      "sha256": "583ebb1eeb1212fdf97cdaca4d21319f03907657792d873a80e2656a9ea33ce8",
+      "variables": {
+        "28": 0,
+        "29": 40,
+        "30": 60,
+        "31": 1,
+        "32": 5,
+        "33": 1,
+        "34": 3,
+        "35": 1,
+        "36": 70,
+        "37": 15,
+        "38": 0,
+        "39": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_localcoord": "1280,960",
+  "p2_fixture": "ownership-victim",
+  "p2_sha256": {
+    "cns": "52e8721291681520a12a4fe4108aeac4de2d2a52e937914c9e3637cba85808d8",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e",
+    "cmd": "0dbbc4cc9cd05bcd9ab08cd951afffe46f3b1af229304ca91042dc2ed7c4b60a"
+  }
+}

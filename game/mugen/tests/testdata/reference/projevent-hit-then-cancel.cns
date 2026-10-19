@@ -1,0 +1,305 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9996
+ctrl=0
+[State 700, cancellation control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, cancellation control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, final event control]
+type=Projectile
+trigger1=Time=3
+projid=9
+projanim=9992
+attr=S,SP
+damage=10
+pausetime=0,0
+hitflag=MAF
+sparkno=-1
+hitsound=-1,0
+ground.hittime=300
+ground.velocity=0,0
+[State 700, cancellation control]
+type=Projectile
+trigger1=Time=10
+projid=7
+projanim=9992
+projpriority=1
+attr=S,SP
+sparkno=-1
+hitsound=-1,0
+
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=0
+value=ProjHitTime(0)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=1
+value=ProjHitTime(9)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=2
+value=ProjContactTime(0)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=3
+value=ProjContactTime(9)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=4
+value=ProjCancelTime(0)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=5
+value=ProjCancelTime(7)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=6
+value=ProjCancelTime(9)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=7
+value=NumProj
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=8
+value=Enemy,NumProj
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=9
+value=Enemy,ProjCancelTime(0)
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=10
+value=Enemy,Life
+[State 700, final event control]
+type=VarSet
+trigger1=Time=16
+fv=11
+value=ProjGuardedTime(0)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9996
+ctrl=0
+[State 701, cancellation control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, cancellation control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, cancellation control]
+type=Projectile
+trigger1=Time=10
+projid=8
+projanim=9992
+projpriority=1
+attr=S,SP
+sparkno=-1
+hitsound=-1,0
+
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5000, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5000, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 5010]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5010, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5010, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 5020]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5020, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5020, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 5080]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5080, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5080, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 150, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 150, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 152]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 152, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 152, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 152, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 152, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 154]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 154, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 154, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 154, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 154, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1

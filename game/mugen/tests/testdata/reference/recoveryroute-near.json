@@ -1,0 +1,57 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "eba205ea41ab6332e01d6d2e1646bacada040061c95f1098ee9c65cc7a37a387",
+  "cmd_sha256": "52486768b2852480543778d94a8a6e56d0eafdcf3a1cb9105e5ae6b0444ec1f2",
+  "air_sha256": "1c722da1119e05675df9da4655806e5ea7ab8b4c2041e4f7da9bec611745c31e",
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "recipe_sha256": "ce0178d38c793958839679b9067d6676173a949bd9aaeabc4c8727b872e1c947",
+  "probe_sha256": "4237ae4482fd2c67450b7ad5e2e8344152f54bb2b7a4012b370b181d2a612e2f",
+  "reference_probe_sha256": "7ca5409ed4798e5901bce937b33f6bc306740e18afb53625aecec21d7e543eb5",
+  "fixture_constants": true,
+  "bank": "fvar",
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "owned_pid": 4181119,
+  "owned_window": "10485761",
+  "events": [
+    {
+      "pid": 4181119,
+      "window": "10485761",
+      "action": "keydown",
+      "keys": [
+        "l"
+      ]
+    },
+    {
+      "pid": 4181119,
+      "window": "10485761",
+      "action": "keyup",
+      "keys": [
+        "l"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "page": 0,
+      "path": "recovery.png",
+      "sha256": "399c9b2d804291f48274c1d832f96512d8add4b5ad4fad869b8fe81587c1f905",
+      "variables": {
+        "0": 5200,
+        "1": 1,
+        "2": -5,
+        "3": 2,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "replay_ticks": 100
+}

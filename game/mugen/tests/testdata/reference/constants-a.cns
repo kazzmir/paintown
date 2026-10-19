@@ -1,0 +1,231 @@
+; Omit all constants when --bare-constants is used, to measure engine defaults.
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+
+[State 0, data.life]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Const(data.life)
+
+[State 0, data.power]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Const(data.power)
+
+[State 0, data.attack]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Const(data.attack)
+
+[State 0, data.defence]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Const(data.defence)
+
+[State 0, data.fall.defence_mul]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Const(data.fall.defence_mul)
+
+[State 0, data.liedown.time]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Const(data.liedown.time)
+
+[State 0, data.airjuggle]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Const(data.airjuggle)
+
+[State 0, data.sparkno]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Const(data.sparkno)
+
+[State 0, data.guard.sparkno]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Const(data.guard.sparkno)
+
+[State 0, data.ko.echo]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Const(data.ko.echo)
+
+[State 0, data.intpersistindex]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Const(data.intpersistindex)
+
+[State 0, data.floatpersistindex]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Const(data.floatpersistindex)
+
+[State 0, size.xscale]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Const(size.xscale)
+
+[State 0, size.yscale]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=Const(size.yscale)
+
+[State 0, size.ground.back]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Const(size.ground.back)
+
+[State 0, size.ground.front]
+type=VarSet
+trigger1=Time=0
+fv=15
+value=Const(size.ground.front)
+
+[State 0, size.air.back]
+type=VarSet
+trigger1=Time=0
+fv=16
+value=Const(size.air.back)
+
+[State 0, size.air.front]
+type=VarSet
+trigger1=Time=0
+fv=17
+value=Const(size.air.front)
+
+[State 0, size.height]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=Const(size.height)
+
+[State 0, size.attack.dist]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=Const(size.attack.dist)
+
+[State 0, size.proj.attack.dist]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=Const(size.proj.attack.dist)
+
+[State 0, size.proj.doscale]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=Const(size.proj.doscale)
+
+[State 0, size.head.pos.x]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Const(size.head.pos.x)
+
+[State 0, size.head.pos.y]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Const(size.head.pos.y)
+
+[State 0, size.mid.pos.x]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=Const(size.mid.pos.x)
+
+[State 0, size.mid.pos.y]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=Const(size.mid.pos.y)
+
+[State 0, size.shadowoffset]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=Const(size.shadowoffset)
+
+[State 0, size.draw.offset.x]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=Const(size.draw.offset.x)
+
+[State 0, size.draw.offset.y]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Const(size.draw.offset.y)
+
+[State 0, velocity.walk.fwd.x]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Const(velocity.walk.fwd.x)
+
+[State 0, velocity.walk.back.x]
+type=VarSet
+trigger1=Time=0
+fv=30
+value=Const(velocity.walk.back.x)
+
+[State 0, velocity.run.fwd.x]
+type=VarSet
+trigger1=Time=0
+fv=31
+value=Const(velocity.run.fwd.x)
+
+[State 0, velocity.run.fwd.y]
+type=VarSet
+trigger1=Time=0
+fv=32
+value=Const(velocity.run.fwd.y)
+
+[State 0, velocity.run.back.x]
+type=VarSet
+trigger1=Time=0
+fv=33
+value=Const(velocity.run.back.x)
+
+[State 0, velocity.run.back.y]
+type=VarSet
+trigger1=Time=0
+fv=34
+value=Const(velocity.run.back.y)
+
+[State 0, velocity.jump.y]
+type=VarSet
+trigger1=Time=0
+fv=35
+value=Const(velocity.jump.y)

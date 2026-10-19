@@ -1,0 +1,1172 @@
+# M.U.G.E.N 1.1 beta 1 compatibility inventory
+
+M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
+replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
+The seven render probes retain84 additional early clipboard readings. Source
+routes are120/127 (94.5%), seven unbound; no whole-engine percentage is justified.
+Full scoped races pass3,169 results across36 packages; fresh native/stock/provenance checks also pass. Read
+[REVERSALS.md](REVERSALS.md) and [HANDOFF.md](HANDOFF.md). Items3–4 remain unallocated.
+
+
+M4cg binds four typed projectile elapsed-time functions and three legacy indexed
+comparison families.51 frozen native programs pin456 values and13 rejections
+with204 authored input hashes. Source routes are119/127 (93.7%), eight unbound;
+this is not a whole-engine coverage percentage. Native cancellation uses only
+wildcard ID0 and excludes ProjContact; history ages at owner completion. Read
+[PROJECTILE-QUERIES.md](PROJECTILE-QUERIES.md). Reversal implementation follows.
+
+
+M4cf coordinate checkpoint completes foreign-state projectile units and per-actor
+render scaling. Eleven native programs /132 values /44 original hashes, three
+exact actual-app sprite masks, selected Match races192.297s, full core races,
+fresh native payload and stock win/rematch/win/input/private-PCM/provenance checks
+pass. All355 frozen hashes/root module guards pass. Read
+[PROJECTILE-COORDINATES.md](PROJECTILE-COORDINATES.md). Source routes stay112/127;
+queries and reversals follow. No whole-engine percentage is justified.
+
+
+M4cf implements projectile hit/miss/hitpause clocks, active/visual-tail phases,
+Clsn2 cancellation/priority attrition, root capacity/config and helper birth
+ordering. Ninety-one frozen controls pin 1,118 distinct slots; six actual app
+masks match native birth/hit/expiry/cancel boundaries and completion. Read
+[PROJECTILE-CONTACTS.md](PROJECTILE-CONTACTS.md). Source routing stays 112/127
+(88.2%), 15 unbound. Foreign-coordinate corrections, event/legacy queries and
+reversals remain active; items 3–4 await later allocation. Older summaries below
+are historical.
+
+M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
+routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
+94.4%); the other two are native load rejections. This is routing, not exhaustive
+behavioral coverage. M4ca/M4cb add 34 frozen programs / 372 scalar observations /
+three rejections, with native arithmetic and authored recovery controls.
+[LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md) and [GETHIT-METADATA.md](GETHIT-METADATA.md)
+record evidence/limits. The reproducible [inventory](TRIGGER-BINDINGS.md) still
+finds **109/127 trigger families with candidate routes (85.8%)**, 18 unbound.
+Final scoped races PASS: 2,774 test/subtest results, no individual skips/failures;
+24 tested and 12 compiled-only packages. All 470 frozen hashes pass. Fresh
+native/application validation is recorded in HANDOFF.md.
+
+M4by makes GameTime process-owned across production menus/matches/rematches,
+binds integer TicksPerSecond and one-on-one MatchNo, and applies the measured
+Config.GameSpeed + 5*Options.GameSpeed rate to the actual loop. Six frozen
+programs pin 84 native observations; exact CNS/keyboard flow and wrapping
+checks cover production handoff. See [ENGINE-CLOCK.md](ENGINE-CLOCK.md).
+Final scoped races pass 2,735 test/subtest results across 36 package identities;
+fresh native and stock input/results/rematch/PNG/private-PCM audits pass.
+Other modes/configuration/presentation gates remain open.
+
+M4bx binds legacy HitVel X/Y with native game-space units, current facing,
+stored-data lifetime, guard/air/down, redirect and foreign-state behavior.
+Fifteen controls pin 180 values; all three unchanged historical projectile
+counterexamples now pass. Canonical hit storage preserves fractional float32
+conversion. See [LEGACY-HITVEL.md](LEGACY-HITVEL.md). Recognition stays 127/127;
+this closes one binding family, not all runtime variants or engine parity.
+
+M4bw completes eight full-life stock matches / 18 rounds, configured keyboard
+combat and repeated rematches, plus a rendered owned-window one-hit replay.
+Full scoped races pass with 2,707 test/subtest results across 24 tested and
+12 compiled application packages. Source/artifact/root-module audits pass.
+See [COMPLETE-MATCHES.md](COMPLETE-MATCHES.md) for the bounded scope and open gates.
+
+M4bv adds native one-on-one result/tally boundaries, draws, rolling roundnotover,
+late damage/DKO, Alive latching, persistence/cleanup/identity and stage resetBG.
+26 promoted controls pin 1,560 integers; focused/core/Character/System/Stage,
+fresh native and application provenance checks pass. Three separate native
+counterexamples originally exposed an unbound legacy HitVel trigger, closed in M4bx. M4bw complete
+input-driven matches and final integration now pass. See [ROUND-RESULTS.md](ROUND-RESULTS.md).
+
+M4bu adds native KO/time-over simulation clocks, staged integer slowdown,
+continuous GameTime, timer zero interval, pause distinctions, Win/Lose suffix
+bindings and distinct readiness/state4/pose/MatchOver/reset boundaries.29
+programs pin1,740 observations; focused/core/Character/System/intro checks,
+fresh native and rebuilt application gates pass. Results/reset breadth and
+complete matches continue in M4bw; full integration follows M4bw. See
+[ROUND-LIFECYCLE.md](ROUND-LIFECYCLE.md). Existing renderer/mode/asset gates remain.
+
+M4bt implements the four stored fall-shake schemas, typed getters, receiver
+profile conversion and positive-duration FallEnvShake consumption, including
+fall=0 and guard exclusion. All 81 documented HitDef keys now have typed routing:
+72 numeric plus nine literal schemas. Final scoped races, native replays and production render checks pass. See
+[FALL-SHAKE.md](FALL-SHAKE.md) and [HITDEF-KEYS.json](HITDEF-KEYS.json).
+This key inventory does not close full interactions or whole-engine parity.
+
+M4bs implements four contact-shake schemas, a shared frame clock, receiver-local
+ScreenPosY and world-only rendering. Numeric routing68/81 plus nine literals
+gives77/81 typed keys (95.1%); four stored-fall keys remain. Native traces and
+rigid-mask comparisons are described in [HIT-SHAKE.md](HIT-SHAKE.md).
+Standalone EnvShake remains unfinished.
+
+M4br adds typed HitDef palette effects, beta arithmetic/duration semantics,
+shared palette clocks and separate body/portrait cache paths.24 programs pin324
+observations/three rejections/96 source hashes;19 rendered programs match228
+exact colors and preserve portraits. Numeric routing64/81; typed schemas73/81
+including nine literals (90.1%). See [HIT-PALETTE.md](HIT-PALETTE.md).
+
+M4bq adds mindist/maxdist/snap integer schemas, deferred contact offsets and
+timed snap binding.39 programs pin588 observations/seven rejections/156 frozen
+hashes, including the undocumented third snap duration. Numeric routing61/81;
+with nine literals, typed coverage70/81 (86.4%). See [HIT-CONSTRAINTS.md](HIT-CONSTRAINTS.md).
+
+M4bp adds typed chainID/nochainID/air.juggle, last-contact ownership, native
+per-move/projectile costs and non-fall preservation, chainid query/selector
+validation and a bounded single-contact projectile adapter.57 programs pin660
+observations/eight rejections/228 frozen hashes. Numeric routing58/81; with
+nine literals, typed schema coverage67/81. See [HIT-CHAINS-JUGGLE.md](HIT-CHAINS-JUGGLE.md).
+
+Current M4bo evidence adds nine HitDef literal mask/enum schemas, selected
+reaction metadata, None contact semantics, HitDefAttr and trip-defence entry.
+Sixty-five native programs pin 684 observations and eight load rejections.
+Typed schema coverage is 64/81 (55 numeric + nine literal); expression routing
+stays 55/81. Seventeen numeric fields remain. See [HIT-LITERALS.md](HIT-LITERALS.md).
+
+Assessment snapshot: 2026-10-16. The tables below describe the original semantic
+baseline. M0a now fixes the build and pins the reference test corpus; no semantic
+row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
+[ASSESSMENT.md](ASSESSMENT.md), and [PLAN.md](PLAN.md).
+
+For the current review, use [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+The refreshed [behavior coverage ledger](COVERAGE.md) records current evidence
+and remaining gates by subsystem.
+The controller/trigger tables remain dated baseline evidence; they are not a
+current completion ledger or a whole-engine coverage percentage.
+
+## Implementation progress
+
+M4bn compiles guard.dist and verifies negative/omitted preservation, explicit
+zero, state reset, strict boundary/facing/height/profile consumers. Fifteen
+programs pin 204 observations/four native rejections/60 source hashes; focused,
+Character/core races, two native reproductions and two apps/three captures pass.
+Routing reaches 55/81 (67.9%). See [GUARD-DISTANCE.md](GUARD-DISTANCE.md).
+
+
+M4bm adds compiled down.bounce and native downed-hit fall-vector/stock bounce
+consumers, including PosFreeze transition retention and the first idle heading
+observation. Twenty-one native programs pin 324 observations, two rejections
+and 84 input hashes. Routing reaches 54/81 (66.7%), with 27 literal/absent keys.
+See [DOWN-BOUNCE.md](DOWN-BOUNCE.md) and HANDOFF.md for final validation.
+
+M4bl fixes HitFallSet optional value/preserve/raw integer/default behavior and
+records native ignoring the documented velocity fields, including malformed
+expressions. Twenty-two native programs pin 240 observations, two rejections
+and 88 input hashes. Focused/core/native/app checks pass. Routing stayed 53/81.
+See [HITFALLSET.md](HITFALLSET.md).
+
+M4bk compiles fall.xvelocity/fall.yvelocity/yaccel with measured float, bottom,
+default/profile and evaluation-order rules and actual velocity consumers.
+Twenty native programs pin 276 observations, three tuple rejections and 80
+source hashes. Routing reaches 53/81 (65.4%), with 28 literal/absent keys.
+Focused, fresh-native, three-app/five-capture and combined full scoped race
+checks pass (Match 693.752s). See [FALL-VECTORS.md](FALL-VECTORS.md).
+
+M4bj fixes the reported KFM sweep loop by selecting Trip at contact and
+removing repeated state forcing. Thirteen native programs pin 156 observations
+and 52 source hashes, including the complete stock common recovery path.
+Real down+B sweeps recover in both mixed-profile directions. Ground/air type
+queries and literal air.type storage are corrected; numeric routing remains
+50/81 at that checkpoint. See [TRIP-RECOVERY.md](TRIP-RECOVERY.md). M4bk's
+combined full integration gate above also verifies the sweep fix.
+
+M4bi adds compiled fall/air.fall/fall.recover/fall.recovertime, native nonzero
+fall selection and default/coercion/order rules, plus fall.time/recovertime
+selectors and CanRecover eligibility. Thirty native text programs pin 372
+observations, five load rejections and 120 source hashes. Routing reaches
+50/81 (61.7%), with 31 keys literal or absent. Focused and full scoped races
+pass (Match 640.740s), as do three fresh native reproductions and three actual
+apps/four captures with provenance checks.
+See [HIT-FALL-RECOVERY.md](HIT-FALL-RECOVERY.md) and HANDOFF.md. Full recovery
+physics, juggle and broad entity/pause combinations remain open.
+
+M4bh compiles air.hittime/down.hittime, preserves explicit zero versus their
+measured default 20, and corrects launch/down timer and slide-time selection.
+Twenty-five native programs pin 336 observations, three load rejections and
+100 source hashes, including bounded countdown/pause/fall/KO controls and
+full forward/reverse field order. Focused integrated races pass (Match 42.414s,
+Character 1.585s); core races pass. At M4bh routing reached 46/81 (56.8%), with 35 keys
+literal/absent. Fresh native reproductions, three actual apps/four captures and
+the full scoped race suite pass (Match 648.043s). See
+[HIT-AIR-DOWN-TIMING.md](HIT-AIR-DOWN-TIMING.md) and HANDOFF.md.
+
+M4bg compiles ground.hittime/ground.slidetime plus the four dependent guard
+timing fields. Native defaults re-evaluate source expressions at their measured
+evaluation points; runtime floats truncate, negative/bottom become 0, and literal
+floats/multi-value tuples reject. Twenty-one programs pin 348 observations,
+four native rejections and 84 source hashes. Focused Match races pass all 21
+plus prior pause controls (29.907s); core races pass. Routing is now 44/81
+(54.3%), with 37 literal/absent keys. Fresh native reproductions, four actual
+apps/five captures and the full scoped race suite pass (Match 614.394s).
+See [HIT-GROUND-TIMING.md](HIT-GROUND-TIMING.md) and HANDOFF.md.
+
+M4bf fixes storyboard localcoord/default 320x240 loading, background canvas size
+and the native storyboard-to-game-to-window fit/stretch path. Six native marker
+programs match 12 rectangles/counts and 24 edge samples in GPU tests and actual
+application captures. Stock KFM intro placement is visually checked; stock match,
+System/resource races pass. Full storyboard/audio/renderer parity remains open.
+See [STORYBOARD-CANVAS.md](STORYBOARD-CANVAS.md).
+
+M4be adds compiled HitDef pausetime/guard.pausetime with native source-default
+re-evaluation, per-component inheritance, second-before-first evaluation,
+runtime truncation, bottom/negative handling and load validation. Nineteen native
+programs record252 observations, four rejections and76 authored hashes. All19
+Match replays plus the four M4bd pause controls pass under race checks
+(14.466s); core races also pass. Fresh native default/order/rejection replays
+and three production apps/four captures pass, including mixed stock fighters.
+The current expression-routing audit is38/81 HitDef keys (46.9%), leaving43
+literal/absent keys. This is not whole-engine behavioral coverage. Read
+[HIT-PAUSE.md](HIT-PAUSE.md); full regression results are in CHECKPOINTS/HANDOFF.
+The six alpha and two spark raster failures remain open. This bounded batch
+stops at its local checkpoint; other timing fields and round clocks are separate.
+
+M4bd adds native fatal/hit/safe/protected cue/pause controls without changing
+production behavior. Twelve programs compare 144 observations and 40 source
+hashes. All new sound/spark-selection/pause semantic replays pass, as does the
+full Character race suite (11.149s). Three fresh native replays and four app
+provenance checks pass; two private-device PCM captures match all 16 selected
+stereo amplitudes. Two spark raster gates fail despite correct selection and
+anchors: all 276 pixels in each native core differ (max channel delta 8), with
+an additional Go core column. These and M4az's six alpha gates remain unwaived.
+See [FATAL-GUARD-CUES.md](FATAL-GUARD-CUES.md). Implementation pauses here at the
+user's request for progress/token review; full engine/assets/modes remain open.
+
+M4bc implements native BGDef.debugbg clear before stage layer0, shared by
+production and the standalone viewer. Numeric values truncate toward zero before
+nonzero conversion; omitted/zero, signed fractions, integers and invalid text
+are measured. Eleven original native programs record132 observations and44
+source hashes. Twelve final apps/fifteen captures share one binary and pass
+provenance/runtime checks; all88,000 solid-color pixels and33 viewport samples
+match exactly. Default fit retains black bars; stage0/stretch expose magenta at
+window edges. Four fresh native programs reproduce pixel/numeric goldens.
+Scoped races pass (System4.713s, stock tests6.502s), as do root module checks.
+See STAGE-CLEAR.md. Reversal:9ef4c313. No whole-frame/renderer claim; KO timing,
+fatal-guard cues, remaining schemas/modes and six strict alpha gates remain open.
+
+M4bb adds pre-entry kill/guard.kill damage caps, fatal guard normalization,
+one-shot raw fall damage, typed fall/kill fields and receiver-scaled KO velocity.
+Ninety native programs compare1,080 observations, four float-literal rejections
+and360 source hashes. Repeated ordinary CNS parameters now keep the first
+value; explicit damage/kill/PowerSet controls confirm the rule. All90 integrated
+race replays pass (Match61.287s), as do pure parser/compiler/combat races.
+Thirteen apps/sixteen captures pass provenance/runtime checks and twelve strict
+garment masks match exactly, including native KO poses. Nine fresh native
+programs reproduce ten captures and one type rejection. Stock throw recovery
+was inspected. Full scoped races pass in m4bb-full-race.log
+(Match618.564s, Character11.012s, System5.027s). See HIT-LETHALITY.md.
+Reversal:3fa397a9. Absolute KO/round timing, wider combat combinations,
+remaining HitDef schema, stage diagnostic fill, six RGB alpha precision gates,
+and full engine/assets/modes remain open.
+
+M4ba adds typed damage/GetPower/GivePower, repeated expression defaults,
+configured zero/negative factors, shared root/helper pools and contact transfer
+before entry. Sixty-six original programs compare804 observations, three type
+rejections and264 source hashes. Full27-field source/reverse controls establish
+the current typed evaluation order. Signed healing now adds.5 before truncation
+and clamps life. All66 integrated programs/full scoped races pass in
+m4ba-full-race.log: Match538.364s, Character12.143s. Eight apps/eleven captures
+share one binary and pass provenance/runtime checks; seven clothing masks match
+exactly. Four fresh native programs/six captures reproduce their observations.
+Stock throw recovery shows two fighters; high configured factors visibly reach
+both HUD level3 counters. Pure races and root module checks pass. See HIT-POWER.md.
+Reversal:83eb5bd9. Whole combat/engine/assets/modes remain open, along with
+M4az alpha precision and diagnostic background fill. M4bb subsequently covers the bounded lethal/fall-damage
+behavior described above.
+
+True-color fight HUD/effects now share the clamped linear sampler and preserve
+caller blend/tint options. Cue coordinates truncate in signed common-game units
+before stage/camera translation. Sixteen original programs record192 numbers
+and80 input hashes; ten strict2100-pixel crops match exactly. Three AS192D64
+cases each fail12 pixels max1; half/independent destination cases each fail117
+pixels max1. These six alpha gates remain open with unchanged native goldens.
+No precision allowance was added. All three HUD/world video-fit profiles now
+match exact core bounds/hashes, closing the prior nearest-filter gap.
+
+Five actor crops match byte-for-byte; three fresh native replays reproduce the
+native goldens, including two alpha controls. Twenty-five app runs/28 captures
+share binary7c40366876ea6cd4dee8a3b73eccd3581c8626b8fff4a017ef9751740f8f8394
+and pass input/config/capture/runtime provenance checks. Stock throw recovery
+shows two fighters without lingering effects. Pure races/root module checks
+pass. The clean full scoped race check passes (Match489.826s,
+Character10.368s), including all16 integrated consumer programs. The first
+invocation found diagnostic Go snapshots in temp/; they were renamed to text
+and its setup failure is retained separately. See RGB-CONSUMERS.md. Reversal:d572399f. Full RGBA/driver/effect/asset/
+engine/mode gates remain open; combat power is the next functional checkpoint.
+
+M4ay matches fractional actor rendering with separate indexed/RGB samplers,
+unsnapped quads, local UV precision, mirrored texel selection, measured boundary
+bias and transparent edge coverage. Thirty-seven native programs compare 444
+numbers and180 source hashes; all integrated comparisons pass. All 32 original
+crops (2,176,000 RGB pixels) and28 legacy flipmark crops are byte-identical.
+Six strict real-art masks match, closing the four M4ax failures and adding the
+irregular400 control. Sixty-seven app runs/70 captures pass provenance/runtime
+checks from one binary; stock throw recovery shows two fighters without lingering
+effects. Six fresh native replays pass. Full scoped races pass in
+m4ay-full-race.log (Match 461.719s, Character 10.938s). See SPRITE-SAMPLING.md.
+
+The additional default HUD/effect ramp gate still fails color hashes:256 of288
+pixels differ in each core, max channel 22, despite correct bounds. A pre-M4ay
+binary produces exactly the same SHA as the final actor binary. Those consumer
+files remain on nearest first-stage RGB filtering. This known pre-existing gap
+is the immediate M4az task; its hashes must not be waived. Full RGBA/effects/
+foreign/angle/zoom/background/driver/mode gates remain open. Reversal:931467ac.
+
+M4ax adds the separate physical corner-push impulse and its common-space
+proximity/cutoff, context selection, double accumulation and float32 decay
+coefficient. Fifty-one original programs compare 1,224 numbers and 204 authored
+hashes. Direction/sign, zero/default/explicit, five hit/guard contexts, interior/
+edge proximity, resolution, irregular precision, pause/freeze, state/target/turn
+lifetime and deferred hit-facing match native. All 51 integrated comparisons
+pass. Full scoped races pass in temp/m4ax-full-race.log (Match 439.097 seconds);
+six fresh native replays pass. Ten actual app captures pass provenance/runtime
+checks. Four fractional-position white masks differ by567/471/933/567 pixels;
+the stationary control matches. This render gap is the immediate next task.
+See CORNER-PUSH.md. Projectile-owner push and broader helper/foreign/bind/multiple/
+zoom/camera combinations remain open, along with full combat/asset/mode gates.
+
+M4aw adds typed hit vectors and inherited corner-push expressions, separate
+component defaults, stored down-contact selection and consumed float Y offsets.
+Sixty-three original programs compare 1,020 numbers and 252 authored hashes with
+no final rejected programs. Tagged assignments establish the native ten-field
+order and repeated expression defaults; mixed profiles distinguish variable
+storage from caller units. Down Y offsets are fixed/scaled and consumed after
+CNS, before motion. All 63 integrated comparisons and pure races pass. Full scoped races pass in
+temp/m4aw-full-race.log (Match 395.933 seconds). Six fresh native replays and
+ten actual app captures pass; five stable sprite masks match exactly. Stock
+recovery retains two fighters. See HIT-VELOCITY.md.
+Physical corner-push movement remains missing; its evaluated/stored parameters
+do not close that runtime gate. Full HitDef/combat/engine/asset/mode gates remain
+open in HITDEF-SCHEMA.md and the compatibility inventory.
+
+M4av adds typed P1Facing/P1GetP2Facing, contact-selected hit direction and
+end-of-actor facing publication. Forty-eight original programs compare 552
+numbers, two load rejections and 192 authored hashes. Miss/guard/override,
+activation/contact headings, range/coercion/precedence, momentum, entry and
+combined P2Facing controls match native. Shared entry fixes apply FaceP2 before
+remaining expressions and defer ordinary get-hit Statedef until the receiver's
+positive pass. All 48 integrated comparisons and pure/Character races pass. Full scoped races
+pass in temp/m4av-full-race.log (Match 349.165 seconds). Six fresh native replays
+and ten actual app captures pass; six sprite masks match exactly, and stock
+throw recovery retains two fighters without persistent dust. See CONTACT-FACING.md.
+The new HITDEF-SCHEMA.md audit identifies remaining parameter/consumer gates;
+whole HitDef, combat, input, rendering, asset and mode compatibility remains open.
+
+M4au adds optional Forcestand, float32 ground.velocity expressions and correct
+world-oriented GetHitVar X with facing-relative HitVelSet. Thirty-eight native
+programs compare 540 numbers, two load rejections and 152 authored hashes.
+Default/explicit posture, guard/override/entry phases, parameter side effects,
+heading/motion and nonzero/coerced axis flags match. Full scoped races pass in
+temp/m4au-full-race.log (Match 320.408 seconds); all focused/pure races pass.
+Six fresh native replays and nine actual app captures pass. Five white sprite
+masks match exactly, including moving/clipped receivers; stock recovery retains
+two fighters without persistent dust. See FORCED-STANDING.md.
+Remaining velocity schema, heading-change timing, full cross-field ordering,
+binding/juggle/projectile/team/input/render/asset/mode gates remain open.
+
+M4at adds shared hitflag eligibility, explicit-empty distinction, downed state
+5080 and typed ForceNoFall/fall continuation. Sixty-seven original programs
+compare 792 numbers, one load rejection and 268 authored input hashes. Posture,
+AF/MF, both modifier orders, non-H fall contexts and reciprocal priority controls
+match native; all focused/pure races and the full scoped suite pass in
+temp/m4at-full-race.log (Match 292.855 seconds). Six fresh native replays pass.
+Nine actual app captures pass provenance/dimension/runtime checks; five stable
+white masks match exactly (11,181 pixels each). Stock throw recovery retains
+two fighters without persistent dust. See HIT-FLAGS.md. Complete down physics, guard/fall,
+juggle, foreign/pause/projectile/team and remaining engine/asset gates stay open.
+
+M4as adds typed HitDef p1sprpriority/p2sprpriority and assignment at contact,
+before ordinary/custom state entry. Twenty-three original marker programs
+compare 252 numbers, two load rejections, 21 native foreground identities and
+115 authored input hashes. Defaults are 1/0; normal/guard/override/helper contact
+and later destination entry match. Measured +/-99 ordering is retained; literal
+floats reject, computed floats truncate and bottom becomes zero. Full scoped
+races pass in temp/m4as-full-race.log (Match 247.463 seconds), as do all focused/
+pure races and four fresh native replays. Twenty-two actual app captures pass
+provenance/runtime checks. Six marker RGB/ID/rectangles match exactly; four
+real-art white masks match exactly, resolving the bound-release 6,099-pixel gap.
+See CONTACT-DRAW.md. Full HitDef, projectile/effect, pause/foreign/team,
+renderer/asset/mode gates remain open.
+
+M4ar adds typed HitDef priority/numhits, reciprocal Hit/Miss/Dodge arbitration,
+HitCount/UniqHitCount credit and incoming-hit target release. Sixty-three native
+programs compare 996 numbers, five load rejections and 252 authored input hashes.
+Higher integer priority wins; equal no-hit ties remain armed. Helpers trade with
+root receivers before helper receivers, independent of team. Guard/manual H
+changes preserve targets; unguarded hits/overrides release them, sending valid
+bound H victims to their own state 5050. Full scoped races pass in
+temp/m4ar-full-race.log (Match 231.848 seconds), as do all focused/pure races
+and six fresh native replays. Sixteen actual app captures pass provenance,
+dimension and runtime/resource checks. Three stable white masks match exactly;
+the bound-release overlap differs at 6,099 pixels and is the next drawing-
+priority investigation. See COMBAT-PRIORITY.md. Full hitflags/protection/projectile/
+pause/team combinations and remaining engine/asset/mode gates stay open.
+
+M4aq corrects actor AIR offsets, flipped-axis pixel phase and draw-axis flooring.
+Twenty-eight native programs compare 336 numbers, 140 input hashes and 28
+original-marker rasters across 320/640/1280 render widths, combined/cancelled
+flips, clipping, fractional positions and helper sizing. Final full races pass
+in temp/m4aq-final-full-race.log (Match 190.318 seconds); all focused cases and
+four final independent native replays pass. All 28 actual Go crops match exact
+geometry; 24 are byte-identical and four have quantified one-channel-level
+rounding at one/four blended corners. Strict checking remains default; the
+opt-in edge allowance preserves exact geometry/pure pixels. See
+SPRITE-ALIGNMENT.md. No whole renderer/asset/engine compatibility claim.
+
+M4ap adds global actor sprite ordering and native SprPriority boundaries.
+Fourteen original programs compare 156 numbers, one load rejection, thirteen
+foreground identities and 70 CNS/AIR/CMD/stage/SFF hashes. Higher priority wins
+across root/helper ownership; lower world ID wins ties, including reversed
+helper birth. Bottom becomes zero, computed floats truncate, literal floats
+reject, and measured +/-99 values retain ordering. Full scoped races pass in
+temp/m4ap-full-race.log (Match 172.121 seconds); all focused and pure races pass.
+Three fresh native color/rectangle replays and the float rejection pass. See
+ACTOR-ORDER.md. Complete effect/projectile/foreign/render/asset gates remain open.
+
+M4ao adds typed HitDef hitonce/affectteam, single-contact consumption and old-
+target dropping. Twenty-eight native programs compare 300 numbers, three load
+rejections and 112 authored input hashes. All throw classes default to one;
+guard consumes the contact. Independent root/root, root/helper and helper/helper
+controls pin roots before helpers, enemy roots before friendly roots and helper
+creation order regardless of team. Full scoped races pass in
+temp/m4ao-full-race.log; all focused cases and four fresh native replays pass.
+See HIT-SELECTION.md. Priority/reversal/override/projectile/team-mode and full
+binding/geometry/render/asset gates remain open.
+
+M4an adds helper defender candidates and measured incoming-contact activation.
+Ten native helpercontact programs compare 204 numbers and 40 authored input
+hashes. Normal/player/multiple helpers take damage, enter their own get-hit
+state and acquire independent target IDs; same-team helpers remain unharmed
+under the default enemy rule. Incoming contact begins two world ticks after
+birth. Independent negative/positive-state controls confirm the existing
+per-entity ordering. Full scoped races pass in temp/m4an-full-race.log; focused
+races and four fresh native replays pass. See HELPER-COMBAT.md. Complete combat,
+HitDef selection, projectiles, pause/foreign/geometry and rendering remain open.
+
+M4am adds anchor-completion binding publication, idle-anchor constraints,
+external 5050 entry on bound-helper retirement and deferred typed P2 hit facing.
+Twenty-seven native programs compare 564 numbers, one load rejection and 108
+input hashes. Third-entity/own-CNS flag controls, changing speed, own/borrowed
+states and reversed headings distinguish the phases. Full scoped races pass in
+temp/m4am-full-race.log; focused/pure races and five fresh native replays pass.
+See HELPER-BINDING.md. Whole binding/combat/helper/render/asset/mode gates remain
+open; the helper fall's late clipped right sprite still has a small raster gap.
+
+M4al adds native helper sound ownership controls: two programs, 24 numeric
+observations and eight PCM tick checks (48 stereo tone amplitudes). Root/parent/
+descendant voices coexist on channel 1. Both ordinary and recursive DestroySelf
+retire entities while their sounds continue; root channel-1 StopSnd removes only
+the root voice. Existing production behavior matches, so no stop-on-retirement
+change is introduced. All 29 PCM programs/30 cases pass race comparison in
+temp/m4al-pcm-first-race.log; both fresh native replays pass. See AUDIO.md.
+
+M4ak adds typed DestroySelf recursion/effect flags and world-driven orphan
+Explod clocks. Fourteen native programs compare 288 numbers, two load
+rejections and 56 authored input hashes. Nonrecursive descendants retain parent
+metadata while the live registry/parent writes retire; recursive removal covers
+the full descendant tree. Effects are removed or orphaned according to the flags.
+Focused native/lifetime/binding/reset checks and the full scoped race suite pass
+in temp/m4ak-focused-race.log and m4ak-full-race.log. See RETIREMENT.md. Complete
+binding publication, sound, retired-state queries, projectile and pause/foreign/
+combat lifecycle combinations remain open.
+
+M4aj adds compiled Helper arguments, helper-owned size overrides and a shared
+root/helper scheduler. Seventy-two native programs pin 984 numbers, eight load
+rejections and 276 authored input hashes. Birth/negative-state eligibility,
+creation order, postype/facing/defaults, names/counts and separate paused-tick
+allowances match the controls. Far helper cameras expose independently rounded
+endpoints/deltas and tiny zoom rounding. Intro now waits ten consecutive clear
+ticks; the measured empty/active assertion flows grant control at 130/135/150.
+Full scoped races pass in temp/m4aj-full-race.log; display-independent
+engine/evaluator races pass in temp/m4aj-final-pure-race.log. See HELPERS.md.
+Opposing-helper contacts, complete retirement, positive input, palette/foreign/
+paused-creation and full projectile/vertical/zoom/mode/asset gates remain open.
+
+M4ai adds typed Width, temporary edge/player offsets and eight horizontal edge
+query bindings. Thirty-one native programs compare 336 numbers, three load
+rejections and all 93 authored input hashes. Ground push, one-pass reset,
+negative offsets, replacement/parameter precedence, nonzero-camera edges,
+asymmetric margins and mixed-profile redirection match the controls. P2BodyDist
+uses base CNS widths independently of Width and selects the opponent's nearer
+edge. Full scoped races pass in temp/m4ai-full-race.log and pure engine/evaluator
+races in temp/m4ai-pure-race.log. See WIDTH.md. Full helper/foreign/air/pause/
+movement/zoom/zero-axis and all other engine/asset/mode gates remain open.
+
+M4ah adds typed ScreenBound, per-pass root/helper defaults, converted stage
+screen margins and root camera eligibility. Forty-seven native programs pin
+924 numbers, four controller rejections, three stage rejections and all 141
+authored input hashes. Fixed/mixed/nonzero-camera edges, retained velocity,
+PosFreeze, one-tick reset, stage bypass, ordinary helper confinement and camera
+axis coupling match the measured controls. Full scoped races pass in
+temp/m4ah-full-race.log; pure engine/evaluator races also pass. SCREENBOUND.md
+records exact values and grammar, including accepted negative/fraction/empty/
+word stage margins. Complete pause/bind/Width/helper-camera, vertical/zoom and
+renderer obligations remain open; no whole-controller compatibility claim.
+
+M4ag adds 20 native horizontal camera programs/720 numbers. Tension/retained
+goals, float32 easing, stage limits, per-root/shared update points and motion
+speed floors match the measured zoom-one controls. Mixed units and interior-
+versus extreme-only movement are distinguished. Full scoped races pass in
+temp/m4ag-full-final-race.log. Complete vertical/1.1 edge tension, zoom,
+ScreenBound/movecamera, entity/pause/priority and rendering behavior remain
+open; see CAMERA.md. No whole camera/controller compatibility claim.
+
+M4af corrects screen-centered Pos X/PosSet while preserving absolute actor
+storage and floor-relative Y. Seven fixed nonzero-camera native programs pin
+192 numbers and two RGB effect placements, including mixed/borrowed units,
+omitted axes, Enemy/P2Dist and own/common Pos X+CameraPos X expressions. Full
+scoped races pass in temp/m4af-full-first-race.log. Actual own/common 1280x720
+windows agree in position; native filter edges still differ. These camera
+controls do not establish follow/easing/zoom or complete bounds/render parity.
+See COORDINATES.md. Full compatibility remains unfinished.
+
+M4ae replaces literal Explod parsing with typed expression/resource/lifetime
+state and shared owned rendering. Twenty-seven native programs compare 636
+numbers, two load rejections and nine RGB positions. Default/negative IDs,
+late shared expiry, immediate removal, missing actions/anim, common F(expr),
+and stage/screen/P1/P2/edge placement are measured. Full scoped races pass in
+temp/m4ae-full-markers-race.log; eight fresh lifecycle/RGB replays match. The
+stock dust clones are removed in the inspected draft window. Full motion,
+binding/pause, palette/transforms/priority and helper/controller coverage remain
+open; see EXPLODS.md. No whole controller/trigger is promoted to Verified.
+
+M4ad composes the actual stock throw/common states and AIR through hash-pinned
+Files overrides. Eight programs compare 228 numbers: normal/forward/released
+throws, an independent start stamp, and first/second attack/hurtbox windows.
+The stamp exposed a 22-tick Go grab versus native one tick; contacts now use
+the saved simulation pose before AIR advances. HitFallVel preserves omitted X
+velocity instead of assigning GetHitVar's sentinel. All scoped races pass in
+temp/m4ad-full-first-race.log. Full facing/hitflag/priority/Width, attacker-hit
+interruption and helper/world/asset/input/mode gates remain open; see THROWS.md.
+
+M4ac connects HitDef custom-state expressions/owners and deferred entry, with
+38 native programs/1244 numbers/three load rejections. Matching override
+exclusions, H-override target suppression, missing-state counter reset and
+GetHitVar(isbound)'s published integer timing are compared. Infinite and
+nonfinal -1 AIR clocks now follow native controls. Full scoped races pass;
+full throws, HitDef grammar/flags/priority, all binding/entity/phase and other
+engine/asset gates remain open. See CUSTOMHIT.md.
+
+M4ab adds typed TargetBind and 53 native programs: 840 numbers/ten load rejections.
+Measured duration, units, facing, queue timing, ownership cleanup, CNS writes,
+literal/expression typing and tuple/bottom behavior match. Independent controls
+require current hurtboxes for push, including H actors; late push can move bound
+actors. Turn preserves world momentum. Full scoped races and representative
+fresh replays pass. Other bind controllers, complete throws/HitDef fields,
+pause/entity/foreign-state interactions remain open; see BINDING.md.
+
+M4aa adds three native root-phase programs/48 numbers. Each ordered root now
+completes CNS, pending damage, physics and clocks before the next root's CNS.
+The second side of a trade sees already-reduced opponent life. Body push stays
+shared after all roots; old push/guard/viewport and all other scoped race
+regressions pass. This supersedes the earlier shared post-CNS damage assumption.
+Complete helper/projectile/world phases and binding remain open; see WORLD.md.
+
+M4z separates state/animation ownership with eleven native programs and 200
+distinct per-program numeric observations. TargetState/ChangeState/SelfState,
+deferred external entry, foreign -2 versus excluded -3/-1, mixed-unit position/
+velocity/constants, ChangeAnim2 elem and AnimExist/SelfAnimExist are compared.
+Repeat hits restore own states while omitted animation can retain borrowed AIR.
+Undefined external destinations and negative clamps are measured. Binding,
+HitDef state fields, all geometry boundaries and full helper/world ownership
+remain open; see OWNERSHIP.md. No whole controller/trigger is promoted to Verified.
+
+M4k binds attacker-owned directional guard range, retained overrides and typed
+AttackDist/PlayerPush. Twenty-three programs cover 26 native cases for range,
+attack-first state passes, custom facing, push spacing and mixed coordinates.
+Full world/pause/entity, dynamic Width, auto-turn and HitDef schemas remain open.
+
+M4j replaces ignored HitBy/NotHitBy maps with two shared timed collision filters.
+Twenty-five native programs cover masks/slots/expiry/omission/precedence; two
+HitOverride programs also establish current attack posture. Typed duration and
+validation are integrated. Full pause/entity/invalid-value behavior remains open.
+
+M4i corrects prior-tick HitDef activation/contact-before-state ordering and
+separates attacker hitpause from receiver hitshake. Twelve native programs cover
+clock/countdown boundaries and guard damage/flags/velocity/time/defaults, including
+HitOverride precedence. These supersede earlier M2b/M4g timing assumptions.
+Guard distance/input, complete hit/protection/priority rules and entity phases
+remain open; no whole controller/trigger row is promoted to Verified.
+
+M4h implements the stock HitOverride path with typed parameters, attribute
+filters, timed slots and native-backed entry/forceair/damage behavior. Twelve
+native cases match; both stock characters now compile all 108 states. Complete
+custom-state exclusions, invalid fallbacks, pause/ownership/projectile rules are
+still open. Get-hit air context is independent of current state type/fall.
+
+
+M4g shares root state/contact/damage/physics phases and positive continuation.
+Three native trade programs match pre-damage Time=0 and post-damage Time=1
+observations, with and without newly-started hitpause. P2 life/state/type queries
+now use opponent data. Priority, guarding/overrides, entity registry and full
+world/pause/physics ordering remain incomplete.
+
+
+M3i applies selected stock v2 palettes through compiled RemapPal and shared
+character/HUD caches. Authored tests cover documented mapping/removal/depth/limit
+rules, pixel selection, cache refresh and round reset. Native controller edge
+probes, external v1 palN and full helper/effect ownership remain open.
+
+
+M4f converts received hit vectors/defaults across local spaces and pins the
+common-space no-change fall X sentinel. Native overflow probes correct the prior
+infinity-as-bottom assumption and scientific-notation lexing. Six contact cases,
+three language programs and a rejected exponent spelling have pinned evidence.
+Complete combat/default schemas and numeric edge coverage remain open.
+
+
+M4e removes forced guard-state restarts/shortcuts and gates builtin movement on
+control. Three native fixtures match guard-end timing, custom guard ownership
+and uncontrolled crouch behavior. Guard damage/flags/hit response remain open.
+
+
+M4d connects the real production selection/versus/fight/result/rematch flow to
+one shared match.Match, with stock HUD drawing and mixed-resolution spawn/draw.
+Injected keys and logical combat inputs exercise the same runtime. Round phases,
+combat, palette/audio/effects and camera/HUD details remain incomplete; this is
+not the full M4 acceptance gate. See MATCH.md.
+
+
+M4c corrects P2Dist local-unit conversion and the previous P2BodyDist axis alias.
+Two mixed-player native cases match 24 fvars. Collision/push/facing conversions
+have authored geometry tests; hit-vector conversion and world phase/ownership
+rules remain incomplete. No full trigger/controller row is promoted to Verified.
+
+
+M1a preserves source expressions and locations. M1b implements typed numeric/
+bottom evaluation, operators, assignment, math/special forms and strict legacy/
+redirect syntax. Language regressions and headless JSONL replay pass; all 1522
+stock trigger expressions parse. The global custom-evaluation hook is removed.
+State scheduling, parameter compilation, constant/world/GetHitVar bindings and
+reference comparisons are still incomplete. The baseline tables remain a dated
+inventory; these language tests alone do not promote gameplay entries to Verified.
+
+M2a moves the shared executor to `engine/`, compiles trigger groups once,
+rejects invalid states/unknown controller names before effects, corrects group
+order/gaps and persistence, and adds Null. Headless state race tests pass.
+Production pause/timer integration, state entry, typed controller parameters,
+world ownership, and executable reference confirmation are still outstanding.
+
+M2b adds a single typed state-entry path and integrates hitpause passes/timer
+fixes in Character.Update. Regression coverage now includes entry omission/U/
+expressions/overrides/persistence, hitpause boundaries, contact timers, PosFreeze,
+Gravity, active-hit gating and runtime failure propagation. Entry/physics phase
+ordering and exact reference edge cases still require executable comparisons.
+
+M2c compiles typed expressions for core movement, variables/ranges/parent
+variables, transitions, life/power/control, angles/multipliers and several simple
+controllers. Integer arguments truncate floats with warnings. New headless
+behavior tests cover these paths. HitAdd has a separate combo counter and
+VictoryQuote now honors its documented default/helper rule. World ownership,
+combat integration and reference parity remain outstanding; the dated tables
+below describe the original assessment rather than current completion counts.
+
+M3a adds SFF v2/v2.01 and all required sprite encodings. All 1376 stock sprites
+decode. Every KFM sprite matches Elecbyte SFF2PNG's opaque pixel output; original
+reference-compressed fixtures cover absent encoding variants. Palette selection
+is available at the decoder boundary; player/font integration remains pending.
+
+M3b loads FNT v2 palette/sprite-bank bitmaps and TrueType/OpenType/TTC. All 19
+runtime font files load. Tests cover banks, alpha, metrics and UTF-8/blend paths;
+Windows fonts use an explicit portable fallback if absent. Reference rendering
+parity is pending. See BUILD.md for dependencies and font lookup.
+
+M2d unifies animation clocks and binds AnimElem/AnimElemTime/AnimElemNo in
+Character. A 24-tick authored looping action matches the supplied executable's
+recorded AnimTime, all three element elapsed times, and current-element queries.
+M4ac subsequently compares final/nonfinal infinite clocks. Other offsets,
+zero-duration and malformed schedules still need native probes. Both stock players load; 105/108 states per character compile,
+with HitOverride blocking the remaining three. Match playability is pending.
+
+M2e adds executable reference evidence for negative-state order/abortion and
+persistence. The success-count interpretation is superseded: N uses a cooldown,
+and suppressed/used one-shot controllers skip triggers. Character and headless
+hosts pass both authored programs against pinned reference variables.
+
+M1c covers the 74 documented Const names: 73 supported stock values match the
+executable and their declared kinds are tested. The beta rejects the documented
+jump.changeanim.threshold constant for both 1.0 and 1.1 character declarations;
+compiled paths now reject it too. Constant omission/required-field, tuple/default
+and localcoord/version edge cases remain open. See REFERENCE.md for evidence.
+
+M3c validates SND/WAV structure and decodes all 45 stock sounds across five banks.
+Authored fixtures cover additional PCM widths/channels and malformed archives.
+Runtime audio and non-PCM codecs remain incomplete. New resource probes pin fatal
+missing-file behavior and the st0..st9 range for the upcoming loader changes.
+
+M3d applies character resource rules with named errors, case/Windows path
+resolution, sound loading and independent common-state definitions. The measured
+state-file precedence is st, numbered slots, CMD, then common; main cns is
+constants-only. All twenty native resource cases now compare directly after
+M2f aligned the common probe with the round control grant. Selected palettes and exact common search order remain open.
+
+M2f fixes transition/entry control and animation precedence with executable
+evidence. Transition values apply first, are visible to entry expressions, and
+explicit Statedef values win. All 24 values in an ordinary seven-state sequence
+match both hosts. Production round setup and full entry/owner ordering remain
+incomplete; this does not promote the entire ChangeState controller to Verified.
+
+M1d binds controllers to their preceding Statedef, preserves the first duplicate
+definition and ignores orphan controllers. Native fixtures match both execution
+hosts; no phantom states are created from controller labels. Malformed/edge
+header and negative-state ownership cases remain outstanding.
+
+M3e loads every stock motif's main archives/fonts and all three stock stages,
+with explicit errors for declared missing/malformed resources. Font lookup now
+includes font/ in the documented order, and bitmap child files honor Windows
+names. Per-background overrides, storyboards, language/font overrides and visual
+parity remain pending.
+
+M3f loads separate sprite archives for title/select/versus/options backgrounds
+and uses them in production draw phases, including the KFM title screen. Archive
+ownership and layer/cache behavior have regressions; full visual/background
+semantics and storyboard integration remain unfinished.
+
+M3g adds the shared storyboard loader and application integration. All eight
+stock storyboards load and complete CPU playback; backgrounds, declared fonts/
+sound banks, 100 animation layers, safe scene indices and error/path handoffs are
+covered. Text, timed audio, full rendering and native timing parity remain open.
+
+M0d production captures show the KFM logo/intro/title flow with readable fonts
+and separate title graphics. Normal shared-AST sections no longer generate false
+unsupported warnings. This is a startup inspection only; input decoding,
+selection-to-fight and complete visual/gameplay parity remain unfinished.
+
+M4a fixes stock SDL keyboard numbers and explicit KeyA/disabled presence. All 22
+stock bindings, YAML overrides and facing-relative gameplay input have tests.
+Keyboard sources are injectable per manager and confirm bindings are player-local.
+Full command/gamepad/layout behavior and playable match flow remain incomplete;
+see INPUT.md.
+
+M3h loads both stock fight/HUD definitions and their declared main/effect/
+common sound/font/animation resources, retaining raw layout/source metadata.
+Production HUD drawing, round announcements/audio/effects and actual fight flow
+remain incomplete; resource loading alone is not gameplay compatibility.
+
+M4b retains coordinate profiles and binds all three scaled-constant functions.
+Five native cases match, including fractional-width coercion and float return
+behavior. HD motif layout/default windows/origin and physical window size are
+corrected. Mixed-player geometry, camera/cropping and actual fight flow remain
+unfinished; see COORDINATES.md.
+
+M4l replaces the three sound controller stubs with typed command emission and
+a CPU mixer. Twenty-four native cases cover syntax, channels, panning, gain,
+loops, finite sample expiry, stereo and tested ignored frequency multipliers.
+Fifty-five native tone segments back 63 production-Character tick checks; full
+races and a fresh channel replay pass. Production device/match/HUD wiring,
+complete lifecycle/ownership, arbitrary-rate resampling and edge arguments remain
+open. See AUDIO.md. Baseline inventory rows below retain the original census.
+
+M4m connects character/menu commands and HUD cues to one production streaming
+player, binds match own/common banks before entry, honors sound configuration
+and live gain, and clears scene voices/cache. Full races, native round-cue gain/
+expiry and nonzero private device output are covered. Native round scheduling,
+contact/guard/KO voice cues, complete lifecycle, resampler/BGM/storyboard fidelity
+remain open. Scene cleanup and configuration fallback bounds are provisional.
+
+M4n compiles HitDef sound expressions/bank prefixes and connects hit/guard cues
+with native channel-0 interruption and measured contact panning. Fourteen new
+programs cover nine audio cases (32 segments/45 Go tick checks) and five grammar
+cases. Full races, fresh override/common-bank replays and real KFM contact PCM
+pass. Complete HitDef fields, KO voice/echo, effects, camera/ownership/lifecycle
+and configuration/resampling behavior remain open; no whole-controller promotion.
+
+M4o connects own-bank root KO voice/echo and global nokosnd suppression. Four
+native programs pin 21 segments and 25 Go checks; full races and fresh isolated
+replay pass. Full KO state/kill/revival/helper/pause behavior remains incomplete.
+See AUDIO.md for exact scope and diagnostic announcement-isolation findings.
+
+M4p connects common/own hit/guard sparks through a CPU effect scene and actual
+production rendering, with typed resource/position parameters and retained AIR
+blend metadata. Eight native programs, full races, fresh marker replays and Go
+GPU inspection support the stated geometry/resource/lifetime scope. Full AIR/
+Explod/pause/palette/ownership parity remains open. EFFECTS.md records the measured
+M4d viewport discrepancy, whose framing is corrected by M4q below.
+
+M4q binds the shared viewport, applies measured stage-aspect match dimensions,
+fits world/HUD independently and draws actors/effects at common game resolution.
+Twelve native cases include seven profile variants, immediate ScreenPos updates,
+legacy accepted queries and three version rejections. Character loading now
+compiles nonempty states and enforces those measured 1.1 gates. Full races,
+stage-version/rejection replays and an actual 1280x720 owned window pass. Camera/
+zoom, remaining version schemas, filter-edge/full-frame parity and empty-state
+execution were still open at that checkpoint; see COORDINATES.md and M4r below.
+
+M4r confirms native load-time rejection of empty effective state declarations.
+Five cases distinguish final/negative/entry-only states, ignored same-file
+duplicates and rejected later-file definitions with already-owned IDs. The
+loader now validates each loaded state file before merge and reuses compiled
+programs; full races and a fresh rejection replay pass. The earlier empty-state
+acceptance assumption is superseded. Complete validation schemas and the
+transition cap still need comparison.
+
+M4s replaces the provisional ten-state continuation cap with the beta's measured
+post-increment 2500-loop guard: a terminal 2502nd positive execution succeeds;
+continuing further fails and names the pending state. Fifteen native programs,
+pure/full races and fresh success/failure replays cover the positive-chain
+boundary. Physics/engine resumptions sharing a tick budget and complete phase/
+ownership/pause behavior remain open. See REFERENCE.md and engine/README.md.
+
+M4t adds same-tick landing CNS/physics resumption, movement-before-forces order,
+retained landing vectors/overshoot, state-105 exemption and a CNS transition
+budget shared across engine resumes. Eighteen native programs pin 336 numbers
+and one overflow; custom movement states retain their CNS-owned exits. Full/
+headless races, frozen/budget replays and mixed stock jump/landing recovery pass.
+Complete phase/body/pause/entity and ownership behavior remains open; see
+PHYSICS.md for the verified scope.
+
+M4u adds typed Pause and a shared GameTime/actor timeline. Thirteen native root
+programs pin 264 duration/movement/argument/replacement/cancellation observations;
+pure/full races and a fresh pair replay pass. Match background/effect/timer/reset
+and command-window checks are authored, with native interactions still pending.
+The initial SuperPause pilot was only a pure clock test; M4v below supersedes
+that production-stub status. See PAUSE.md for the remaining input/ownership gaps.
+
+M4v connects typed SuperPause to production clocks, combat, power, effects,
+darkening and audio. Thirty-eight native programs cover 600 numeric observations,
+ten static render cases and seven audio segments/Go PCM checks. Frozen contacts,
+deferred receiver damage, acquired-target defence stacking/recovery, cue ownership
+and effect animation through pauses now match those fixtures. Full races, fresh
+render/audio replays and stock KFM's common-cue super pass. Complete native
+argument schemas, world/Target IDs, input and combat/effect interactions remain
+open; see SUPERPAUSE.md. Captures also identify an unresolved HUD/configuration
+framing difference, so M4q is not full framebuffer parity.
+
+M4w replaces independent HUD fitting with the shared fight viewport transform.
+Ten native cases pin 240 numbers/twenty marker cores for stage fit/crop, window
+aspect and HUD projection. Native crop truncation/guideline allocation now feeds
+CameraPos/ScreenPos, drawing and round camera resets. Full/pure races, fresh
+native replays and actual Go HUD/world inspections pass. Filtered world edges
+still differ; menus/SystemFit, other renderers, overdraw and complete camera/
+zoom/configuration semantics remain open. See COORDINATES.md.
+
+M4x separates entity/input/team/helper IDs and opponents/acquired targets, adds
+the match registry and runtime redirection/count bindings, and implements
+native-backed helper-family/leaf retirement behavior. Nine stable programs/
+thirteen cases cover 240 numbers and one malformed-expression rejection.
+Native bottom operator/controller boundaries supersede earlier propagation
+assumptions; two layout-dependent power cases remain unresolved. Full/pure
+races and fresh replays pass. Complete target ownership, helper/projectile
+schemas and global phases remain open. See ENTITIES.md and BOTTOM.md.
+
+M4y adds typed target drop/facing/life/power/velocity effects and native target
+label/retention/release behavior. Forty-nine programs cover 744 values and three
+load rejections. Redirection now handles eager origin arguments, delayed Cond
+destination context and direct caller-unit geometry. Runtime defence, negative
+phase and mixed-coordinate observations match; full/pure races and fresh replays
+pass. TargetState ownership/binding, multi-entity/RNG, complete damage and schema
+coverage remain open. See TARGETS.md; no whole-controller promotion follows.
+
+## Evidence and status definitions
+
+Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).
+
+- **Missing**: no controller registration or trigger evaluation path found.
+- **Stub**: registered controller reaches an empty implementation, including indirect empty methods.
+- **Present**: some behavior exists, with documented gaps or no semantic tests. This does not mean compatible.
+- **Verified**: requires behavior tests and reference evidence for the advertised semantics; no controller/trigger currently qualifies.
+
+Counts are inventory counts, not compatibility percentages. Every row needs parameter/default/type/version coverage, negative cases, interaction tests, and reference evidence before promotion to Verified.
+
+## Controllers
+
+The reference documents 89 controllers. The port registers 84 names: 81 documented names plus three non-reference FVar convenience names. Eight documented names are missing. The stock KFM/KFM720/common-state corpus uses 46 distinct controller types and cannot cover the complete reference. Occurrence counts below come from their CNS/CMD files and are not execution counts.
+
+| Controller | Baseline | Stock occurrences | Principal gap |
+| --- | --- | ---: | --- |
+| AfterImage | Stub | 14 | Registered handler has no effective implementation. |
+| AfterImageTime | Stub | 20 | Registered handler has no effective implementation. |
+| AllPalFX | Stub | 0 | Registered handler has no effective implementation. |
+| AngleAdd | Present | 0 | Updates DrawAngle; renderer does not apply the full angle/scale behavior. |
+| AngleDraw | Present | 0 | Sets a number; angle/scale drawing and enable semantics need implementation. |
+| AngleMul | Present | 0 | Updates DrawAngle; render consumption and persistence missing. |
+| AngleSet | Present | 0 | Updates DrawAngle; render consumption and persistence missing. |
+| AppendToClipboard | Present | 0 | Stores raw text; format parameters and complete debug behavior missing. |
+| AssertSpecial | Present | 4 | Stores flags; most engine/render consumers and durations missing. |
+| AttackDist | Missing | 0 | Missing dynamic guard-distance controller. |
+| AttackMulSet | Present | 0 | Literal parsing; dynamic expressions and combat scaling rules incomplete. |
+| BGPalFX | Stub | 0 | Registered handler has no effective implementation. |
+| BindToParent | Stub | 0 | Registered handler has no effective implementation. |
+| BindToRoot | Stub | 0 | Registered handler has no effective implementation. |
+| BindToTarget | Stub | 0 | Registered handler has no effective implementation. |
+| ChangeAnim | Present | 68 | Expression value supported; element parameter and animation-owner semantics incomplete. |
+| ChangeAnim2 | Partial | 6 | Typed action/elem and state-owner AIR selection; native ownership/clock probes, full render geometry open. |
+| ChangeState | Present | 246 | Basic transition; entry override ordering, ownership, defaults and expressions incomplete. |
+| ClearClipboard | Present | 0 | Clears local text; debug display integration unverified. |
+| CtrlSet | Present | 21 | Literal-only value parsing. |
+| DefenceMulSet | Present | 2 | Literal parsing; target-version damage rules unverified. |
+| DestroySelf | Partial | 0 | Typed recursive/removeexplods, native descendant/parent-snapshot/effect-retirement controls; complete binding, sound, projectiles and pause/foreign lifecycle open. |
+| DisplayToClipboard | Present | 0 | Stores raw text; formatting/params and debug display incomplete. |
+| EnvColor | Stub | 0 | Registered handler has no effective implementation. |
+| EnvShake | Stub | 6 | Registered handler has no effective implementation. |
+| Explod | Present | 9 | Basic record; first frame only, lifetime/motion/binding/1.1 space parameters incomplete. |
+| ExplodBindTime | Missing | 0 | No dispatcher entry. |
+| ForceFeedback | Stub | 16 | Registered handler has no effective implementation. |
+| FallEnvShake | Stub | 2 | Registered handler has no effective implementation. |
+| GameMakeAnim | Stub | 0 | Registered handler has no effective implementation. |
+| Gravity | Present | 0 | Sets a persistent flag rather than implementing one controller activation. |
+| Helper | Partial | 0 | Typed arguments and native birth/order/postype/size/negative/pause controls; full contacts, input, palettes, foreign ownership and lifecycle open. |
+| HitAdd | Present | 0 | Increments a counter; hit/unique-hit bookkeeping and expressions incomplete. |
+| HitBy | Present | 0 | Records masks/timers; collision does not enforce them. |
+| HitDef | Partial | 82 | Typed cue/ID/custom-state/P2-facing subset with native timing/ownership controls; full dynamic hit/guard/priority/juggle/accounting schema remains open. |
+| HitFallDamage | Present | 2 | Adds damage to life; complete fall/KO/defence behavior unverified. |
+| HitFallSet | Present | 1 | M4bl: native optional value/preserve/raw integer rules and bounded consumers; beta ignores documented velocity fields. See HITFALLSET.md; broader contexts remain open. |
+| HitFallVel | Present | 1 | Basic flag/velocity application; fall lifecycle unverified. |
+| HitOverride | Missing | 8 | No dispatcher entry; stock characters use this. |
+| HitVelSet | Present | 10 | Interprets selectors as multipliers; typed arguments and hit velocity semantics incomplete. |
+| LifeAdd | Present | 0 | Literal value; kill/absolute flags and complete damage rules missing. |
+| LifeSet | Present | 0 | Literal value; expressions and bounds/defaults need tests. |
+| MakeDust | Stub | 1 | Registered handler has no effective implementation. |
+| ModifyExplod | Missing | 0 | No dispatcher entry. |
+| MoveHitReset | Present | 0 | Clears hit deduplication, rather than resetting the complete MoveHit/MoveGuarded status. |
+| NotHitBy | Present | 26 | Records masks/timers; collision does not enforce them. |
+| Null | Missing | 8 | No dispatcher entry; must be an explicit documented no-action controller. |
+| Offset | Present | 0 | Stores offsets; renderer does not apply them. |
+| PalFX | Stub | 16 | Registered handler has no effective implementation. |
+| ParentVarAdd | Missing | 0 | No dispatcher entry. |
+| ParentVarSet | Missing | 0 | No dispatcher entry. |
+| Pause | Stub | 6 | Registered handler has no effective implementation. |
+| PlayerPush | Missing | 0 | No dispatcher entry; push logic cannot be disabled through this controller. |
+| PlaySnd | Stub | 90 | Registered handler has no effective implementation. |
+| PosAdd | Present | 63 | Literal components; coordinate-space semantics and dynamic expressions incomplete. |
+| PosFreeze | Present | 6 | Persistent local flag; tick/hitpause/reset semantics need reference tests. |
+| PosSet | Present | 14 | Some expression evaluation; localcoord and world integration incomplete. |
+| PowerAdd | Present | 0 | Literal-only value parsing. |
+| PowerSet | Present | 0 | Literal-only value parsing; fixed maximum power. |
+| Projectile | Present | 0 | Generic Character creation; projectile parameters, HitDef, collision and lifecycle incomplete. |
+| RemapPal | Stub | 1 | Registered handler has no effective implementation. |
+| RemoveExplod | Present | 0 | Filters matching IDs; default ID -1 does not remove all. |
+| ReversalDef | Present | 12 | Stores raw parameters; collision does not enforce reversal. |
+| ScreenBound | Partial | 4 | Typed value/movecamera, native root/helper confinement and root camera eligibility; full pause/Width/helper-camera/zoom cases remain open. |
+| SelfState | Partial | 11 | Restores own state definitions/units; continuing animation source remains independent, native chain compared. |
+| SprPriority | Present | 2 | Stores literal value; full renderer ordering missing. |
+| StateTypeSet | Present | 21 | Basic enum setters; unchanged/default and version semantics need tests. |
+| SndPan | Stub | 0 | Registered handler has no effective implementation. |
+| StopSnd | Stub | 0 | Registered handler has no effective implementation. |
+| SuperPause | Stub | 4 | Registered handler has no effective implementation. |
+| TargetBind | Partial | 18 | Typed constraints; native root/helper anchor completion, durations, flag phases and retirement fall; full pause/multi-target/foreign/controller-family cases open. |
+| TargetDrop | Stub | 0 | Registered handler has no effective implementation. |
+| TargetFacing | Stub | 2 | Registered handler has no effective implementation. |
+| TargetLifeAdd | Stub | 2 | Registered handler has no effective implementation. |
+| TargetPowerAdd | Stub | 0 | Registered handler has no effective implementation. |
+| TargetState | Partial | 2 | Acquired-target state owner, delayed entry, negative clamp and missing destination compared; binding/full world cases open. |
+| TargetVelAdd | Stub | 0 | Registered handler has no effective implementation. |
+| TargetVelSet | Stub | 0 | Registered handler has no effective implementation. |
+| Trans | Stub | 0 | Registered handler has no effective implementation. |
+| Turn | Partial | 10 | Preserves world momentum when facing flips; native binding trace compared, full entity/render edges open. |
+| VarAdd | Present | 1 | Literal index/value only; alternate var/fvar forms and expressions missing. |
+| VarRandom | Stub | 0 | Registered handler has no effective implementation. |
+| VarRangeSet | Present | 2 | Uses range instead of complete first/last/value/fvalue schema. |
+| VarSet | Present | 21 | Some integer/sysvar forms; fv/fvar and dynamic index/schema coverage incomplete. |
+| VelAdd | Present | 39 | Basic expression components; source preservation/types/scaling unverified. |
+| VelMul | Present | 15 | Basic expression components; source preservation/types/scaling unverified. |
+| VelSet | Present | 46 | Basic expression components; source preservation/types/scaling unverified. |
+| VictoryQuote | Present | 0 | Stores literal quote index; victory screen does not consume it. |
+| Width | Partial | 32 | Typed edge/player offsets, reset/precedence, native ground push and query controls; complete pause/helper/foreign/air/zoom behavior open. |
+
+Controller status totals: 8 Missing, 34 Stub, 47 Present, 0 Verified.
+
+The extra registrations are `FVarSet`, `FVarAdd`, and `FVarRangeSet`. They do not replace the documented floating-variable forms of VarSet/VarAdd/VarRangeSet.
+
+## Triggers
+
+The reference documents 127 trigger entries, including math functions. Base names below remove documentation annotations such as `(math)` and `(*,***)`. Component variants, redirects, old comparison syntax, accepted arguments, types, and version behavior are additional obligations within each row. All Present entries inherit the evaluator numeric-type/bottom defects described in the assessment.
+
+| Trigger | Baseline | Principal gap / evidence |
+| --- | --- | --- |
+| Abs | Present | Math call exists; types/bottom not modeled. |
+| Acos | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| AILevel | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Alive | Present | Life comparison exists; match/dead-entity semantics unverified. |
+| Anim | Present | Reads character animation number. |
+| AnimElem | Present | Compares current element index; start-time/old condition syntax not implemented correctly. |
+| AnimElemNo | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| AnimElemTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| AnimExist | Partial | Queries active action's AIR source; native borrowed/own transitions compared. |
+| AnimTime | Present | Computes remaining element durations; exact tick and loop semantics unverified. |
+| Asin | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Atan | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| AuthorName | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| BackEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| BackEdgeBodyDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| BackEdgeDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| BottomEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| CameraPos | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| CameraZoom | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| CanRecover | Present | Uses fall.recover flag; recovery timing and full get-hit state incomplete. |
+| Ceil | Present | Math call exists; types/bottom not modeled. |
+| Command | Present | Named commands plus raw-input fallback; matcher and strict name semantics incomplete. |
+| Cond | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Const | Present | Small subset of velocity/movement constants; data/size/remaining constants and scaling absent. |
+| Const240p | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Const480p | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Const720p | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Cos | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Ctrl | Present | Reads control flag; state-entry override ordering defective. |
+| DrawGame | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| E | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Exp | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Facing | Present | Reads facing; entity/coordinate interactions unverified. |
+| Floor | Present | Math call exists; types/bottom not modeled. |
+| FrontEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| FrontEdgeBodyDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| FrontEdgeDist | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| FVar | Present | Reads float array; fixed Go float64 rather than target numeric model. |
+| GameHeight | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| GameTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| GameWidth | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| GetHitVar | Present | Subset of attributes; get-hit data and defaults incomplete. |
+| HitCount | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| HitDefAttr | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| HitFall | Present | Reads local fall flag; hit/fall lifecycle incomplete. |
+| HitOver | Present | Reads HitTime; counter decrements twice on unpaused ticks. |
+| HitPauseTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| HitShakeOver | Present | Reads ShakeTime; pause tick ordering unverified. |
+| HitVel | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ID | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| IfElse | Present | Evaluates one branch lazily, whereas target IfElse evaluates all arguments. |
+| InGuardDist | Present | Queries opponent-like Target list; dynamic AttackDist and team/range rules incomplete. |
+| IsHelper | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| IsHomeTeam | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| LeftEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| Life | Present | Reads life; damage/guard/match rules incomplete. |
+| LifeMax | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Ln | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Log | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Lose | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| MatchNo | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| MatchOver | Present | Reads manually set flag; production match progression missing. |
+| MoveContact | Present | One-tick-like flag reset before state checks; elapsed-time semantics missing. |
+| MoveGuarded | Present | Getter exists, but guarding does not correctly record this status. |
+| MoveHit | Present | One-tick-like flag reset before state checks; elapsed-time semantics missing. |
+| MoveType | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| MoveReversed | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Name | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumEnemy | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumExplod | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumHelper | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumPartner | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumProj | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumProjID | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| NumTarget | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P1Name | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P2BodyDist | Partial | Native base-width front/near-opponent-edge queries, mixed units and Width independence; complete entity/air/zero-axis rules open. |
+| P2Dist | Present | Uses first Target as opponent; real enemy selection/scaling missing. |
+| P2Life | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P2MoveType | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P2Name | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P2StateNo | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P2StateType | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P3Name | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| P4Name | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| PalNo | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ParentDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Pi | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Pos | Present | X/Y getters only; correct localcoord and legacy Z semantics need work. |
+| Power | Present | Reads local power; maximum fixed and power-award integration incomplete. |
+| PowerMax | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| PlayerIDExist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| PrevStateNo | Present | Reads previous state; custom-state/transition semantics unverified. |
+| ProjCancelTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ProjContact | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ProjContactTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ProjGuarded | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ProjGuardedTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ProjHit | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ProjHitTime | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Random | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| RightEdge | Partial | Native fixed-camera/facing/asymmetric-margin and mixed-redirect controls; full moving/zoom/entity behavior open. |
+| RootDist | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| RoundNo | Present | Hardcoded to 1. |
+| RoundsExisted | Present | Reads field; production round reset/progression absent. |
+| RoundState | Present | Reads field; real match/intro/outro phase management absent. |
+| ScreenPos | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ScreenHeight | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| ScreenWidth | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| SelfAnimExist | Partial | Always queries own AIR, distinct from borrowed action source; native cases compared. |
+| Sin | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| StateNo | Present | Reads current state number. |
+| StateType | Present | Implemented through process-global custom evaluation hook. |
+| StageVar | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| SysFVar | Present | Reads fixed float array; target typing and bounds behavior unverified. |
+| SysVar | Present | Reads fixed int array; target typing and bounds behavior unverified. |
+| Tan | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| TeamMode | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| TeamSide | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| TicksPerSecond | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Time | Present | Reads character Time; timing/reset/hitpause semantics need tests. |
+| TimeMod | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| TopEdge | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| UniqHitCount | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+| Var | Present | Reads integer array; fixed-width arithmetic/bounds behavior unverified. |
+| Vel | Present | X/Y getters plus fixed zero for Z; scaling and legacy version rules incomplete. |
+| Win | Missing | No evaluation implementation found; add syntax, environment binding and semantics tests. |
+
+Trigger status totals: 86 Missing, 41 Present, 0 Verified.
+
+## Language and scheduling obligations
+
+| Area | Baseline | Acceptance examples |
+| --- | --- | --- |
+| Source fidelity | Token reconstruction changes expressions | Preserve source locations, quotes, operator spelling, tuple nesting, integer/float spelling, and duplicate attributes. |
+| Numeric model | float64-only plus ad hoc unknown sentinel | Int32, float32, bottom, casts, overflow/domain/zero-divisor cases, and evaluation order match the reference. |
+| Operators | Several missing | Unary, exponent, arithmetic, comparisons/intervals, assignment, bitwise and logical operators; associativity and side effects. |
+| Special forms | Partial IfElse only | Eager IfElse versus lazy Cond, including side effects and unused-branch bottom behavior. |
+| Trigger syntax | Subset | All old forms and component forms, strings/enums, legal redirects and missing destinations. |
+| State entry | Applied in two places | Every Statedef attribute, omission/defaults, expressions, override ordering, self-transition and owner switch. |
+| Trigger groups | Partial | triggerall first, ordered contiguous numbered groups, repeated clauses and short-circuit behavior between clauses. |
+| Persistence | >1 unimplemented | M2e implements observed activation/cooldown and one-shot suppression; pause/negative-state re-entry interactions still need probes. |
+| Tick scheduling | Local Character.Update | Negative-state eligibility/order, hitpause/ignorehitpause, Pause/SuperPause, animation/physics/collision ordering and transitions. |
+| Lifetimes and ownership | Incomplete | Distinct entity/input/helper/target identities; state and animation owners; creation/deletion and binding. |
+| Version behavior | Mostly absent | Character mugenversion, deprecated syntax and documented 1.1 additions. |
+
+## Reference asset census
+
+Header census of the supplied distribution: 27 SFF, 5 SND, 9 FNT (including two old-tools examples), 33 DEF, 3 AIR, 2 CMD, and 3 CNS files. The archive also contains executable support files, documentation and internal shaders/Lua; those are not themselves evidence of Go runtime asset support. No assets have been copied or modified.
+
+| Asset family | Current port | Required coverage |
+| --- | --- | --- |
+| DEF/CNS/CMD/config/select | Basic parsers and loaders | Source-preserving syntax, encoding/BOM/newlines, defaults, all file mappings, ordered merge and case/path rules. |
+| AIR / embedded AIR | Basic frames/boxes/loops | Frame timing/zero/infinite frames, interpolation, flips, blend/alpha and required animation fallbacks. |
+| SFF v1 / PCX / ACT | Partial | Links, palettes, masking versus opaque, exact pixels, malformed inputs and selected palette behavior. |
+| SFF v2/v2.01 | Rejected | Raw, RLE8, RLE5, LZ5, PNG8/24/32; palette/sprite links, ldata/tdata, depth, offsets and bounds. |
+| FNT v1 | Partial | Fixed/variable metrics, mapping, banks, glyph transparency, offsets and invalid containers. |
+| FNT v2 bitmap / TrueType | Missing | SFF palette/sprite banks including RGBA, text metrics/UTF-8 where specified, font file lookup and fallback policy. |
+| SND / WAV | Strict archives/PCM decoding; typed character commands and measured CPU mixing | Contact/guard/KO voice cues, complete lifecycle/ownership, arbitrary-rate fidelity and configuration edges; BGM/storyboard audio. |
+| BGM | Paths partly parsed; playback missing | Target-supported formats, looping/volume/transitions, stage/motif/storyboard music. Additional fixtures needed: stock distribution has no music files. |
+| Stage/motif/storyboard/fight | Partial loaders; fight UI absent | Default resource paths, localcoord/zoom, animation/layers/background controllers, stage shadows/reflections, HUD and progression. |
+
+### SFF files and record formats
+
+Versions below are reported in header byte order major.minor.revision.build. v2.01 in the release history appears as `2.0.1.0`. Counts are declared sprite records, including links; these are not decoded-image success counts. Stock v2 record formats are 0/8 raw indexed (94), 2/8 RLE8 (472), 4/5 LZ5 (559), and 12/32 PNG32 (22). The PNG32 record signature was checked after its four-byte decompressed-size prefix.
+
+| File under reference root | Header version | Sprite records | Record formats |
+| --- | --- | ---: | --- |
+| `chars/kfm/ending.sff` | 1.0.1.0 | 7 | PCX/link: 7 |
+| `chars/kfm/intro.sff` | 1.0.1.0 | 12 | PCX/link: 12 |
+| `chars/kfm/kfm.sff` | 2.0.1.0 | 281 | RLE8: 1, LZ5: 280 |
+| `chars/kfm720/ending.sff` | 1.0.1.0 | 7 | PCX/link: 7 |
+| `chars/kfm720/intro.sff` | 1.0.1.0 | 12 | PCX/link: 12 |
+| `chars/kfm720/kfm720.sff` | 2.0.0.0 | 281 | RLE8: 2, LZ5: 279 |
+| `data/fight.sff` | 1.0.1.0 | 43 | PCX/link: 43 |
+| `data/fightfx.sff` | 1.0.1.0 | 104 | PCX/link: 104 |
+| `data/kfm/credits.sff` | 1.0.1.0 | 2 | PCX/link: 2 |
+| `data/kfm/gameover.sff` | 1.0.1.0 | 1 | PCX/link: 1 |
+| `data/kfm/intro.sff` | 1.0.1.0 | 8 | PCX/link: 8 |
+| `data/kfm/kfmtitle.sff` | 1.0.1.0 | 2 | PCX/link: 2 |
+| `data/kfm/logo.sff` | 1.0.1.0 | 1 | PCX/link: 1 |
+| `data/mugen1/fight.sff` | 2.0.0.0 | 51 | RLE8: 51 |
+| `data/mugen1/system.sff` | 2.0.0.0 | 36 | RLE8: 36 |
+| `data/system.sff` | 1.0.1.0 | 30 | PCX/link: 30 |
+| `font/arcade.sff` | 2.0.0.0 | 67 | RLE8: 67 |
+| `font/enter48.sff` | 2.0.0.0 | 94 | RLE8: 94 |
+| `font/f-4x6.sff` | 2.0.0.0 | 94 | raw indexed: 94 |
+| `font/f-6x9.sff` | 2.0.0.0 | 94 | RLE8: 94 |
+| `font/name14.sff` | 2.0.0.0 | 94 | RLE8: 94 |
+| `font/num1.sff` | 2.0.0.0 | 11 | RLE8: 11 |
+| `font/num48.sff` | 2.0.0.0 | 11 | RLE8: 11 |
+| `font/num72.sff` | 2.0.0.0 | 22 | PNG32: 22 |
+| `stages/kfm.sff` | 2.0.1.0 | 7 | RLE8: 7 |
+| `stages/stage0-720.sff` | 2.0.0.0 | 2 | RLE8: 2 |
+| `stages/stage0.sff` | 2.0.0.0 | 2 | RLE8: 2 |
+
+RLE5, PNG8/24, many malformed cases, charge/chord input, helpers, projectiles, most controller parameter variants, team behavior and TrueType font payloads require added synthetic or user-provided fixtures. Passing every stock file is necessary but insufficient.
+
+## Completion accounting
+
+During implementation, expand each row into behavior cases and record the fixture/test, parameter/default/type/version scope, reference observation, and known divergence. Parser acceptance, dispatcher registration, line coverage, and a playable KFM demo must remain separate from behavioral compatibility. No item is Verified in this snapshot.

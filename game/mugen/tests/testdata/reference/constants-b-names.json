@@ -1,0 +1,193 @@
+[
+  {
+    "name": "velocity.jump.neu.x",
+    "kind": "float",
+    "index": 0
+  },
+  {
+    "name": "velocity.jump.back.x",
+    "kind": "float",
+    "index": 1
+  },
+  {
+    "name": "velocity.jump.fwd.x",
+    "kind": "float",
+    "index": 2
+  },
+  {
+    "name": "velocity.runjump.back.x",
+    "kind": "float",
+    "index": 3
+  },
+  {
+    "name": "velocity.runjump.fwd.x",
+    "kind": "float",
+    "index": 4
+  },
+  {
+    "name": "velocity.airjump.y",
+    "kind": "float",
+    "index": 5
+  },
+  {
+    "name": "velocity.airjump.neu.x",
+    "kind": "float",
+    "index": 6
+  },
+  {
+    "name": "velocity.airjump.back.x",
+    "kind": "float",
+    "index": 7
+  },
+  {
+    "name": "velocity.airjump.fwd.x",
+    "kind": "float",
+    "index": 8
+  },
+  {
+    "name": "velocity.air.gethit.groundrecover.x",
+    "kind": "float",
+    "index": 9
+  },
+  {
+    "name": "velocity.air.gethit.groundrecover.y",
+    "kind": "float",
+    "index": 10
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.mul.x",
+    "kind": "float",
+    "index": 11
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.mul.y",
+    "kind": "float",
+    "index": 12
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.add.x",
+    "kind": "float",
+    "index": 13
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.add.y",
+    "kind": "float",
+    "index": 14
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.back",
+    "kind": "float",
+    "index": 15
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.fwd",
+    "kind": "float",
+    "index": 16
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.up",
+    "kind": "float",
+    "index": 17
+  },
+  {
+    "name": "velocity.air.gethit.airrecover.down",
+    "kind": "float",
+    "index": 18
+  },
+  {
+    "name": "movement.airjump.num",
+    "kind": "int",
+    "index": 19
+  },
+  {
+    "name": "movement.airjump.height",
+    "kind": "int",
+    "index": 20
+  },
+  {
+    "name": "movement.yaccel",
+    "kind": "float",
+    "index": 21
+  },
+  {
+    "name": "movement.stand.friction",
+    "kind": "float",
+    "index": 22
+  },
+  {
+    "name": "movement.crouch.friction",
+    "kind": "float",
+    "index": 23
+  },
+  {
+    "name": "movement.stand.friction.threshold",
+    "kind": "float",
+    "index": 24
+  },
+  {
+    "name": "movement.crouch.friction.threshold",
+    "kind": "float",
+    "index": 25
+  },
+  {
+    "name": "movement.jump.changeanim.threshold",
+    "kind": "float",
+    "index": 26,
+    "supported": false
+  },
+  {
+    "name": "movement.air.gethit.groundlevel",
+    "kind": "float",
+    "index": 27
+  },
+  {
+    "name": "movement.air.gethit.groundrecover.ground.threshold",
+    "kind": "float",
+    "index": 28
+  },
+  {
+    "name": "movement.air.gethit.groundrecover.groundlevel",
+    "kind": "float",
+    "index": 29
+  },
+  {
+    "name": "movement.air.gethit.airrecover.threshold",
+    "kind": "float",
+    "index": 30
+  },
+  {
+    "name": "movement.air.gethit.airrecover.yaccel",
+    "kind": "float",
+    "index": 31
+  },
+  {
+    "name": "movement.air.gethit.trip.groundlevel",
+    "kind": "float",
+    "index": 32
+  },
+  {
+    "name": "movement.down.bounce.offset.x",
+    "kind": "float",
+    "index": 33
+  },
+  {
+    "name": "movement.down.bounce.offset.y",
+    "kind": "float",
+    "index": 34
+  },
+  {
+    "name": "movement.down.bounce.yaccel",
+    "kind": "float",
+    "index": 35
+  },
+  {
+    "name": "movement.down.bounce.groundlevel",
+    "kind": "float",
+    "index": 36
+  },
+  {
+    "name": "movement.down.friction.threshold",
+    "kind": "float",
+    "index": 37
+  }
+]

@@ -1,0 +1,424 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 130]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 130, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 130, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 150, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(hittime)
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(slidetime)
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(ctrltime)
+[State 150, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=HitOver
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5000, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=GetHitVar(hittime)
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=GetHitVar(slidetime)
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=GetHitVar(ctrltime)
+[State 5000, entry timing]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=HitOver
+[Statedef 180]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 180, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 180, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef -3]
+[State -3, hold]
+type=Null
+trigger1=0
+
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, seed]
+type=VarSet
+trigger1=Time=0
+v=10
+value=7
+[State 700, seed]
+type=VarSet
+trigger1=Time=0
+v=11
+value=11
+[State 700, seed float]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=3.9
+[State 700, seed float]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=4.9
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+guardflag=
+ground.type=High
+air.hittime=300
+guard.hittime=299
+guard.slidetime=300
+guard.ctrltime=301
+ground.slidetime=((Var(39):=(Var(58):=Var(58)+1))*0+29)
+ground.hittime=((Var(38):=(Var(58):=Var(58)+1))*0+23)
+airguard.cornerpush.veloff=((Var(37):=(Var(58):=Var(58)+1))*0+0)
+airguard.velocity=((Var(36):=(Var(58):=Var(58)+1))*0+0),0
+guard.cornerpush.veloff=((Var(35):=(Var(58):=Var(58)+1))*0+0)
+guard.pausetime=((Var(34):=(Var(58):=Var(58)+1))*0+0),0
+guard.velocity=((Var(33):=(Var(58):=Var(58)+1))*0+0)
+down.cornerpush.veloff=((Var(32):=(Var(58):=Var(58)+1))*0+0)
+down.velocity=((Var(31):=(Var(58):=Var(58)+1))*0+0),0
+air.cornerpush.veloff=((Var(30):=(Var(58):=Var(58)+1))*0+0)
+air.velocity=((Var(29):=(Var(58):=Var(58)+1))*0+0),0
+ground.cornerpush.veloff=((Var(28):=(Var(58):=Var(58)+1))*0+0)
+ground.velocity=((Var(27):=(Var(58):=Var(58)+1))*0+0),0
+p2facing=((Var(26):=(Var(58):=Var(58)+1))*0+0)
+p1getp2facing=((Var(25):=(Var(58):=Var(58)+1))*0+0)
+p1facing=((Var(24):=(Var(58):=Var(58)+1))*0+0)
+sparkxy=((Var(23):=(Var(58):=Var(58)+1))*0+0),0
+guard.sparkno=((Var(22):=(Var(58):=Var(58)+1))*0+-1)
+sparkno=((Var(21):=(Var(58):=Var(58)+1))*0+-1)
+fall.damage=((Var(20):=(Var(58):=Var(58)+1))*0+0)
+forcenofall=((Var(19):=(Var(58):=Var(58)+1))*0+0)
+forcestand=((Var(18):=(Var(58):=Var(58)+1))*0+1)
+p2sprpriority=((Var(17):=(Var(58):=Var(58)+1))*0+0)
+p1sprpriority=((Var(16):=(Var(58):=Var(58)+1))*0+0)
+p2getp1state=((Var(15):=(Var(58):=Var(58)+1))*0+1)
+p2stateno=((Var(14):=(Var(58):=Var(58)+1))*0+-1)
+p1stateno=((Var(13):=(Var(58):=Var(58)+1))*0+-1)
+priority=((Var(12):=(Var(58):=Var(58)+1))*0+4),Hit
+guardsound=((Var(11):=(Var(58):=Var(58)+1))*0+-1),0
+hitsound=((Var(10):=(Var(58):=Var(58)+1))*0+-1),0
+numhits=((Var(9):=(Var(58):=Var(58)+1))*0+1)
+pausetime=((Var(8):=(Var(58):=Var(58)+1))*0+0),0
+givepower=((Var(7):=(Var(58):=Var(58)+1))*0+0),0
+getpower=((Var(6):=(Var(58):=Var(58)+1))*0+0),0
+damage=((Var(5):=(Var(58):=Var(58)+1))*0+1),0
+hitonce=((Var(4):=(Var(58):=Var(58)+1))*0+1)
+fall.kill=((Var(3):=(Var(58):=Var(58)+1))*0+1)
+guard.kill=((Var(2):=(Var(58):=Var(58)+1))*0+1)
+kill=((Var(1):=(Var(58):=Var(58)+1))*0+1)
+id=((Var(0):=(Var(58):=Var(58)+1))*0+7)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=0
+value=Var(0)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=1
+value=Var(1)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=2
+value=Var(2)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=3
+value=Var(3)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=4
+value=Var(4)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=5
+value=Var(5)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=6
+value=Var(6)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=7
+value=Var(7)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=8
+value=Var(8)+100000
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=9
+value=Var(9)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=10
+value=Var(10)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=11
+value=Var(11)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=12
+value=Var(12)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=13
+value=Var(13)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=14
+value=Var(14)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=15
+value=Var(15)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=16
+value=Var(16)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=17
+value=Var(17)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=18
+value=Var(18)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=19
+value=Var(19)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=20
+value=Var(20)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=21
+value=Var(21)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=22
+value=Var(22)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=23
+value=Var(23)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=24
+value=Var(24)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=25
+value=Var(25)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=26
+value=Var(26)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=27
+value=Var(27)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=28
+value=Var(28)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=29
+value=Var(29)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=30
+value=Var(30)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=31
+value=Var(31)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=32
+value=Var(32)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=33
+value=Var(33)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=34
+value=Var(34)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=35
+value=Var(35)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=36
+value=Var(36)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=37
+value=Var(37)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=38
+value=Var(38)
+[State 700, snapshot]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+fv=39
+value=Var(39)
+[State 700, latch]
+type=VarSet
+trigger1=Time>=8 && Var(59)=0
+v=59
+value=1

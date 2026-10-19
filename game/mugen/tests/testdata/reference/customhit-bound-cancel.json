@@ -1,0 +1,94 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "5692fcc88040c235428471ea75f63f6a9232be98e56197aa7e05bd5d5482506d",
+  "air_sha256": "a19979ed08a7422603ce6b70034137a738e5456f0eff4873f814240f76a5d39e",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "4b1da005768a0cd4c80c894127e6b04c7358a57417aa2af00b096f57bcc605f9",
+      "variables": {
+        "0": -68,
+        "1": 67,
+        "2": 67,
+        "3": 0,
+        "4": 3,
+        "5": -66,
+        "6": -36,
+        "7": 5,
+        "8": -2,
+        "9": -36,
+        "10": 5,
+        "11": -1
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "fdee2fcca9fee1fbd3d9ed17af2da090c8df104247f9941762f99a6d93772534",
+      "variables": {
+        "12": -61,
+        "13": -34,
+        "14": -2,
+        "15": -53,
+        "16": -32,
+        "17": -2,
+        "18": -52,
+        "19": -30,
+        "20": -2,
+        "21": -48,
+        "22": -28,
+        "23": -2
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "3a76b16d310dafcfe2254064006121593eb490a921db34459985fd7e2618c552",
+      "variables": {
+        "24": 0,
+        "25": 0,
+        "26": 1,
+        "27": 0,
+        "28": 0,
+        "29": 0,
+        "30": 1,
+        "31": 0,
+        "32": 0,
+        "33": 0,
+        "34": 0,
+        "35": 2
+      }
+    },
+    {
+      "page": 28,
+      "path": "animation-page28.png",
+      "sha256": "807759ca017d8c80e3d0c26dbac0e63b8ed98dfaca78b22120e13f0be17fe25e",
+      "variables": {
+        "28": 0,
+        "29": 0,
+        "30": 1,
+        "31": 0,
+        "32": 0,
+        "33": 0,
+        "34": 0,
+        "35": 2,
+        "36": 1,
+        "37": 0,
+        "38": 0,
+        "39": 0
+      },
+      "run": "customhit-bound-cancel-immediate-native"
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_fixture": "customhit-bound-cancel-victim",
+  "p2_sha256": {
+    "cns": "48cd822e3a81a7cf3c311b99800ad7de1e59b89231ddf8cca7232a1f34f7caa3",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "b2a76c783b5d8d87b176b8209af3368e252fdbc35b06f7a427e55da7a37e91d1",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "787abfe39408bdeeff223b186eee60cb424a5d7365dbdbf78d66b1611437052f",
+          "variables": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.snd": "58b6beecae0ad5b26566d89fee1fc53ef1b0f0e9cc453b8f81899ee55d41b543"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441.0
+        ],
+        "pcm_sha256": "d7197875b0d271d4cc32a276ce233959805bcaecb62a786932e1af6eccfffc57",
+        "segments": [
+          {
+            "start": 0.9,
+            "end": 1.9,
+            "levels": {
+              "441": [
+                3998.8,
+                3967.8
+              ]
+            }
+          },
+          {
+            "start": 2.0,
+            "end": 9.2,
+            "levels": {
+              "441": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "hud_tone": true,
+        "hud_fight_sha256": {
+          "data/fight.def": "27d0305b58005648e8cea0f7dd531fa8cb6ce4bca63c6073bf8422ff8e850cc7",
+          "data/mugen1/fight.def": "8359d25fabde5c23b3a3906c2156c5e639a8e957e4b289319286c0609e9c7402"
+        }
+      }
+    }
+  }
+}
