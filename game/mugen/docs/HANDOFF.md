@@ -23,33 +23,39 @@ this checkpoint. Prior complete scoped race baseline is M4cb; the allocated
 final projectile/reversal integration will rerun it. Only source/text is staged;
 no pushes or binaries.
 
-M4cd is committed as ded53de8. M4ce is COMPLETE and ready for its local
-source/text commit. Read PROJECTILES.md. Typed setup, split HitDef evaluation,
-source defaults, independent motion/animation/pause, native lifetime/directional
-bounds, center postypes, root ownership and NumProjID counts match 104 native
-programs: 95 accepted / nine rejections / 1,192 distinct slots / 416 authored
-hashes / 12 sprite calibrations. Source routing is 112/127 (88.2%), 15 unbound.
+M4cd is ded53de8; M4ce is 4b3ab498. M4cf contact/cancellation/capacity is
+COMPLETE, ready for its local commit. Read PROJECTILE-CONTACTS.md. 91 native
+programs / 1,118 distinct slots / 364 authored hashes, including six native
+phase/completion masks. All 295 selected Match native controls pass races
+197.707s; new end/stock/clock checks pass 27.278s; full core races pass (Character
+11.416s, System 9.726s, engine 1.451s, evaluator 1.019s, config 1.040s,
+CNS/combat 1.013s each). Six actual app masks, fresh priority attrition, stock
+four-PNG win/rematch/win/82 balanced events/private PCM and all 755 frozen
+hashes/root module guards pass. All sessions including 44297 were awaited;
+no native/app/test clients remain. Earlier diagnostics/review rejection and safe
+bounded edits are recorded in the topic notes; no review blocker remains.
 
-Match races PASS 135.338s (new programs plus chain/juggle/legacy velocity/RNG/
-HitPauseTime). Core races PASS: Character 11.450s, System 9.636s, engine 1.476s,
-evaluator 1.023s, CNS 1.013s, combat 1.011s. Fresh reverse-order native reproduces
-48 readings; three actual projectile apps match opaque body masks exactly.
-Stock four-PNG win/rematch/win, 82 balanced owned events, private PCM and source/
-config/binary/PNG/input/audio provenance audits pass. All 819 frozen source/
-probe/fixture/module hashes and root module guards pass. All sessions, including
-88753, were awaited; no native/app/test clients remain. Artifacts and preparation
-diagnostics are listed in PROJECTILES.md. Last entire scoped race suite: M4cb;
-repeat at final allocated integration with adequate timeout for corpus growth.
+Next: commit M4cf locally, then complete the dependent coordinate slice. Eight
+projspace-* controls are captured/promoted but EXCLUDED from this contact
+commit. Three projspace-draw-* originals (12 hashes) are frozen but not yet
+observed; temp/m4cf-space-draw-{inputs,metadata}.json records them. Capture
+those first, serially with positive-CNS clipboard delay 0; they end in St700
+and freeze geometry with Pause at Time=5. Their valid BG is displaced offscreen
+for clean masks. The eight existing controls use manifests m4cf-space-inputs.json
+and m4cf-space-metadata.json; raw log m4cf-end-space.log. Native source profiles
+prove motion and payload differences: foreign width320 to issuer640 gives
+receiver X velocity1.25/yaccel0.5, own640 gives0.625/0.25, reverse foreign640
+also1.25/0.5 in receiver640. Current CreateProjectile stores all values in issuer
+units, so compare/replay and fix demonstrated coordinate boundaries. No profile
+conversion code or tests have yet been added. Source space/ownership must not
+change native originals/goldens. Positive lifetime/own-hitpause controls in this
+same slice pin timer suspension. The new coordinate work may be its own local
+checkpoint before M4cg queries and M4ch reversals.
 
-Next: commit M4ce locally, then proceed automatically through M4cf contacts/
-multi-hit/miss/removal/cancellation, M4cg event/legacy queries and M4ch reversals.
-Measure PlayerProjectileMax capacity (parsed but not passed into World), helper
-birth-pass movement/lifetime and cross-owner observation order. Do not guess a
-world-wide phase reordering. Source multiplier/state/target and paused/retiring
-pool rules need controls. No M4cf fixture or implementation has started yet.
-M4ce source snapshots are now frozen; preserve originals and numeric goldens.
-All native/app/display-dependent work stays serial. No agents/goals, pushes,
-binaries or authored edits outside game/mugen/. Items 3–4 remain unallocated.
+Source routing remains 112/127, 15 unbound; no event/reversal implementation
+yet. Native/app/display-dependent work stays serial. Full scoped races at final
+integration with a larger timeout for the growing corpus. Items 3–4 remain
+unallocated. No agents/goals, pushes, binaries or edits outside game/mugen/.
 
 All prior allocations below are historical; their stop condition is superseded
 by the new user authorization. No agents/goals. No authored changes outside

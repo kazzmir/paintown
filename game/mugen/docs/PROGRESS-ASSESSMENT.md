@@ -1,13 +1,13 @@
 # Current progress assessment
 
-M4ce adds typed projectile setup, independent motion/animation/pause clocks,
-native lifetime/bounds, root ownership and basic NumProjID. Its 104 frozen
-programs pin 1,192 distinct variable slots, nine load rejections and 12 native
-sprite positions; three actual projectile apps match opaque body masks exactly.
-Source routing is now 112/127 (88.2%), 15 unbound. [PROJECTILES.md](PROJECTILES.md)
-records limits. Contacts/multi-hit/removal/cancellation/queries/reversals remain
-active in this allocation; effects/modes/final rendering await items 3–4.
-Earlier allocation summaries below are historical.
+M4cf implements projectile hit/miss/hitpause clocks, active/visual-tail phases,
+Clsn2 cancellation/priority attrition, root capacity/config and helper birth
+ordering. Ninety-one frozen controls pin 1,118 distinct slots; six actual app
+masks match native birth/hit/expiry/cancel boundaries and completion. Read
+[PROJECTILE-CONTACTS.md](PROJECTILE-CONTACTS.md). Source routing stays 112/127
+(88.2%), 15 unbound. Foreign-coordinate corrections, event/legacy queries and
+reversals remain active; items 3–4 await later allocation. Older summaries below
+are historical.
 
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,

@@ -12,10 +12,11 @@ import (
 // World owns entity identity and root relationships. TickCharacters schedules
 // roots/helpers; projectiles still use legacy child adapters.
 type World struct {
-	Registry  *engine.Registry[*Character]
-	Roots     []*Character
-	Helpers   []*Character
-	HelperMax int
+	Registry      *engine.Registry[*Character]
+	Roots         []*Character
+	Helpers       []*Character
+	HelperMax     int
+	ProjectileMax int
 	// Fixed camera travel limits plus half the viewport, in game units.
 	ProjectileStageBounds      [2]float64
 	ProjectileStageBoundsKnown bool
@@ -29,7 +30,7 @@ type World struct {
 
 func NewWorld(helperMax int) *World {
 	helperMax = max(4, min(56, helperMax))
-	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, random: engine.NewRandomStream(1)}
+	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, ProjectileMax: 32, random: engine.NewRandomStream(1)}
 }
 
 // SeedRandom starts a new match stream. ResetRoots deliberately preserves it.

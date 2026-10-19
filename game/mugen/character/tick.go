@@ -103,11 +103,14 @@ func TickCharacters(players []*Character) error {
 			p.prepareProjectileTick()
 		}
 	}
+	cancelProjectiles(players)
 	var rawContacts []contact
-	projectileHits := map[*Character]bool{}
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
 		for _, attacker := range attackers {
+			if attacker.isProjectile && !attacker.projectileCanHit() {
+				continue
+			}
 			if attacker.HitGuard == nil {
 				attacker.HitGuard = map[int]bool{}
 			}
@@ -151,9 +154,6 @@ func TickCharacters(players []*Character) error {
 			event.guard[int(event.defender.EntityID)] = true
 			continue
 		}
-		if event.projectile {
-			projectileHits[event.attacker] = true
-		}
 		event.guard[int(event.defender.EntityID)] = true
 		c := event.attacker
 		c.MoveHit, c.MoveContact, c.MoveGuarded = 1, 1, 0
@@ -185,6 +185,11 @@ func TickCharacters(players []*Character) error {
 			return event.defender.RuntimeError
 		}
 		if metadataOnly {
+			// None reactions still consume projectile hits/miss time, while
+			// ordinary hit metadata has no damage, power or move counters.
+			if event.projectile {
+				event.attacker.projectileContact()
+			}
 			continue
 		}
 		if event.guarded && !event.defender.GetHitGuarded {
@@ -206,6 +211,9 @@ func TickCharacters(players []*Character) error {
 		}
 		event.defender.pendingHitDamage += amount
 		event.defender.hasPendingHitDamage = true
+		if event.projectile {
+			event.attacker.projectileContact()
+		}
 	}
 	// Previous-tick definitions collide before this tick's state passes.
 	// Timed defence remains active for contact, then can be renewed by CNS.
@@ -236,13 +244,6 @@ func TickCharacters(players []*Character) error {
 			c.applyHitDamage(c.pendingHitDamage)
 			c.pendingHitDamage, c.hasPendingHitDamage = 0, false
 		}
-		var active []*Character
-		for _, p := range c.Projectiles {
-			if !projectileHits[p] {
-				active = append(active, p)
-			}
-		}
-		c.Projectiles = active
 		c.finishTick()
 		if c.RuntimeError != nil {
 			return c.RuntimeError
@@ -256,6 +257,14 @@ func TickCharacters(players []*Character) error {
 				return helper.RuntimeError
 			}
 			ordered = append(ordered, helper)
+		}
+	}
+	advancedOwners := map[*Character]bool{}
+	for _, c := range players {
+		owner := c.rootPlayer()
+		if !advancedOwners[owner] {
+			owner.advanceProjectiles()
+			advancedOwners[owner] = true
 		}
 	}
 	// Body push waits until every root has run CNS/movement. A later root can

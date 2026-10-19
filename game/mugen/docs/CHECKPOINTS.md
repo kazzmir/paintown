@@ -4,6 +4,20 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4cf: projectile contacts, phases, cancellation and capacity
+
+Predecessor/reversal 4b3ab498. 91 accepted frozen programs / 1,118 distinct slots /
+364 authored hashes, plus six native/app phase masks. Implements measured hit/
+miss/pause and active/visual-tail clocks, None hit consumption, Clsn2 cancellation,
+signed priorities/one pair per pass, issuer multiplier snapshot, root state/credit,
+PlayerProjectileMax and separate post-CNS projectile motion/birth phase. All
+295 selected Match native controls pass races (197.707s); new end/stock/clock
+checks and full core races pass. Fresh attrition, six actual phase apps, stock
+four-PNG win/rematch/win/82 events/private PCM, 755 frozen hashes and module/
+provenance audits pass. PROJECTILE-CONTACTS.md records diagnostics and limits.
+Next dependent coordinate slice uses eight captured and three frozen render
+controls, then M4cg queries and M4ch reversals. No pushes/binaries.
+
 ## M4ce: typed projectile setup, motion, lifetime and root ownership
 
 Predecessor/reversal ded53de8. 104 frozen programs / 1,192 distinct scalar slots /

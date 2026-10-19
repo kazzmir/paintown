@@ -190,6 +190,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			var reference struct {
 				FixtureConstants   bool               `json:"fixture_constants"`
 				RandomSeed         *int64             `json:"random_seed"`
+				ProjectileMax      *int               `json:"projectile_max"`
 				CNSHash            string             `json:"cns_sha256"`
 				AIRHash            string             `json:"air_sha256"`
 				StageHash          string             `json:"stage_fixture_sha256"`
@@ -305,6 +306,10 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			m := stockMatch(t, 99)
+			if reference.ProjectileMax != nil {
+				m.Options.PlayerProjectileMax = max(5, *reference.ProjectileMax)
+				m.World.ProjectileMax = m.Options.PlayerProjectileMax
+			}
 			if reference.RandomSeed != nil {
 				m.World.SeedRandom(*reference.RandomSeed)
 			}

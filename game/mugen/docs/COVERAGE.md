@@ -1,13 +1,13 @@
 # Current behavior coverage ledger
 
-M4ce adds typed projectile setup, independent motion/animation/pause clocks,
-native lifetime/bounds, root ownership and basic NumProjID. Its 104 frozen
-programs pin 1,192 distinct variable slots, nine load rejections and 12 native
-sprite positions; three actual projectile apps match opaque body masks exactly.
-Source routing is now 112/127 (88.2%), 15 unbound. [PROJECTILES.md](PROJECTILES.md)
-records limits. Contacts/multi-hit/removal/cancellation/queries/reversals remain
-active in this allocation; effects/modes/final rendering await items 3–4.
-Earlier allocation summaries below are historical.
+M4cf implements projectile hit/miss/hitpause clocks, active/visual-tail phases,
+Clsn2 cancellation/priority attrition, root capacity/config and helper birth
+ordering. Ninety-one frozen controls pin 1,118 distinct slots; six actual app
+masks match native birth/hit/expiry/cancel boundaries and completion. Read
+[PROJECTILE-CONTACTS.md](PROJECTILE-CONTACTS.md). Source routing stays 112/127
+(88.2%), 15 unbound. Foreign-coordinate corrections, event/legacy queries and
+reversals remain active; items 3–4 await later allocation. Older summaries below
+are historical.
 
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
@@ -49,7 +49,7 @@ does not promote an entire controller from one passing parameter/default.
 | Chains/juggle | M4bp integer schemas, predecessor ownership/ID, guard/None/idle context, per-move and per-projectile costs, non-fall budget preservation and chainid query. HIT-CHAINS-JUGGLE.md. | Broad helper/foreign/team/third-party/recovery/pause and full projectile interactions. |
 | Distance/snap constraints | M4bq strict integer schemas, source replacement/order, per-axis intervals, deferred offsets/GetHitVar and timed binding, facing/profile/CNS-write/moving-axis controls. HIT-CONSTRAINTS.md. | Broad entity/projectile/foreign/override/pause and moving timed-bind combinations. |
 | Guard distance | M4bn compiles guard.dist with native integer/coercion/bottom/order rules, preserves omitted/negative range, resets it on state entry and verifies facing/boundary/height/profile consumers. GUARD-DISTANCE.md. | Broad input/entity/foreign/pause combinations and other AttackDist variants. |
-| Projectiles/reversals | M4ce typed setup, motion/animation/pause, native lifetime/bounds and root ownership; 104 controls and three exact opaque app masks. PROJECTILES.md. ReversalDef still stores parameter data. | Multi-hit/removal/cancellation/event queries, capacity/birth ordering and consumed reversal rules remain in the current allocation; afterimages/shadows defer to effects/rendering. |
+| Projectiles/reversals | M4ce setup/motion/ownership plus M4cf hit/miss/phase/cancellation, active capacity and helper birth ordering. 104+91 controls and nine exact opaque/phase app masks. PROJECTILES.md, PROJECTILE-CONTACTS.md. ReversalDef still stores data. | Foreign-coordinate corrections, event/legacy queries and consumed reversals remain in this allocation. Broader combinations stay explicit; afterimages/shadows defer to effects/rendering. |
 | Contact shake | M4bs native schemas/defaults/order, fractional amplitude, asymmetric rounding, issuing-frame duration, global clock, profile conversions, ScreenPosY and world-only rendering. M4bt adds stored fall payload, typed getters, positive-duration consumption and guard/fall=0 rules. HIT-SHAKE.md, FALL-SHAKE.md. | Standalone EnvShake and broad request/entity/pause/zoom combinations. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. M4br adds native HitDef palette schemas, shared clocks, cache/portrait isolation and exact opaque indexed color comparisons. EXPLODS.md, RGB-CONSUMERS.md, HIT-PALETTE.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |

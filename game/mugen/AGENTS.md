@@ -153,6 +153,16 @@ multi-hit/removal/cancellation, including capacity/config and helper birth
 ordering, then M4cg queries and M4ch reversals. No sessions/clients remain at
 M4ce; no further implementation has started. Full suite at final integration.
 
+M4ce is 4b3ab498. M4cf completes the coherent contact/cancellation/capacity
+slice: 91 native programs, 1,118 distinct slots, 364 authored hashes; integrated
+295-control Match races PASS 197.707s, end/stock/clock and full core checks pass.
+Six actual phase masks, fresh native attrition, stock win/rematch/win with owned
+input/private PCM, all 755 hashes and module/provenance audits pass. Read
+PROJECTILE-CONTACTS.md. No sessions/clients remain at this checkpoint. Continue
+a dependent coordinate checkpoint using eight captured projspace-* and three
+unobserved/frozen projspace-draw-* programs; they are excluded from this commit.
+Then M4cg event/legacy queries and M4ch reversals. Full suite at final integration.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify

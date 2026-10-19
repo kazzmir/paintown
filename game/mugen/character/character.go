@@ -591,9 +591,6 @@ func (c *Character) finishTick() {
 		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
 	}
 
-	// 6. Update Helpers, Projectiles, Explods
-	c.advanceProjectiles()
-
 	// Diagnostic: detect infinite fall
 	if c.Y > 5000 && !c.PosFrozen {
 		fmt.Printf("[WARNING] Tick %d: Extreme Y position detected in state %d!\n", c.Time, c.StateNo)
@@ -2208,7 +2205,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	}
 	if !guarded && !hasOverride {
 		if hit.P1StateNo != nil && *hit.P1StateNo >= 0 {
-			attacker.changeStateWithEntry(*hit.P1StateNo, engine.EntryOverrides{}, true)
+			attacker.contactOwner().changeStateWithEntry(*hit.P1StateNo, engine.EntryOverrides{}, true)
 		}
 		if hit.P2StateNo != nil && *hit.P2StateNo >= 0 {
 			if hit.P2GetP1State {

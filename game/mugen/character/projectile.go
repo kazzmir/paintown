@@ -6,9 +6,13 @@ import (
 )
 
 type projectileState struct {
-	parameters           engine.ProjectileParameters
-	scale                [2]float64
-	pauseMove, superMove int
+	parameters               engine.ProjectileParameters
+	scale                    [2]float64
+	pauseMove, superMove     int
+	hits, cooldown, priority int
+	removing, newAnimation   bool
+	prepared                 bool
+	preparedTick             int32
 }
 
 func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit map[string]string) error {
@@ -16,9 +20,23 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 		return err
 	}
 	owner := c.rootPlayer()
+	limit := c.World.ProjectileMax
+	if limit == 0 {
+		limit = 32
+	}
+	if owner.numProjectiles(0, false) >= max(5, limit) {
+		return nil
+	}
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	p.isProjectile = true
 	p.projectile = &projectileState{parameters: parameters, scale: parameters.Scale, pauseMove: parameters.PauseMoveTime, superMove: parameters.SuperMoveTime}
+	p.projectile.hits = parameters.Hits
+	if p.projectile.hits < 0 {
+		p.projectile.hits = 1
+	}
+	p.projectile.priority = parameters.Priority
+	p.projectile.newAnimation = true
+	p.AttackMul = c.AttackMul
 	if c.StateFile != nil && c.StateFile.Size.ProjDoScale != 0 {
 		x, y := c.spriteScale()
 		p.projectile.scale[0] *= x
@@ -73,6 +91,14 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 }
 
 func (p *Character) prepareProjectileTick() {
+	newborn := p.projectile != nil && !p.projectile.prepared
+	if p.projectile != nil && p.Timeline != nil {
+		if p.projectile.prepared && p.projectile.preparedTick == p.Timeline.GameTime {
+			return
+		}
+		p.projectile.prepared = true
+		p.projectile.preparedTick = p.Timeline.GameTime
+	}
 	p.worldFrozen = p.Timeline != nil && p.Timeline.Paused()
 	if p.worldFrozen && p.projectile != nil {
 		allowance := &p.projectile.pauseMove
@@ -80,20 +106,38 @@ func (p *Character) prepareProjectileTick() {
 			allowance = &p.projectile.superMove
 		}
 		if *allowance > 0 {
-			*allowance--
+			if !newborn {
+				*allowance--
+			}
 			p.worldFrozen = false
 		}
 	}
-	if !p.worldFrozen && p.HitPauseTime > 0 {
+	wasHitPaused := p.HitPauseTime > 0
+	if !p.worldFrozen && !newborn && p.HitPauseTime > 0 {
 		p.HitPauseTime--
 	}
 	p.pausedThisTick = p.HitPauseTime > 0
+	if s := p.projectile; s != nil && !s.removing {
+		if p.projectileLifetime == 0 {
+			p.removeProjectile("expiry")
+		} else if !newborn && !p.worldFrozen && !wasHitPaused && p.projectileLifetime > 0 {
+			p.projectileLifetime--
+		}
+	}
+	if p.projectile != nil && !p.worldFrozen {
+		if !wasHitPaused && p.projectile.cooldown > 0 {
+			p.projectile.cooldown--
+		}
+		if p.projectile.cooldown == 0 && p.HitPauseTime == 0 {
+			p.HitGuard = map[int]bool{}
+		}
+	}
 }
 
 func (c *Character) numProjectiles(id int, hasID bool) int {
 	count := 0
 	for _, p := range c.Projectiles {
-		if !p.destroyed && (!hasID || p.projectile != nil && p.projectile.parameters.ID == max(0, id)) {
+		if !p.destroyed && (p.projectile == nil || !p.projectile.removing) && (!hasID || p.projectile != nil && p.projectile.parameters.ID == max(0, id)) {
 			count++
 		}
 	}
@@ -114,4 +158,53 @@ func (c *Character) lookupProjectileCount(name string, args []evaluator.Value) (
 		return evaluator.Value{}, true
 	}
 	return evaluator.Int(int32(c.numProjectiles(int(id), true))), true
+}
+
+func (p *Character) projectileCanHit() bool {
+	s := p.projectile
+	return s == nil || !p.destroyed && !s.removing && s.hits > 0 && s.cooldown == 0 && !p.pausedThisTick
+}
+
+func (p *Character) projectileContact() {
+	s := p.projectile
+	if s == nil {
+		return
+	}
+	s.hits--
+	s.cooldown = s.parameters.MissTime
+	// The beta replaces every measured negative miss interval with two.
+	if s.cooldown < 0 {
+		s.cooldown = 2
+	}
+	p.pausedThisTick = p.HitPauseTime > 0
+	if s.hits == 0 && s.parameters.Remove {
+		p.removeProjectile("hit")
+	}
+}
+
+func (p *Character) removeProjectile(reason string) {
+	s := p.projectile
+	if s == nil {
+		p.destroyed = true
+		return
+	}
+	if s.removing || p.destroyed {
+		return
+	}
+	s.removing = true
+	p.HitDefActive = false
+	action := s.parameters.RemoveAnimation
+	if reason == "hit" {
+		action = s.parameters.HitAnimation
+	}
+	if reason == "cancel" {
+		action = s.parameters.CancelAnimation
+	}
+	if action < 0 || p.AirFile == nil || p.AirFile.Actions[action] == nil {
+		p.destroyed = true
+		return
+	}
+	p.ChangeAnim(action)
+	s.newAnimation = true
+	p.VelX, p.VelY = s.parameters.RemoveVelocity[0], s.parameters.RemoveVelocity[1]
 }

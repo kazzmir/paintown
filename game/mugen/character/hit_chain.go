@@ -72,40 +72,53 @@ func (c *Character) juggleRelevant(hit cns.HitDef) bool {
 	return c.GetHitFall() || c.StateType == "L" || hit.Fall != 0 || (c.StateType == "A" && hit.AirFall != 0)
 }
 
-// Projectiles have independent motion and pause clocks; they execute no CNS.
+// Projectiles advance after all root/helper CNS, including their birth pass.
 func (c *Character) advanceProjectiles() {
 	active := c.Projectiles[:0]
 	for _, p := range c.Projectiles {
-		if p.projectileLifetime == 0 {
+		if p.destroyed {
+			continue
+		}
+		p.prepareProjectileTick()
+		s := p.projectile
+		if p.destroyed {
 			continue
 		}
 		if !p.worldFrozen && !p.pausedThisTick {
 			p.X = float64(float32(p.X) + float32(p.VelX)*float32(p.Facing))
 			p.Y = float64(float32(p.Y) + float32(p.VelY))
-			if state := p.projectile; state != nil {
-				v := state.parameters
+			if s != nil && !s.removing {
+				v := s.parameters
 				p.VelX = float64(float32(p.VelX)*float32(v.VelocityMultiplier[0]) + float32(v.Accel[0]))
 				p.VelY = float64(float32(p.VelY)*float32(v.VelocityMultiplier[1]) + float32(v.Accel[1]))
 				left := p.cameraPositionX() - float64(p.LocalCoordinateWidth())/2
 				right := left + float64(p.LocalCoordinateWidth())
-				if p.X < left-float64(v.EdgeBound) || p.X > right+float64(v.EdgeBound) || p.VelY < 0 && p.Y < v.HeightBound[0] || p.VelY > 0 && p.Y > v.HeightBound[1] {
-					continue
-				}
+				outside := p.X < left-float64(v.EdgeBound) || p.X > right+float64(v.EdgeBound) || p.VelY < 0 && p.Y < v.HeightBound[0] || p.VelY > 0 && p.Y > v.HeightBound[1]
 				if p.World != nil && p.World.ProjectileStageBoundsKnown {
 					scale := float64(p.LocalCoordinateWidth()) / float64(p.GameCoord.Width)
 					bounds := p.World.ProjectileStageBounds
 					direction := p.VelX * float64(p.Facing)
-					if direction < 0 && p.X < bounds[0]*scale-float64(v.StageBound) || direction > 0 && p.X > bounds[1]*scale+float64(v.StageBound) {
-						continue
-					}
+					outside = outside || direction < 0 && p.X < bounds[0]*scale-float64(v.StageBound) || direction > 0 && p.X > bounds[1]*scale+float64(v.StageBound)
+				}
+				if outside {
+					p.removeProjectile("expiry")
 				}
 			}
-			p.Time++
-			if p.projectileLifetime > 0 {
-				p.projectileLifetime--
+			if p.destroyed {
+				continue
 			}
-			p.contactFrame, p.contactFrameReady = p.CurrentElement(), true
-			p.UpdateAnimation()
+			p.Time++
+			if s == nil || !s.newAnimation {
+				p.UpdateAnimation()
+			}
+			p.contactFrameReady = false
+			if s != nil && s.removing && p.GetAnimTime() == 0 {
+				p.destroyed = true
+				continue
+			}
+		}
+		if s != nil {
+			s.newAnimation = false
 		}
 		active = append(active, p)
 	}

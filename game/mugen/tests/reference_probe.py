@@ -30,7 +30,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None, p2_fixture=None, rules=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False, game_height=None, video=None, helper_max=None, p2_fixture=None, rules=None, projectile_max=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -115,6 +115,8 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
         settings = re.sub(r'(?im)^GameHeight\s*=.*$', 'GameHeight = ' + str(game_height), settings)
     if helper_max is not None:
         settings = re.sub(r'(?im)^HelperMax\s*=.*$','HelperMax = '+str(helper_max),settings)
+    if projectile_max is not None:
+        settings = re.sub(r'(?im)^PlayerProjectileMax\s*=.*$', 'PlayerProjectileMax = ' + str(projectile_max), settings)
     for key, value in (video or {}).items():
         settings, count = re.subn(r'(?im)^\s*;?\s*' + re.escape(key) + r'\s*=.*$',
                                   lambda match: key + ' = ' + str(value), settings)
@@ -278,6 +280,7 @@ def main():
     parser.add_argument('--rule', action='append', default=[], help='Disposable power rule override: Default.Attack.LifeToPowerMul=N or Default.GetHit.LifeToPowerMul=N')
     parser.add_argument('--hud-marker', action='store_true', help='Use the fixture-owned probe.sff for calibrated Face background markers in disposable fight files')
     parser.add_argument('--helper-max', type=int, help='Override only the copied HelperMax for entity identity/allocation probes')
+    parser.add_argument('--projectile-max', type=int, help='Disposable PlayerProjectileMax control')
     parser.add_argument('--stage', default='kfm', help='Stage name/path in the disposable distribution')
     parser.add_argument('--fixture-stage', action='store_true', help='Use the authored fixture .stage.def sidecar in the disposable distribution')
     parser.add_argument('--stage-version',choices=['1.0','1.1'],help='Override only the copied stage version for compatibility probes')
@@ -314,6 +317,7 @@ def main():
         args.rule = [key+'='+str(value) for key,value in case_expected.get('rules',{}).items()]
         args.hud_marker = case_expected.get('hud_marker',False)
         args.helper_max = case_expected.get('helper_max')
+        args.projectile_max = case_expected.get('projectile_max')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if args.p2_fixture is not None and not re.fullmatch('[a-z0-9_-]+', args.p2_fixture):
@@ -328,6 +332,8 @@ def main():
         parser.error('Game height must be 1 through 8192 for bounded reference probes')
     if args.helper_max is not None and not 0 <= args.helper_max <= 256:
         parser.error('Helper allocation probe limit must be 0..256')
+    if args.projectile_max is not None and not 0 <= args.projectile_max <= 512:
+        parser.error('Projectile allocation probe limit must be 0..512')
     if not re.fullmatch('[a-zA-Z0-9_./-]+',args.stage) or args.stage.startswith('/') or '..' in Path(args.stage).parts:
         parser.error('Stage must be a relative name/path in the disposable distribution')
     for profile in (args.localcoord, args.p2_localcoord):
@@ -374,7 +380,7 @@ def main():
         parser.error('State-file order must contain unique st/stN keys')
     if args.bare_constants and args.fixture_constants:
         parser.error('Bare and fixture-owned constants are mutually exclusive')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max,p2_fixture,rules)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants,args.game_height,video,args.helper_max,p2_fixture,rules,args.projectile_max)
     if args.fixture_stage:
         if args.stage not in ['kfm', 'probe-stage']:
             parser.error('Fixture stage owns the stage path; omit --stage')
@@ -447,6 +453,8 @@ def main():
         p2_extras = p2_fixture.with_suffix('.extra')
         if p2_extras.exists():
             evidence['p2_extra_sha256'] = {str(path.relative_to(p2_extras)): digest(path) for path in sorted(p2_extras.rglob('*')) if path.is_file()}
+    if args.projectile_max is not None:
+        evidence['projectile_max'] = args.projectile_max
     if args.game_width is not None:
         evidence['game_width'] = args.game_width
     if args.game_height is not None:
