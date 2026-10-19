@@ -1,5 +1,16 @@
 # Implementation checkpoints
 
+## M4cf coordinate: foreign-state projectile profiles
+
+M4cf coordinate checkpoint completes foreign-state projectile units and per-actor
+render scaling. Eleven native programs /132 values /44 original hashes, three
+exact actual-app sprite masks, selected Match races192.297s, full core races,
+fresh native payload and stock win/rematch/win/input/private-PCM/provenance checks
+pass. All355 frozen hashes/root module guards pass. Read
+[PROJECTILE-COORDINATES.md](PROJECTILE-COORDINATES.md). Source routes stay112/127;
+queries and reversals follow. No whole-engine percentage is justified.
+
+
 The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.

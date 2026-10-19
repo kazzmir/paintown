@@ -1,0 +1,133 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, coordinate control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, coordinate control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, coordinate control]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+damage=0
+pausetime=0,0
+sparkno=-1
+hitsound=-1,0
+p2stateno=710
+p2getp1state=1
+ground.velocity=0,0
+ground.hittime=300
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=4
+fv=0
+value=Enemy,NumProj
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=5
+fv=1
+value=Enemy,NumProj
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=6
+fv=2
+value=Enemy,NumProj
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=7
+fv=3
+value=Enemy,NumProj
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=8
+fv=4
+value=Enemy,NumProj
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=10
+fv=5
+value=Enemy,NumProj
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=4
+fv=6
+value=Enemy,StateNo
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=5
+fv=7
+value=Enemy,StateNo
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=6
+fv=8
+value=Enemy,StateNo
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=7
+fv=9
+value=Enemy,StateNo
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=8
+fv=10
+value=Enemy,StateNo
+[State 700, coordinate control]
+type=VarSet
+trigger1=Time=10
+fv=11
+value=Enemy,StateNo
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, coordinate control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, coordinate control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[Statedef 710]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 710, coordinate control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 710, coordinate control]
+type=Projectile
+trigger1=Time=0
+projid=7
+projanim=9992
+velocity=80,0

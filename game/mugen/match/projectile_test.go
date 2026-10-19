@@ -41,3 +41,7 @@ func TestNativeProjectileClockPrograms(t *testing.T) {
 func TestNativeProjectileAnimationEndPrograms(t *testing.T) {
 	replayNativeGeometryPrograms(t, "projend-*.json", 3)
 }
+
+func TestNativeProjectileCoordinatePrograms(t *testing.T) {
+	replayNativeGeometryPrograms(t, "projspace-*.json", 11)
+}

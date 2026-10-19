@@ -1,5 +1,14 @@
 # Current progress assessment
 
+M4cf coordinate checkpoint completes foreign-state projectile units and per-actor
+render scaling. Eleven native programs /132 values /44 original hashes, three
+exact actual-app sprite masks, selected Match races192.297s, full core races,
+fresh native payload and stock win/rematch/win/input/private-PCM/provenance checks
+pass. All355 frozen hashes/root module guards pass. Read
+[PROJECTILE-COORDINATES.md](PROJECTILE-COORDINATES.md). Source routes stay112/127;
+queries and reversals follow. No whole-engine percentage is justified.
+
+
 M4cf implements projectile hit/miss/hitpause clocks, active/visual-tail phases,
 Clsn2 cancellation/priority attrition, root capacity/config and helper birth
 ordering. Ninety-one frozen controls pin 1,118 distinct slots; six actual app

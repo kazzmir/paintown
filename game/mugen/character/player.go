@@ -66,9 +66,10 @@ func (p *Player) DrawScaled(screen *ebiten.Image, screenX, screenY, scaleX, scal
 	p.pruneSpriteCache()
 	for _, actor := range OrderedActors([]*Player{p}) {
 		c := actor.Character
-		x := screenX + (c.X-p.Character.X)*scaleX
-		y := screenY + (c.Y-p.Character.Y)*scaleY
-		p.drawEntity(screen, c, x, y, scaleX, scaleY)
+		units := p.Character.ScaleFrom(c)
+		x := screenX + (c.X*units-p.Character.X)*scaleX
+		y := screenY + (c.Y*units-p.Character.Y)*scaleY
+		p.drawEntity(screen, c, x, y, scaleX*units, scaleY*units)
 	}
 
 	p.drawLegacyExplods(screen, screenX, screenY, scaleX, scaleY)

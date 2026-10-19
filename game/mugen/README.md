@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-19, through M4cf**. Projectile setup/motion/pause/ownership now has native controls and actual
+Snapshot: **2026-10-19, through M4cf coordinate checkpoint**. Foreign-state projectile units and three exact sprite render controls now pass; see [coordinate evidence](docs/PROJECTILE-COORDINATES.md). Projectile setup/motion/pause/ownership now has native controls and actual
 app rendering checks. Hit/miss clocks, visual tails, cancellation and capacity
 now have native consumers; coordinate/query/reversal work continues. See
 [projectile progress](docs/PROJECTILES.md). Random/VarRandom now share the native match RNG, with deterministic seed replay

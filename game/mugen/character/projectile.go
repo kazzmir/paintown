@@ -48,6 +48,12 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 	p.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
 	p.BindEffects(c.EffectQueue, c.CommonEffects)
 	p.LocalCoord, p.GameCoord, p.Viewport = c.LocalCoord, c.GameCoord, c.Viewport
+	ratio := float32(1)
+	if parameters.CoordinateWidth > 0 {
+		ratio = float32(parameters.CoordinateWidth) / float32(c.LocalCoordinateWidth())
+		p.LocalCoord.Width = parameters.CoordinateWidth
+		p.LocalCoord.Height = max(1, int(float32(c.LocalCoord.Height)*ratio))
+	}
 	p.Timeline, p.SuperTargetDefenceMul = c.Timeline, c.SuperTargetDefenceMul
 	p.PowerRules = c.PowerRules
 	p.Palettes, p.PaletteNo = c.Palettes, c.PaletteNo
@@ -62,11 +68,14 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 	p.Facing = c.Facing
 	p.Anim = parameters.Action
 	p.ChangeAnim(parameters.Action)
-	x := c.X
+	// Unlike helpers, a projectile retains the issuing state's coordinate
+	// profile. Its AIR/sprite coordinates and HitDef share that same profile.
+	x := float64(float32(c.X) * ratio)
 	switch parameters.PosType {
 	case "p2":
 		if len(c.Opponents) > 0 {
 			x, _ = c.PositionOf(c.Opponents[0])
+			x = float64(float32(x) * ratio)
 		} else {
 			c.EvaluationWarning("Projectile postype p2 has no opponent; using p1")
 		}
@@ -74,10 +83,10 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 		// The beta accepts these four names but anchors all four at the
 		// screen center. The isolated native sprite controls distinguish this
 		// from the edge placement described in its manual and used by Helper.
-		x = c.cameraPositionX()
+		x = float64(float32(c.cameraPositionX()) * ratio)
 	}
 	p.X = x + parameters.Offset[0]*float64(c.Facing)
-	p.Y = c.Y + parameters.Offset[1]
+	p.Y = float64(float32(c.Y)*ratio) + parameters.Offset[1]
 	p.VelX, p.VelY = parameters.Velocity[0], parameters.Velocity[1]
 	p.SprPriority = parameters.SpritePriority
 	p.Opponents = owner.Opponents

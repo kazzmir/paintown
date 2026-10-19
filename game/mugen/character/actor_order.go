@@ -52,7 +52,7 @@ func DrawPlayers(screen *ebiten.Image, players []*Player, space coord.Space, cam
 	}
 	for _, actor := range OrderedActors(players) {
 		p, c := actor.Owner, actor.Character
-		scale, _ := p.LocalCoord.ScaleTo(space)
+		scale := float64(space.Width) / float64(c.LocalCoordinateWidth())
 		p.drawEntity(screen, c, float64(space.Width)/2+c.X*scale-cameraX, floorY+c.Y*scale, scale, scale)
 	}
 	for _, p := range players {

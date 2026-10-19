@@ -11,6 +11,7 @@ import (
 // ProjectileParameters keeps projectile state separate from its HitDef payload.
 // Afterimage rendering and the shared stage-shadow renderer remain separate gates.
 type ProjectileParameters struct {
+	CoordinateWidth                                                    int // Active CNS owner's units, including foreign states.
 	ID, Action, HitAnimation, RemoveAnimation, CancelAnimation         int
 	RemoveTime, Hits, MissTime, Priority, SpritePriority               int
 	EdgeBound, StageBound                                              int
@@ -195,6 +196,8 @@ func compileProjectile(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		if !ok {
 			return fmt.Errorf("Projectile context is unavailable")
 		}
-		return context.CreateProjectile(projectileParameters(values, postype, width), hitValues)
+		parameters := projectileParameters(values, postype, width)
+		parameters.CoordinateWidth = width
+		return context.CreateProjectile(parameters, hitValues)
 	}, true, nil
 }

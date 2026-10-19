@@ -90,10 +90,6 @@ m4cf-phase-app-audit.json and m4cf-app-evidence-audit.json. Last complete scoped
 race baseline is M4cb; the final allocated integration will rerun it with a
 longer package deadline for the expanded corpus.
 
-The next coordinate slice will compare the eight captured projspace-* controls
-against Go, fix foreign-state units as demonstrated and use the three pre-frozen
-coordinate render controls. Native payloads distinguish source width 320/640:
-foreign/own X velocities are 1.25/0.625 in the 320-unit receiver, with corresponding
-yaccel 0.5/0.25. No conversion code has been added yet. Event query families and
-legacy forms follow as M4cg, then reversals as M4ch. Broad effects/shadows,
-mode/team combinations, numeric extremes and final renderer parity remain gates.
+The dependent coordinate slice is now complete; see PROJECTILE-COORDINATES.md.
+Event queries and reversals follow. Broad effects/shadows, mode/team combinations,
+numeric extremes and final renderer parity remain gates.

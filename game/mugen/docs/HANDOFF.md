@@ -23,39 +23,21 @@ this checkpoint. Prior complete scoped race baseline is M4cb; the allocated
 final projectile/reversal integration will rerun it. Only source/text is staged;
 no pushes or binaries.
 
-M4cd is ded53de8; M4ce is 4b3ab498. M4cf contact/cancellation/capacity is
-COMPLETE, ready for its local commit. Read PROJECTILE-CONTACTS.md. 91 native
-programs / 1,118 distinct slots / 364 authored hashes, including six native
-phase/completion masks. All 295 selected Match native controls pass races
-197.707s; new end/stock/clock checks pass 27.278s; full core races pass (Character
-11.416s, System 9.726s, engine 1.451s, evaluator 1.019s, config 1.040s,
-CNS/combat 1.013s each). Six actual app masks, fresh priority attrition, stock
-four-PNG win/rematch/win/82 balanced events/private PCM and all 755 frozen
-hashes/root module guards pass. All sessions including 44297 were awaited;
-no native/app/test clients remain. Earlier diagnostics/review rejection and safe
-bounded edits are recorded in the topic notes; no review blocker remains.
+M4cd is ded53de8; M4ce is4b3ab498; M4cf contacts is40d1b25b. The dependent
+coordinate checkpoint is complete and ready for local commit. Read
+PROJECTILE-COORDINATES.md:11 native programs/132 values/44 hashes, three exact
+actual-app masks, full core and selected Match races192.297s, fresh native and
+stock win/rematch/win/82 events/PCM pass. All355 frozen final hashes/module
+guards pass; session37725 awaited and separate process check finds no clients.
 
-Next: commit M4cf locally, then complete the dependent coordinate slice. Eight
-projspace-* controls are captured/promoted but EXCLUDED from this contact
-commit. Three projspace-draw-* originals (12 hashes) are frozen but not yet
-observed; temp/m4cf-space-draw-{inputs,metadata}.json records them. Capture
-those first, serially with positive-CNS clipboard delay 0; they end in St700
-and freeze geometry with Pause at Time=5. Their valid BG is displaced offscreen
-for clean masks. The eight existing controls use manifests m4cf-space-inputs.json
-and m4cf-space-metadata.json; raw log m4cf-end-space.log. Native source profiles
-prove motion and payload differences: foreign width320 to issuer640 gives
-receiver X velocity1.25/yaccel0.5, own640 gives0.625/0.25, reverse foreign640
-also1.25/0.5 in receiver640. Current CreateProjectile stores all values in issuer
-units, so compare/replay and fix demonstrated coordinate boundaries. No profile
-conversion code or tests have yet been added. Source space/ownership must not
-change native originals/goldens. Positive lifetime/own-hitpause controls in this
-same slice pin timer suspension. The new coordinate work may be its own local
-checkpoint before M4cg queries and M4ch reversals.
-
-Source routing remains 112/127, 15 unbound; no event/reversal implementation
-yet. Native/app/display-dependent work stays serial. Full scoped races at final
-integration with a larger timeout for the growing corpus. Items 3–4 remain
-unallocated. No agents/goals, pushes, binaries or edits outside game/mugen/.
+Next M4cg:37 projevent-* originals are frozen but unobserved and EXCLUDED from
+the coordinate commit. Manifests temp/m4cg-native-inputs.json (33programs) and
+m4cg-extra-inputs.json (4) total148 hashes. Capture serially before implementation;
+never rerun author scripts or edit observed originals. Cover event kinds/IDs,
+legacy comparison forms, pause clocks, helper/root ownership, syntax/errors and
+state history. Then M4ch ReversalDef/MoveReversed. No query/reversal code yet.
+Full scoped races at final integration with a larger deadline for corpus growth.
+Items3–4 await allocation; no agents/goals/pushes/binaries/out-of-scope edits.
 
 All prior allocations below are historical; their stop condition is superseded
 by the new user authorization. No agents/goals. No authored changes outside

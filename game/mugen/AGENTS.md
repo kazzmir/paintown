@@ -163,6 +163,15 @@ a dependent coordinate checkpoint using eight captured projspace-* and three
 unobserved/frozen projspace-draw-* programs; they are excluded from this commit.
 Then M4cg event/legacy queries and M4ch reversals. Full suite at final integration.
 
+M4cf contacts is40d1b25b. The dependent coordinate checkpoint completes11
+programs/132 values/44 authored hashes and three exact actual-app masks. Full
+core and selected Match races192.297s, fresh native payload, stock replay/PCM,
+all355 frozen hashes and module guards pass. Read PROJECTILE-COORDINATES.md.
+All sessions awaited/no clients. Continue M4cg with37 frozen/unobserved projevent
+originals (148 hashes in m4cg-native-inputs/m4cg-extra-inputs.json), then M4ch.
+Do not stage those originals in the coordinate commit. Final full scoped races
+need a larger package timeout for corpus growth. No pushes/binaries/agents.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify
