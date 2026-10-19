@@ -202,6 +202,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				ErrorState         int                `json:"expected_compile_state"`
 				ErrorFile          string             `json:"expected_compile_file"`
 				ReplayTicks        int                `json:"replay_ticks"`
+				RenderOnly         bool               `json:"render_only"`
 				RecipeHash         string             `json:"recipe_sha256"`
 				GameWidth          int                `json:"game_width"`
 				Rules              map[string]float64 `json:"rules"`
@@ -401,6 +402,12 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal("native replay did not complete its simulation passes", completed, ticks)
 			}
 			for _, capture := range reference.Captures {
+				// Positive-CNS render probes can publish their clipboard before
+				// subsequent VarSets. Their acceptance is the external native/app
+				// PNG comparison, not a comparison against final stored variables.
+				if reference.RenderOnly {
+					continue
+				}
 				for key, want := range capture.Variables {
 					index, err := strconv.Atoi(key)
 					if err != nil {

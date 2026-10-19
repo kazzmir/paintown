@@ -104,6 +104,9 @@ func TickCharacters(players []*Character) error {
 		}
 	}
 	cancelProjectiles(players)
+	if err := reverseAttacks(players); err != nil {
+		return err
+	}
 	var rawContacts []contact
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
@@ -156,6 +159,7 @@ func TickCharacters(players []*Character) error {
 		}
 		event.guard[int(event.defender.EntityID)] = true
 		c := event.attacker
+		c.MoveReversed = 0
 		c.MoveHit, c.MoveContact, c.MoveGuarded = 1, 1, 0
 		if event.guarded {
 			c.MoveHit, c.MoveGuarded = 0, 1

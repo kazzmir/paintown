@@ -1,5 +1,30 @@
 # Implementation checkpoints
 
+## M4ch: native character reversals and MoveReversed
+
+Typed required masks/full HitDef reader, Clsn1 character contact selection,
+consumption/persistence, counters/targets/GetPower/pauses/custom states and sparks.
+Ninety promoted native programs include four rejections,948 numeric readings and
+84 early clipboard readings kept separate.404 hashes pin101 originals, including
+11 preserved invalid drafts. Ten genuine Projectile controls prove the beta's
+projectile exclusion for NA/NP/SP and idle/attacking owners. A parsed controller
+assertion prevents accidental substitution of HitDef. Seven exact actual apps
+show four sparks and three surviving projectiles. The shared indexed effect
+sampler now retains native pixel sampling and blend options.
+
+Final full scoped race suite PASSED:3,169 test/subtest results,24 tested and12
+compiled-only packages (36 full package identities), no failures or individual
+skips. Match1228.212s; total1298.980s. Command:
+`bash game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m -json`.
+All10,831 frozen source/test/probe/fixture/module hashes pass; stderr is empty.
+Session36806 was awaited and a separate process check found no clients. Only
+full3 is acceptance; the two interrupted attempts remain diagnostics. Artifacts:
+temp/m4ch3-final-inputs.json, m4ch3-full-scoped-race{.jsonl,.stderr.log,-result.json}
+and m4ch3-full.log. Final native/stock/provenance checks also pass.
+See REVERSALS.md for the authoring correction, interrupted diagnostic runs,
+underscore scratch directory/package preflight and actual variant limits.
+Source routing120/127 (94.5%) is not whole-engine parity. All final gates pass. This completes allocated items 1–2; items 3–4 await review.
+
 ## M4cg: projectile event queries
 
 Final checks PASS:51 native programs/456 values/13 rejections/204 authored

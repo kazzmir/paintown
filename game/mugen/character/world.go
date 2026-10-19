@@ -281,6 +281,7 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 type hitTarget struct {
 	generation uint64
 	id         int
+	reversal   bool
 }
 
 func (c *Character) acquireTarget(target *Character, id int) {
@@ -291,7 +292,7 @@ func (c *Character) acquireTarget(target *Character, id int) {
 	if _, ok := c.hitTargets[target]; !ok {
 		c.targetOrder = append(c.targetOrder, target)
 	}
-	c.hitTargets[target] = hitTarget{target.hitGeneration, id}
+	c.hitTargets[target] = hitTarget{generation: target.hitGeneration, id: id}
 }
 
 func (c *Character) acquiredTargets(id int, filter bool) []*Character {
@@ -299,7 +300,11 @@ func (c *Character) acquiredTargets(id int, filter bool) []*Character {
 	var active []*Character
 	for _, target := range c.targetOrder {
 		record, ok := c.hitTargets[target]
-		if !ok || target.destroyed || target.MoveType != "H" || record.generation != target.hitGeneration {
+		validMove := target.MoveType == "H"
+		if record.reversal {
+			validMove = true
+		}
+		if !ok || target.destroyed || !validMove || record.generation != target.hitGeneration {
 			delete(c.hitTargets, target)
 			continue
 		}

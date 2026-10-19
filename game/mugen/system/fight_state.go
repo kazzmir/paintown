@@ -22,6 +22,7 @@ type FightState struct {
 	effectImages                       map[effectImageKey]effectImage
 	effectWarnings                     map[string]bool
 	linearSampler                      render.Linear
+	indexSampler                       render.Nearest
 	renderError                        error
 }
 

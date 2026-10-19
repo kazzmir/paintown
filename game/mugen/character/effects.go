@@ -15,6 +15,12 @@ func (c *Character) BindEffects(queue *effect.Queue, common effect.Source) {
 }
 
 func (c *Character) contactEffect(attacker *Character, hit cns.HitDef, guarded bool) error {
+	return c.contactEffectFrom(attacker, attacker, hit, guarded)
+}
+
+// Reversals use the incoming attack's geometry with the reverser's resources
+// and spark offset units. Ordinary contacts have the same owner for both.
+func (c *Character) contactEffectFrom(attacker, sourceOwner *Character, hit cns.HitDef, guarded bool) error {
 	action, own := hit.SparkNo, hit.SparkOwn
 	if guarded {
 		action, own = hit.GuardSparkNo, hit.GuardSparkOwn
@@ -27,12 +33,13 @@ func (c *Character) contactEffect(attacker *Character, hit cns.HitDef, guarded b
 		gameWidth = 320
 	}
 	attackerScale := float64(gameWidth) / float64(attacker.LocalCoordinateWidth())
+	sourceScale := float64(gameWidth) / float64(sourceOwner.LocalCoordinateWidth())
 	defenderScale := float64(gameWidth) / float64(c.LocalCoordinateWidth())
-	source := attacker.CommonEffects
+	source := sourceOwner.CommonEffects
 	if own {
-		source = effect.Source{Animations: attacker.AirFile, Palette: attacker.Palettes, Scale: attackerScale}
-		if attacker.Palettes != nil {
-			source.Sprites = attacker.Palettes.Archive
+		source = effect.Source{Animations: sourceOwner.AirFile, Palette: sourceOwner.Palettes, Scale: sourceScale}
+		if sourceOwner.Palettes != nil {
+			source.Sprites = sourceOwner.Palettes.Archive
 		}
 	}
 	if source.Sprites == nil || source.Animations == nil || source.Animations.Actions[action] == nil {
@@ -58,8 +65,11 @@ func (c *Character) contactEffect(attacker *Character, hit cns.HitDef, guarded b
 	if len(hit.SparkXY) > 1 {
 		offsetY = float64(hit.SparkXY[1])
 	}
-	x := (c.X+float64(direction)*width)*defenderScale + float64(direction)*offsetX*attackerScale
+	x := (c.X+float64(direction)*width)*defenderScale + float64(direction)*offsetX*sourceScale
 	y := (attacker.Y + offsetY) * attackerScale
+	if sourceOwner != attacker {
+		y = attacker.Y*attackerScale + offsetY*sourceScale
+	}
 	if attacker.EffectQueue == nil {
 		attacker.BindEffects(nil, attacker.CommonEffects)
 	}

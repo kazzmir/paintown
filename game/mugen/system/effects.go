@@ -106,8 +106,16 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 		if instance.HasScale {
 			op.GeoM.Scale(instance.ScaleX, instance.ScaleY)
 		}
+		if sx < 0 {
+			op.GeoM.Translate(1, 0)
+		}
+		if sy < 0 {
+			op.GeoM.Translate(0, 1)
+		}
 		x, y := instance.X, instance.Y
-		if _, indexed := sprite.Image.(*image.Paletted); !indexed {
+		if _, indexed := sprite.Image.(*image.Paletted); indexed {
+			x, y = x+0.5, y+0.5
+		} else {
 			x, y = math.Trunc(x), math.Trunc(y)
 		}
 		if !instance.ScreenSpace {
@@ -128,7 +136,10 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 				BlendFactorSourceAlpha: ebiten.BlendFactorZero, BlendFactorDestinationAlpha: ebiten.BlendFactorOne}
 		}
 		if _, indexed := sprite.Image.(*image.Paletted); indexed {
-			screen.DrawImage(cached.image, op)
+			if err := s.indexSampler.DrawImage(screen, cached.image, op); err != nil {
+				s.renderError = fmt.Errorf("fight effect action %d indexed sampler: %w", instance.Action, err)
+				return
+			}
 		} else if err := s.linearSampler.DrawImage(screen, cached.image, op); err != nil {
 			s.renderError = fmt.Errorf("fight effect action %d sprite %d,%d sampler: %w", instance.Action, el.Group, el.Image, err)
 			return

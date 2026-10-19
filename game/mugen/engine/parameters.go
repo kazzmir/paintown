@@ -101,6 +101,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileSuperPause(ctrl)
 	case "hitdef":
 		return compileHitDef(ctrl)
+	case "reversaldef":
+		return compileReversalDef(ctrl)
 	case "projectile":
 		return compileProjectile(ctrl)
 	case "hitvelset":

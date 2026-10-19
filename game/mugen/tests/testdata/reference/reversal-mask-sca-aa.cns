@@ -1,0 +1,292 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, reversal control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, reversal control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, reversal control]
+type=ReversalDef
+trigger1=Time=3
+reversal.attr=SCA,AA
+pausetime=0,0
+sparkno=-1
+hitsound=-1,0
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=MoveHit
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=3
+fv=1
+value=MoveHit
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=4
+fv=2
+value=MoveHit
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=5
+fv=3
+value=MoveHit
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=6
+fv=4
+value=MoveHit
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=MoveHit
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Enemy,MoveReversed
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=3
+fv=7
+value=Enemy,MoveReversed
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=4
+fv=8
+value=Enemy,MoveReversed
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=5
+fv=9
+value=Enemy,MoveReversed
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=6
+fv=10
+value=Enemy,MoveReversed
+[State 700, reversal control]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=Enemy,MoveReversed
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 701, reversal control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, reversal control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, reversal control]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+damage=10,3
+pausetime=0,0
+ground.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=11
+ground.velocity=0,0
+air.velocity=0,0
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5000, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5000, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 5010]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5010, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5010, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 5020]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5020, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5020, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 5080]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5080, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 5080, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 150, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 150, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 152]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 152, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 152, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 152, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 152, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[Statedef 154]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 154, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 154, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 154, lifecycle control]
+type=PosFreeze
+trigger1=1
+value=1
+[State 154, lifecycle control]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1

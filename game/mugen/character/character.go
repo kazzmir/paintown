@@ -188,6 +188,7 @@ type Character struct {
 	GuardDistance     float64
 	Specials          map[string]bool
 	ActiveReversalDef map[string]string
+	reversal          *reversalState
 	SoundQueue        *sound.Queue
 	AudioOwner        uint64
 	OwnSounds         *snd.SoundBank
@@ -229,6 +230,7 @@ type Character struct {
 
 	// Combat status for triggers
 	MoveHit             int
+	MoveReversed        int
 	MoveContact         int
 	lastProjectileEvent *projectileEvent
 	MoveGuarded         int
@@ -424,7 +426,6 @@ func (c *Character) runStateTick() bool {
 	c.screenBoundsDisabled = c.Parent != nil && !c.PlayerHelper
 	c.cameraDisabled = [2]bool{c.screenBoundsDisabled, c.screenBoundsDisabled}
 	c.frameWidths = engine.WidthParameters{}
-	c.ActiveReversalDef = make(map[string]string)
 	c.DrawAngle = 0
 	c.DrawOffset = []float64{0, 0}
 	// Clear stale debug info globally so we only see current frame actions.
@@ -586,6 +587,9 @@ func (c *Character) finishTick() {
 		}
 		if c.MoveGuarded > 0 {
 			c.MoveGuarded++
+		}
+		if c.MoveReversed > 0 {
+			c.MoveReversed++
 		}
 		c.UpdateAnimation()
 		c.ageBinding()
@@ -818,6 +822,8 @@ func (c *Character) PosFreeze(active bool) {
 }
 
 func (c *Character) HitDef(params map[string]string) {
+	c.reversal = nil
+	c.ActiveReversalDef = nil
 	c.HitDefActive = true
 	c.HitGuard = make(map[int]bool)
 	// Parse and store the new HitDef
@@ -1023,9 +1029,22 @@ func (c *Character) TargetVelSet(x, y float64, id int) {
 
 func (c *Character) ReversalDef(params map[string]string) {
 	c.ActiveReversalDef = params
+	mask, err := combat.ParseAttributes(params["reversal.attr"])
+	if err != nil {
+		c.RuntimeError = fmt.Errorf("ReversalDef: %w", err)
+		return
+	}
+	hit := cns.ParseHitDef(params)
+	if _, specified := params["sparkno"]; !specified {
+		hit.SparkNo = c.StateFile.Data.SparkNo
+	}
+	c.reversal = &reversalState{mask: mask, hit: hit}
+	c.CurrentHitDef = hit
+	c.HitDefActive = false
 }
 
 func (c *Character) MoveHitReset() {
+	c.MoveReversed = 0
 	c.MoveHit = 0
 	c.MoveContact = 0
 	c.MoveGuarded = 0
@@ -1800,12 +1819,15 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 
 func (c *Character) BeginStateEntry(hitdefPersist, movehitPersist, hitcountPersist bool) {
 	if !hitdefPersist {
+		c.reversal = nil
+		c.ActiveReversalDef = nil
 		c.GuardDistance = float64(c.StateFile.Size.AttackDist)
 		c.CurrentHitDef = cns.HitDef{}
 		c.HitDefActive = false
 		c.HitGuard = make(map[int]bool)
 	}
 	if !movehitPersist {
+		c.MoveReversed = 0
 		c.MoveHit = 0
 		c.MoveContact = 0
 		c.MoveGuarded = 0

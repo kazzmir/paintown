@@ -56,6 +56,8 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "movereversed":
+		return evaluator.Int(int32(c.MoveReversed)), true
 	case "random":
 		if err := c.ensureWorld(); err != nil {
 			c.EvaluationFailure(err)

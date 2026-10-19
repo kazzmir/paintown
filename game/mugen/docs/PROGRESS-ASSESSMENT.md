@@ -1,5 +1,13 @@
 # Current progress assessment
 
+M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
+replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
+The seven render probes retain84 additional early clipboard readings. Source
+routes are120/127 (94.5%), seven unbound; no whole-engine percentage is justified.
+Full scoped races pass3,169 results across36 packages; fresh native/stock/provenance checks also pass. Read
+[REVERSALS.md](REVERSALS.md) and [HANDOFF.md](HANDOFF.md). Items3–4 remain unallocated.
+
+
 M4cg binds four typed projectile elapsed-time functions and three legacy indexed
 comparison families.51 frozen native programs pin456 values and13 rejections
 with204 authored input hashes. Source routes are119/127 (93.7%), eight unbound;
@@ -38,7 +46,7 @@ Final scoped races PASS: 2,774 test/subtest results, no individual skips/failure
 24 tested and 12 compiled-only packages. All 470 frozen hashes pass. Fresh
 native/application validation is recorded in HANDOFF.md.
 
-Updated 2026-10-18 through M4cb liedown/input, M4ca metadata and M4bz runtime routing.
+Updated2026-10-19 through M4ch; full scoped races pass.
 The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The 27-key HitDef allocation is complete. The user subsequently authorized
 M4bu clocks, M4bv results/reset and M4bw complete input-driven matches. All authored changes stay under game/mugen/, with local
 checkpoint commits, no push and no new binaries/assets committed.
@@ -57,7 +65,10 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | --- | ---: | --- |
 | HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
 | Controller registration | 87/89 (97.8%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod and ExplodBindTime are unregistered. |
-| Trigger runtime routes | 112/127 (88.2%) | Candidate source handlers; 15 absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
+| Trigger runtime routes | 120/127 (94.5%) | Candidate source handlers; seven absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
+| Scalar clocks/random | HitPauseTime plus21 RNG controls/192 readings | Own pause clock, shared Park–Miller stream, VarRandom schemas/ranges/order and helper/redirect ownership. |
+| Projectile corpus |257 programs across setup/contact/coordinate/query slices | Typed setup and native lifecycle, cancellation/capacity/ownership/query behavior. Detailed bounded evidence in PROJECTILES.md, PROJECTILE-CONTACTS.md, PROJECTILE-COORDINATES.md and PROJECTILE-QUERIES.md. |
+| Reversal corpus |90 promoted programs, four rejections,948 numeric readings | Character reversals/counters/targets/pause/states, genuine projectile exclusion, four exact spark plus three surviving-projectile app masks.84 early clipboard readings remain separate. REVERSALS.md. |
 | GetHitVar routing | 34/36 manual entries (94.4%) | All 34 beta-accepted entries route; two reject at load. New metadata/liedown consumers have bounded native evidence. |
 | Trigger recognition | 127/127 (100%) | Vocabulary only; bindings/variants are not all complete. |
 | Loaded stock state programs | 216/216 (100%) | Both KFM variants and loaded common states compile; not all execution paths/interactions. |
@@ -78,7 +89,7 @@ follows from the present inventory.
 | Workstream | Current foundation | Remaining acceptance |
 | --- | --- | --- |
 | Language/state runtime (M1/M2) | Typed expressions, shared executor, ordering/persistence, negative states, ownership, pause, coordinates and stock commands have extensive native controls. | Every remaining controller/trigger schema/binding/variant, version/default/error rules, complete command/gamepad timing and broad foreign/helper/pause combinations. |
-| Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers and single-contact projectiles. | Broader recovery physics, simultaneous/paused input and GetHitVar interactions; full projectile lifecycle/cancellation/queries, reversals, teams and multiple-contact/entity interactions. |
+| Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers, projectile lifecycle/multi-hit/cancellation/event queries and bounded reversals. | Broader recovery physics, simultaneous/paused input and GetHitVar interactions; simultaneous/team contacts, foreign/resource/size/zoom variants and broad entity/effect interactions. |
 | Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. M4by adds cumulative Engine GameTime and configured tick rate. | M4bu/bv establish bounded clocks/results/reset; M4bw completes full-life stock matches/rematches. Broader assertion/pause/reset interactions, exact presentation timing, extreme configuration and other mode clocks remain. |
 | Effects/rendering/audio (M6) | Sprite/background/HUD/effect drawing, hit palette/shake, sound output and owned numeric/pixel/PCM controls. | Standalone EnvShake, PalFX/AllPalFX/BGPalFX, afterimages/angles/zoom/transparency and other incomplete methods; broad camera/background behavior; BGM loading/looping/transitions. |
 | Assets/fonts (M3) | Stock SFF v1/v2/v2.01, AIR/SND, bitmap/outline fonts and relocatable resource loading work. | Full format/default/malformed-resource matrix, animation variants, resource lifecycle and platform conformance. Missing Arial/MS Gothic payloads use a visible Go Regular fallback, without native glyph/metric parity. |

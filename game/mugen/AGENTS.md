@@ -1,5 +1,16 @@
 # MUGEN Go port
 
+## Latest allocation complete — stop boundary
+
+Assessment items 1–2 are COMPLETE. All scalar/projectile/reversal checkpoints
+are locally committed or ready for the final M4ch commit. Full scoped races
+pass 3,169 results across 36 packages; all fresh native/app/render/provenance/
+module gates pass. Read the current HANDOFF.md and REVERSALS.md, including the
+corrected genuine Projectile exclusion and preserved diagnostics. There are no
+running sessions/clients. Do not start items 3–4 without new user authorization.
+No push, binaries, agents or authored changes outside game/mugen/.
+
+
 ## Current authorization
 
 Implementation is authorized. The user approved `docs/PLAN.md` and authorized
@@ -181,6 +192,27 @@ reversals and final full scoped races30m. Preserve11 invalid drafts in place;
 review rejected deleting them, so corrected -valid originals are separate. Do not
 stage invalid drafts. Stop after item2; items3–4 remain unallocated.
 
+M4cg is2899cd00. M4ch remains uncommitted. Read current HANDOFF/REVERSALS:
+90 promoted programs,948 numeric+84 early clipboard readings, four rejections,
+404 hashes/101 originals. Ten genuine Projectile controls prove the beta does
+not reverse NA/NP/SP projectiles with idle/attacking owners. Mislabelled older
+HitDef-based projectile controls are retained as ordinary diagnostics; their
+projectile conclusions are withdrawn. First full run92446 was stopped/awaited
+and is not acceptance. Do not reuse its source snapshot as final validation.
+Latest corrected replay87 programs60.057s; ten genuine PS+type assertion8.223s.
+Actual app3 and fresh full2/post2 gates remain before M4ch commit. Never edit
+Go/tests/probes/fixtures during a frozen running validation. Stop after item2;
+items3–4 await allocation. No agents/push/binaries/out-of-scope edits.
+
+M4ch final gates PASS: 90 promoted programs / 948 numeric + 84 early clipboard
+readings / four rejections / 404 original hashes; seven exact final app masks.
+Full3 races: 3,169 results, 24 tested + 12 compiled-only packages, Match1228.212s,
+total1298.980s, no failures/skips. All10,831 source/fixture/module and797 app hashes,
+fresh genuine PS/spark, stock win/rematch/win/82 events/private PCM and101-run
+provenance audits pass. No clients remain. First two full attempts are diagnostic,
+not acceptance. Preserve originals in place and ignored build artifacts under
+underscore names. Stop after this commit for user testing/3–4 decision.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify
@@ -232,7 +264,7 @@ Do not modify the reference distribution. Do not commit its binaries/assets.
   overlay; see `docs/BUILD.md`. Keep it synchronized when dependencies change.
 - Use non-Go extensions for disposable source snapshots. The recursive check
   also discovers ordinary packages below `temp/`; ignored files still compile.
-- Full race checks use `--check -race -timeout=20m`; the growing native Match
+- Full race checks use `--check -race -timeout=30m`; the growing native Match
   corpus approaches Go's default ten-minute package deadline.
 - Update `docs/COMPATIBILITY.md` and `docs/HANDOFF.md` when behavior or verified
   coverage changes. Do not call the port complete without tests and reference

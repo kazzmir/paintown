@@ -1,33 +1,68 @@
 # Current handoff
 
-## Current scalar/projectile/reversal allocation
+## Items 1–2 complete — paused for user testing/allocation
 
-M4cc750f0076, M4cdded53de8, M4ce4b3ab498, M4cf40d1b25b and coordinate2e6195de
-are committed locally. M4cg is complete and ready for local commit.
-Final checks PASS:51 native programs/456 values/13 rejections/204 authored
-hashes. Core races: Character11.445s, engine1.445s, evaluator1.019s, System9.768s.
-Selected query/cancellation/coordinate/clock/phase/Random/HitPauseTime Match races
-pass88.019s. Fresh hit-then-cancel reproduces the immutable observation. Four-PNG
-stock win/rematch/win/82 balanced owned events/private PCM, all556 final frozen
-hashes and module guards pass. Sessions39895/59309 were awaited; separate client
-check is clear. Artifacts: temp/m4cg-{focused,corrected-focused,final}.log,
-m4cg-final-inputs.json, m4cg-final-validation.json, m4cg-native-audit.json and
-m4cg-app-evidence-audit.json. Full scoped races follow final reversal integration.
+The user authorized assessment items 1–2 with local checkpoint commits. All
+allocated work is complete; do not start items 3–4 without new authorization.
+No agents, goals, running sessions or native/app/test clients remain. No push.
+All authored changes remain under game/mugen/; no binaries are added.
 
-Next M4ch:40 original programs plus17 valid follow/order controls are promoted.
-Eleven invalid renderer/empty-state drafts remain unchanged in their original
-paths, with frozen hashes/native load errors; no JSON is promoted. Automatic
-review rejected deleting/moving those originals, so the safe correction leaves
-them intact and creates separately named -valid controls. No blocker remains.
-Twenty additional frozen controls await native capture: manifest
-m4ch-final-native-inputs.json combines11 corrected, four final and five consumer
-programs. Runner run-m4ch-final-native.py captures serially, positive-CNS dump
-for spark/tail programs. All other native originals remain immutable. No reversal
-Go code is added yet. Query source is frozen by final556-hash manifest.
+Local checkpoints: M4cc HitPauseTime `750f0076`; M4cd shared Random/VarRandom
+`ded53de8`; M4ce projectile setup/motion `4b3ab498`; M4cf contacts/cancellation/
+capacity `40d1b25b`; foreign-state projectile coordinates `2e6195de`; M4cg event
+queries `2899cd00`; M4ch reversals is the final checkpoint in this working tree.
 
-Then implement ReversalDef/MoveReversed, focused checks, actual spark/tail masks
-and full scoped races with30m package timeout. Stop after item2; items3–4 await
-user allocation. No agents/goals/pushes/binaries/out-of-scope edits.
+Read REVERSALS.md and PROJECTILE-QUERIES.md. Source routing is 120/127 (94.5%),
+with seven mode/stage/name families unbound. This is a source-route metric;
+whole-engine compatibility and complete variant coverage remain unfinished.
+All 34 beta-accepted GetHitVar selectors retain routes. Typed HitDef coverage
+remains 81/81 keys (72 numeric and nine literal schemas), with bounded consumers.
+
+M4ch adds typed required reversal masks/full HitDef reading, character Clsn1
+reversal selection/consumption/persistence, MoveReversed, counters/targets,
+GetPower, pauses/custom states and sparks. The beta leaves actual projectiles
+unaffected in ten genuine NA/NP/SP controls with idle/attacking owners. A parsed
+controller assertion prevents substitution of HitDef in those fixtures. Earlier
+mislabelled projectile probes actually used HitDef; their projectile conclusions
+were withdrawn and originals preserved. Seven renderer probes have 84 early
+clipboard readings, separated from 948 final-variable readings. Ninety promoted
+programs include four genuine load rejections; 404 hashes pin 101 originals,
+including 11 preserved invalid drafts. See the topic note for all limitations.
+
+Final full scoped races PASS: 3,169 test/subtest results, 24 tested and 12
+compiled-only packages (36 full identities), no failures or individual skips.
+Match 1,228.212s; total 1,298.980s. The command was:
+`bash game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m -json`.
+Only full3 is acceptance. Earlier interrupted attempts are retained diagnostics.
+The private GOTMPDIR now uses temp/_tmp, preventing abandoned CGO build files
+from becoming packages; the full preflight verifies 36 intended packages.
+
+All final gates pass. Fresh genuine projectile and combined-spark captures
+reproduce all original numbers and exact 7,935-pixel masks. Stock captures show
+win/rematch/win at 21/26/45 seconds, visually inspected. All 82 owned key events
+balance; private PCM, source/config/binary/PNG/input/audio provenance, all 10,831
+full-suite hashes, 797 application hashes and root module guards pass. Native
+prepared definitions/config/commands/eight resources pass all 101 authored runs.
+Sessions 36806 and 12654 were awaited; a separate check finds no clients.
+Final audit: temp/m4ch3-final-evidence-audit.json; post logs/results begin
+m4ch3-post; final stock app is app-runs/m4ch2-stock-input. No originals, numerical
+goldens or tolerances changed. No binaries or changes outside game/mugen/ are
+committed. The allocated items 1–2 are complete. Stop before items 3–4.
+
+Validation artifacts are ignored: m4ch3-final-inputs.json,
+m4ch3-full-scoped-race{.jsonl,.stderr.log,-result.json}, m4ch3-full.log,
+m4ch3-post-results.json, m4ch-native-audit.json, m4ch-provenance-audit.json,
+m4ch3-phase-app-audit.json and m4ch3-final-evidence-audit.json. Fresh native runs
+are reference-runs/m4ch2-fresh-{projectile,spark}. All seven actual app3 masks
+match: four reversal sparks and three surviving genuine projectiles, each 7,935
+pixels. The initial indexed-sampler mismatch is preserved; the effect path now
+uses the existing measured sampler and retains blending.
+
+Next decision: items 3–4 cover remaining controller/effect stubs and asset/mode/
+AI/BGM/final renderer/font conformance. Mutual/multiple-contact and team/foreign/
+resource/size/zoom variants remain honest gates; no whole-engine percentage or
+full beta parity is claimed. Do not infer a new implementation allocation from
+this list. The current checkpoint is ready for the user's play test and push.
 
 All prior allocations below are historical; their stop condition is superseded
 by the new user authorization. No agents/goals. No authored changes outside
@@ -546,7 +581,7 @@ CNS/combat tests without DISPLAY may run alongside native captures.
 Build caches: GOCACHE=.../game/mugen/temp/go-build,
 GOTMPDIR=.../game/mugen/temp/tmp, GOPROXY=off,
 GOFLAGS='-modfile=/home/juvinious/projects/paintown/game/mugen/mugen.mod -mod=readonly'.
-Full suite: game/mugen/mugen.sh --check -race -p1 -count=1 -timeout=20m.
+Full suite: game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=20m.
 Use non-Go suffixes for disposable source snapshots: recursive tests discover
 ignored .go files too. Root checksum baseline:
 temp/upstream-post-merge-module.sha256. Native executable SHA256:

@@ -21,7 +21,7 @@ Character packages still import Ebitengine and need DISPLAY even for CPU tests;
 the engine/evaluator/SFF/parser core is display independent.
 
 The growing native fixture corpus takes about nine minutes for a full Match
-race run. Use `game/mugen/mugen.sh --check -race -timeout=20m` for full race
+race run. Use `game/mugen/mugen.sh --check -race -timeout=30m` for full race
 validation so Go's default ten-minute package deadline does not become a false
 failure as coverage grows.
 
@@ -91,3 +91,8 @@ No package installation or system/user audio configuration change is required.
 `tests/app_smoke.py --audio` requires explicit private paths and records only the
 private mugen_reference.monitor. The server uses installed PulseAudio 16.1 and
 Wine's existing 32-bit pulse driver; all runtime/cookie/state files stay in temp.
+
+Private validation uses `temp/_tmp` for GOTMPDIR. Go ignores underscore-prefixed
+directories during recursive package discovery, so interrupted CGO build files
+cannot become extra packages. Disposable source snapshots should still use a
+non-Go suffix. The final integration preflight requires36 intended packages.

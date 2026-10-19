@@ -23,6 +23,14 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 `
 
 func (r *Nearest) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten.ColorScale) error {
+	return r.DrawImage(dst, src, &ebiten.DrawImageOptions{GeoM: geometry, ColorScale: tint})
+}
+
+func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions) error {
+	if options == nil {
+		options = &ebiten.DrawImageOptions{}
+	}
+	geometry, tint := options.GeoM, options.ColorScale
 	if !geometry.IsInvertible() {
 		return nil
 	}
@@ -43,6 +51,7 @@ func (r *Nearest) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten
 	}
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
 		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
+			Blend: options.Blend, CompositeMode: options.CompositeMode,
 			Uniforms: map[string]any{"Reverse": reverse}})
 	return nil
 }

@@ -1,5 +1,13 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
+replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
+The seven render probes retain84 additional early clipboard readings. Source
+routes are120/127 (94.5%), seven unbound; no whole-engine percentage is justified.
+Full scoped races pass3,169 results across36 packages; fresh native/stock/provenance checks also pass. Read
+[REVERSALS.md](REVERSALS.md) and [HANDOFF.md](HANDOFF.md). Items3–4 remain unallocated.
+
+
 M4cg binds four typed projectile elapsed-time functions and three legacy indexed
 comparison families.51 frozen native programs pin456 values and13 rejections
 with204 authored input hashes. Source routes are119/127 (93.7%), eight unbound;

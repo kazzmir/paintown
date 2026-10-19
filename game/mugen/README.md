@@ -83,10 +83,10 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 
 ```bash
 # Build/test every MUGEN package against the stock reference corpus.
-game/mugen/mugen.sh --check -p 1 -timeout=20m
+game/mugen/mugen.sh --check -p 1 -timeout=30m
 
 # Full race checks; the last full run took about seventeen minutes.
-game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=20m
+game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m
 
 # Focused stock character loading and state compilation.
 game/mugen/mugen.sh --check -run '^TestStockPlayerLoadAndCompilationInventory$' -v
@@ -101,17 +101,21 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-19, through M4cg**. Foreign-state projectile units and three exact sprite render controls now pass; see [coordinate evidence](docs/PROJECTILE-COORDINATES.md). Projectile setup/motion/pause/ownership now has native controls and actual Projectile event queries now have native controls; see [query evidence](docs/PROJECTILE-QUERIES.md).
-app rendering checks. Hit/miss clocks, visual tails, cancellation and capacity
-now have native consumers; coordinate/query/reversal work continues. See
-[projectile progress](docs/PROJECTILES.md). Random/VarRandom now share the native match RNG, with deterministic seed replay
-and measured range/draw/ownership rules; see [random controls](docs/RANDOM.md).
-The latest group also audits runtime trigger
-gaps, adds received hit/fall metadata, and implements the liedown timer and
-input mashing. Recovery follows character-authored CNS conditions. All 34
-beta-accepted documented GetHitVar selectors have routes; two manual-only
-names reject like the reference. See [metadata](docs/GETHIT-METADATA.md) and
-[liedown/recovery](docs/LIEDOWN-RECOVERY.md) for measured behavior and limits.
+Snapshot: **2026-10-19, through M4ch implementation**; full scoped races pass 3,169 results across 36 packages. Fresh native, actual
+render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have
+typed setup, motion/lifetime/pause clocks, multiple hits, cancellation, capacity,
+root ownership, foreign-state coordinate profiles and event queries. ReversalDef
+and MoveReversed have native-tested combat consumers and seven exact application
+render comparisons. See [projectiles](docs/PROJECTILES.md),
+[contacts](docs/PROJECTILE-CONTACTS.md), [coordinates](docs/PROJECTILE-COORDINATES.md),
+[queries](docs/PROJECTILE-QUERIES.md), [random](docs/RANDOM.md) and
+[reversals](docs/REVERSALS.md) for evidence and variant limits.
+
+Received hit/fall metadata and the liedown timer/input mashing are implemented.
+Recovery follows character-authored CNS conditions. All34 beta-accepted documented
+GetHitVar selectors have routes; two manual-only names reject like the reference.
+See [metadata](docs/GETHIT-METADATA.md) and
+[liedown/recovery](docs/LIEDOWN-RECOVERY.md).
 
 Earlier changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
@@ -163,7 +167,7 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
-| Trigger families with candidate runtime routes | 112 / 127 | **93.7%** | Source routing only; 15 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
+| Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
 | Documented HitDef keys routed through the expression compiler | 72 / 81 | **88.9%** | Numeric expression routing; nine other documented keys are literal masks/enums. |
@@ -187,7 +191,7 @@ title → selection → versus → fight → result → rematch/exit path. Many 
 have focused native numeric, pixel or audio evidence.
 
 Major remaining work includes full controller/trigger schemas, broader recovery/juggle interactions,
-projectiles/reversals/teams, exact KO/round clocks, complete modes and AI, BGM,
+simultaneous/team and foreign/resource variants, broader KO/clock interactions, complete modes and AI, BGM,
 broader camera/render/effect behavior and final asset/conformance coverage.
 Six alpha precision comparisons and two spark raster comparisons remain open.
 Missing stock Windows outline-font payloads use a reported Go Regular fallback,

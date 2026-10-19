@@ -8,14 +8,13 @@ After reviewing an intentional routing change, `--write` regenerates
 functions; parser/validation switches are excluded. Explicit conditional routes
 include Command, Const variants, IfElse/Cond, Log, GetHitVar and HitDefAttr.
 
-119/127 families (93.7%) have a candidate runtime route; eight have none. This is a
+120/127 families (94.5%) have a candidate runtime route; seven have none. This is a
 source-routing percentage, not behavioral coverage. A route can return bottom
 in an unsupported context, implement only some variants, or call partial code.
 No row is marked variant-complete. The original compatibility table is historical.
 
 | Unbound families | Dependency / next obligation |
 | --- | --- |
-| MoveReversed | Actual reversal acceptance and contact bookkeeping. |
 | IsHomeTeam, TeamMode, P3Name, P4Name | Match mode, teams and available-player context. |
 | TopEdge, BottomEdge, StageVar | Vertical/zoom camera and typed stage selectors. |
 
@@ -70,3 +69,7 @@ explicitly records the named conditional production handler. See PROJECTILES.md.
 M4cg: four elapsed-time and three legacy projectile query families have measured
 routes.51 controls/456 values/13 rejections pin kinds/IDs, helper/root publication,
 clocks and syntax. See PROJECTILE-QUERIES.md; other variant gates remain.
+
+M4ch binds typed MoveReversed and its reversal consumer. See REVERSALS.md for
+90 native programs, counter/target/pause/custom-state behavior and exact render
+controls. Seven mode/stage/name families remain unbound; broader variants remain.
