@@ -1,10 +1,12 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
-M4cc binds integer HitPauseTime with seven native programs / 84 values and
-helper/guard/Pause/negative controls. Candidate runtime routes are now 110/127
-(86.6%), with 17 unbound. Read [HITPAUSETIME.md](HITPAUSETIME.md). The user
-validated/pushed M4cb and authorized scalar/random then projectile/reversal work;
-that allocation is active. Older completed allocations below are historical.
+M4cd binds integer Random and compiled VarRandom to the native shared match
+stream. Twenty-one frozen controls establish 192 values, five load rejections,
+seed replay, ranges, draw order and helper/redirect ownership. Candidate runtime
+routes are now 111/127 (87.4%), with 16 unbound. Read [RANDOM.md](RANDOM.md).
+M4cc HitPauseTime is committed as 750f0076. The authorized projectile/reversal
+allocation continues; items 3–4 remain deferred. Earlier allocation summaries
+below are historical and do not override this current scope.
 
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,

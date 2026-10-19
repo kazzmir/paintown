@@ -134,6 +134,15 @@ record dependencies rather than silently expanding into those workstreams.
 Keep projectile/reversal-specific consumers in scope, with honest variant limits.
 No pushes, binaries, sub-agents or authored changes outside game/mugen/.
 
+M4cc is committed as 750f0076. M4cd completes Random/VarRandom: 21 native
+programs, 192 values, five rejections and 84 frozen inputs. Core/Match/57-chain
+races, fresh seeded sequence/helper reproductions, four-PNG stock win/rematch/
+win, 82 balanced owned events/private PCM, 436 frozen hashes and module audits
+pass. Read RANDOM.md/HANDOFF.md. Continue M4ce automatically; 42 projspawn-*
+programs / 168 hashes are frozen but not yet observed and not in M4cd's commit.
+Move basic NumProjID counting into M4ce as needed for native lifetime controls;
+keep the remaining query forms in M4cg. No clients/sessions remain at M4cd.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify

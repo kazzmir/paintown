@@ -29,7 +29,7 @@ func (c *Character) DropTargets(p engine.TargetDropParameters) error {
 		if err := c.ensureWorld(); err != nil {
 			return err
 		}
-		keep = []*Character{keep[c.World.random.Intn(len(keep))]}
+		keep = []*Character{keep[c.World.random.Next()%int64(len(keep))]}
 	}
 	kept := make(map[*Character]hitTarget, len(keep))
 	for _, target := range keep {

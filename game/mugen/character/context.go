@@ -53,6 +53,12 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		return value, true
 	}
 	switch name {
+	case "random":
+		if err := c.ensureWorld(); err != nil {
+			c.EvaluationFailure(err)
+			return evaluator.Value{}, true
+		}
+		return evaluator.Int(int32(c.World.random.Next() % 1000)), true
 	case "hitpausetime":
 		return evaluator.Int(int32(max(0, c.HitPauseTime))), true
 	case "hitvel x", "hitvel y":

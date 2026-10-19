@@ -189,6 +189,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			}
 			var reference struct {
 				FixtureConstants bool               `json:"fixture_constants"`
+				RandomSeed       *int64             `json:"random_seed"`
 				CNSHash          string             `json:"cns_sha256"`
 				AIRHash          string             `json:"air_sha256"`
 				StageHash        string             `json:"stage_fixture_sha256"`
@@ -300,6 +301,9 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			m := stockMatch(t, 99)
+			if reference.RandomSeed != nil {
+				m.World.SeedRandom(*reference.RandomSeed)
+			}
 			if len(reference.Rules) > 0 {
 				rules := combat.DefaultPowerRules()
 				for key, value := range reference.Rules {

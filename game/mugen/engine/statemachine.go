@@ -1096,16 +1096,11 @@ func handleMakeDust(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleVarRandom(ctrl *cns.StateController, env Environment) error {
-	idx := 0
-	if v, ok := ctrl.Params["v"]; ok {
-		idx, _ = strconv.Atoi(v)
+	fn, _, err := compileVarRandom(ctrl)
+	if err != nil {
+		return err
 	}
-	min, max := 0, 1000
-	if r, ok := ctrl.Params["range"]; ok {
-		fmt.Sscanf(r, "%d,%d", &min, &max)
-	}
-	env.VarRandom(idx, min, max)
-	return nil
+	return fn(ctrl, env)
 }
 
 func handleVarRangeSet(ctrl *cns.StateController, env Environment) error {

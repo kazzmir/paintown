@@ -1190,7 +1190,14 @@ func (c *Character) DestroySelf() {
 	}
 }
 func (c *Character) VarRandom(id int, min, max int) {
-	// Stub: set variable to random value
+	if id < 0 || id >= len(c.IntVars) {
+		return
+	}
+	if err := c.ensureWorld(); err != nil {
+		c.RuntimeError = err
+		return
+	}
+	c.SetVar(id, int(c.World.random.Range(int32(min), int32(max))))
 }
 
 func (c *Character) FallEnvShake(params map[string]string) {

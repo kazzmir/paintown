@@ -151,6 +151,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileVariable(ctrl, name == "parentvaradd", true)
 	case "varrangeset":
 		return compileVariableRange(ctrl)
+	case "varrandom":
+		return compileVarRandom(ctrl)
 	case "changeanim", "changeanim2":
 		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"elem", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
 			element := 1

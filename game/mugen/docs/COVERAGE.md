@@ -1,10 +1,12 @@
 # Current behavior coverage ledger
 
-M4cc binds integer HitPauseTime with seven native programs / 84 values and
-helper/guard/Pause/negative controls. Candidate runtime routes are now 110/127
-(86.6%), with 17 unbound. Read [HITPAUSETIME.md](HITPAUSETIME.md). The user
-validated/pushed M4cb and authorized scalar/random then projectile/reversal work;
-that allocation is active. Older completed allocations below are historical.
+M4cd binds integer Random and compiled VarRandom to the native shared match
+stream. Twenty-one frozen controls establish 192 values, five load rejections,
+seed replay, ranges, draw order and helper/redirect ownership. Candidate runtime
+routes are now 111/127 (87.4%), with 16 unbound. Read [RANDOM.md](RANDOM.md).
+M4cc HitPauseTime is committed as 750f0076. The authorized projectile/reversal
+allocation continues; items 3–4 remain deferred. Earlier allocation summaries
+below are historical and do not override this current scope.
 
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
@@ -28,6 +30,7 @@ does not promote an entire controller from one passing parameter/default.
 | Language and compiler | Typed int32/float32/bottom, versioned expressions, assignment, tuples, redirect contexts, precompiled core parameters. M4bx binds legacy HitVel X/Y with 15 native controls and closes three original counterexamples. `evaluator/`, `engine/parameters.go`, BOTTOM.md, LEGACY-HITVEL.md. | Full controller schemas, remaining trigger bindings/variants/errors and their interactions. |
 | State/world scheduling | Shared executor and production world; native state entry, persistence, negative states, ordering and physics. WORLD.md, PHYSICS.md, ACTOR-ORDER.md. | All Statedef/default/version cases and broad paused/foreign/entity combinations. |
 | Process clock/rate | M4by: Engine-owned GameTime across menus, matches, result waits and fresh rematch timelines; native rate formula drives Ebiten and typed TicksPerSecond, one-on-one MatchNo=1. Six programs/84 native observations plus production CNS/keyboard flow and wrap checks. ENGINE-CLOCK.md. | Exact menu/fade timing, malformed/extreme rates and Arcade/team progression/continue numbering remain separate gates. |
+| Random/VarRandom | Native shared Park–Miller match stream; ranges, exact draw order, helper/redirect ownership and production session/rematch handoff. RANDOM.md. | Broader mode/AI seed consumers, TargetDrop selection/order, extreme ranges and pause/foreign/team interactions. |
 | Input | Logical input shared with production, stock keyboard mappings, command matching. M4cb adds native press/release liedown mashing, including direction/Start. INPUT.md, LIEDOWN-RECOVERY.md, `system/flow_test.go`. | Full command timing/modifier/facing, simultaneous/paused input and gamepad adapters remain. |
 | Identity/helpers | Match-owned IDs, ownership, spawning, retirement, root/parent/target redirects. ENTITIES.md, HELPERS.md, RETIREMENT.md. | Full projectile/team/multi-entity behavior and parameter interactions. |
 | Targets/throws | Acquired target IDs/generations, custom state/animation ownership, binding and stock throw controls. TARGETS.md, OWNERSHIP.md, BINDING.md, THROWS.md. | Full foreign/helper/pause/projectile combinations and all controller variants. |
@@ -55,7 +58,7 @@ does not promote an entire controller from one passing parameter/default.
 | KO/time-over clocks | M4bu29 native programs, integer slowdown, continuous GameTime, zero timer interval, pause distinctions, readiness/900-pass fallback, result suffixes and separate state4/pose/MatchOver/init boundaries. ROUND-LIFECYCLE.md. | Broader DKO/draw/reset/persistence interactions, broader input-driven character scenarios, exact HUD/fade/audio timing and broader entity/pause variants. |
 | Complete stock matches | M4bw deterministic checks complete eight matches / 18 rounds with full-life walk/punch KOs, both winners, alternating wins, time draws and repeated rematches. An owned-window 2%-life replay shows actual win/rematch screens. M4by adds production process-clock handoff. COMPLETE-MATCHES.md, ENGINE-CLOCK.md. | Broader input timing/characters/modes/resources remain open; full scoped integration evidence is recorded per checkpoint. |
 | Stock match/UI | Title/selection/versus/fight/result/rematch/exit tested through production. M4bf storyboard localcoord and game/window scaling match six native placement controls. STORYBOARD-CANVAS.md, MATCH.md, `system/flow_test.go`. | Broader KO/round combinations. Full modes/AI/progression; win/continue/game-over types retain black-screen stubs. |
-| Other explicit stubs | VarRandom, GameMakeAnim and MakeDust have empty Character methods (`character/character.go`). | Implement runtime behavior, schemas and native controls. BindToParent/Root's legacy methods are empty, but typed binding paths must be assessed through `engine/binding.go`, not those fallback bodies alone. |
+| Other explicit stubs | GameMakeAnim and MakeDust have empty Character methods (`character/character.go`). | Implement runtime behavior, schemas and native controls. BindToParent/Root's legacy methods are empty, but typed binding paths must be assessed through `engine/binding.go`, not those fallback bodies alone. |
 
 ## Quantitative scopes
 

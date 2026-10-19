@@ -4,6 +4,18 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4cd: match-owned native Random and compiled VarRandom
+
+Predecessor/reversal 750f0076. Twenty-one frozen programs / 192 values / five
+load rejections / 84 authored hashes. Exact native Park–Miller stream from
+logged seeds; shared helper/redirect/controller draws, range/index/type rules,
+world/round isolation and production session/rematch seed handoff. RANDOM.md
+records semantics and limits. Core races, native-program Match checks (17.260s),
+57 historical chain/juggle controls (36.175s), two fresh native reproductions,
+four-PNG win/rematch/win with owned input/private PCM, all 436 frozen hashes and
+module/provenance checks pass. Full scoped races follow the final allocated
+integration. Continue projectile/reversal checkpoints. No pushes/binaries.
+
 ## M4cc: HitPauseTime attack-clock binding
 
 Predecessor/reversal d251549d. Seven frozen controls / 84 values / 28 authored

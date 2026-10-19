@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"path/filepath"
+	"time"
 
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
@@ -45,6 +46,7 @@ type Options struct {
 	StageCrop                    bool // false preserves the default StageFit=1
 	HelperMax                    int
 	PowerRules                   *combat.PowerRules
+	RandomSeed                   int64 // zero chooses a fresh session-derived seed
 }
 
 type Phase int
@@ -107,6 +109,11 @@ func New(request Request, options Options) (*Match, error) {
 		helperMax = 56
 	}
 	m.World = character.NewWorld(helperMax)
+	seed := options.RandomSeed
+	if seed == 0 {
+		seed = engine.NewRandomStream(time.Now().Unix()).Next()
+	}
+	m.World.SeedRandom(seed)
 	m.World.AfterEntityUpdate = m.updateHorizontalCamera
 	if options.SuperTargetDefenceMul <= 0 {
 		options.SuperTargetDefenceMul = 1.5

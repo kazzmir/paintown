@@ -1,10 +1,12 @@
 # Current progress assessment
 
-M4cc binds integer HitPauseTime with seven native programs / 84 values and
-helper/guard/Pause/negative controls. Candidate runtime routes are now 110/127
-(86.6%), with 17 unbound. Read [HITPAUSETIME.md](HITPAUSETIME.md). The user
-validated/pushed M4cb and authorized scalar/random then projectile/reversal work;
-that allocation is active. Older completed allocations below are historical.
+M4cd binds integer Random and compiled VarRandom to the native shared match
+stream. Twenty-one frozen controls establish 192 values, five load rejections,
+seed replay, ranges, draw order and helper/redirect ownership. Candidate runtime
+routes are now 111/127 (87.4%), with 16 unbound. Read [RANDOM.md](RANDOM.md).
+M4cc HitPauseTime is committed as 750f0076. The authorized projectile/reversal
+allocation continues; items 3–4 remain deferred. Earlier allocation summaries
+below are historical and do not override this current scope.
 
 M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
 routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
@@ -37,7 +39,7 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | --- | ---: | --- |
 | HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
 | Controller registration | 87/89 (97.8%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod and ExplodBindTime are unregistered. |
-| Trigger runtime routes | 109/127 (85.8%) | Candidate source handlers; 18 absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
+| Trigger runtime routes | 111/127 (87.4%) | Candidate source handlers; 16 absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
 | GetHitVar routing | 34/36 manual entries (94.4%) | All 34 beta-accepted entries route; two reject at load. New metadata/liedown consumers have bounded native evidence. |
 | Trigger recognition | 127/127 (100%) | Vocabulary only; bindings/variants are not all complete. |
 | Loaded stock state programs | 216/216 (100%) | Both KFM variants and loaded common states compile; not all execution paths/interactions. |

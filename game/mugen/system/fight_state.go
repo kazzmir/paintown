@@ -31,7 +31,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
 		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, MaxEffects: engine.cfg.Config.SysExplodMax, SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul, StageCrop: !engine.cfg.Video.StageFit, HelperMax: max(4, min(56, engine.cfg.Config.HelperMax)),
-		PowerRules: &combat.PowerRules{Attack: engine.cfg.Rules.DefaultAttackLifeToPowerMul, GetHit: engine.cfg.Rules.DefaultGetHitLifeToPowerMul}})
+		RandomSeed: engine.nextMatchSeed(), PowerRules: &combat.PowerRules{Attack: engine.cfg.Rules.DefaultAttackLifeToPowerMul, GetHit: engine.cfg.Rules.DefaultGetHitLifeToPowerMul}})
 	if err != nil {
 		return nil, err
 	}

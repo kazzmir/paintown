@@ -3,7 +3,6 @@ package character
 import (
 	"fmt"
 	"math"
-	"math/rand"
 	"sort"
 
 	"github.com/kazzmir/paintown/game/mugen/engine"
@@ -22,13 +21,18 @@ type World struct {
 	// AfterEntityUpdate observes completed root/helper CNS and physics. Match
 	// uses this for camera easing; state-only worlds leave it nil.
 	AfterEntityUpdate func()
-	random            *rand.Rand
+	random            *engine.RandomStream
 }
 
 func NewWorld(helperMax int) *World {
 	helperMax = max(4, min(56, helperMax))
-	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, random: rand.New(rand.NewSource(1))}
+	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, random: engine.NewRandomStream(1)}
 }
+
+// SeedRandom starts a new match stream. ResetRoots deliberately preserves it.
+func (w *World) SeedRandom(seed int64) { w.random.Seed(seed) }
+
+func (w *World) RandomSeed() int64 { return w.random.InitialSeed() }
 
 func (w *World) ResetRoots(players ...*Character) error {
 	for _, owner := range w.orphanEffectOwners {

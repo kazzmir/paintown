@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
@@ -38,6 +39,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	keyboard := &flowKeyboard{}
 	input.GlobalManager.Keyboard = keyboard
 	e := &Engine{dataDir: root, cfg: cfg, motif: m, logicalWidth: m.Info.LocalCoord.Width, logicalHeight: m.Info.LocalCoord.Height}
+	e.random = engine.NewRandomStream(1)
 	t.Cleanup(func() {
 		if err := e.closeSound(); err != nil {
 			t.Error(err)
@@ -123,6 +125,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatalf("versus did not enter fight: %T", e.currentState)
 	}
 	watchGameTime(t, f)
+	if f.match.World.RandomSeed() != 16807 {
+		t.Fatal("session seed was not handed to production match")
+	}
 	for i := 0; i < 600 && f.match.Phase != match.Active; i++ {
 		step()
 	}
@@ -166,6 +171,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !damagedRounds[1] || !damagedRounds[2] || f.match.Wins != [2]int{2, 0} {
 		t.Fatal("configured keyboard did not win both rounds", damagedRounds, f.match.Wins)
 	}
+	if f.match.World.RandomSeed() != 16807 {
+		t.Fatal("round reset reseeded the match")
+	}
 	if f.match.Phase != match.Finished {
 		t.Fatal("match did not reach result")
 	}
@@ -184,6 +192,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("rematch must retain process time with a fresh simulation timeline")
 	}
 	watchGameTime(t, rematch)
+	if rematch.match.World.RandomSeed() != 282475249 {
+		t.Fatal("rematch did not advance the session RNG")
+	}
 	for i := 0; i < 150; i++ {
 		step()
 	}

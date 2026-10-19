@@ -3,23 +3,34 @@
 ## Current scalar/projectile/reversal allocation
 
 The user validated/pushed d251549d and authorized assessment items 1–2 on
-2026-10-19. M4cc HitPauseTime is complete: seven native programs / 84 values /
-28 original hashes; Match focused races 19.970s, Character/evaluator races
-11.615/1.021s. Fresh helper reproduces all 12 values; all 321 frozen source/
-probe/fixture/module hashes pass. Source routing now 110/127; 17 unbound.
-Read HITPAUSETIME.md. No app/full-suite rerun is needed for this isolated
-binding; full integration follows the allocated boundaries. Only source/text
-is committed locally; never push or add binaries.
+2026-10-19. M4cc HitPauseTime is committed as 750f0076. M4cd Random/VarRandom
+is complete: 21 frozen native programs / 192 values / five rejections / 84
+original input hashes. The beta Park–Miller match stream is proven from logged
+seeds, including helper/redirect sharing, range semantics and draw order. Read
+RANDOM.md. Source routing is 111/127 (87.4%), 16 unbound; no whole-engine percent.
 
-Continue M4cd Random/VarRandom, then projectile schema/lifecycle/cancellation/
-queries and ReversalDef/MoveReversed, with local checkpoints and frozen native
-controls throughout. New randomdraw-* originals are frozen before capture;
-active native runner/log are temp/run-m4cd-native.py and m4cd-native.log.
-Await its exec session 64483 before Go/display-dependent checks. Native analysis
-shows separate session/match Park–Miller streams (16807 modulo 2147483647);
-use captured seeds and controlled programs to prove the actual trigger/controller
-sequence before implementation. Disassembly is ignored temp/native-disassembly.txt.
-Do not modify observed inputs/goldens. Items 3–4 await a later allocation.
+Core races PASS: engine 1.462s, evaluator 1.022s, Character 11.401s, System
+9.575s. Native Random + HitPauseTime Match races PASS 17.260s; all 57 historical
+projectile/chain/juggle controls pass 36.175s. Two fresh independently seeded
+native sequence/helper controls match all 24 algorithmic draw observations.
+Four stock input app captures visually show intro, win, rematch fight and second
+win; 82 owned balanced events and private PCM pass binary/config/PNG/input/audio
+provenance audit. All 436 frozen Go/probe/fixture/module hashes and root module
+guards pass. Logs/manifests: temp/m4cd-{core,focused-match,final}.log,
+m4cd-final-inputs.json, m4cd-final-validation.json, m4cd-native-audit.json and
+m4cd-app-evidence-audit.json. No sessions or native/app/test clients remain at
+this checkpoint. Prior complete scoped race baseline is M4cb; the allocated
+final projectile/reversal integration will rerun it. Only source/text is staged;
+no pushes or binaries.
+
+Continue M4ce projectile schema/spawn/motion/lifetime/ownership, M4cf contacts/
+cancellation, M4cg query forms and M4ch reversals. Basic NumProjID counts may
+move into M4ce as a prerequisite for native lifetime controls. Forty-two
+projspawn-* CNS/CMD/AIR/stage programs (168 hashes) are already frozen BEFORE
+capture in temp/m4ce-native-inputs.json. They are untracked preparation and
+are NOT part of the M4cd commit. Native capture is the next step; no projectile
+Go changes have been made. Keep native observations immutable and private
+native/app/display-dependent tests serial. Items 3–4 await a later allocation.
 
 All prior allocations below are historical; their stop condition is superseded
 by the new user authorization. No agents/goals. No authored changes outside

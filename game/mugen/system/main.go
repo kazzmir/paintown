@@ -7,11 +7,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
@@ -29,6 +31,14 @@ type Engine struct {
 	gameTime      int32 // Process ticks, including menus and finished-match waits.
 	sprites       map[string]*background.SpriteImages
 	sound         *engineSound
+	random        *engine.RandomStream
+}
+
+func (e *Engine) nextMatchSeed() int64 {
+	if e.random == nil {
+		e.random = engine.NewRandomStream(time.Now().Unix())
+	}
+	return e.random.Next()
 }
 
 func (e *Engine) ticksPerSecond() int {
@@ -131,6 +141,7 @@ func main() {
 	}
 
 	engine := &Engine{
+		random:        engine.NewRandomStream(time.Now().Unix()),
 		cfg:           cfg,
 		motif:         m,
 		dataDir:       *dataDir,

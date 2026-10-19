@@ -1,0 +1,99 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, sample]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Random
+[State 700, sample]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Random
+[State 700, sample]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Random
+[State 700, sample]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Random
+[State 700, helper]
+type=Helper
+trigger1=Time=0
+id=9
+stateno=710
+[State 700, sample]
+type=VarSet
+trigger1=Time=1
+fv=8
+value=Random
+[State 700, sample]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=Random
+[State 700, sample]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=Random
+[State 700, sample]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=Random
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, inert]
+type=Null
+trigger1=1
+[Statedef 710]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 710, shared stream]
+type=ParentVarSet
+trigger1=Time=0
+fv=4
+value=Random
+[State 710, shared stream]
+type=ParentVarSet
+trigger1=Time=0
+fv=5
+value=Root,Random
+[State 710, shared stream]
+type=ParentVarSet
+trigger1=Time=0
+fv=6
+value=Parent,Random
+[State 710, shared stream]
+type=ParentVarSet
+trigger1=Time=0
+fv=7
+value=Enemy,Random
