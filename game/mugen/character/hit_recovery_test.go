@@ -8,7 +8,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cns"
 )
 
-func TestRecoveryCommandWaitsForEligibility(t *testing.T) {
+func TestRecoveryCommandDoesNotInventTransitions(t *testing.T) {
 	for _, enabled := range []bool{false, true} {
 		c := fixtureCharacter(t, "type=A\nmovetype=H\nctrl=0\n[State 7, idle]\ntype=Null\ntrigger1=1\n[Statedef 5040]\ntype=A\nmovetype=I\nphysics=N\n[State 5040, recovered]\ntype=Null\ntrigger1=1\n")
 		c.HitFall = true
@@ -25,10 +25,10 @@ func TestRecoveryCommandWaitsForEligibility(t *testing.T) {
 			if c.RuntimeError != nil {
 				t.Fatal(c.RuntimeError)
 			}
-			want := 7
-			if enabled && tick == 4 {
-				want = 5040
+			if got, want := c.GetCanRecover(), enabled && tick == 4; got != want {
+				t.Fatalf("enabled=%v tick=%d: CanRecover=%v want=%v", enabled, tick, got, want)
 			}
+			want := 7
 			if c.StateNo != want {
 				t.Fatalf("enabled=%v tick=%d: state=%d want=%d", enabled, tick, c.StateNo, want)
 			}

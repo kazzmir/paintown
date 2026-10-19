@@ -4,6 +4,20 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4cb: liedown/input timer and authored recovery routes
+
+Predecessor/reversal b258eaf3. Twenty-one frozen programs / 252 observations /
+95 authored inputs. Adds integer recovertime and measured 5110 timer, zero/
+negative/life/Pause behavior, physical input transition mashing and authored
+5050 routes. Removes the global recovery shortcut; preserves eligible data
+outside H. All 34 beta-accepted documented GetHitVar selectors now have routes.
+LIEDOWN-RECOVERY.md records precise scope, required-constant rejection and
+remaining interactions. Focused Match races PASS 102.887s; core races pass.
+Final scoped races PASS: 2,774 results, 24 tested and 12 compiled-only packages,
+no individual skips/failures; Match 1,009.698s, complete command 1,083.286s.
+All 470 frozen hashes pass. HANDOFF.md records final native/application checks.
+Local source/text only; no push/binaries. Final checkpoint in this allocation.
+
 ## M4ca: received combo/impact metadata and beta selector limits
 
 Predecessor/reversal bd018c65. Ten accepted frozen programs / 120 values and

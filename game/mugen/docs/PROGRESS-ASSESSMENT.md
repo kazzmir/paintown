@@ -1,19 +1,18 @@
 # Current progress assessment
 
-M4ca adds received hit/fall counters and typed zero-valued beta KO-add fields.
-Ten native controls / 120 values and three load rejections distinguish accepted
-selectors from manual-only hitid/zoff. GetHitVar now has 33/36 documented runtime
-routes, two rejected selectors and one remaining accepted selector (recovertime).
-Read [GETHIT-METADATA.md](GETHIT-METADATA.md); M4cb recovery is next.
+M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
+routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
+94.4%); the other two are native load rejections. This is routing, not exhaustive
+behavioral coverage. M4ca/M4cb add 34 frozen programs / 372 scalar observations /
+three rejections, with native arithmetic and authored recovery controls.
+[LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md) and [GETHIT-METADATA.md](GETHIT-METADATA.md)
+record evidence/limits. The reproducible [inventory](TRIGGER-BINDINGS.md) still
+finds **109/127 trigger families with candidate routes (85.8%)**, 18 unbound.
+Final scoped races PASS: 2,774 test/subtest results, no individual skips/failures;
+24 tested and 12 compiled-only packages. All 470 frozen hashes pass. Fresh
+native/application validation is recorded in HANDOFF.md.
 
-M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
-runtime routes, **18 are unbound**; this does not establish complete variants or
-native behavior. The M4bz baseline had 29/36 documented selector routes; M4ca supersedes that
-selector count and distinguishes target rejections. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
-[JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
-recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
-
-Updated 2026-10-18 through M4by process clocks and M4bx legacy HitVel.
+Updated 2026-10-18 through M4cb liedown/input, M4ca metadata and M4bz runtime routing.
 The approved target remains full M.U.G.E.N 1.1 beta 1 compatibility. The 27-key HitDef allocation is complete. The user subsequently authorized
 M4bu clocks, M4bv results/reset and M4bw complete input-driven matches. All authored changes stay under game/mugen/, with local
 checkpoint commits, no push and no new binaries/assets committed.
@@ -32,6 +31,8 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | --- | ---: | --- |
 | HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
 | Controller registration | 87/89 (97.8%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod and ExplodBindTime are unregistered. |
+| Trigger runtime routes | 109/127 (85.8%) | Candidate source handlers; 18 absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
+| GetHitVar routing | 34/36 manual entries (94.4%) | All 34 beta-accepted entries route; two reject at load. New metadata/liedown consumers have bounded native evidence. |
 | Trigger recognition | 127/127 (100%) | Vocabulary only; bindings/variants are not all complete. |
 | Loaded stock state programs | 216/216 (100%) | Both KFM variants and loaded common states compile; not all execution paths/interactions. |
 | KO/time-over clock corpus |29 programs/1,740 observations | Native slowdown, timer/pause boundaries, readiness and pose/reset clocks; ROUND-LIFECYCLE.md. |
@@ -51,7 +52,7 @@ follows from the present inventory.
 | Workstream | Current foundation | Remaining acceptance |
 | --- | --- | --- |
 | Language/state runtime (M1/M2) | Typed expressions, shared executor, ordering/persistence, negative states, ownership, pause, coordinates and stock commands have extensive native controls. | Every remaining controller/trigger schema/binding/variant, version/default/error rules, complete command/gamepad timing and broad foreign/helper/pause combinations. |
-| Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers and single-contact projectiles. | Full recovery/input/mashing/liedown behavior; remaining GetHitVar fields; full projectile lifecycle/cancellation/queries, reversals, teams and multiple-contact/entity interactions. |
+| Combat/entities (M5) | All HitDef key schemas; bounded contact, guard, damage/power, fall/velocity/recovery eligibility, juggle/chains, targets/throws, helpers and single-contact projectiles. | Broader recovery physics, simultaneous/paused input and GetHitVar interactions; full projectile lifecycle/cancellation/queries, reversals, teams and multiple-contact/entity interactions. |
 | Match clocks (M4) | Working intro, combat, KO/time-over, result, round reset/rematch and real stock sweep recovery. M4by adds cumulative Engine GameTime and configured tick rate. | M4bu/bv establish bounded clocks/results/reset; M4bw completes full-life stock matches/rematches. Broader assertion/pause/reset interactions, exact presentation timing, extreme configuration and other mode clocks remain. |
 | Effects/rendering/audio (M6) | Sprite/background/HUD/effect drawing, hit palette/shake, sound output and owned numeric/pixel/PCM controls. | Standalone EnvShake, PalFX/AllPalFX/BGPalFX, afterimages/angles/zoom/transparency and other incomplete methods; broad camera/background behavior; BGM loading/looping/transitions. |
 | Assets/fonts (M3) | Stock SFF v1/v2/v2.01, AIR/SND, bitmap/outline fonts and relocatable resource loading work. | Full format/default/malformed-resource matrix, animation variants, resource lifecycle and platform conformance. Missing Arial/MS Gothic payloads use a visible Go Regular fallback, without native glyph/metric parity. |
@@ -83,21 +84,22 @@ not close native filtered/partial-alpha parity.
 HITDEF-REMAINING.md records the seven batches and their source/topic evidence.
 HIT-SHAKE.md and FALL-SHAKE.md describe the final families; HANDOFF.md records
 exact validation results and artifacts. CHECKPOINTS.md records local reversal
-history. The latest full scoped race suite belongs to M4by: 2,735 passing test/subtest
+history. The latest full scoped race suite belongs to M4cb: 2,774 passing test/subtest
 results across 24 tested and 12 compiled application packages, no individual
-skips/failures. Match takes 956.321s and the complete command 1,028.682s. All 408
-frozen source/probe/fixture/module hashes pass. HANDOFF.md records final native,
-application/PNG/private-PCM and root-module provenance. Earlier failed or
+skips/failures. Match takes 1,009.698s and the complete command 1,083.286s.
+All 470 frozen source/probe/fixture/module hashes pass. HANDOFF.md records
+final native/application/PNG/private-PCM and root-module provenance. Earlier failed or
 superseded runs remain diagnostic. Passing Go checks do not waive the explicit
 native renderer/font/platform discrepancies above.
 
 M4bu, M4bv and M4bw are complete within the approved round-lifecycle allocation.
-The user validated M4bw and authorized M4bx legacy HitVel, followed by M4by
-cumulative GameTime. Both implementations now have native and production-flow
-evidence; final integration is recorded in HANDOFF.md. Remaining runtime
-bindings still need an explicit variant/consumer inventory and closure.
-Then prioritize remaining
-recovery/input behavior and projectile/reversal/team subsystems as separate deliveries.
+M4bx and M4by are complete. The next authorized group, M4bz/M4ca/M4cb,
+now has the source inventory, received combat metadata and bounded liedown/
+input/authored recovery implementation. Full scoped integration, fresh native/application checks and source/PNG/PCM/
+module provenance all pass. This three-checkpoint group is complete. The remaining binding inventory explicitly lists 18 absent
+families. Next prioritize HitPauseTime/Random and their state/random ownership,
+then projectile lifecycle/query and reversal/entity slices with native controls.
+Broader recovery combinations remain separate from the measured consumers.
 Modes and BGM can also be budgeted as visible end-to-end slices. Resolve strict
 renderer/platform failures before claiming final conformance. This assessment
 does not silently expand the current allocation into all remaining M0–M8 work.

@@ -49,3 +49,9 @@ and one accepted selector remains unbound (`recovertime`). Native controls and
 limits are in [GETHIT-METADATA.md](GETHIT-METADATA.md). The generator now reports
 parser acceptance separately. The extra air.animtype runtime case is rejected
 by the reference parser; its route alone is not usable reference support.
+
+M4cb update: all 34 documented selectors accepted by the beta now have typed
+runtime/Character routes, including recovertime and its liedown/input consumer.
+The two other manual entries remain target load rejections. See
+[LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md). No family count changes; 18 complete
+families and broader variants remain unbound/unverified.

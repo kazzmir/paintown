@@ -1,0 +1,50 @@
+{
+  "settle_seconds": 6,
+  "events": [
+    {
+      "keys": [
+        "Left"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    },
+    {
+      "keys": [
+        "Left"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    },
+    {
+      "keys": [
+        "Left"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    }
+  ],
+  "tail_seconds": 0.5,
+  "go_inputs": [
+    {
+      "at": 10,
+      "duration": 9,
+      "inputs": [
+        "DirBack"
+      ]
+    },
+    {
+      "at": 34,
+      "duration": 9,
+      "inputs": [
+        "DirBack"
+      ]
+    },
+    {
+      "at": 58,
+      "duration": 9,
+      "inputs": [
+        "DirBack"
+      ]
+    }
+  ]
+}

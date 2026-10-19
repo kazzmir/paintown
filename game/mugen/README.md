@@ -101,7 +101,14 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-18, through M4ca**. Recent changes cover damage/power transfer,
+Snapshot: **2026-10-18, through M4cb**. The latest group audits runtime trigger
+gaps, adds received hit/fall metadata, and implements the liedown timer and
+input mashing. Recovery follows character-authored CNS conditions. All 34
+beta-accepted documented GetHitVar selectors have routes; two manual-only
+names reject like the reference. See [metadata](docs/GETHIT-METADATA.md) and
+[liedown/recovery](docs/LIEDOWN-RECOVERY.md) for measured behavior and limits.
+
+Earlier changes cover damage/power transfer,
 lethal hit/guard normalization, fall damage, KO velocities, stage diagnostic
 fill, native sound/spark-selection/pause comparisons and compiled HitDef
 hit/guard pause expressions with measured default/evaluation order. Storyboard
@@ -144,15 +151,15 @@ Production GameTime now continues through menus, results and rematches.
 TicksPerSecond and one-on-one MatchNo are bound, and configured game speed
 uses the native rate formula. See [engine clock evidence](docs/ENGINE-CLOCK.md).
 Complete input-driven
-matches/rematches and final full scoped races now pass (2,735 test/subtest
-results). See [complete match validation](docs/COMPLETE-MATCHES.md).
+matches/rematches and final full scoped races now pass (2,774 test/subtest
+results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md).
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
 | Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 109 / 127 | **85.8%** | Source routing only; 18 unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
-| Documented GetHitVar selector routes | 33 / 36 | **91.7%** | Two manual selectors are rejected by beta1; recovertime remains. [Evidence](docs/GETHIT-METADATA.md). |
+| Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |
 | Loaded stock character state programs compiling successfully | 216 / 216 | **100%** | 108 states per KFM variant, including loaded common states; execution paths and interactions are a separate obligation. |
 | Documented HitDef keys routed through the expression compiler | 72 / 81 | **88.9%** | Numeric expression routing; nine other documented keys are literal masks/enums. |
 | Documented HitDef keys with typed schemas | 81 / 81 | **100%** | 72 numeric and nine literal schemas with bounded native consumers; full interactions remain open. |

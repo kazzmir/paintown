@@ -1044,6 +1044,7 @@
       "hitshaketime",
       "hittime",
       "isbound",
+      "recovertime",
       "slidetime",
       "type",
       "xoff",
@@ -1056,16 +1057,13 @@
     ],
     "unbound_selectors": [
       "hitid",
-      "recovertime",
       "zoff"
     ],
     "parser_rejected_selectors": [
       "hitid",
       "zoff"
     ],
-    "accepted_but_unbound_selectors": [
-      "recovertime"
-    ],
+    "accepted_but_unbound_selectors": [],
     "extra_bound_selectors": [
       "air.animtype"
     ]

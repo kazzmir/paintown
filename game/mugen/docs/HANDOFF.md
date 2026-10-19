@@ -1,28 +1,72 @@
 # Current handoff
 
-## Current allocation: M4bz → M4ca → M4cb
+## Completed binding/recovery allocation: M4bz → M4ca → M4cb
 
-M4bz is bd018c65 (source-only inventory); M4ca completes metadata/counters.
-Read GETHIT-METADATA.md and TRIGGER-BINDINGS.md. Thirteen frozen programs:
-ten accepted / 120 values, three rejected / 52 CNS/CMD/AIR/stage hashes.
-GetHitVar now has 33/36 documented routes; hitid/zoff are target load rejections,
-recovertime is the one accepted unbound selector. Family routing stays 109/127.
+All three authorized checkpoints are complete. M4bz is bd018c65; M4ca is
+b258eaf3; M4cb is the final local checkpoint. Ready for the user's play test.
+No agents/goals/sessions or native/app/test clients remain. Do not start another
+feature batch without a new allocation. No push or binaries. All authored
+changes remain under game/mugen/ and root module guards pass.
 
-M4ca focused Match races PASS 47.322s (all 13 metadata controls, legacy HitVel,
-projectile counterexamples and recovery/sweep regressions). Full Character /
-evaluator / engine races PASS 12.195 / 1.021 / 1.494s. Fresh native combo
-reproduction passes exact values. All 348 frozen source/probe/fixture/module
-hashes and root-module guards pass. No observed original or numeric golden was
-changed; early KO all-zero captures and rejected/unobserved drafts remain
-explicit diagnostics. Artifacts: temp/m4ca-final-inputs.json,
-m4ca-final-match.log, reference-runs/m4ca-fresh-combo and m4ca-* native runs.
-The M4ca test/native clients were awaited before M4cb timer capture began.
+Read LIEDOWN-RECOVERY.md, GETHIT-METADATA.md and TRIGGER-BINDINGS.md. All 34
+beta-accepted documented GetHitVar selectors now have routes; manual-only hitid
+and zoff reject like the target. The 109/127 family-route count stays unchanged,
+with 18 families and broader variants open. No whole-engine percentage follows.
 
-Continue M4cb liedown timer/input and recovery routing. Five new original timer
-programs are frozen before their native captures; no timer runtime change yet.
-A full scoped race suite follows final integration. The previous M4by full
-suite remains the baseline below. No pushes, binaries, agents or out-of-scope
-changes. The user authorized all three checkpoints without intermediate review.
+M4ca: ten accepted native programs / 120 values and three rejections / 52 frozen
+inputs. Received hit count counts contacts, fall count publishes after 5100's
+first CNS pass, and KO-add fields are typed zero in measured target controls.
+Focused Match races PASS 47.322s; Character/evaluator/engine races PASS
+12.195/1.021/1.494s. Fresh native combo and all 348 source/probe/fixture/module
+hashes/root guards passed at its checkpoint. M4cb integration supersedes that
+source snapshot while preserving all native originals and goldens.
+
+M4cb: 21 accepted programs / 252 scalar observations / 95 authored hashes.
+Ten timers pin positive/zero/negative, state-number/type, I reset, death and
+Pause behavior. Five normalized input programs check exact quarter reductions
+and 36 balanced owned events. Six authored route controls add 12 events and
+remove the old global recovery shortcut. CanRecover retains eligible fall data
+after leaving H. The original omitted-required-constant rejection and raw
+wall-time-dependent input programs remain ignored diagnostics, never acceptance.
+The asset/schema gate for required Data constants remains explicit.
+
+Focused Match races PASS 102.887s; Character/evaluator/engine/CNS races PASS
+12.697/1.022/1.497/1.013s. Final full scoped races PASS: 2,774 test/subtest
+results, 24 tested and 12 compiled-only packages, no individual skips/failures.
+Match 1,009.698s; Character 12.063s; System 9.897s; Stage 1.040s; engine 1.488s;
+evaluator 1.025s; CNS 1.013s; stock/resources 6.871s; full command 1,083.286s.
+Command: bash game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=20m -json.
+Exec session 78886 was awaited before any final native/application work.
+
+All 470 frozen runtime/test/probe/fixture/module hashes pass after validation.
+Fresh native Pause-timer, normalized taps and far-air recovery reproductions
+pass exact originals (13.079 / 9.475 / 8.100s). The final stock input app passes
+in 46.927s: four PNGs at 3/21/26/45s, with win/rematch/win visually inspected.
+All 82 app events target one owned PID/window and release their keys. Private
+PCM: 1,920,581 stereo frames, peak 32767, RMS 1656.66. Application binary SHA256:
+ff752c91ba6ef1ab418f19c8b35082d01be4a8421e423e8c70ecbb6e973fb7d0.
+
+The final audit passes all 34 programs / 372 scalar observations / three load
+rejections, original and prepared CNS/CMD/AIR/stage/definition/config/executable,
+exact PNG glyph/value/hash, frozen recipes, balanced events, app binary/PCM and
+root modules. Only native FirstRun startup persistence and line endings are
+normalized. No original, numeric golden or tolerance changed. All exec sessions
+were awaited; a separate process check confirms no native/app/test clients.
+
+Artifacts: temp/m4cb-final-inputs.json, m4cb-full-scoped-race{.jsonl,-result.json,
+.stderr.log}, m4cb-final-focused-match.log, m4cb-final-core.log,
+m4cb-post-validation.json, m4cb-final-audit.log, m4cb-final-evidence-audit.json,
+m4cb-evidence-audit.json and m4cb-app-evidence-audit.json. Fresh runs:
+reference-runs/m4cb-fresh-timer-pause, recovery-input-runs/m4cb-fresh-input-taps,
+recovery-input-runs/m4cb-fresh-route-far, app-runs/m4cb-stock-input. Historical
+native/diagnostic sources remain in reference-runs/m4ca-*, m4cb-*,
+recovery-input-runs/m4cb-* and m4cb-raw-input-diagnostics.
+
+Next suggested slices: remaining scalar/random bindings (HitPauseTime, Random),
+then projectile lifecycle/query and reversal/entity work. Broader input/recovery,
+required asset/constant schemas, modes/AI/BGM and strict renderer/font/platform
+gates remain open. This completed group does not authorize all remaining work.
+The prior trigger/clock allocation below is historical.
 
 ## Completed trigger/clock allocation
 

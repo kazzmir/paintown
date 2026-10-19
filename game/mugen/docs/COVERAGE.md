@@ -1,19 +1,18 @@
 # Current behavior coverage ledger
 
-M4ca adds received hit/fall counters and typed zero-valued beta KO-add fields.
-Ten native controls / 120 values and three load rejections distinguish accepted
-selectors from manual-only hitid/zoff. GetHitVar now has 33/36 documented runtime
-routes, two rejected selectors and one remaining accepted selector (recovertime).
-Read [GETHIT-METADATA.md](GETHIT-METADATA.md); M4cb recovery is next.
+M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
+routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
+94.4%); the other two are native load rejections. This is routing, not exhaustive
+behavioral coverage. M4ca/M4cb add 34 frozen programs / 372 scalar observations /
+three rejections, with native arithmetic and authored recovery controls.
+[LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md) and [GETHIT-METADATA.md](GETHIT-METADATA.md)
+record evidence/limits. The reproducible [inventory](TRIGGER-BINDINGS.md) still
+finds **109/127 trigger families with candidate routes (85.8%)**, 18 unbound.
+Final scoped races PASS: 2,774 test/subtest results, no individual skips/failures;
+24 tested and 12 compiled-only packages. All 470 frozen hashes pass. Fresh
+native/application validation is recorded in HANDOFF.md.
 
-M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
-runtime routes, **18 are unbound**; this does not establish complete variants or
-native behavior. The M4bz baseline had 29/36 documented selector routes; M4ca supersedes that
-selector count and distinguishes target rejections. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
-[JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
-recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
-
-Updated 2026-10-18 through M4by process clocks, M4bx legacy HitVel, M4bw complete-match validation, M4bv results/reset and M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
+Updated 2026-10-18 through M4cb liedown/recovery, M4ca received metadata, M4bz runtime routing, M4by process clocks, M4bx legacy HitVel, M4bw complete-match validation, M4bv results/reset and M4bu KO/time-over clocks, M4bt stored fall shake, M4bs contact shake, M4br hit palette effects, M4bq constraints, M4bp chains/juggle, M4bo literal schemas, M4bn guard distance, M4bm downed-hit bounce, M4bl HitFallSet, M4bk fall vectors, M4bj trip recovery, M4bi fall/recovery, M4bh air/down timing, M4bg ground/guard timing and M4bf storyboard
 canvas scaling, after upstream merge 99b4605c. This ledger reconciles current source/tests with the historical
 inventory. A row describes demonstrated behavior and its remaining gate; it
 does not promote an entire controller from one passing parameter/default.
@@ -23,14 +22,16 @@ does not promote an entire controller from one passing parameter/default.
 | Language and compiler | Typed int32/float32/bottom, versioned expressions, assignment, tuples, redirect contexts, precompiled core parameters. M4bx binds legacy HitVel X/Y with 15 native controls and closes three original counterexamples. `evaluator/`, `engine/parameters.go`, BOTTOM.md, LEGACY-HITVEL.md. | Full controller schemas, remaining trigger bindings/variants/errors and their interactions. |
 | State/world scheduling | Shared executor and production world; native state entry, persistence, negative states, ordering and physics. WORLD.md, PHYSICS.md, ACTOR-ORDER.md. | All Statedef/default/version cases and broad paused/foreign/entity combinations. |
 | Process clock/rate | M4by: Engine-owned GameTime across menus, matches, result waits and fresh rematch timelines; native rate formula drives Ebiten and typed TicksPerSecond, one-on-one MatchNo=1. Six programs/84 native observations plus production CNS/keyboard flow and wrap checks. ENGINE-CLOCK.md. | Exact menu/fade timing, malformed/extreme rates and Arcade/team progression/continue numbering remain separate gates. |
-| Input | Logical input shared with production, stock keyboard mappings, command matching. INPUT.md, `system/flow_test.go`. | Full command timing/modifier/facing cases and gamepad adapters. |
+| Input | Logical input shared with production, stock keyboard mappings, command matching. M4cb adds native press/release liedown mashing, including direction/Start. INPUT.md, LIEDOWN-RECOVERY.md, `system/flow_test.go`. | Full command timing/modifier/facing, simultaneous/paused input and gamepad adapters remain. |
 | Identity/helpers | Match-owned IDs, ownership, spawning, retirement, root/parent/target redirects. ENTITIES.md, HELPERS.md, RETIREMENT.md. | Full projectile/team/multi-entity behavior and parameter interactions. |
 | Targets/throws | Acquired target IDs/generations, custom state/animation ownership, binding and stock throw controls. TARGETS.md, OWNERSHIP.md, BINDING.md, THROWS.md. | Full foreign/helper/pause/projectile combinations and all controller variants. |
 | Hit/guard selection | Native hit flags, posture, reciprocal priority, heading and draw priority. HIT-FLAGS.md, COMBAT-PRIORITY.md, CONTACT-FACING.md. | Broader juggle/chain/constraint interactions, reversals, teams and multi-entity combinations. |
-| Damage/power/KO vectors | Typed expressions, power defaults/rules, lethal caps, fatal guard normalization, fall damage and measured KO velocities. HIT-POWER.md, HIT-LETHALITY.md. | Fall recovery, all GetHitVar selectors and absolute KO/round clocks. |
+| Damage/power/KO vectors | Typed expressions, power defaults/rules, lethal caps, fatal guard normalization, fall damage and measured KO velocities. HIT-POWER.md, HIT-LETHALITY.md. | Broader recovery/GetHitVar interactions, foreign/entity/pause contexts and extreme numeric inputs. |
 | HitDef timing | M4be compiles pausetime/guard.pausetime with native source defaults, reversed component evaluation, truncation, bottom/negative handling and malformed-input checks. HIT-PAUSE.md. M4bg adds ground.hittime/ground.slidetime and their four dependent guard timings, including source defaults and measured order. HIT-GROUND-TIMING.md. M4bh compiles air/down timers, default 20/explicit 0 and bounded launch/down/countdown selection. HIT-AIR-DOWN-TIMING.md. | Full recovery/timing interactions, broad foreign/helper/projectile/Pause/SuperPause combinations and absolute KO/round clocks are separate batches. |
 | Fall/recovery eligibility | M4bi compiles fall/air.fall/fall.recover/fall.recovertime; native boolean selection, repeated source default, delay default/coercion and order. GetHitVar(fall.time/fall.recovertime) and CanRecover share the receiver clock, including shake and H-state continuation controls. HIT-FALL-RECOVERY.md. | Full recovery/bounce physics, juggle/chains and broader HitFallSet/contact/entity/pause combinations. |
-| Trip recovery | M4bj removes the recurring trip-state heuristic, chooses native Trip entry at contact, stores air.type and corrects groundtype/airtype values. Thirteen native programs and real mixed-profile down+B sweeps complete lying down, get-up and idle/control. TRIP-RECOVERY.md. | Broader reaction-type/recovery-command routing, liedown/mashing clocks and entity/contact/pause combinations. |
+| Trip recovery | M4bj removes the recurring trip-state heuristic, chooses native Trip entry at contact, stores air.type and corrects groundtype/airtype values. Thirteen native programs and real mixed-profile down+B sweeps complete lying down, get-up and idle/control. TRIP-RECOVERY.md. | M4cb subsequently verifies bounded liedown/mashing and authored routes. Broader reaction/physics/entity/contact/pause combinations remain. |
+| Received hit metadata | M4ca contact count independent of numhits, 5100 impact publication, lifecycle, typed zero KO-add fields and beta hitid/zoff rejections. Ten native controls/120 values plus three rejections. GETHIT-METADATA.md. | Repeated guard/third-party/helper/projectile/foreign contacts, special impact transitions and broad pause/reset combinations. |
+| Liedown/input and authored recovery | M4cb integer recovertime, measured 5110 timer/reset, zero/negative/dead/Pause controls, physical press/release quarter reductions and authored 5050 routes. 21 native programs/252 observations. LIEDOWN-RECOVERY.md. | Simultaneous/rapid/paused input, broad recovery physics/entity/foreign/profile combinations and required Data-constant load validation. |
 | Fall velocity/gravity | M4bk compiles fall.xvelocity/fall.yvelocity/yaccel; native omission versus zero, float/bottom/order/default/profile rules, plus actual HitFallVel and scripted gravity consumers. FALL-VECTORS.md. | Full recovery and broader bounce/HitFallSet/foreign/helper/projectile/team/contact/pause combinations. |
 | HitFallSet | M4bl compiles optional value with native preserve/raw integer/coercion rules and retained clock/query/velocity consumers. The beta ignores documented velocity fields, including invalid expressions. HITFALLSET.md. | Broad foreign/entity/contact/pause combinations and full recovery remain open. |
 | Downed-hit bounce | M4bm compiles down.bounce; native zero/nonzero/float/bottom/order rules, zero-launch boundary, contact fall-vector reset and stock bounce/get-up consumers. PosFreeze survives same-tick transitions; first idle observation retains facing. DOWN-BOUNCE.md. | Full recovery, all auto-turn/PosFreeze edges and broad entity/contact/pause/foreign combinations. |
@@ -42,7 +43,7 @@ does not promote an entire controller from one passing parameter/default.
 | Contact shake | M4bs native schemas/defaults/order, fractional amplitude, asymmetric rounding, issuing-frame duration, global clock, profile conversions, ScreenPosY and world-only rendering. M4bt adds stored fall payload, typed getters, positive-duration consumption and guard/fall=0 rules. HIT-SHAKE.md, FALL-SHAKE.md. | Standalone EnvShake and broad request/entity/pause/zoom combinations. |
 | Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. M4br adds native HitDef palette schemas, shared clocks, cache/portrait isolation and exact opaque indexed color comparisons. EXPLODS.md, RGB-CONSUMERS.md, HIT-PALETTE.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
-| Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | All format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
+| Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | Required Data-constant load validation and all format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
 | Audio | Production command queue/mixer, channel ownership, pan/volume/voice/cues and owned native PCM controls. AUDIO.md. | BGM, broader configuration/resource/clock combinations; ForceFeedback remains an empty method. |
 | Results/reset | M4bv: 26 native controls / 1,560 integers; normal-mode wins/draws/MatchOver, rolling holds, late damage/DKO, Alive latching and persistent state/entity cleanup; stage resetBG state checks. ROUND-RESULTS.md. | Broader input-driven character scenarios, exact presentation timing, all assertion/pause and broader mode/entity combinations. |
 | KO/time-over clocks | M4bu29 native programs, integer slowdown, continuous GameTime, zero timer interval, pause distinctions, readiness/900-pass fallback, result suffixes and separate state4/pose/MatchOver/init boundaries. ROUND-LIFECYCLE.md. | Broader DKO/draw/reset/persistence interactions, broader input-driven character scenarios, exact HUD/fade/audio timing and broader entity/pause variants. |
@@ -79,6 +80,12 @@ Empty runtime methods are source-audit findings. Native comparison must still
 distinguish missing Go behavior from operations disabled in the beta itself.
 
 ## Current allocation and stop condition
+
+M4bz (bd018c65), M4ca (b258eaf3) and M4cb form the current authorized group.
+M4cb runtime, focused/full scoped integration, fresh native/application and
+provenance validation all pass. This group is complete. Stop for user testing
+and a new allocation. No push or binaries. All older allocations
+below are historical and complete within their stated scope.
 
 The user has now authorized all 27 remaining HitDef keys after 24b3ebd0,
 with a local checkpoint for each coherent batch and continued iteration until
@@ -118,7 +125,7 @@ recovery eligibility/clock consumers. Thirty native programs pin 372 numeric
 observations, five load rejections and 120 input hashes. Focused races, three
 fresh native reproductions, three actual apps/four captures and the full
 scoped race suite pass (Match 640.740s). M4bi is the completed local checkpoint;
-pause for user testing and the next allocation. Legacy recovery state routing
-and physics remain open; eligibility coverage does not close those paths.
+pause for user testing and the next allocation. This historical eligibility allocation did not close routing or physics. M4cb
+subsequently removes the global shortcut and verifies bounded authored routes.
 Juggle, bounce physics, round clocks and renderer families stay outside this
 allocation. Existing strict alpha/spark failures remain open.

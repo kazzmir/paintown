@@ -233,17 +233,20 @@ type Character struct {
 
 	// HitGuard tracks world EntityIDs already hit by the current HitDef.
 	// activation, preventing the same attack from landing multiple times per swing.
-	HitGuard         map[int]bool
-	GetHit           cns.HitDef
-	HitTime          int
-	HitFall          bool
-	hitFallValue     int32
-	fallTime         int
-	GetHitDown       bool
-	GetHitAir        bool
-	GetHitGuarded    bool
-	GetHitDamage     int
-	HitFallVelActive bool // Tracks if HitFallVel controller was triggered
+	HitGuard           map[int]bool
+	GetHit             cns.HitDef
+	HitTime            int
+	HitFall            bool
+	hitFallValue       int32
+	fallTime           int
+	liedownRemaining   int32
+	liedownInitialized bool
+	recoveryInputMask  uint16
+	GetHitDown         bool
+	GetHitAir          bool
+	GetHitGuarded      bool
+	GetHitDamage       int
+	HitFallVelActive   bool // Tracks if HitFallVel controller was triggered
 
 	// Input latching to stabilize diagonals (input name -> ticks remaining)
 	InputLatch map[string]int
@@ -568,6 +571,7 @@ func (c *Character) finishTick() {
 			// Beta publishes the impact after the first landing CNS pass.
 			c.receivedFallCount++
 		}
+		c.advanceLiedownTime()
 		c.Time++
 		if c.MoveHit > 0 {
 			c.MoveHit++
@@ -742,6 +746,9 @@ func (c *Character) SetMoveType(mtype string) {
 		c.juggleMoves = nil
 	}
 	c.MoveType = next
+	if next != "H" {
+		c.resetLiedownTime()
+	}
 }
 
 func (c *Character) SetPower(power int) {
@@ -1353,6 +1360,8 @@ func (c *Character) GetHitVar(name string) float64 {
 	case "xveladd", "yveladd":
 		// Beta folds KO offsets into xvel/yvel; these accepted selectors stay zero.
 		val = 0
+	case "recovertime":
+		val = float64(c.getLiedownTime())
 	case "hitcount":
 		val = float64(c.receivedHitCount)
 	case "fallcount":
@@ -1601,17 +1610,13 @@ func (c *Character) GetStateFile() *cns.CNS {
 }
 func (c *Character) HandleBuiltinTransitions() {
 	if c.StateNo == 5110 {
-		liedownTime := 60 // Default MUGEN
-		if c.StateFile != nil && c.StateFile.Data.LiedownTime > 0 {
-			liedownTime = c.StateFile.Data.LiedownTime
-		}
 
 		if c.GetLife() <= 0 && c.GetAnimTime() == 0 {
 			c.ChangeState(5150, -1, -1)
 			return
 		}
 
-		if c.Time >= liedownTime {
+		if c.GetLife() > 0 && c.Time > 0 && c.getLiedownTime() <= 0 {
 			c.ChangeState(5120, -1, -1)
 			return
 		}
@@ -1676,28 +1681,7 @@ func (c *Character) HandleBuiltinTransitions() {
 		}
 	}
 
-	// Ground Recovery (5200, 5201)
-	if c.HitFall && st == "L" && c.Command("recovery") {
-		canRecover := c.GetCanRecover()
-		if canRecover {
-			c.ChangeState(5200, -1, -1)
-			return
-		}
-	}
-
-	// Air Recovery (5040, 5210)
-	if c.HitFall && st == "A" && c.Command("recovery") {
-		canRecover := c.GetCanRecover()
-		if canRecover {
-			// Air recovery states
-			if c.HasAnim(5210) {
-				c.ChangeState(5210, -1, -1)
-			} else {
-				c.ChangeState(5040, -1, -1)
-			}
-			return
-		}
-	}
+	// Falling recovery routes belong to authored common/custom CNS (5050).
 
 	// Run/backhop exits are authored by CNS as well; state 105 is exempt from
 	// automatic Physics A landing so its own controller can select state 106.
@@ -2202,6 +2186,7 @@ func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded 
 	if !guarded && (hit.P2Facing == 1 || hit.P2Facing == -1) {
 		c.pendingHitFacing = -hit.P2Facing * hitFacing
 	}
+	c.resetLiedownTime()
 	c.HitPauseTime = 0
 	c.pausedThisTick = false
 

@@ -488,7 +488,7 @@ func callWithArguments(e *Call, env, argumentsEnv EvaluatorEnvironment) Value {
 			return Float(float32(who.GetHitVar(field)))
 		case "fall.envshake.time", "fall.envshake.ampl":
 			return Int(int32(who.GetHitVar(field)))
-		case "type", "animtype", "air.animtype", "groundtype", "airtype", "fall", "fall.damage", "fall.kill", "fall.recover", "fall.recovertime", "fall.time", "hittime", "slidetime", "ctrltime", "damage", "guarded", "hitshaketime", "isbound", "chainid", "hitcount", "fallcount":
+		case "type", "animtype", "air.animtype", "groundtype", "airtype", "fall", "fall.damage", "fall.kill", "fall.recover", "fall.recovertime", "fall.time", "hittime", "slidetime", "ctrltime", "damage", "guarded", "hitshaketime", "isbound", "chainid", "hitcount", "fallcount", "recovertime":
 			return Int(int32(who.GetHitVar(field)))
 		default:
 			return failure(env, "unimplemented GetHitVar field %s", field)

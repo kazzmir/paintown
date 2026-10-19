@@ -310,6 +310,7 @@ func (c *Character) updateCommands(isPaused bool) {
 		} else {
 			physicalRaw = GetRawInputs(c.InputSlot, c.Facing)
 		}
+		c.updateRecoveryInput(physicalRaw)
 		raw := make([]string, len(physicalRaw))
 		copy(raw, physicalRaw)
 

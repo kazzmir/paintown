@@ -44,9 +44,9 @@ func TestGetHitVarRequiresBetaSelector(t *testing.T) {
 }
 
 func TestGetHitMetadataValueTypes(t *testing.T) {
-	for _, field := range []string{"xveladd", "yveladd", "hitcount", "fallcount"} {
+	for _, field := range []string{"xveladd", "yveladd", "hitcount", "fallcount", "recovertime"} {
 		value := evaluate(t, "GetHitVar("+field+")", &fallShakeFixture{})
-		integer := field == "hitcount" || field == "fallcount"
+		integer := field == "hitcount" || field == "fallcount" || field == "recovertime"
 		if integer && (value.Kind() != IntKind || value.Number() != 4) {
 			t.Fatal(field, value)
 		}

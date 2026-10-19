@@ -171,6 +171,13 @@ func TestNativeFallShakePrograms(t *testing.T) {
 func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
+	programs := paths[:0]
+	for _, path := range paths {
+		if !strings.HasSuffix(path, ".input.json") {
+			programs = append(programs, path)
+		}
+	}
+	paths = programs
 	if err != nil || len(paths) != count {
 		t.Fatal("incomplete native geometry corpus", len(paths), err)
 	}
@@ -193,6 +200,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				ErrorState       int                `json:"expected_compile_state"`
 				ErrorFile        string             `json:"expected_compile_file"`
 				ReplayTicks      int                `json:"replay_ticks"`
+				RecipeHash       string             `json:"recipe_sha256"`
 				GameWidth        int                `json:"game_width"`
 				Rules            map[string]float64 `json:"rules"`
 				ExtraHashes      map[string]string  `json:"extra_sha256"`
@@ -217,6 +225,23 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				return data
 			}
 			stem := strings.TrimSuffix(path, ".json")
+			var inputRecipe struct {
+				Inputs []struct {
+					At       int      `json:"at"`
+					Duration int      `json:"duration"`
+					Inputs   []string `json:"inputs"`
+				} `json:"go_inputs"`
+			}
+			if reference.RecipeHash != "" {
+				if err := json.Unmarshal(checked(stem+".input.json", reference.RecipeHash), &inputRecipe); err != nil {
+					t.Fatal(err)
+				}
+				for _, event := range inputRecipe.Inputs {
+					if event.At < 0 || event.Duration < 1 || event.At+event.Duration > 600 {
+						t.Fatal("invalid frozen input event", event)
+					}
+				}
+			}
 			for name, hash := range reference.ExtraHashes {
 				checked(filepath.Join(stem+".extra", name), hash)
 			}
@@ -335,6 +360,22 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			// These fixtures measure completed simulation passes. KO slowdown
 			// adds real GameTime ticks without executing another CNS pass.
 			completed := 0
+			if reference.RecipeHash != "" {
+				for _, player := range m.Players {
+					player.Character.InputSource = func(slot, facing int) []string {
+						if slot != 1 {
+							return nil
+						}
+						var inputs []string
+						for _, event := range inputRecipe.Inputs {
+							if completed >= event.At && completed < event.At+event.Duration {
+								inputs = append(inputs, event.Inputs...)
+							}
+						}
+						return inputs
+					}
+				}
+			}
 			for frame := 0; frame < ticks*8 && completed < ticks; frame++ {
 				if err := m.Update(); err != nil {
 					t.Fatal(err)

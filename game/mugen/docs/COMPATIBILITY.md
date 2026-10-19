@@ -1,17 +1,16 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
-M4ca adds received hit/fall counters and typed zero-valued beta KO-add fields.
-Ten native controls / 120 values and three load rejections distinguish accepted
-selectors from manual-only hitid/zoff. GetHitVar now has 33/36 documented runtime
-routes, two rejected selectors and one remaining accepted selector (recovertime).
-Read [GETHIT-METADATA.md](GETHIT-METADATA.md); M4cb recovery is next.
-
-M4bz source-routing audit: **109/127 trigger families (85.8%)** have candidate
-runtime routes, **18 are unbound**; this does not establish complete variants or
-native behavior. The M4bz baseline had 29/36 documented selector routes; M4ca supersedes that
-selector count and distinguishes target rejections. See [TRIGGER-BINDINGS.md](TRIGGER-BINDINGS.md) and the reproducible
-[JSON inventory](TRIGGER-BINDINGS.json). M4ca combat metadata and M4cb liedown/
-recovery are the next authorized checkpoints; prior clocks/HitVel are complete.
+M4cb completes this bounded binding/recovery allocation. GetHitVar has runtime
+routes for all **34 beta-accepted documented selectors** (34/36 manual entries,
+94.4%); the other two are native load rejections. This is routing, not exhaustive
+behavioral coverage. M4ca/M4cb add 34 frozen programs / 372 scalar observations /
+three rejections, with native arithmetic and authored recovery controls.
+[LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md) and [GETHIT-METADATA.md](GETHIT-METADATA.md)
+record evidence/limits. The reproducible [inventory](TRIGGER-BINDINGS.md) still
+finds **109/127 trigger families with candidate routes (85.8%)**, 18 unbound.
+Final scoped races PASS: 2,774 test/subtest results, no individual skips/failures;
+24 tested and 12 compiled-only packages. All 470 frozen hashes pass. Fresh
+native/application validation is recorded in HANDOFF.md.
 
 M4by makes GameTime process-owned across production menus/matches/rematches,
 binds integer TicksPerSecond and one-on-one MatchNo, and applies the measured

@@ -3,7 +3,7 @@ package character
 import "github.com/kazzmir/paintown/game/mugen/cns"
 
 func (c *Character) GetCanRecover() bool {
-	return c.GetHitFall() && c.GetHit.FallRecover && c.fallTime >= c.GetHit.FallRecoverTime
+	return c.HitFall && c.GetHit.FallRecover && c.fallTime >= c.GetHit.FallRecoverTime
 }
 
 // A vertical launch uses the air timer even when the contact began grounded

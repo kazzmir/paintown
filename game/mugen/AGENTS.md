@@ -91,7 +91,7 @@ sessions were awaited; no clients remain. M4by is committed as 0414d54e and was 
 complete; the current allocation below supersedes its stop condition. Keep renderer/mode/asset/remaining binding gates explicit; no
 overall engine completion percentage is justified. No push or binaries.
 
-## Current binding/recovery allocation
+## Latest binding/recovery allocation (complete)
 
 The user authorized the next few checkpoints after 0414d54e (2026-10-18).
 Proceed through three bounded checkpoints: M4bz audits all 127 trigger families
@@ -103,8 +103,14 @@ by native observations. Split dependent selectors between M4ca/M4cb if needed;
 document the reason and keep the original inputs/goldens immutable. Each batch
 gets focused checks, evidence/limits and a local source/text commit. Use a full
 scoped race run at the final integration boundary, not at every small revision.
-M4bz is bd018c65; M4ca metadata/counters pass their focused/native gates. Read
-GETHIT-METADATA.md. Continue M4cb timer/input/routing and final integration.
+M4bz is bd018c65; M4ca is b258eaf3. M4cb completes this group. Final full scoped
+races PASS: 2,774 results, 24 tested and 12 compiled-only packages, no individual
+skips/failures; Match 1,009.698s, total 1,083.286s. All 470 frozen hashes, fresh
+native reproductions, four-PNG stock win/rematch/win, owned events, private PCM
+and root-module audits pass. All sessions were awaited; no clients remain.
+Read LIEDOWN-RECOVERY.md and HANDOFF.md. Stop for user testing/new allocation;
+no further implementation is active. Historical continuation instructions below
+applied only until these three checkpoints completed.
 Continue automatically through these three; stop at completion or an issue
 requiring user input. No pushes, binaries, changes outside game/mugen or agents.
 

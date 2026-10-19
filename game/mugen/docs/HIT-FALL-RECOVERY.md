@@ -1,5 +1,10 @@
 # Fall flags and recovery eligibility
 
+M4cb supersedes the historical global recovery-command adapter below: actual
+routes belong to authored CNS, and eligible retained fall data can still answer
+CanRecover after leaving H. Read [LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md) for
+new native controls, liedown/input semantics and remaining interactions.
+
 M4bi compiles `fall`, `air.fall`, `fall.recover` and `fall.recovertime`, exposes
 the two missing integer GetHitVar selectors, and binds CanRecover to the
 receiver's fall clock. Previously, the flags were literal strings and
