@@ -92,6 +92,50 @@ func TestThrownEnemyDoesNotChainProjectiles(t *testing.T) {
 	}
 }
 
+func TestGrabPoseStaysStatic(t *testing.T) {
+	player := grabTestPlayer()
+	grab := MakeAnimation("grab", "", []AnimationEvent{
+		&AnimationEventDelay{Delay: 2},
+		&AnimationEventFrame{},
+		&AnimationEventOffset{X: 20},
+		&AnimationEventFrame{},
+	}, nil, "", "")
+	player.Animations["grab"] = grab
+	enemy := grabTestEnemy()
+	player.DoGrab(enemy)
+	enemy.WasGrabbed(player)
+
+	checkStatic := func(counter uint64) {
+		t.Helper()
+		event, delay := grab.CurrentEvent, grab.CurrentDelay
+		for i := uint64(0); i < 20; i++ {
+			player.Update(InputState{HeldRight: true}, &Level{}, &dummySystem{}, counter+i)
+		}
+		if player.ShowAnimation != grab || grab.CurrentEvent != event || grab.CurrentDelay != delay || grab.OffsetX != 0 {
+			t.Fatal("grab hold advanced its animation instead of keeping a static pose")
+		}
+		if player.Status != PlayerStateGrab || player.Grabbed != enemy || player.X != 0 {
+			t.Fatal("static grab pose did not preserve the hold")
+		}
+	}
+	checkStatic(100)
+
+	// Grab attacks still advance and return to the same frozen hold pose.
+	punch := MakeAnimation("grab-punch", "attack", nil, nil, "", "grab")
+	punch.CurrentDelay = 2
+	player.ShowAnimation = punch
+	player.Update(InputState{}, &Level{}, &dummySystem{}, 200)
+	if punch.CurrentDelay != 1 || player.ShowAnimation != punch {
+		t.Fatal("grab attack did not advance")
+	}
+	player.Update(InputState{}, &Level{}, &dummySystem{}, 201)
+	player.Update(InputState{}, &Level{}, &dummySystem{}, 202)
+	if player.ShowAnimation != grab {
+		t.Fatal("grab attack did not return to the hold pose")
+	}
+	checkStatic(203)
+}
+
 func TestGrabMoveSelectionAndThrow(t *testing.T) {
 	player := grabTestPlayer()
 	enemy := grabTestEnemy()

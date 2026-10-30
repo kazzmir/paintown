@@ -770,9 +770,11 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
         }
 
     if playerState.Status == PlayerStateGrab {
-        if playerState.ShowAnimation.Update(false, system) {
-            grab, ok := playerState.Animations["grab"]
-            if ok {
+        grab := playerState.Animations["grab"]
+        // Hold the initial grab pose. Only grab attacks advance; when they
+        // finish, return to the static pose instead of looping the grab.
+        if playerState.ShowAnimation != grab && playerState.ShowAnimation.Update(false, system) {
+            if grab != nil {
                 playerState.ShowAnimation = grab
                 grab.Reset()
                 grab.Update(false, system)
