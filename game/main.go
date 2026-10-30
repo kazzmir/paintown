@@ -11,7 +11,6 @@ import (
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/audio"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
-    "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Engine struct {
@@ -20,50 +19,87 @@ type Engine struct {
 }
 
 func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext *audio.Context) (func (yield coroutine.YieldFunc) error, error) {
+    root, err := paintown.LoadMenu("menu/main.txt", nil)
+    if err != nil {
+        return nil, err
+    }
     backgroundPng, err := data.LoadPng("menu/paintown.png")
     if err != nil {
         return nil, err
     }
-
     background := ebiten.NewImageFromImage(backgroundPng)
-
-    drawer := func(screen *ebiten.Image) {
-        var options ebiten.DrawImageOptions
-        screen.DrawImage(background, &options)
-        ebitenutil.DebugPrintAt(screen, "Start", 300, 240)
+    sounds := paintown.MakeAudioManager(audioContext)
+    play := func(path string) {
+        if err := sounds.PlaySound(path); err != nil {
+            log.Printf("Menu sound: %v", err)
+        }
+    }
+    pressed := func(key ebiten.Key) bool {
+        duration := inpututil.KeyPressDuration(key)
+        return duration == 1 || (duration > 25 && duration % 6 == 0)
     }
 
     logic := func(yield coroutine.YieldFunc) error {
+        current := root
+        var stack []*paintown.Menu
+        drawer := func(screen *ebiten.Image) { current.Draw(screen) }
         oldDrawer := setDraw(drawer)
         defer setDraw(oldDrawer)
-
+        backToMenu := fmt.Errorf("back to menu")
+        gameYield := func() error {
+            if err := yield(); err != nil { return err }
+            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) { return backToMenu }
+            return nil
+        }
+        adventure := func() error {
+            // Consume the menu confirmation before character selection.
+            if err := gameYield(); err != nil { return err }
+            player, err := paintown.ChooseCharacter(gameYield, background, setDraw)
+            if err != nil { return err }
+            for i := range 10 {
+                if err := paintown.RunLevel(player, gameYield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i+1), audioContext); err != nil { return err }
+            }
+            return nil
+        }
         for {
-            keys := inpututil.AppendJustPressedKeys(nil)
-            for _, key := range keys {
-                if key == ebiten.KeyEnter {
-                    yield()
-
-                    choosePlayer, err := paintown.ChooseCharacter(yield, background, setDraw)
+            current.Update()
+            if pressed(ebiten.KeyArrowDown) || pressed(ebiten.KeyS) {
+                if current.Move(1) { play(current.SelectSound) }
+            }
+            if pressed(ebiten.KeyArrowUp) || pressed(ebiten.KeyW) {
+                if current.Move(-1) { play(current.SelectSound) }
+            }
+            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyBackspace) {
+                play(current.BackSound)
+                if len(stack) == 0 { return ebiten.Termination }
+                current = stack[len(stack)-1]
+                stack = stack[:len(stack)-1]
+            } else if (inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsKeyJustPressed(ebiten.KeySpace)) && len(current.Options) > 0 {
+                option := current.Options[current.Selected]
+                play(current.OKSound)
+                switch option.Kind {
+                case "menu":
+                    next, err := paintown.LoadMenu(option.Path, current)
                     if err != nil {
-                        return err
+                        log.Printf("Menu: %v", err)
+                        current.Notice = "Could not open this menu"
+                    } else {
+                        stack = append(stack, current)
+                        current = next
                     }
-
-                    for i := range 10 {
-                        err = paintown.RunLevel(choosePlayer, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i + 1), audioContext)
-                        if err != nil {
-                            return err
-                        }
-                    }
+                case "quit":
+                    return ebiten.Termination
+                case "adventure":
+                    err := adventure()
+                    setDraw(drawer)
+                    if err != nil && err != backToMenu { return err }
+                default:
+                    current.Notice = option.Name + " is not implemented yet"
                 }
             }
-
-            err := yield()
-            if err != nil {
-                return err
-            }
+            if err := yield(); err != nil { return err }
         }
     }
-
     return logic, nil
 }
 
@@ -97,7 +133,7 @@ func (engine *Engine) Update() error {
     keys := inpututil.AppendJustPressedKeys(nil)
 
     for _, key := range keys {
-        if key == ebiten.KeyEscape || key == ebiten.KeyCapsLock {
+        if key == ebiten.KeyCapsLock {
             return ebiten.Termination
         }
     }
@@ -124,6 +160,7 @@ func main(){
     engine, err := MakeEngine()
     if err != nil {
         log.Printf("Error: %v", err)
+        return
     }
 
     err = ebiten.RunGame(engine)

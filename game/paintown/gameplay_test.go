@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/lib/sexp"
 )
 
 func grabTestEnemy() *Enemy {
@@ -287,6 +288,139 @@ func TestCatSpawningAndIndependentAnimations(t *testing.T) {
 	if model.Cats[1].Animations["walk"].CurrentDelay == 123 {
 		t.Fatal("cats share mutable animation playback")
 	}
+}
+
+func TestMenuParsingAndNavigation(t *testing.T) {
+	root, err := sexp.ReadSExpressionString(`(menu
+		(name main)
+		(coordinate (relative -.6 -.2 .6 .7))
+		(transforms (radius 15))
+		(info-position 0, -.5)
+		(font fonts/Neuropol.ttf 24 24)
+		(display-list (wrap 1) (items (other-color-alpha 180) (distance-fade-multiplier 40)))
+		(option (menu menu/arcade.txt) (info (language English Arcade)))
+		(option (quit (name (language Deutsch Beenden) (language English Quit)) (info "Exit the game")))
+		;@ (option (platformer (name Disabled)))
+	)`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	read := func(path string) (*sexp.SExpr, error) {
+		if path != "menu/arcade.txt" {
+			t.Fatalf("unexpected submenu %s", path)
+		}
+		return sexp.ReadSExpressionString(`(menu (name Arcade) (info "Play an adventure"))`)
+	}
+	menu, err := ParseMenu(root, nil, read)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.Bounds != image.Rect(128, 192, 512, 408) || menu.Radius != 15 || menu.InfoX != 320 || menu.InfoY != 120 {
+		t.Fatalf("incorrect menu positioning: %+v", menu.Bounds)
+	}
+	if len(menu.Options) != 2 || menu.Options[0].Name != "Arcade" || menu.Options[0].Info != "Arcade" || menu.Options[1].Name != "Quit" {
+		t.Fatalf("incorrect localized options: %+v", menu.Options)
+	}
+	menu.Move(-1)
+	if menu.Selected != 1 {
+		t.Fatal("up did not wrap to the last option")
+	}
+	menu.Move(1)
+	if menu.Selected != 0 {
+		t.Fatal("down did not wrap to the first option")
+	}
+	menu.Wrap = false
+	if menu.Move(-1) || menu.Selected != 0 {
+		t.Fatal("non-wrapping selection escaped bounds")
+	}
+	if menu.itemColor(1).A != 140 || menu.itemColor(5).A != 0 {
+		t.Fatal("distance alpha did not fade")
+	}
+	before := menu.itemColor(0)
+	for range 25 {
+		menu.Update()
+	}
+	if menu.itemColor(0) == before {
+		t.Fatal("selected option color did not pulse")
+	}
+	child, _ := sexp.ReadSExpressionString(`(menu (name Arcade) (coordinate (absolute 100 200 450 250)) (display-list (type normal)) (option (adventure (name "Single Player"))))`)
+	sub, err := ParseMenu(child, menu, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sub.Bounds != image.Rect(100, 200, 550, 450) || sub.FontPath != menu.FontPath || sub.Scroll || sub.Selected != 0 || len(sub.Options) != 1 {
+		t.Fatal("submenu did not apply its layout and inherit its font")
+	}
+	if menu.Bounds != image.Rect(128, 192, 512, 408) || len(menu.Options) != 2 {
+		t.Fatal("submenu mutated parent")
+	}
+}
+
+func TestMenuAnimationTiming(t *testing.T) {
+	root, err := sexp.ReadSExpressionString(`(anim
+		(depth foreground top) (basedir menu/bg) (image 0 first.png) (image 1 second.png)
+		(velocity -.001 0) (axis .06 .7) (window -.325 -.89 .3 .18)
+		(frame (image 0) (time 2) (alpha 15)) (frame (image 1) (time -1) (hflip 1)))`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	animation := parseMenuAnimation(root)
+	if animation.Depth != 5 || animation.Paths[0] != "menu/bg/first.png" || animation.Frames[0].Alpha != 15 {
+		t.Fatal("animation images, depth, or alpha parsed incorrectly")
+	}
+	if animation.Clip.Min.X != 104 || animation.Clip.Max.X != 544 || !isClose(animation.AxisX, 19.2) {
+		t.Fatalf("animation coordinates are wrong: %v", animation.Clip)
+	}
+	animation.Update()
+	if animation.current != 0 {
+		t.Fatal("animation advanced too early")
+	}
+	animation.Update()
+	if animation.current != 1 || !animation.Frames[1].HFlip {
+		t.Fatal("animation did not reach second frame")
+	}
+	for range 10 {
+		animation.Update()
+	}
+	if animation.current != 1 || !isClose(animation.scrollX, -3.84) {
+		t.Fatal("infinite frame stopped scrolling or advanced")
+	}
+	animation.Frames[1].Time = 1
+	animation.Update()
+	if animation.current != 0 {
+		t.Fatal("animation did not loop")
+	}
+}
+
+func TestLoadMainMenuAssets(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/menu/main.txt"); os.IsNotExist(err) {
+		t.Skip("menu assets not installed")
+	}
+	menu, err := LoadMenu("menu/main.txt", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.FontPath != "fonts/Neuropol.ttf" || len(menu.Options) != 8 || menu.Options[0].Name != "Arcade" || menu.Options[4].Name != "Options" {
+		t.Fatalf("main menu does not match its definition: %+v", menu.Options)
+	}
+	if len(menu.Animations) != 1 {
+		t.Fatalf("disabled menu effects were loaded: %d", len(menu.Animations))
+	}
+	if menu.Options[2].Info != "Host a game that can be\nplayed over the internet" {
+		t.Fatal("menu info did not decode its line break")
+	}
+	menu.Update()
+	menu.Draw(ebiten.NewImage(640, 480))
+	sub, err := LoadMenu("menu/arcade.txt", menu)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sub.Options) != 3 || sub.Options[0].Kind != "adventure" || sub.FontPath != menu.FontPath || sub.Scroll {
+		t.Fatal("arcade submenu did not load correctly")
+	}
+	sub.Update()
+	sub.Draw(ebiten.NewImage(640, 480))
 }
 
 func TestLoadCatAssets(t *testing.T) {
