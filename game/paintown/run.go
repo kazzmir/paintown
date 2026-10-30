@@ -25,6 +25,9 @@ import (
 
 const Z_DISTANCE = 6
 
+// The C++ player uses a wider lane tolerance for grabs than for attacks.
+const grabZDistance = 10
+
 func loadArrowImage() (*ebiten.Image, error) {
     path := "sprites/arrow.png"
     img, err := data.LoadPng(path)
@@ -246,15 +249,6 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
                     enemy.Hurt(playerState.AttackId, attack.Damage, force)
                     playerState.IgnoreHit(enemy)
 
-                    if playerState.Grabbed == enemy {
-                        if enemy.State == EnemyStateFalling || enemy.State == EnemyStateDead {
-                            playerState.Grabbed = nil
-                            playerState.Status = PlayerIdle
-                        } else {
-                            enemy.State = EnemyStateGrabbed
-                        }
-                    }
-
                     // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                     // create hit projectile, flash
 
@@ -276,9 +270,10 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
                 }
             }
         }
-    } else if playerState.Status == PlayerMove {
+    } else if playerState.Status == PlayerMove && playerState.Animations["grab"] != nil &&
+        ((playerState.Facing == FacingRight && inputState.HeldRight) || (playerState.Facing == FacingLeft && inputState.HeldLeft)) {
         for _, enemy := range model.Enemies {
-            if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.IsGrabbable() {
+            if abs(enemy.Z - playerState.Z) < grabZDistance && enemy.IsGrabbable() {
                 grabbed := false
 
                 if playerState.Facing == FacingRight && enemy.X > playerState.X && enemy.X - playerState.X < 50 {
@@ -294,6 +289,13 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
                     playerState.DoGrab(enemy)
                     enemy.WasGrabbed(playerState)
                     enemy.Z = playerState.Z + 0.1
+                    enemy.Y = 0
+                    enemy.X = playerState.X + 36
+                    enemy.Facing = FacingLeft
+                    if playerState.Facing == FacingLeft {
+                        enemy.X = playerState.X - 36
+                        enemy.Facing = FacingRight
+                    }
                     break
                 }
             }
@@ -313,22 +315,33 @@ func (model *GameModel) UpdateFlashes(system System) {
     }
 }
 
-func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, system System, flashFactory *FlashFactory) {
+// Each thrown body hits a target at most once. Ordinary knockdowns never
+// become projectiles, even when caused by another thrown body.
+func (model *GameModel) UpdateThrownEnemies() {
     for _, enemy := range model.Enemies {
-        if enemy.State == EnemyStateFalling {
-
-            for _, other := range model.Enemies {
-                if other != enemy && other.CanBeHit(enemy.AttackId) && other.HitBy(enemy.GetAttackBox()) {
-                    attack := enemy.CurrentAnimationValue.Attack
-                    force := float64(attack.Force)
-                    if enemy.Vx < 0 {
-                        force = -force
-                    }
-                    other.Hurt(enemy.AttackId, attack.Damage, force)
-                }
+        if !enemy.Thrown || enemy.State != EnemyStateFalling {
+            continue
+        }
+        if enemy.ThrowHits == nil {
+            enemy.ThrowHits = make(map[*Enemy]bool)
+        }
+        box := enemy.ThrownBodyBox()
+        for _, other := range model.Enemies {
+            if other == enemy || enemy.ThrowHits[other] || abs(other.Z - enemy.Z) >= Z_DISTANCE ||
+                other.State == EnemyStateFalling || other.State == EnemyStateFallen || other.IsDead() {
+                continue
+            }
+            if other.HitBy(box) {
+                enemy.ThrowHits[other] = true
+                other.Hurt(other.LastAttacked, 5, enemy.Vx)
+                model.UpdateHealthMap(other, model.Counter)
             }
         }
     }
+}
+
+func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, system System, flashFactory *FlashFactory) {
+    model.UpdateThrownEnemies()
 
     outEnemies := make([]*Enemy, 0, len(model.Enemies))
     for _, enemy := range model.Enemies {
@@ -342,7 +355,7 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
         if !enemy.IsDead() {
 
             attack := enemy.CurrentAnimationValue.Attack
-            if !attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
+            if enemy.State == EnemyStateAttacking && !attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
                 if playerState.HitBy(enemy.GetAttackBox()) {
                     force := attack.Force
                     if enemy.GetFacing() == FacingLeft {

@@ -134,6 +134,10 @@ type Enemy struct {
 
     GrabTime uint64
 
+    // Only explicitly thrown enemies damage others while airborne.
+    Thrown bool
+    ThrowHits map[*Enemy]bool
+
     Behavior Behavior
 
     Health float64
@@ -383,6 +387,24 @@ func (enemy *Enemy) GetAttackBox() image.Rectangle {
     return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
 }
 
+// ThrownBodyBox uses the body's collision bounds, not the fall animation's
+// attack box (which may be empty).
+func (enemy *Enemy) ThrownBodyBox() image.Rectangle {
+    animation := enemy.CurrentAnimationValue
+    if animation == nil {
+        return image.Rectangle{}
+    }
+    collision := animation.CurrentCollision()
+    if collision == nil {
+        return image.Rectangle{}
+    }
+    box := collision.MainBox.Add(image.Pt(-collision.width / 2, -collision.height))
+    if enemy.Facing == FacingLeft {
+        box = flipRect(box)
+    }
+    return box.Add(image.Pt(int(enemy.X + float64(animation.OffsetX)), int(enemy.Z - enemy.Y + float64(animation.OffsetY))))
+}
+
 func (enemy *Enemy) GetX() float64 {
     return enemy.X
 }
@@ -436,13 +458,26 @@ func (enemy *Enemy) DoFall(xforce float64, yforce float64) {
     enemy.Pain = 0
     enemy.State = EnemyStateFalling
     enemy.AttackId += 1
-    enemy.Y = yforce
-    enemy.Vy = 2
+    enemy.Y = max(enemy.Y, 0.5)
+    enemy.Vy = yforce
     enemy.Vx = xforce
     fall, ok := enemy.Animations["fall"]
     if ok {
         enemy.CurrentAnimationValue = fall
         enemy.CurrentAnimationValue.Reset()
+    }
+}
+
+func (enemy *Enemy) Throw(xforce float64, yforce float64) {
+    enemy.DoFall(xforce, yforce)
+    if enemy.State == EnemyStateFalling {
+        enemy.Thrown = true
+        enemy.ThrowHits = make(map[*Enemy]bool)
+        if xforce < 0 {
+            enemy.Facing = FacingLeft
+        } else {
+            enemy.Facing = FacingRight
+        }
     }
 }
 
@@ -453,6 +488,9 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     log.Printf("Enemy hurt for %v damage, pain is now %v. Health is %v", damage, enemy.Pain, enemy.Health)
 
     enemy.State = EnemyStatePain
+    if enemy.Grabber != nil {
+        enemy.State = EnemyStateGrabbed
+    }
     painAnimation, ok := enemy.Animations["pain"]
     if ok {
         enemy.CurrentAnimationValue = painAnimation
@@ -496,7 +534,7 @@ func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
     }
 
     x := enemy.X + float64(enemy.CurrentAnimationValue.OffsetX)
-    y := enemy.Z + enemy.Y + float64(enemy.CurrentAnimationValue.OffsetY)
+    y := enemy.Z - enemy.Y + float64(enemy.CurrentAnimationValue.OffsetY)
 
     return collision.Intersect(x, y, attackBox, enemy.Facing == FacingLeft)
 }
@@ -509,11 +547,17 @@ func (system *dummySystem) PlaySound(name string) error {
 }
 
 func (enemy *Enemy) Ungrab() {
-    enemy.State = EnemyStateIdle
-    enemy.CurrentAnimationValue = enemy.Animations["idle"]
-    if enemy.Grabber != nil {
-        enemy.Grabber.ReleaseGrab()
-        enemy.Grabber = nil
+    grabber := enemy.Grabber
+    enemy.Grabber = nil
+    if enemy.State == EnemyStateGrabbed {
+        enemy.State = EnemyStateIdle
+        enemy.CurrentAnimationValue = enemy.Animations["idle"]
+        if enemy.CurrentAnimationValue != nil {
+            enemy.CurrentAnimationValue.Reset()
+        }
+    }
+    if grabber != nil {
+        grabber.ReleaseGrab()
     }
 }
 
@@ -522,7 +566,10 @@ type Grabber interface {
 }
 
 func (enemy *Enemy) IsGrabbable() bool {
-    return enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking || enemy.State == EnemyStatePain
+    // Attacking is still a grounded state in the C++ engine. Normal-game
+    // enemies often begin an attack before the player reaches grab range.
+    return enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking ||
+        enemy.State == EnemyStateAttacking || enemy.State == EnemyStatePain
 }
 
 func (enemy *Enemy) WasGrabbed(grabber Grabber) {
@@ -595,6 +642,8 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
         if enemy.Y < 0 {
             enemy.Y = 0
             enemy.State = EnemyStateFallen
+            enemy.Thrown = false
+            enemy.ThrowHits = nil
             // stay on ground for a while
             enemy.FallenCount = 90
         }

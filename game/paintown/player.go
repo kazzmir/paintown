@@ -221,7 +221,7 @@ type Attacker interface {
 }
 
 type Grabbed interface {
-    DoFall(xforce float64, yforce float64)
+    Throw(xforce float64, yforce float64)
     Ungrab()
     Attacker
 }
@@ -416,7 +416,10 @@ func (playerState *PlayerState) SetGlowEffect(color color.RGBA, time uint64) {
 }
 
 func (playerState *PlayerState) ReleaseGrab() {
-    playerState.Status = PlayerIdle
+    if playerState.Status == PlayerStateGrab {
+        playerState.Status = PlayerIdle
+        playerState.ShowAnimation = nil
+    }
     playerState.Grabbed = nil
 }
 
@@ -428,6 +431,7 @@ func (playerState *PlayerState) DoGrab(grabbed Grabbed) {
         grab.Reset()
         grab.Update(false, &dummySystem{})
         playerState.Grabbed = grabbed
+        playerState.ActivatedAnimations = make(map[*Animation]uint64)
     }
 }
 
@@ -510,12 +514,18 @@ func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force floa
         playerState.ShowAnimation.Reset()
     }
 
-    /*
-    // TODO
+    playerState.ActivatedAnimations = make(map[*Animation]uint64)
     if playerState.Pain >= playerState.PainThreshold || playerState.Health <= 0 {
-        enemy.DoFall(force)
+        playerState.Status = PlayerStateFalling
+        playerState.Pain = 0
+        playerState.Dx = force
+        playerState.Dy = 5
+        playerState.Y = max(playerState.Y, 0.5)
+        if fall := playerState.Animations["fall"]; fall != nil {
+            playerState.ShowAnimation = fall
+            fall.Reset()
+        }
     }
-    */
 }
 
 func (playerState *PlayerState) HitBy(attackBox image.Rectangle) bool {
@@ -525,7 +535,7 @@ func (playerState *PlayerState) HitBy(attackBox image.Rectangle) bool {
     }
 
     x := playerState.X + float64(playerState.CurrentAnimation().OffsetX)
-    y := playerState.Z + playerState.Y + float64(playerState.CurrentAnimation().OffsetY)
+    y := playerState.Z - playerState.Y + float64(playerState.CurrentAnimation().OffsetY)
 
     return collision.Intersect(x, y, attackBox, playerState.Facing == FacingLeft)
 }
@@ -575,6 +585,32 @@ func (playerState *PlayerState) GetStatus() string {
 func (playerState *PlayerState) Update(input InputState, level *Level, system System, counter uint64) {
     doJump := false
     move := false
+
+    // Hurt and knockdown animations cannot be interrupted by buffered moves.
+    if playerState.Status == PlayerStateFalling {
+        playerState.X += playerState.Dx
+        playerState.Y += playerState.Dy
+        playerState.Dy -= 0.2
+        if playerState.Y <= 0 {
+            playerState.Y = 0
+            playerState.Status = PlayerStateFallen
+            if rise := playerState.Animations["rise"]; rise != nil {
+                playerState.ShowAnimation = rise
+                rise.Reset()
+            }
+        }
+        if playerState.ShowAnimation != nil {
+            playerState.ShowAnimation.Update(false, system)
+        }
+        return
+    }
+    if playerState.Status == PlayerStatePain || playerState.Status == PlayerStateFallen {
+        if playerState.ShowAnimation == nil || playerState.ShowAnimation.Update(false, system) {
+            playerState.Status = PlayerIdle
+            playerState.ShowAnimation = nil
+        }
+        return
+    }
 
     if playerState.VisualEffect.Time > 0 {
         playerState.VisualEffect.Time -= 1
@@ -680,7 +716,11 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
         chooseNextAnimation := func() *Animation {
             possibleNextAnimations := make([]*Animation, 0, len(playerState.ActivatedAnimations))
             for animation, activationTime := range playerState.ActivatedAnimations {
-                if counter - activationTime < 40 {
+                requiredStatus := animation.Status
+                if requiredStatus == "" {
+                    requiredStatus = "ground"
+                }
+                if counter - activationTime < 40 && requiredStatus == playerState.GetStatus() {
                     possibleNextAnimations = append(possibleNextAnimations, animation)
                 }
             }
@@ -734,12 +774,14 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
             grab, ok := playerState.Animations["grab"]
             if ok {
                 playerState.ShowAnimation = grab
+                grab.Reset()
+                grab.Update(false, system)
             }
         }
 
         nextAnimation := chooseNextAnimation()
 
-        if nextAnimation != nil {
+        if nextAnimation != nil && playerState.ShowAnimation == playerState.Animations["grab"] {
             playerState.AttackId += 1
             playerState.ShowAnimation = nextAnimation
             nextAnimation.Reset()
@@ -753,7 +795,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
                     force = -force
                 }
                 grabbed := playerState.Grabbed
-                grabbed.DoFall(force, 15)
+                grabbed.Throw(force, 5)
                 playerState.IgnoreHit(grabbed)
                 playerState.Grabbed = nil
             }
