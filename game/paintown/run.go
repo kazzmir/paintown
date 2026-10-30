@@ -168,6 +168,8 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 
 type GameModel struct {
     Enemies []*Enemy
+    Cats []*Cat
+    CatFactory CatFactory
     Item []*Item
     Shake int
     ShowHealthMap map[*Enemy]uint64
@@ -588,6 +590,15 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             })
         }
 
+        for _, cat := range model.Cats {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    cat.Draw(buffer, cameraX, screenShake)
+                },
+                Z: cat.Z,
+            })
+        }
+
         for _, enemy := range model.Enemies {
             if !enemy.Blinking() {
                 objects = append(objects, Drawable{
@@ -815,6 +826,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 playerState.ResetAttackers()
 
+                model.CreateCats(blocks[currentBlock].Objects, level, model.LevelLimit - float64(blocks[currentBlock].Length))
                 model.Items = model.CreateItems(blocks[currentBlock].Objects, level)
                 model.Enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range model.Enemies {
@@ -837,6 +849,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
 
         model.UpdateFlashes(audio)
+        model.UpdateCats(level, audio)
 
         if playerState.X - cameraX < (data.ScreenWidth/2) / 4 {
             cameraX = max(0, cameraX - cameraSpeed)

@@ -2,6 +2,7 @@ package paintown
 
 import (
 	"image"
+	"os"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -154,5 +155,109 @@ func TestGrabRequiresMovingTowardEnemy(t *testing.T) {
 		if toward && (enemy.State != EnemyStateGrabbed || enemy.X != player.X+36) {
 			t.Fatal("grab did not position and hold enemy")
 		}
+	}
+}
+
+func catTestAnimations() map[string]*Animation {
+	out := make(map[string]*Animation)
+	for _, name := range []string{"idle1", "idle2", "yawn", "walk", "run", "turn", "sit"} {
+		out[name] = &Animation{Name: name}
+	}
+	return out
+}
+
+type catTestSound struct{ sounds []string }
+
+func (sound *catTestSound) PlaySound(path string) error {
+	sound.sounds = append(sound.sounds, path)
+	return nil
+}
+
+func TestCatMovementAndBounds(t *testing.T) {
+	level := &Level{ZMinimum: 100, ZMaximum: 200}
+	for _, state := range []string{"walk", "run"} {
+		cat := &Cat{X: 50, Z: 150, Facing: FacingRight, State: state, Animations: catTestAnimations()}
+		cat.Animations[state].CurrentDelay = 100
+		cat.update(level, 100, &dummySystem{}, func(int) int { return 1 })
+		speed := 0.8
+		if state == "run" {
+			speed = 2.2
+		}
+		if !isClose(cat.X, 50-speed) {
+			t.Fatalf("%s: wrong movement %v", state, cat.X)
+		}
+		cat.X, cat.Z = 0, 99
+		cat.update(level, 100, &dummySystem{}, func(int) int { return 1 })
+		if cat.X != 0 || cat.Facing != FacingLeft || cat.Z != 100 {
+			t.Fatal("cat did not stay inside the map and turn around")
+		}
+		cat.X, cat.Z = 100, 201
+		cat.update(level, 100, &dummySystem{}, func(int) int { return 1 })
+		if cat.X != 100 || cat.Facing != FacingRight || cat.Z != 200 {
+			t.Fatal("cat escaped right/depth boundary")
+		}
+	}
+}
+
+func TestCatTransitionsAndMeow(t *testing.T) {
+	cat := &Cat{X: 50, Z: 150, Facing: FacingRight, State: "idle1", Animations: catTestAnimations()}
+	sound := &catTestSound{}
+	level := &Level{ZMinimum: 100, ZMaximum: 200}
+	// Select yawn, then walk, then run when each animation finishes.
+	chooseRun := func(n int) int {
+		if n == 2000 {
+			return 0
+		}
+		if n == 12 {
+			return 4
+		}
+		return n - 1
+	}
+	for _, expected := range []string{"yawn", "walk", "run"} {
+		cat.update(level, 100, sound, chooseRun)
+		if cat.State != expected {
+			t.Fatalf("expected %s, got %s", expected, cat.State)
+		}
+	}
+	if len(sound.sounds) != 3 || sound.sounds[0] != catMeowSound {
+		t.Fatal("cat did not meow during updates")
+	}
+	cat.State = "turn"
+	cat.update(level, 100, &dummySystem{}, func(int) int { return 1 })
+	if cat.State != "walk" || cat.Facing != FacingLeft {
+		t.Fatal("turn animation did not reverse direction and resume walking")
+	}
+}
+
+func TestCatSpawningAndIndependentAnimations(t *testing.T) {
+	model := &GameModel{CatFactory: CatFactory{animations: map[string]map[string]*Animation{"cat.txt": catTestAnimations()}}}
+	model.CreateCats([]BlockObject{
+		{Type: "enemy", Path: "ignored"},
+		{Type: "cat", Path: "cat.txt", Coords: image.Pt(20, 5)},
+		{Type: "cat", Path: "cat.txt", Coords: image.Pt(40, 10)},
+	}, &Level{ZMinimum: 100}, 500)
+	if len(model.Cats) != 2 || len(model.Enemies) != 0 || model.Cats[0].X != 520 || model.Cats[0].Z != 105 {
+		t.Fatal("incorrect cat spawning or block coordinates")
+	}
+	model.Cats[0].Animations["walk"].CurrentDelay = 123
+	if model.Cats[1].Animations["walk"].CurrentDelay == 123 {
+		t.Fatal("cats share mutable animation playback")
+	}
+}
+
+func TestLoadCatAssets(t *testing.T) {
+	// Game assets are distributed separately; exercise the real definition
+	// when available, while keeping unit tests usable without them.
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/misc/cat/cat.txt"); os.IsNotExist(err) {
+		t.Skip("cat assets not installed")
+	}
+	var factory CatFactory
+	cat, err := factory.Make(BlockObject{Path: "misc/cat/cat.txt"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cat.Animations["idle1"].CurrentFrame() == nil {
+		t.Fatal("cat has no initial frame")
 	}
 }
