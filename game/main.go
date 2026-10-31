@@ -48,7 +48,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
         backToMenu := fmt.Errorf("back to menu")
         gameYield := func() error {
             if err := yield(); err != nil { return err }
-            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) { return backToMenu }
+            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) { return backToMenu }
             return nil
         }
         adventure := func() error {
@@ -58,7 +58,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
             if err != nil { return err }
             cache := paintown.MakeObjectFactory()
             for i := range 10 {
-                if err := paintown.RunLevelWithCache(player, gameYield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i+1), audioContext, cache); err != nil { return err }
+                if err := paintown.RunLevelWithCache(player, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i+1), audioContext, cache); err != nil { return err }
             }
             return nil
         }
@@ -70,7 +70,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
             if pressed(ebiten.KeyArrowUp) || pressed(ebiten.KeyW) {
                 if current.Move(-1) { play(current.SelectSound) }
             }
-            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyBackspace) {
+            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) || inpututil.IsKeyJustPressed(ebiten.KeyBackspace) {
                 play(current.BackSound)
                 if len(stack) == 0 { return ebiten.Termination }
                 current = stack[len(stack)-1]
@@ -80,7 +80,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                 play(current.OKSound)
                 switch option.Kind {
                 case "menu":
-                    next, err := paintown.LoadMenu(option.Path, current)
+                    next, err := current.OpenSubmenu(option)
                     if err != nil {
                         log.Printf("Menu: %v", err)
                         current.Notice = "Could not open this menu"
@@ -92,8 +92,12 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                     return ebiten.Termination
                 case "adventure":
                     err := adventure()
+                    if err == paintown.ErrReturnToMainMenu {
+                        current = root
+                        stack = nil
+                    }
                     setDraw(drawer)
-                    if err != nil && err != backToMenu { return err }
+                    if err != nil && err != backToMenu && err != paintown.ErrReturnToMainMenu { return err }
                 default:
                     current.Notice = option.Name + " is not implemented yet"
                 }
@@ -131,14 +135,6 @@ func MakeEngine() (*Engine, error) {
 }
 
 func (engine *Engine) Update() error {
-    keys := inpututil.AppendJustPressedKeys(nil)
-
-    for _, key := range keys {
-        if key == ebiten.KeyCapsLock {
-            return ebiten.Termination
-        }
-    }
-
     return engine.Coroutine.Run()
 }
 

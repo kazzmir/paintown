@@ -46,6 +46,7 @@ type Menu struct {
 
 type MenuOption struct {
 	Name, Info, Kind, Path string
+	Definition             *sexp.SExpr
 }
 
 type MenuAnimation struct {
@@ -221,6 +222,9 @@ func ParseMenu(root *sexp.SExpr, parent *Menu, read func(string) (*sexp.SExpr, e
 		switch child.Name {
 		case "anim":
 			animations = append(animations, parseMenuAnimation(child))
+		case "menu":
+			// Inline tab contents can also be navigated as submenus.
+			menu.Options = append(menu.Options, MenuOption{Kind: "menu", Name: menuText(child.GetChild("name")), Info: menuText(child.GetChild("info")), Definition: child})
 		case "option":
 			if len(child.Children) == 0 {
 				continue
@@ -229,7 +233,10 @@ func ParseMenu(root *sexp.SExpr, parent *Menu, read func(string) (*sexp.SExpr, e
 			option := MenuOption{Kind: action.Name, Name: menuText(action.GetChild("name")), Info: menuText(action.GetChild("info"))}
 			if action.Name == "menu" {
 				option.Path = action.GetValue(0)
-				if read != nil {
+				if option.Path == "" {
+					option.Definition = action
+				}
+				if option.Path != "" && read != nil {
 					sub, err := read(option.Path)
 					if err != nil {
 						return nil, fmt.Errorf("submenu %s: %w", option.Path, err)
@@ -282,6 +289,20 @@ func LoadMenu(path string, parent *Menu) (*Menu, error) {
 		return nil, fmt.Errorf("loading menu %s: %w", path, err)
 	}
 	return menu, nil
+}
+
+func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
+	if option.Definition == nil {
+		return LoadMenu(option.Path, menu)
+	}
+	next, err := ParseMenu(option.Definition, menu, readMenu)
+	if err != nil {
+		return nil, err
+	}
+	if err := next.loadAssets(); err != nil {
+		return nil, err
+	}
+	return next, nil
 }
 
 func (menu *Menu) loadAssets() error {
@@ -420,6 +441,16 @@ func (menu *Menu) Draw(screen *ebiten.Image) {
 			animation.Draw(screen)
 		}
 	}
+	menu.DrawOverlay(screen)
+	for _, animation := range menu.Animations {
+		if animation.Depth >= 3 {
+			animation.Draw(screen)
+		}
+	}
+}
+
+// DrawOverlay leaves the underlying scene intact for in-game menus.
+func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 	// Fade the panel and its contents together, without fading the background.
 	if menu.layer == nil {
 		menu.layer = ebiten.NewImage(data.ScreenWidth, data.ScreenHeight)
@@ -466,11 +497,6 @@ func (menu *Menu) Draw(screen *ebiten.Image) {
 	var options ebiten.DrawImageOptions
 	options.ColorScale.ScaleAlpha(float32(menu.opacity))
 	screen.DrawImage(layer, &options)
-	for _, animation := range menu.Animations {
-		if animation.Depth >= 3 {
-			animation.Draw(screen)
-		}
-	}
 }
 
 func parseMenuAnimation(root *sexp.SExpr) *MenuAnimation {

@@ -1,6 +1,7 @@
 package paintown
 
 import (
+	"errors"
 	"image"
 	"image/color"
 	"image/png"
@@ -8,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/data"
 	"github.com/kazzmir/paintown/game/lib/sexp"
 )
 
@@ -629,6 +631,129 @@ func TestCatSpawningAndIndependentAnimations(t *testing.T) {
 	model.Cats[0].Animations["walk"].CurrentDelay = 123
 	if model.Cats[1].Animations["walk"].CurrentDelay == 123 {
 		t.Fatal("cats share mutable animation playback")
+	}
+}
+
+func TestPauseMenuNavigationAndMoveList(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/menu/in-game.txt"); os.IsNotExist(err) {
+		t.Skip("menu assets not installed")
+	}
+	player := grabTestPlayer()
+	player.Name = "Akuma"
+	player.Animations["haddoken"] = MakeAnimation("haddoken", "", nil, []InputKey{InputKeyDown, InputKeyForward, InputKeyAttack1}, "", "")
+	player.Animations["throw"] = MakeAnimation("throw", "", nil, []InputKey{InputKeyBack, InputKeyAttack1}, "", "grab")
+	player.Animations["jump-kick"] = MakeAnimation("jump-kick", "", nil, []InputKey{InputKeyAttack2}, "", "jump")
+	pause, err := NewPauseMenu(player)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pause.Root.Options) != 4 || pause.Root.Options[0].Kind != "continue" || pause.Root.Options[3].Name != "Quit to Main Menu" {
+		t.Fatal("pause menu did not expose the four game actions")
+	}
+	if pause.Update(PauseInput{Confirm: true}, &dummySystem{}) != PauseContinue {
+		t.Fatal("Continue did not resume")
+	}
+	pause.reset()
+	pause.Root.Selected = 1
+	if pause.Update(PauseInput{Confirm: true}, &dummySystem{}) != PauseStay || pause.Current.Name != "Move List" {
+		t.Fatal("move list did not open")
+	}
+	if len(pause.Current.Options) != 3 || pause.Current.Options[0].Name != "haddoken" || pause.Current.Options[0].Info != "Down > Forward > A\nOn the ground" || pause.Current.Options[2].Info != "Back > A\nWhile grabbing" {
+		t.Fatalf("move list did not show the character's commands: %+v", pause.Current.Options)
+	}
+	pause.Current.DrawOverlay(ebiten.NewImage(640, 480))
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != pause.Root {
+		t.Fatal("move list Back did not return to pause menu")
+	}
+	pause.Root.Selected = 2
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Options" || len(pause.Current.Options) < 10 {
+		t.Fatal("game options did not open")
+	}
+	// options.txt includes inline submenus, not only external menu paths.
+	keyboard := -1
+	for index, option := range pause.Current.Options {
+		if option.Name == "Keyboard Configuration" {
+			keyboard = index
+		}
+	}
+	if keyboard < 0 {
+		t.Fatal("keyboard submenu missing")
+	}
+	pause.Current.Selected = keyboard
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Keyboard Configuration" || len(pause.Current.Options) < 2 {
+		t.Fatal("inline configuration menu did not open")
+	}
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != pause.Root {
+		t.Fatal("options Back did not return to pause menu")
+	}
+	pause.Root.Selected = 3
+	if pause.Update(PauseInput{Confirm: true}, &dummySystem{}) != PauseQuitToMain {
+		t.Fatal("Quit did not request the main menu")
+	}
+	pause.reset()
+	if pause.Update(PauseInput{Back: true}, &dummySystem{}) != PauseContinue {
+		t.Fatal("Escape at the pause root did not resume")
+	}
+}
+
+func TestPauseLoopFreezesWorldAndRestoresDrawing(t *testing.T) {
+	for _, action := range []string{"continue", "quit", "cancelled"} {
+		t.Run(action, func(t *testing.T) {
+			player, enemy := grabTestPlayer(), grabTestEnemy()
+			player.X, enemy.Y = 12, 20
+			projectile := &Projectile{Life: 70}
+			model := &GameModel{Counter: 1000, Enemies: []*Enemy{enemy}, Projectiles: []*Projectile{projectile}}
+			root := defaultMenu()
+			root.Options = []MenuOption{{Kind: "continue"}, {Kind: "return"}}
+			pause := &PauseMenu{Root: root, Current: root, Player: player}
+			drawCalls, setCalls, yields, inputs := 0, 0, 0, 0
+			var drawer data.DrawFunc = func(*ebiten.Image) { drawCalls++ }
+			setDraw := func(next data.DrawFunc) data.DrawFunc { previous := drawer; drawer = next; setCalls++; return previous }
+			screen := ebiten.NewImage(640, 480)
+			cancelled := errors.New("cancelled")
+			yield := func() error {
+				yields++
+				if yields > 20 {
+					t.Fatal("pause loop failed to exit")
+				}
+				drawer(screen)
+				if action == "cancelled" {
+					return cancelled
+				}
+				return nil
+			}
+			read := func() PauseInput {
+				inputs++
+				if inputs < 10 {
+					return PauseInput{}
+				}
+				return PauseInput{Confirm: true, Down: action == "quit"}
+			}
+			err := runPauseMenu(pause, yield, setDraw, &dummySystem{}, read)
+			if action == "continue" && (err != nil || yields != 11) {
+				t.Fatal("Continue failed to consume its menu input before resuming")
+			}
+			if action == "quit" && err != ErrReturnToMainMenu {
+				t.Fatal("Quit did not unwind the level")
+			}
+			if action == "cancelled" && err != cancelled {
+				t.Fatal("pause did not propagate cancellation")
+			}
+			if model.Counter != 1000 || player.X != 12 || enemy.Y != 20 || projectile.Life != 70 {
+				t.Fatal("world advanced while paused")
+			}
+			if setCalls != 2 || drawCalls != yields {
+				t.Fatal("pause did not draw the game or restore its drawer")
+			}
+			// The restored world drawer tolerates nil; the overlay would not.
+			drawer(nil)
+		})
 	}
 }
 

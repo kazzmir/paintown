@@ -421,6 +421,26 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         return err
     }
 
+    audio := MakeAudioManager(audioContext)
+    var pause *PauseMenu
+    gameYield := yield
+    yield = func() error {
+        if err := gameYield(); err != nil {
+            return err
+        }
+        if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) {
+            if pause == nil {
+                var err error
+                pause, err = NewPauseMenu(playerState)
+                if err != nil {
+                    return err
+                }
+            }
+            return RunPauseMenu(pause, gameYield, setDraw, audio)
+        }
+        return nil
+    }
+
     var screenShake ebiten.GeoM
 
     drawBackground := func(screen *ebiten.Image) {
@@ -837,7 +857,6 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         }
     }
 
-    audio := MakeAudioManager(audioContext)
     setDraw(drawer)
 
     blocks := level.Blocks
