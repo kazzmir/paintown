@@ -139,6 +139,39 @@ func TestGrabPoseStaysStatic(t *testing.T) {
 	checkStatic(203)
 }
 
+func TestRegularKnockdownHasAirborneArc(t *testing.T) {
+	for _, lethal := range []bool{false, true} {
+		enemy := grabTestEnemy()
+		if lethal {
+			enemy.Health = 10
+			enemy.PainThreshold = 100
+		}
+		enemy.Hurt(1, 10, -2)
+		healthAfterHit := enemy.Health
+		if enemy.State != EnemyStateFalling || enemy.Vy <= 0 || enemy.Thrown {
+			t.Fatal("regular damage did not start a non-projectile knockdown")
+		}
+		peak := enemy.Y
+		descended := false
+		for tick := 0; tick < 200 && enemy.State == EnemyStateFalling; tick++ {
+			enemy.UpdateState(&Level{}, grabTestPlayer())
+			peak = max(peak, enemy.Y)
+			descended = descended || enemy.Vy < 0
+			if enemy.Health != healthAfterHit || enemy.Thrown {
+				t.Fatal("ordinary knockdown gained landing damage or projectile state")
+			}
+		}
+		if peak < 10 || !descended || enemy.Y != 0 || enemy.State != EnemyStateFallen || enemy.X >= 0 {
+			t.Fatalf("missing knockdown arc: peak=%v state=%v position=(%v,%v)", peak, enemy.State, enemy.X, enemy.Y)
+		}
+		enemy.FallenCount = 0
+		enemy.UpdateState(&Level{}, grabTestPlayer())
+		if enemy.IsDead() != lethal {
+			t.Fatal("knockdown recovery did not respect health from the original hit")
+		}
+	}
+}
+
 func TestThrownLandingDamage(t *testing.T) {
 	for _, test := range []struct {
 		name               string

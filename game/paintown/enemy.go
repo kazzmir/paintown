@@ -508,6 +508,8 @@ func (enemy *Enemy) DoFall(xforce float64, yforce float64) {
     enemy.Ungrab()
 
     enemy.Pain = 0
+    enemy.Thrown = false
+    enemy.ThrowHits = nil
     enemy.State = EnemyStateFalling
     enemy.AttackId += 1
     enemy.Y = max(enemy.Y, 0.5)
@@ -553,7 +555,9 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     }
 
     if enemy.Pain >= enemy.PainThreshold || enemy.Health <= 0 {
-        enemy.DoFall(force, 0.5)
+        // Give ordinary knockdowns a visible airborne arc without enabling
+        // thrown-body collisions or throw landing damage.
+        enemy.DoFall(force, 2)
     }
 }
 
