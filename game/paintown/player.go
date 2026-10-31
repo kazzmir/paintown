@@ -27,6 +27,7 @@ const (
     PlayerStatePain
     PlayerStateGrab
     PlayerStateDead
+    PlayerStateDropping
 )
 
 func (status PlayerStatus) String() string {
@@ -39,6 +40,7 @@ func (status PlayerStatus) String() string {
         case PlayerStatePain: return "Pain"
         case PlayerStateGrab: return "Grab"
         case PlayerStateDead: return "Dead"
+        case PlayerStateDropping: return "Dropping"
     }
 
     return "Unknown"
@@ -295,12 +297,14 @@ type PlayerState struct {
     AttackId uint64
 
     HitSound string
+    FallSound string
 
     VisualEffect VisualEffect
 
     Health float64
     MaxHealth float64
     Lives int
+    spawnProtection int
     Pain float64
     PainThreshold float64
 
@@ -345,6 +349,7 @@ func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, err
         Status: PlayerIdle,
         Animations: animations,
         HitSound: player.Definition.GetHitSound(),
+        FallSound: player.Definition.GetFallSound(),
         // TODO: make configurable in the definition file
         PainThreshold: 4,
         Icon: iconImage,
@@ -516,7 +521,7 @@ func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
         return false
     }
 
-    return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling && playerState.Status != PlayerStateDead
+    return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling && playerState.Status != PlayerStateDead && playerState.Status != PlayerStateDropping && playerState.spawnProtection == 0
 }
 
 func (playerState *PlayerState) NextAttackId() {
@@ -539,7 +544,7 @@ func (playerState *PlayerState) Pickup(item *Item) {
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
-    if playerState.Status == PlayerStateDead {
+    if playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping || playerState.spawnProtection > 0 {
         return
     }
     if playerState.Grabbed != nil {
@@ -570,7 +575,7 @@ func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force floa
 }
 
 func (playerState *PlayerState) DoFall(xforce float64, yforce float64) {
-    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead {
+    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping {
         return
     }
     if playerState.Grabbed != nil {
@@ -591,7 +596,7 @@ func (playerState *PlayerState) DoFall(xforce float64, yforce float64) {
 }
 
 func (playerState *PlayerState) Throw(xforce float64, yforce float64) {
-    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead {
+    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping {
         return
     }
     playerState.DoFall(xforce, yforce)
@@ -655,6 +660,24 @@ func (playerState *PlayerState) GetStatus() string {
 func (playerState *PlayerState) Update(input InputState, level *Level, system System, counter uint64) {
     doJump := false
     move := false
+
+    if playerState.spawnProtection > 0 {
+        playerState.spawnProtection--
+    }
+    if playerState.Status == PlayerStateDropping {
+        playerState.Dy -= 0.2
+        playerState.Y += playerState.Dy
+        if playerState.Y <= 0 {
+            playerState.Y, playerState.Dx, playerState.Dy = 0, 0, 0
+            playerState.Status = PlayerIdle
+            playerState.ShowAnimation = nil
+            playerState.spawnProtection = max(1, arcadeRespawnDelay()/2)
+            if idle := playerState.Animations["idle"]; idle != nil {
+                idle.Frame = idle.FirstFrame()
+            }
+        }
+        return
+    }
 
     // Hurt and knockdown animations cannot be interrupted by buffered moves.
     if playerState.Status == PlayerStateDead {

@@ -180,6 +180,10 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 
 type GameModel struct {
     Enemies []*Enemy
+    Arcade bool
+    GameOver bool
+    awaitingRespawn bool
+    playerRespawnTicks int
     Projectiles []*Projectile
     Gore []*GoreParticle
     GoreFactory GoreFactory
@@ -249,8 +253,13 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
         }
     }
 
+    wasDropping := playerState.Status == PlayerStateDropping
     playerState.Update(inputState, level, system, model.Counter)
-    if playerState.Status == PlayerStateDead {
+    if wasDropping && playerState.Status == PlayerIdle {
+        model.Shake = max(model.Shake, 24)
+        system.PlaySound(playerState.FallSound)
+    }
+    if playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping {
         return
     }
 
@@ -417,6 +426,7 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
     model.Enemies = outEnemies
     model.UpdateProjectiles(playerState, system, flashFactory)
     model.UpdateGore(playerState)
+    model.updateArcadeRespawn(playerState)
 }
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
@@ -426,6 +436,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 // RunLevelWithCache keeps enemy sprite/collision resources warm across an
 // adventure. Playback and per-enemy state are still newly allocated per spawn.
 func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context, factory *ObjectFactory) error {
+    return runLevelWithSession(player, yield, setDraw, levelPath, audioContext, factory, nil)
+}
+
+func runLevelWithSession(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context, factory *ObjectFactory, session *ArcadeSession) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
@@ -444,6 +458,11 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
     playerState, err := MakePlayerState(player, level)
     if err != nil {
         return err
+    }
+
+    if session != nil {
+        playerState.Lives = session.Lives
+        defer func(){ session.Lives = playerState.Lives }()
     }
 
     audio := MakeAudioManager(audioContext)
@@ -624,7 +643,7 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         arrowImage = ebiten.NewImage(1, 1)
     }
 
-    var model GameModel
+    model := GameModel{Arcade:true}
 
     // avoid triggering moves immediately
     model.Counter = 1000
@@ -881,7 +900,7 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         return fmt.Errorf("Error creating flash factory: %v", err)
     }
 
-    // enemies = append(enemies, &Enemy{})
+    playerState.DropIn()
 
     for currentBlock < len(blocks) {
         model.Counter += 1
@@ -900,7 +919,8 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
 
         // Let the final death effect finish before replacing the level.
         effectsFinished := currentBlock < len(blocks) - 1 || len(model.Gore) == 0
-        if playerState.X > model.LevelLimit - 100 && len(model.Enemies) == 0 && effectsFinished {
+        canAdvance := currentBlock < 0 || (playerState.Status != PlayerStateDead && playerState.Status != PlayerStateDropping)
+        if playerState.X > model.LevelLimit - 100 && len(model.Enemies) == 0 && effectsFinished && canAdvance {
             currentBlock += 1
             if currentBlock < len(blocks) {
                 model.LevelLimit += float64(blocks[currentBlock].Length)
@@ -949,6 +969,7 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         }
 
         model.UpdateEnemies(level, playerState, audio, flashFactory)
+        if model.GameOver { return ErrReturnToMainMenu }
 
         err := yield()
         if err != nil {

@@ -51,9 +51,9 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
             if err := gameYield(); err != nil { return err }
             player, err := paintown.ChooseCharacter(gameYield, background, setDraw)
             if err != nil { return err }
-            cache := paintown.MakeObjectFactory()
+            session := paintown.NewArcadeSession()
             for i := range 10 {
-                if err := paintown.RunLevelWithCache(player, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i+1), audioContext, cache); err != nil { return err }
+                if err := session.RunLevel(player, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i+1), audioContext); err != nil { return err }
             }
             return nil
         }

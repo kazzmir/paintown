@@ -619,6 +619,147 @@ func TestMusicVolumeSliderMenuAndPauseControls(t *testing.T) {
 	}
 }
 
+func dropTestPlayer() *PlayerState {
+	player := grabTestPlayer()
+	player.MaxHealth, player.Health, player.Lives, player.X, player.Z = 100, 80, 3, 100, 150
+	frame := ebiten.NewImage(40, 60)
+	for _, name := range []string{"idle", "jump", "fall"} {
+		animation := MakeAnimation(name, "", []AnimationEvent{&AnimationEventFrame{Image: frame}}, nil, "", "")
+		animation.Owner = player
+		player.Animations[name] = animation
+	}
+	return player
+}
+
+func TestPlayerDropInIsHarmlessAndShakesOnLanding(t *testing.T) {
+	player := dropTestPlayer()
+	player.Thrown = true
+	player.FallSound = "landing"
+	player.DropIn()
+	if player.Status != PlayerStateDropping || player.Z-player.Y >= 0 || player.Thrown || player.ShowAnimation.CurrentFrame() == nil {
+		t.Fatal("player did not begin above the screen in a visible, non-thrown drop pose")
+	}
+	model := &GameModel{LevelLimit: 1000}
+	sounds := &catTestSound{}
+	attacker := grabTestEnemy()
+	if player.CanBeHit(attacker, 1) {
+		t.Fatal("dropping player can be hit")
+	}
+	player.Hurt(attacker, 1000, 10)
+	player.Throw(10, 10)
+	if player.Health != 80 || player.Status != PlayerStateDropping {
+		t.Fatal("drop could be interrupted or damaged")
+	}
+	for tick := 0; tick < 300 && player.Status == PlayerStateDropping; tick++ {
+		model.UpdatePlayer(player, InputState{HeldRight: true, Jump: true, Attack1: true}, &Level{ZMaximum: 200}, sounds, nil)
+		if player.X != 100 || player.Health != 80 || player.Lives != 3 {
+			t.Fatal("drop moved horizontally, took damage, or consumed a life")
+		}
+	}
+	if player.Status != PlayerIdle || player.Y != 0 || player.Dy != 0 || model.Shake == 0 || player.CurrentAnimation().CurrentFrame() == nil {
+		t.Fatal("player did not land in idle with a screen shake")
+	}
+	if len(sounds.sounds) != 1 || sounds.sounds[0] != "landing" {
+		t.Fatal("landing effect did not fire exactly once")
+	}
+	player.Hurt(attacker, 10, 2)
+	if player.Health != 80 || player.CanBeHit(attacker, 2) {
+		t.Fatal("landing had no brief spawn protection")
+	}
+	model.Shake = 0
+	for tick := 0; tick < arcadeRespawnDelay(); tick++ {
+		model.UpdatePlayer(player, InputState{}, &Level{ZMaximum: 200}, sounds, nil)
+	}
+	if model.Shake != 0 || len(sounds.sounds) != 1 || !player.CanBeHit(attacker, 2) {
+		t.Fatal("landing shake repeated or spawn protection never expired")
+	}
+}
+
+func TestArcadeDeathRespawnsWithRemainingLivesAndKeepsGore(t *testing.T) {
+	player := dropTestPlayer()
+	player.Health, player.AttackId = 5, 88
+	player.Hurt(grabTestEnemy(), 100, 2)
+	if !player.Exploded {
+		t.Fatal("test death did not explode")
+	}
+	model := &GameModel{Arcade: true, LevelLimit: 1000, GoreFactory: GoreFactory{parts: []*ebiten.Image{ebiten.NewImage(10, 10)}}}
+	model.UpdateEnemies(&Level{}, player, &dummySystem{}, nil)
+	if player.Lives != 2 || len(model.Gore) == 0 || !model.awaitingRespawn {
+		t.Fatal("death did not spend one life and preserve the explosion")
+	}
+	player.Animations["idle"].KeyPresses = []uint64{123}
+	for tick := 0; tick < arcadeRespawnDelay()+5 && player.Status == PlayerStateDead; tick++ {
+		model.UpdateEnemies(&Level{}, player, &dummySystem{}, nil)
+		if player.Lives != 2 {
+			t.Fatal("one death consumed multiple lives")
+		}
+	}
+	if player.Status != PlayerStateDropping || player.Health != 100 || player.Exploded || player.Thrown || player.AttackId <= 88 || len(player.Attackers) != 0 {
+		t.Fatal("respawn did not restore a clean, healthy airborne player")
+	}
+	if len(model.Gore) == 0 || player.Animations["idle"].KeyPresses[0] != 0 {
+		t.Fatal("respawn erased gore or retained buffered inputs")
+	}
+	if model.GameOver || model.awaitingRespawn {
+		t.Fatal("healthy respawn retained its death timer")
+	}
+}
+
+func TestArcadeLastLifeAndOffscreenRespawn(t *testing.T) {
+	player := dropTestPlayer()
+	player.Status, player.Health, player.Lives = PlayerStateDead, 0, 1
+	model := &GameModel{Arcade: true, Gore: []*GoreParticle{{Y: 10}}}
+	model.updateArcadeRespawn(player)
+	if player.Lives != 0 {
+		t.Fatal("last life was not consumed")
+	}
+	for range arcadeRespawnDelay() + 5 {
+		model.updateArcadeRespawn(player)
+	}
+	if model.GameOver || player.Status != PlayerStateDead {
+		t.Fatal("last death respawned or skipped the gore effect")
+	}
+	model.Gore = nil
+	model.updateArcadeRespawn(player)
+	if !model.GameOver {
+		t.Fatal("exhausting lives did not finish the adventure")
+	}
+
+	player = dropTestPlayer()
+	player.Status, player.Health, player.X = PlayerStateDead, 0, -500
+	model = &GameModel{Arcade: true, LevelLimit: 1000}
+	model.updateArcadeRespawn(player)
+	for range arcadeRespawnDelay() + 2 {
+		model.updateArcadeRespawn(player)
+	}
+	if player.Status != PlayerStateDropping || player.X < 0 || player.X > model.LevelLimit {
+		t.Fatal("offscreen corpse did not respawn inside the stage")
+	}
+
+	player = dropTestPlayer()
+	player.Status = PlayerStateDead
+	model = &GameModel{}
+	model.updateArcadeRespawn(player)
+	if player.Lives != 3 || model.awaitingRespawn {
+		t.Fatal("arcade lifecycle interfered with simulator respawns")
+	}
+}
+
+func TestArcadeSessionSnapshotsStartingLives(t *testing.T) {
+	previous := StartingLives()
+	t.Cleanup(func() { SetStartingLives(previous) })
+	SetStartingLives(7)
+	session := NewArcadeSession()
+	SetStartingLives(10)
+	if session.Lives != 7 || session.cache == nil {
+		t.Fatal("adventure did not keep its starting lives and shared asset cache")
+	}
+	session.Lives = 0
+	if err := session.RunLevel(nil, nil, nil, "not-a-level", nil); err != ErrReturnToMainMenu {
+		t.Fatal("out-of-lives adventure attempted to load another level")
+	}
+}
+
 func TestPlayerLivesInitializeFromSettingAndHUDLabel(t *testing.T) {
 	previous := StartingLives()
 	t.Cleanup(func() { SetStartingLives(previous) })
