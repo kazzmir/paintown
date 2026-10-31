@@ -7,11 +7,16 @@ import (
 	"image/color"
 	"image/png"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/data"
 	"github.com/kazzmir/paintown/game/lib/sexp"
+	"golang.org/x/image/font/gofont/goregular"
+	"golang.org/x/image/font/sfnt"
+	"golang.org/x/image/math/fixed"
 )
 
 func grabTestEnemy() *Enemy {
@@ -353,6 +358,359 @@ func TestAkumaProjectileMoves(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+// Build a small Unicode cmap over the real test font, allowing individual
+// characters to be missing/blank/fallback without making the TTF malformed.
+func menuTestFontMappings(t *testing.T, overrides map[rune]sfnt.GlyphIndex) []byte {
+	t.Helper()
+	raw := append([]byte(nil), goregular.TTF...)
+	font, err := sfnt.Parse(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const count = 96 // printable ASCII plus the required 0xffff sentinel.
+	table := make([]byte, 12+16+8*count)
+	put := binary.BigEndian.PutUint16
+	put(table[2:], 1)
+	put(table[4:], 3)
+	put(table[6:], 1)
+	binary.BigEndian.PutUint32(table[8:], 12)
+	sub := table[12:]
+	put(sub, 4)
+	put(sub[2:], uint16(len(sub)))
+	put(sub[6:], count*2)
+	put(sub[8:], 128)
+	put(sub[10:], 6)
+	put(sub[12:], count*2-128)
+	var buffer sfnt.Buffer
+	for index := range count {
+		character := rune(32 + index)
+		glyph := sfnt.GlyphIndex(0)
+		if index == count-1 {
+			character = 0xffff
+		} else {
+			glyph, err = font.GlyphIndex(&buffer, character)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if replacement, ok := overrides[character]; ok {
+				glyph = replacement
+			}
+		}
+		put(sub[14+index*2:], uint16(character))
+		put(sub[16+count*2+index*2:], uint16(character))
+		put(sub[16+count*4+index*2:], uint16(glyph)-uint16(character))
+	}
+	for len(raw)%4 != 0 {
+		raw = append(raw, 0)
+	}
+	offset := len(raw)
+	raw = append(raw, table...)
+	for index := 0; index < int(binary.BigEndian.Uint16(raw[4:])); index++ {
+		entry := raw[12+16*index : 12+16*(index+1)]
+		if string(entry[:4]) == "cmap" {
+			binary.BigEndian.PutUint32(entry[8:], uint32(offset))
+			binary.BigEndian.PutUint32(entry[12:], uint32(len(table)))
+			return raw
+		}
+	}
+	t.Fatal("test font has no cmap")
+	return nil
+}
+
+func TestMenuFontRejectsMissingBlankAndFallbackGlyphs(t *testing.T) {
+	isolateMenuFontPreferences(t)
+	font, err := sfnt.Parse(goregular.TTF)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buffer sfnt.Buffer
+	space, _ := font.GlyphIndex(&buffer, ' ')
+	placeholder, _ := font.GlyphIndex(&buffer, '?')
+	root := t.TempDir()
+	good := filepath.Join(root, "good.ttf")
+	if err := os.WriteFile(good, goregular.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range []struct {
+		name      string
+		overrides map[rune]sfnt.GlyphIndex
+	}{
+		{"missing-a", map[rune]sfnt.GlyphIndex{'a': 0}},
+		{"missing-b", map[rune]sfnt.GlyphIndex{'b': 0}},
+		{"blank-a", map[rune]sfnt.GlyphIndex{'a': space}},
+		{"same-placeholder", map[rune]sfnt.GlyphIndex{'a': placeholder, 'b': placeholder}},
+	} {
+		path := filepath.Join(root, item.name+".ttf")
+		if err := os.WriteFile(path, menuTestFontMappings(t, item.overrides), 0600); err != nil {
+			t.Fatal(err)
+		}
+		if usableMenuFontFile(path) {
+			t.Fatalf("accepted unusable font %s", item.name)
+		}
+		if _, err := loadMenuFontSource(path); err == nil {
+			t.Fatalf("direct selection accepted unusable font %s", item.name)
+		}
+		menu := defaultMenu()
+		menu.FontPath = path
+		for _, option := range menu.fontFiles() {
+			if option.Path == canonicalFontPath(path) {
+				t.Fatal("unusable current theme font bypassed picker filtering")
+			}
+		}
+	}
+	if err := os.WriteFile(filepath.Join(root, "broken.ttf"), []byte("not a font"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	fonts := discoverMenuFonts([]string{root})
+	if len(fonts) != 1 || fonts[0].Path != canonicalFontPath(good) {
+		t.Fatalf("font picker did not filter unusable fonts: %+v", fonts)
+	}
+	menu := defaultMenu()
+	menu.FontPath = good
+	if err := menu.loadAssets(); err != nil {
+		t.Fatal(err)
+	}
+	before := currentMenuFontConfig()
+	menu.ApplySetting(MenuOption{Kind: "set-font", Path: filepath.Join(root, "missing-a.ttf")})
+	if currentMenuFontConfig() != before || !strings.Contains(menu.Notice, "Could not load font") {
+		t.Fatal("rejected font changed menu preferences or failed silently")
+	}
+}
+
+func TestMenuFontDetectsHollowReplacementBoxes(t *testing.T) {
+	rectangle := func(x, y, size int) sfnt.Segments {
+		points := []fixed.Point26_6{{X: fixed.I(x), Y: fixed.I(y)}, {X: fixed.I(x + size), Y: fixed.I(y)}, {X: fixed.I(x + size), Y: fixed.I(y + size)}, {X: fixed.I(x), Y: fixed.I(y + size)}, {X: fixed.I(x), Y: fixed.I(y)}}
+		out := make(sfnt.Segments, len(points))
+		for index, point := range points {
+			out[index].Op = sfnt.SegmentOpLineTo
+			out[index].Args[0] = point
+		}
+		out[0].Op = sfnt.SegmentOpMoveTo
+		return out
+	}
+	box := append(rectangle(0, 0, 20), rectangle(2, 2, 16)...)
+	if !hollowMenuGlyphBox(box) {
+		t.Fatal("hollow replacement square was not detected")
+	}
+	if hollowMenuGlyphBox(rectangle(0, 0, 20)) {
+		t.Fatal("solid glyph was mistaken for an empty square")
+	}
+	font, err := sfnt.Parse(goregular.TTF)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buffer sfnt.Buffer
+	for _, character := range "ab" {
+		index, _ := font.GlyphIndex(&buffer, character)
+		outline, err := normalizedMenuGlyph(font, &buffer, index)
+		if err != nil || hollowMenuGlyphBox(outline) {
+			t.Fatal("normal letter was mistaken for a replacement square")
+		}
+	}
+}
+
+func TestDiscoverMenuFonts(t *testing.T) {
+	root := t.TempDir()
+	first, second := filepath.Join(root, "first"), filepath.Join(root, "second")
+	for _, dir := range []string{filepath.Join(first, "nested"), second, filepath.Join(first, "directory.ttf")} {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, path := range []string{filepath.Join(first, "B.ttf"), filepath.Join(first, "nested", "a.TTF"), filepath.Join(second, "B.ttf"), filepath.Join(first, "ignored.otf"), filepath.Join(first, "README")} {
+		if err := os.WriteFile(path, goregular.TTF, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Symlink support is optional on platforms that require extra permissions.
+	os.Symlink(filepath.Join(first, "B.ttf"), filepath.Join(second, "duplicate.ttf"))
+	os.Symlink(first, filepath.Join(first, "nested", "cycle"))
+	fonts := discoverMenuFonts([]string{first, second, filepath.Join(first, "nested"), first, filepath.Join(root, "missing")})
+	if len(fonts) != 3 || fonts[0].Name != "a" {
+		t.Fatalf("recursive, case-insensitive TTF discovery failed: %+v", fonts)
+	}
+	seen := make(map[string]bool)
+	for _, font := range fonts {
+		if !filepath.IsAbs(font.Path) || seen[font.Path] {
+			t.Fatal("font discovery returned relative or duplicate paths")
+		}
+		seen[font.Path] = true
+	}
+}
+
+func TestCommonMenuFontRoots(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("XDG_DATA_HOME", filepath.Join(home, "xdg"))
+	t.Setenv("XDG_DATA_DIRS", filepath.Join(home, "extra"))
+	t.Setenv("WINDIR", filepath.Join(home, "windows"))
+	t.Setenv("LOCALAPPDATA", filepath.Join(home, "local"))
+	roots := make(map[string]bool)
+	for _, root := range menuFontRoots() {
+		roots[filepath.Clean(root)] = true
+	}
+	for _, expected := range []string{
+		"/usr/share/fonts", "/usr/local/share/fonts", data.DataPath("fonts"), "/Library/Fonts", "/System/Library/Fonts",
+		filepath.Join(home, ".fonts"), filepath.Join(home, ".local", "share", "fonts"), filepath.Join(home, "Library", "Fonts"),
+		filepath.Join(home, "xdg", "fonts"), filepath.Join(home, "extra", "fonts"), filepath.Join(home, "windows", "Fonts"), filepath.Join(home, "local", "Microsoft", "Windows", "Fonts"),
+	} {
+		if !roots[filepath.Clean(expected)] {
+			t.Fatalf("font search omitted %s", expected)
+		}
+	}
+}
+
+func isolateMenuFontPreferences(t *testing.T) {
+	t.Helper()
+	previous := currentMenuFontConfig()
+	menuFontPreferences.Lock()
+	menuFontPreferences.config = menuFontConfig{}
+	menuFontPreferences.Unlock()
+	t.Cleanup(func() {
+		menuFontPreferences.Lock()
+		menuFontPreferences.config = previous
+		menuFontPreferences.Unlock()
+	})
+}
+
+func TestAdjustFontMenuAndSharedPreferences(t *testing.T) {
+	isolateMenuFontPreferences(t)
+	path := filepath.Join(t.TempDir(), "Test-Regular.ttf")
+	if err := os.WriteFile(path, goregular.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	path = canonicalFontPath(path)
+	parent := defaultMenu()
+	parent.FontPath = path
+	if err := parent.loadAssets(); err != nil {
+		t.Fatal(err)
+	}
+	originalSource := parent.font.Source
+	root, err := sexp.ReadSExpressionString(`(menu (name "Adjust Font") (position 20 200 600 80)
+		(option (font-select (adjust name))) (option (font-select (adjust width))) (option (font-select (adjust height))))`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	menu, err := ParseMenu(root, parent, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(menu.Options) != 3 || menu.Options[0].Adjust != "name" || menu.Options[1].Name != "Font Width: 24" || menu.Bounds != image.Rect(20, 200, 620, 280) {
+		t.Fatal("Adjust Font entries or legacy placement were not parsed")
+	}
+	picker, err := menu.OpenSubmenu(menu.Options[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, option := range picker.Options {
+		if option.Path == canonicalFontPath(path) {
+			found = true
+			if !picker.ApplySetting(option) {
+				t.Fatal("font family option was not handled")
+			}
+		}
+	}
+	if !found || picker.font.Source != originalSource {
+		t.Fatal("font picker omitted the current font or reloaded its cached source")
+	}
+	parent.Update()
+	if parent.FontPath != path || parent.font.Source != originalSource {
+		t.Fatal("font selection did not propagate to an existing parent menu")
+	}
+
+	pause := &PauseMenu{Root: menu, Current: menu, Player: grabTestPlayer()}
+	menu.Selected = 1
+	pause.Update(PauseInput{Right: true}, &dummySystem{})
+	if menu.FontWidth != 25 {
+		t.Fatal("Right did not adjust font width")
+	}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Font Width" || len(pause.Current.Options) != maxMenuFontSize-minMenuFontSize+1 {
+		t.Fatal("font width picker did not open")
+	}
+	pause.Current.Selected = 32 - minMenuFontSize
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != menu {
+		t.Fatal("font picker did not return to Adjust Font")
+	}
+	menu.Update()
+	if menu.FontWidth != 32 || menu.Options[1].Name != "Font Width: 32" {
+		t.Fatal("font width did not propagate back into the cached menu")
+	}
+	menu.Selected = 2
+	if !menu.Adjust(-1) || menu.FontSize != 23 {
+		t.Fatal("Left did not adjust font height")
+	}
+	if !menu.ApplySetting(MenuOption{Kind: "set-font-height", Value: 40}) {
+		t.Fatal("font height setting was not handled")
+	}
+	parent.Update()
+	if parent.FontSize != 40 || parent.FontWidth != 32 || parent.font.Size != 40 {
+		t.Fatal("font dimensions were not shared with other menus")
+	}
+	newDefinition, _ := sexp.ReadSExpressionString(`(menu (font "missing-theme-font.ttf" 12 12))`)
+	fresh, err := ParseMenu(newDefinition, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := fresh.loadAssets(); err != nil {
+		t.Fatal("user font preference did not override the new menu's theme font", err)
+	}
+	if fresh.FontSize != 40 || fresh.FontPath != path {
+		t.Fatal("new menus did not inherit chosen font preferences")
+	}
+	otherPath := filepath.Join(t.TempDir(), "Alternative.ttf")
+	if err := os.WriteFile(otherPath, goregular.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	otherPath = canonicalFontPath(otherPath)
+	parent.ApplySetting(MenuOption{Kind: "set-font", Path: otherPath})
+	fresh.Update()
+	menu.Update()
+	if fresh.FontPath != otherPath || menu.font.Source != parent.font.Source || parent.font.Source == originalSource {
+		t.Fatal("changing font files did not replace the family in existing menus")
+	}
+	moves := makeMoveList(grabTestPlayer(), parent)
+	if moves.FontSize != 30 || moves.FontWidth != 24 {
+		t.Fatal("move list did not retain its relative font scale")
+	}
+	parent.ApplySetting(MenuOption{Kind: "set-font-height", Value: 32})
+	moves.Update()
+	if moves.FontSize != 24 {
+		t.Fatal("cached move list did not track new font preferences")
+	}
+
+	// Font sources own their bytes: later glyph loading and size changes must
+	// still work after the original file is closed or removed.
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(otherPath); err != nil {
+		t.Fatal(err)
+	}
+	if source, err := loadMenuFontSource(path); err != nil || source != originalSource {
+		t.Fatal("selected font was not cached")
+	}
+	parent.ApplySetting(MenuOption{Kind: "set-font-width", Value: -100})
+	parent.ApplySetting(MenuOption{Kind: "set-font-height", Value: 1000})
+	if parent.FontWidth != minMenuFontSize || parent.FontSize != maxMenuFontSize {
+		t.Fatal("font dimensions escaped safe bounds")
+	}
+	parent.MenuInfo = "Font sample Aa Bb 0123"
+	parent.DrawOverlay(ebiten.NewImage(640, 480))
+	before := currentMenuFontConfig()
+	bad := filepath.Join(t.TempDir(), "bad.ttf")
+	if err := os.WriteFile(bad, []byte("not a font"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if !parent.ApplySetting(MenuOption{Kind: "set-font", Path: bad}) || currentMenuFontConfig() != before || !strings.Contains(parent.Notice, "Could not load font") {
+		t.Fatal("invalid font selection changed the working font or failed silently")
 	}
 }
 

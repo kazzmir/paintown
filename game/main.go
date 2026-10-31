@@ -66,6 +66,8 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
             if input.Up {
                 if current.Move(-1) { play(current.SelectSound) }
             }
+            if input.Left && current.Adjust(-1) { play(current.SelectSound) }
+            if input.Right && current.Adjust(1) { play(current.SelectSound) }
             if input.Back {
                 play(current.BackSound)
                 if len(stack) == 0 { return ebiten.Termination }
@@ -75,7 +77,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                 option := current.Options[current.Selected]
                 play(current.OKSound)
                 switch option.Kind {
-                case "menu", "gibs":
+                case "menu", "gibs", "font-select":
                     next, err := current.OpenSubmenu(option)
                     if err != nil {
                         log.Printf("Menu: %v", err)
@@ -84,8 +86,10 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                         stack = append(stack, current)
                         current = next
                     }
-                case "set-gibs":
+                case "set-gibs", "set-font", "set-font-width", "set-font-height":
                     current.ApplySetting(option)
+                case "notice":
+                    // Informational entries (such as an empty font list).
                 case "quit":
                     return ebiten.Termination
                 case "adventure":

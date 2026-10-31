@@ -5,6 +5,7 @@ go 1.26.0
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.10.5
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96
+	golang.org/x/image v0.47.0
 	golang.org/x/sys v0.49.0
 )
 
@@ -16,7 +17,6 @@ require (
 	github.com/go-text/typesetting v0.3.5 // indirect
 	github.com/jfreymuth/pulse v0.1.3 // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
-	golang.org/x/image v0.47.0 // indirect
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 )

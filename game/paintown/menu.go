@@ -1,11 +1,9 @@
 package paintown
 
 import (
-	"bytes"
 	"fmt"
 	"image"
 	"image/color"
-	"io"
 	"math"
 	"path/filepath"
 	"sort"
@@ -38,6 +36,10 @@ type Menu struct {
 	Notice                                         string
 
 	font                  *text.GoTextFace
+	fontRevision          uint64
+	fontScale             float64
+	spacingFace           *text.GoTextFace
+	lineHeight            float64
 	background            *ebiten.Image
 	layer                 *ebiten.Image
 	ticks                 int
@@ -47,6 +49,7 @@ type Menu struct {
 type MenuOption struct {
 	Name, Info, Kind, Path string
 	Value                  int
+	Adjust                 string
 	Definition             *sexp.SExpr
 	moveAnimation          *Animation
 }
@@ -128,6 +131,7 @@ func defaultMenu() *Menu {
 		LowColor: color.NRGBA{R: 19, G: 167, B: 168, A: 255}, HighColor: color.NRGBA{R: 27, G: 237, B: 239, A: 255},
 		SelectedColor: color.NRGBA{R: 19, G: 167, B: 168, A: 255}, OtherColor: color.NRGBA{R: 255, G: 255, B: 255, A: 255},
 		Scroll: true, Wrap: true, Interpolate: true, DistanceFade: true, InterpolateDistance: 50, FadeMultiplier: 35,
+		fontScale: 1,
 	}
 }
 
@@ -144,6 +148,12 @@ func ParseMenu(root *sexp.SExpr, parent *Menu, read func(string) (*sexp.SExpr, e
 		menu.Selected, menu.ticks = 0, 0
 		menu.opacity, menu.scrollOffset = 0, 0
 		menu.Notice, menu.MenuInfo = "", ""
+	}
+	// Reapply user preferences after any font tags in this definition.
+	menu.fontRevision = 0
+	if position := root.GetChild("position"); position != nil && root.GetChild("coordinate") == nil {
+		x, y := int(menuNumber(position, 0, 0)), int(menuNumber(position, 1, 0))
+		menu.Bounds = image.Rect(x, y, x+int(menuNumber(position, 2, 640)), y+int(menuNumber(position, 3, 480)))
 	}
 	// The last name wins (arcade.txt includes both a legacy and localized name).
 	for _, child := range root.Children {
@@ -233,6 +243,9 @@ func ParseMenu(root *sexp.SExpr, parent *Menu, read func(string) (*sexp.SExpr, e
 			}
 			action := child.Children[0]
 			option := MenuOption{Kind: action.Name, Name: menuText(action.GetChild("name")), Info: menuText(action.GetChild("info"))}
+			if action.Name == "font-select" {
+				option.Adjust = menuText(action.GetChild("adjust"))
+			}
 			if action.Name == "menu" {
 				option.Path = action.GetValue(0)
 				if option.Path == "" {
@@ -266,6 +279,7 @@ func ParseMenu(root *sexp.SExpr, parent *Menu, read func(string) (*sexp.SExpr, e
 		menu.Animations = animations
 	}
 	sort.SliceStable(menu.Animations, func(i, j int) bool { return menu.Animations[i].Depth < menu.Animations[j].Depth })
+	menu.refreshFontLabels()
 	return menu, nil
 }
 
@@ -294,6 +308,10 @@ func LoadMenu(path string, parent *Menu) (*Menu, error) {
 }
 
 func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
+	menu.syncMenuFont()
+	if option.Kind == "font-select" {
+		return makeFontSelectionMenu(menu, option.Adjust), nil
+	}
 	if option.Kind == "gibs" {
 		return makeGibAmountMenu(menu), nil
 	}
@@ -349,6 +367,10 @@ func (menu *Menu) refreshGibLabels() {
 
 // ApplySetting is shared by main-menu and in-game menu dispatchers.
 func (menu *Menu) ApplySetting(option MenuOption) bool {
+	switch option.Kind {
+	case "set-font", "set-font-width", "set-font-height":
+		return menu.applyFontSetting(option)
+	}
 	if option.Kind != "set-gibs" {
 		return false
 	}
@@ -359,18 +381,9 @@ func (menu *Menu) ApplySetting(option MenuOption) bool {
 }
 
 func (menu *Menu) loadAssets() error {
+	menu.syncMenuFont()
 	if menu.font == nil {
-		file, err := data.LoadFile(menu.FontPath)
-		if err != nil {
-			return err
-		}
-		fontData, err := io.ReadAll(file)
-		file.Close()
-		if err != nil {
-			return err
-		}
-		// The font source retains its reader for lazy glyph loading.
-		source, err := text.NewGoTextFaceSource(bytes.NewReader(fontData))
+		source, err := loadMenuFontSource(menu.FontPath)
 		if err != nil {
 			return err
 		}
@@ -418,6 +431,7 @@ func (menu *Menu) Move(direction int) bool {
 }
 
 func (menu *Menu) Update() {
+	menu.syncMenuFont()
 	menu.ticks++
 	menu.opacity = min(1, menu.opacity+menu.FadeSpeed/255)
 	menu.scrollOffset *= .8
@@ -504,6 +518,7 @@ func (menu *Menu) Draw(screen *ebiten.Image) {
 
 // DrawOverlay leaves the underlying scene intact for in-game menus.
 func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
+	menu.syncMenuFont()
 	// Fade the panel and its contents together, without fading the background.
 	if menu.layer == nil {
 		menu.layer = ebiten.NewImage(data.ScreenWidth, data.ScreenHeight)
@@ -512,7 +527,7 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 	layer.Clear()
 	menuRoundRect(layer, menu.Bounds, menu.Radius, menu.BodyColor, menu.BorderColor)
 	list := layer.SubImage(menu.Bounds.Intersect(layer.Bounds())).(*ebiten.Image)
-	spacing := menu.FontSize / 1.3
+	spacing := menu.listSpacing()
 	centerX := float64(menu.Bounds.Min.X+menu.Bounds.Max.X) / 2
 	centerY := float64(menu.Bounds.Min.Y+menu.Bounds.Max.Y) / 2
 	if len(menu.Options) > 0 {

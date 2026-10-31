@@ -17,7 +17,7 @@ import (
 
 var ErrReturnToMainMenu = errors.New("return to main menu")
 
-type PauseInput struct{ Up, Down, Confirm, Back bool }
+type PauseInput struct{ Up, Down, Left, Right, Confirm, Back bool }
 type PauseAction int
 
 const (
@@ -76,6 +76,12 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 	if input.Up && menu.Move(-1) {
 		play(menu.SelectSound)
 	}
+	if input.Left && menu.Adjust(-1) {
+		play(menu.SelectSound)
+	}
+	if input.Right && menu.Adjust(1) {
+		play(menu.SelectSound)
+	}
 	if input.Back {
 		play(menu.BackSound)
 		if len(pause.stack) == 0 {
@@ -98,7 +104,7 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 	case "move-list":
 		pause.stack = append(pause.stack, menu)
 		pause.Current = makeMoveList(pause.Player, menu)
-	case "menu", "gibs":
+	case "menu", "gibs", "font-select":
 		next, err := menu.OpenSubmenu(option)
 		if err != nil {
 			log.Printf("Pause submenu: %v", err)
@@ -107,7 +113,7 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 			pause.stack = append(pause.stack, menu)
 			pause.Current = next
 		}
-	case "set-gibs":
+	case "set-gibs", "set-font", "set-font-width", "set-font-height":
 		menu.ApplySetting(option)
 	case "move", "notice":
 		// Move entries are informational, not game commands.
@@ -130,10 +136,15 @@ func makeMoveList(player *PlayerState, parent *Menu) *Menu {
 	menu.opacity, menu.scrollOffset = 0, 0
 	menu.Animations = nil
 	menu.Bounds = image.Rect(30, 120, 300, 420)
-	menu.FontSize, menu.FontWidth = 18, 18
+	menu.fontScale = parent.fontScale
+	if menu.fontScale <= 0 {
+		menu.fontScale = 1
+	}
+	menu.fontScale *= .75
+	menu.FontSize, menu.FontWidth = parent.FontSize*.75, parent.FontWidth*.75
 	if parent.font != nil {
 		face := *parent.font
-		face.Size = 18
+		face.Size = menu.FontSize
 		menu.font = &face
 	}
 	menu.InfoX, menu.InfoY, menu.MenuInfoX, menu.MenuInfoY = 320, 65, 320, 452
@@ -183,7 +194,7 @@ func makeMoveList(player *PlayerState, parent *Menu) *Menu {
 
 func readPauseInput() PauseInput {
 	input := ReadMenuInput()
-	return PauseInput{Up: input.Up, Down: input.Down, Confirm: input.Confirm, Back: input.Back || PauseRequested()}
+	return PauseInput{Up: input.Up, Down: input.Down, Left: input.Left, Right: input.Right, Confirm: input.Confirm, Back: input.Back || PauseRequested()}
 }
 
 func RunPauseMenu(pause *PauseMenu, yield coroutine.YieldFunc, setDraw func(data.DrawFunc) data.DrawFunc, system System) error {
