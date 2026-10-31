@@ -702,6 +702,103 @@ func TestPauseMenuNavigationAndMoveList(t *testing.T) {
 	}
 }
 
+func TestMovePreviewIsolatedFromPausedPlayer(t *testing.T) {
+	player := grabTestPlayer()
+	player.X, player.Y, player.Z, player.AttackId = 12, 4, 100, 88
+	first, second := ebiten.NewImage(20, 30), ebiten.NewImage(24, 32)
+	move := MakeAnimation("sandbox", "attack", []AnimationEvent{
+		&AnimationEventDelay{Delay: 2},
+		&AnimationEventOffset{X: 5, Y: 3},
+		&AnimationMoveEvent{X: 4, Y: 2, Z: 1},
+		&AnimationFaceEvent{Facing: "left"},
+		&AnimationTrailEvent{Generate: 1, Length: 10},
+		&AnimationEventNextTicket{},
+		&AnimationSoundEvent{Sound: "do-not-play.wav"},
+		projectileTestEvent(),
+		&AnimationEventFrame{Image: first},
+		&AnimationEventFrame{Image: second},
+		&AnimationEventNop{},
+	}, []InputKey{InputKeyAttack1}, "", "")
+	move.Owner, move.Frame = player, second
+	move.OffsetX, move.OffsetY, move.Delay, move.CurrentEvent, move.CurrentDelay = 99, 50, 42, 3, 9
+	move.KeyPresses[0] = 123
+	player.Animations["sandbox"] = move
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "move-list"}}
+	pause := &PauseMenu{Root: root, Current: root, Player: player}
+	sounds := &catTestSound{}
+	pause.Update(PauseInput{Confirm: true}, sounds)
+	preview := pause.preview
+	if preview == nil || preview.animation == move || preview.animation.Owner != preview || preview.animation.CurrentFrame() != first {
+		t.Fatal("move list did not start an independent preview from the first frame")
+	}
+	if preview.x != 4 || preview.y != 2 || preview.facing != FacingLeft || len(preview.projectiles) != 1 {
+		t.Fatal("animation events did not run in the preview sandbox")
+	}
+	for range 3 {
+		pause.Update(PauseInput{}, sounds)
+	}
+	if preview.animation.CurrentFrame() != second {
+		t.Fatal("preview animation did not advance")
+	}
+	replayed := false
+	for range 100 {
+		pause.Update(PauseInput{}, sounds)
+		if preview.animation.CurrentFrame() == first {
+			replayed = true
+		}
+	}
+	if !replayed {
+		t.Fatal("preview did not replay the selected move")
+	}
+	pause.Draw(ebiten.NewImage(640, 480))
+	if player.X != 12 || player.Y != 4 || player.Z != 100 || player.AttackId != 88 || player.TrailActive || len(player.pendingProjectiles) != 0 {
+		t.Fatal("preview events changed the paused player's state or emitted live projectiles")
+	}
+	if move.Owner != player || move.Frame != second || move.OffsetX != 99 || move.OffsetY != 50 || move.Delay != 42 || move.CurrentEvent != 3 || move.CurrentDelay != 9 || move.KeyPresses[0] != 123 {
+		t.Fatal("preview changed the live animation's playback state")
+	}
+	for _, sound := range sounds.sounds {
+		if sound == "do-not-play.wav" {
+			t.Fatal("preview played live animation audio")
+		}
+	}
+	pause.Update(PauseInput{Back: true}, sounds)
+	if pause.Current != root || pause.preview != nil {
+		t.Fatal("leaving the move list retained an active preview")
+	}
+}
+
+func TestMovePreviewRestartsOnSelectionChange(t *testing.T) {
+	player := grabTestPlayer()
+	first, second := ebiten.NewImage(10, 10), ebiten.NewImage(12, 12)
+	for _, item := range []struct {
+		name   string
+		frame  *ebiten.Image
+		status string
+	}{
+		{"alpha", first, ""}, {"beta", second, "jump"},
+	} {
+		player.Animations[item.name] = MakeAnimation(item.name, "", []AnimationEvent{
+			&AnimationEventDelay{Delay: 4}, &AnimationEventFrame{Image: item.frame}, &AnimationEventNop{},
+		}, []InputKey{InputKeyAttack1}, "", item.status)
+	}
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "move-list"}}
+	pause := &PauseMenu{Root: root, Current: root, Player: player}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	alpha := pause.preview
+	pause.Update(PauseInput{}, &dummySystem{})
+	pause.Update(PauseInput{Down: true}, &dummySystem{})
+	if pause.preview == alpha || pause.preview.source != player.Animations["beta"] || pause.preview.animation.CurrentFrame() != second || pause.preview.animation.CurrentDelay != 4 || pause.preview.y <= 0 {
+		t.Fatal("selecting a jump move did not restart its preview in the air")
+	}
+	pause.Update(PauseInput{Up: true}, &dummySystem{})
+	if pause.preview.source != player.Animations["alpha"] || pause.preview.animation.CurrentFrame() != first || pause.preview.animation.CurrentDelay != 4 || pause.preview.y != 0 {
+		t.Fatal("returning to a ground move did not reset its preview")
+	}
+}
+
 func TestPauseLoopFreezesWorldAndRestoresDrawing(t *testing.T) {
 	for _, action := range []string{"continue", "quit", "cancelled"} {
 		t.Run(action, func(t *testing.T) {

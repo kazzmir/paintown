@@ -47,6 +47,7 @@ type Menu struct {
 type MenuOption struct {
 	Name, Info, Kind, Path string
 	Definition             *sexp.SExpr
+	moveAnimation          *Animation
 }
 
 type MenuAnimation struct {

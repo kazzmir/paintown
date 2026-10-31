@@ -33,6 +33,8 @@ type PauseMenu struct {
 	Root, Current *Menu
 	Player        *PlayerState
 	stack         []*Menu
+	preview       *movePreview
+	previewLayer  *ebiten.Image
 }
 
 func NewPauseMenu(player *PlayerState) (*PauseMenu, error) {
@@ -54,12 +56,14 @@ func NewPauseMenu(player *PlayerState) (*PauseMenu, error) {
 func (pause *PauseMenu) reset() {
 	pause.Current = pause.Root
 	pause.stack = nil
+	pause.preview = nil
 	pause.Root.Selected = 0
 	pause.Root.Notice = ""
 	pause.Root.opacity, pause.Root.scrollOffset = 0, 0
 }
 
 func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
+	defer pause.updateMovePreview()
 	menu := pause.Current
 	menu.Update()
 	play := func(path string) {
@@ -124,7 +128,7 @@ func makeMoveList(player *PlayerState, parent *Menu) *Menu {
 	menu.Notice = ""
 	menu.opacity, menu.scrollOffset = 0, 0
 	menu.Animations = nil
-	menu.Bounds = image.Rect(60, 120, 580, 420)
+	menu.Bounds = image.Rect(30, 120, 300, 420)
 	menu.FontSize, menu.FontWidth = 18, 18
 	if parent.font != nil {
 		face := *parent.font
@@ -166,6 +170,7 @@ func makeMoveList(player *PlayerState, parent *Menu) *Menu {
 		}
 		menu.Options = append(menu.Options, MenuOption{
 			Kind: "move", Name: strings.ReplaceAll(name, "-", " "), Info: strings.Join(keys, " > ") + "\n" + status,
+			moveAnimation: animation,
 		})
 	}
 	slices.SortFunc(menu.Options, func(a, b MenuOption) int { return strings.Compare(a.Name, b.Name) })
@@ -201,7 +206,7 @@ func runPauseMenu(pause *PauseMenu, yield coroutine.YieldFunc, setDraw func(data
 			background(screen)
 		}
 		vector.FillRect(screen, 0, 0, data.ScreenWidth, data.ScreenHeight, color.NRGBA{A: 120}, false)
-		pause.Current.DrawOverlay(screen)
+		pause.Draw(screen)
 	})
 	defer setDraw(background)
 	for {
