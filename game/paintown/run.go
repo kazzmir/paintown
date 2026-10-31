@@ -168,6 +168,7 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 
 type GameModel struct {
     Enemies []*Enemy
+    Projectiles []*Projectile
     Cats []*Cat
     CatFactory CatFactory
     Item []*Item
@@ -361,6 +362,8 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
                 }
             }
         }, system)
+        model.Projectiles = append(model.Projectiles, enemy.pendingProjectiles...)
+        enemy.pendingProjectiles = nil
         if !enemy.IsDead() {
 
             attack := enemy.CurrentAnimationValue.Attack
@@ -388,6 +391,7 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
     }
 
     model.Enemies = outEnemies
+    model.UpdateProjectiles(playerState, system, flashFactory)
 }
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
@@ -631,6 +635,15 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
                     healthObjects = append(healthObjects, enemy)
                 }
             }
+        }
+
+        for _, projectile := range model.Projectiles {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    projectile.Draw(buffer, cameraX, screenShake)
+                },
+                Z: projectile.Z,
+            })
         }
 
         for _, flash := range model.Flashes {

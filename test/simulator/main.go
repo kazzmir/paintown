@@ -201,6 +201,10 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
         }
     }
 
+    for _, projectile := range engine.Model.Projectiles {
+        projectile.Draw(screen, 0, ebiten.GeoM{})
+    }
+
     ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Player state: %v", engine.Player.Status), 0, 0)
     ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Enemy state: %v", engine.Enemies[0].State), 0, 15)
 }

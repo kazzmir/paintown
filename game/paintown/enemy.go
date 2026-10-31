@@ -135,6 +135,7 @@ type Enemy struct {
     Vx float64
 
     GrabTime uint64
+    pendingProjectiles []*Projectile
 
     // Only explicitly thrown enemies damage others while airborne.
     Thrown bool

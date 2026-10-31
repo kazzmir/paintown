@@ -529,6 +529,12 @@ func makeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr, f
             case "sound":
                 value := child.GetValue(0)
                 events = append(events, &AnimationSoundEvent{Sound: value})
+            case "projectile":
+                event, err := parseProjectileEvent(child, frames)
+                if err != nil {
+                    return nil, err
+                }
+                events = append(events, event)
             case "bbox":
                 // ignore
             case "loop":

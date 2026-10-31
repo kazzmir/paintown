@@ -284,6 +284,7 @@ type PlayerState struct {
     Icon *ebiten.Image
 
     Grabbed Grabbed
+    pendingProjectiles []*Projectile
 
     // map of active animations to the time they were activated, used to determine if an attack should be invoked
     // at the end of the current animation

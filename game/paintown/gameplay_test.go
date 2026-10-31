@@ -139,6 +139,220 @@ func TestGrabPoseStaysStatic(t *testing.T) {
 	checkStatic(203)
 }
 
+func projectileTestEvent() *AnimationEventProjectile {
+	frame := ebiten.NewImage(20, 20)
+	main := MakeAnimation("main", "attack", []AnimationEvent{
+		&AnimationEventAttack{Attack: AnimationAttack{X2: 20, Y2: 20, Damage: 3, Force: 2}},
+		&AnimationEventDelay{Delay: 2}, &AnimationEventFrame{Image: frame}, &AnimationEventNop{},
+	}, nil, "", "")
+	death := MakeAnimation("death", "", []AnimationEvent{
+		&AnimationEventDelay{Delay: 2}, &AnimationEventFrame{Image: frame}, &AnimationEventFrame{Image: frame}, &AnimationEventNop{},
+	}, nil, "", "")
+	return &AnimationEventProjectile{Definition: &ProjectileDefinition{Main: main, Death: death}, X: 40, Y: -10, Vx: 2, Life: 70}
+}
+
+func TestProjectileEventPlacementAndIndependentPlayback(t *testing.T) {
+	for _, facing := range []Facing{FacingRight, FacingLeft} {
+		player := grabTestPlayer()
+		player.X, player.Y, player.Z, player.Facing = 100, 8, 150, facing
+		animation := &Animation{Owner: player, OffsetX: 5, OffsetY: 7}
+		event := projectileTestEvent()
+		event.Update(animation, &dummySystem{})
+		event.Update(animation, &dummySystem{})
+		first, second := player.pendingProjectiles[0], player.pendingProjectiles[1]
+		direction := 1.0
+		if facing == FacingLeft {
+			direction = -1
+		}
+		if first.X != 100+direction*45 || first.Y != 11 || first.Z != 150 || first.Vx != direction*2 || first.Facing != facing {
+			t.Fatal("projectile did not inherit facing and sprite-relative spawn position")
+		}
+		first.Animation.CurrentDelay = 99
+		if second.Animation.CurrentDelay == 99 || first.Animation == second.Animation || first.Animation.Owner != first || second.Animation.Owner != second {
+			t.Fatal("projectiles share mutable animation playback")
+		}
+		if first.Animation.CurrentFrame() != second.Animation.CurrentFrame() {
+			t.Fatal("projectiles did not share sprite resources")
+		}
+	}
+}
+
+func TestProjectileAnimationKeepsLastFrameAndAttack(t *testing.T) {
+	player := grabTestPlayer()
+	event := projectileTestEvent()
+	// A one-frame main animation still needs an active attack throughout
+	// its frame delay and subsequent loops.
+	event.Definition.Main.Events = event.Definition.Main.Events[:3]
+	event.Definition.Death.Events = event.Definition.Death.Events[:2]
+	event.Update(&Animation{Owner: player}, &dummySystem{})
+	projectile := player.pendingProjectiles[0]
+	for range 20 {
+		projectile.Update(&dummySystem{})
+		if projectile.Animation.Attack.IsEmpty() || projectile.Animation.CurrentFrame() == nil {
+			t.Fatal("looping projectile lost its last frame or attack")
+		}
+	}
+	projectile.finish(&dummySystem{})
+	if projectile.Done || !projectile.Dying {
+		t.Fatal("death animation skipped its only frame")
+	}
+	for range 2 {
+		projectile.Update(&dummySystem{})
+		if projectile.Done {
+			t.Fatal("death animation did not hold its frame for its full delay")
+		}
+	}
+	projectile.Update(&dummySystem{})
+	if !projectile.Done {
+		t.Fatal("death animation did not finish")
+	}
+}
+
+func TestProjectileHitsOneEnemyThenExpires(t *testing.T) {
+	for _, facing := range []Facing{FacingRight, FacingLeft} {
+		player := grabTestPlayer()
+		player.Z, player.Facing = 100, facing
+		event := projectileTestEvent()
+		event.Update(&Animation{Owner: player}, &dummySystem{})
+		projectile := player.pendingProjectiles[0]
+		targetX := projectile.X + projectile.Vx
+		first, second, otherLane := grabTestEnemy(), grabTestEnemy(), grabTestEnemy()
+		for _, enemy := range []*Enemy{first, second, otherLane} {
+			enemy.X, enemy.Z, enemy.State = targetX, 100, EnemyStatePain
+			enemy.PainThreshold, enemy.LastAttacked = 100, 999
+		}
+		otherLane.Z += 20
+		model := &GameModel{Enemies: []*Enemy{otherLane, first, second}}
+		model.UpdateEnemies(&Level{}, player, &dummySystem{}, nil)
+		if first.Health != 97 || second.Health != 100 || otherLane.Health != 100 || first.LastAttacked != 999 {
+			t.Fatal("projectile failed damage, single-target, lane, or independent ticket checks")
+		}
+		if len(model.Projectiles) != 1 || !projectile.Dying || projectile.Vx != 0 || len(player.pendingProjectiles) != 0 {
+			t.Fatal("hit projectile did not stop and enter its death animation")
+		}
+		x := projectile.X
+		for range 30 {
+			model.UpdateProjectiles(player, &dummySystem{}, nil)
+		}
+		if len(model.Projectiles) != 0 || first.Health != 97 || second.Health != 100 || projectile.X != x {
+			t.Fatal("death animation repeated damage, kept moving, or failed to clean up")
+		}
+	}
+}
+
+func TestProjectileLifetimeAndEnemyOwnership(t *testing.T) {
+	player := grabTestPlayer()
+	player.Z = 100
+	event := projectileTestEvent()
+	event.Life = 2
+	event.Update(&Animation{Owner: player}, &dummySystem{})
+	projectile := player.pendingProjectiles[0]
+	model := &GameModel{}
+	model.UpdateProjectiles(player, &dummySystem{}, nil)
+	if projectile.Life != 1 || projectile.X != 42 || projectile.Dying {
+		t.Fatal("projectile movement/lifetime incorrect")
+	}
+	model.UpdateProjectiles(player, &dummySystem{}, nil)
+	if !projectile.Dying || projectile.Life != 0 {
+		t.Fatal("expired projectile did not enter its death animation")
+	}
+	for range 30 {
+		model.UpdateProjectiles(player, &dummySystem{}, nil)
+	}
+	if len(model.Projectiles) != 0 {
+		t.Fatal("expired projectile was not removed")
+	}
+	// A projectile without a death animation is removed immediately at expiry.
+	event.Definition.Death, event.Life = nil, 1
+	event.Update(&Animation{Owner: player}, &dummySystem{})
+	model.UpdateProjectiles(player, &dummySystem{}, nil)
+	if len(model.Projectiles) != 0 {
+		t.Fatal("projectile without death animation was retained")
+	}
+
+	// Enemy projectiles hit the player, not their allies, and interrupt grabs.
+	source, held := grabTestEnemy(), grabTestEnemy()
+	source.Z, source.State = 100, EnemyStatePain
+	player.X = 42
+	player.Animations["grab"] = grabTestEnemy().Animations["idle"]
+	player.DoGrab(held)
+	held.WasGrabbed(player)
+	event = projectileTestEvent()
+	event.Update(&Animation{Owner: source}, &dummySystem{})
+	model.Enemies = []*Enemy{source}
+	model.UpdateEnemies(&Level{}, player, &dummySystem{}, nil)
+	if player.Health != 97 || player.Status != PlayerStatePain || player.Grabbed != nil || held.Grabber != nil || source.Health != 100 {
+		t.Fatal("enemy projectile failed to damage the player and release the hold, or damaged its ally")
+	}
+}
+
+func TestAkumaProjectileMoves(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/players/akuma/akuma.txt"); os.IsNotExist(err) {
+		t.Skip("Akuma assets not installed")
+	}
+	character, err := MakePaintownPlayer("akuma")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, move := range []struct {
+		name   string
+		damage float64
+		speed  float64
+		super  bool
+	}{
+		{"haddoken", 8, 2, false}, {"super-haddoken", 17, 2.3, true},
+	} {
+		for _, facing := range []Facing{FacingRight, FacingLeft} {
+			t.Run(move.name+"/"+map[Facing]string{FacingRight: "right", FacingLeft: "left"}[facing], func(t *testing.T) {
+				level := &Level{ZMinimum: 100, ZMaximum: 200}
+				player, err := MakePlayerState(character, level)
+				if err != nil {
+					t.Fatal(err)
+				}
+				player.X, player.Facing = 100, facing
+				forward := InputState{Right: true}
+				if facing == FacingLeft {
+					forward = InputState{Left: true}
+				}
+				inputs := []InputState{{Down: true}, forward}
+				if move.super {
+					inputs = append(inputs, InputState{Down: true}, forward)
+				}
+				inputs = append(inputs, InputState{Attack1: true})
+				for index, input := range inputs {
+					player.Update(input, level, &dummySystem{}, uint64(100+index))
+				}
+				if player.ShowAnimation == nil || player.ShowAnimation.Name != move.name {
+					t.Fatalf("combo did not select %s", move.name)
+				}
+				for tick := 200; tick < 500 && len(player.pendingProjectiles) == 0; tick++ {
+					player.Update(InputState{}, level, &dummySystem{}, uint64(tick))
+				}
+				if len(player.pendingProjectiles) != 1 {
+					t.Fatal("Akuma attack did not emit its configured projectile")
+				}
+				projectile := player.pendingProjectiles[0]
+				direction := 1.0
+				if facing == FacingLeft {
+					direction = -1
+				}
+				if projectile.Life != 70 || projectile.Vx != direction*move.speed || projectile.Animation.Attack.Damage != move.damage {
+					t.Fatal("Akuma projectile settings do not match the data")
+				}
+				box := projectile.GetAttackBox()
+				target := grabTestEnemy()
+				target.X, target.Z, target.State = float64(box.Min.X+box.Max.X)/2, player.Z, EnemyStatePain
+				model := &GameModel{Enemies: []*Enemy{target}}
+				model.UpdateEnemies(level, player, &dummySystem{}, nil)
+				if target.Health != 100-move.damage || !projectile.Dying {
+					t.Fatal("Akuma projectile did not collide and apply its configured damage")
+				}
+			})
+		}
+	}
+}
+
 func TestRegularKnockdownHasAirborneArc(t *testing.T) {
 	for _, lethal := range []bool{false, true} {
 		enemy := grabTestEnemy()
