@@ -7,6 +7,7 @@ import (
     "strconv"
     "strings"
     "path/filepath"
+    "runtime"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
     "github.com/kazzmir/paintown/game/graphics"
@@ -47,6 +48,7 @@ type Animation struct {
     Frame *ebiten.Image
 
     Collision map[*ebiten.Image]*Collision
+    frames map[*ebiten.Image]*animationFrame
 
     Events []AnimationEvent
     CurrentEvent int
@@ -136,24 +138,41 @@ func (animation *Animation) Reset() {
 
 func (animation *Animation) InitializeCollision() {
     collisionMap := make(map[*ebiten.Image]*Collision)
-
-    var group sync.WaitGroup
-    var lock sync.Mutex
-
+    var images []*ebiten.Image
     for _, event := range animation.Events {
         if frameEvent, ok := event.(*AnimationEventFrame); ok {
-            group.Go(func() {
-                collision := MakeCollision(frameEvent.Image)
-
-                lock.Lock()
-                collisionMap[frameEvent.Image] = collision
-                lock.Unlock()
-            })
+            if _, seen := collisionMap[frameEvent.Image]; !seen {
+                collisionMap[frameEvent.Image] = nil
+                images = append(images, frameEvent.Image)
+            }
         }
     }
 
+    // Bound CPU work instead of starting a goroutine for every frame event.
+    jobs := make(chan *ebiten.Image, len(images))
+    for _, frame := range images {
+        jobs <- frame
+    }
+    close(jobs)
+    var group sync.WaitGroup
+    var lock sync.Mutex
+    for range min(runtime.GOMAXPROCS(0), len(images)) {
+        group.Go(func() {
+            for frame := range jobs {
+                var collision *Collision
+                if source := animation.frames[frame]; source != nil {
+                    collision = source.getCollision()
+                } else {
+                    // Support animations constructed manually by callers.
+                    collision = MakeCollision(frame)
+                }
+                lock.Lock()
+                collisionMap[frame] = collision
+                lock.Unlock()
+            }
+        })
+    }
     group.Wait()
-
     animation.Collision = collisionMap
 }
 
@@ -361,8 +380,47 @@ func parseAttack(definition *sexp.SExpr) AnimationAttack {
     }
 }
 
+// animationFrames owns immutable sprite resources for an asset-cache lifetime.
+// Collision data is generated from decoded CPU pixels, never a GPU readback.
+type animationFrames map[string]*animationFrame
+
+type animationFrame struct {
+    Image *ebiten.Image
+    pixels image.Image
+    collision *Collision
+    once sync.Once
+}
+
+func (frame *animationFrame) getCollision() *Collision {
+    frame.once.Do(func() {
+        frame.collision = MakeCollision(frame.pixels)
+        frame.pixels = nil
+    })
+    return frame.collision
+}
+
+func (frames animationFrames) load(path string) (*animationFrame, error) {
+    path = filepath.Clean(path)
+    if frame := frames[path]; frame != nil {
+        return frame, nil
+    }
+    bitmap, err := data.LoadPng(path)
+    if err != nil {
+        return nil, err
+    }
+    pixels := graphics.ConvertTransparency(bitmap)
+    frame := &animationFrame{Image: ebiten.NewImageFromImage(pixels), pixels: pixels}
+    frames[path] = frame
+    return frame, nil
+}
+
 func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
+    return makeAnimationFromDefinition(baseDirectory, definition, make(animationFrames))
+}
+
+func makeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr, frames animationFrames) (*Animation, error) {
     var events []AnimationEvent
+    sources := make(map[*ebiten.Image]*animationFrame)
     var name string
     var sequence string
     var status string
@@ -441,13 +499,12 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                 }
             case "frame":
                 frame := child.GetValue(0)
-                img, err := data.LoadPng(filepath.Join(baseDirectory, frame))
+                source, err := frames.load(filepath.Join(baseDirectory, frame))
                 if err != nil {
                     return nil, err
                 }
-                events = append(events, &AnimationEventFrame{
-                    Image: ebiten.NewImageFromImage(graphics.ConvertTransparency(img)),
-                })
+                sources[source.Image] = source
+                events = append(events, &AnimationEventFrame{Image: source.Image})
             case "move":
                 x := 0
                 y := 0
@@ -489,6 +546,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
 
     out := MakeAnimation(name, type_, events, keys, sequence, status)
     out.Range = rangeValue
+    out.frames = sources
 
     return out, nil
 }

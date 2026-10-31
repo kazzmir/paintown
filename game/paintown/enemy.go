@@ -194,7 +194,11 @@ func loadAnimations(definition *CharacterDefinition, factory AnimationCreator) (
         name := animationName.GetValue(0)
         // base := filepath.Join("chars", strings.ToLower(definition.Name), name)
         base := "."
-        animation, err := factory.MakeAnimationFromDefinition(strings.ToLower(definition.Name), name, base, animation)
+        key := definition.Path
+        if key == "" {
+            key = strings.ToLower(definition.Name)
+        }
+        animation, err := factory.MakeAnimationFromDefinition(key, name, base, animation)
         if err == nil {
             out[name] = animation
         } else {
@@ -208,16 +212,28 @@ func loadAnimations(definition *CharacterDefinition, factory AnimationCreator) (
 type ObjectFactory struct {
     definitions map[string]CharacterDefinition
     animations map[string]map[string]*Animation
+    frames animationFrames
 }
 
 func MakeObjectFactory() *ObjectFactory {
     return &ObjectFactory{
         definitions: make(map[string]CharacterDefinition),
         animations: make(map[string]map[string]*Animation),
+        frames: make(animationFrames),
     }
 }
 
 func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animation string, baseDir string, definition *sexp.SExpr) (*Animation, error) {
+    template, err := factory.loadAnimation(player, animation, baseDir, definition)
+    if err != nil {
+        return nil, err
+    }
+    out := template.Clone()
+    out.Reset()
+    return out, nil
+}
+
+func (factory *ObjectFactory) loadAnimation(player string, animation string, baseDir string, definition *sexp.SExpr) (*Animation, error) {
     chars, ok := factory.animations[player]
     if !ok {
         chars = make(map[string]*Animation)
@@ -231,7 +247,7 @@ func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animati
             baseDir = dir
         }
 
-        loaded, err := MakeAnimationFromDefinition(baseDir, definition)
+        loaded, err := makeAnimationFromDefinition(baseDir, definition, factory.frames)
         if err != nil {
             return nil, err
         }
@@ -242,12 +258,39 @@ func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animati
     }
 
     if useAnimation != nil {
-        out := useAnimation.Clone()
-        out.Reset()
-        return out, nil
+        return useAnimation, nil
     }
 
     return nil, fmt.Errorf("Animation '%v' for character '%v' not found", animation, player)
+}
+
+func (factory *ObjectFactory) LoadIcon(path string) (*ebiten.Image, error) {
+    frame, err := factory.frames.load(path)
+    if err != nil {
+        return nil, err
+    }
+    return frame.Image, nil
+}
+
+// PrecacheEnemy warms immutable resources without constructing an enemy or
+// cloning its playback state. Repeated definitions are already cache hits.
+func (factory *ObjectFactory) PrecacheEnemy(object BlockObject) error {
+    definition, err := factory.LoadDefinition(data.DataPath(object.Path))
+    if err != nil {
+        return err
+    }
+    for _, raw := range definition.FindAll("character", "anim") {
+        name := raw.GetChild("name").GetValue(0)
+        if _, err := factory.loadAnimation(definition.Path, name, ".", raw); err != nil {
+            log.Printf("Error precaching animation '%s': %v", name, err)
+        }
+    }
+    if icon := definition.GetIcon(); icon != "" {
+        if _, err := factory.LoadIcon(icon); err != nil {
+            log.Printf("Error precaching icon '%s': %v", icon, err)
+        }
+    }
+    return nil
 }
 
 func (factory *ObjectFactory) LoadDefinition(path string) (CharacterDefinition, error) {
@@ -298,10 +341,17 @@ func MakeEnemyFromDefinition(object BlockObject, definition CharacterDefinition,
 
     var iconImage *ebiten.Image
     if icon != "" {
-        img, err := data.LoadPng(icon)
-        if err == nil {
-            iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
+        var err error
+        if cache, ok := factory.(interface{ LoadIcon(string) (*ebiten.Image, error) }); ok {
+            iconImage, err = cache.LoadIcon(icon)
         } else {
+            var img image.Image
+            img, err = data.LoadPng(icon)
+            if err == nil {
+                iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
+            }
+        }
+        if err != nil {
             log.Printf("Unable to load icon %v: %v", icon, err)
         }
     }

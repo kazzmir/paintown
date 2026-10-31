@@ -2,6 +2,8 @@ package paintown
 
 import (
 	"image"
+	"image/color"
+	"image/png"
 	"os"
 	"testing"
 
@@ -421,6 +423,234 @@ func TestLoadMainMenuAssets(t *testing.T) {
 	}
 	sub.Update()
 	sub.Draw(ebiten.NewImage(640, 480))
+}
+
+// Keep the old map-based algorithm here as an oracle: the faster storage
+// must preserve collision geometry, including partial cells at image edges.
+func referenceCollision(input image.Image) *Collision {
+	bounds := input.Bounds()
+	grid := make(map[image.Point]image.Rectangle)
+	for x := bounds.Min.X; x < bounds.Max.X; x += 3 {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y += 3 {
+			count := 0
+			for dx := range 3 {
+				for dy := range 3 {
+					if x+dx < bounds.Max.X && y+dy < bounds.Max.Y {
+						_, _, _, alpha := input.At(x+dx, y+dy).RGBA()
+						if alpha != 0 {
+							count++
+						}
+					}
+				}
+			}
+			if count >= 7 {
+				r := image.Rect(x, y, x+3, y+3)
+				for dx := range 3 {
+					for dy := range 3 {
+						if x+dx < bounds.Max.X && y+dy < bounds.Max.Y {
+							grid[image.Pt(x+dx, y+dy)] = r
+						}
+					}
+				}
+			}
+		}
+	}
+	for changed := true; changed; {
+		changed = false
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			for x := bounds.Min.X; x < bounds.Max.X; x++ {
+				if r, ok := grid[image.Pt(x, y)]; ok {
+					for _, point := range []image.Point{image.Pt(r.Max.X, y), image.Pt(x, r.Max.Y)} {
+						if other, ok := grid[point]; ok && r != other && r.Dy() == other.Dy() {
+							r = r.Union(other)
+							for dx := r.Min.X; dx < other.Max.X; dx++ {
+								for dy := r.Min.Y; dy < r.Max.Y; dy++ {
+									grid[image.Pt(dx, dy)] = r
+								}
+							}
+							changed = true
+						}
+					}
+				}
+			}
+		}
+	}
+	out := &Collision{width: bounds.Dx(), height: bounds.Dy()}
+	for _, box := range grid {
+		out.Boxes = append(out.Boxes, box)
+		out.MainBox = out.MainBox.Union(box)
+	}
+	return out
+}
+
+func TestCollisionOptimizationPreservesGeometry(t *testing.T) {
+	for seed := range 40 {
+		bounds := image.Rect(seed%3-2, seed%5-2, 17+seed%4, 16+seed%7)
+		pixels := image.NewNRGBA(bounds)
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			for x := bounds.Min.X; x < bounds.Max.X; x++ {
+				if seed == 0 || (seed != 1 && (x*x+y*7+seed)%11 != 0) {
+					pixels.SetNRGBA(x, y, color.NRGBA{A: 255})
+				}
+			}
+		}
+		for _, input := range []image.Image{pixels, pixels.SubImage(bounds.Inset(1)), struct{ image.Image }{pixels}} {
+			got, want := MakeCollision(input), referenceCollision(input)
+			if got.MainBox != want.MainBox || got.width != want.width || got.height != want.height {
+				t.Fatalf("seed %d: collision bounds changed", seed)
+			}
+			unique := make(map[image.Rectangle]bool)
+			for _, box := range want.Boxes {
+				unique[box] = true
+			}
+			if len(got.Boxes) != len(unique) {
+				t.Fatalf("seed %d: duplicate or missing collision boxes", seed)
+			}
+			for _, box := range got.Boxes {
+				if !unique[box] {
+					t.Fatalf("seed %d: unexpected collision box %v", seed, box)
+				}
+			}
+		}
+	}
+}
+
+func TestAssetCacheReusesResourcesNotPlayback(t *testing.T) {
+	t.Chdir(t.TempDir())
+	if err := os.MkdirAll("paintown-data/sprites", 0755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"a", "b"} {
+		pixels := image.NewNRGBA(image.Rect(0, 0, 9, 9))
+		for y := range 9 {
+			for x := range 9 {
+				if name == "a" || (x >= 3 && x < 6 && y >= 3 && y < 6) {
+					pixels.SetNRGBA(x, y, color.NRGBA{A: 255})
+				}
+			}
+		}
+		file, err := os.Create("paintown-data/sprites/" + name + ".png")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := png.Encode(file, pixels); err != nil {
+			t.Fatal(err)
+		}
+		file.Close()
+		definition := `(character (name shared) (health 10) (icon sprites/` + name + `.png)
+			(anim (name idle) (keys key_attack1) (basedir sprites) (frame ` + name + `.png) (frame ` + name + `.png))
+			(anim (name walk) (basedir sprites) (frame ` + name + `.png)))`
+		if err := os.WriteFile("paintown-data/"+name+".txt", []byte(definition), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	factory := MakeObjectFactory()
+	a, b := BlockObject{Path: "a.txt"}, BlockObject{Path: "b.txt"}
+	if err := factory.PrecacheEnemy(a); err != nil {
+		t.Fatal(err)
+	}
+	if err := factory.PrecacheEnemy(b); err != nil {
+		t.Fatal(err)
+	}
+	definition, err := factory.LoadDefinition("paintown-data/a.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	character := &PaintownCharacter{Definition: definition}
+	player, err := MakePlayerState(character, &Level{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// No further disk reads are possible after warming the caches.
+	for _, path := range []string{"sprites/a.png", "sprites/b.png", "a.txt", "b.txt"} {
+		if err := os.Remove("paintown-data/" + path); err != nil {
+			t.Fatal(err)
+		}
+	}
+	first, err := MakeEnemy(a, factory, &BehaviorNormal{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := MakeEnemy(a, factory, &BehaviorNormal{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	other, err := MakeEnemy(b, factory, &BehaviorNormal{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	idle, walk := first.Animations["idle"], first.Animations["walk"]
+	frame := idle.FirstFrame()
+	if len(factory.frames) != 2 || len(idle.Collision) != 1 || walk.FirstFrame() != frame || idle.Collision[frame] != walk.Collision[frame] || first.Icon != second.Icon {
+		t.Fatal("sprite, collision, or icon resources were not shared")
+	}
+	if frame == other.Animations["idle"].FirstFrame() || idle.Collision[frame].MainBox == other.Animations["idle"].Collision[other.Animations["idle"].FirstFrame()].MainBox {
+		t.Fatal("different definition paths with the same character name shared the wrong assets")
+	}
+	idle.CurrentEvent, idle.KeyPresses[0] = 42, 99
+	if second.Animations["idle"].CurrentEvent != 0 || second.Animations["idle"].KeyPresses[0] != 0 || idle.Owner != first || second.Animations["idle"].Owner != second {
+		t.Fatal("cached enemies shared mutable playback state")
+	}
+	player.Animations["idle"].CurrentEvent = 42
+	nextPlayer, err := MakePlayerState(character, &Level{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if nextPlayer.Icon != player.Icon || nextPlayer.Animations["idle"].FirstFrame() != player.Animations["idle"].FirstFrame() || nextPlayer.Animations["idle"].CurrentEvent != 0 || nextPlayer.Animations["idle"].Owner != nextPlayer {
+		t.Fatal("player level changes did not reuse assets with independent playback")
+	}
+}
+
+func BenchmarkCollisionGeneration(b *testing.B) {
+	pixels := image.NewNRGBA(image.Rect(0, 0, 64, 100))
+	for y := range 100 {
+		for x := range 64 {
+			if x > 10 && x < 55 && y > 5 && (x+y)%13 != 0 {
+				pixels.SetNRGBA(x, y, color.NRGBA{A: 255})
+			}
+		}
+	}
+	for _, implementation := range []struct {
+		name  string
+		build func(image.Image) *Collision
+	}{
+		{"map_reference", referenceCollision}, {"dense", MakeCollision},
+	} {
+		b.Run(implementation.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				implementation.build(pixels)
+			}
+		})
+	}
+}
+
+func BenchmarkEnemyLoading(b *testing.B) {
+	b.Chdir("../..")
+	if _, err := os.Stat("paintown-data/chars/punk/punk.txt"); os.IsNotExist(err) {
+		b.Skip("game assets not installed")
+	}
+	object := BlockObject{Type: "enemy", Path: "chars/punk/punk.txt"}
+	b.Run("cold", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			if _, err := MakeEnemy(object, MakeObjectFactory(), &BehaviorNormal{}); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+	b.Run("cached", func(b *testing.B) {
+		factory := MakeObjectFactory()
+		if _, err := MakeEnemy(object, factory, &BehaviorNormal{}); err != nil {
+			b.Fatal(err)
+		}
+		b.ReportAllocs()
+		for b.Loop() {
+			if _, err := MakeEnemy(object, factory, &BehaviorNormal{}); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
 }
 
 func TestLoadCatAssets(t *testing.T) {

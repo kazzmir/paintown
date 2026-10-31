@@ -11,7 +11,6 @@ import (
     "image/color"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
-    "github.com/kazzmir/paintown/game/graphics"
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
@@ -77,6 +76,25 @@ type InputState struct {
 
 type PaintownCharacter struct {
     Definition CharacterDefinition
+    animations map[string]*Animation
+    frames animationFrames
+}
+
+func (character *PaintownCharacter) animationTemplate(name string, raw *sexp.SExpr) (*Animation, error) {
+    if template := character.animations[name]; template != nil {
+        return template, nil
+    }
+    if character.animations == nil {
+        character.animations = make(map[string]*Animation)
+        character.frames = make(animationFrames)
+    }
+    base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
+    template, err := makeAnimationFromDefinition(base, raw, character.frames)
+    if err != nil {
+        return nil, err
+    }
+    character.animations[name] = template
+    return template, nil
 }
 
 func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, error) {
@@ -88,11 +106,13 @@ func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, err
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         name := animationName.GetValue(0)
-        base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
-        animation, err := MakeAnimationFromDefinition(base, animation)
+        animation, err := character.animationTemplate(name, animation)
         if err == nil {
-            animation.InitializeCollision()
-            out[name] = animation
+            if len(animation.Collision) == 0 {
+                animation.InitializeCollision()
+            }
+            out[name] = animation.Clone()
+            out[name].Reset()
         } else {
             log.Printf("Error loading animation '%v' for character '%v': %v", name, character.Definition.Name, err)
         }
@@ -109,8 +129,13 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         if animationName != nil && animationName.GetValue(0) == name {
-            base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
-            return MakeAnimationFromDefinition(base, animation)
+            template, err := character.animationTemplate(name, animation)
+            if err != nil {
+                return nil, err
+            }
+            out := template.Clone()
+            out.Reset()
+            return out, nil
         }
     }
 
@@ -118,6 +143,7 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
 }
 
 type CharacterDefinition struct {
+    Path string
     Name string
     SExpr *sexp.SExpr
 }
@@ -185,6 +211,7 @@ func LoadDefinition(path string) (CharacterDefinition, error) {
 
     value := raw.GetChild("name")
     return CharacterDefinition{
+        Path: filepath.Clean(path),
         Name: value.GetValue(0),
         SExpr: raw,
     }, nil
@@ -291,9 +318,12 @@ func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, err
 
     var iconImage *ebiten.Image
     if icon != "" {
-        img, err := data.LoadPng(icon)
+        if player.frames == nil {
+            player.frames = make(animationFrames)
+        }
+        frame, err := player.frames.load(icon)
         if err == nil {
-            iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
+            iconImage = frame.Image
         } else {
             log.Printf("Unable to load icon %v: %v", icon, err)
         }

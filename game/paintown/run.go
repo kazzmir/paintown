@@ -384,6 +384,12 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
 }
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
+    return RunLevelWithCache(player, yield, setDraw, levelPath, audioContext, MakeObjectFactory())
+}
+
+// RunLevelWithCache keeps enemy sprite/collision resources warm across an
+// adventure. Playback and per-enemy state are still newly allocated per spawn.
+func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context, factory *ObjectFactory) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
@@ -723,7 +729,9 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         return inputState
     }
 
-    factory := MakeObjectFactory()
+    if factory == nil {
+        factory = MakeObjectFactory()
+    }
 
     createEnemies := func(objects []BlockObject) []*Enemy {
         var out []*Enemy
@@ -776,9 +784,17 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     go func(){
         // preload all enemies
         log.Printf("Preloading enemies...")
+        seen := make(map[string]bool)
         for _, block := range level.Blocks {
-            // create enemies, and throw them away
-            createEnemies(block.Objects)
+            for _, object := range block.Objects {
+                if object.Type != "enemy" || seen[object.Path] {
+                    continue
+                }
+                seen[object.Path] = true
+                if err := factory.PrecacheEnemy(object); err != nil {
+                    log.Printf("Error precaching enemy '%s': %v", object.Name, err)
+                }
+            }
         }
         log.Printf("Done preloading enemies")
 

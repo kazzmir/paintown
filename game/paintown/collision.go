@@ -15,12 +15,36 @@ type Collision struct {
 }
 
 func MakeCollision(input image.Image) *Collision {
-    grid := make(map[image.Point]image.Rectangle)
-
-    // maybe make an in-memory copy of the image first
-
+    bounds := input.Bounds()
     boxSize := 3
     pixelRatio := 0.8
+    opaque := func(x, y int) bool {
+        _, _, _, a := input.At(x, y).RGBA()
+        return a != 0
+    }
+    if pixels, ok := input.(*image.NRGBA); ok {
+        opaque = func(x, y int) bool { return pixels.Pix[pixels.PixOffset(x, y) + 3] != 0 }
+    } else if pixels, ok := input.(*image.RGBA); ok {
+        opaque = func(x, y int) bool { return pixels.Pix[pixels.PixOffset(x, y) + 3] != 0 }
+    }
+
+    // Dense storage avoids hashing a point for every pixel on every merge
+    // pass. Pad to whole cells because the original boxes include edge cells
+    // extending up to two pixels beyond the image bounds.
+    width := (bounds.Dx() + boxSize - 1) / boxSize * boxSize
+    height := (bounds.Dy() + boxSize - 1) / boxSize * boxSize
+    grid := make([]image.Rectangle, width * height)
+    get := func(p image.Point) (image.Rectangle, bool) {
+        x, y := p.X - bounds.Min.X, p.Y - bounds.Min.Y
+        if x < 0 || y < 0 || x >= width || y >= height {
+            return image.Rectangle{}, false
+        }
+        r := grid[y * width + x]
+        return r, !r.Empty()
+    }
+    set := func(x, y int, r image.Rectangle) {
+        grid[(y - bounds.Min.Y) * width + x - bounds.Min.X] = r
+    }
 
     for x := input.Bounds().Min.X; x < input.Bounds().Max.X; x += boxSize {
         for y := input.Bounds().Min.Y; y < input.Bounds().Max.Y; y += boxSize {
@@ -33,8 +57,7 @@ func MakeCollision(input image.Image) *Collision {
                     cy := y + y2
 
                     if cx < input.Bounds().Max.X && cy < input.Bounds().Max.Y {
-                        _, _, _, a := input.At(cx, cy).RGBA()
-                        if a != 0 {
+                        if opaque(cx, cy) {
                             pixelCount += 1
                         }
                     }
@@ -49,7 +72,7 @@ func MakeCollision(input image.Image) *Collision {
                         cx := x + x2
                         cy := y + y2
                         if cx < input.Bounds().Max.X && cy < input.Bounds().Max.Y {
-                            grid[image.Pt(cx, cy)] = r
+                            set(cx, cy, r)
                         }
                     }
                 }
@@ -89,7 +112,7 @@ func MakeCollision(input image.Image) *Collision {
             for x := input.Bounds().Min.X; x < input.Bounds().Max.X; x += 1 {
                 p := image.Point{x, y}
 
-                if r, ok := grid[p]; ok {
+                if r, ok := get(p); ok {
 
                     p1 := image.Pt(r.Max.X, y)
                     p2 := image.Pt(x, r.Max.Y)
@@ -98,7 +121,7 @@ func MakeCollision(input image.Image) *Collision {
 
                         // have box at p, try to merge with box to the right
                         // both boxes must have the same height to merge
-                        if r2, ok := grid[pMerge]; ok {
+                        if r2, ok := get(pMerge); ok {
 
                             if r != r2 && r.Bounds().Dy() == r2.Bounds().Dy() {
 
@@ -110,7 +133,7 @@ func MakeCollision(input image.Image) *Collision {
 
                                 for x2 := r.Min.X; x2 < r2.Max.X; x2 += 1 {
                                     for y2 := r.Min.Y; y2 < r.Max.Y; y2 += 1 {
-                                        grid[image.Pt(x2, y2)] = r
+                                        set(x2, y2, r)
                                     }
                                 }
 
@@ -127,8 +150,15 @@ func MakeCollision(input image.Image) *Collision {
 
     mainBox := image.Rectangle{}
 
+    // A merged rectangle is stored at every pixel it covers. Keep just one
+    // copy for collision checks instead of thousands of duplicate boxes.
+    seen := make(map[image.Rectangle]bool)
     var boxes []image.Rectangle
     for _, r := range grid {
+        if r.Empty() || seen[r] {
+            continue
+        }
+        seen[r] = true
         boxes = append(boxes, r)
         mainBox = mainBox.Union(r)
     }
