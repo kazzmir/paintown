@@ -312,6 +312,7 @@ func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
 	menu.syncMenuFont()
 	if option.Kind == "sound" { return makeSoundVolumeMenu(menu), nil }
 	if option.Kind == "music" { return makeMusicVolumeMenu(menu), nil }
+	if option.Kind == "lives" { return makeLivesMenu(menu), nil }
 	if option.Kind == "font-select" {
 		return makeFontSelectionMenu(menu, option.Adjust), nil
 	}
@@ -539,7 +540,7 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 			padding := max(30.0, spacing)
 			menu.drawText(list, option.Name, centerX, float64(menu.Bounds.Min.Y)+padding, menu.itemColor(0))
 			option.Slider.Draw(list, image.Rect(menu.Bounds.Min.X+40, int(centerY)-10, menu.Bounds.Max.X-40, int(centerY)+10), menu.itemColor(0))
-			menu.drawText(list, fmt.Sprintf("%d%%", option.Slider.Value()), centerX, float64(menu.Bounds.Max.Y)-padding, menu.itemColor(0))
+			menu.drawText(list, option.Slider.Label(), centerX, float64(menu.Bounds.Max.Y)-padding, menu.itemColor(0))
 		} else if menu.Scroll {
 			count := int(float64(menu.Bounds.Dy())/spacing/2) + 2
 			for distance := -count; distance <= count; distance++ {

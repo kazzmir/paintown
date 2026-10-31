@@ -619,6 +619,59 @@ func TestMusicVolumeSliderMenuAndPauseControls(t *testing.T) {
 	}
 }
 
+func TestLivesSliderMenuAndBounds(t *testing.T) {
+	previous := StartingLives()
+	t.Cleanup(func() { SetStartingLives(previous) })
+	SetStartingLives(4)
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "lives", Name: "Lives"}}
+	menu, err := root.OpenSubmenu(root.Options[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.Name != "Lives" || len(menu.Options) != 1 || menu.Options[0].Slider == nil {
+		t.Fatal("lives menu did not use a slider")
+	}
+	slider := menu.Options[0].Slider
+	if slider.Min != 1 || slider.Max != 100 || slider.Value() != 4 || slider.Label() != "4" {
+		t.Fatal("lives range, initial value, or non-percentage label is incorrect")
+	}
+	menu.Adjust(1)
+	if StartingLives() != 5 {
+		t.Fatal("Right did not increase lives")
+	}
+	menu.Adjust(-1)
+	if StartingLives() != 4 {
+		t.Fatal("Left did not decrease lives")
+	}
+	SetStartingLives(-10)
+	if slider.Value() != 1 || slider.Fraction() != 0 || menu.Adjust(-1) {
+		t.Fatal("lives went below one")
+	}
+	SetStartingLives(1000)
+	if slider.Value() != 100 || slider.Fraction() != 1 || menu.Adjust(1) {
+		t.Fatal("lives exceeded 100")
+	}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Lives" {
+		t.Fatal("lives slider did not open from pause menu")
+	}
+	pause.Update(PauseInput{Left: true}, &dummySystem{})
+	if StartingLives() != 99 || slider.Label() != "99" {
+		t.Fatal("pause adjustment was not shared with the existing menu")
+	}
+	pause.Draw(ebiten.NewImage(640, 480))
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != root {
+		t.Fatal("Back did not leave the lives slider")
+	}
+	volume := makeSoundVolumeMenu(root).Options[0].Slider
+	if !strings.HasSuffix(volume.Label(), "%") {
+		t.Fatal("volume slider lost its percentage label")
+	}
+}
+
 func TestSliderBoundsBindingAndDrawing(t *testing.T) {
 	value := 50
 	slider := &Slider{Min: 0, Max: 100, Step: 1, GetValue: func() int { return value }, SetValue: func(next int) { value = next }}

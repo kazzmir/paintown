@@ -3,6 +3,8 @@ package paintown
 import (
 	"image"
 	"image/color"
+	"strconv"
+	"sync/atomic"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -12,6 +14,7 @@ import (
 // store a second copy, so multiple menus always display the current value.
 type Slider struct {
 	Min, Max, Step int
+	Suffix         string
 	GetValue       func() int
 	SetValue       func(int)
 }
@@ -22,6 +25,8 @@ func (slider *Slider) Value() int {
 	}
 	return max(slider.Min, min(slider.Max, slider.GetValue()))
 }
+
+func (slider *Slider) Label() string { return strconv.Itoa(slider.Value()) + slider.Suffix }
 
 func (slider *Slider) Adjust(direction int) bool {
 	if direction == 0 || slider.SetValue == nil || slider.Max <= slider.Min {
@@ -67,12 +72,27 @@ func makeMusicVolumeMenu(parent *Menu) *Menu {
 	return makeVolumeMenu(parent, "Music Volume", "Music", MusicVolume, SetMusicVolume)
 }
 
+var configuredStartingLives atomic.Int32
+
+func init() { configuredStartingLives.Store(4) }
+
+func StartingLives() int         { return int(configuredStartingLives.Load()) }
+func SetStartingLives(lives int) { configuredStartingLives.Store(int32(max(1, min(100, lives)))) }
+
+func makeLivesMenu(parent *Menu) *Menu {
+	return makeSliderMenu(parent, "Lives", "Starting lives", &Slider{Min: 1, Max: 100, Step: 1, GetValue: StartingLives, SetValue: SetStartingLives})
+}
+
 func makeVolumeMenu(parent *Menu, title, label string, get func() int, set func(int)) *Menu {
+	return makeSliderMenu(parent, title, label, &Slider{Min: 0, Max: 100, Step: 1, Suffix: "%", GetValue: get, SetValue: set})
+}
+
+func makeSliderMenu(parent *Menu, title, label string, slider *Slider) *Menu {
 	menu := *parent
 	menu.Name, menu.MenuInfo = title, title
 	menu.Options = []MenuOption{{
-		Kind: "slider", Name: label, Info: "Left / Right: adjust volume\nEscape / Circle: back",
-		Slider: &Slider{Min: 0, Max: 100, Step: 1, GetValue: get, SetValue: set},
+		Kind: "slider", Name: label, Info: "Left / Right: adjust\nEscape / Circle: back",
+		Slider: slider,
 	}}
 	menu.Selected, menu.ticks = 0, 0
 	menu.opacity, menu.scrollOffset = 0, 0
