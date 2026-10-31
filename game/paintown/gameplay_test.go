@@ -139,6 +139,99 @@ func TestGrabPoseStaysStatic(t *testing.T) {
 	checkStatic(203)
 }
 
+func TestThrownLandingDamage(t *testing.T) {
+	for _, test := range []struct {
+		name               string
+		health, wantHealth float64
+		thrown             bool
+	}{
+		{"survives", 10, 7, true},
+		{"lethal", 3, 0, true},
+		{"overkill", 1, 0, true},
+		{"ordinary_knockdown", 1, 1, false},
+	} {
+		t.Run("enemy/"+test.name, func(t *testing.T) {
+			enemy := grabTestEnemy()
+			enemy.Health = test.health
+			if test.thrown {
+				enemy.Throw(3, 5)
+			} else {
+				enemy.DoFall(3, 5)
+			}
+			if enemy.Health != test.health {
+				t.Fatal("damage applied before landing")
+			}
+			enemy.Y, enemy.Vy = 0, -1
+			enemy.UpdateState(&Level{}, grabTestPlayer())
+			if enemy.Health != test.wantHealth || enemy.Thrown || enemy.State != EnemyStateFallen {
+				t.Fatalf("incorrect landing: health=%v state=%v thrown=%v", enemy.Health, enemy.State, enemy.Thrown)
+			}
+			for range 5 {
+				enemy.UpdateState(&Level{}, grabTestPlayer())
+			}
+			if enemy.Health != test.wantHealth {
+				t.Fatal("landing damage applied more than once")
+			}
+			enemy.FallenCount = 0
+			enemy.UpdateState(&Level{}, grabTestPlayer())
+			if enemy.IsDead() != (test.wantHealth == 0) {
+				t.Fatal("lethal landing did not follow the death path")
+			}
+		})
+		t.Run("player/"+test.name, func(t *testing.T) {
+			player := grabTestPlayer()
+			player.Health = test.health
+			if test.thrown {
+				player.Throw(3, 5)
+			} else {
+				player.DoFall(3, 5)
+			}
+			if player.Health != test.health {
+				t.Fatal("damage applied before landing")
+			}
+			player.Y, player.Dy = 0, -1
+			player.Update(InputState{}, &Level{}, &dummySystem{}, 100)
+			wantState := PlayerStateFallen
+			if test.wantHealth == 0 {
+				wantState = PlayerStateDead
+			}
+			if player.Health != test.wantHealth || player.Thrown || player.Status != wantState {
+				t.Fatalf("incorrect landing: health=%v state=%v thrown=%v", player.Health, player.Status, player.Thrown)
+			}
+			for tick := range 5 {
+				player.Update(InputState{Jump: true, Attack1: true}, &Level{}, &dummySystem{}, uint64(101+tick))
+			}
+			if player.Health != test.wantHealth {
+				t.Fatal("landing damage applied more than once")
+			}
+			if test.wantHealth == 0 && (player.Status != PlayerStateDead || player.CanBeHit(grabTestEnemy(), 1)) {
+				t.Fatal("dead player recovered or remained hittable")
+			}
+		})
+	}
+}
+
+func TestThrownEnemyLandingDeathEffects(t *testing.T) {
+	enemy := grabTestEnemy()
+	enemy.Health = 3
+	enemy.FallSound, enemy.DieSound = "fall", "die"
+	enemy.Throw(3, 5)
+	enemy.Y, enemy.Vy = 0, -1
+	model := &GameModel{Enemies: []*Enemy{enemy}}
+	sound := &catTestSound{}
+	model.UpdateEnemies(&Level{}, grabTestPlayer(), sound, nil)
+	if len(sound.sounds) != 2 || sound.sounds[0] != "fall" || sound.sounds[1] != "die" {
+		t.Fatal("lethal landing did not play fall and death sounds")
+	}
+	if _, shown := model.ShowHealthMap[enemy]; !shown {
+		t.Fatal("landing damage did not update the health display")
+	}
+	model.UpdateEnemies(&Level{}, grabTestPlayer(), sound, nil)
+	if len(sound.sounds) != 2 {
+		t.Fatal("landing sounds played more than once")
+	}
+}
+
 func TestGrabMoveSelectionAndThrow(t *testing.T) {
 	player := grabTestPlayer()
 	enemy := grabTestEnemy()

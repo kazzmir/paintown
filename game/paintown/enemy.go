@@ -15,6 +15,8 @@ import (
     "github.com/hajimehoshi/ebiten/v2"
 )
 
+const thrownLandingDamage = 3
+
 type EnemyState int
 
 const (
@@ -519,6 +521,9 @@ func (enemy *Enemy) DoFall(xforce float64, yforce float64) {
 }
 
 func (enemy *Enemy) Throw(xforce float64, yforce float64) {
+    if enemy.State == EnemyStateFalling || enemy.State == EnemyStateFallen || enemy.State == EnemyStateDead {
+        return
+    }
     enemy.DoFall(xforce, yforce)
     if enemy.State == EnemyStateFalling {
         enemy.Thrown = true
@@ -692,6 +697,9 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
         if enemy.Y < 0 {
             enemy.Y = 0
             enemy.State = EnemyStateFallen
+            if enemy.Thrown {
+                enemy.Health = max(0, enemy.Health - thrownLandingDamage)
+            }
             enemy.Thrown = false
             enemy.ThrowHits = nil
             // stay on ground for a while

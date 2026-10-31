@@ -26,6 +26,7 @@ const (
     PlayerStateFalling
     PlayerStatePain
     PlayerStateGrab
+    PlayerStateDead
 )
 
 func (status PlayerStatus) String() string {
@@ -37,6 +38,7 @@ func (status PlayerStatus) String() string {
         case PlayerStateFalling: return "Falling"
         case PlayerStatePain: return "Pain"
         case PlayerStateGrab: return "Grab"
+        case PlayerStateDead: return "Dead"
     }
 
     return "Unknown"
@@ -272,6 +274,7 @@ type PlayerState struct {
     Z float64
     Dy float64
     Dx float64
+    Thrown bool
     Animations map[string]*Animation
     // if doing some kind of move
     ShowAnimation *Animation
@@ -504,7 +507,7 @@ func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
         return false
     }
 
-    return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling
+    return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling && playerState.Status != PlayerStateDead
 }
 
 func (playerState *PlayerState) NextAttackId() {
@@ -546,16 +549,37 @@ func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force floa
 
     playerState.ActivatedAnimations = make(map[*Animation]uint64)
     if playerState.Pain >= playerState.PainThreshold || playerState.Health <= 0 {
-        playerState.Status = PlayerStateFalling
-        playerState.Pain = 0
-        playerState.Dx = force
-        playerState.Dy = 5
-        playerState.Y = max(playerState.Y, 0.5)
-        if fall := playerState.Animations["fall"]; fall != nil {
-            playerState.ShowAnimation = fall
-            fall.Reset()
-        }
+        playerState.DoFall(force, 5)
     }
+}
+
+func (playerState *PlayerState) DoFall(xforce float64, yforce float64) {
+    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead {
+        return
+    }
+    if playerState.Grabbed != nil {
+        playerState.Grabbed.Ungrab()
+        playerState.Grabbed = nil
+    }
+    playerState.Status = PlayerStateFalling
+    playerState.Thrown = false
+    playerState.Pain = 0
+    playerState.Dx = xforce
+    playerState.Dy = yforce
+    playerState.Y = max(playerState.Y, 0.5)
+    playerState.ActivatedAnimations = make(map[*Animation]uint64)
+    if fall := playerState.Animations["fall"]; fall != nil {
+        playerState.ShowAnimation = fall
+        fall.Reset()
+    }
+}
+
+func (playerState *PlayerState) Throw(xforce float64, yforce float64) {
+    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead {
+        return
+    }
+    playerState.DoFall(xforce, yforce)
+    playerState.Thrown = true
 }
 
 func (playerState *PlayerState) HitBy(attackBox image.Rectangle) bool {
@@ -617,12 +641,24 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
     move := false
 
     // Hurt and knockdown animations cannot be interrupted by buffered moves.
+    if playerState.Status == PlayerStateDead {
+        return
+    }
     if playerState.Status == PlayerStateFalling {
         playerState.X += playerState.Dx
         playerState.Y += playerState.Dy
         playerState.Dy -= 0.2
         if playerState.Y <= 0 {
             playerState.Y = 0
+            if playerState.Thrown {
+                playerState.Health = max(0, playerState.Health - thrownLandingDamage)
+                playerState.Thrown = false
+            }
+            if playerState.Health <= 0 {
+                playerState.Status = PlayerStateDead
+                playerState.Dx, playerState.Dy = 0, 0
+                return
+            }
             playerState.Status = PlayerStateFallen
             if rise := playerState.Animations["rise"]; rise != nil {
                 playerState.ShowAnimation = rise

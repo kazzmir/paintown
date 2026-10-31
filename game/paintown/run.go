@@ -347,11 +347,18 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
 
     outEnemies := make([]*Enemy, 0, len(model.Enemies))
     for _, enemy := range model.Enemies {
+        healthBefore := enemy.Health
         enemy.Update(level, playerState, func(state EnemyState){
             switch state {
             case EnemyStateFallen:
                 model.Shake = 30
                 system.PlaySound(enemy.FallSound)
+                if enemy.Health != healthBefore {
+                    model.UpdateHealthMap(enemy, model.Counter)
+                    if healthBefore > 0 && enemy.Health <= 0 {
+                        system.PlaySound(enemy.DieSound)
+                    }
+                }
             }
         }, system)
         if !enemy.IsDead() {
