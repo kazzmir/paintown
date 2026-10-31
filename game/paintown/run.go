@@ -54,6 +54,13 @@ func loadFont() (*text.GoTextFace, error) {
     }, nil
 }
 
+func healthBarLabel(health interface{ GetName() string }) string {
+    if player, ok := health.(interface{ GetLives() int }); ok {
+        return fmt.Sprintf("x %d  %s", player.GetLives(), health.GetName())
+    }
+    return health.GetName()
+}
+
 func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
     if playerState.Exploded {
         return
@@ -573,20 +580,30 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
 
         x := 5.0 + (slot % maxHealthBars) * (totalWidth + gap)
         y := float64(2.0 + (slot / maxHealthBars) * 30)
-        var options ebiten.DrawImageOptions
-        options.GeoM.Translate(float64(x), y)
-        screen.DrawImage(icon, &options)
+        iconWidth := 0
+        if icon != nil {
+            var options ebiten.DrawImageOptions
+            options.GeoM.Translate(float64(x), y)
+            screen.DrawImage(icon, &options)
+            iconWidth = icon.Bounds().Dx()
+        }
 
+        label := healthBarLabel(health)
+        labelWidth, _ := text.Measure(label, font, 0)
+        availableWidth := float64(max(1, totalWidth - iconWidth - 2))
         var textOptions text.DrawOptions
-        textOptions.GeoM.Translate(float64(x+icon.Bounds().Dx()+2), float64(y))
-        text.Draw(screen, health.GetName(), font, &textOptions)
+        if labelWidth > availableWidth {
+            textOptions.GeoM.Scale(availableWidth / labelWidth, 1)
+        }
+        textOptions.GeoM.Translate(float64(x+iconWidth+2), float64(y))
+        text.Draw(screen, label, font, &textOptions)
 
         y += fontHeight + 1
 
-        x1 := x + icon.Bounds().Dx() + 2
-        length := totalWidth - icon.Bounds().Dx() - 2
+        x1 := x + iconWidth + 2
+        length := max(1, totalWidth - iconWidth - 2)
         vector.FillRect(screen, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 32, G: 32, B: 32, A: 200}, false)
-        healthLength := float64(length) * health.GetHealthPercent()
+        healthLength := float64(length) * max(0, min(1, health.GetHealthPercent()))
 
 		sub := screen.SubImage(image.Rect(x1, int(y), x1 + int(healthLength), int(y) + 10)).(*ebiten.Image)
 		graphics.DrawHorizontalGradient(sub, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, color.NRGBA{R: 0, G: 200, B: 0, A: 255})

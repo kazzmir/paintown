@@ -619,6 +619,45 @@ func TestMusicVolumeSliderMenuAndPauseControls(t *testing.T) {
 	}
 }
 
+func TestPlayerLivesInitializeFromSettingAndHUDLabel(t *testing.T) {
+	previous := StartingLives()
+	t.Cleanup(func() { SetStartingLives(previous) })
+	SetStartingLives(7)
+	raw, err := sexp.ReadSExpressionString(`(character (name Akuma) (health 100))`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	character := &PaintownCharacter{Definition: CharacterDefinition{Name: "Akuma", SExpr: raw}}
+	player, err := MakePlayerState(character, &Level{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if player.Lives != 7 || player.GetLives() != 7 || healthBarLabel(player) != "x 7  Akuma" {
+		t.Fatal("player HUD did not include configured starting lives beside the name/icon")
+	}
+	SetStartingLives(10)
+	if player.GetLives() != 7 {
+		t.Fatal("changing starting lives overwrote the current player's count")
+	}
+	player.Lives = 6
+	if healthBarLabel(player) != "x 6  Akuma" {
+		t.Fatal("HUD did not read the player's current lives")
+	}
+	player.Lives = 100
+	if healthBarLabel(player) != "x 100  Akuma" {
+		t.Fatal("HUD did not support the maximum configured lives")
+	}
+	player.Lives = -1
+	if healthBarLabel(player) != "x 0  Akuma" {
+		t.Fatal("HUD displayed negative lives")
+	}
+	enemy := grabTestEnemy()
+	enemy.Name = "Enemy"
+	if healthBarLabel(enemy) != "Enemy" {
+		t.Fatal("enemy HUD unexpectedly displayed player lives")
+	}
+}
+
 func TestLivesSliderMenuAndBounds(t *testing.T) {
 	previous := StartingLives()
 	t.Cleanup(func() { SetStartingLives(previous) })

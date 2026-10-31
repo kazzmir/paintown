@@ -300,6 +300,7 @@ type PlayerState struct {
 
     Health float64
     MaxHealth float64
+    Lives int
     Pain float64
     PainThreshold float64
 
@@ -349,6 +350,7 @@ func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, err
         Icon: iconImage,
         Health: max(1, player.Definition.GetHealth()),
         MaxHealth: max(1, player.Definition.GetHealth()),
+        Lives: StartingLives(),
         Attackers: make(map[Attacker]uint64),
         Name: name,
         ActivatedAnimations: make(map[*Animation]uint64),
@@ -392,6 +394,10 @@ func (playerState *PlayerState) GetAttackBox() image.Rectangle {
 
 func (playerState *PlayerState) ResetAttackers() {
     playerState.Attackers = make(map[Attacker]uint64)
+}
+
+func (playerState *PlayerState) GetLives() int {
+    return max(0, playerState.Lives)
 }
 
 func (playerState *PlayerState) GetIcon() *ebiten.Image {
