@@ -10,7 +10,6 @@ import (
 
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/audio"
-    "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Engine struct {
@@ -34,10 +33,6 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
             log.Printf("Menu sound: %v", err)
         }
     }
-    pressed := func(key ebiten.Key) bool {
-        duration := inpututil.KeyPressDuration(key)
-        return duration == 1 || (duration > 25 && duration % 6 == 0)
-    }
 
     logic := func(yield coroutine.YieldFunc) error {
         current := root
@@ -48,7 +43,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
         backToMenu := fmt.Errorf("back to menu")
         gameYield := func() error {
             if err := yield(); err != nil { return err }
-            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) { return backToMenu }
+            if paintown.ReadMenuInput().Back { return backToMenu }
             return nil
         }
         adventure := func() error {
@@ -64,18 +59,19 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
         }
         for {
             current.Update()
-            if pressed(ebiten.KeyArrowDown) || pressed(ebiten.KeyS) {
+            input := paintown.ReadMenuInput()
+            if input.Down {
                 if current.Move(1) { play(current.SelectSound) }
             }
-            if pressed(ebiten.KeyArrowUp) || pressed(ebiten.KeyW) {
+            if input.Up {
                 if current.Move(-1) { play(current.SelectSound) }
             }
-            if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) || inpututil.IsKeyJustPressed(ebiten.KeyBackspace) {
+            if input.Back {
                 play(current.BackSound)
                 if len(stack) == 0 { return ebiten.Termination }
                 current = stack[len(stack)-1]
                 stack = stack[:len(stack)-1]
-            } else if (inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsKeyJustPressed(ebiten.KeySpace)) && len(current.Options) > 0 {
+            } else if input.Confirm && len(current.Options) > 0 {
                 option := current.Options[current.Selected]
                 play(current.OKSound)
                 switch option.Kind {
@@ -135,6 +131,7 @@ func MakeEngine() (*Engine, error) {
 }
 
 func (engine *Engine) Update() error {
+    paintown.UpdateInput()
     return engine.Coroutine.Run()
 }
 

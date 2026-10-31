@@ -8,6 +8,7 @@ Paintown is a 2-d fighting game that is similar in style to Streets of Rage. Pai
 
 * [Releases](#releases)
 * [Get Source](#get-source)
+* [Go engine controls](#go-engine-controls)
 * [Requirements to build](#requirements-to-build)
 * [Compilation](#compilation)
 * [Scripting](#scripting)
@@ -37,6 +38,23 @@ Note to distribution maintainers it is recommended to omit the data from the abo
 The included data in the Paintown Repository should be sufficient for running the application (which excludes levels and content).
 ```
   
+## Go engine controls
+
+Run the Go engine with `go run ./game` from the repository root, with game assets in `paintown-data/`.
+Keyboard and controller inputs can be used together.
+
+| Action | Keyboard | PS3 controller |
+| --- | --- | --- |
+| Move / navigate | Arrow keys (W/S also navigate menus) | D-pad or left stick |
+| Jump | Space | Cross |
+| Attack 1 | A | Square |
+| Attack 2 | S | Triangle or Circle |
+| Confirm | Enter / Space | Cross or Start |
+| Back in menus | Escape / Caps Lock / Backspace | Circle or Select |
+| Pause / resume | Escape / Caps Lock | Start |
+
+Controllers with an Ebiten standard mapping work across platforms. On Linux, the Go engine also reads `/dev/input/js*` directly, including PS3 setups that do not expose `/dev/input/event*`. Joystick devices need to be readable by the current user; reconnection is detected automatically.
+
 ## Requirements to build
 
 You need the following things to compile Paintown:

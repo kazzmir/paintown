@@ -1,6 +1,7 @@
 package paintown
 
 import (
+	"encoding/binary"
 	"errors"
 	"image"
 	"image/color"
@@ -631,6 +632,147 @@ func TestCatSpawningAndIndependentAnimations(t *testing.T) {
 	model.Cats[0].Animations["walk"].CurrentDelay = 123
 	if model.Cats[1].Animations["walk"].CurrentDelay == 123 {
 		t.Fatal("cats share mutable animation playback")
+	}
+}
+
+func TestControllerDefaultMappingsAndDeadzone(t *testing.T) {
+	for _, item := range []struct {
+		name    string
+		pad     controllerState
+		actions []inputAction
+	}{
+		{"cross", controllerState{Cross: true}, []inputAction{inputJump, inputConfirm}},
+		{"square", controllerState{Square: true}, []inputAction{inputAttack1}},
+		{"triangle", controllerState{Triangle: true}, []inputAction{inputAttack2}},
+		{"circle", controllerState{Circle: true}, []inputAction{inputAttack2, inputBack}},
+		{"start", controllerState{Start: true}, []inputAction{inputPause, inputConfirm}},
+		{"select", controllerState{Select: true}, []inputAction{inputBack}},
+		{"left stick", controllerState{X: -.8, Y: .9}, []inputAction{inputLeft, inputDown, inputMenuLeft, inputMenuDown}},
+		{"dpad", controllerState{Right: true, Up: true}, []inputAction{inputRight, inputUp, inputMenuRight, inputMenuUp}},
+		{"neutral drift", controllerState{X: .2, Y: -.2}, nil},
+	} {
+		t.Run(item.name, func(t *testing.T) {
+			want := inputButtons{}
+			for _, action := range item.actions {
+				want[action] = true
+			}
+			if got := item.pad.buttons(); got != want {
+				t.Fatalf("incorrect controller mapping: got %v want %v", got, want)
+			}
+		})
+	}
+}
+
+func TestLogicalInputEdgesMergeRepeatAndDisconnect(t *testing.T) {
+	var input logicalInput
+	keyboard := inputButtons{inputJump: true}
+	keyboard.merge(controllerState{Cross: true, Down: true}.buttons())
+	input.advance(keyboard)
+	if !input.gameplay().Jump || !input.gameplay().HeldJump || !input.menu().Confirm || !input.menu().Down {
+		t.Fatal("first press did not emit logical edges")
+	}
+	// Releasing one device must not retrigger an action held by another.
+	pad := controllerState{Cross: true, Down: true}.buttons()
+	for tick := 2; tick <= 32; tick++ {
+		input.advance(pad)
+		if input.gameplay().Jump || input.menu().Confirm || !input.gameplay().HeldJump {
+			t.Fatal("held controller action repeated a press")
+		}
+		if input.menu().Down != (tick > 25 && tick%6 == 0) {
+			t.Fatalf("incorrect menu repeat at tick %d", tick)
+		}
+	}
+	input.advance(inputButtons{})
+	if input.gameplay().HeldJump || input.gameplay().HeldDown || input.menu().Down {
+		t.Fatal("disconnect left held actions stuck")
+	}
+	input.advance(pad)
+	if !input.gameplay().Jump || !input.menu().Confirm {
+		t.Fatal("reconnected/repressed button did not emit a new edge")
+	}
+
+	previous := currentInput
+	defer func() { currentInput = previous }()
+	currentInput = logicalInput{}
+	currentInput.advance(controllerState{Start: true}.buttons())
+	if !PauseRequested() || !ReadMenuInput().Confirm || ReadMenuInput().Back {
+		t.Fatal("Start must pause gameplay or confirm a normal menu, not quit it")
+	}
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "return"}}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	if pause.Update(readPauseInput(), &dummySystem{}) != PauseContinue {
+		t.Fatal("Start in the pause menu should resume, not confirm Quit")
+	}
+}
+
+func TestJoystickPS3EventsUseDriverMaps(t *testing.T) {
+	stick := joystickState{axisCount: 6, buttonCount: 17}
+	copy(stick.axisCodes[:], []byte{0, 1, 2, 3, 4, 5})
+	copy(stick.buttonCodes[:], []uint16{304, 305, 307, 308, 310, 311, 312, 313, 314, 315, 316, 317, 318, 544, 545, 546, 547})
+	record := func(kind, index byte, value int16) []byte {
+		data := make([]byte, 8)
+		binary.LittleEndian.PutUint16(data[4:6], uint16(value))
+		data[6], data[7] = kind, index
+		return data
+	}
+	// The connected PS3 reports L2/R2 at -32767 while released. They must
+	// not cause phantom left/up movement, including during INIT events.
+	stick.feed(append(record(0x82, 2, -32767), record(0x82, 5, -32767)...))
+	if got := stick.controller().buttons(); got != (inputButtons{}) {
+		t.Fatal("trigger initialization was interpreted as movement")
+	}
+	press := record(0x81, 3, 1) // Square; INIT is still a state update.
+	stick.feed(press[:3])
+	if stick.controller().Square {
+		t.Fatal("partial joystick event was decoded prematurely")
+	}
+	stick.feed(press[3:])
+	if !stick.controller().Square {
+		t.Fatal("fragmented Square event was not decoded")
+	}
+	stick.feed(record(1, 3, 0))
+	stick.feed(record(1, 13, 1))
+	stick.feed(record(2, 0, -32768))
+	pad := stick.controller()
+	if pad.Square || !pad.Up || pad.X != -1 || !pad.buttons()[inputLeft] {
+		t.Fatal("button release, dpad, or signed axis event decoded incorrectly")
+	}
+	// Driver layouts can enumerate the same buttons at different indices.
+	stick = joystickState{buttonCount: 2}
+	stick.buttonCodes[0], stick.buttonCodes[1] = 308, 304
+	stick.feed(record(1, 0, 1))
+	if !stick.controller().Square || stick.controller().Cross {
+		t.Fatal("joystick mapping depends on hard-coded button indices")
+	}
+	stick.feed(record(1, 1, 1))
+	if !stick.controller().Cross {
+		t.Fatal("remapped Cross button did not work")
+	}
+	stick.feed(record(2, 63, 32767)) // Invalid for this device; ignore safely.
+	stick = joystickState{axisCount: 2}
+	stick.axisCodes[0], stick.axisCodes[1] = 16, 17
+	stick.feed(record(2, 0, 1))
+	stick.feed(record(2, 1, -1))
+	if !stick.controller().Right || !stick.controller().Up {
+		t.Fatal("hat-axis dpad did not work")
+	}
+}
+
+func TestControllerDirectionalCombo(t *testing.T) {
+	player := grabTestPlayer()
+	player.ActivatedAnimations = make(map[*Animation]uint64)
+	player.Facing, player.Z = FacingRight, 100
+	move := MakeAnimation("haddoken", "", []AnimationEvent{&AnimationEventFrame{Image: ebiten.NewImage(10, 10)}, &AnimationEventNop{}}, []InputKey{InputKeyDown, InputKeyForward, InputKeyAttack1}, "", "")
+	move.Owner = player
+	player.Animations["haddoken"] = move
+	var input logicalInput
+	for index, pad := range []controllerState{{Down: true}, {Right: true}, {Square: true}} {
+		input.advance(pad.buttons())
+		player.Update(input.gameplay(), &Level{ZMaximum: 200}, &dummySystem{}, uint64(100+index))
+	}
+	if player.ShowAnimation != move {
+		t.Fatal("D-pad Down, Forward, Square did not activate the projectile combo")
 	}
 }
 

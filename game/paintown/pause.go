@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/kazzmir/paintown/game/data"
 	"github.com/kazzmir/paintown/game/lib/coroutine"
@@ -180,18 +179,9 @@ func makeMoveList(player *PlayerState, parent *Menu) *Menu {
 	return &menu
 }
 
-func pausePressed(key ebiten.Key) bool {
-	duration := inpututil.KeyPressDuration(key)
-	return duration == 1 || (duration > 25 && duration%6 == 0)
-}
-
 func readPauseInput() PauseInput {
-	return PauseInput{
-		Up:      pausePressed(ebiten.KeyArrowUp) || pausePressed(ebiten.KeyW),
-		Down:    pausePressed(ebiten.KeyArrowDown) || pausePressed(ebiten.KeyS),
-		Confirm: inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsKeyJustPressed(ebiten.KeySpace),
-		Back:    inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) || inpututil.IsKeyJustPressed(ebiten.KeyBackspace),
-	}
+	input := ReadMenuInput()
+	return PauseInput{Up: input.Up, Down: input.Down, Confirm: input.Confirm, Back: input.Back || PauseRequested()}
 }
 
 func RunPauseMenu(pause *PauseMenu, yield coroutine.YieldFunc, setDraw func(data.DrawFunc) data.DrawFunc, system System) error {

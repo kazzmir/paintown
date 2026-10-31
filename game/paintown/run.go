@@ -20,7 +20,6 @@ import (
     "github.com/hajimehoshi/ebiten/v2/colorm"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
     "github.com/hajimehoshi/ebiten/v2/vector"
-    "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const Z_DISTANCE = 6
@@ -428,7 +427,7 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         if err := gameYield(); err != nil {
             return err
         }
-        if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyCapsLock) {
+        if PauseRequested() {
             if pause == nil {
                 var err error
                 pause, err = NewPauseMenu(playerState)
@@ -723,52 +722,6 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         }
     }
 
-    var keys []ebiten.Key
-    readInputState := func() InputState {
-        keys = inpututil.AppendPressedKeys(keys[:0])
-        var inputState InputState
-        for _, key := range keys {
-            switch key {
-                case ebiten.KeyArrowRight:
-                    inputState.HeldRight = true
-                case ebiten.KeyArrowLeft:
-                    inputState.HeldLeft = true
-                case ebiten.KeyArrowDown:
-                    inputState.HeldDown = true
-                case ebiten.KeyArrowUp:
-                    inputState.HeldUp = true
-                case ebiten.KeySpace:
-                    inputState.HeldJump = true
-                case ebiten.KeyA:
-                    inputState.HeldAttack1 = true
-                case ebiten.KeyS:
-                    inputState.HeldAttack2 = true
-            }
-        }
-
-        keys = inpututil.AppendJustPressedKeys(keys[:0])
-        for _, key := range keys {
-            switch key {
-                case ebiten.KeyArrowRight:
-                    inputState.Right = true
-                case ebiten.KeyArrowLeft:
-                    inputState.Left = true
-                case ebiten.KeyArrowDown:
-                    inputState.Down = true
-                case ebiten.KeyArrowUp:
-                    inputState.Up = true
-                case ebiten.KeySpace:
-                    inputState.Jump = true
-                case ebiten.KeyA:
-                    inputState.Attack1 = true
-                case ebiten.KeyS:
-                    inputState.Attack2 = true
-            }
-        }
-
-        return inputState
-    }
-
     if factory == nil {
         factory = MakeObjectFactory()
     }
@@ -917,7 +870,7 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
             showForwardArrow = false
         }
 
-        inputState := readInputState()
+        inputState := ReadGameInput()
 
         model.UpdatePlayer(playerState, inputState, level, audio, flashFactory)
 
@@ -1123,29 +1076,17 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
 
     perRow := 4
 
-    var keys []ebiten.Key
     for {
         counter += 1
-        keys = inpututil.AppendJustPressedKeys(keys[:0])
-        change := false
-        for _, key := range keys {
-            switch key {
-                case ebiten.KeyEnter:
-                    return allPlayers[currentChoice], nil
-                case ebiten.KeyArrowRight:
-                    currentChoice = (currentChoice + 1) % len(allPlayers)
-                    change = true
-                case ebiten.KeyArrowLeft:
-                    currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers)
-                    change = true
-                case ebiten.KeyArrowDown:
-                    currentChoice = (currentChoice + perRow) % len(allPlayers)
-                    change = true
-                case ebiten.KeyArrowUp:
-                    currentChoice = (currentChoice - perRow + len(allPlayers)) % len(allPlayers)
-                    change = true
-            }
+        input := ReadMenuInput()
+        if input.Confirm {
+            return allPlayers[currentChoice], nil
         }
+        change := input.Right || input.Left || input.Down || input.Up
+        if input.Right { currentChoice = (currentChoice + 1) % len(allPlayers) }
+        if input.Left { currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers) }
+        if input.Down { currentChoice = (currentChoice + perRow) % len(allPlayers) }
+        if input.Up { currentChoice = (currentChoice - perRow + len(allPlayers)) % len(allPlayers) }
 
         if change {
             bigX = bigStart

@@ -118,47 +118,13 @@ func (engine *Engine) Update() error {
     engine.Init.Do(engine.Load)
     engine.Model.Counter += 1
 
-    var inputState paintown.InputState
-    keys := inpututil.AppendPressedKeys(nil)
-    for _, key := range keys {
-        switch key {
-            case ebiten.KeyArrowRight:
-                inputState.HeldRight = true
-            case ebiten.KeyArrowLeft:
-                inputState.HeldLeft = true
-            case ebiten.KeyArrowDown:
-                inputState.HeldDown = true
-            case ebiten.KeyArrowUp:
-                inputState.HeldUp = true
-            case ebiten.KeySpace:
-                inputState.HeldJump = true
-            case ebiten.KeyA:
-                inputState.HeldAttack1 = true
-            case ebiten.KeyS:
-                inputState.HeldAttack2 = true
-        }
-    }
-
-    keys = inpututil.AppendJustPressedKeys(keys[:0])
+    paintown.UpdateInput()
+    inputState := paintown.ReadGameInput()
+    keys := inpututil.AppendJustPressedKeys(nil)
     for _, key := range keys {
         switch key {
             case ebiten.KeyEscape, ebiten.KeyCapsLock:
                 return ebiten.Termination
-            case ebiten.KeyArrowRight:
-                inputState.Right = true
-            case ebiten.KeyArrowLeft:
-                inputState.Left = true
-            case ebiten.KeyArrowDown:
-                inputState.Down = true
-            case ebiten.KeyArrowUp:
-                inputState.Up = true
-            case ebiten.KeySpace:
-                inputState.Jump = true
-            case ebiten.KeyA:
-                inputState.Attack1 = true
-            case ebiten.KeyS:
-                inputState.Attack2 = true
-
             case ebiten.Key1:
                 engine.EnemiesEnabled[0] = !engine.EnemiesEnabled[0]
             case ebiten.Key2:
