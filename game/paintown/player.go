@@ -275,6 +275,8 @@ type PlayerState struct {
     Dy float64
     Dx float64
     Thrown bool
+    Exploded bool
+    explosion *goreBurst
     Animations map[string]*Animation
     // if doing some kind of move
     ShowAnimation *Animation
@@ -531,6 +533,9 @@ func (playerState *PlayerState) Pickup(item *Item) {
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
+    if playerState.Status == PlayerStateDead {
+        return
+    }
     if playerState.Grabbed != nil {
         playerState.Grabbed.Ungrab()
     }
@@ -540,6 +545,10 @@ func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force floa
     playerState.Attackers[hitter] = hitter.GetAttackId()
     playerState.Health -= damage
     playerState.Pain += damage
+    if explosiveDamage(playerState.Health, playerState.Pain, playerState.PainThreshold) {
+        playerState.explode(force)
+        return
+    }
 
     playerState.Status = PlayerStatePain
     painAnimation, ok := playerState.Animations["pain"]

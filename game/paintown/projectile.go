@@ -234,10 +234,12 @@ func (model *GameModel) UpdateProjectiles(player *PlayerState, system System, fl
 			}
 			box := projectile.GetAttackBox()
 			hit := false
+			showFlash := true
 			hitX, hitY, hitZ := 0.0, 0.0, 0.0
 			if projectile.FromEnemy {
 				if abs(player.Z-projectile.Z) < Z_DISTANCE && player.CanBeHit(projectile, projectile.AttackId) && player.HitBy(box) {
 					player.Hurt(projectile, attack.Damage, force)
+					showFlash = !player.Exploded
 					hit, hitX, hitY, hitZ = true, player.X, player.Y, player.Z
 				}
 			} else {
@@ -250,6 +252,7 @@ func (model *GameModel) UpdateProjectiles(player *PlayerState, system System, fl
 						// Projectiles are independent attacks, not tickets from
 						// the player's melee sequence. Do not overwrite it.
 						enemy.Hurt(enemy.LastAttacked, attack.Damage, force)
+						showFlash = !enemy.Exploded
 						model.UpdateHealthMap(enemy, model.Counter)
 						if healthBefore > 0 && enemy.Health <= 0 {
 							system.PlaySound(enemy.DieSound)
@@ -260,7 +263,7 @@ func (model *GameModel) UpdateProjectiles(player *PlayerState, system System, fl
 				}
 			}
 			if hit {
-				if flashes != nil {
+				if flashes != nil && showFlash {
 					model.Flashes = append(model.Flashes, flashes.MakeFlash(hitX, hitY+50, hitZ+.1))
 				}
 				if err := system.PlaySound(projectile.HitSound); err != nil {

@@ -135,6 +135,8 @@ type Enemy struct {
     Vx float64
 
     GrabTime uint64
+    Exploded bool
+    explosion *goreBurst
     pendingProjectiles []*Projectile
 
     // Only explicitly thrown enemies damage others while airborne.
@@ -405,7 +407,7 @@ func (enemy *Enemy) CurrentAnimation() *Animation {
 }
 
 func (enemy *Enemy) CanBeHit(attack uint64) bool {
-    return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
+    return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling && !enemy.IsDead()
 }
 
 func (enemy *Enemy) GetName() string {
@@ -540,9 +542,16 @@ func (enemy *Enemy) Throw(xforce float64, yforce float64) {
 }
 
 func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
+    if enemy.IsDead() {
+        return
+    }
     enemy.LastAttacked = attackId
     enemy.Health -= damage
     enemy.Pain += damage
+    if explosiveDamage(enemy.Health, enemy.Pain, enemy.PainThreshold) {
+        enemy.explode(force)
+        return
+    }
     log.Printf("Enemy hurt for %v damage, pain is now %v. Health is %v", damage, enemy.Pain, enemy.Health)
 
     enemy.State = EnemyStatePain
@@ -717,10 +726,16 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 }
 
 func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(EnemyState), system System) {
+    if enemy.IsDead() {
+        return
+    }
     oldState := enemy.State
     enemy.UpdateState(level, playerInfo)
     if enemy.State != oldState {
         newState(enemy.State)
+    }
+    if enemy.IsDead() {
+        return
     }
 
     switch enemy.State {

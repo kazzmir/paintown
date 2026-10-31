@@ -55,6 +55,9 @@ func loadFont() (*text.GoTextFace, error) {
 }
 
 func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
+    if playerState.Exploded {
+        return
+    }
     var options ebiten.DrawImageOptions
 
     for _, trail := range playerState.Trails {
@@ -127,6 +130,9 @@ func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.Ge
 }
 
 func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
+    if enemy.IsDead() {
+        return
+    }
     var options ebiten.DrawImageOptions
 
     // for _, enemy := range enemies {
@@ -168,6 +174,10 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 type GameModel struct {
     Enemies []*Enemy
     Projectiles []*Projectile
+    Gore []*GoreParticle
+    GoreFactory GoreFactory
+    goreBursts []goreBurst
+    goreLoadErrorLogged bool
     Cats []*Cat
     CatFactory CatFactory
     Item []*Item
@@ -233,6 +243,9 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
     }
 
     playerState.Update(inputState, level, system, model.Counter)
+    if playerState.Status == PlayerStateDead {
+        return
+    }
 
     if playerState.X > model.LevelLimit {
         playerState.X = model.LevelLimit
@@ -254,7 +267,9 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
                     // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                     // create hit projectile, flash
 
-                    model.Flashes = append(model.Flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
+                    if !enemy.Exploded && flashFactory != nil {
+                        model.Flashes = append(model.Flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
+                    }
 
                     model.UpdateHealthMap(enemy, model.Counter)
 
@@ -361,6 +376,7 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
                 }
             }
         }, system)
+        model.collectEnemyGore(enemy)
         model.Projectiles = append(model.Projectiles, enemy.pendingProjectiles...)
         enemy.pendingProjectiles = nil
         if !enemy.IsDead() {
@@ -376,7 +392,9 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
                     playerState.Hurt(enemy, attack.Damage, force)
                     model.UpdateHealthMap(enemy, model.Counter)
 
-                    model.Flashes = append(model.Flashes, flashFactory.MakeFlash(playerState.X, playerState.Y + 50, playerState.Z + 0.1))
+                    if !playerState.Exploded && flashFactory != nil {
+                        model.Flashes = append(model.Flashes, flashFactory.MakeFlash(playerState.X, playerState.Y + 50, playerState.Z + 0.1))
+                    }
 
                     err := system.PlaySound(enemy.HitSound)
                     if err != nil {
@@ -391,6 +409,7 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
 
     model.Enemies = outEnemies
     model.UpdateProjectiles(playerState, system, flashFactory)
+    model.UpdateGore(playerState)
 }
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
@@ -636,6 +655,9 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
         }
 
         for _, enemy := range model.Enemies {
+            if enemy.IsDead() {
+                continue
+            }
             if !enemy.Blinking() {
                 objects = append(objects, Drawable{
                     DrawFirst: func() {
@@ -654,6 +676,15 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
                     healthObjects = append(healthObjects, enemy)
                 }
             }
+        }
+
+        for _, particle := range model.Gore {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    particle.Draw(buffer, cameraX, screenShake)
+                },
+                Z: particle.Z,
+            })
         }
 
         for _, projectile := range model.Projectiles {
@@ -683,7 +714,9 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
 
         objects = append(objects, Drawable{
             DrawFirst: func() {
-                drawShadow(buffer, playerState)
+                if !playerState.Exploded {
+                    drawShadow(buffer, playerState)
+                }
             },
             Draw: func(){
                 DrawPlayer(playerState, cameraX, screenShake, buffer)
@@ -777,6 +810,11 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
     go func(){
         // preload all enemies
         log.Printf("Preloading enemies...")
+        model.GoreFactory.frames = factory.frames
+        if err := model.GoreFactory.Load(); err != nil {
+            log.Printf("Preloading body parts: %v", err)
+            model.goreLoadErrorLogged = true
+        }
         seen := make(map[string]bool)
         for _, block := range level.Blocks {
             for _, object := range block.Objects {
@@ -843,7 +881,9 @@ func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, set
             screenShake.Reset()
         }
 
-        if playerState.X > model.LevelLimit - 100 && len(model.Enemies) == 0 {
+        // Let the final death effect finish before replacing the level.
+        effectsFinished := currentBlock < len(blocks) - 1 || len(model.Gore) == 0
+        if playerState.X > model.LevelLimit - 100 && len(model.Enemies) == 0 && effectsFinished {
             currentBlock += 1
             if currentBlock < len(blocks) {
                 model.LevelLimit += float64(blocks[currentBlock].Length)

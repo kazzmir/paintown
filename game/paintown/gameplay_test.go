@@ -356,6 +356,185 @@ func TestAkumaProjectileMoves(t *testing.T) {
 	}
 }
 
+func TestExplosiveDamageThresholds(t *testing.T) {
+	for _, test := range []struct {
+		name                            string
+		health, damage, pain, threshold float64
+		explode                         bool
+	}{
+		{"heavy_nonlethal", 100, 20, 0, 7, false},
+		{"weak_lethal", 2, 3, 0, 7, false},
+		{"exact_threshold", 7, 7, 0, 7, false},
+		{"heavy_lethal", 5, 20, 0, 7, true},
+		{"accumulated_lethal", 2, 3, 6, 7, true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			enemy := grabTestEnemy()
+			enemy.Health, enemy.Pain, enemy.PainThreshold = test.health, test.pain, test.threshold
+			enemy.Hurt(1, test.damage, 2)
+			if enemy.Exploded != test.explode || (enemy.explosion != nil) != test.explode || enemy.IsDead() != test.explode {
+				t.Fatal("enemy explosion threshold was incorrect")
+			}
+			player := grabTestPlayer()
+			player.Health, player.Pain, player.PainThreshold = test.health, test.pain, test.threshold
+			player.Hurt(grabTestEnemy(), test.damage, 2)
+			if player.Exploded != test.explode || (player.explosion != nil) != test.explode || (player.Status == PlayerStateDead) != test.explode {
+				t.Fatal("player explosion threshold was incorrect")
+			}
+		})
+	}
+}
+
+func TestGibRotationBounceAndFade(t *testing.T) {
+	particle := &GoreParticle{Y: 10, Vx: 50, Vy: 160, Vz: 20, Spin: 5}
+	for tick := 0; tick < 400 && !particle.Landed; tick++ {
+		particle.Update(1.0 / 90)
+	}
+	if !particle.Landed || particle.Angle == 0 || particle.Spin != 0 || particle.Vy <= 0 || particle.Settled {
+		t.Fatal("gib did not rotate in flight and stop rotating on its first bounce")
+	}
+	angle := particle.Angle
+	for tick := 0; tick < 400 && !particle.Settled; tick++ {
+		particle.Update(1.0 / 90)
+		if particle.Angle != angle {
+			t.Fatal("gib resumed rotating after ground impact")
+		}
+	}
+	if !particle.Settled || particle.Y != 0 || particle.Vx != 0 || particle.Vz != 0 || particle.bounces < 1 || particle.bounces > 2 {
+		t.Fatal("gib did not settle after small bounces")
+	}
+	x, z := particle.X, particle.Z
+	particle.Update(.9)
+	if particle.Alpha() != 1 || particle.Done {
+		t.Fatal("gib faded before resting for a second")
+	}
+	particle.Update(.3)
+	if !isClose(float64(particle.Alpha()), .5) || particle.Done {
+		t.Fatal("gib did not fade gradually")
+	}
+	particle.Update(.3)
+	if !particle.Done || particle.Alpha() != 0 || particle.X != x || particle.Z != z {
+		t.Fatal("gib did not disappear without further motion")
+	}
+
+	blood := &GoreParticle{Blood: true, Y: 5, Vy: 80, Vx: 10}
+	for tick := 0; tick < 400 && !blood.Settled; tick++ {
+		blood.Update(1.0 / 90)
+	}
+	if !blood.Settled || !blood.Landed || blood.bounces != 0 {
+		t.Fatal("blood did not settle on the floor")
+	}
+}
+
+func TestExplosionReleasesGrabAndSpawnsOnlyOnce(t *testing.T) {
+	player, enemy := grabTestPlayer(), grabTestEnemy()
+	player.DoGrab(enemy)
+	enemy.WasGrabbed(player)
+	enemy.Health = 5
+	enemy.Animations["idle"].Frame = ebiten.NewImage(30, 60)
+	enemy.Hurt(1, 20, 2)
+	if !enemy.Exploded || player.Grabbed != nil || enemy.Grabber != nil || enemy.CanBeHit(2) {
+		t.Fatal("exploded enemy retained its grab or collision state")
+	}
+	// This must return before trying to draw the old sprite to a nil target.
+	DrawEnemy(enemy, 0, ebiten.GeoM{}, nil)
+	model := &GameModel{Enemies: []*Enemy{enemy}, GoreFactory: GoreFactory{parts: []*ebiten.Image{ebiten.NewImage(10, 10)}}}
+	model.UpdateEnemies(&Level{}, player, &dummySystem{}, nil)
+	if len(model.Enemies) != 0 || len(model.Gore) != 65 || enemy.explosion != nil {
+		t.Fatal("enemy removal lost or duplicated the gore burst")
+	}
+	parts, blood := 0, 0
+	for _, particle := range model.Gore {
+		if particle.Blood {
+			blood++
+		} else {
+			parts++
+			if particle.Spin == 0 || particle.Vy <= 0 {
+				t.Fatal("body part did not launch spinning")
+			}
+		}
+	}
+	if parts != 1 || blood != 64 {
+		t.Fatal("explosion did not emit body parts and a blood spray")
+	}
+	health := enemy.Health
+	enemy.Hurt(2, 100, 2)
+	model.UpdateGore(player)
+	if enemy.Health != health || enemy.explosion != nil || len(model.Gore) != 65 {
+		t.Fatal("dead enemy exploded repeatedly")
+	}
+	for range 1000 {
+		model.UpdateGore(player)
+	}
+	if len(model.Gore) != 0 {
+		t.Fatal("finished gore particles were not removed")
+	}
+}
+
+func TestExplodedPlayerHasNoSpriteOrLiveAttack(t *testing.T) {
+	player, held := grabTestPlayer(), grabTestEnemy()
+	player.Health = 5
+	player.DoGrab(held)
+	held.WasGrabbed(player)
+	frame := ebiten.NewImage(40, 60)
+	player.ShowAnimation.Frame = frame
+	player.ShowAnimation.Attack = AnimationAttack{X2: 40, Y2: 60, Damage: 100}
+	player.TrailActive = true
+	player.Trails = []*Trail{{Image: frame}}
+	player.Hurt(grabTestEnemy(), 20, 2)
+	if !player.Exploded || player.Status != PlayerStateDead || held.State != EnemyStateIdle || held.Grabber != nil || player.Grabbed != nil || len(player.Trails) != 0 || player.TrailActive {
+		t.Fatal("player explosion retained a grab, trail, or live status")
+	}
+	DrawPlayer(player, 0, ebiten.GeoM{}, nil)
+	enemy := grabTestEnemy()
+	model := &GameModel{Enemies: []*Enemy{enemy}, GoreFactory: GoreFactory{parts: []*ebiten.Image{frame}}}
+	model.UpdatePlayer(player, InputState{Attack1: true}, &Level{}, &dummySystem{}, nil)
+	if enemy.Health != 100 {
+		t.Fatal("exploded player retained an invisible attack")
+	}
+	model.UpdateGore(player)
+	if len(model.Gore) != 65 || player.explosion != nil {
+		t.Fatal("player explosion did not spawn gore")
+	}
+}
+
+func TestProjectileExplosionAppearsInSameFrame(t *testing.T) {
+	player, enemy := grabTestPlayer(), grabTestEnemy()
+	player.Z, enemy.Z, enemy.X, enemy.Health, enemy.PainThreshold = 100, 100, 42, 2, 1
+	enemy.State = EnemyStatePain
+	projectileTestEvent().Update(&Animation{Owner: player}, &dummySystem{})
+	model := &GameModel{Enemies: []*Enemy{enemy}, GoreFactory: GoreFactory{parts: []*ebiten.Image{ebiten.NewImage(10, 10)}}}
+	model.UpdateEnemies(&Level{}, player, &dummySystem{}, nil)
+	if !enemy.Exploded || len(model.Gore) != 65 || enemy.explosion != nil || len(model.Flashes) != 0 {
+		t.Fatal("projectile explosion was delayed, left a flash, or lost its particles")
+	}
+}
+
+func TestLoadGoreAssets(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/misc/body/arm.png"); os.IsNotExist(err) {
+		t.Skip("body part assets not installed")
+	}
+	cache := MakeObjectFactory()
+	factory := GoreFactory{frames: cache.frames}
+	if err := factory.Load(); err != nil {
+		t.Fatal(err)
+	}
+	if len(factory.parts) != 9 {
+		t.Fatal("not all body part sprites were loaded")
+	}
+	first := factory.parts[0]
+	if err := factory.Load(); err != nil || factory.parts[0] != first || len(cache.frames) != 9 {
+		t.Fatal("body sprites were not cached")
+	}
+	model := &GameModel{GoreFactory: factory}
+	model.spawnGore(goreBurst{X: 100, Y: 30, Z: 150})
+	screen := ebiten.NewImage(320, 240)
+	for _, particle := range model.Gore {
+		particle.Draw(screen, 0, ebiten.GeoM{})
+	}
+}
+
 func TestRegularKnockdownHasAirborneArc(t *testing.T) {
 	for _, lethal := range []bool{false, true} {
 		enemy := grabTestEnemy()
