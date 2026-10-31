@@ -523,14 +523,15 @@ func (menu *Menu) applyFontSetting(option MenuOption) bool {
 	return true
 }
 
-// Adjust supports the original menu's Left/Right font controls as well as the
-// full font/size picker opened with Enter or Cross.
+// Adjust handles sliders and the original menu's Left/Right font controls.
+// Font and size pickers can also be opened with Enter or Cross.
 func (menu *Menu) Adjust(direction int) bool {
 	if len(menu.Options) == 0 || direction == 0 {
 		return false
 	}
 	menu.syncMenuFont()
 	option := menu.Options[menu.Selected]
+	if option.Slider != nil { return option.Slider.Adjust(direction) }
 	if option.Kind != "font-select" {
 		return false
 	}

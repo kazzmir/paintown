@@ -512,6 +512,193 @@ func TestMenuFontDetectsHollowReplacementBoxes(t *testing.T) {
 	}
 }
 
+type soundVolumeTestPlayer struct{ values []float64 }
+
+func (player *soundVolumeTestPlayer) SetVolume(value float64) {
+	player.values = append(player.values, value)
+}
+
+func TestSoundVolumeUpdatesPlayingEffectsAndMute(t *testing.T) {
+	previous := SoundVolume()
+	t.Cleanup(func() { SetSoundVolume(previous) })
+	SetSoundVolume(35)
+	first, second := &soundVolumeTestPlayer{}, &soundVolumeTestPlayer{}
+	trackSoundVolume(first)
+	trackSoundVolume(second)
+	defer untrackSoundVolume(first)
+	defer untrackSoundVolume(second)
+	if !isClose(first.values[0], .35) || !isClose(second.values[0], .35) {
+		t.Fatal("new sounds did not inherit shared volume")
+	}
+	SetSoundVolume(70)
+	if !isClose(first.values[len(first.values)-1], .7) || !isClose(second.values[len(second.values)-1], .7) {
+		t.Fatal("volume change did not update currently playing sounds")
+	}
+	untrackSoundVolume(first)
+	calls := len(first.values)
+	SetSoundVolume(-10)
+	if SoundVolume() != 0 || second.values[len(second.values)-1] != 0 || len(first.values) != calls {
+		t.Fatal("mute, lower clamp, or completed-player cleanup failed")
+	}
+	// Muted playback must not decode a file or initialize an audio backend.
+	manager := MakeAudioManager(nil)
+	if err := manager.PlaySound("does-not-exist.wav"); err != nil || len(manager.sounds) != 0 {
+		t.Fatal("muted sound tried to load or play")
+	}
+	SetSoundVolume(1000)
+	if SoundVolume() != 100 || second.values[len(second.values)-1] != 1 {
+		t.Fatal("maximum volume was not clamped and normalized")
+	}
+}
+
+func TestMusicVolumeIsIndependentOfSound(t *testing.T) {
+	oldSound, oldMusic := SoundVolume(), MusicVolume()
+	t.Cleanup(func() { SetSoundVolume(oldSound); SetMusicVolume(oldMusic) })
+	SetSoundVolume(35)
+	SetMusicVolume(70)
+	sound, music := &soundVolumeTestPlayer{}, &soundVolumeTestPlayer{}
+	trackSoundVolume(sound)
+	musicSettings.track(music)
+	defer untrackSoundVolume(sound)
+	defer musicSettings.untrack(music)
+	if !isClose(sound.values[0], .35) || !isClose(music.values[0], .7) {
+		t.Fatal("audio channels did not retain separate volume levels")
+	}
+	SetMusicVolume(10)
+	if !isClose(music.values[len(music.values)-1], .1) || !isClose(sound.values[len(sound.values)-1], .35) || SoundVolume() != 35 {
+		t.Fatal("music adjustment affected sound volume")
+	}
+	SetSoundVolume(25)
+	if !isClose(music.values[len(music.values)-1], .1) || MusicVolume() != 10 {
+		t.Fatal("sound adjustment affected music volume")
+	}
+	SetMusicVolume(-1)
+	if MusicVolume() != 0 || music.values[len(music.values)-1] != 0 {
+		t.Fatal("music mute did not clamp to zero")
+	}
+	SetMusicVolume(1000)
+	if MusicVolume() != 100 || music.values[len(music.values)-1] != 1 {
+		t.Fatal("music maximum did not clamp to 100")
+	}
+}
+
+func TestMusicVolumeSliderMenuAndPauseControls(t *testing.T) {
+	oldSound, oldMusic := SoundVolume(), MusicVolume()
+	t.Cleanup(func() { SetSoundVolume(oldSound); SetMusicVolume(oldMusic) })
+	SetSoundVolume(23)
+	SetMusicVolume(60)
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "music", Name: "Music"}}
+	menu, err := root.OpenSubmenu(root.Options[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.Name != "Music Volume" || len(menu.Options) != 1 || menu.Options[0].Slider == nil || menu.Options[0].Slider.Value() != 60 {
+		t.Fatal("music menu did not use the shared slider component")
+	}
+	menu.Adjust(-1)
+	if MusicVolume() != 59 || SoundVolume() != 23 {
+		t.Fatal("music slider adjusted the wrong setting")
+	}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Music Volume" {
+		t.Fatal("music slider did not open from the pause menu")
+	}
+	pause.Update(PauseInput{Right: true}, &dummySystem{})
+	if MusicVolume() != 60 || SoundVolume() != 23 {
+		t.Fatal("pause-menu music adjustment failed")
+	}
+	pause.Draw(ebiten.NewImage(640, 480))
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != root {
+		t.Fatal("Back did not leave the music slider")
+	}
+	if menu.Options[0].Slider.Value() != 60 {
+		t.Fatal("music slider did not see changes from another menu")
+	}
+}
+
+func TestSliderBoundsBindingAndDrawing(t *testing.T) {
+	value := 50
+	slider := &Slider{Min: 0, Max: 100, Step: 1, GetValue: func() int { return value }, SetValue: func(next int) { value = next }}
+	if slider.Value() != 50 || slider.Fraction() != .5 || !slider.Adjust(-1) || value != 49 {
+		t.Fatal("slider did not bind and adjust its value")
+	}
+	value = 0
+	if slider.Adjust(-1) || slider.Fraction() != 0 {
+		t.Fatal("slider moved below its minimum")
+	}
+	value = 100
+	if slider.Adjust(1) || slider.Fraction() != 1 {
+		t.Fatal("slider moved above its maximum")
+	}
+	value = -100
+	if slider.Value() != 0 {
+		t.Fatal("slider did not clamp an external value")
+	}
+	value = 1000
+	if slider.Value() != 100 {
+		t.Fatal("slider did not clamp an excessive external value")
+	}
+	if slider.Adjust(0) {
+		t.Fatal("zero direction changed the slider")
+	}
+	slider.Draw(ebiten.NewImage(200, 80), image.Rect(10, 30, 190, 50), color.NRGBA{G: 200, B: 200, A: 255})
+	slider.Draw(nil, image.Rectangle{}, color.NRGBA{})
+	fixed := &Slider{Min: 5, Max: 5}
+	if fixed.Fraction() != 0 || fixed.Adjust(1) {
+		t.Fatal("zero-range slider was not safe")
+	}
+}
+
+func TestSoundVolumeSliderMenuAndPauseControls(t *testing.T) {
+	previous := SoundVolume()
+	t.Cleanup(func() { SetSoundVolume(previous) })
+	SetSoundVolume(42)
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "sound", Name: "Sound"}}
+	menu, err := root.OpenSubmenu(root.Options[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.Name != "Sound Volume" || len(menu.Options) != 1 || menu.Options[0].Slider == nil || menu.Options[0].Kind != "slider" {
+		t.Fatal("sound menu was not a single slider")
+	}
+	if !menu.Adjust(-1) || SoundVolume() != 41 || menu.Options[0].Slider.Value() != 41 {
+		t.Fatal("Left did not reduce sound volume")
+	}
+	if !menu.Adjust(1) || SoundVolume() != 42 {
+		t.Fatal("Right did not increase sound volume")
+	}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Sound Volume" {
+		t.Fatal("pause menu did not open the sound slider")
+	}
+	pause.Update(PauseInput{Left: true}, &dummySystem{})
+	if SoundVolume() != 41 {
+		t.Fatal("pause-menu Left did not adjust sound")
+	}
+	pause.Update(PauseInput{Right: true}, &dummySystem{})
+	if SoundVolume() != 42 {
+		t.Fatal("pause-menu Right did not adjust sound")
+	}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Notice != "" || pause.Current.Name != "Sound Volume" {
+		t.Fatal("slider confirmation behaved like an unsupported option")
+	}
+	pause.Draw(ebiten.NewImage(640, 480))
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != root {
+		t.Fatal("Back did not return from the sound slider")
+	}
+	SetSoundVolume(17)
+	if menu.Options[0].Slider.Value() != 17 {
+		t.Fatal("another menu did not see the shared sound setting")
+	}
+}
+
 func TestDiscoverMenuFonts(t *testing.T) {
 	root := t.TempDir()
 	first, second := filepath.Join(root, "first"), filepath.Join(root, "second")

@@ -50,6 +50,7 @@ type MenuOption struct {
 	Name, Info, Kind, Path string
 	Value                  int
 	Adjust                 string
+	Slider                 *Slider
 	Definition             *sexp.SExpr
 	moveAnimation          *Animation
 }
@@ -309,6 +310,8 @@ func LoadMenu(path string, parent *Menu) (*Menu, error) {
 
 func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
 	menu.syncMenuFont()
+	if option.Kind == "sound" { return makeSoundVolumeMenu(menu), nil }
+	if option.Kind == "music" { return makeMusicVolumeMenu(menu), nil }
 	if option.Kind == "font-select" {
 		return makeFontSelectionMenu(menu, option.Adjust), nil
 	}
@@ -531,7 +534,13 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 	centerX := float64(menu.Bounds.Min.X+menu.Bounds.Max.X) / 2
 	centerY := float64(menu.Bounds.Min.Y+menu.Bounds.Max.Y) / 2
 	if len(menu.Options) > 0 {
-		if menu.Scroll {
+		if len(menu.Options) == 1 && menu.Options[0].Slider != nil {
+			option := menu.Options[0]
+			padding := max(30.0, spacing)
+			menu.drawText(list, option.Name, centerX, float64(menu.Bounds.Min.Y)+padding, menu.itemColor(0))
+			option.Slider.Draw(list, image.Rect(menu.Bounds.Min.X+40, int(centerY)-10, menu.Bounds.Max.X-40, int(centerY)+10), menu.itemColor(0))
+			menu.drawText(list, fmt.Sprintf("%d%%", option.Slider.Value()), centerX, float64(menu.Bounds.Max.Y)-padding, menu.itemColor(0))
+		} else if menu.Scroll {
 			count := int(float64(menu.Bounds.Dy())/spacing/2) + 2
 			for distance := -count; distance <= count; distance++ {
 				index := menu.Selected + distance

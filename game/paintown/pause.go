@@ -104,7 +104,7 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 	case "move-list":
 		pause.stack = append(pause.stack, menu)
 		pause.Current = makeMoveList(pause.Player, menu)
-	case "menu", "gibs", "font-select":
+	case "menu", "gibs", "font-select", "sound", "music":
 		next, err := menu.OpenSubmenu(option)
 		if err != nil {
 			log.Printf("Pause submenu: %v", err)
@@ -115,8 +115,8 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 		}
 	case "set-gibs", "set-font", "set-font-width", "set-font-height":
 		menu.ApplySetting(option)
-	case "move", "notice":
-		// Move entries are informational, not game commands.
+	case "move", "notice", "slider":
+		// Moves/notices are informational; sliders use Left/Right.
 	case "fullscreen":
 		fullscreen := !ebiten.IsFullscreen()
 		ebiten.SetFullscreen(fullscreen)

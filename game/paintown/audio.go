@@ -13,6 +13,61 @@ import (
     "github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
 
+type audioVolumeTarget interface {
+    SetVolume(float64)
+}
+
+type volumeControl struct {
+    sync.Mutex
+    volume int
+    playing map[audioVolumeTarget]struct{}
+}
+
+func newVolumeControl() *volumeControl {
+    return &volumeControl{volume:100, playing:make(map[audioVolumeTarget]struct{})}
+}
+
+func (control *volumeControl) get() int {
+    control.Lock()
+    defer control.Unlock()
+    return control.volume
+}
+
+func (control *volumeControl) set(volume int) {
+    control.Lock()
+    defer control.Unlock()
+    control.volume = max(0,min(100,volume))
+    for player := range control.playing {
+        player.SetVolume(float64(control.volume)/100)
+    }
+}
+
+func (control *volumeControl) track(player audioVolumeTarget) {
+    control.Lock()
+    defer control.Unlock()
+    player.SetVolume(float64(control.volume)/100)
+    control.playing[player] = struct{}{}
+}
+
+func (control *volumeControl) untrack(player audioVolumeTarget) {
+    control.Lock()
+    defer control.Unlock()
+    delete(control.playing,player)
+}
+
+var soundSettings = newVolumeControl()
+var musicSettings = newVolumeControl()
+
+func SoundVolume() int { return soundSettings.get() }
+func MusicVolume() int { return musicSettings.get() }
+
+// Volume settings are independent and shared across menus for this session.
+func SetSoundVolume(volume int) { soundSettings.set(volume) }
+func SetMusicVolume(volume int) { musicSettings.set(volume) }
+
+func trackSoundVolume(player audioVolumeTarget) { soundSettings.track(player) }
+func untrackSoundVolume(player audioVolumeTarget) { soundSettings.untrack(player) }
+
 type AudioManager struct {
     sounds map[string]*sync.Pool
     context *audiolib.Context
@@ -36,6 +91,7 @@ func (audio *AudioManager) LoadSound(path string) (*audiolib.Player, func(), err
                 return nil, err
             }
 
+            defer file.Close()
             wavStream, err := wav.DecodeWithSampleRate(audio.context.SampleRate(), bufio.NewReader(file))
             if err != nil {
                 return nil, err
@@ -58,8 +114,10 @@ func (audio *AudioManager) LoadSound(path string) (*audiolib.Player, func(), err
 
     player := pool.Get().(*audiolib.Player)
     player.Rewind()
+    trackSoundVolume(player)
 
     putBack := func() {
+        untrackSoundVolume(player)
         pool.Put(player)
     }
 
@@ -67,7 +125,7 @@ func (audio *AudioManager) LoadSound(path string) (*audiolib.Player, func(), err
 }
 
 func (audio *AudioManager) PlaySound(path string) error {
-    if path != "" {
+    if path != "" && SoundVolume() > 0 {
         sound, putBack, err := audio.LoadSound(path)
         if err != nil {
             return err
