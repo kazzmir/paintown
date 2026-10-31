@@ -356,6 +356,127 @@ func TestAkumaProjectileMoves(t *testing.T) {
 	}
 }
 
+func TestGibAmountSubmenuAndPauseSelection(t *testing.T) {
+	previous := GibAmount()
+	t.Cleanup(func() { SetGibAmount(previous) })
+	SetGibAmount(3)
+	parent := defaultMenu()
+	parent.Options = []MenuOption{{Kind: "gibs", Name: "Gib amount"}}
+	menu, err := parent.OpenSubmenu(parent.Options[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.Name != "Gib Amount" || len(menu.Options) != 6 || menu.Selected != 3 || menu.Options[0].Name != "None" || menu.Options[5].Name != "Maximum" {
+		t.Fatal("gib submenu did not expose all six levels and focus the current value")
+	}
+	for amount := range 6 {
+		if !menu.ApplySetting(menu.Options[amount]) || GibAmount() != amount {
+			t.Fatalf("could not apply gib level %d", amount)
+		}
+		for _, option := range menu.Options {
+			selected := len(option.Name) > 0 && option.Name[0] == '*'
+			if selected != (option.Value == amount) {
+				t.Fatal("submenu did not mark the applied gib level")
+			}
+		}
+	}
+	if len(parent.Options) != 1 || parent.Options[0].Name != "Gib amount" {
+		t.Fatal("submenu mutated its parent")
+	}
+	if menu.ApplySetting(MenuOption{Kind: "quit"}) {
+		t.Fatal("unrelated option was treated as a gib setting")
+	}
+
+	pause := &PauseMenu{Root: parent, Current: parent, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "Gib Amount" {
+		t.Fatal("pause menu did not open the gib submenu")
+	}
+	pause.Current.Selected = 1
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if GibAmount() != 1 {
+		t.Fatal("pause menu did not apply the chosen gib amount")
+	}
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != parent {
+		t.Fatal("Back did not leave the gib submenu")
+	}
+	reopened, err := parent.OpenSubmenu(parent.Options[0])
+	if err != nil || reopened.Selected != 1 {
+		t.Fatal("gib amount was not shared with the next menu instance")
+	}
+	SetGibAmount(-100)
+	if GibAmount() != 0 {
+		t.Fatal("negative gib amount was not clamped")
+	}
+	SetGibAmount(100)
+	if GibAmount() != 5 {
+		t.Fatal("excessive gib amount was not clamped")
+	}
+}
+
+func TestGibAmountScalesPartsAndBlood(t *testing.T) {
+	previous := GibAmount()
+	t.Cleanup(func() { SetGibAmount(previous) })
+	parts := make([]*ebiten.Image, 9)
+	for index := range parts {
+		parts[index] = ebiten.NewImage(10, 10)
+	}
+	lastCount := -1
+	for amount := range 6 {
+		SetGibAmount(amount)
+		model := &GameModel{GoreFactory: GoreFactory{parts: parts}}
+		model.spawnGore(goreBurst{Y: 32})
+		partCount, bloodCount := 0, 0
+		unique := make(map[*ebiten.Image]bool)
+		for _, particle := range model.Gore {
+			if particle.Blood {
+				bloodCount++
+			} else {
+				partCount++
+				unique[particle.Image] = true
+			}
+		}
+		if partCount != (9*amount+4)/5 || bloodCount != (64*amount+4)/5 || len(unique) != partCount {
+			t.Fatalf("level %d did not scale unique body parts and blood: %d parts, %d blood", amount, partCount, bloodCount)
+		}
+		if len(model.Gore) <= lastCount {
+			t.Fatal("higher gib amounts did not increase particle count")
+		}
+		lastCount = len(model.Gore)
+		if amount == 0 && model.GoreFactory.loaded {
+			t.Fatal("disabled gibs still loaded body sprites")
+		}
+	}
+}
+
+func TestGibAmountNoneUsesNormalDeathsAndKeepsExistingEffects(t *testing.T) {
+	previous := GibAmount()
+	t.Cleanup(func() { SetGibAmount(previous) })
+	SetGibAmount(5)
+	model := &GameModel{GoreFactory: GoreFactory{parts: []*ebiten.Image{ebiten.NewImage(10, 10)}}}
+	model.spawnGore(goreBurst{Y: 32})
+	particles := len(model.Gore)
+	SetGibAmount(0)
+	enemy := grabTestEnemy()
+	enemy.Health = 5
+	enemy.Hurt(1, 100, 2)
+	if enemy.Exploded || enemy.explosion != nil || enemy.State != EnemyStateFalling {
+		t.Fatal("disabled gibs did not use normal enemy death")
+	}
+	player := grabTestPlayer()
+	player.Health = 5
+	player.Hurt(grabTestEnemy(), 100, 2)
+	if player.Exploded || player.explosion != nil || player.Status != PlayerStateFalling {
+		t.Fatal("disabled gibs did not use normal player death")
+	}
+	model.spawnGore(goreBurst{Y: 32})
+	model.UpdateGore(player)
+	if len(model.Gore) != particles {
+		t.Fatal("changing the setting deleted old particles or spawned new gore at zero")
+	}
+}
+
 func TestExplosiveDamageThresholds(t *testing.T) {
 	for _, test := range []struct {
 		name                            string

@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"math/rand/v2"
+	"sync/atomic"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -17,10 +18,20 @@ const (
 	maxGoreParticles = 2048
 )
 
+var configuredGibAmount atomic.Int32
+
+func init() { configuredGibAmount.Store(5) }
+
+// GibAmount is shared by all levels and the simulator for this session.
+func GibAmount() int { return int(configuredGibAmount.Load()) }
+
+// SetGibAmount affects future deaths; existing particles finish normally.
+func SetGibAmount(amount int) { configuredGibAmount.Store(int32(max(0, min(5, amount)))) }
+
 // Match the C++ explosive-death rule: a lethal hit with accumulated damage
 // above the character's knockdown threshold. Small lethal hits die normally.
 func explosiveDamage(health, pain, threshold float64) bool {
-	return health <= 0 && pain > threshold
+	return GibAmount() > 0 && health <= 0 && pain > threshold
 }
 
 type goreBurst struct{ X, Y, Z, Force float64 }
@@ -170,11 +181,20 @@ func (model *GameModel) collectEnemyGore(enemy *Enemy) {
 }
 
 func (model *GameModel) spawnGore(burst goreBurst) {
+	amount := GibAmount()
+	if amount == 0 {
+		return
+	}
 	if err := model.GoreFactory.Load(); err != nil && !model.goreLoadErrorLogged {
 		log.Printf("Loading body parts: %v", err)
 		model.goreLoadErrorLogged = true
 	}
-	for _, image := range model.GoreFactory.parts {
+	parts := model.GoreFactory.parts
+	count := (len(parts)*amount + 4) / 5
+	// Lower settings show a smaller, varied subset, without duplicating parts.
+	order := rand.Perm(len(parts))
+	for _, index := range order[:count] {
+		image := parts[index]
 		if len(model.Gore) >= maxGoreParticles {
 			break
 		}
@@ -188,7 +208,7 @@ func (model *GameModel) spawnGore(burst goreBurst) {
 			Image: image, Angle: rand.Float64() * 2 * math.Pi, Spin: spin,
 		})
 	}
-	for range 64 {
+	for range (64*amount + 4) / 5 {
 		if len(model.Gore) >= maxGoreParticles {
 			break
 		}

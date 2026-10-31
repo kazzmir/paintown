@@ -75,7 +75,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                 option := current.Options[current.Selected]
                 play(current.OKSound)
                 switch option.Kind {
-                case "menu":
+                case "menu", "gibs":
                     next, err := current.OpenSubmenu(option)
                     if err != nil {
                         log.Printf("Menu: %v", err)
@@ -84,6 +84,8 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                         stack = append(stack, current)
                         current = next
                     }
+                case "set-gibs":
+                    current.ApplySetting(option)
                 case "quit":
                     return ebiten.Termination
                 case "adventure":

@@ -98,7 +98,7 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 	case "move-list":
 		pause.stack = append(pause.stack, menu)
 		pause.Current = makeMoveList(pause.Player, menu)
-	case "menu":
+	case "menu", "gibs":
 		next, err := menu.OpenSubmenu(option)
 		if err != nil {
 			log.Printf("Pause submenu: %v", err)
@@ -107,6 +107,8 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 			pause.stack = append(pause.stack, menu)
 			pause.Current = next
 		}
+	case "set-gibs":
+		menu.ApplySetting(option)
 	case "move", "notice":
 		// Move entries are informational, not game commands.
 	case "fullscreen":

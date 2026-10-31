@@ -46,6 +46,7 @@ type Menu struct {
 
 type MenuOption struct {
 	Name, Info, Kind, Path string
+	Value                  int
 	Definition             *sexp.SExpr
 	moveAnimation          *Animation
 }
@@ -293,6 +294,9 @@ func LoadMenu(path string, parent *Menu) (*Menu, error) {
 }
 
 func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
+	if option.Kind == "gibs" {
+		return makeGibAmountMenu(menu), nil
+	}
 	if option.Definition == nil {
 		return LoadMenu(option.Path, menu)
 	}
@@ -304,6 +308,54 @@ func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
 		return nil, err
 	}
 	return next, nil
+}
+
+var gibAmountLabels = [...]string{"None", "Very low", "Low", "Medium", "High", "Maximum"}
+
+func makeGibAmountMenu(parent *Menu) *Menu {
+	menu := *parent
+	menu.Name, menu.MenuInfo = "Gib Amount", "Gib Amount"
+	menu.Info = "Choose the amount of body parts and blood"
+	menu.Options = nil
+	menu.Selected = GibAmount()
+	menu.ticks, menu.opacity, menu.scrollOffset = 0, 0, 0
+	menu.Notice = ""
+	menu.Bounds = image.Rect(140, 180, 500, 360)
+	menu.InfoX, menu.InfoY, menu.MenuInfoX, menu.MenuInfoY = 320, 120, 320, 450
+	menu.Scroll, menu.Wrap, menu.DistanceFade = false, true, false
+	for amount := range gibAmountLabels {
+		info := fmt.Sprintf("Body parts and blood: level %d of 5", amount)
+		if amount == 0 {
+			info = "No gibs or blood.\nCharacters use normal deaths."
+		}
+		menu.Options = append(menu.Options, MenuOption{Kind: "set-gibs", Value: amount, Info: info})
+	}
+	menu.refreshGibLabels()
+	return &menu
+}
+
+func (menu *Menu) refreshGibLabels() {
+	for index := range menu.Options {
+		option := &menu.Options[index]
+		if option.Kind != "set-gibs" {
+			continue
+		}
+		option.Name = gibAmountLabels[max(0, min(5, option.Value))]
+		if option.Value == GibAmount() {
+			option.Name = "* " + option.Name
+		}
+	}
+}
+
+// ApplySetting is shared by main-menu and in-game menu dispatchers.
+func (menu *Menu) ApplySetting(option MenuOption) bool {
+	if option.Kind != "set-gibs" {
+		return false
+	}
+	SetGibAmount(option.Value)
+	menu.refreshGibLabels()
+	menu.Notice = "Gib amount set to " + gibAmountLabels[GibAmount()]
+	return true
 }
 
 func (menu *Menu) loadAssets() error {
