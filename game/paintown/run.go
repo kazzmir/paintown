@@ -741,14 +741,36 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         return out
     }
 
-    draw1 := setDraw(func(screen *ebiten.Image) {
+    loadingTicks := 0
+    loadingFont := *font
+    loadingFont.Size = 24
+    oldDrawer := setDraw(func(screen *ebiten.Image) {
+        buffer.Clear()
         drawBackground(buffer)
         drawBackPanels(buffer)
+        var backgroundOptions ebiten.DrawImageOptions
+        backgroundOptions.GeoM.Scale(2, 2)
+        screen.DrawImage(buffer, &backgroundOptions)
+        // Keep the level visible behind a readable loading overlay.
+        vector.FillRect(screen, 0, 0, float32(data.ScreenWidth), float32(data.ScreenHeight), color.RGBA{A: 100}, false)
 
-        var options ebiten.DrawImageOptions
-        options.GeoM.Scale(2, 2)
-        screen.DrawImage(buffer, &options)
+        centerX := float64(data.ScreenWidth) / 2
+        centerY := float64(data.ScreenHeight) / 2
+        for dot := range 8 {
+            angle := float64(dot) * math.Pi / 4
+            phase := (dot - (loadingTicks / 6) % 8 + 8) % 8
+            brightness := uint8(55 + 200 * phase / 7)
+            vector.FillCircle(screen, float32(centerX + math.Cos(angle) * 20), float32(centerY - 30 + math.Sin(angle) * 20), 3,
+                color.RGBA{R: brightness, G: brightness, B: brightness, A: 255}, true)
+        }
+
+        var options text.DrawOptions
+        options.GeoM.Translate(centerX, centerY + 20)
+        options.PrimaryAlign = text.AlignCenter
+        options.SecondaryAlign = text.AlignCenter
+        text.Draw(screen, "Loading level", &loadingFont, &options)
     })
+    defer setDraw(oldDrawer)
 
     preload := make(chan struct{}, 1)
     go func(){
@@ -772,18 +794,15 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             default:
         }
 
+        loadingTicks += 1
         err := yield()
         if err != nil {
             return err
         }
     }
 
-    setDraw(draw1)
-
     audio := MakeAudioManager(audioContext)
-
-    oldDrawer := setDraw(drawer)
-    defer setDraw(oldDrawer)
+    setDraw(drawer)
 
     blocks := level.Blocks
     if len(blocks) == 0 {
