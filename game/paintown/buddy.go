@@ -147,6 +147,32 @@ func (buddy *Buddy) attack(projectile bool) *Animation {
 	return choices[0]
 }
 
+// Sequence names point to the preceding move. Refresh the selected follow-up
+// while its predecessor plays so even a long animation cannot expire its input
+// buffer before PlayerState performs the normal combo transition.
+func (buddy *Buddy) queueComboFollowUp(current *Animation, counter uint64) {
+	player := buddy.Player
+	var next *Animation
+	for _, animation := range player.Animations {
+		status := animation.Status
+		if status == "" {
+			status = "ground"
+		}
+		if animation == current || animation.Sequence != current.Name || status != player.GetStatus() {
+			continue
+		}
+		if next == nil || len(animation.Keys) < len(next.Keys) || (len(animation.Keys) == len(next.Keys) && animation.Name < next.Name) {
+			next = animation
+		}
+	}
+	if next != nil {
+		if player.ActivatedAnimations == nil {
+			player.ActivatedAnimations = make(map[*Animation]uint64)
+		}
+		player.ActivatedAnimations[next] = counter
+	}
+}
+
 // Gameplay positions use the half-resolution world buffer: half of the
 // visible 320-unit screen is 160 world units, not 320 UI pixels.
 const buddyWanderRadius = float64(data.ScreenWidth) / 4
@@ -290,6 +316,10 @@ func (buddy *Buddy) input(model *GameModel, human *PlayerState, level *Level) In
 	}
 	switch player.Status {
 	case PlayerStateDead, PlayerStateDropping, PlayerStatePain, PlayerStateFalling, PlayerStateFallen, PlayerJump:
+		return InputState{}
+	}
+	if current := player.ShowAnimation; current != nil && current != player.Animations["grab"] {
+		buddy.queueComboFollowUp(current, model.Counter)
 		return InputState{}
 	}
 	if (buddy.target == nil && len(model.Enemies) > 0) || (buddy.target != nil && !model.validBuddyTarget(buddy.target)) {

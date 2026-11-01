@@ -765,6 +765,71 @@ func TestBuddyTargetsShareEvenlyAndRespectGrabs(t *testing.T) {
 	checkBalanced() // Reinforcements should attract previously doubled-up buddies.
 }
 
+func TestBuddyCompletesAttackSequenceAndCancelsOnHurt(t *testing.T) {
+	for _, interrupted := range []bool{false, true} {
+		name := "complete"
+		if interrupted {
+			name = "interrupted"
+		}
+		t.Run(name, func(t *testing.T) {
+			human, npc := buddyTestPlayer(200, 150), buddyTestPlayer(40, 150)
+			for index, name := range []string{"opener", "second", "finisher"} {
+				sequence := ""
+				if index > 0 {
+					sequence = []string{"opener", "second"}[index-1]
+				}
+				move := MakeAnimation(name, "attack", []AnimationEvent{
+					&AnimationEventDelay{Delay: 50}, // Longer than the 40-tick input buffer.
+					&AnimationEventAttack{Attack: AnimationAttack{Damage: 1}},
+					&AnimationEventFrame{Image: ebiten.NewImage(40, 60)}, &AnimationEventNop{},
+				}, []InputKey{InputKeyAttack1}, sequence, "")
+				move.Owner = npc
+				npc.Animations[name] = move
+			}
+			enemy := grabTestEnemy()
+			enemy.X, enemy.Z = 80, 150
+			model := &GameModel{Counter: 1000, LevelLimit: 1000, Enemies: []*Enemy{enemy}, Buddies: []*Buddy{{Player: npc}}}
+			level := &Level{ZMinimum: 100, ZMaximum: 200}
+			tick := func() { model.Counter++; model.UpdateBuddies(human, level, &dummySystem{}, nil) }
+			tick()
+			if npc.ShowAnimation != npc.Animations["opener"] {
+				t.Fatal("buddy did not start with the combo opener")
+			}
+			tick()
+			if _, queued := npc.ActivatedAnimations[npc.Animations["second"]]; !queued {
+				t.Fatal("buddy did not buffer its next combo move")
+			}
+			model.Enemies = nil // Finish the current combo even if its target dies.
+			if interrupted {
+				npc.Hurt(enemy, 2, 1)
+				if len(npc.ActivatedAnimations) != 0 {
+					t.Fatal("hurt did not discard the buffered combo")
+				}
+				for range 100 {
+					tick()
+					if npc.ShowAnimation == npc.Animations["second"] || npc.ShowAnimation == npc.Animations["finisher"] {
+						t.Fatal("interrupted combo resumed after hurt")
+					}
+				}
+				return
+			}
+			visited := []string{"opener"}
+			for range 250 {
+				tick()
+				if npc.ShowAnimation == nil {
+					break
+				}
+				if current := npc.ShowAnimation.Name; current != visited[len(visited)-1] {
+					visited = append(visited, current)
+				}
+			}
+			if strings.Join(visited, ",") != "opener,second,finisher" || npc.ShowAnimation != nil || npc.AttackId != 3 {
+				t.Fatalf("buddy did not complete its full combo: %v (ticket %v)", visited, npc.AttackId)
+			}
+		})
+	}
+}
+
 func TestBuddyFightsEnemiesThenWandersNearPlayer(t *testing.T) {
 	human, npc := buddyTestPlayer(200, 150), buddyTestPlayer(40, 150)
 	frame := ebiten.NewImage(40, 60)
