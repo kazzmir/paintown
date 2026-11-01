@@ -14,6 +14,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/kazzmir/paintown/game/data"
+	"github.com/kazzmir/paintown/game/graphics"
 	"github.com/kazzmir/paintown/game/lib/sexp"
 )
 
@@ -44,6 +45,7 @@ type Menu struct {
 	layer                 *ebiten.Image
 	ticks                 int
 	opacity, scrollOffset float64
+	credits *creditsView
 }
 
 type MenuOption struct {
@@ -244,6 +246,7 @@ func ParseMenu(root *sexp.SExpr, parent *Menu, read func(string) (*sexp.SExpr, e
 			}
 			action := child.Children[0]
 			option := MenuOption{Kind: action.Name, Name: menuText(action.GetChild("name")), Info: menuText(action.GetChild("info"))}
+			if action.Name == "credits" { option.Definition = action }
 			if action.Name == "font-select" {
 				option.Adjust = menuText(action.GetChild("adjust"))
 			}
@@ -310,6 +313,7 @@ func LoadMenu(path string, parent *Menu) (*Menu, error) {
 
 func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
 	menu.syncMenuFont()
+	if option.Kind == "credits" { return makeCreditsMenu(menu,option.Definition) }
 	if option.Kind == "sound" { return makeSoundVolumeMenu(menu), nil }
 	if option.Kind == "music" { return makeMusicVolumeMenu(menu), nil }
 	if option.Kind == "lives" { return makeLivesMenu(menu), nil }
@@ -390,6 +394,14 @@ func (menu *Menu) ApplySetting(option MenuOption) bool {
 	return true
 }
 
+// Menu art uses the same magenta color key as character sprites, including
+// opaque PNGs such as the credits starfield layers.
+func loadMenuImage(path string) (image.Image, error) {
+	bitmap, err := data.LoadPng(path)
+	if err != nil { return nil, err }
+	return graphics.ConvertTransparency(bitmap), nil
+}
+
 func (menu *Menu) loadAssets() error {
 	menu.syncMenuFont()
 	if menu.font == nil {
@@ -400,7 +412,7 @@ func (menu *Menu) loadAssets() error {
 		menu.font = &text.GoTextFace{Source: source, Size: menu.FontSize}
 	}
 	if menu.BackgroundPath != "" {
-		bitmap, err := data.LoadPng(menu.BackgroundPath)
+		bitmap, err := loadMenuImage(menu.BackgroundPath)
 		if err != nil {
 			return err
 		}
@@ -411,7 +423,7 @@ func (menu *Menu) loadAssets() error {
 			if animation.Images[id] != nil {
 				continue
 			}
-			bitmap, err := data.LoadPng(path)
+			bitmap, err := loadMenuImage(path)
 			if err != nil {
 				return err
 			}
@@ -422,6 +434,7 @@ func (menu *Menu) loadAssets() error {
 }
 
 func (menu *Menu) Move(direction int) bool {
+	if menu.credits != nil { return menu.credits.move(menu,direction) }
 	if len(menu.Options) == 0 {
 		return false
 	}
@@ -443,6 +456,7 @@ func (menu *Menu) Move(direction int) bool {
 func (menu *Menu) Update() {
 	menu.syncMenuFont()
 	menu.ticks++
+	if menu.credits != nil { menu.credits.update(menu) }
 	menu.opacity = min(1, menu.opacity+menu.FadeSpeed/255)
 	menu.scrollOffset *= .8
 	for _, animation := range menu.Animations {
@@ -518,11 +532,17 @@ func (menu *Menu) Draw(screen *ebiten.Image) {
 			animation.Draw(screen)
 		}
 	}
-	menu.DrawOverlay(screen)
+	if menu.credits == nil {
+		menu.DrawOverlay(screen)
+	}
 	for _, animation := range menu.Animations {
 		if animation.Depth >= 3 {
 			animation.Draw(screen)
 		}
+	}
+	// Credits text stays above every starfield layer, including foreground stars.
+	if menu.credits != nil {
+		menu.DrawOverlay(screen)
 	}
 }
 
@@ -535,6 +555,13 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 	}
 	layer := menu.layer
 	layer.Clear()
+	if menu.credits != nil {
+		menu.credits.draw(menu,layer)
+		var options ebiten.DrawImageOptions
+		options.ColorScale.ScaleAlpha(float32(menu.opacity))
+		screen.DrawImage(layer,&options)
+		return
+	}
 	menuRoundRect(layer, menu.Bounds, menu.Radius, menu.BodyColor, menu.BorderColor)
 	list := layer.SubImage(menu.Bounds.Intersect(layer.Bounds())).(*ebiten.Image)
 	spacing := menu.listSpacing()

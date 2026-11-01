@@ -1388,6 +1388,121 @@ func TestLivesSliderMenuAndBounds(t *testing.T) {
 	}
 }
 
+func TestCreditsStarfieldMenuImagesHonorMagentaTransparency(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/menu/bgs/stars/top.png"); os.IsNotExist(err) {
+		t.Skip("game assets not installed")
+	}
+	for _, name := range []string{"top", "middle", "bottom"} {
+		path := "menu/bgs/stars/" + name + ".png"
+		raw, err := data.LoadPng(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		converted, err := loadMenuImage(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		masked, visible := 0, 0
+		bounds := raw.Bounds()
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			for x := bounds.Min.X; x < bounds.Max.X; x++ {
+				r, g, b, a := raw.At(x, y).RGBA()
+				cr, cg, cb, ca := converted.At(x, y).RGBA()
+				if r == 0xffff && g == 0 && b == 0xffff {
+					masked++
+					if ca != 0 {
+						t.Fatalf("%s retained an opaque magenta background pixel", path)
+					}
+				} else if a != 0 {
+					visible++
+					if r != cr || g != cg || b != cb || a != ca {
+						t.Fatalf("%s changed a visible star pixel", path)
+					}
+				}
+			}
+		}
+		if masked == 0 || visible == 0 {
+			t.Fatalf("%s did not exercise both color-keyed background and visible stars", path)
+		}
+	}
+}
+
+func TestCreditsMenuShowsContributorsAndDataAcknowledgements(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/menu/main.txt"); os.IsNotExist(err) {
+		t.Skip("game assets not installed")
+	}
+	root, err := LoadMenu("menu/main.txt", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var option MenuOption
+	for _, candidate := range root.Options {
+		if candidate.Kind == "credits" {
+			option = candidate
+			break
+		}
+	}
+	if option.Definition == nil {
+		t.Fatal("credits definition was discarded by the menu parser")
+	}
+	menu, err := root.OpenSubmenu(option)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if menu.credits == nil || menu.Name != "Credits" || len(menu.Animations) != 3 {
+		t.Fatal("credits did not open with its configured starfield")
+	}
+	var lines []string
+	for _, line := range menu.credits.lines {
+		lines = append(lines, line.text)
+	}
+	joined := strings.Join(lines, "\n")
+	for _, name := range []string{"Programming", "Jon Rafkind", "Miguel Gavidia", "Level design", "Music", "aqua.s3m - Purple Motion", "Additional thanks", "Paintown logo by Mark Oates", "Senile Team"} {
+		if !strings.Contains(joined, name) {
+			t.Fatalf("missing credit: %s", name)
+		}
+	}
+	for range arcadeRespawnDelay()*2 + 100 {
+		menu.Update()
+	}
+	if menu.credits.offset <= 0 {
+		t.Fatal("credits did not scroll automatically")
+	}
+	before := menu.credits.offset
+	if !menu.Move(-1) || menu.credits.offset >= before {
+		t.Fatal("Up did not scroll credits back")
+	}
+	menu.Move(10000)
+	if menu.credits.offset != menu.credits.maxOffset(menu) || menu.Move(1) {
+		t.Fatal("manual scrolling passed the end of the credits")
+	}
+	menu.credits.pause = 0
+	menu.Update()
+	for range arcadeRespawnDelay()*3 + 1 {
+		menu.Update()
+	}
+	if menu.credits.offset != 0 {
+		t.Fatal("credits did not restart after reaching the end")
+	}
+	menu.Draw(ebiten.NewImage(data.ScreenWidth, data.ScreenHeight))
+	root.Options = []MenuOption{option}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.credits == nil {
+		t.Fatal("credits menu action was unsupported")
+	}
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != root {
+		t.Fatal("Back did not return from credits")
+	}
+	fallback, err := root.OpenSubmenu(MenuOption{Kind: "credits"})
+	if err != nil || fallback.credits == nil || len(fallback.credits.lines) == 0 {
+		t.Fatal("built-in credits require optional menu data")
+	}
+}
+
 func TestNPCBuddyCountSliderAndPauseControls(t *testing.T) {
 	previous := NPCBuddyCount()
 	t.Cleanup(func() { SetNPCBuddyCount(previous) })
