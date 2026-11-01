@@ -113,7 +113,7 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 			pause.stack = append(pause.stack, menu)
 			pause.Current = next
 		}
-	case "set-gibs", "set-font", "set-font-width", "set-font-height":
+	case "set-gibs", "set-font", "set-font-width", "set-font-height", "invincible":
 		menu.ApplySetting(option)
 	case "move", "notice", "slider":
 		// Moves/notices are informational; sliders use Left/Right.

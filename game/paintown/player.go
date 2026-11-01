@@ -446,6 +446,7 @@ func (playerState *PlayerState) SetTrail(generate int, length int) {
 }
 
 func (playerState *PlayerState) AddHealth(health float64) {
+    if health < 0 && Invincible() { return }
     playerState.Health = min(playerState.MaxHealth, playerState.Health + health)
     playerState.SetGlowEffect(color.RGBA{R: 255, G: 255, A: 255}, 150)
 }
@@ -515,6 +516,7 @@ func (playerState *PlayerState) UpdateTrails(counter uint64) {
 }
 
 func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
+    if Invincible() { return false }
     lastAttack, has := playerState.Attackers[hitter]
 
     if has && attack <= lastAttack {
@@ -546,7 +548,7 @@ func (playerState *PlayerState) Pickup(item *Item) {
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
-    if playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping || playerState.spawnProtection > 0 {
+    if Invincible() || playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping || playerState.spawnProtection > 0 {
         return
     }
     if playerState.Grabbed != nil {
@@ -692,7 +694,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
         if playerState.Y <= 0 {
             playerState.Y = 0
             if playerState.Thrown {
-                playerState.Health = max(0, playerState.Health - thrownLandingDamage)
+                if !Invincible() { playerState.Health = max(0, playerState.Health - thrownLandingDamage) }
                 playerState.Thrown = false
             }
             if playerState.Health <= 0 {

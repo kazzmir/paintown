@@ -531,6 +531,7 @@ func (menu *Menu) Adjust(direction int) bool {
 	}
 	menu.syncMenuFont()
 	option := menu.Options[menu.Selected]
+	if option.Kind == "invincible" { return menu.ApplySetting(option) }
 	if option.Slider != nil { return option.Slider.Adjust(direction) }
 	if option.Kind != "font-select" {
 		return false

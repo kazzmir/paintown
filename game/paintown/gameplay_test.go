@@ -1503,6 +1503,81 @@ func TestCreditsMenuShowsContributorsAndDataAcknowledgements(t *testing.T) {
 	}
 }
 
+func TestInvincibilityToggleMenuAndPauseControls(t *testing.T) {
+	previous := Invincible()
+	t.Cleanup(func() { SetInvincible(previous) })
+	SetInvincible(false)
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "invincible", Name: "Invincibility"}}
+	option := root.Options[0]
+	if option.Label() != "Invincibility: Off" || !root.ApplySetting(option) || !Invincible() || option.Label() != "Invincibility: On" {
+		t.Fatal("confirm did not toggle and label invincibility")
+	}
+	if !root.Adjust(-1) || Invincible() || !root.Adjust(1) || !Invincible() || root.Adjust(0) {
+		t.Fatal("Left/Right did not toggle invincibility")
+	}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if Invincible() || pause.Current != root || root.Notice != "" {
+		t.Fatal("pause confirmation did not toggle invincibility in place")
+	}
+	pause.Update(PauseInput{Right: true}, &dummySystem{})
+	if !Invincible() || option.Label() != "Invincibility: On" {
+		t.Fatal("pause and main menus did not share the toggle")
+	}
+}
+
+func TestInvincibilityProtectsPlayersAndBuddiesIncludingLanding(t *testing.T) {
+	previous := Invincible()
+	t.Cleanup(func() { SetInvincible(previous) })
+	SetInvincible(true)
+	attacker := grabTestEnemy()
+	party := []*PlayerState{buddyTestPlayer(100, 150), buddyTestPlayer(140, 150), buddyTestPlayer(180, 150)}
+	level := &Level{ZMinimum: 100, ZMaximum: 200}
+	for _, player := range party {
+		player.Health = 5
+		if player.CanBeHit(attacker, 1) {
+			t.Fatal("invincible party member could be hit")
+		}
+		player.Hurt(attacker, 1000, 10)
+		if player.Health != 5 || player.Pain != 0 || player.Status != PlayerIdle || player.Exploded {
+			t.Fatal("invincible party member was damaged or interrupted")
+		}
+		player.AddHealth(-2)
+		if player.Health != 5 {
+			t.Fatal("negative health stimulation bypassed invincibility")
+		}
+		player.AddHealth(1)
+		if player.Health != 6 {
+			t.Fatal("invincibility prevented healing")
+		}
+		player.Health = 5
+		player.Throw(2, 5)
+		for tick := 0; tick < 200 && player.Status == PlayerStateFalling; tick++ {
+			player.Update(InputState{}, level, &dummySystem{}, uint64(1000+tick))
+		}
+		if player.Health != 5 || player.Y != 0 || player.Thrown || player.Status != PlayerStateFallen {
+			t.Fatal("invincibility did not prevent thrown landing damage")
+		}
+	}
+	enemy := grabTestEnemy()
+	enemy.Hurt(1, 2, 1)
+	if enemy.Health != 98 {
+		t.Fatal("invincibility also protected enemies")
+	}
+	SetInvincible(false)
+	for _, player := range party {
+		player.Status, player.ShowAnimation = PlayerIdle, nil
+		if !player.CanBeHit(attacker, 1) {
+			t.Fatal("turning off invincibility did not restore hits")
+		}
+		player.Hurt(attacker, 2, 1)
+		if player.Health != 3 {
+			t.Fatal("party member remained immune after toggling off")
+		}
+	}
+}
+
 func TestNPCBuddyCountSliderAndPauseControls(t *testing.T) {
 	previous := NPCBuddyCount()
 	t.Cleanup(func() { SetNPCBuddyCount(previous) })

@@ -94,7 +94,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                         stack = append(stack, current)
                         current = next
                     }
-                case "set-gibs", "set-font", "set-font-width", "set-font-height":
+                case "set-gibs", "set-font", "set-font-width", "set-font-height", "invincible":
                     current.ApplySetting(option)
                 case "notice", "slider":
                     // Informational entries (such as an empty font list).

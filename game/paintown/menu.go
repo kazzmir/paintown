@@ -382,6 +382,10 @@ func (menu *Menu) refreshGibLabels() {
 // ApplySetting is shared by main-menu and in-game menu dispatchers.
 func (menu *Menu) ApplySetting(option MenuOption) bool {
 	switch option.Kind {
+	case "invincible":
+		SetInvincible(!Invincible())
+		menu.Notice = ""
+		return true
 	case "set-font", "set-font-width", "set-font-height":
 		return menu.applyFontSetting(option)
 	}
@@ -571,7 +575,7 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 		if len(menu.Options) == 1 && menu.Options[0].Slider != nil {
 			option := menu.Options[0]
 			padding := max(30.0, spacing)
-			menu.drawText(list, option.Name, centerX, float64(menu.Bounds.Min.Y)+padding, menu.itemColor(0))
+			menu.drawText(list, option.Label(), centerX, float64(menu.Bounds.Min.Y)+padding, menu.itemColor(0))
 			option.Slider.Draw(list, image.Rect(menu.Bounds.Min.X+40, int(centerY)-10, menu.Bounds.Max.X-40, int(centerY)+10), menu.itemColor(0))
 			menu.drawText(list, option.Slider.Label(), centerX, float64(menu.Bounds.Max.Y)-padding, menu.itemColor(0))
 		} else if menu.Scroll {
@@ -587,7 +591,7 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 					continue
 				}
 				y := centerY + (float64(distance)+menu.scrollOffset)*spacing
-				menu.drawText(list, menu.Options[index].Name, centerX, y, menu.itemColor(distance))
+				menu.drawText(list, menu.Options[index].Label(), centerX, y, menu.itemColor(distance))
 			}
 		} else {
 			// A normal list does not wrap visually and only scrolls to keep
@@ -595,7 +599,7 @@ func (menu *Menu) DrawOverlay(screen *ebiten.Image) {
 			first := max(0, menu.Selected-int(float64(menu.Bounds.Dy())/spacing)+1)
 			for index := first; index < len(menu.Options); index++ {
 				y := float64(menu.Bounds.Min.Y) + spacing*(float64(index-first)+.75)
-				menu.drawText(list, menu.Options[index].Name, centerX, y, menu.itemColor(index-menu.Selected))
+				menu.drawText(list, menu.Options[index].Label(), centerX, y, menu.itemColor(index-menu.Selected))
 			}
 		}
 		info := menu.Options[menu.Selected].Info
