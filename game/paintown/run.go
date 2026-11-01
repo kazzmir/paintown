@@ -180,6 +180,7 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 
 type GameModel struct {
     Enemies []*Enemy
+    Buddies []*Buddy
     Arcade bool
     GameOver bool
     awaitingRespawn bool
@@ -271,13 +272,13 @@ func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputS
         attack := playerState.CurrentAnimation().Attack
         attackBox := playerState.GetAttackBox()
         for _, enemy := range model.Enemies {
-            if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit(playerState.AttackId) {
+            if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHitFrom(playerState) {
                 if enemy.HitBy(attackBox) {
                     force := float64(attack.Force)
                     if playerState.Facing == FacingLeft {
                         force = -force
                     }
-                    enemy.Hurt(playerState.AttackId, attack.Damage, force)
+                    enemy.HurtFrom(playerState, attack.Damage, force)
                     playerState.IgnoreHit(enemy)
 
                     // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
@@ -374,12 +375,14 @@ func (model *GameModel) UpdateThrownEnemies() {
 }
 
 func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, system System, flashFactory *FlashFactory) {
+    model.UpdateBuddies(playerState, level, system, flashFactory)
     model.UpdateThrownEnemies()
+    party := model.party(playerState)
 
     outEnemies := make([]*Enemy, 0, len(model.Enemies))
     for _, enemy := range model.Enemies {
         healthBefore := enemy.Health
-        enemy.Update(level, playerState, func(state EnemyState){
+        enemy.Update(level, nearestPartyMember(enemy, playerState, party), func(state EnemyState){
             switch state {
             case EnemyStateFallen:
                 model.Shake = 30
@@ -398,27 +401,22 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
         if !enemy.IsDead() {
 
             attack := enemy.CurrentAnimationValue.Attack
-            if enemy.State == EnemyStateAttacking && !attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
-                if playerState.HitBy(enemy.GetAttackBox()) {
-                    force := attack.Force
-                    if enemy.GetFacing() == FacingLeft {
-                        force = -force
-                    }
-
-                    playerState.Hurt(enemy, attack.Damage, force)
-                    model.UpdateHealthMap(enemy, model.Counter)
-
-                    if !playerState.Exploded && flashFactory != nil {
-                        model.Flashes = append(model.Flashes, flashFactory.MakeFlash(playerState.X, playerState.Y + 50, playerState.Z + 0.1))
-                    }
-
-                    err := system.PlaySound(enemy.HitSound)
-                    if err != nil {
-                        log.Printf("Error playing hit sound: %v", err)
-                    }
+            for _, target := range party {
+                if enemy.State != EnemyStateAttacking || attack.IsEmpty() || abs(enemy.Z - target.Z) >= Z_DISTANCE ||
+                    !target.CanBeHit(enemy, enemy.AttackId) || !target.HitBy(enemy.GetAttackBox()) {
+                    continue
+                }
+                force := attack.Force
+                if enemy.GetFacing() == FacingLeft { force = -force }
+                target.Hurt(enemy, attack.Damage, force)
+                model.UpdateHealthMap(enemy, model.Counter)
+                if !target.Exploded && flashFactory != nil {
+                    model.Flashes = append(model.Flashes, flashFactory.MakeFlash(target.X, target.Y + 50, target.Z + 0.1))
+                }
+                if err := system.PlaySound(enemy.HitSound); err != nil {
+                    log.Printf("Error playing hit sound: %v", err)
                 }
             }
-
             outEnemies = append(outEnemies, enemy)
         }
     }
@@ -426,6 +424,9 @@ func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, sy
     model.Enemies = outEnemies
     model.UpdateProjectiles(playerState, system, flashFactory)
     model.UpdateGore(playerState)
+    // Persist deaths caused by this tick's enemy attacks and projectiles before
+    // the next loop can advance to another level.
+    for _, buddy := range model.Buddies { buddy.recordDeath() }
     model.updateArcadeRespawn(playerState)
 }
 
@@ -662,6 +663,7 @@ func runLevelWithSession(player *PaintownCharacter, yield coroutine.YieldFunc, s
         healthObjects := []HealthObject{
             playerState,
         }
+        for _, buddy := range model.Buddies { healthObjects = append(healthObjects, buddy) }
 
         objects = objects[:0]
 
@@ -712,6 +714,14 @@ func runLevelWithSession(player *PaintownCharacter, yield coroutine.YieldFunc, s
                     healthObjects = append(healthObjects, enemy)
                 }
             }
+        }
+
+        for _, buddy := range model.Buddies {
+            objects = append(objects, Drawable{
+                DrawFirst: func() { if !buddy.Player.Exploded { drawShadow(buffer, buddy.Player) } },
+                Draw: func() { DrawPlayer(buddy.Player, cameraX, screenShake, buffer) },
+                Z: buddy.Player.Z,
+            })
         }
 
         for _, particle := range model.Gore {
@@ -863,6 +873,7 @@ func runLevelWithSession(player *PaintownCharacter, yield coroutine.YieldFunc, s
                 }
             }
         }
+        model.createBuddies(session, playerState, level)
         log.Printf("Done preloading enemies")
 
         preload <- struct{}{}
@@ -987,6 +998,14 @@ func (dummy *DummySystem) PlaySound(path string) error {
 }
 
 func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer data.DrawFunc) data.DrawFunc) (*PaintownCharacter, error) {
+    return ChooseCharacterFor(yield, background, setDraw, "Choose Your Character")
+}
+
+func ChooseCharacterFor(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer data.DrawFunc) data.DrawFunc, title string) (*PaintownCharacter, error) {
+    font, err := loadFont()
+    if err != nil { return nil, err }
+    font.Size = 24
+    if config := currentMenuFontConfig(); config.source != nil { font.Source = config.source }
 
     animations := make(map[string]*Animation)
     var allPlayers []*PaintownCharacter
@@ -1147,10 +1166,20 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
             }
         }
 
+        var textOptions text.DrawOptions
+        textOptions.GeoM.Translate(20, 10)
+        text.Draw(screen, title, font, &textOptions)
+        textOptions.GeoM.Reset()
+        textOptions.GeoM.Translate(30, 340)
+        text.Draw(screen, allPlayers[currentChoice].Definition.Name, font, &textOptions)
     }
 
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
+
+    // Present the new slot before accepting input, consuming the confirmation
+    // used by the previous screen (including a held controller button).
+    if err := yield(); err != nil { return nil, err }
 
     perRow := 4
 

@@ -104,7 +104,7 @@ func (pause *PauseMenu) Update(input PauseInput, system System) PauseAction {
 	case "move-list":
 		pause.stack = append(pause.stack, menu)
 		pause.Current = makeMoveList(pause.Player, menu)
-	case "menu", "gibs", "font-select", "sound", "music", "lives":
+	case "menu", "gibs", "font-select", "sound", "music", "lives", "npc":
 		next, err := menu.OpenSubmenu(option)
 		if err != nil {
 			log.Printf("Pause submenu: %v", err)

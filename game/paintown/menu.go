@@ -313,6 +313,7 @@ func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
 	if option.Kind == "sound" { return makeSoundVolumeMenu(menu), nil }
 	if option.Kind == "music" { return makeMusicVolumeMenu(menu), nil }
 	if option.Kind == "lives" { return makeLivesMenu(menu), nil }
+	if option.Kind == "npc" { return makeNPCBuddiesMenu(menu), nil }
 	if option.Kind == "font-select" {
 		return makeFontSelectionMenu(menu, option.Adjust), nil
 	}
@@ -320,7 +321,12 @@ func (menu *Menu) OpenSubmenu(option MenuOption) (*Menu, error) {
 		return makeGibAmountMenu(menu), nil
 	}
 	if option.Definition == nil {
-		return LoadMenu(option.Path, menu)
+		next, err := LoadMenu(option.Path, menu)
+		if err == nil && filepath.ToSlash(filepath.Clean(option.Path)) == "menu/arcade.txt" {
+			next.Options = arcadeModeOptions()
+			next.MenuInfo = "Arcade Mode"
+		}
+		return next, err
 	}
 	next, err := ParseMenu(option.Definition, menu, readMenu)
 	if err != nil {

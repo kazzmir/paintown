@@ -225,6 +225,12 @@ func (model *GameModel) UpdateGore(player *PlayerState) {
 		model.goreBursts = append(model.goreBursts, *player.explosion)
 		player.explosion = nil
 	}
+	for _, buddy := range model.Buddies {
+		if buddy.Player.explosion != nil {
+			model.goreBursts = append(model.goreBursts, *buddy.Player.explosion)
+			buddy.Player.explosion = nil
+		}
+	}
 	// Projectile kills happen after the normal enemy-update pass.
 	for _, enemy := range model.Enemies {
 		model.collectEnemyGore(enemy)

@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -619,6 +620,428 @@ func TestMusicVolumeSliderMenuAndPauseControls(t *testing.T) {
 	}
 }
 
+func buddyTestPlayer(x, z float64) *PlayerState {
+	player := dropTestPlayer()
+	player.X, player.Z, player.Health, player.Name = x, z, 100, "Buddy"
+	collision := grabTestEnemy().Animations["idle"].Collision[nil]
+	for _, animation := range player.Animations {
+		if frame := animation.FirstFrame(); frame != nil {
+			animation.Frame = frame
+			animation.Collision = map[*ebiten.Image]*Collision{frame: collision}
+		}
+	}
+	return player
+}
+
+func TestPartyMeleeAttackTicketsAreIndependent(t *testing.T) {
+	enemy := grabTestEnemy()
+	enemy.PainThreshold = 100
+	players := []*PlayerState{buddyTestPlayer(0, 100), buddyTestPlayer(10, 100), buddyTestPlayer(20, 100)}
+	players[0].AttackId, players[1].AttackId, players[2].AttackId = 500, 1, 1
+	for _, player := range players {
+		if !enemy.CanBeHitFrom(player) {
+			t.Fatal("another party member's ticket blocked this attack")
+		}
+		enemy.HurtFrom(player, 3, 1)
+		if enemy.CanBeHitFrom(player) {
+			t.Fatal("same melee attack could hit twice")
+		}
+	}
+	if enemy.Health != 91 {
+		t.Fatal("party members did not each damage the enemy")
+	}
+	players[1].NextAttackId()
+	if !enemy.CanBeHitFrom(players[1]) {
+		t.Fatal("buddy's next attack remained blocked")
+	}
+}
+
+func TestBuddyRandomTargetsAreDistinctAndPersistent(t *testing.T) {
+	model := &GameModel{}
+	for range 4 {
+		model.Enemies = append(model.Enemies, grabTestEnemy())
+	}
+	for range 3 {
+		model.Buddies = append(model.Buddies, &Buddy{Player: buddyTestPlayer(100, 150)})
+	}
+	model.assignBuddyTargets()
+	seen := make(map[*Enemy]bool)
+	var targets []*Enemy
+	for _, buddy := range model.Buddies {
+		if !model.validBuddyTarget(buddy.target) || seen[buddy.target] {
+			t.Fatal("buddies did not choose different living enemies")
+		}
+		seen[buddy.target] = true
+		targets = append(targets, buddy.target)
+	}
+	for range 50 {
+		model.assignBuddyTargets()
+		for index, buddy := range model.Buddies {
+			if buddy.target != targets[index] {
+				t.Fatal("buddy changed its living target every frame")
+			}
+		}
+	}
+	targets[0].Health = 0
+	model.assignBuddyTargets()
+	if model.Buddies[0].target == targets[0] || model.Buddies[1].target != targets[1] || model.Buddies[2].target != targets[2] {
+		t.Fatal("dead target was not replaced independently")
+	}
+	seen = make(map[*Enemy]bool)
+	for _, buddy := range model.Buddies {
+		if seen[buddy.target] {
+			t.Fatal("replacement ignored an unclaimed enemy")
+		}
+		seen[buddy.target] = true
+	}
+	removed := model.Buddies[1].target
+	var remaining []*Enemy
+	for _, enemy := range model.Enemies {
+		if enemy != removed {
+			remaining = append(remaining, enemy)
+		}
+	}
+	model.Enemies = remaining
+	model.assignBuddyTargets()
+	if model.Buddies[1].target == removed {
+		t.Fatal("buddy kept chasing an enemy removed from the level")
+	}
+	model.Enemies = nil
+	model.assignBuddyTargets()
+	for _, buddy := range model.Buddies {
+		if buddy.target != nil {
+			t.Fatal("buddy did not release its target when combat ended")
+		}
+	}
+}
+
+func TestBuddyTargetsShareEvenlyAndRespectGrabs(t *testing.T) {
+	model := &GameModel{}
+	for range 3 {
+		model.Enemies = append(model.Enemies, grabTestEnemy())
+	}
+	for range 8 {
+		model.Buddies = append(model.Buddies, &Buddy{Player: buddyTestPlayer(100, 150)})
+	}
+	checkBalanced := func() {
+		t.Helper()
+		counts := make(map[*Enemy]int)
+		for _, buddy := range model.Buddies {
+			if buddy.Player.Health <= 0 {
+				if buddy.target != nil {
+					t.Fatal("dead buddy retained a target")
+				}
+				continue
+			}
+			if !model.validBuddyTarget(buddy.target) {
+				t.Fatal("living buddy has no valid target")
+			}
+			counts[buddy.target]++
+		}
+		low, high := len(model.Buddies), 0
+		for _, enemy := range model.Enemies {
+			low = min(low, counts[enemy])
+			high = max(high, counts[enemy])
+		}
+		if high-low > 1 {
+			t.Fatal("excess buddies all piled onto the same enemy")
+		}
+	}
+	model.assignBuddyTargets()
+	checkBalanced()
+	grabber := model.Buddies[7]
+	grabber.Player.Grabbed = model.Enemies[0]
+	grabber.Player.Status = PlayerStateGrab
+	model.assignBuddyTargets()
+	if grabber.target != model.Enemies[0] {
+		t.Fatal("grabber abandoned its held enemy for a random target")
+	}
+	checkBalanced()
+	model.Buddies[0].Player.Health = 0
+	model.assignBuddyTargets()
+	checkBalanced()
+	model.Enemies = append(model.Enemies, grabTestEnemy(), grabTestEnemy(), grabTestEnemy(), grabTestEnemy())
+	model.assignBuddyTargets()
+	checkBalanced() // Reinforcements should attract previously doubled-up buddies.
+}
+
+func TestBuddyFightsEnemiesThenWandersNearPlayer(t *testing.T) {
+	human, npc := buddyTestPlayer(200, 150), buddyTestPlayer(40, 150)
+	frame := ebiten.NewImage(40, 60)
+	move := MakeAnimation("punch", "attack", []AnimationEvent{
+		&AnimationEventAttack{Attack: AnimationAttack{X2: 70, Y2: 60, Damage: 3}}, &AnimationEventFrame{Image: frame}, &AnimationEventNop{},
+	}, []InputKey{InputKeyAttack1}, "", "")
+	move.Owner = npc
+	npc.Animations["punch"] = move
+	enemy := grabTestEnemy()
+	enemy.X, enemy.Z, enemy.PainThreshold, enemy.LastAttacked = 80, 150, 100, 999
+	model := &GameModel{Counter: 1000, LevelLimit: 1000, Enemies: []*Enemy{enemy}, Buddies: []*Buddy{{Player: npc}}}
+	level := &Level{ZMinimum: 100, ZMaximum: 200}
+	model.UpdateEnemies(level, human, &dummySystem{}, nil)
+	if enemy.Health != 97 || human.Health != 100 || npc.ShowAnimation != move {
+		t.Fatal("buddy failed to execute an attack or caused friendly fire")
+	}
+	model.Enemies = nil
+	for range 200 {
+		model.Counter++
+		model.UpdateEnemies(level, human, &dummySystem{}, nil)
+	}
+	if math.Hypot(npc.X-human.X, npc.Z-human.Z) > buddyWanderRadius {
+		t.Fatalf("idle buddy wandered beyond half a screen: (%v,%v)", npc.X, npc.Z)
+	}
+	if strings.HasPrefix(healthBarLabel(model.Buddies[0]), "x ") || !strings.Contains(model.Buddies[0].GetName(), "AI") {
+		t.Fatal("buddy HUD was not identified as AI independently of player lives")
+	}
+}
+
+func TestIdleBuddiesWanderWithinHalfScreen(t *testing.T) {
+	for _, bounds := range []struct {
+		humanX, npcX, limit float64
+		minZ, maxZ          int
+	}{
+		{400, 375, 1000, 100, 200}, {0, 5, 80, 100, 101},
+	} {
+		human, npc := buddyTestPlayer(bounds.humanX, float64(bounds.minZ)), buddyTestPlayer(bounds.npcX, float64(bounds.minZ))
+		buddy := &Buddy{Player: npc}
+		model := &GameModel{Counter: 1000, LevelLimit: bounds.limit, Buddies: []*Buddy{buddy}}
+		level := &Level{ZMinimum: bounds.minZ, ZMaximum: bounds.maxZ}
+		goals := make(map[[2]float64]bool)
+		moving, pausing := 0, 0
+		for range 2500 {
+			model.Counter++
+			model.UpdateEnemies(level, human, &dummySystem{}, nil)
+			if math.Hypot(npc.X-human.X, npc.Z-human.Z) > buddyWanderRadius+1e-9 {
+				t.Fatal("idle buddy escaped the half-screen radius")
+			}
+			if npc.X < 0 || npc.X > bounds.limit || npc.Z < float64(bounds.minZ) || npc.Z > float64(bounds.maxZ) {
+				t.Fatal("wandering escaped stage bounds")
+			}
+			if buddy.wanderValid {
+				goals[[2]float64{buddy.wanderX, buddy.wanderZ}] = true
+			}
+			if npc.Status == PlayerMove {
+				moving++
+			}
+			if buddy.wanderPause > 0 {
+				pausing++
+			}
+		}
+		if len(goals) < 3 || moving == 0 || pausing == 0 {
+			t.Fatal("buddy did not alternate wandering to new destinations with pauses")
+		}
+	}
+}
+
+func TestWanderingBuddyRecentersWhenPlayerMovesAndPrioritizesEnemies(t *testing.T) {
+	human, npc := buddyTestPlayer(400, 150), buddyTestPlayer(480, 150)
+	buddy := &Buddy{Player: npc, wanderX: 300, wanderZ: 150, wanderValid: true, wanderPause: 70}
+	model := &GameModel{Counter: 1000, LevelLimit: 1000, Buddies: []*Buddy{buddy}}
+	level := &Level{ZMinimum: 100, ZMaximum: 200}
+	human.X = 800
+	model.UpdateBuddies(human, level, &dummySystem{}, nil)
+	if npc.X <= 480 || buddy.wanderValid || buddy.wanderPause != 0 {
+		t.Fatal("out-of-range buddy kept its old destination or pause instead of returning")
+	}
+	entered := false
+	for range 600 {
+		model.Counter++
+		model.UpdateBuddies(human, level, &dummySystem{}, nil)
+		inside := math.Hypot(npc.X-human.X, npc.Z-human.Z) <= buddyWanderRadius+1e-9
+		if entered && !inside {
+			t.Fatal("buddy left the new player-centered radius")
+		}
+		entered = entered || inside
+	}
+	if !entered {
+		t.Fatal("buddy never returned to the player")
+	}
+	buddy.wanderValid, buddy.wanderPause = true, 70
+	enemy := grabTestEnemy()
+	enemy.X, enemy.Z = npc.X+100, npc.Z
+	model.Enemies = []*Enemy{enemy}
+	input := buddy.input(model, human, level)
+	if !input.HeldRight || buddy.wanderValid || buddy.wanderPause != 0 {
+		t.Fatal("new enemy did not interrupt idle wandering")
+	}
+}
+
+func TestEnemiesTargetAndDamageBuddies(t *testing.T) {
+	human, npc := buddyTestPlayer(300, 150), buddyTestPlayer(110, 150)
+	enemy := grabTestEnemy()
+	enemy.X, enemy.Z, enemy.State, enemy.AttackId = 100, 150, EnemyStateAttacking, 1
+	attack := MakeAnimation("attack", "attack", []AnimationEvent{
+		&AnimationEventAttack{Attack: AnimationAttack{X2: 40, Y2: 60, Damage: 3}},
+		&AnimationEventFrame{Image: ebiten.NewImage(40, 60)}, &AnimationEventNop{},
+	}, nil, "", "")
+	attack.Owner = enemy
+	attack.Update(false, &dummySystem{})
+	enemy.CurrentAnimationValue = attack
+	model := &GameModel{Counter: 1000, LevelLimit: 1000, Enemies: []*Enemy{enemy}, Buddies: []*Buddy{{Player: npc}}}
+	if nearestPartyMember(enemy, human, model.party(human)) != npc {
+		t.Fatal("enemy AI ignored the closer buddy")
+	}
+	model.UpdateEnemies(&Level{ZMinimum: 100, ZMaximum: 200}, human, &dummySystem{}, nil)
+	if npc.Health != 97 || human.Health != 100 {
+		t.Fatal("enemy melee did not damage the nearby buddy independently of the human")
+	}
+}
+
+func TestPartyProjectilesRespectTeams(t *testing.T) {
+	human, npc := buddyTestPlayer(42, 100), buddyTestPlayer(0, 100)
+	enemy := grabTestEnemy()
+	enemy.X, enemy.Z, enemy.PainThreshold = 42, 100, 100
+	model := &GameModel{Enemies: []*Enemy{enemy}, Buddies: []*Buddy{{Player: npc}}}
+	projectileTestEvent().Update(&Animation{Owner: npc}, &dummySystem{})
+	model.UpdateProjectiles(human, &dummySystem{}, nil)
+	if enemy.Health != 97 || human.Health != 100 || len(npc.pendingProjectiles) != 0 {
+		t.Fatal("buddy projectile did not damage enemies safely")
+	}
+	model.Projectiles = nil
+	human.X, npc.X = 300, 42
+	source := grabTestEnemy()
+	source.Z = 100
+	projectileTestEvent().Update(&Animation{Owner: source}, &dummySystem{})
+	model.Projectiles = source.pendingProjectiles
+	model.UpdateProjectiles(human, &dummySystem{}, nil)
+	if npc.Health != 97 || human.Health != 100 {
+		t.Fatal("enemy projectile did not damage the buddy")
+	}
+}
+
+func TestFatalProjectileRecordsBuddyLossInSameTick(t *testing.T) {
+	human, npc := buddyTestPlayer(150, 100), buddyTestPlayer(42, 100)
+	npc.Health = 3
+	session := NewArcadeSession()
+	source := grabTestEnemy()
+	source.Z = 100
+	projectileTestEvent().Update(&Animation{Owner: source}, &dummySystem{})
+	model := &GameModel{Counter: 1000, LevelLimit: 1000, Buddies: []*Buddy{{Player: npc, session: session, slot: 1, wanderPause: 100}}, Projectiles: source.pendingProjectiles}
+	model.UpdateEnemies(&Level{ZMinimum: 100, ZMaximum: 200}, human, &dummySystem{}, nil)
+	if npc.Health > 0 || !session.defeatedBuddies[1] {
+		t.Fatal("fatal projectile was not remembered before the level could advance")
+	}
+}
+
+func TestBuddyStaysDeadWithoutSpendingPlayerLives(t *testing.T) {
+	human, npc := buddyTestPlayer(200, 150), buddyTestPlayer(100, 150)
+	human.Lives, npc.Health = 3, 5
+	npc.Hurt(grabTestEnemy(), 100, 2)
+	session := NewArcadeSession()
+	model := &GameModel{Arcade: true, Counter: 1000, LevelLimit: 1000, Buddies: []*Buddy{{Player: npc, session: session, slot: 0}}, GoreFactory: GoreFactory{parts: []*ebiten.Image{ebiten.NewImage(10, 10)}}}
+	level := &Level{ZMinimum: 100, ZMaximum: 200}
+	model.UpdateEnemies(level, human, &dummySystem{}, nil)
+	if len(model.Gore) == 0 {
+		t.Fatal("buddy's explosive death did not produce gore")
+	}
+	for tick := 0; tick < arcadeRespawnDelay()*10; tick++ {
+		model.Counter++
+		model.UpdateEnemies(level, human, &dummySystem{}, nil)
+	}
+	if npc.Status != PlayerStateDead || npc.Health > 0 || human.Lives != 3 || !npc.Exploded || !session.defeatedBuddies[0] {
+		t.Fatal("dead buddy respawned, was not remembered, or consumed a human life")
+	}
+}
+
+func TestArcadeModeMenuAndBuddyAssets(t *testing.T) {
+	options := arcadeModeOptions()
+	if len(options) != 2 || options[0].Name != "Solo" || options[1].Name != "With AI Buddies" || options[1].Kind != "adventure-cpu" {
+		t.Fatal("Arcade did not offer the two requested modes")
+	}
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/menu/arcade.txt"); os.IsNotExist(err) {
+		t.Skip("game assets not installed")
+	}
+	root, err := LoadMenu("menu/main.txt", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mode, err := root.OpenSubmenu(root.Options[0])
+	if err != nil || len(mode.Options) != 2 || mode.Options[1].Name != "With AI Buddies" {
+		t.Fatal("main-menu Arcade entry did not open mode selection")
+	}
+	character, err := MakePaintownPlayer("akuma")
+	if err != nil {
+		t.Fatal(err)
+	}
+	human, err := MakePlayerState(character, &Level{ZMinimum: 100, ZMaximum: 200})
+	if err != nil {
+		t.Fatal(err)
+	}
+	session := NewArcadeSession()
+	if session.BuddyCount != 0 {
+		t.Fatal("Solo unexpectedly enables buddies")
+	}
+	session.BuddyCount = 2
+	session.prepareBuddies(character)
+	model := &GameModel{LevelLimit: 1000}
+	model.createBuddies(session, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(model.Buddies) != 2 {
+		t.Fatal("AI mode did not create two player-character buddies")
+	}
+	for _, buddy := range model.Buddies {
+		if buddy.Player == human || buddy.Player.Status != PlayerStateDropping || buddy.Player.Animations["idle"].Owner != buddy.Player {
+			t.Fatal("buddy did not have independent character state and drop-in")
+		}
+	}
+	choices := []*PaintownCharacter{session.buddyCharacters[1], character}
+	firstName := choices[0].Definition.Name
+	session.SetBuddies(choices...)
+	choices[0] = nil // The session owns the roster, not the caller's slice.
+	session.prepareBuddies(character)
+	chosen := &GameModel{LevelLimit: 1000}
+	chosen.createBuddies(session, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(chosen.Buddies) != 2 || chosen.Buddies[0].Player.Name != firstName || chosen.Buddies[1].Player.Name != character.Definition.Name {
+		t.Fatal("chosen buddy roster or order was replaced by automatic choices")
+	}
+	session.SetBuddies(character, character)
+	duplicates := &GameModel{LevelLimit: 1000}
+	duplicates.createBuddies(session, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(duplicates.Buddies) != 2 || duplicates.Buddies[0].Player == duplicates.Buddies[1].Player || duplicates.Buddies[0].Player.Animations["idle"] == duplicates.Buddies[1].Player.Animations["idle"] {
+		t.Fatal("choosing the same fighter for multiple slots shared mutable state")
+	}
+	// A fatal non-explosive knockdown can still be airborne at level end.
+	duplicates.Buddies[0].Player.Health = 0
+	duplicates.Buddies[0].Player.Status = PlayerStateFalling
+	duplicates.Buddies[0].recordDeath()
+	session.prepareBuddies(character)
+	nextLevel := &GameModel{LevelLimit: 1000}
+	nextLevel.createBuddies(session, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(nextLevel.Buddies) != 1 || nextLevel.Buddies[0].slot != 1 {
+		t.Fatal("level transition revived a defeated roster slot or removed its living duplicate")
+	}
+	nextLevel.Buddies[0].Player.Health = 0
+	nextLevel.Buddies[0].Player.Status = PlayerStateDead
+	nextLevel.Buddies[0].recordDeath()
+	session.prepareBuddies(character)
+	laterLevel := &GameModel{LevelLimit: 1000}
+	laterLevel.createBuddies(session, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(laterLevel.Buddies) != 0 {
+		t.Fatal("automatic roster preparation replaced dead buddies")
+	}
+	newGame := NewArcadeSession()
+	newGame.SetBuddies(character, character)
+	freshLevel := &GameModel{LevelLimit: 1000}
+	freshLevel.createBuddies(newGame, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(freshLevel.Buddies) != 2 {
+		t.Fatal("buddy deaths carried into a new game")
+	}
+	previousCount := NPCBuddyCount()
+	t.Cleanup(func() { SetNPCBuddyCount(previousCount) })
+	SetNPCBuddyCount(3)
+	var roster []*PaintownCharacter
+	for range NPCBuddyCount() {
+		roster = append(roster, character)
+	}
+	configuredGame := NewArcadeSession()
+	configuredGame.SetBuddies(roster...)
+	SetNPCBuddyCount(1) // Changing the option must not modify an active party.
+	configuredLevel := &GameModel{LevelLimit: 1000}
+	configuredLevel.createBuddies(configuredGame, human, &Level{ZMinimum: 100, ZMaximum: 200})
+	if len(configuredLevel.Buddies) != 3 || configuredGame.BuddyCount != 3 {
+		t.Fatal("configured party size was not retained after character selection")
+	}
+}
+
 func dropTestPlayer() *PlayerState {
 	player := grabTestPlayer()
 	player.MaxHealth, player.Health, player.Lives, player.X, player.Z = 100, 80, 3, 100, 150
@@ -745,6 +1168,54 @@ func TestArcadeLastLifeAndOffscreenRespawn(t *testing.T) {
 	}
 }
 
+func TestCharacterSelectionConsumesConfirmationBetweenPartySlots(t *testing.T) {
+	t.Chdir("../..")
+	if _, err := os.Stat("paintown-data/players/akuma"); os.IsNotExist(err) {
+		t.Skip("game assets not installed")
+	}
+	previousInput := currentInput
+	t.Cleanup(func() { currentInput = previousInput })
+	currentInput = logicalInput{}
+	currentInput.advance(inputButtons{inputConfirm: true})
+	var drawer data.DrawFunc = func(*ebiten.Image) {}
+	setCalls := 0
+	setDraw := func(next data.DrawFunc) data.DrawFunc { old := drawer; drawer = next; setCalls++; return old }
+	var selected []*PaintownCharacter
+	for index, steps := range [][]inputButtons{
+		{{inputConfirm: true}, {}, {inputMenuRight: true}, {inputConfirm: true}},
+		{{inputConfirm: true}, {}, {inputConfirm: true}},
+		{{inputConfirm: true}, {}, {inputMenuRight: true}, {}, {inputMenuRight: true}, {inputConfirm: true}},
+	} {
+		step := 0
+		yield := func() error {
+			if step >= len(steps) {
+				return errors.New("selection did not accept its own confirmation")
+			}
+			currentInput.advance(steps[step])
+			step++
+			return nil
+		}
+		character, err := ChooseCharacterFor(yield, nil, setDraw, []string{"Choose Your Character", "Choose AI Buddy 1 of 2", "Choose AI Buddy 2 of 2"}[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if step != len(steps) {
+			t.Fatal("previous slot's held confirmation skipped the new selector")
+		}
+		selected = append(selected, character)
+	}
+	if selected[0].Definition.Name == selected[1].Definition.Name || selected[1].Definition.Name == selected[2].Definition.Name || selected[0].Definition.Name == selected[2].Definition.Name {
+		t.Fatal("party slots could not select different fighters")
+	}
+	if setCalls != 6 {
+		t.Fatal("character selectors did not restore their previous draw functions")
+	}
+	cancel := errors.New("cancel party selection")
+	if _, err := ChooseCharacterFor(func() error { return cancel }, nil, setDraw, "Choose AI Buddy 1 of 2"); err != cancel || setCalls != 8 {
+		t.Fatal("canceling a buddy selection did not restore the menu")
+	}
+}
+
 func TestArcadeSessionSnapshotsStartingLives(t *testing.T) {
 	previous := StartingLives()
 	t.Cleanup(func() { SetStartingLives(previous) })
@@ -849,6 +1320,49 @@ func TestLivesSliderMenuAndBounds(t *testing.T) {
 	volume := makeSoundVolumeMenu(root).Options[0].Slider
 	if !strings.HasSuffix(volume.Label(), "%") {
 		t.Fatal("volume slider lost its percentage label")
+	}
+}
+
+func TestNPCBuddyCountSliderAndPauseControls(t *testing.T) {
+	previous := NPCBuddyCount()
+	t.Cleanup(func() { SetNPCBuddyCount(previous) })
+	SetNPCBuddyCount(3)
+	root := defaultMenu()
+	root.Options = []MenuOption{{Kind: "npc", Name: "NPC Buddies"}}
+	menu, err := root.OpenSubmenu(root.Options[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	slider := menu.Options[0].Slider
+	if menu.Name != "NPC Buddies" || slider == nil || slider.Value() != 3 || slider.Label() != "3" {
+		t.Fatal("NPC Buddies did not open a numeric count slider")
+	}
+	if !menu.Adjust(1) || NPCBuddyCount() != 4 || !menu.Adjust(-1) || NPCBuddyCount() != 3 {
+		t.Fatal("Left/Right did not change the configured buddy count")
+	}
+	SetNPCBuddyCount(-10)
+	if slider.Value() != 1 || menu.Adjust(-1) {
+		t.Fatal("buddy count went below one")
+	}
+	SetNPCBuddyCount(1000)
+	if slider.Value() != 10 || menu.Adjust(1) {
+		t.Fatal("buddy count exceeded its maximum")
+	}
+	pause := &PauseMenu{Root: root, Current: root, Player: grabTestPlayer()}
+	pause.Update(PauseInput{Confirm: true}, &dummySystem{})
+	if pause.Current.Name != "NPC Buddies" {
+		t.Fatal("pause menu did not open the NPC slider")
+	}
+	pause.Update(PauseInput{Left: true}, &dummySystem{})
+	if NPCBuddyCount() != 9 || slider.Value() != 9 {
+		t.Fatal("pause and main menus did not share the buddy count")
+	}
+	pause.Update(PauseInput{Back: true}, &dummySystem{})
+	if pause.Current != root {
+		t.Fatal("Back did not leave the NPC slider")
+	}
+	if NewArcadeSession().BuddyCount != 0 {
+		t.Fatal("configured buddy count enabled buddies in Solo mode")
 	}
 }
 

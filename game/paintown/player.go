@@ -524,6 +524,8 @@ func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
     return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling && playerState.Status != PlayerStateDead && playerState.Status != PlayerStateDropping && playerState.spawnProtection == 0
 }
 
+func (playerState *PlayerState) GetAttackId() uint64 { return playerState.AttackId }
+
 func (playerState *PlayerState) NextAttackId() {
     playerState.AttackId += 1
 }

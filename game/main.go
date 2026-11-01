@@ -46,12 +46,20 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
             if paintown.ReadMenuInput().Back { return backToMenu }
             return nil
         }
-        adventure := func() error {
-            // Consume the menu confirmation before character selection.
-            if err := gameYield(); err != nil { return err }
-            player, err := paintown.ChooseCharacter(gameYield, background, setDraw)
+        adventure := func(withBuddies bool) error {
+            player, err := paintown.ChooseCharacterFor(gameYield, background, setDraw, "Choose Your Character")
             if err != nil { return err }
             session := paintown.NewArcadeSession()
+            if withBuddies {
+                var buddies []*paintown.PaintownCharacter
+                count := paintown.NPCBuddyCount()
+                for i := range count {
+                    buddy, err := paintown.ChooseCharacterFor(gameYield, background, setDraw, fmt.Sprintf("Choose AI Buddy %d of %d", i+1, count))
+                    if err != nil { return err }
+                    buddies = append(buddies, buddy)
+                }
+                session.SetBuddies(buddies...)
+            }
             for i := range 10 {
                 if err := session.RunLevel(player, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i+1), audioContext); err != nil { return err }
             }
@@ -77,7 +85,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                 option := current.Options[current.Selected]
                 play(current.OKSound)
                 switch option.Kind {
-                case "menu", "gibs", "font-select", "sound", "music", "lives":
+                case "menu", "gibs", "font-select", "sound", "music", "lives", "npc":
                     next, err := current.OpenSubmenu(option)
                     if err != nil {
                         log.Printf("Menu: %v", err)
@@ -92,8 +100,8 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext 
                     // Informational entries (such as an empty font list).
                 case "quit":
                     return ebiten.Termination
-                case "adventure":
-                    err := adventure()
+                case "adventure", "adventure-cpu":
+                    err := adventure(option.Kind == "adventure-cpu")
                     if err == paintown.ErrReturnToMainMenu {
                         current = root
                         stack = nil

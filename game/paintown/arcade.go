@@ -1,6 +1,8 @@
 package paintown
 
 import (
+	"slices"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	audiolib "github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/kazzmir/paintown/game/data"
@@ -10,18 +12,29 @@ import (
 // An adventure shares its remaining lives and immutable enemy assets across
 // levels. Changing StartingLives only affects the next adventure.
 type ArcadeSession struct {
-	Lives int
-	cache *ObjectFactory
+	Lives           int
+	BuddyCount      int
+	buddyCharacters []*PaintownCharacter
+	defeatedBuddies map[int]bool
+	cache           *ObjectFactory
 }
 
 func NewArcadeSession() *ArcadeSession {
 	return &ArcadeSession{Lives: StartingLives(), cache: MakeObjectFactory()}
 }
 
+// SetBuddies keeps the chosen roster for the entire adventure. Duplicate
+// characters are allowed; every fighter still receives independent live state.
+func (session *ArcadeSession) SetBuddies(characters ...*PaintownCharacter) {
+	session.buddyCharacters = slices.Clone(characters)
+	session.BuddyCount = len(characters)
+}
+
 func (session *ArcadeSession) RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(data.DrawFunc) data.DrawFunc, path string, audio *audiolib.Context) error {
 	if session.Lives <= 0 {
 		return ErrReturnToMainMenu
 	}
+	session.prepareBuddies(player)
 	if session.cache == nil {
 		session.cache = MakeObjectFactory()
 	}

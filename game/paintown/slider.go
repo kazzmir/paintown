@@ -73,8 +73,22 @@ func makeMusicVolumeMenu(parent *Menu) *Menu {
 }
 
 var configuredStartingLives atomic.Int32
+var configuredNPCBuddyCount atomic.Int32
 
-func init() { configuredStartingLives.Store(4) }
+func init() {
+	configuredStartingLives.Store(4)
+	configuredNPCBuddyCount.Store(2)
+}
+
+// NPCBuddyCount controls new AI-mode parties; it never changes an active roster.
+func NPCBuddyCount() int         { return int(configuredNPCBuddyCount.Load()) }
+func SetNPCBuddyCount(count int) { configuredNPCBuddyCount.Store(int32(max(1, min(10, count)))) }
+
+func makeNPCBuddiesMenu(parent *Menu) *Menu {
+	menu := makeSliderMenu(parent, "NPC Buddies", "AI buddies", &Slider{Min: 1, Max: 10, Step: 1, GetValue: NPCBuddyCount, SetValue: SetNPCBuddyCount})
+	menu.Options[0].Info = "Left / Right: adjust\nApplies to new Arcade games with AI buddies"
+	return menu
+}
 
 func StartingLives() int         { return int(configuredStartingLives.Load()) }
 func SetStartingLives(lives int) { configuredStartingLives.Store(int32(max(1, min(100, lives)))) }

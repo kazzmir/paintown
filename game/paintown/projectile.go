@@ -223,6 +223,11 @@ func (projectile *Projectile) Draw(screen *ebiten.Image, cameraX float64, shake 
 func (model *GameModel) UpdateProjectiles(player *PlayerState, system System, flashes *FlashFactory) {
 	model.Projectiles = append(model.Projectiles, player.pendingProjectiles...)
 	player.pendingProjectiles = nil
+	for _, buddy := range model.Buddies {
+		model.Projectiles = append(model.Projectiles, buddy.Player.pendingProjectiles...)
+		buddy.Player.pendingProjectiles = nil
+	}
+	party := model.party(player)
 	out := model.Projectiles[:0]
 	for _, projectile := range model.Projectiles {
 		projectile.Update(system)
@@ -237,10 +242,13 @@ func (model *GameModel) UpdateProjectiles(player *PlayerState, system System, fl
 			showFlash := true
 			hitX, hitY, hitZ := 0.0, 0.0, 0.0
 			if projectile.FromEnemy {
-				if abs(player.Z-projectile.Z) < Z_DISTANCE && player.CanBeHit(projectile, projectile.AttackId) && player.HitBy(box) {
-					player.Hurt(projectile, attack.Damage, force)
-					showFlash = !player.Exploded
-					hit, hitX, hitY, hitZ = true, player.X, player.Y, player.Z
+				for _, target := range party {
+					if abs(target.Z-projectile.Z) < Z_DISTANCE && target.CanBeHit(projectile, projectile.AttackId) && target.HitBy(box) {
+						target.Hurt(projectile, attack.Damage, force)
+						showFlash = !target.Exploded
+						hit, hitX, hitY, hitZ = true, target.X, target.Y, target.Z
+						break
+					}
 				}
 			} else {
 				for _, enemy := range model.Enemies {

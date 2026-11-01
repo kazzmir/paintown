@@ -167,6 +167,7 @@ type Enemy struct {
     // each attack that hits the enemy has an id that increments monotonically. the enemy
     // cannot be hit by the same attack twice (unless the attack explicitly enables this via next-ticket)
     LastAttacked uint64
+    Attackers map[Attacker]uint64
     AttackId uint64
 
     HasDestination bool
@@ -408,6 +409,18 @@ func (enemy *Enemy) CurrentAnimation() *Animation {
 
 func (enemy *Enemy) CanBeHit(attack uint64) bool {
     return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling && !enemy.IsDead()
+}
+
+func (enemy *Enemy) CanBeHitFrom(attacker Attacker) bool {
+    if enemy.IsDead() || enemy.State == EnemyStateFalling || enemy.State == EnemyStateFallen { return false }
+    last, hit := enemy.Attackers[attacker]
+    return !hit || attacker.GetAttackId() > last
+}
+
+func (enemy *Enemy) HurtFrom(attacker Attacker, damage, force float64) {
+    if enemy.Attackers == nil { enemy.Attackers = make(map[Attacker]uint64) }
+    enemy.Attackers[attacker] = attacker.GetAttackId()
+    enemy.Hurt(attacker.GetAttackId(), damage, force)
 }
 
 func (enemy *Enemy) GetName() string {
