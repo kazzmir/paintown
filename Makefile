@@ -1,4 +1,7 @@
-.PHONY: debug clean
+.PHONY: debug clean paintown
+
+paintown:
+	go build -o paintown ./game
 
 debug: build-debug
 	(cd build-debug; meson configure -Dbuild_tests=false)
