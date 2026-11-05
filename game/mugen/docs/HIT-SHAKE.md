@@ -10,10 +10,13 @@ Time and amplitude reject direct float literals; runtime time truncates while
 runtime amplitude retains its fraction. Frequency/phase accept floats. Bottom
 becomes zero and unknown expressions/extra components reject before state
 side effects. Defaults are time 0, frequency 60 and raw author-local amplitude -4.
-Absent phase chooses 90 for evaluated frequency >= 90, otherwise 0, without
+Absent phase chooses 90 for normalized frequency >= 90, otherwise 0, without
 executing the frequency expression again. The measured order after palette
 fields is time, amplitude, phase, frequency, independent of declaration order.
-Frequency clamps to at least float32(.001), including explicit zero.
+M4cw corrects the earlier minimum-clamp description: frequency uses its absolute
+magnitude; only exact zero becomes float32(.001). Tiny nonzero magnitudes persist.
+The original zero/positive controls could not establish negative/tiny behavior;
+12 separately captured controls now do. See [SHAKE-FREQUENCY.md](SHAKE-FREQUENCY.md).
 
 Amplitude converts once from author to receiver coordinates and then into
 base 320 camera units. The global clock stores float32 amplitude/phase/frequency.

@@ -6,8 +6,13 @@ They use the contact-shake typed schema: strict integer literals for time and
 amplitude, runtime integer time/floating amplitude, floating frequency/phase,
 bottom zero and atomic rejection of unknown expressions or malformed tuples.
 Defaults after a hit are time 0, raw author amplitude -4, frequency 60 and phase 0;
-missing phase instead becomes 90 when evaluated frequency >= 90. Frequency clamps
-to float32(0.001). Default phase does not repeat frequency side effects.
+missing phase instead becomes 90 when normalized frequency >= 90. M4cw corrects
+the earlier minimum-clamp inference: absolute magnitude is retained, including
+tiny nonzero values, and only exact zero becomes float32(0.001). Default phase
+does not repeat frequency side effects. Twelve independent new controls pin
+both stored fall metadata and actual camera waves; the original zero/positive
+controls did not establish negative/tiny behavior. See
+[SHAKE-FREQUENCY.md](SHAKE-FREQUENCY.md).
 
 The joint tagged control pins all contact fields before all stored-fall fields,
 with each family ordered time, amplitude, phase, frequency, after the palette

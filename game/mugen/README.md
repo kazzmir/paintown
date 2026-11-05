@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cv implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cw implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
 motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cv)
@@ -150,6 +150,11 @@ HUD AIR transparency now reaches the shared blend consumer. Revision2 retains38/
 full environment race suite passes4,033results/36packages. See
 [environment shake](docs/ENV-SHAKE.md). These are bounded observations, not an
 overall completion percentage.
+Contact/fall frequency normalization now preserves tiny nonzero magnitudes and
+uses the magnitude of negative inputs. Twelve additional native controls pin
+144 observations; all145 selected native programs pass with the fix. See
+[contact/fall frequency](docs/SHAKE-FREQUENCY.md). The full4,033-result suite
+remains the M4cv integration boundary and precedes this focused parser fix.
 The final M4cs integration passes25 tested and11 compiled-only packages,
 with no failures or individual skips and all14,164 frozen inputs verified. No whole-engine completion percentage is justified.
 

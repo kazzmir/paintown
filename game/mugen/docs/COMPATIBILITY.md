@@ -1,5 +1,20 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cw corrects shared contact/fall shake frequency normalization using12separate
+native programs/144values/49original-probehashes. Native frequencies use absolute
+magnitude, preserve tiny nonzero values and replace only exact zero with0.001;
+omitted phase follows normalization. The previous minimum-clamp inference was
+incorrect. New controls inspect both stored fall metadata and physical waves.
+Read [SHAKE-FREQUENCY.md](SHAKE-FREQUENCY.md). Old expectations stay unchanged.
+
+Fourcore races and145selected native programs(152results/93.361s) pass. Four old
+actual contact/fall garment masks match; stockwin/rematch/win is visually inspected
+with82balanced events/1,915,680private PCM frames. All15,035frozen inputs and
+final provenance/module/inventory guards pass. Audit:m4cw-final-evidence-audit.json.
+Latest full remains M4cv4,033/36, before this focused parser fix. Seven M4cv and12
+M4cq strict raster failures remain unwaived. Source-routing counts unchanged;
+no whole-engine completion claim. Continue AfterImage and all remaining item3.
+
 M4cv EnvShake has a bounded implementation and completed integration checkpoint.72 native
 programs pin792 values/six rejects and289 original/probe hashes. Typed defaults,
 evaluation order, fractional amplitudes, deferred replacement and global clocks

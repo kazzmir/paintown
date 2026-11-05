@@ -30,30 +30,30 @@ inspected before implementation. Missingtime defaults0;ampl raw-4;runtime ampl
 fractions persist;frequency abs, exactzero=>.001, nonzero tiny magnitudes survive.
 Nonpositive standalone requests clear pending only, retaining active shake.
 
-**M4cv environment checkpoint validation COMPLETE; local commit next.** No
-runtime active. Full session32364 finished/awaited0; separate source/client
-checks PASS all14,998inputs.4,033test/subtest results/36packages (25tested/
-11compiled-only),Match1736.103s,no failures/individual skips. Final audit16464
-finished/awaited0:temp/m4cv-final-evidence-audit.json. Earlier audit80209 found
-stale generatedinventoryHUDhash; only that JSONsourcehash refreshed after full,
-not Go/test/native/probe/fixture code. Exception:m4cv-inventory-refresh.json;
-original fullfreeze untouched. All final provenance/module/inventory guards pass.
+**M4cw frequency checkpoint ACCEPTED; local commit next.** No runtime active.
+Native8530finished/awaited,49hash/clientguardPASS; ALL12table inspected before
+implementation.12accepted/144numeric values. Contact/fall usesABSfreq/exactzero
+fallback.001/tiny nonzero retained; defaultphase follows normalizedfreq. Shared
+cns/hit_shake.go corrected. Baseline66979failedexpected (oldfreq.001/native90,
+phase0/native90); originalsource verifiedmatchesM4cv99a5. No oldgolden edits.
 
-All focused/native/app/regression sessions finished/awaited/guarded4295/34597/
-36095. Final38/45strict scenes exact (14,935,520pixels),1,727/1,755samples exact.
-Seven640/1280profiles retain252/876worldpixelerrors(max2RGBsteps),four1-step HUD
-sampleerrors each. Every strictfailure UNWAIVED; no sampler/expected/tolerance
-changes. Prior12M4cq raster failures remain. Stock visually inspectedwin/rematch/
-win82balanced events/1,975,603privatePCM. Source72typed/17fallback/5stubs/9partial/
-15bounded/60route-only is not whole-engine coverage. Read ENV-SHAKE.md.
+Acceptance94455finished/awaited0; separateclient/sourceguardPASS15,035inputs.
+Fourcore races +145native programs(152results/93.361s),four originalcontact/fall
+render masks and stockwin/rematch/win visuallyinspected82events/1,915,680PCM PASS.
+Final audit completed0:m4cw-final-evidence-audit.json. Native/source/resource/
+binary/config/PNG/audio/module/inventory guards pass. No newfullsuiteclaim:
+latestfullM4cv4,033/36(25tested/11compiled-only),Match1736.103s,14,998inputs.
+SevenM4cv profiles and12M4cq rasterfailures remain UNWAIVED. Read SHAKE-FREQUENCY.md.
+Sourcecounts72typed/17fallback/5stubs/9partial/15bounded/60route-only unchanged;
+no variantcomplete families/whole-engine percentage. No sampler change.
 
-Next localcommit383UTF8source/textpaths after stagedscope/binary/diff audit,
-then separate idle guard, execute prepared prep-m4cw.py (12contact/fall frequency
-controls), runnativebatch/guard,inspect ALLnative table before implementation.
-Then AfterImagepilotprep-m4cx-pilot.py. These scripts PREPARED ONLY, no newfixtures
-yet. Continue ALLitem3, no checkpoint stop or push. Standalone behavior must not
-be inferred for contact/fall. Separate clippednative viewportcalibration remains
-diagnostic ONLY, never accepted numeric evidence. Native originals immutable.
+Next audited localM4cwcommit, separateidle guard, execute PREPARED ONLY
+prep-m4cx-pilot.py (12AfterImagefirstlook controls), run generatednativebatch,
+await/guard and inspect ALLnative rows/captures BEFORE implementation/additional
+controls. No AfterImagefixtures/Go yet. Continue ALLitem3; do not checkpointstop.
+M4cw originalauthor assertion caught ambiguousFVar10/11snapshot beforeexecution;
+24alreadywrittenpaths preserved, separate correctedauthorcompleted12/49hashes.
+See docs and m4cw-author-partial-inputs.json; originals remain immutable.
 
 M4cu acceptance:76 native/68 accepted/816 values/eight rejects/305 hashes;
 68 exact crops31,715,200 pixels/2,516 samples; core+189 native races,ten regression

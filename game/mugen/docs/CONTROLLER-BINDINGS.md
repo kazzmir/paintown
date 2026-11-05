@@ -151,3 +151,12 @@ The source audit now includes engine/env_shake.go and the shared shake timeline.
 Full environment integration passes4,033results/36packages; no whole-engine completion claim.
 Final audit caught/refreshed only the generated HUD source hash, preserving source
 counts/classifications and all tested code/native inputs. See ENV-SHAKE.md.
+
+## M4cw dependent frequency correction
+
+The inventory includes cns/hit_shake.go, now matching12independent native controls
+for contact/fall frequency magnitude, tiny values and exact-zero fallback.
+Counts remain72typed/17fallback/5stubs/9partial/15bounded/60route-only; no family
+variant-complete.145native programs/fouractualrenderregressions/stock/privateaudio
+and allprovenanceguards pass. See SHAKE-FREQUENCY.md. LatestfullM4cv4033/36
+precedes this focused parser fix; all old native expectations remain unchanged.

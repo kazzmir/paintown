@@ -124,10 +124,10 @@ sample. It cannot author expectations. Batch drivers collect every failure and
 return nonzero whenever a strict case fails.
 
 Remaining variants include reset/round/KO-slowdown, more mixed coordinate/state
-owners, dynamic image captures and full framebuffer precision. Contact/fall
-frequency normalization also needs its own negative/tiny native controls:
-`cns/hit_shake.go` still uses a minimum clamp, unlike measured standalone
-EnvShake. No previous HitDef/Fall fixture or expected result was changed.
+owners, dynamic image captures and full framebuffer precision. M4cw subsequently captures12 independent contact/fall frequency controls and
+corrects the shared parser's minimum clamp to magnitude/zero-only normalization.
+See [SHAKE-FREQUENCY.md](SHAKE-FREQUENCY.md). No previous HitDef/Fall/EnvShake
+fixture or expected result was changed.
 
 Completed-Go-only storage sharing preserved3,737additional asset paths/hashes/
 permissions and released442,783,495unique inode bytes. Native resources, captures,

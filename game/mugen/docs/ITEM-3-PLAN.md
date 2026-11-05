@@ -139,3 +139,10 @@ AfterImage first-look controls are also prepared without authoring frozen
 fixtures during the active full run. They isolate history spacing/lifetimes,
 neutral/default palettes and AfterImageTime before choosing implementation
 boundaries. All remaining item3 groups stay allocated.
+
+M4cw completes the follow-up contact/fall frequency audit and fixes the shared
+minimum-clamp bug.12newnative programs/144values,145selected native replays,
+fouroldrenderregressions and visuallyinspectedstock/privateaudio pass. Source/
+native/artifact/module/inventory guards verify15,035inputs. Continue AfterImage
+with the prepared12first-look controls, then its measured schema/history/palette/
+ownership/projectile dependencies. Native all-case inspection precedes code.

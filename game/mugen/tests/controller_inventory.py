@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
