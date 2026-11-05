@@ -65,9 +65,9 @@ configuration overrides can change them.
 ## Build a standalone executable
 
 ```bash
-mkdir -p game/mugen/temp/bin game/mugen/temp/go-build game/mugen/temp/tmp
+mkdir -p game/mugen/temp/bin game/mugen/temp/go-build game/mugen/temp/_tmp
 GOCACHE="$PWD/game/mugen/temp/go-build" \
-GOTMPDIR="$PWD/game/mugen/temp/tmp" \
+GOTMPDIR="$PWD/game/mugen/temp/_tmp" \
 go build -modfile=game/mugen/mugen.mod -mod=readonly \
   -o game/mugen/temp/bin/mugen-go ./game/mugen/system
 

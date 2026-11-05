@@ -27,6 +27,7 @@ RENDER_FIELDS = {'angleadd': 'DrawAngle', 'angledraw': 'DrawAngle',
                  'anglemul': 'DrawAngle', 'angleset': 'DrawAngle',
                  'offset': 'DrawOffset'}
 PARTIAL = {
+	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'projectile shadow/trail fields lack complete renderer consumers',
     'explod': 'bindID explicitly unsupported; remaining parameters and consumers open',
     'assertspecial': 'only a subset of literal flags have production consumers',
@@ -35,6 +36,7 @@ PARTIAL = {
     'hitadd': 'updates ComboCount; no production reader of that field was found',
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
+BOUNDED = {'explodbindtime': 'EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open'}
 
 
 def function(source, name):
@@ -77,6 +79,9 @@ def inventory():
         elif name in PARTIAL:
             status = 'partial-consumer'
             evidence.append(PARTIAL[name])
+        elif name in BOUNDED:
+            status = 'bounded-native-consumer'
+            evidence.append(BOUNDED[name])
         elif route == 'missing':
             status = 'missing-dispatcher'
         rows.append({'name': name, 'registered': name in registered,
@@ -90,7 +95,7 @@ def inventory():
                 flags.update(re.findall(r'Specials\["([^"]+)"\]', path.read_text()))
     counts = {key: sum(row['consumer_status'] == key for row in rows)
               for key in ['stub', 'unconsumed-render-field', 'partial-consumer',
-                          'missing-dispatcher', 'route-only']}
+                          'missing-dispatcher', 'bounded-native-consumer', 'route-only']}
     return {'target': 'Elecbyte M.U.G.E.N 1.1 beta 1',
             'scope': 'source routes and audited gaps; not behavioral coverage',
             'manual_sha256': hashlib.sha256(doc.read_bytes()).hexdigest(),

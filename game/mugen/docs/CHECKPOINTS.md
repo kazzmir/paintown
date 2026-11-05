@@ -1,5 +1,20 @@
 # Implementation checkpoints
 
+## M4cj: ExplodBindTime schema and production binding consumer
+
+Twenty-eight frozen native programs / 288 readings / four load rejections /
+28 calibrated effect positions / 112 pinned authored inputs. Typed ID/time/value
+defaults, alias precedence, bottom/runtime conversion, source errors and active
+owned selection now reach production effects. Binding retains its birth-oriented
+offset after the anchor turns. Eight actual-app masks match every native white
+pixel. Match races17.690s and full Engine/Effect/Character races pass; all native,
+application, source/PNG/config/binary and module/inventory audits pass. Sessions
+awaited/no clients. The host harness uses private Wine32/header dependencies;
+app build temporary files now use `_tmp`. Immutable invalid VarSet setup source
+is preserved separately, with its schema gap open in the audit. Read
+EXPLOD-BINDING.md and HANDOFF.md. Continue ModifyExplod/remaining item 3;
+no binaries, push or out-of-scope authored changes. Full suite at integration.
+
 ## M4ci: current controller consumer audit / item 3 allocation
 
 Reconciles all 89 beta manual names with actual registered/typed/fallback routes

@@ -19,3 +19,7 @@ mugen
 /tests/testdata/reference/reversal-state-dest-own.*
 /tests/testdata/reference/reversal-state-dest-p1.*
 /tests/testdata/reference/reversal-state-dest-p2.*
+
+# Immutable setup diagnostic: native rejects VarSet before ExplodBindTime.
+# Its valid replacement is explodbind-supp-runtime-expr; retain this in place.
+/tests/testdata/reference/explodbind-runtime.*

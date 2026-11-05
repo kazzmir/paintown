@@ -79,7 +79,7 @@ def main():
     # First readable override wins: exclude ambient user/executable settings.
     (stock / 'mugen.yaml').write_text(json.dumps({'video': {'width': args.width, 'height': args.height}}) + '\n')
     env = os.environ.copy()
-    for key, suffix in [('GOCACHE', 'go-build'), ('GOTMPDIR', 'tmp'), ('TMPDIR', 'tmp')]:
+    for key, suffix in [('GOCACHE', 'go-build'), ('GOTMPDIR', '_tmp'), ('TMPDIR', '_tmp')]:
         path = project / 'temp' / suffix
         path.mkdir(parents=True, exist_ok=True)
         env[key] = str(path)

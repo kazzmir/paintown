@@ -50,6 +50,7 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 			e.Anchor = c.Opponents[0]
 		}
 		e.BindingTime = p.BindTime
+		e.OffsetX *= float64(e.Anchor.Facing)
 		face *= e.Anchor.Facing
 		x, y = c.PositionOf(e.Anchor)
 		x, y = x+p.X*float64(e.Anchor.Facing), y+p.Y
@@ -93,6 +94,15 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 	return nil
 }
 
+func (c *Character) SetExplodBindTime(p engine.ExplodBindTimeParameters) error {
+	for _, e := range c.Explods {
+		if e.Visual != nil && e.Visual.Active && (p.ID < 0 || e.ID == p.ID) {
+			e.BindingTime = p.Time
+		}
+	}
+	return nil
+}
+
 func (c *Character) advanceExplods(paused, superPaused bool) error {
 	keep := c.Explods[:0]
 	for _, e := range c.Explods {
@@ -101,7 +111,7 @@ func (c *Character) advanceExplods(paused, superPaused bool) error {
 		}
 		if e.Anchor != nil && e.BindingTime != 0 && !e.Anchor.destroyed {
 			x, y := c.PositionOf(e.Anchor)
-			e.X, e.Y = x+e.OffsetX*float64(e.Anchor.Facing), y+e.OffsetY
+			e.X, e.Y = x+e.OffsetX, y+e.OffsetY
 			if e.BindingTime > 0 {
 				e.BindingTime--
 			}

@@ -3,28 +3,28 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
-    "engine/statemachine.go": "9f27e1771e23c6f9896b6a2ec3199837af9d6bb297f5ae52b9c3c612412fcc45",
-    "engine/parameters.go": "7d308f9dc4d00137cc04cec6018bb9db5a88735def952fddb15985094ef2783a",
+    "engine/statemachine.go": "5665d20aac08482d13c08bbe03fa5bb0b5a419d10ad382437fe9997659becc01",
+    "engine/parameters.go": "94697f17b373bdde143b7c1271e77a0270125e2596acaa28e564a7019f412e68",
     "character/character.go": "cc560e4f1887b9cb18b061cdc172e44bbd15e667c3ee3bff4c909991e691a951",
     "character/player.go": "485b752c748f2a461a14a1f85bc6868c272cafa447c0f28c763c1ee049808784",
-    "character/explod.go": "d1166891e5139ac1aefc2333d322f6d8bedcf452891f49bfaf1f782b3a6fba39",
-    "engine/explod.go": "1c34028f1c103363300f0a2ce0ab35653b57f75356bacf9222a51abf8b76a4f1"
+    "character/explod.go": "d5d8d6cdf3d97a1d9ded503111bfa5e2af4dbb5c053b3c664481db6105f2ab90",
+    "engine/explod.go": "7cde84de6c677958aa38e61ab3c51dbdf49d46f05a9f09398b5b36c903f9dcdf"
   },
   "summary": {
     "manual": 89,
-    "registered": 87,
-    "typed": 59,
+    "registered": 88,
+    "typed": 60,
     "fallback": 28,
     "missing": [
-      "explodbindtime",
       "modifyexplod"
     ],
     "consumer_status_counts": {
       "stub": 14,
       "unconsumed-render-field": 5,
-      "partial-consumer": 7,
-      "missing-dispatcher": 2,
-      "route-only": 61
+      "partial-consumer": 8,
+      "missing-dispatcher": 1,
+      "bounded-native-consumer": 1,
+      "route-only": 60
     },
     "extra_registered_aliases": [
       "fvaradd",
@@ -313,11 +313,13 @@
     },
     {
       "name": "explodbindtime",
-      "registered": false,
-      "parameter_route": "missing",
-      "handler": null,
-      "consumer_status": "missing-dispatcher",
-      "evidence": [],
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open"
+      ],
       "variants_complete": false
     },
     {
@@ -847,8 +849,10 @@
       "registered": true,
       "parameter_route": "typed",
       "handler": "handleVarSet",
-      "consumer_status": "route-only",
-      "evidence": [],
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending"
+      ],
       "variants_complete": false
     },
     {

@@ -26,6 +26,16 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4ci is c9066e64. M4cj completes the bounded ExplodBindTime slice: 28 native
+programs/288 readings/four rejections/28 calibrated positions, eight exact
+actual-app masks, focused Match and full Engine/Effect/Character races pass.
+All frozen inputs/application provenance/module/inventory guards pass. Read
+EXPLOD-BINDING.md and HANDOFF.md. Continue ModifyExplod and full Explod dependencies
+before the remaining item 3 groups. Source inventory now88 registered/60 typed;
+VarSet literal-float validation is a newly found residual gap. Preserve its
+unpromoted setup diagnostic unchanged. Private host restore uses temp Wine32
+shims/dev headers; app harness temporary builds use `_tmp`. No clients remain.
+
 
 ## Current authorization
 

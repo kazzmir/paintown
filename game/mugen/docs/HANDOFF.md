@@ -5,18 +5,33 @@
 The user selected complete remaining effects/controllers, not a two-checkpoint
 stop. Continue through ITEM-3-PLAN.md with local commits and no agents/push/
 binaries/out-of-scope edits. Earlier item 1–2 stop conditions are historical.
-Item 4 still needs a separate allocation. M4ci establishes CONTROLLER-BINDINGS.md
-and its reproducible JSON/source audit; no runtime code has changed yet.
-Next close ExplodBindTime/ModifyExplod and required Explod binding/geometry
-consumers, then remaining effects/controllers. Keep frozen native originals and
+Item 4 still needs a separate allocation. M4ci (c9066e64) establishes
+CONTROLLER-BINDINGS.md and its reproducible JSON/source audit. M4cj implements
+ExplodBindTime with 28 native programs / 288 readings / four load rejections /
+28 isolated effect positions and 112 pinned inputs. Read EXPLOD-BINDING.md.
+Next close ModifyExplod and required Explod binding/geometry consumers, then
+remaining effects/controllers. Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
 The old private display/audio servers were absent. New task-owned Xvfb :97 and
 private Pulse processes are recorded in temp/item3-private-servers.json; all
 credentials/runtime logs remain under temp/. The display was verified with
 xdpyinfo. Use round-task-env.py (GOTMPDIR=temp/_tmp), preserving module guards.
-No native/app/test clients are active. The prior full suite remains df59235b;
+Task-local Wine32 shims and development headers restore the upgraded host without
+changing system packages. The prior full suite remains df59235b;
 use focused checks until the next meaningful integration boundary.
+
+M4cj acceptance: Match races 17.690s; Engine/Effect/Character races
+1.448s/1.011s/11.333s. Eight final actual-app masks match every native white
+pixel exactly, including left-facing and two-object cases; a two-object PNG was
+visually inspected. All application source/config/binary/PNG/prepared-input
+hashes, both native manifests (101 + 16 entries), root module guards and the
+controller inventory pass. Artifacts: temp/m4cj3-app-{inputs,results,audit}.json,
+temp/m4cj-native-mask-audit.json and m4cj-{match2,core}-race.log. All sessions were
+awaited and a separate client check is empty. No push/binaries. Continue
+ModifyExplod, then full Explod dependencies and the remaining item 3 groups.
+The immutable VarSet setup diagnostic remains ignored in place and its schema
+gap is explicitly open; valid binding replacement uses a separate name.
 
 
 ## Items 1–2 complete — paused for user testing/allocation

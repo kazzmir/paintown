@@ -1,5 +1,13 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cj adds typed ExplodBindTime and its production consumer: 28 native programs,
+288 numeric readings, four rejections, 28 calibrated positions and eight exact
+actual-app masks. See [EXPLOD-BINDING.md](EXPLOD-BINDING.md). The current audit has
+88/89 registered names and 60 typed routes; ModifyExplod is absent and many
+consumers remain partial/stubbed. Item 3 is active; item 4 remains unallocated.
+The full integration baseline is still M4ch; M4cj focused/core races pass.
+Older allocation/status paragraphs below are historical, not stop conditions.
+
 M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
 replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
 The seven render probes retain84 additional early clipboard readings. Source

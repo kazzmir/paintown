@@ -17,6 +17,50 @@ type ExplodParameters struct {
 	PosType                                                    string
 }
 
+type ExplodBindTimeParameters struct {
+	ID, Time int
+}
+
+func compileExplodBindTime(ctrl *cns.StateController) (ControllerFunc, bool, error) {
+	key := "time"
+	if _, present := ctrl.Params[key]; !present {
+		key = "value"
+	}
+	// The beta compiles only the selected alias, in ID/time order.
+	args, err := compileArguments(ctrl, []argumentSpec{{"id", true, false}, {key, true, false}})
+	if err != nil {
+		return nil, true, err
+	}
+	for _, arg := range args {
+		if err := evaluator.ValidateKnownTriggers(arg.expr); err != nil {
+			return nil, true, fmt.Errorf("%s: %w", arg.name, err)
+		}
+		if integerFieldFloatLiteral(arg.expr) {
+			return nil, true, fmt.Errorf("%s: expected int value and read float", arg.name)
+		}
+	}
+	return func(_ *cns.StateController, env Environment) error {
+		v, err := evaluateArgumentsWithBottom(args, env, true)
+		if err != nil {
+			return err
+		}
+		p := ExplodBindTimeParameters{ID: -1, Time: 1}
+		if value, present := v["id"]; present {
+			p.ID = int(value.Number())
+		}
+		if value, present := v[key]; present {
+			p.Time = int(value.Number())
+		}
+		context, ok := env.(interface {
+			SetExplodBindTime(ExplodBindTimeParameters) error
+		})
+		if !ok {
+			return fmt.Errorf("ExplodBindTime context is unavailable")
+		}
+		return context.SetExplodBindTime(p)
+	}, true, nil
+}
+
 // ExecuteExplodParameters preserves the legacy Environment entry point while
 // executable state controllers use the cached compiler below.
 func ExecuteExplodParameters(params map[string]string, env Environment, version string) error {

@@ -1,12 +1,16 @@
 # Current progress assessment
 
-2026-11-04 refresh: df59235b is unchanged and the scoped working tree was clean.
-The user authorized completion of remaining effects/controllers (item 3).
-[CONTROLLER-BINDINGS.md](CONTROLLER-BINDINGS.md) records 28 families with concrete
-schema/consumer gaps: 14 stubs, five unconsumed draw-field families, seven partial
-consumers and two missing names. 59/89 have typed routes, not full acceptance.
+2026-11-04: the user authorized completion of remaining effects/controllers
+(item 3). M4ci committed the reproducible audit; M4cj adds ExplodBindTime with
+28 native programs / 288 readings / four rejections / eight exact actual-app
+masks. Focused Match/core races pass. [CONTROLLER-BINDINGS.md](CONTROLLER-BINDINGS.md)
+now records 88 registered and 60 typed routes, 14 stubs, five unconsumed drawing
+families, eight partial families and one absent name (ModifyExplod). A newly
+observed VarSet literal-float gap is explicit. These are not full acceptance.
 The work is roughly ten substantial groups with multiple possible checkpoints.
 Item 4 remains unallocated. See [ITEM-3-PLAN.md](ITEM-3-PLAN.md).
+The full integration baseline is M4ch; older status paragraphs below are
+historical and do not supersede the current item 3 allocation.
 
 
 M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
@@ -73,7 +77,7 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | Scope | Current count | What it establishes |
 | --- | ---: | --- |
 | HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
-| Controller registration | 87/89 (97.8%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod and ExplodBindTime are unregistered. |
+| Controller registration | 88/89 (98.9%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod remains unregistered. |
 | Trigger runtime routes | 120/127 (94.5%) | Candidate source handlers; seven absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
 | Scalar clocks/random | HitPauseTime plus21 RNG controls/192 readings | Own pause clock, shared Park–Miller stream, VarRandom schemas/ranges/order and helper/redirect ownership. |
 | Projectile corpus |257 programs across setup/contact/coordinate/query slices | Typed setup and native lifecycle, cancellation/capacity/ownership/query behavior. Detailed bounded evidence in PROJECTILES.md, PROJECTILE-CONTACTS.md, PROJECTILE-COORDINATES.md and PROJECTILE-QUERIES.md. |

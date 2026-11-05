@@ -188,21 +188,26 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				FixtureConstants   bool               `json:"fixture_constants"`
-				RandomSeed         *int64             `json:"random_seed"`
-				ProjectileMax      *int               `json:"projectile_max"`
-				CNSHash            string             `json:"cns_sha256"`
-				AIRHash            string             `json:"air_sha256"`
-				StageHash          string             `json:"stage_fixture_sha256"`
-				CMDHash            string             `json:"cmd_sha256"`
-				Local              string             `json:"localcoord"`
-				P2Local            string             `json:"p2_localcoord"`
-				StageError         string             `json:"expected_stage_error"`
-				LoadError          string             `json:"expected_load_error"`
-				ErrorState         int                `json:"expected_compile_state"`
-				ErrorFile          string             `json:"expected_compile_file"`
-				ReplayTicks        int                `json:"replay_ticks"`
-				RenderOnly         bool               `json:"render_only"`
+				FixtureConstants bool   `json:"fixture_constants"`
+				RandomSeed       *int64 `json:"random_seed"`
+				ProjectileMax    *int   `json:"projectile_max"`
+				CNSHash          string `json:"cns_sha256"`
+				AIRHash          string `json:"air_sha256"`
+				StageHash        string `json:"stage_fixture_sha256"`
+				CMDHash          string `json:"cmd_sha256"`
+				Local            string `json:"localcoord"`
+				P2Local          string `json:"p2_localcoord"`
+				StageError       string `json:"expected_stage_error"`
+				LoadError        string `json:"expected_load_error"`
+				ErrorState       int    `json:"expected_compile_state"`
+				ErrorFile        string `json:"expected_compile_file"`
+				ReplayTicks      int    `json:"replay_ticks"`
+				RenderOnly       bool   `json:"render_only"`
+				ExplodPositions  []struct {
+					ID     int `json:"id"`
+					X, Y   float64
+					Facing int `json:"facing"`
+				} `json:"explod_positions"`
 				RecipeHash         string             `json:"recipe_sha256"`
 				GameWidth          int                `json:"game_width"`
 				Rules              map[string]float64 `json:"rules"`
@@ -427,6 +432,18 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				got := [2]float64{p.X - owner.X, p.Y - owner.Y}
 				if got != reference.ProjectilePosition.Offset || p.Facing != reference.ProjectilePosition.Facing {
 					t.Error("native sprite position/facing differs", got, p.Facing, reference.ProjectilePosition)
+				}
+			}
+			if reference.ExplodPositions != nil {
+				objects := m.Players[0].Character.Explods
+				if len(objects) != len(reference.ExplodPositions) {
+					t.Fatal("native isolated Explod count differs", len(objects), len(reference.ExplodPositions))
+				}
+				for i, want := range reference.ExplodPositions {
+					got := objects[i]
+					if got.ID != want.ID || got.X != want.X || got.Y != want.Y || got.Facing != want.Facing {
+						t.Errorf("Explod %d: id/position/facing=(%d,%g,%g,%d), native=%+v", i, got.ID, got.X, got.Y, got.Facing, want)
+					}
 				}
 			}
 			if reference.ActorRender != nil {

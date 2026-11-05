@@ -113,6 +113,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileTargetBind(ctrl)
 	case "explod":
 		return compileExplod(ctrl)
+	case "explodbindtime":
+		return compileExplodBindTime(ctrl)
 	case "screenbound":
 		return compileScreenBound(ctrl)
 	case "width":

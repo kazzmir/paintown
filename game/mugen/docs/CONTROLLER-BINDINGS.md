@@ -7,7 +7,7 @@ the immutable local beta manual's 89 names with actual dispatcher/compiler
 routes and named consumer gaps. Registration and typed parsing are separate
 from observable behavior; no family is marked variant-complete.
 
-## Current findings
+## M4ci baseline findings
 
 - 87/89 manual names are registered. ExplodBindTime and ModifyExplod are absent.
 - 59 families have a typed compiler route; 28 use fallback handlers. Eight of
@@ -47,7 +47,17 @@ validation, remaining stage/mode/name triggers and final renderer/font/platform
 conformance. The playable one-on-one engine and 120/127 trigger routes do not
 establish that those larger workstreams are nearly complete.
 
-## Validation
+## M4cj update
+
+ExplodBindTime now has a typed route and bounded native consumer; see
+EXPLOD-BINDING.md. Counts are 88/89 registered, 60 typed and 28 fallback, with
+only ModifyExplod absent. Fourteen stubs and five drawing fields remain. Eight
+partial families now include a newly observed VarSet literal-float schema gap;
+the seven M4ci rows were not exhaustive. One bounded native row is distinct from
+60 route-only rows. No row is variant-complete. These are source/audit counts,
+not an engine completion percentage.
+
+## M4ci validation
 
 The generator passed write and comparison modes, with all 89 names accounted
 for and source/manual SHA-256 evidence. Root go.mod/go.sum guards pass. No runtime

@@ -202,6 +202,9 @@ func (sm *StateMachine) registerCoreControllers() {
 	}
 	sm.controllers["assertspecial"] = handleAssertSpecial
 	sm.controllers["explod"] = handleExplod
+	sm.controllers["explodbindtime"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("ExplodBindTime requires compiled parameters")
+	}
 	sm.controllers["removeexplod"] = handleRemoveExplod
 	sm.controllers["afterimage"] = handleAfterImage
 	sm.controllers["afterimagetime"] = handleAfterImageTime
