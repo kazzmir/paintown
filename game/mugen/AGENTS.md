@@ -26,6 +26,20 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4cn implements Explod entity binding, lazy animation availability, retained
+retargets, motion orientation and owned age-limit clocks.62 programs/708 values/
+three rejections/49 calibrated positions/249 unique hashes. Read
+EXPLOD-ATTACHMENT.md. Focused236-program Match races126.003s and core races pass;
+17 final actual-app masks are exact. The first mixed-profile app used the wrong
+opponent definition and is diagnostic; m4cn2 corrected it, with both definition
+hashes verified. No runtime/source/golden changed for that correction. Stock
+win/rematch/win/82 balanced events/private PCM and all1,480 focused/app/native/
+module/inventory guards pass. Sessions awaited/no clients. Commit M4cn then
+continue remaining creation/shared effects under item3. Next address shared
+alpha precision/Trans and palette dependencies, including unresolved ownpal/
+remap/random/angle/shadow/capacity fields. Counts64 typed/25 fallback/11 stubs;
+latest full integration remains M4cl. Preserve all originals/failed diagnostics.
+
 M4cl is c3e810d40. M4cm implements BindToTarget with73 native programs/792
 readings/seven rejections/293 unique hashes. Read TARGET-SELF-BINDING.md:
 immediate caller position, reverse combat constraint, retained/sentinel offsets,
@@ -33,8 +47,8 @@ game-pixel truncation and tested profiles. Focused194-program Match races125.315
 and core/System/CNS/Character races pass; legacy target glob was narrowed after
 its discovery-only failure. Three exact white-pixel masks below HUD, stock
 win/rematch/win/82 owned events/private PCM,1,095 final hashes and provenance/
-module/inventory guards pass. All sessions awaited; no clients remain. Commit
-M4cm then continue remaining Explod/shared consumers and all item3. Latest full
+module/inventory guards pass. All sessions awaited; no clients remain. M4cm is
+committed as b72baadb9; continue remaining Explod/shared consumers and all item3. Latest full
 integration remains M4cl.64 typed/25 fallback/11 stubs; no full parity claim.
 
 M4ck is3d44c4ba. M4cl implements BindToParent/Root before remaining Explod creation

@@ -87,19 +87,32 @@ func (instance *Instance) Advance(paused, superPaused bool) error {
 	if !instance.Active {
 		return nil
 	}
-	if superPaused {
-		if !instance.IgnoreSuperPause && instance.SuperMoveTime <= 0 {
+	if instance.OwnerDriven {
+		// Explod movement allowances are age limits, not independently spent
+		// pause budgets. Native's internal age includes its creation pass;
+		// this clock retains that initial pose separately at Age zero.
+		limit, ignore := instance.PauseMoveTime, instance.IgnorePause
+		if superPaused {
+			limit, ignore = instance.SuperMoveTime, instance.IgnoreSuperPause
+		}
+		if (paused || superPaused) && !ignore && limit != -1 && instance.Age >= limit {
 			return nil
 		}
-		if !instance.IgnoreSuperPause {
-			instance.SuperMoveTime--
-		}
-	} else if paused {
-		if !instance.IgnorePause && instance.PauseMoveTime <= 0 {
-			return nil
-		}
-		if !instance.IgnorePause {
-			instance.PauseMoveTime--
+	} else {
+		if superPaused {
+			if !instance.IgnoreSuperPause && instance.SuperMoveTime <= 0 {
+				return nil
+			}
+			if !instance.IgnoreSuperPause {
+				instance.SuperMoveTime--
+			}
+		} else if paused {
+			if !instance.IgnorePause && instance.PauseMoveTime <= 0 {
+				return nil
+			}
+			if !instance.IgnorePause {
+				instance.PauseMoveTime--
+			}
 		}
 	}
 	instance.Clock.Update()

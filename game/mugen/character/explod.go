@@ -8,7 +8,25 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 )
 
+func (c *Character) CreateExplodEvaluated(action int, common bool, evaluate func() (engine.ExplodParameters, error)) error {
+	actions := c.AirFile
+	if common {
+		actions = c.CommonEffects.Animations
+	}
+	if actions == nil || actions.Actions[action] == nil {
+		c.EvaluationWarning(fmt.Sprintf("Explod action %d is unavailable", action))
+		return nil
+	}
+	p, err := evaluate()
+	if err != nil {
+		return err
+	}
+	p.Action, p.Common = action, common
+	return c.CreateExplod(p)
+}
+
 func (c *Character) CreateExplod(p engine.ExplodParameters) error {
+	p.Action = max(0, p.Action)
 	p.ID = max(0, p.ID)
 	width := c.GameCoord.Width
 	if width <= 0 {
@@ -34,11 +52,14 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 		p.RemoveTime = -2
 	}
 	face := 1
-	if p.Facing < 0 {
+	if p.Facing == -1 {
 		face = -1
 	}
+	if p.VFacing != -1 && p.VFacing != 1 {
+		p.VFacing = 1
+	}
 	x, y := p.X, p.Y
-	e := &ExplodData{ID: p.ID, Anim: p.Action, X: x, Y: y, Facing: face, VelX: p.VelX, VelY: p.VelY, AccelX: p.AccelX, AccelY: p.AccelY, Time: p.RemoveTime, Fresh: true, IgnoreHitPause: p.IgnoreHitPause, RemoveOnGetHit: p.RemoveOnGetHit, ScaleToGame: scale, OffsetX: x, OffsetY: y}
+	e := &ExplodData{ID: p.ID, Anim: p.Action, X: x, Y: y, Facing: face, MotionFacing: 1, VelX: p.VelX, VelY: p.VelY, AccelX: p.AccelX, AccelY: p.AccelY, Time: p.RemoveTime, Fresh: true, IgnoreHitPause: p.IgnoreHitPause, RemoveOnGetHit: p.RemoveOnGetHit, ScaleToGame: scale, OffsetX: x, OffsetY: y, BindingTime: p.BindTime}
 	screen := p.ScreenSpace
 	switch p.PosType {
 	case "p1", "p2":
@@ -51,9 +72,21 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 		}
 		e.BindingTime = p.BindTime
 		e.OffsetX *= float64(e.Anchor.Facing)
+		e.MotionFacing = e.Anchor.Facing
 		face *= e.Anchor.Facing
 		x, y = c.PositionOf(e.Anchor)
 		x, y = x+p.X*float64(e.Anchor.Facing), y+p.Y
+		if screen {
+			// Legacy postype in screen space puts the actor's screen pose in
+			// the offset, while retaining the old actor anchor. Native later
+			// adds its stage pose to that offset, even after rejecting bindID.
+			ax, _ := e.Anchor.lookupViewport("screenpos x")
+			ay, _ := e.Anchor.lookupViewport("screenpos y")
+			factor := c.ScaleFrom(e.Anchor)
+			e.OffsetX += ax.Number() * factor
+			e.OffsetY += ay.Number() * factor
+			x, y = e.OffsetX, e.OffsetY
+		}
 	case "front", "back", "left", "right":
 		screen = !p.SpaceSpecified || p.ScreenSpace
 		observed, _ := c.lookupViewport("screenwidth")
@@ -76,9 +109,10 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 			x += c.cameraPositionX() - viewWidth/2
 		}
 	}
-	if p.BindID != -2 {
-		return fmt.Errorf("Explod bindID requires the pending entity-binding implementation")
+	if e.BindingTime < -1 {
+		e.BindingTime = -1
 	}
+	c.retargetExplod(e, p.BindID, screen)
 	e.X, e.Y, e.Facing = x, y, face
 	request := effect.Request{Source: source, Action: p.Action, Facing: face, X: x * scale, Y: y * scale, RemoveTime: &e.Time, SpritePriority: p.SpritePriority, VFacing: p.VFacing, ScreenSpace: screen, OnTop: p.OnTop, PauseMoveTime: p.PauseMoveTime, SuperMoveTime: p.SuperMoveTime, ScaleX: p.ScaleX, ScaleY: p.ScaleY, HasScale: true}
 	e.Visual = &effect.Instance{Request: request, Clock: clock, Active: true, OwnerDriven: true}
@@ -92,6 +126,28 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 		return c.EffectQueue.PushOwned(e.Visual)
 	}
 	return nil
+}
+
+func (c *Character) retargetExplod(e *ExplodData, id int, screen bool) {
+	if id < -1 {
+		return
+	}
+	if screen {
+		c.EvaluationWarning("screen-space Explod cannot bind to a player")
+		return
+	}
+	if id == -1 {
+		e.Anchor = c
+		return
+	}
+	if c.World != nil {
+		if actor, found := c.World.Registry.Lookup(int32(id)); found && !actor.destroyed {
+			e.Anchor = actor
+			return
+		}
+	}
+	// A failed retarget retains the old legacy/mutation binding.
+	c.EvaluationWarning(fmt.Sprintf("Explod bindID %d is unavailable", id))
 }
 
 func (c *Character) SetExplodBindTime(p engine.ExplodBindTimeParameters) error {
@@ -132,17 +188,7 @@ func (c *Character) ModifyExplods(id int, evaluate func(bool) (engine.ExplodModi
 			e.BindingTime = *p.BindTime
 		}
 		if p.BindID != nil && *p.BindID != -2 {
-			e.Anchor = nil
-			if c.World != nil {
-				if *p.BindID == -1 && len(c.World.Roots) > 0 {
-					e.Anchor = c.World.Roots[0]
-				}
-				if *p.BindID >= 0 {
-					if actor, found := c.World.Registry.Lookup(int32(*p.BindID)); found {
-						e.Anchor = actor
-					}
-				}
-			}
+			c.retargetExplod(e, *p.BindID, v.ScreenSpace)
 		}
 		if p.OnTop != nil {
 			v.OnTop = *p.OnTop
@@ -188,26 +234,32 @@ func (c *Character) advanceExplods(paused, superPaused bool) error {
 		if e.Visual == nil || !e.Visual.Active {
 			continue
 		}
-		if e.Anchor != nil && e.BindingTime != 0 && !e.Anchor.destroyed {
-			x, y := c.PositionOf(e.Anchor)
-			e.X, e.Y = x+e.OffsetX, y+e.OffsetY
-			if e.BindingTime > 0 {
-				e.BindingTime--
-			}
-		}
+		fresh := e.Fresh
+		previous := e.Visual.Age
 		if e.Fresh {
 			e.Fresh = false
 			if e.Time == 0 {
 				e.Visual.Active = false
 			}
 		} else if c.destroyed || e.IgnoreHitPause || !c.IsPaused() {
-			previous := e.Visual.Age
 			if err := e.Visual.Advance(paused, superPaused); err != nil {
 				return err
 			}
-			if e.Visual.Age != previous {
-				e.X += e.VelX * float64(e.Facing)
-				e.Y += e.VelY
+		}
+		if fresh || e.Visual.Age != previous {
+			bound := e.Anchor != nil && e.BindingTime != 0 && !e.Anchor.destroyed
+			if bound {
+				x, y := c.PositionOf(e.Anchor)
+				e.X, e.Y = x+e.OffsetX, y+e.OffsetY
+				if e.BindingTime > 0 {
+					e.BindingTime--
+				}
+			}
+			if !fresh {
+				if !bound {
+					e.X += e.VelX * float64(e.MotionFacing)
+					e.Y += e.VelY
+				}
 				e.VelX, e.VelY = e.VelX+e.AccelX, e.VelY+e.AccelY
 			}
 		}

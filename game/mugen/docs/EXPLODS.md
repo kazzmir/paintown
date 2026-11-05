@@ -1,5 +1,12 @@
 # Explod resources, lifetime and owned rendering
 
+M4cn supersedes the historical unsupported-bindID/default/clock statements below.
+Creation and modification now share measured caller/helper retargeting, including
+retained offsets after failed IDs. Negative or missing anim falls back to action0
+when available; unavailable action skips later geometry. Motion and owned pause
+age limits have native consumers. Read EXPLOD-ATTACHMENT.md; other creation and
+shared rendering fields remain active item3.
+
 M4cj/M4ck update: ExplodBindTime and a bounded ModifyExplod path now compile and
 reach production effects. Read EXPLOD-BINDING.md and MODIFY-EXPLOD.md for native
 defaults/order/errors, actual geometry and explicit shared-rendering limits.

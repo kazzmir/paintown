@@ -31,7 +31,7 @@ PARTIAL = {
 	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; shared alpha/shadow/priority/pause and projection sampling gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'projectile shadow/trail fields lack complete renderer consumers',
-    'explod': 'bindID explicitly unsupported; remaining parameters and consumers open',
+    'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; creation palette/random/angle/trans/shadow/capacity and broader variants open',
     'assertspecial': 'only a subset of literal flags have production consumers',
     'appendtoclipboard': 'stores raw text; params/formatting absent',
     'displaytoclipboard': 'stores raw text; params/formatting absent',

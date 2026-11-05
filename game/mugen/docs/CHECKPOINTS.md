@@ -1,5 +1,20 @@
 # Implementation checkpoints
 
+## M4cn: Explod entity binding, motion and owned clocks
+
+Typed creation now consumes explicit IDs and shares corrected caller-relative /
+retained retargeting with ModifyExplod. Lazy availability/action0 fallback,
+legacy screen offsets, draw/motion orientation and owned age limits follow62
+native programs/708 readings/three rejections/49 calibrated positions.249 hashes
+pin the originals/probe. Read EXPLOD-ATTACHMENT.md for exact scope and open fields.
+
+Focused236-program Match races126.003s/core races pass.17 final actual-window
+masks are exact. The initial P2profile launcher mismatch is preserved; a separate
+corrected run pins both character DEFs and matches native. Stock win/rematch/win/
+82 owned events/private PCM,1,480 focused/source/native/app/module/inventory guards
+pass. All sessions awaited/no clients. Only source/text under game/mugen/ is
+committed. Continue creation/shared effects under item3; item4 stays unallocated.
+
 ## M4cm: BindToTarget positioning and reverse target constraint
 
 Typed selection/evaluation, immediate caller position, reverse target binding,

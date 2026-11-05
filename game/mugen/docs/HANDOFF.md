@@ -13,7 +13,42 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
-M4cl is c3e810d40. M4cm adds BindToTarget with73 frozen programs/792 readings/
+M4cn implements the bounded Explod attachment/evaluation/motion/clock slice.
+Read EXPLOD-ATTACHMENT.md:62 programs/708 readings/three rejections,49 exact
+whole-pose calibrated root positions,248 originals plus probe hash. Native
+manifests/metadata are m4cn-{native,extra,policy,clock,retarget}-*.json. All
+captures and originals are immutable. Negative/default anim falls back to0;
+missing resources skip later geometry. ID-1 binds caller (P2/helpers too), failed
+retargets retain anchors, screen warns/ignores explicit binding while preserving
+legacy behavior, bound displacement is suppressed while acceleration continues,
+and owned move allowances are age limits. Source counts64 typed/25 fallback/
+11 stubs; creation palette/random/angle/trans/shadow/capacity remain partial.
+
+Engine/Effect races1.425s/1.010s;236-program Match races126.003s;
+Character/System/CNS11.146s/9.246s/1.012s all pass.17 final actual-window masks
+are exact, including mixed profiles and legacy screen behavior. Initial m4cn1
+P2profile app accidentally launched KFM at320 instead of the native probeopponent
+at1280; it is preserved diagnostic. m4cn2-explodattach-p2local1280 uses the correct
+definition; final audit checks both selected DEF hashes for every accepted app.
+No Go source or native observation changed. RGB/full-frame conformance remains
+separate from these exact white masks. Corrected profile and stock21/26/45s were
+visually inspected. Stock has82 balanced owned events and2,002,050 private PCM
+frames. All249 native/1,480 focused/app/source/config/binary/PNG/PCM/module/
+inventory guards pass. Final audit: temp/m4cn-final-evidence-audit.json.
+All sessions awaited/no clients. Latest full suite remains M4cl.
+
+Continue item3 without a new stop: shared alpha precision/Trans and palette
+consumers, then remaining creation/dependent effects. Read-only supporting
+native disassembly is temp/item3-reference-disassembly.txt; it corroborates,
+not replaces, the native controls. Do not infer facing from a white-pixel count:
+fractional sampling can produce the same count as an integer mirrored pose.
+The alpha normalization analyses under temp/ remain a research clue only; no
+sampler fix has been applied or validated yet. Prior uniform-tint tweak failed
+and was reverted. Ordinary scene-driven cue move clocks retain their earlier
+policy pending their own matrix; the new age policy applies only to owned
+Explods. No whole-engine percentage or item4 allocation follows.
+
+M4cl is c3e810d40. M4cm is b72baadb9 and adds BindToTarget with73 frozen programs/792 readings/
 seven rejections/292 authored hashes plus the probe. Read TARGET-SELF-BINDING.md.
 Its consumer moves the caller immediately and stores a reverse target constraint;
 missing axes reuse retained acquisition offsets. Fractional/profile controls

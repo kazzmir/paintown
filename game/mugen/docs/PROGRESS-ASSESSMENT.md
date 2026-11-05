@@ -1,5 +1,14 @@
 # Current progress assessment
 
+M4cn (2026-11-05) consumes Explod entity binding, retained legacy offsets,
+motion and native pause age limits.62 programs pin708 readings/three rejections
+and49 calibrated root positions. Focused236-program Match races126.003s and
+core races pass;17 final actual-window masks are exact, including profiles and
+second-player/helper ownership. See [EXPLOD-ATTACHMENT.md](EXPLOD-ATTACHMENT.md).
+Creation palette/random/angle/trans/shadow/capacity and broader interactions
+remain partial. Current counts stay89 registered/64 typed/25 fallback,11 stubs.
+Latest full integration remains M4cl; item3 continues and item4 is unallocated.
+
 M4cm (2026-11-05) adds typed BindToTarget and the native immediate-caller /
 reverse-target constraint.73 programs pin792 readings/seven rejections, including
 retained offsets, game-pixel quantization and mixed profiles. Focused194-program

@@ -5,12 +5,12 @@
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
     "engine/parameters.go": "06402b74559f537de35cd4d4f5840c66f2eb51d6971475f20892204b9d881399",
-    "character/character.go": "70dbb5690d9a875245b7c5d4ea35d3a47f23eafe43c2b4e3c3ceb76660f82144",
+    "character/character.go": "2f82f2845b1636584d816441ce49ddac3ceeb0f8e41c8b85d3dd67fb8e152115",
     "character/player.go": "485b752c748f2a461a14a1f85bc6868c272cafa447c0f28c763c1ee049808784",
-    "character/explod.go": "99e4a3bc6f422b380139b588eaed964dcd925249bfb4ec9bb0757a4a696ba2e9",
-    "engine/explod.go": "7cde84de6c677958aa38e61ab3c51dbdf49d46f05a9f09398b5b36c903f9dcdf",
+    "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
+    "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
-    "effect/scene.go": "017ccd133f1a115d97ba110aec841f89a3f6527ef0cab6cbe62dcdae9a84ce8f",
+    "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
     "system/effects.go": "0933f782761bee7e442634a4f64a6acd461a581c78ef57c656e32459211acadc",
     "render/perspective.go": "56025e50257a5f991f73030a18ec58b1b0447a487c39561505e3660ead0c54fc",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
@@ -314,7 +314,7 @@
       "handler": "handleExplod",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "bindID explicitly unsupported; remaining parameters and consumers open"
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; creation palette/random/angle/trans/shadow/capacity and broader variants open"
       ],
       "variants_complete": false
     },

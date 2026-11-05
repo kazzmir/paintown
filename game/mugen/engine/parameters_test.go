@@ -72,6 +72,14 @@ func (h *parameterHost) CreateExplod(p ExplodParameters) error {
 	h.explod = p
 	return nil
 }
+func (h *parameterHost) CreateExplodEvaluated(action int, common bool, evaluate func() (ExplodParameters, error)) error {
+	p, err := evaluate()
+	if err != nil {
+		return err
+	}
+	p.Action, p.Common = action, common
+	return h.CreateExplod(p)
+}
 func (h *parameterHost) GetHitVar(name string) float64 {
 	if name == "xvel" {
 		return -4

@@ -2378,6 +2378,7 @@ type ExplodData struct {
 	X, Y                                          float64
 	PosType                                       string
 	Facing                                        int
+	MotionFacing                                  int
 	VelX, VelY                                    float64
 	Time                                          int // Ticks remaining (-1 for infinite)
 	CurrentTime                                   int

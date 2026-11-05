@@ -1,5 +1,13 @@
 # Native Explod mutation and drawing projections — M4ck
 
+M4cn correction: bindID-1 selects the caller, including player2/helpers. The
+first-player-only M4ck controls did not distinguish that from selecting the
+first root. Failed/nonselecting retarget IDs retain an existing anchor; the
+shared creation/modification consumer now follows this policy. Native second-
+player controls and actual windows verify it. Owned movement limits also use
+native age, not an independently spent pause budget. Read EXPLOD-ATTACHMENT.md.
+Alpha/rotation differences below remain open.
+
 ModifyExplod now has a typed compiler and a production mutation consumer. All
 89 manual controller names are registered, but registration is not behavioral
 completion: 14 stubs and other partial consumers remain. This checkpoint is a

@@ -75,8 +75,7 @@ func ExecuteExplodParameters(params map[string]string, env Environment, version 
 func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	raw, present := ctrl.Params["anim"]
 	if !present {
-		// Despite the manual's required label, the beta accepts omission and
-		// creates no object. Still compile/evaluate the other parameters.
+		// Beta accepts omission, warns and falls back to action zero.
 		raw = "-1"
 	}
 	raw = strings.TrimSpace(raw)
@@ -89,7 +88,7 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, fmt.Errorf("anim: %w", err)
 	}
 	args := []argument{{argumentSpec{"anim", true, true}, expr}}
-	scalars, err := compileArguments(ctrl, []argumentSpec{{"id", true, false}, {"removetime", true, false}, {"facing", true, false}, {"vfacing", true, false}, {"sprpriority", true, false}, {"pausemovetime", true, false}, {"supermovetime", true, false}, {"bindid", true, false}, {"bindtime", true, false}, {"ignorehitpause", true, false}, {"removeongethit", true, false}, {"ontop", true, false}})
+	scalars, err := compileArguments(ctrl, []argumentSpec{{"id", true, false}, {"facing", true, false}, {"vfacing", true, false}})
 	if err != nil {
 		return nil, true, err
 	}
@@ -105,6 +104,11 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 	}
+	scalars, err = compileArguments(ctrl, []argumentSpec{{"bindtime", true, false}, {"bindid", true, false}, {"ontop", true, false}, {"removetime", true, false}, {"supermovetime", true, false}, {"pausemovetime", true, false}, {"sprpriority", true, false}, {"removeongethit", true, false}})
+	if err != nil {
+		return nil, true, err
+	}
+	args = append(args, scalars...)
 	for _, arg := range args {
 		if err := evaluator.ValidateKnownTriggers(arg.expr); err != nil {
 			return nil, true, fmt.Errorf("%s: %w", arg.name, err)
@@ -137,25 +141,37 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		v, err := evaluateArgumentsWithBottom(args, env, true)
+		v, err := evaluateArgumentsWithBottom(args[:1], env, true)
 		if err != nil {
 			return err
 		}
-		integer := func(key string, fallback int) int {
-			if value, present := v[key]; present {
-				return int(value.Number())
-			}
-			return fallback
-		}
-		p := ExplodParameters{Action: integer("anim", 0), ID: integer("id", 0), RemoveTime: integer("removetime", -2), Facing: integer("facing", 1), VFacing: integer("vfacing", 1), SpritePriority: integer("sprpriority", 0), PauseMoveTime: integer("pausemovetime", 0), SuperMoveTime: integer("supermovetime", 0), BindID: integer("bindid", -2), BindTime: integer("bindtime", 1), X: v["pos0"].Number(), Y: v["pos1"].Number(), VelX: v["vel0"].Number(), VelY: v["vel1"].Number(), AccelX: v["accel0"].Number(), AccelY: v["accel1"].Number(), ScaleX: 1, ScaleY: 1, Common: common, PosType: postype, ScreenSpace: screen, IgnoreHitPause: integer("ignorehitpause", 1) != 0, RemoveOnGetHit: integer("removeongethit", 0) != 0, OnTop: integer("ontop", 0) != 0}
-		p.SpaceSpecified = explicitSpace
-		if value, present := v["scale0"]; present {
-			p.ScaleX, p.ScaleY = value.Number(), v["scale1"].Number()
-		}
-		context, ok := env.(interface{ CreateExplod(ExplodParameters) error })
+		action := max(0, int(v["anim"].Number()))
+		context, ok := env.(interface {
+			CreateExplodEvaluated(int, bool, func() (ExplodParameters, error)) error
+		})
 		if !ok {
 			return fmt.Errorf("Explod context is unavailable")
 		}
-		return context.CreateExplod(p)
+		return context.CreateExplodEvaluated(action, common, func() (ExplodParameters, error) {
+			v, err := evaluateArgumentsWithBottom(args[1:], env, true)
+			if err != nil {
+				return ExplodParameters{}, err
+			}
+			integer := func(key string, fallback int) int {
+				if value, present := v[key]; present {
+					return int(value.Number())
+				}
+				return fallback
+			}
+			p := ExplodParameters{Action: action, ID: integer("id", 0), RemoveTime: integer("removetime", -2), Facing: integer("facing", 1), VFacing: integer("vfacing", 1), SpritePriority: integer("sprpriority", 0), PauseMoveTime: integer("pausemovetime", 0), SuperMoveTime: integer("supermovetime", 0), BindID: integer("bindid", -2), BindTime: integer("bindtime", 1), X: v["pos0"].Number(), Y: v["pos1"].Number(), VelX: v["vel0"].Number(), VelY: v["vel1"].Number(), AccelX: v["accel0"].Number(), AccelY: v["accel1"].Number(), ScaleX: 1, ScaleY: 1, Common: common, PosType: postype, ScreenSpace: screen, IgnoreHitPause: true, RemoveOnGetHit: integer("removeongethit", 0) != 0, OnTop: integer("ontop", 0) != 0}
+			if ctrl.IgnoreHitPauseSource != "" {
+				p.IgnoreHitPause = ctrl.IgnoreHitPause != 0
+			}
+			p.SpaceSpecified = explicitSpace
+			if value, present := v["scale0"]; present {
+				p.ScaleX, p.ScaleY = value.Number(), v["scale1"].Number()
+			}
+			return p, nil
+		})
 	}, true, nil
 }

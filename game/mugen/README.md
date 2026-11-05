@@ -101,12 +101,15 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cm implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cn implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
-actor binding have production consumers. The latest full race suite (M4cl)
+actor binding have production consumers. Explicit Explod entity binding, native
+motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cl)
 passes **3,435** test/subtest results across **36 packages**. M4cm focused races
 pass194 native programs, including73 new controls/792 readings/seven rejections;
-three actor-window masks match. See [target binding](docs/TARGET-SELF-BINDING.md),
+three actor-window masks match. M4cn adds62 controls/708 readings/three rejections,
+49 calibrated positions and17 exact effect-window masks. See
+[effect attachment](docs/EXPLOD-ATTACHMENT.md), [target binding](docs/TARGET-SELF-BINDING.md),
 [parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
 All89 controller names register;64 typed routes,11 stubs and partial consumers
