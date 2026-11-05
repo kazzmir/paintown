@@ -1,0 +1,60 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "20a9f11b8672b9e80660dd2531bf7ff7b1e17d4683b007a7eb10e4fbe1df3c32",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "fd3948643b16a18eb648210ed659e76a5a949fbed5bf656bf1706cec9d4f92e0",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 160,
+        "7": -80,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "phase_control": "bounds-portrait",
+  "follows_unchanged_failure": "afterpilot-neutral",
+  "actual_statedef_velocity": [
+    0,
+    0
+  ],
+  "actual_sprite": [
+    9000,
+    0
+  ],
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "6ff958ae7c46b6a55f08c0d2c97ee2f2979d32ffeffe4587b14de397224ca7fc"
+  }
+}

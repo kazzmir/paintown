@@ -872,3 +872,33 @@ python3 game/mugen/tests/env_color_render_probe.py \
 [ENV-COLOR.md](../docs/ENV-COLOR.md) records76 native programs,68 exact applications
 and the native layer rules. All-case native-only consumer tables precede future
 implementation; complete batch collectors retain every strict failure.
+
+## AfterImage / AfterImageTime
+
+The native ledgers contain141 programs:132 accepted cases and nine load
+rejections. The Match replay checks source hashes, exact stored float32 values
+and source/state/controller context for load errors. Six preserved clipboard
+diagnostics use image acceptance because their original publisher preceded the
+final paused snapshot; the topic notes explain the independent timing controls.
+
+```bash
+game/mugen/mugen.sh --check -race -p 1 -timeout=10m \
+  -run '^TestNativeAfterImage'
+```
+
+`after_image_render_probe.py` is a strict read-only comparison. It verifies
+source/native/application/config/resource/capture hashes and every RGB pixel in
+the508,800-pixel native world crop. It has no recording or tolerance option. Use
+a fresh output name with an existing completed private application:
+
+```bash
+python3 game/mugen/tests/after_image_render_probe.py \
+  --fixture afterhist-length-60 \
+  --go-run m4cx-matrix-afterhist-length-60 --name my-afterimage-check
+```
+
+[AfterImage findings](../docs/AFTERIMAGE.md) record native quirks, preserved
+authoring/clipboard diagnostics, recording/animation order, palette quantization
+and remaining ownership/capacity/projectile variants. Native, application and
+display-dependent Go checks run sequentially. Never regenerate expectations from
+Go or overwrite original native input/capture files.

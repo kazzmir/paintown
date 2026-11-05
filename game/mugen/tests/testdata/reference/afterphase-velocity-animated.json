@@ -1,0 +1,61 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "88db022045025462bac769584744a99bd8934ea0fa2b579996b79cf1502f8170",
+  "air_sha256": "f7a78330299d3543fb4eae23e1a95b123070bbef5f2ef5f3495bd1ffaba4a0e3",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "f86377d733287debe606595b0f9fc38c012045ed3eab5845b6a2d29753febbfb",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "phase_control": "velocity-animated",
+  "follows_unchanged_failure": "afterpilot-neutral",
+  "actual_statedef_velocity": [
+    0,
+    0
+  ],
+  "actual_sprite": [
+    9000,
+    0
+  ],
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "36ce6a240f75ad95baf26698ae0f51b3fd8a6f3541617942b477dd0d79805623"
+  },
+  "authoring_note": "Velocity-named original controls retain statedef velset=0,0; explicit motion controls separately use velset=30,0."
+}

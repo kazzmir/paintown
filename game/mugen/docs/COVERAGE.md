@@ -1,5 +1,26 @@
 # Current behavior coverage ledger
 
+M4cx implements typed AfterImage/AfterImageTime schemas, native evaluation
+quirks, recording after physics/bounds and before animation advance, and trail
+drawing with palette age counted over selected enabled entries.141 native
+programs pin1,668raw values/1,524final-storage comparisons/nine load rejections
+and566source/probe hashes. Every fresh132-app crop is exact across67,161,600RGB
+pixels. The earlier strict failures and native authoring/clipboard diagnostics
+remain preserved; no old expectation or tolerance changed. See
+[AFTERIMAGE.md](AFTERIMAGE.md).
+
+Full scoped races PASS4,193 test/subtest results across36 packages (25tested/
+11compiled-only), no failures or individual skips; Match1825.419s. Four old
+contact/fall render masks and visually inspected stock win/rematch/win pass,
+with82balanced owned inputs and1,921,557private PCM frames. All15,751 final
+source/fixture/launcher inputs and native/resource/binary/config/PNG/audio/
+module/inventory guards pass. Audit:temp/m4cx-final2-evidence-audit.json.
+Source74/89typed routes(83.1%),15fallbacks,three stubs,nine partial,17bounded
+and60route-only families are not whole-engine coverage. Shared capacity,
+fully drained context,ownership/palette/drawing variants and projectile trails/
+shadows continue under item3. The12M4cq and sevenM4cv raster failures remain
+unwaived. Item4 remains unallocated.
+
 M4cw corrects shared contact/fall shake frequency normalization using12separate
 native programs/144values/49original-probehashes. Native frequencies use absolute
 magnitude, preserve tiny nonzero values and replace only exact zero with0.001;
@@ -243,8 +264,8 @@ does not promote an entire controller from one passing parameter/default.
 | Distance/snap constraints | M4bq strict integer schemas, source replacement/order, per-axis intervals, deferred offsets/GetHitVar and timed binding, facing/profile/CNS-write/moving-axis controls. HIT-CONSTRAINTS.md. | Broad entity/projectile/foreign/override/pause and moving timed-bind combinations. |
 | Guard distance | M4bn compiles guard.dist with native integer/coercion/bottom/order rules, preserves omitted/negative range, resets it on state entry and verifies facing/boundary/height/profile consumers. GUARD-DISTANCE.md. | Broad input/entity/foreign/pause combinations and other AttackDist variants. |
 | Projectiles/reversals | M4ce setup/motion/ownership plus M4cf hit/miss/phase/cancellation, active capacity and helper birth ordering. 104+91 controls and nine exact opaque/phase app masks. PROJECTILES.md, PROJECTILE-CONTACTS.md. ReversalDef still stores data. | Foreign-coordinate corrections, event/legacy queries and consumed reversals remain in this allocation. Broader combinations stay explicit; afterimages/shadows defer to effects/rendering. |
-| Contact shake | M4bs native schemas/defaults/order, fractional amplitude, asymmetric rounding, issuing-frame duration, global clock, profile conversions, ScreenPosY and world-only rendering. M4bt adds stored fall payload, typed getters, positive-duration consumption and guard/fall=0 rules. HIT-SHAKE.md, FALL-SHAKE.md. | Standalone EnvShake and broad request/entity/pause/zoom combinations. |
-| Effects/palettes | Typed Explod/RemoveExplod and palette remapping have bounded evidence. M4br adds native HitDef palette schemas, shared clocks, cache/portrait isolation and exact opaque indexed color comparisons. EXPLODS.md, RGB-CONSUMERS.md, HIT-PALETTE.md. | ModifyExplod/ExplodBindTime are unregistered. AfterImage, AfterImageTime, EnvShake, EnvColor, Trans, PalFX/AllPalFX/BGPalFX and several system effects still reach empty Character methods. |
+| Contact shake | M4bs native schemas/defaults/order, fractional amplitude, asymmetric rounding, issuing-frame duration, global clock, profile conversions, ScreenPosY and world-only rendering. M4bt adds stored fall payload, typed getters, positive-duration consumption and guard/fall=0 rules. HIT-SHAKE.md, FALL-SHAKE.md. | M4cv implements standalone EnvShake; seven precision profiles and broader request/entity/pause/zoom combinations remain open. |
+| Effects/palettes | Typed Explod mutation/binding, palette effects, angles/offset/transparency and environment effects have bounded production consumers. M4cx AfterImage/AfterImageTime is under final integration after141 native replay passes and132 exact application crops. See CONTROLLER-BINDINGS.json and the corresponding topic notes. | Shared trail capacity/ownership and projectile trails/shadows, remaining Explod creation/ownership/capacity, AssertSpecial and system effects remain item3 gates. Native variant limits and existing raster failures stay explicit. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
 | Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | Required Data-constant load validation and all format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
 | Audio | Production command queue/mixer, channel ownership, pan/volume/voice/cues and owned native PCM controls. AUDIO.md. | BGM, broader configuration/resource/clock combinations; ForceFeedback remains an empty method. |
@@ -252,7 +273,7 @@ does not promote an entire controller from one passing parameter/default.
 | KO/time-over clocks | M4bu29 native programs, integer slowdown, continuous GameTime, zero timer interval, pause distinctions, readiness/900-pass fallback, result suffixes and separate state4/pose/MatchOver/init boundaries. ROUND-LIFECYCLE.md. | Broader DKO/draw/reset/persistence interactions, broader input-driven character scenarios, exact HUD/fade/audio timing and broader entity/pause variants. |
 | Complete stock matches | M4bw deterministic checks complete eight matches / 18 rounds with full-life walk/punch KOs, both winners, alternating wins, time draws and repeated rematches. An owned-window 2%-life replay shows actual win/rematch screens. M4by adds production process-clock handoff. COMPLETE-MATCHES.md, ENGINE-CLOCK.md. | Broader input timing/characters/modes/resources remain open; full scoped integration evidence is recorded per checkpoint. |
 | Stock match/UI | Title/selection/versus/fight/result/rematch/exit tested through production. M4bf storyboard localcoord and game/window scaling match six native placement controls. STORYBOARD-CANVAS.md, MATCH.md, `system/flow_test.go`. | Broader KO/round combinations. Full modes/AI/progression; win/continue/game-over types retain black-screen stubs. |
-| Other explicit stubs | GameMakeAnim and MakeDust have empty Character methods (`character/character.go`). | Implement runtime behavior, schemas and native controls. BindToParent/Root's legacy methods are empty, but typed binding paths must be assessed through `engine/binding.go`, not those fallback bodies alone. |
+| Other explicit stubs | GameMakeAnim and MakeDust have empty Character methods (`character/character.go`). | Implement remaining runtime behavior, schemas and native controls. Parent/root/target binding already reaches typed production consumers; see SELF-BINDING.md and TARGET-SELF-BINDING.md. |
 
 ## Quantitative scopes
 

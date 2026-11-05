@@ -1,0 +1,68 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "79ed3fc8bfc46d159cee3cbe7c19f8fd7000a9b71b1576e3964f0e941a3b61c7",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "8d79ee5966eb7cff53ce9894b8b6c6726903db79e1a533b6b7981c8a89cdf55a",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 160,
+        "7": -80,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_time_count": 0,
+  "parameter_control": {
+    "parameters": {
+      "time": "99999",
+      "length": "60",
+      "timegap": "1",
+      "framegap": "1",
+      "palcolor": "256",
+      "palinvertall": "0",
+      "palbright": "0,0,0",
+      "palcontrast": "128,64,256",
+      "palpostbright": "0,0,0",
+      "paladd": "0,0,0",
+      "palmul": "1,1,1",
+      "trans": "none"
+    },
+    "order": false
+  },
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "71f25b4cf7fa6e3b9d96633490c636ac7a54ab22d65bae55621889ebd544b6a0"
+  }
+}

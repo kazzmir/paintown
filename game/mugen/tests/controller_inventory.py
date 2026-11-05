@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['engine/after_image.go', 'character/after_image.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
@@ -22,7 +22,6 @@ SOURCES = ['cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'background/background.go', 'stage/stage.go', 'font/font.go', 'system/fight_state.go', 'system/hud.go',
            'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
-    'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
     'forcefeedback': 'ForceFeedback', 'gamemakeanim': 'GameMakeAnim',
     'makedust': 'MakeDust',
 }
@@ -39,6 +38,8 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
+    'afterimage': 'AFTERIMAGE.md: typed native schema/order and bounded recording/palette/render consumers; broader ownership/projectile variants open',
+    'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema and retained history/expiry/resume consumer; wider variants open',
     'envshake': 'ENV-SHAKE.md: native schemas/evaluation, author-local amplitude, frequency normalization, pending/current clocks and actual fixed-overlay/viewport consumers; wider variants open',
     'envcolor': 'ENV-COLOR.md: native packed RGB/evaluation/global clocks, finite overlays and negative-duration stage suppression, actor/effect/foreground/palette production consumers; wider variants open',
     'allpalfx': 'GLOBAL-PALETTE-FX.md: native independent global clock, parameter merge and two-stage actor/effect/stage/HUD/portrait/font production drawing; wider variants remain open',

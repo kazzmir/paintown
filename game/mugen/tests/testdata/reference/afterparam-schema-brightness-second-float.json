@@ -1,0 +1,42 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "61923d67c3d4090059ab8030cbc569cd2736b0881ef122a8b76cb8bd1ae7ed24",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "load_error": "Library error message: Expected int value and read float.\n\nError detected.\n\nError parsing AfterImage\nError parsing [State 700, Actor transparency]\nError in [Statedef 700]\nError in probe.cns:179\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 1624280081\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...Freeing player RC Kung Fu Man...CMD...CNS...SFF...AIR...SND...Misc...OK\nCharacter kfm.def failed to load\n\n",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_time_count": 0,
+  "parameter_control": {
+    "parameters": {
+      "time": "99999",
+      "length": "60",
+      "timegap": "1",
+      "framegap": "1",
+      "palcolor": "256",
+      "palinvertall": "0",
+      "palbright": "0,1.5,0",
+      "palcontrast": "256,256,256",
+      "palpostbright": "0,0,0",
+      "paladd": "0,0,0",
+      "palmul": "1,1,1",
+      "trans": "none"
+    },
+    "order": false
+  },
+  "expected_load_error": "Library error message: Expected int value and read float.",
+  "expected_compile_state": 700
+}

@@ -26,6 +26,7 @@ import (
 type Character struct {
 	Name, AuthorName string
 	RuntimeError     error
+	afterImages      *afterImageHistory
 	stateInitialized bool
 	updateActive     bool
 	pausedThisTick   bool
@@ -574,6 +575,8 @@ func (c *Character) finishTick() {
 		}
 		c.applySelfBinding()
 		c.constrainPosition()
+		// Beta records the constrained pose before advancing the AIR clock.
+		c.advanceAfterImages()
 		// Contacts at the next tick use this completed simulation pose, before
 		// the animation clock selects the next CNS/display element.
 		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
@@ -906,11 +909,19 @@ func (c *Character) RemoveExplod(id int) {
 }
 
 func (c *Character) AfterImage(params map[string]string) {
-	// Stub
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteAfterImage(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("AfterImage: %w", err)
+	}
 }
 
 func (c *Character) AfterImageTime(time int) {
-	// Stub
+	if err := c.SetAfterImageTime(time); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) EnvShake(params map[string]string) {

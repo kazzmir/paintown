@@ -21,46 +21,41 @@ and its stock data as primary reference. C++ `src/mugen/` is incomplete prior ar
 Use the scoped mugen.mod/mugen.sum overlay and readonly module flags. Verify
 `sha256sum -c game/mugen/temp/upstream-post-merge-module.sha256`.
 
-## Immediate state — read HANDOFF.md
+## Immediate state — M4cx validated, local commit next
 
-Latest commit **M4cu b8654fca3**; prior M4ct a048effa3. M4cv EnvShake is
-implemented and in validation. All72 original programs/289 source+probe hashes
-are immutable;66 accepted/792 values/six rejects. Native-only all-case table was
-inspected before implementation. Missingtime defaults0;ampl raw-4;runtime ampl
-fractions persist;frequency abs, exactzero=>.001, nonzero tiny magnitudes survive.
-Nonpositive standalone requests clear pending only, retaining active shake.
+No runtime is active. Final chain83328 completed/awaited0 and a separate
+client/source guard passed. Native numeric141 programs/1668raw values/1524stored
+comparisons/nine rejects/566source-probe hashes. ALL native tables/images were
+inspected before implementation/corrections. Every fresh132-app crop is exact:
+67,161,600RGB pixels. Full scoped races PASS4193 test/subtest results/36packages
+(25tested/11compiled-only), no failures/individual skips; Match1825.419s,total
+1929.442s. Four old contact/fall masks pass. Stock win/rematch/win was visually
+inspected:82balanced owned events/1,921,557private PCM frames. All15,751 final
+source/fixture/launcher inputs and final provenance/module/inventory audits PASS.
+Audit:temp/m4cx-final2-evidence-audit.json. Binary036ee456257b01d4ee9d3e45421e4e02acf7fc12765ca68c5e76c601b877c3cc.
 
-**M4cw frequency checkpoint ACCEPTED; local commit next.** No runtime active.
-Native8530finished/awaited,49hash/clientguardPASS; ALL12table inspected before
-implementation.12accepted/144numeric values. Contact/fall usesABSfreq/exactzero
-fallback.001/tiny nonzero retained; defaultphase follows normalizedfreq. Shared
-cns/hit_shake.go corrected. Baseline66979failedexpected (oldfreq.001/native90,
-phase0/native90); originalsource verifiedmatchesM4cv99a5. No oldgolden edits.
+AfterImage/AfterImageTime has typed schemas, recording after physics/bounds and
+before AIR clocks, retained history and native palette/drawing consumers. Palette
+age counts selected enabled entries, ignoring disabled slots but including
+clipped enabled entries. Red brightness validates without evaluating; postbright
+evaluates without observed draw effect. See AFTERIMAGE.md for defaults, native
+quirks, phase/clipboard/authoring diagnostics and exact bounds. Original native
+inputs/resources/captures/goldens remain immutable. Failed complete matrix118/120
+and its hash-identical validator are preserved; both failures close unchanged in
+the fresh132/132 matrix. Old12M4cq and sevenM4cv raster failures remain UNWAIVED.
 
-Acceptance94455finished/awaited0; separateclient/sourceguardPASS15,035inputs.
-Fourcore races +145native programs(152results/93.361s),four originalcontact/fall
-render masks and stockwin/rematch/win visuallyinspected82events/1,915,680PCM PASS.
-Final audit completed0:m4cw-final-evidence-audit.json. Native/source/resource/
-binary/config/PNG/audio/module/inventory guards pass. No newfullsuiteclaim:
-latestfullM4cv4,033/36(25tested/11compiled-only),Match1736.103s,14,998inputs.
-SevenM4cv profiles and12M4cq rasterfailures remain UNWAIVED. Read SHAKE-FREQUENCY.md.
-Sourcecounts72typed/17fallback/5stubs/9partial/15bounded/60route-only unchanged;
-no variantcomplete families/whole-engine percentage. No sampler change.
+Next:stage/audit the explicit731-source/text path proposal in
+m4cx-proposed-commit-paths.json, commit locally, then CONTINUE ALLitem3. No push.
+Source74typed/15fallback/3stubs/9partial/17bounded/60route-only is not an engine
+percentage. Latest committed checkpoint is still f428cd5db until the M4cx commit.
 
-Next audited localM4cwcommit, separateidle guard, execute PREPARED ONLY
-prep-m4cx-pilot.py (12AfterImagefirstlook controls), run generatednativebatch,
-await/guard and inspect ALLnative rows/captures BEFORE implementation/additional
-controls. No AfterImagefixtures/Go yet. Continue ALLitem3; do not checkpointstop.
-M4cw originalauthor assertion caught ambiguousFVar10/11snapshot beforeexecution;
-24alreadywrittenpaths preserved, separate correctedauthorcompleted12/49hashes.
-See docs and m4cw-author-partial-inputs.json; originals remain immutable.
-
-M4cu acceptance:76 native/68 accepted/816 values/eight rejects/305 hashes;
-68 exact crops31,715,200 pixels/2,516 samples; core+189 native races,ten regression
-apps and visually inspected stock82events/1,972,229 private PCM frames. Audit:
-temp/m4cu-final-evidence-audit.json. Latest full **M4cs**3,857 results/36packages
-predates M4ct/M4cu/M4cv. Current source72typed/17fallback/5stubs/9partial/15bounded/
-60route-only is a source-routing count, not behavioral completion.
+Next native research:global trail capacity,drained context/helper lifetime,
+palette/drawing/pause variants,then projectile trails/shared shadows. Independent
+ignored builders prepare-m4cy-actor-draft.py and prepare-m4cy-projectile-draft.py
+are syntax-checked but NOT EXECUTED; they write ignored draft directories only.
+Inspect actual CNS/AIR/stage/controller intent before freezing/observing. See
+m4cy-native-research-draft.md. Do not implement from speculative notes. Native
+results precede Go; keep source/test/probe/fixture inputs frozen during runs.
 
 ## Native and validation workflow
 
@@ -111,7 +106,7 @@ temp/private-go-asset-sharing.json. Keep all diagnostics and evidence intact.
 
 ## Remaining allocation and historical record
 
-EnvShake; AfterImage/AfterImageTime and projectile trails/shadows; remaining
+AfterImage/AfterImageTime variants and projectile trails/shadows; remaining
 Explod creation/ownership/remapping/random/angle/trans/shadow/capacity; all
 AssertSpecial consumers; GameMakeAnim/MakeDust; clipboard formatting; force
 feedback and actual target/device boundary; residual typed/literal schemas,

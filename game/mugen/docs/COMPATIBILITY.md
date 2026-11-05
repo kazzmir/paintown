@@ -1,5 +1,26 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cx implements typed AfterImage/AfterImageTime schemas, native evaluation
+quirks, recording after physics/bounds and before animation advance, and trail
+drawing with palette age counted over selected enabled entries.141 native
+programs pin1,668raw values/1,524final-storage comparisons/nine load rejections
+and566source/probe hashes. Every fresh132-app crop is exact across67,161,600RGB
+pixels. The earlier strict failures and native authoring/clipboard diagnostics
+remain preserved; no old expectation or tolerance changed. See
+[AFTERIMAGE.md](AFTERIMAGE.md).
+
+Full scoped races PASS4,193 test/subtest results across36 packages (25tested/
+11compiled-only), no failures or individual skips; Match1825.419s. Four old
+contact/fall render masks and visually inspected stock win/rematch/win pass,
+with82balanced owned inputs and1,921,557private PCM frames. All15,751 final
+source/fixture/launcher inputs and native/resource/binary/config/PNG/audio/
+module/inventory guards pass. Audit:temp/m4cx-final2-evidence-audit.json.
+Source74/89typed routes(83.1%),15fallbacks,three stubs,nine partial,17bounded
+and60route-only families are not whole-engine coverage. Shared capacity,
+fully drained context,ownership/palette/drawing variants and projectile trails/
+shadows continue under item3. The12M4cq and sevenM4cv raster failures remain
+unwaived. Item4 remains unallocated.
+
 M4cw corrects shared contact/fall shake frequency normalization using12separate
 native programs/144values/49original-probehashes. Native frequencies use absolute
 magnitude, preserve tiny nonzero values and replace only exact zero with0.001;

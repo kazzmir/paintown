@@ -1,0 +1,311 @@
+{
+  "summary": {
+    "programs": 12,
+    "accepted": 12,
+    "rejects": 0,
+    "source_probe_hashes": 49,
+    "all_native_rows_and_images_inspected_before_revision": true
+  },
+  "programs": [
+    {
+      "fixture": "afterage-finite-3-framegap-1",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "943f4e16ee1b51683b4754ffe5022c2888a0b66852e9a9918a81b707732c6a39",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-finite-5-framegap-2",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4f641b6ef428ad8c232ba7e0148321354c6e66cfbfc5acbf740604e9119e19a0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-framegap-2",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "3bd5ac047366182f37b5676af1904d63289aaf91f4efaf2a59d2f673a054100c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-framegap-3",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d15c0f46509115643f85adbe28b1579403d8ab4229c15c004089139a41a88498",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-framegap-4",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "35e2833e92e865692bd95d59925b3965b5fffdc1caaa3721d1a120d603ad1830",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-reissue-framegap-2",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4070eb8ae39ea5de156682f82d17d3e3810ba7a2708d8d8d84c0b5b3268fcc2c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-reissue-framegap-3",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e016442fee7945760d456781d27a04d69ee48d9711c0e30ccaa49caa35dede67",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-reissue-framegap-4",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "fdaae5ce2833a91cca52c613e9396d930cf55444e5fe62418d309bf2c537e03e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-resume-framegap-2",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "08de5c6c61378c477fece24d210c6cf93114c6ab8e2c0a7c7ba1903df4476d5e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-stop-framegap-2",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "286f9dd3692d07c20b1257b5f7c585c5696695c7b94a53d4ea24d24a7e5308bc",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-timegap-2-framegap-1",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "cb68bbe4f71261b6890ac74bc2b5e09a1c12855c0add3185e869a525703ee007",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterage-timegap-2-framegap-2",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f6ed6afd04db0f6aa4d53c572616c42ae49c603569a13e81cddbb41936bf1ea6",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    }
+  ]
+}

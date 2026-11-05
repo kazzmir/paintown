@@ -3,20 +3,16 @@
 Start with the [project README](../README.md) for requirements, building,
 running, controls and dated coverage percentages with their exact scopes.
 
-Current status: M4br closes hit palette schemas and bounded rendering/clock consumers; the user
-authorized all remaining 27 HitDef keys, tracked in
-[the allocation ledger](HITDEF-REMAINING.md). Read the
-[current coverage ledger](COVERAGE.md),
-[fall/recovery evidence](HIT-FALL-RECOVERY.md),
-[trip recovery findings](TRIP-RECOVERY.md),
-[fall vector evidence](FALL-VECTORS.md),
-[HitFallSet findings](HITFALLSET.md),
-[downed-hit bounce](DOWN-BOUNCE.md),
-[guard distance](GUARD-DISTANCE.md), and
-[progress assessment](PROGRESS-ASSESSMENT.md) for working behavior, remaining
-gates and bounded allocations. The [checkpoint history](CHECKPOINTS.md) and
-[handoff](HANDOFF.md) record verification and authorization; the original
-assessment describes the baseline.
+Current work is the remaining effects/controllers allocation in
+[ITEM-3-PLAN.md](ITEM-3-PLAN.md). AfterImage/AfterImageTime has completed its bounded native, image and integration
+checkpoint; see [AFTERIMAGE.md](AFTERIMAGE.md). The earlier 27-key
+HitDef allocation is complete. Broader modes, assets and final platform
+conformance remain a separate allocation.
+
+Read the [coverage ledger](COVERAGE.md), [compatibility inventory](COMPATIBILITY.md)
+and [current handoff](HANDOFF.md) for measured behavior, active validation and
+remaining work. The [checkpoint history](CHECKPOINTS.md) and topic notes preserve
+verification and limits. The original assessment documents the starting baseline.
 
 1. [Assessment](ASSESSMENT.md): source-confirmed gaps, baseline tests, and comparison with the C++ engine and bundled M.U.G.E.N 1.1 beta 1.
 2. [Implementation plan](PLAN.md): architecture, scope, milestones, dependencies, and acceptance gates.

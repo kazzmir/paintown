@@ -3,11 +3,13 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
+    "engine/after_image.go": "d1dd69aef38045db8c35ab93716604a37fb669324fa5d9ca4d47e543862729b8",
+    "character/after_image.go": "f9e568b9e830f25ef04f9aa747dfc97095c6d74db9236e530e94cef482f16abf",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "15c69730725822361b8b3d169a0a347f4162cf4635cf8ef1fcbccfd94a67b8e8",
-    "character/character.go": "d67b143299183e67339e9f840b9773074a5e840ba114c6c5adfb4a79f3946ebc",
-    "character/player.go": "b2b1468bc92297c552e032341ad1159f04b7a41dbe52c93a0fca4f84695d579d",
+    "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
+    "character/character.go": "7ae3eef351d4d3df5a6aae871e065996a7a26a25078050bc9b0107c5c41f8c8b",
+    "character/player.go": "db99df39f0783e480f1a63f665e88a349629cbc45d8e49da8858d4684f512443",
     "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
@@ -46,15 +48,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 72,
-    "fallback": 17,
+    "typed": 74,
+    "fallback": 15,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 5,
+      "stub": 3,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 15,
+      "bounded-native-consumer": 17,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -77,22 +79,22 @@
     {
       "name": "afterimage",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleAfterImage",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:AfterImage"
+        "AFTERIMAGE.md: typed native schema/order and bounded recording/palette/render consumers; broader ownership/projectile variants open"
       ],
       "variants_complete": false
     },
     {
       "name": "afterimagetime",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleAfterImageTime",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:AfterImageTime"
+        "AFTERIMAGE.md: native canonical/alias schema and retained history/expiry/resume consumer; wider variants open"
       ],
       "variants_complete": false
     },

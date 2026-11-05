@@ -1,0 +1,211 @@
+{
+  "summary": {
+    "programs": 8,
+    "accepted": 8,
+    "rejects": 0,
+    "source_probe_hashes": 33,
+    "pre_go_revision_native_table_inspected": true
+  },
+  "programs": [
+    {
+      "fixture": "afterphase-animated",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6d9e648f9ca830957a522bd2b6f01c147a9cb2a502e490e7d64f78b5685a7d1a",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-bounds-body",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "c75f8a9909b16a7bc915852810e687044f0e2ae5caa87c52ca530005b8df0c9c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-bounds-portrait",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "fd3948643b16a18eb648210ed659e76a5a949fbed5bf656bf1706cec9d4f92e0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-explicit-default-palette",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "935e18cef91f7cf7b59d5ff37d1d8272b74f14fe8acc39603152cc1db0eae237",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-motion",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6aeec1ce5b99d31917f222efae80186b8b2df4a138f086412d2147c4353a0c0b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-motion-animated",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a63ca968b9aa46c2465899847caa4b4f4a6a767111146a204c7ec2292b5eb4d2",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-velocity",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0d648add5d3788eaa5dbded83de814c6eae54aaa040111f409981ba59bda3218",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterphase-velocity-animated",
+      "accepted": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f86377d733287debe606595b0f9fc38c012045ed3eab5845b6a2d29753febbfb",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -88,6 +88,11 @@ func (p *Player) drawLegacyExplods(screen *ebiten.Image, screenX, screenY, scale
 }
 
 func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy float64) {
+	p.drawAfterImages(screen, ent, x, y, sx, sy)
+	p.drawEntityWithPalette(screen, ent, x, y, sx, sy, nil)
+}
+
+func (p *Player) drawEntityWithPalette(screen *ebiten.Image, ent *Character, x, y, sx, sy float64, override *palette.Transform) {
 	animNo := ent.GetAnim()
 	frames := ent.AnimationFile()
 	if frames == nil {
@@ -182,6 +187,9 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 	}
 	destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
 	style := render.DrawStyle{DestinationFactor: destination, Palette: ent.Palettes.Transform()}
+	if override != nil {
+		style.Palette = *override
+	}
 	if ent.Timeline != nil {
 		style.Palette = palette.Combine(style.Palette, ent.Timeline.AllPalette.Transform())
 	}
