@@ -22,6 +22,7 @@ type pauseClock struct {
 // Timeline is simulation-owned. Requests take effect after the issuing tick;
 // nested entity adapters share its frame instead of advancing GameTime again.
 type Timeline struct {
+	EnvironmentColor              EnvironmentColorParameters
 	AllPalette, BackgroundPalette *palette.State
 	GameTime                      int32
 	TicksPerSecond                int32 // Zero uses the standalone default of 60.
@@ -35,6 +36,7 @@ type Timeline struct {
 func (t *Timeline) BeginFrame() {
 	if t.depth == 0 {
 		t.AdvanceGlobalPalette()
+		t.AdvanceEnvironmentColor()
 	}
 	t.depth++
 }

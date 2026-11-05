@@ -1,5 +1,22 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cu EnvColor (2026-11-05) now has a typed schema, native unmasked RGB
+packing/evaluation order, global lifetime and actual background/actor/effect/
+foreground/HUD/palette consumers.76 native programs pin816 values/eight rejects/
+305 original+probe hashes. All68 final applications are byte-exact across
+31,715,200 crop pixels and2,516 color samples. Read [ENV-COLOR.md](ENV-COLOR.md)
+for native behavior that differs from the manual and preserved diagnostics.
+
+Core and189 selected native-program races pass; final System races9.365s pass.
+Ten strict ordering/palette regression apps and visually inspected stock
+win/rematch/win pass, with82 balanced owned events/1,972,229 private PCM frames.
+All final source/native/resource/binary/config/PNG/audio/module/inventory guards
+pass. Final audit:temp/m4cu-final-evidence-audit.json. Latest full integration
+remains M4cs3,857 results/36 packages; a fresh full boundary follows EnvShake.
+Source71/89 typed routes (79.8%),18 fallbacks,6 stubs,9 partial,14 bounded and60
+route-only families do not establish whole-engine coverage. No family is marked
+variant-complete. Continue EnvShake and ALL remaining item3; item4 is unallocated.
+
 M4ct completes bounded actor/owned-effect ordering. Sixteen frozen native
 programs pin 192 readings and 65 original/probe hashes. All 16 new 151,800-pixel
 RGB crops match exactly (2,428,800 pixels); all FOUR unchanged M4cs Explod overlap

@@ -130,3 +130,12 @@ strict crops and four unchanged M4cs overlap crops match native. The audit now
 includes character/actor_order.go and records the bounded priority consumer on
 Explod/ModifyExplod. Counts remain70 typed/19 fallback/7 stubs/9 partial/13 bounded/
 60 route-only; no family is variant-complete. Read EFFECT-ORDERING.md.
+
+## M4cu update
+
+EnvColor has a typed compiler and measured global lifetime/drawing consumer.
+All76 native programs and68 strict application scenes establish packing, errors,
+evaluation order, positive/negative durations and layer/palette behavior; see
+ENV-COLOR.md. Audit counts are71 typed/18 fallback,6 stubs,9 partial,14 bounded,
+60 route-only.71/89 (79.8%) is parameter routing, not behavioral coverage. All
+families remain variant-incomplete. Source audit now includes engine/env_color.go.

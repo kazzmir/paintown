@@ -856,3 +856,19 @@ python3 game/mugen/tests/effect_order_render_probe.py \
 
 [EFFECT-ORDERING.md](../docs/EFFECT-ORDERING.md) records the16 controls, production
 consumer, exact comparisons and remaining variants.
+
+## Environment color
+
+`env_color_render_probe.py` performs a strict read-only crop/color comparison,
+including prepared assets, native/source/application/config/capture hashes.
+It cannot record expectations. Example for existing private evidence:
+
+```bash
+python3 game/mugen/tests/env_color_render_probe.py \
+  --fixture envcolor-extra-positive-foreground-under1 \
+  --go-run m4cu4-envcolor-extra-positive-foreground-under1 --name my-env-color-check
+```
+
+[ENV-COLOR.md](../docs/ENV-COLOR.md) records76 native programs,68 exact applications
+and the native layer rules. All-case native-only consumer tables precede future
+implementation; complete batch collectors retain every strict failure.

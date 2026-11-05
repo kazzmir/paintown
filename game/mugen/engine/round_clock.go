@@ -55,5 +55,6 @@ func (s *RoundSlowdown) Advance() {
 // requests, pause duration, palette and shake clocks belong to simulation.
 func (t *Timeline) SkipSimulationFrame() {
 	t.AdvanceGlobalPalette()
+	t.AdvanceEnvironmentColor()
 	t.GameTime++
 }

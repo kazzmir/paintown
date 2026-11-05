@@ -109,3 +109,10 @@ M4ct now closes the four unchanged M4cs overlap failures.16 native controls and
 20 strict applications establish actual actor/effect priority comparison,
 actor/effect ties, creation ties, ontop and modified priorities. Read
 EFFECT-ORDERING.md. Continue environment effects next, then all remaining item3.
+
+M4cu adds the bounded EnvColor schema/global clock and production layer consumer.
+All68 accepted actual-application scenes match native exactly. Native-only
+all-case inspection is now mandatory before implementation, following manual/
+foreground/HUD differences found in this batch. Old agent notes are archived;
+active scope/handoff are concise. Continue EnvShake (43 prepared controls), then
+all remaining item3 groups and full integration at the environment boundary.

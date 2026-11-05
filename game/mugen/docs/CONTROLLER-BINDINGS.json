@@ -4,8 +4,8 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "50ef615e549465fbc2c2f572d4fc7aec237c37eb4f435521a2a032b53fdcefdf",
-    "character/character.go": "a22c1b46eb149594c1791b8eed0987ea662017b7387242fe7a8475dc66a06c8f",
+    "engine/parameters.go": "74fdf8540efc65553e31e1386dbcfdd62ed79b6dd83cab9509bf6b7c2bacb2e0",
+    "character/character.go": "41ec580d47481b50455f3ddea7e93a864920032000f4f9504213e62e14ef7d80",
     "character/player.go": "b2b1468bc92297c552e032341ad1159f04b7a41dbe52c93a0fca4f84695d579d",
     "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
@@ -20,8 +20,9 @@
     "engine/drawing.go": "160df41e6afb94a1e34a9e850f553aac3a3a666e882eb483d92db79c52d16cf0",
     "engine/trans.go": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
     "engine/palette_fx.go": "fbfe30e579171d3b9c646462edfe324fe8c1053ff1e8366684238fe3dcb209c7",
-    "engine/timeline.go": "28d0f9b5e2304d30e398755c11b78ece6b8fe09951a30d712c675423beefbd96",
-    "engine/round_clock.go": "28279e87709a5726bca68351f0c09335861dc09b0ba55cd78a58f50fbde239da",
+    "engine/env_color.go": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
+    "engine/timeline.go": "8f4954ed3e7d351064431270f88341991bd95f59469bd09dd5196d964fcecc58",
+    "engine/round_clock.go": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
     "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
     "palette/controller_effect.go": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
     "palette/hit_effect.go": "14f801c3823004401e2f8183cd25e536ffd9ea32dca7d230dcc38c35816d978f",
@@ -31,7 +32,7 @@
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "b1e62cd12aaacc2a86e8888b10c15905552483d332a9bcb5a22d947b05558ab0",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "518ba2b35a194b2626705cd3447ceb8bd76d9ca4936425d14130e2f05e903199",
+    "system/fight_state.go": "6afcc11fe9dfa76dcda5163dfc3420d20ca8758e50331f79c65f90232934657f",
     "system/hud.go": "b5cea75cdc456eb151a377a88a0b432f5d497d910df20758454d3e7e362dc01f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
@@ -42,15 +43,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 70,
-    "fallback": 19,
+    "typed": 71,
+    "fallback": 18,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 7,
+      "stub": 6,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 13,
+      "bounded-native-consumer": 14,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -308,11 +309,11 @@
     {
       "name": "envcolor",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleEnvColor",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:EnvColor"
+        "ENV-COLOR.md: native packed RGB/evaluation/global clocks, finite overlays and negative-duration stage suppression, actor/effect/foreground/palette production consumers; wider variants open"
       ],
       "variants_complete": false
     },

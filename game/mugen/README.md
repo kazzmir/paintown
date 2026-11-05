@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4ct implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cu implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
 motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cs)
@@ -112,7 +112,7 @@ three actor-window masks match. M4cn adds62 controls/708 readings/three rejectio
 [effect attachment](docs/EXPLOD-ATTACHMENT.md), [target binding](docs/TARGET-SELF-BINDING.md),
 [parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
-All89 controller names register;70 typed routes,7 stubs and partial consumers
+All89 controller names register;71 typed routes,6 stubs and partial consumers
 remain. The two indexed and six RGB alpha counterexamples now pass unchanged goldens;
 see [alpha precision](docs/ALPHA-NORMALIZATION.md). Rotation sampling and wider
 documented gates stay open.
@@ -136,7 +136,12 @@ see [effect ordering](docs/EFFECT-ORDERING.md).
 The render tests pass10,352 native GPU color samples. See
 [global palette effects](docs/GLOBAL-PALETTE-FX.md). Final full integration passes3,857 results across36 packages, with no failures
 or individual skips and14,164 frozen inputs verified. Remaining item3 work
-continues with EnvColor/EnvShake and remaining controller consumers.
+continues with EnvShake and remaining controller consumers.
+EnvColor now has native RGB packing, global clocks and measured over/under,
+foreground/HUD and palette drawing. Its76 native programs pin816 values/eight
+rejections; all68 actual applications match31,715,200 crop pixels and2,516 color
+samples. Ten regressions and stock win/rematch/win with private audio pass.
+See [environment color](docs/ENV-COLOR.md) for beta quirks and remaining variants.
 The final M4cs integration passes25 tested and11 compiled-only packages,
 with no failures or individual skips and all14,164 frozen inputs verified. No whole-engine completion percentage is justified.
 
@@ -204,7 +209,8 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
-| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only;11 stubs and other partial consumers remain.64 typed routes; not full controller compatibility. |
+| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; six stubs and other partial consumers remain. Not full controller compatibility. |
+| Documented controller names with typed compiler routes | 71 / 89 | **79.8%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |
@@ -216,8 +222,8 @@ These percentages measure the named scopes. **Whole-engine behavioral
 compatibility has not yet been quantified.** They cannot be averaged into an
 overall completion percentage or treated as line/branch test coverage.
 Controller counts come from [the dispatcher](engine/statemachine.go) against
-the 89-name [reference inventory](docs/COMPATIBILITY.md); the unregistered names
-are ModifyExplod and ExplodBindTime. Trigger recognition comes from
+the 89-name [reference inventory](docs/COMPATIBILITY.md); all names now register.
+Typed route counts come from the [reproducible source audit](docs/CONTROLLER-BINDINGS.json). Trigger recognition comes from
 [names.go](evaluator/names.go). Stock compilation is checked by
 [player_test.go](tests/player_test.go), and the HitDef audit is documented in
 [HITDEF-SCHEMA.md](docs/HITDEF-SCHEMA.md). The inventory's historical status

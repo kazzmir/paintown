@@ -1,442 +1,108 @@
-# MUGEN Go port
+# MUGEN Go port — active instructions
 
-## Active allocation — item 3
+## Authorization and scope
 
-On 2026-11-04 the user selected "Complete remaining effects/controllers (item 3)".
-Continue autonomously through this allocation with documented local checkpoints
-and commits. Items 1–2 completed at df59235b are historical; their stop condition
-is superseded for item 3 only. Item 4 (modes/AI/BGM, asset validation and final
-renderer/font/platform conformance) remains unallocated. Keep dependent runtime
-consumers in item 3 and record exact variant/evidence limits instead of counting
-registrations as implemented behavior. Do not stop after two checkpoints.
+The user selected **complete remaining effects/controllers (item3)** on
+2026-11-04 and repeatedly authorized continuation. Continue autonomously through
+ITEM-3-PLAN.md with documented local checkpoints and commits. Do not stop after
+two checkpoints. Stop after item3 or a concrete issue needing user input. Item4
+(modes/teams/AI/BGM, assets, remaining triggers and final renderer/font/platform
+conformance) remains unallocated. Earlier allocation stop conditions are history.
 
-Start with M4ci: reproducible current controller/schema/consumer inventory;
-then close ExplodBindTime/ModifyExplod and the Explod surface, actor binding,
-palette effects, EnvShake/EnvColor, draw transforms/transparency, afterimages
-(including dependent projectile effects), AssertSpecial consumers, dust/system
-animations, debug formatting and force-feedback commands. Audit nominally typed
-controllers for dead/partial consumers too. Split/reorder coherent batches when
-native findings require it. Each feature checkpoint needs frozen native originals,
-focused tests/actual production consumption, findings/limits and a local commit.
-Use full scoped races at meaningful integration boundaries and final allocation
-closure, not every small revision. Preserve original inputs/captures and reference
-binary. Private native/app/display-dependent Go runs stay serial. GOTMPDIR must
-use an underscore-prefixed directory under temp/ so interrupted builds cannot
-be discovered as packages. Stop after item 3 or a concrete issue needing input.
+Author changes only under `game/mugen/`. No pushes, binaries, subagents or goals.
+Preserve unrelated root work and incoming upstream font/module changes. Commit
+source/text only; audit staged paths, UTF-8 content and absence of binary data.
+The tracked `mugen.sh` is a Bash launcher. Reference resources and build outputs
+remain ignored. New engine files may require explicit `git add -f` because of a
+historical root ignore rule; never force-add the whole tree or temp assets.
 
-No pushes, binaries, agents, goals or authored changes outside game/mugen/.
+Target Elecbyte **M.U.G.E.N1.1 beta1**, using immutable `temp/mugen-1.1b1/docs/`
+and its stock data as primary reference. C++ `src/mugen/` is incomplete prior art.
+Use the scoped mugen.mod/mugen.sum overlay and readonly module flags. Verify
+`sha256sum -c game/mugen/temp/upstream-post-merge-module.sha256`.
 
-M4cr is committed as c2e32e933. Read PALETTE-FX.md:53 native programs/576
-values/five rejections/812 colors/213 hashes;48 exact apps5,216,400 pixels,504
-GPU colors/224 CPU colors,19 HitDef apps228 colors. Core/native races, stock
-win/rematch/win82 owned events/1,978,304 private PCM frames and final provenance/
-module/inventory/staged-text audits pass. No binaries or outside changes.
+## Immediate state — read HANDOFF.md
 
-M4cs is COMMITTED cac8c6957. Read GLOBAL-PALETTE-FX.md.83 native programs/
-948 values/four rejects/333 hashes;10,352 GPU samples;71 app palette/stage checks
-pass and67 actor crops exact, FOUR owned-Explod overlap crops UNWAIVED126 pixels
-each. Overall app RGB FALSE. Final full3,857 results/36 packages25 tested+11
-compiled-only, Match1606.364s/total1691.569s,14,164 frozen inputs.10 regressions,
-stock win/rematch/win82 owned events/1,941,379 PCM, all final source/native/artifact/
-module/inventory/staged452-text-file guards pass. No binaries/push/outside changes.
-M4cr c2e32e933. Latest full integration M4cs; earlier M4cq raster12 remain open.
+Latest committed checkpoint: **M4ct a048effa3**, native actor/owned-effect
+ordering. All16 new strict crops and four original M4cs overlaps pass unchanged
+goldens; no remaining M4cs ordering waiver. Earlier M4cq12 fractional/nonquarter
+raster failures remain unwaived separately.
 
-M4ct acceptance COMPLETE; source/text checkpoint. Read docs/EFFECT-ORDERING.md
-(or EFFECT-ORDERING.md from docs).16 native programs/192 readings/65 original+
-probe hashes;16 exact151,800-pixel crops and all FOUR unchanged M4cs overlaps
-fixed exactly. Core Character11.320/System9.465/Effect1.011 races,99 effect/global
-native programs67.354s and14 actor-order programs10.476s pass. Four regression
-apps and visually inspected stock win/rematch/win82 balanced inputs/1,965,839
-private PCM frames pass. All source/native/resource/binary/config/PNG/audio/
-module/inventory guards pass; no clients. Audit:m4ct-final-evidence-audit.json.
-Latest full M4cs3,857/36 remains;12 M4cq raster cases unwaived. Continue ALL item3 after the local source/text checkpoint. Next guarded preparation temp/prep-m4cu.py is NOT
-EXECUTED: EnvColor schemas/clocks/layer matrix. No original/capture/golden changes,
-no tolerance relaxation. No item4/agents/goals/push/binaries/outside authoring.
-Private Xvfb/Pulse are healthy; serial runtime and frozen-source policy remains.
+**M4cu EnvColor acceptance COMPLETE; local source/text checkpoint follows.**
+Read ENV-COLOR.md and HANDOFF. All76 native controls:68 accepted/816 numeric
+readings/eight rejects/305 unique hashes. All68 final466,400-pixel crops and2,516
+samples match exactly (31,715,200 pixels). Core and189 native races123.968s pass;
+final System9.365s, ten regressions and visually inspected stock win/rematch/win
+82 balanced events/1,972,229 private PCM frames pass. All final source/native/
+resource/config/binary/PNG/audio/module/inventory guards pass; no clients/sessions
+remain. Audit:temp/m4cu-final-evidence-audit.json. Only fight drawing changed
+after core/native tests; all other frozen inputs verify unchanged. Native
+originals/captures/goldens and failed m4cu1/2/3 diagnostics remain immutable.
 
-M4cq is934bd9203, latest full3,703 passes/36 packages (25 tested+11 compiled-only),
-13,467 frozen inputs. Twelve raster counterexamples remain unwaived. Continue
-ALL item3, then stop only at its completion or concrete issue needing input.
-No agents/goals/push/binaries/outside authoring. Private wrapper/servers as below.
+Next EnvShake preparation `temp/prep-m4cv.py` is **not executed**. Continue it
+and all remaining item3 after the EnvColor checkpoint. Do not mark any registered
+or typed family variant-complete by inference. Current inventory71 typed/18
+fallback/6 stubs/9 partial/14 bounded/60 route-only is a source audit, not a
+whole-engine percentage. Latest full suite remains M4cs3,857 results/36 packages;
+new full integration follows the EnvShake boundary.
 
-M4cq consumes native angle/scale/Offset state and drawing. Read ANGLES-OFFSET.md.
-62 promoted programs/696 readings/four controller rejections;282 original/probe/
-stock-constant/empty-world hashes remain immutable. Seven incomplete-Data drafts
-are unpromoted; seven replacements capture successfully before a post-loop
-provenance-name KeyError, corrected by metadata iteration and a separate audit.
-All originals/diagnostics are preserved. Original62 JSON wider crop goldens stay
-unchanged; separate empty-native/Go-calibrated actor crops are native-only.
+## Native and validation workflow
 
-Final58 actual apps:46 exact RGB crops/21,454,400 pixels and54 exact white masks.
-12 fractional/nonquarter raster counterexamples remain UNWAIVED; strict matrix
-correctly exits1. Do not call all58 RGB-conformant. Positive/mirrored quarter
-turns are exact after dominant-axis addressing and screen-space flipped bias.
-Inverse projection was worse/reverted. New read-only drawing_render_probe.py
-checks source/resources/binary/config/PNG/crop hashes and preserves diagnostic
-regions via --original-region. Leading-BOM loading and _tmp launcher are fixed.
+1. Freeze separately named original fixtures/recipes before native observation.
+   **Never edit/delete/move original native inputs, captures or goldens**, including
+   failed diagnostics. Never relax comparisons/tolerances to make a test pass.
+2. Inspect an **all-case native-only consumer/layer table before implementation**.
+   Do not infer uninspected matrix branches from manual prose. Native beta quirks
+   can differ from its manual. Check actual controller kinds per state.
+3. Implement typed schemas/defaults/errors, evaluation order and real production
+   consumers. Unknown controllers/invalid triggers must not silently succeed.
+   Keep file/state/controller/expression context in diagnostics.
+4. Test counterexamples/dependencies first. Collect every strict RGB mismatch
+   in a batch, retain each public probe's failure status, and fail the complete
+   matrix on any mismatch. Never describe a partially passing matrix as exact.
+5. Use focused races/apps during revisions and full scoped races at meaningful
+   integration boundaries and final allocation closure. Run required checks;
+   broaden/repeat only for changes/failures/unresolved concerns. Full races use
+   `--check -race -p 1 -count=1 -timeout=30m`.
+6. Freeze source/test/probe/fixture/module inputs for each runtime run. **Native,
+   actual-app and display-dependent Go runs are strictly serial.** Await every
+   exec session, then a separate client guard before edits/another runtime.
+   Never edit frozen inputs or the active driver while a run is executing.
+7. Record findings, failures, exact limits, tests and remaining work at each local
+   checkpoint. Update README, COMPATIBILITY, COVERAGE and HANDOFF as relevant.
+   Full stock selection/fight/results/rematch and required private audio remain
+   acceptance gates. Source routing and behavioral evidence are separate counts.
 
-FINAL FULL SCOPED RACES PASS3,703 results/36 packages (25 tested/11 compiled-only),
-no failures/individual skips; Match1490.670s, total1547.931s. All13,467 frozen
-inputs verify. Stock win/rematch/win is visually inspected (contact sheet plus
-originals),82 balanced owned input events/1,995,181 private PCM frames. All282
-native/full/app/module/inventory/provenance guards pass. Final audit:
-temp/m4cq-final-evidence-audit.json records application conformance FALSE for the
-12 cases. Sessions21196(full)/20967(stock) awaited; separate client checks empty.
-Commit the bounded M4cq checkpoint, then continue ALL item3. Engine/drawing.go
-needs explicit git add -f (historical ignore); source/text only, no push/binaries.
+## Tools and private environment
 
-M4cr now follows as recorded in the leading active block. Continue
-palette/shared effects, environment/afterimages, remaining creation/dependencies
-and residual controllers. Source67 typed/22 fallback/10 stubs/zero unread actor
-draw families/nine partial rows is not whole-engine coverage. Item4 remains
-unallocated; full raster/font/platform conformance stays explicitly bounded.
-M4cp acfdbb1dc/M4co33098c939; latest completed full suite is M4cq. No agents/goals/
-out-of-scope authoring. Private host: item3-private-servers.json, round-task-env.py.
-All native/app/display-dependent Go stays serial; await then separately check
-clients. Never edit Go/tests/probes/fixtures during a frozen run. Preserve native
-originals/captures/goldens and all failed diagnostics. No tolerance changes.
+Use `rg` / `rg --files --no-ignore` to discover source paths before reading them;
+root ignores hide some engine files. Disposable Go packages/builds belong under
+`temp/_tmp` (underscore), preventing recursive package discovery. No ordinary Go
+experiments anywhere else under temp. Keep the Go module readonly.
 
-M4cp consumes actor AIR transparency and typed Trans overrides. Read TRANS.md:
-56 promoted programs/492 readings/15 rejections/630 colors,233 original/probe
-hashes including two preserved unpublished-transition diagnostics. All41 actual
-apps match every RGB pixel in108,675-pixel crops (4,455,675 pixels total).
-Core/GPU races and56-program Match races29.023s pass. Stock win/rematch/win is
-visually inspected;82 balanced events/1,943,231 private PCM frames and all607
-focused/app frozen source hashes/module/inventory/artifact guards pass. Final
-audit: temp/m4cp-final-evidence-audit.json. All sessions awaited/no clients.
-Commit M4cp, then continue angle/scale/Offset and remaining item3. Next private
-author script is temp/author-m4cq.py; it is prepared, not executed or frozen.
-Counts65 typed/24 fallback/10 stubs, five unconsumed draw families/nine partial
-rows; no overall completion claim. Latest full integration remains M4cl.
-M4co is33098c939. No pushes, agents, binaries or out-of-scope authoring.
+Private runtime/Git wrapper from repository root:
+`python3 game/mugen/temp/round-task-env.py ...` (elevated tool execution uses the
+already authorized wrapper prefix). It checks clients and sets private display,
+audio, Go cache/_tmp, scoped modules, Wine32 shims and local dev headers/libs.
+Xvfb:97/Pulse are task-owned; metadata is temp/item3-private-servers.json. Check
+selective process output before inferring a server died; full listings truncate.
+Do not print private audio cookies. Do not restart/kill unrelated user services.
 
-M4co closes the bounded native alpha precision gaps. Read ALPHA-NORMALIZATION.md:
-540 actual-GPU samples /1,620 exact RGB component comparisons,26 frozen actual
-apps (270 indexed readings, two exact indexed masks,16 exact RGB crops including
-six previous failures, five actor regression crops). GPU/core races pass. Stock
-win/rematch/win is visually inspected;82 balanced events/1,987,918 private PCM
-frames and all frozen hashes/module/inventory/app guards pass. Final audit:
-temp/m4co-final-evidence-audit.json. Sessions awaited/no clients. M4co is33098c939;
-continue Trans and remaining item3; latest full integration remains M4cl.
-Render now has display-dependent GPU tests. No RGBA/platform/full-frame parity
-claim follows. Preserve failed diagnostic logs and immutable native originals.
+Byte-identical completed private Go app binaries and stock SFF/SND/font copies
+may share storage with their paths/content/hash/permissions preserved; no native
+resources, screenshots or expectations are candidates. Prior record:
+temp/private-go-asset-sharing.json. Keep all diagnostics and evidence intact.
 
-M4cn implements Explod entity binding, lazy animation availability, retained
-retargets, motion orientation and owned age-limit clocks.62 programs/708 values/
-three rejections/49 calibrated positions/249 unique hashes. Read
-EXPLOD-ATTACHMENT.md. Focused236-program Match races126.003s and core races pass;
-17 final actual-app masks are exact. The first mixed-profile app used the wrong
-opponent definition and is diagnostic; m4cn2 corrected it, with both definition
-hashes verified. No runtime/source/golden changed for that correction. Stock
-win/rematch/win/82 balanced events/private PCM and all1,480 focused/app/native/
-module/inventory guards pass. Sessions awaited/no clients. M4cn is18ff83fbd;
-continue remaining creation/shared effects under item3. Next address shared
-alpha precision/Trans and palette dependencies, including unresolved ownpal/
-remap/random/angle/shadow/capacity fields. Counts64 typed/25 fallback/11 stubs;
-latest full integration remains M4cl. Preserve all originals/failed diagnostics.
+## Remaining allocation and historical record
 
-M4cl is c3e810d40. M4cm implements BindToTarget with73 native programs/792
-readings/seven rejections/293 unique hashes. Read TARGET-SELF-BINDING.md:
-immediate caller position, reverse combat constraint, retained/sentinel offsets,
-game-pixel truncation and tested profiles. Focused194-program Match races125.315s
-and core/System/CNS/Character races pass; legacy target glob was narrowed after
-its discovery-only failure. Three exact white-pixel masks below HUD, stock
-win/rematch/win/82 owned events/private PCM,1,095 final hashes and provenance/
-module/inventory guards pass. All sessions awaited; no clients remain. M4cm is
-committed as b72baadb9; continue remaining Explod/shared consumers and all item3. Latest full
-integration remains M4cl.64 typed/25 fallback/11 stubs; no full parity claim.
+EnvShake; AfterImage/AfterImageTime and projectile trails/shadows; remaining
+Explod creation/ownership/remapping/random/angle/trans/shadow/capacity; all
+AssertSpecial consumers; GameMakeAnim/MakeDust; clipboard formatting; force
+feedback and actual target/device boundary; residual typed/literal schemas,
+HitAdd HUD, StateTypeSet and FVar aliases. `-nojoy` alone cannot prove a hardware
+limitation. VarSet literal7.9 must reject natively; fix conflicting old unit
+inputs to7.9+0.0 expressions without changing native goldens.
 
-M4ck is3d44c4ba. M4cl implements BindToParent/Root before remaining Explod creation
-fields; BindToTarget follows with combat selection. Read SELF-BINDING.md:84
-programs/936 values/six rejections/336 original hashes plus probe;14 friction
-traces establish a fixed standing cutoff1/ignored threshold fields, float32
-coefficients with retained velocity precision. Main+legacy helper/contact Match
-races80.996s and two exact actual-window masks pass. Core/System/CNS races and
-final full scoped races pass3,435 results/36 packages (Match1352.013s). Stock
-win/rematch/win,82 balanced owned events/private PCM and all12,141 frozen
-source/fixture hashes plus337 unique native hashes pass. No clients remain.
-M4cl is committed as c3e810d40; continue BindToTarget. Native captures awaited; all
-private native/app/display Go stays serial. Preserve failed logs and originals.
-Source routing now63 typed/26 fallback,12 stubs. Continue item3; no new stop or
-item4 allocation. Full integration after the dependent binding/Explod boundary.
-
-M4ck implements measured ModifyExplod mutation and 2D/3D drawing. Read
-MODIFY-EXPLOD.md:143 programs/1,164 readings/46 rejections plus three alpha grids/
-36 readings,584 authored originals. Main Match/grid and full core/System races
-pass.18 windows retain nine exact geometry masks and explicit seven rotation/
-two alpha discrepancies. Shared alpha precision must be revisited with Trans;
-do not claim full renderer/color parity or change goldens/tolerances to pass it.
-Uniform-tint experiment failed and was reverted. Stock replay/82 events/private
-PCM, all585 unique native hashes and guards pass. All89 names now register;
-61 typed routes,14 stubs and partial consumers remain. Continue the remaining
-Explod creation fields and dependent consumers, then other item3 groups.
-
-M4ci is c9066e64. M4cj completes the bounded ExplodBindTime slice: 28 native
-programs/288 readings/four rejections/28 calibrated positions, eight exact
-actual-app masks, focused Match and full Engine/Effect/Character races pass.
-All frozen inputs/application provenance/module/inventory guards pass. Read
-EXPLOD-BINDING.md and HANDOFF.md. Continue ModifyExplod and full Explod dependencies
-before the remaining item 3 groups. Source inventory now88 registered/60 typed;
-VarSet literal-float validation is a newly found residual gap. Preserve its
-unpromoted setup diagnostic unchanged. Private host restore uses temp Wine32
-shims/dev headers; app harness temporary builds use `_tmp`. No clients remain.
-
-
-## Current authorization
-
-Implementation is authorized. The user approved `docs/PLAN.md` and authorized
-local commits at each milestone or coherent checkpoint. Record findings,
-validation, and remaining work with each checkpoint. Stage/commit only changes
-under `game/mugen/`; preserve unrelated work and never push without instruction.
-
-The user authorized completion of all 27 remaining documented HitDef keys
-from the M4bm audit, with local checkpoint commits and continuous iteration
-until complete or blocked. No two-checkpoint stop remains. Planned batches:
-M4bn guard.dist (1), M4bo literal enums/flags (9), M4bp juggle/chains (3),
-M4bq minimum/maximum/snap constraints (3), M4br hit palette effects (3),
-M4bs contact shake (4), M4bt fall shake (4). Adjust boundaries if native
-findings require it; document dependencies and actual behavioral limits.
-Numeric expression routing and literal schema coverage are separate counts:
-there are 54 expression keys initially, 18 remaining numeric and nine literal
-keys. Do not force literal fields through numeric evaluation to report 81/81.
-Acceptance for each batch requires typed schemas/defaults/errors, demonstrated
-runtime consumers or measured beta limitations, frozen native controls,
-focused regression checks and updated handoff/ledger. Use full scoped races
-at the enum/combat integration boundary and final integration, broadening only
-for failures or unresolved concerns. Commit each coherent batch locally;
-continue automatically. Never push or add binaries. Other engine/mode/asset/
-renderer gates remain outside this HitDef allocation unless a key depends on
-them. All seven batches M4bn through M4bt passed their gates. The 27-key allocation
-is complete: 72 numeric schemas plus nine literal schemas cover all 81 documented
-HitDef keys, with bounded native consumers. The final full scoped race suite
-passes (Match 942.741s), including post-M4bp corrections. All final native/app/
-render/provenance checks pass. See FALL-SHAKE.md, HITDEF-KEYS.json and HANDOFF.md.
-Whole-engine parity and broad interaction coverage remain unfinished. The
-subsequent round-lifecycle allocation below is also complete. The current
-trigger/clock allocation follows it. Prior checkpoints are 8779869a and 24b3ebd0; read HITFALLSET.md,
-DOWN-BOUNCE.md and COVERAGE.md, including the corrected idle-override case.
-Read `README.md`,
-`docs/COVERAGE.md`, `docs/PROGRESS-ASSESSMENT.md` and the current handoff.
-
-## Previous round-lifecycle allocation (complete)
-
-The user approved three more checkpoints after M4bt (2026-10-18):
-M4bu KO/time-over clocks (native slowdown, timer freezing, pause interactions,
-control removal and win/lose entry); M4bv results/reset (double KO/draws, wins,
-match completion, persistence and entity/effect cleanup); M4bw complete-match
-validation (actual inputs/damage, multiple rounds, results/rematch, sustained
-runs). Proceed through all three with local commits and documentation; stop
-only at completion or a concrete issue requiring user input. Keep one-on-one
-scope; other modes remain separate. The 27-key allocation above is historical.
-Freeze original fixtures/recipes before native captures and never edit them
-once observed. Use focused checks while developing and a full scoped race
-suite at the final integration boundary. Private native/app runs stay serial.
-
-M4bu is committed as 7fae8ec4; M4bv as ddb48b18. M4bw completes eight
-full-life stock matches / 18 rounds through logical/keyboard input, including
-natural KOs, time draws and repeated rematches. An owned-window 2%-life replay
-also reaches two actual win/rematch screens. The final full scoped race suite
-passes: 2,707 test/subtest results, 24 tested and 12 compiled-only packages;
-Match 968.597s, total 1,037.599s. Source/config/binary/PNG/private-PCM audits and
-root module checks pass; no clients/sessions remain. M4bw is committed as
-218e3106. See docs/COMPLETE-MATCHES.md, docs/ROUND-RESULTS.md and docs/HANDOFF.md. Legacy HitVel binding, engine-wide
-GameTime handoff and other documented engine gates remain open. Typed HitDef
-coverage stays 81/81; no whole-engine completion percentage is justified.
-No pushes or binaries.
-
-## Previous trigger/clock allocation (complete)
-
-The user validated M4bw and authorized proceeding. M4bx measures and binds
-legacy HitVel X/Y, preserving the three existing counterexamples and adding
-frozen native controls for units, heading, hit/guard/air/down contexts and
-redirection. M4by separately wires cumulative GameTime through production
-menus, matches and rematches. Each checkpoint requires focused regression
-checks, updated behavioral limits/evidence and a local source/text commit.
-Continue through these two bounded checkpoints unless user input is needed.
-Earlier completed allocations are historical. No pushes or new binaries.
-
-M4bx is committed as e1299891: 15 controls / 180 values / 60 frozen inputs, plus three
-unchanged projectile counterexamples / 180 integers. Focused Match races
-227.327s, Character/System/core races, two fresh native runs and a four-capture
-stock input/results/rematch replay pass. Source/PNG/private-PCM/module/native
-audits pass. See LEGACY-HITVEL.md and HANDOFF.md. M4by final integration below
-also covers this checkpoint. Preserve all native originals and diagnostics.
-
-M4by adds process-owned GameTime, native Config.GameSpeed + 5*Options.GameSpeed
-rate, typed TicksPerSecond and bounded Versus MatchNo. Six programs/84 native
-values/29 authored input hashes plus System/native-program/keyboard/wrap checks
-pass. Final scoped integration PASSED against 408 frozen hashes: 2,735 test/
-subtest results, 24 tested and 12 compiled-only packages; Match 956.321s, total
-1,028.682s. Fresh native clock and four-PNG stock win/rematch/win with private
-PCM pass source/input/config/PNG/executable/audio/root-module audits. All
-sessions were awaited; no clients remain. M4by is committed as 0414d54e and was pushed by the user. This allocation is
-complete; the current allocation below supersedes its stop condition. Keep renderer/mode/asset/remaining binding gates explicit; no
-overall engine completion percentage is justified. No push or binaries.
-
-## Latest binding/recovery allocation (complete)
-
-The user authorized the next few checkpoints after 0414d54e (2026-10-18).
-Proceed through three bounded checkpoints: M4bz audits all 127 trigger families
-against actual runtime routes, records selector/variant gaps and adds a
-reproducible inventory; M4ca implements missing GetHitVar combat metadata and
-combo/impact counters with frozen native controls; M4cb implements the remaining
-liedown recovery timer/input consumer and corrects recovery routing as supported
-by native observations. Split dependent selectors between M4ca/M4cb if needed;
-document the reason and keep the original inputs/goldens immutable. Each batch
-gets focused checks, evidence/limits and a local source/text commit. Use a full
-scoped race run at the final integration boundary, not at every small revision.
-M4bz is bd018c65; M4ca is b258eaf3. M4cb completes this group. Final full scoped
-races PASS: 2,774 results, 24 tested and 12 compiled-only packages, no individual
-skips/failures; Match 1,009.698s, total 1,083.286s. All 470 frozen hashes, fresh
-native reproductions, four-PNG stock win/rematch/win, owned events, private PCM
-and root-module audits pass. All sessions were awaited; no clients remain.
-Read LIEDOWN-RECOVERY.md and HANDOFF.md. Stop for user testing/new allocation;
-no further implementation is active. Historical continuation instructions below
-applied only until these three checkpoints completed.
-Continue automatically through these three; stop at completion or an issue
-requiring user input. No pushes, binaries, changes outside game/mugen or agents.
-
-## Current scalar/projectile/reversal allocation
-
-The user tested/pushed d251549d and on 2026-10-19 authorized items 1–2 of the
-assessment, with checkpoints and local commits throughout. Proceed automatically
-through HitPauseTime, Random/VarRandom, projectile lifecycle/cancellation/contact
-queries, then ReversalDef/MoveReversed. Suggested coherent checkpoints: M4cc
-HitPauseTime; M4cd random stream/controller; M4ce projectile schema/spawn/motion/
-lifetime/ownership; M4cf multi-hit/removal/cancellation; M4cg projectile query
-families and legacy forms; M4ch reversals. Split or reorder dependent slices if
-native evidence requires it and document the actual boundary. Each gets frozen
-native originals, focused checks, evidence/limits and a local source/text commit.
-Use full scoped races at meaningful integration boundaries, including final
-integration; do not repeat the entire suite for every small correction. Complete
-these items without asking for routine approval. Stop after their final checkpoint
-or a concrete issue needing user input. Items 3–4 (other controller/effect stubs,
-assets/modes/AI/BGM and final renderer/font conformance) await later allocation;
-record dependencies rather than silently expanding into those workstreams.
-Keep projectile/reversal-specific consumers in scope, with honest variant limits.
-No pushes, binaries, sub-agents or authored changes outside game/mugen/.
-
-M4cc is committed as 750f0076. M4cd completes Random/VarRandom: 21 native
-programs, 192 values, five rejections and 84 frozen inputs. Core/Match/57-chain
-races, fresh seeded sequence/helper reproductions, four-PNG stock win/rematch/
-win, 82 balanced owned events/private PCM, 436 frozen hashes and module audits
-pass. Read RANDOM.md/HANDOFF.md. Continue M4ce automatically; 42 projspawn-*
-programs / 168 hashes are frozen but not yet observed and not in M4cd's commit.
-Move basic NumProjID counting into M4ce as needed for native lifetime controls;
-keep the remaining query forms in M4cg. No clients/sessions remain at M4cd.
-
-M4ce completes typed projectile setup/motion/lifetime/bounds/root ownership:
-104 native programs, 1,192 distinct slots, nine load rejections, 416 authored
-hashes and 12 sprite calibrations. Match races PASS 135.338s, core races pass;
-fresh tagged native, three actual projectile apps/exact body masks, four-PNG
-stock win/rematch/win with 82 owned events/private PCM, 819 frozen hashes and
-module audits pass. Read PROJECTILES.md and HANDOFF.md. Continue M4cf contact/
-multi-hit/removal/cancellation, including capacity/config and helper birth
-ordering, then M4cg queries and M4ch reversals. No sessions/clients remain at
-M4ce; no further implementation has started. Full suite at final integration.
-
-M4ce is 4b3ab498. M4cf completes the coherent contact/cancellation/capacity
-slice: 91 native programs, 1,118 distinct slots, 364 authored hashes; integrated
-295-control Match races PASS 197.707s, end/stock/clock and full core checks pass.
-Six actual phase masks, fresh native attrition, stock win/rematch/win with owned
-input/private PCM, all 755 hashes and module/provenance audits pass. Read
-PROJECTILE-CONTACTS.md. No sessions/clients remain at this checkpoint. Continue
-a dependent coordinate checkpoint using eight captured projspace-* and three
-unobserved/frozen projspace-draw-* programs; they are excluded from this commit.
-Then M4cg event/legacy queries and M4ch reversals. Full suite at final integration.
-
-M4cf contacts is40d1b25b. The dependent coordinate checkpoint completes11
-programs/132 values/44 authored hashes and three exact actual-app masks. Full
-core and selected Match races192.297s, fresh native payload, stock replay/PCM,
-all355 frozen hashes and module guards pass. Read PROJECTILE-COORDINATES.md.
-All sessions awaited/no clients. Continue M4cg with37 frozen/unobserved projevent
-originals (148 hashes in m4cg-native-inputs/m4cg-extra-inputs.json), then M4ch.
-Do not stage those originals in the coordinate commit. Final full scoped races
-need a larger package timeout for corpus growth. No pushes/binaries/agents.
-
-M4cf coordinate is2e6195de. M4cg completes51 event query programs/456 values/
-13 rejections/204 original hashes. Core/selected Match races88.019s, fresh history,
-stock replay/input/PCM and all556 hashes/module guards pass. Read
-PROJECTILE-QUERIES.md/HANDOFF.md. No clients/sessions remain. Continue M4ch with
-20 frozen unobserved controls in m4ch-final-native-inputs.json, then implement
-reversals and final full scoped races30m. Preserve11 invalid drafts in place;
-review rejected deleting them, so corrected -valid originals are separate. Do not
-stage invalid drafts. Stop after item2; items3–4 remain unallocated.
-
-M4cg is2899cd00. M4ch remains uncommitted. Read current HANDOFF/REVERSALS:
-90 promoted programs,948 numeric+84 early clipboard readings, four rejections,
-404 hashes/101 originals. Ten genuine Projectile controls prove the beta does
-not reverse NA/NP/SP projectiles with idle/attacking owners. Mislabelled older
-HitDef-based projectile controls are retained as ordinary diagnostics; their
-projectile conclusions are withdrawn. First full run92446 was stopped/awaited
-and is not acceptance. Do not reuse its source snapshot as final validation.
-Latest corrected replay87 programs60.057s; ten genuine PS+type assertion8.223s.
-Actual app3 and fresh full2/post2 gates remain before M4ch commit. Never edit
-Go/tests/probes/fixtures during a frozen running validation. Stop after item2;
-items3–4 await allocation. No agents/push/binaries/out-of-scope edits.
-
-M4ch final gates PASS: 90 promoted programs / 948 numeric + 84 early clipboard
-readings / four rejections / 404 original hashes; seven exact final app masks.
-Full3 races: 3,169 results, 24 tested + 12 compiled-only packages, Match1228.212s,
-total1298.980s, no failures/skips. All10,831 source/fixture/module and797 app hashes,
-fresh genuine PS/spark, stock win/rematch/win/82 events/private PCM and101-run
-provenance audits pass. No clients remain. First two full attempts are diagnostic,
-not acceptance. Preserve originals in place and ignored build artifacts under
-underscore names. Stop after this commit for user testing/3–4 decision.
-
-## Scope
-
-All project changes for this effort belong under `game/mugen/`. Do not modify
-the root Go module, other engines, or existing data trees. Keep working notes,
-compatibility evidence, and handoffs in `docs/`.
-The explicitly requested upstream merge adds font requirements to root go.mod;
-preserve those incoming changes. Continue authoring port changes only here.
-
-The user explicitly prohibits adding binaries to the repository. Commit source,
-text fixtures and documentation only; keep compiled executables, generated
-binary artifacts and reference resources in ignored `temp/`. The tracked `mugen.sh`
-file is a text Bash launcher. Existing binary test resources are historical;
-do not add more binary files. Verify staged content before each local commit.
-
-## Compatibility target
-
-Target Elecbyte M.U.G.E.N 1.1 beta 1. The local reference distribution is
-`temp/mugen-1.1b1/`: use its `docs/`, `data/`, `chars/`, and `stages/` as the
-primary specification and regression corpus. The C++ implementation in
-`src/mugen/` is useful prior art, but is incomplete and is not the specification.
-Do not modify the reference distribution. Do not commit its binaries/assets.
-
-## Implementation and verification
-
-- On resumption, refresh a concise current behavior-coverage ledger from source,
-  existing tests and topic documents before estimating broader work. The old
-  inventory status columns remain baseline evidence. Keep percentage metrics
-  dated, scoped and linked to their numerator/denominator sources.
-- Work in bounded feature batches with explicit acceptance and stopping points.
-  Use focused checks during development and full regression suites at meaningful
-  integration boundaries; repeat broad checks only for a concrete reason.
-  Record native evidence, unresolved differences and the next scope at each
-  local checkpoint. Stop at the agreed boundary unless more batches are
-  explicitly authorized; token-budget decisions belong to the user.
-- A registered controller or a successfully parsed file does not demonstrate
-  behavioral compatibility. Track partial and missing behavior honestly.
-- Prefer deterministic, display-independent tests for expression and state
-  semantics. Add corpus tests for the bundled stock content and malformed files.
-- Errors must identify the file/state/controller/expression. Never treat an
-  unknown controller or invalid trigger as a successful no-op.
-- Exercise the complete selection-to-fight path as well as test applications.
-- Run native captures, app smoke captures and audio probes sequentially on the
-  private display/audio server. Overlapping windows can invalidate OpenGL
-  captures, and other audio output invalidates tone provenance. Pure tests
-  without DISPLAY may run alongside those probes.
-- Run Go with `GOFLAGS=-mod=readonly` so the root module stays unchanged. Build
-  artifacts and disposable tools belong in `temp/`, which is not source.
-- Use the launcher or `-modfile=game/mugen/mugen.mod` for the scoped dependency
-  overlay; see `docs/BUILD.md`. Keep it synchronized when dependencies change.
-- Use non-Go extensions for disposable source snapshots. The recursive check
-  also discovers ordinary packages below `temp/`; ignored files still compile.
-- Full race checks use `--check -race -timeout=30m`; the growing native Match
-  corpus approaches Go's default ten-minute package deadline.
-- Update `docs/COMPATIBILITY.md` and `docs/HANDOFF.md` when behavior or verified
-  coverage changes. Do not call the port complete without tests and reference
-  evidence covering the advertised compatibility.
+Read current HANDOFF and topic notes. Old detailed status is preserved in
+`docs/AGENT-STATE-HISTORY-M4CU.md` for historical lookup only; its old stop
+conditions are superseded. No engine-completion percentage is currently justified.

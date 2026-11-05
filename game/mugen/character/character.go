@@ -918,7 +918,21 @@ func (c *Character) EnvShake(params map[string]string) {
 }
 
 func (c *Character) EnvColor(params map[string]string) {
-	// Stub
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteEnvironmentColor(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("EnvColor: %w", err)
+	}
+}
+
+func (c *Character) SetEnvironmentColor(p engine.EnvironmentColorParameters) error {
+	if c.Timeline == nil {
+		return fmt.Errorf("EnvColor global timeline is unavailable")
+	}
+	c.Timeline.SetEnvironmentColor(p)
+	return nil
 }
 
 func (c *Character) ScreenBound(params map[string]string) {

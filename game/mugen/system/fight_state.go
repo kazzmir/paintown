@@ -20,6 +20,7 @@ type FightState struct {
 	match                              *match.Match
 	hud                                *FightHUD
 	stageCanvas, gameCanvas, hudCanvas *ebiten.Image
+	environmentColorImage              *ebiten.Image
 	effectImages                       map[effectImageKey]effectImage
 	effectUsed                         map[effectImageKey]bool
 	effectWarnings                     map[string]bool
@@ -98,10 +99,14 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	cameraX, cameraY := m.CameraX*toStage, (m.CameraY-m.Viewport.CropY)*toStage
 	allPalette := m.Timeline.AllPalette.Transform()
 	backgroundPalette := palette.Combine(m.Timeline.BackgroundPalette.Transform(), allPalette)
+	environment := m.Timeline.EnvironmentColor
+	environmentActive := environment.Time != 0
 	s.stageCanvas.Fill(allPalette.ClearColor(color.Black))
-	if err := m.Stage.DrawWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette); err != nil {
-		s.renderError = err
-		return
+	if !environmentActive {
+		if err := m.Stage.DrawWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette); err != nil {
+			s.renderError = err
+			return
+		}
 	}
 	s.gameCanvas.Fill(allPalette.ClearColor(color.Black))
 	// Indexed stage pixels remain plateaus through the viewport fit.
@@ -110,19 +115,49 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	backgroundOptions.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
 	backgroundOptions.GeoM.Translate(0, -m.Viewport.CropY)
-	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
+	if environmentActive {
+		// Negative durations suppress the stage but draw no color quad.
+		s.gameCanvas.Fill(color.Black)
+	} else {
+		s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
+	}
+	drawEnvironment := func() {
+		if s.environmentColorImage == nil {
+			s.environmentColorImage = ebiten.NewImage(1, 1)
+		}
+		s.environmentColorImage.Fill(environment.Color)
+		options := &ebiten.DrawImageOptions{}
+		options.GeoM.Scale(float64(gameSpace.Width), float64(gameSpace.Height))
+		if err := s.linearSampler.DrawStyledImage(s.gameCanvas, s.environmentColorImage, options, render.DrawStyle{DestinationFactor: -1, Palette: allPalette}); err != nil {
+			s.renderError = fmt.Errorf("EnvColor sampler: %w", err)
+		}
+	}
+	if environment.Time > 0 && environment.Under {
+		drawEnvironment()
+	}
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
 	character.DrawPlayersWithSprites(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
-	s.drawEffects(s.gameCanvas, 1)
+	frontEnvironment := environment.Time > 0 && !environment.Under
+	if !frontEnvironment {
+		s.drawEffects(s.gameCanvas, 1)
+	}
+	// Stage foreground still draws for negative durations. A positive front
+	// quad covers it; an under quad leaves it visible above the actors.
 	s.stageCanvas.Clear()
 	if err := m.Stage.DrawForegroundWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette); err != nil {
 		s.renderError = err
 		return
 	}
 	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
+	if frontEnvironment {
+		drawEnvironment()
+		s.drawEffects(s.gameCanvas, 1)
+	}
 	s.drawEffects(s.gameCanvas, 2)
 	s.hudCanvas.Clear()
+	// Consume HUD drawing even while covered, keeping lazy animation clocks
+	// and resource initialization independent of EnvColor visibility.
 	s.hud.Draw(s.hudCanvas)
 	screen.Fill(color.Black)
 	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
@@ -145,5 +180,8 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	world.Y += m.Timeline.ShakeOffset() * float64(gameSpace.Width) / 320 * world.ScaleY
 	drawFitted(s.gameCanvas, world, err)
 	hud, err := coord.HUDProject(gameSpace, motifSpace, target, s.engine.cfg.Video.KeepAspect)
-	drawFitted(s.hudCanvas, hud, err)
+	// Native positive EnvColor covers the HUD with either under flag.
+	if environment.Time <= 0 {
+		drawFitted(s.hudCanvas, hud, err)
+	}
 }
