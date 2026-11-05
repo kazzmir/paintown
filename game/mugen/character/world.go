@@ -12,11 +12,13 @@ import (
 // World owns entity identity and root relationships. TickCharacters schedules
 // roots/helpers; projectiles still use legacy child adapters.
 type World struct {
-	Registry      *engine.Registry[*Character]
-	Roots         []*Character
-	Helpers       []*Character
-	HelperMax     int
-	ProjectileMax int
+	Registry         *engine.Registry[*Character]
+	Roots            []*Character
+	Helpers          []*Character
+	HelperMax        int
+	ProjectileMax    int
+	AfterImageMax    int
+	afterImageOwners map[*Character]struct{}
 	// Fixed camera travel limits plus half the viewport, in game units.
 	ProjectileStageBounds      [2]float64
 	ProjectileStageBoundsKnown bool
@@ -30,7 +32,7 @@ type World struct {
 
 func NewWorld(helperMax int) *World {
 	helperMax = max(4, min(56, helperMax))
-	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, ProjectileMax: 32, random: engine.NewRandomStream(1)}
+	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, ProjectileMax: 32, AfterImageMax: 16, random: engine.NewRandomStream(1)}
 }
 
 // SeedRandom starts a new match stream. ResetRoots deliberately preserves it.
@@ -39,6 +41,7 @@ func (w *World) SeedRandom(seed int64) { w.random.Seed(seed) }
 func (w *World) RandomSeed() int64 { return w.random.InitialSeed() }
 
 func (w *World) ResetRoots(players ...*Character) error {
+	clear(w.afterImageOwners)
 	for _, owner := range w.orphanEffectOwners {
 		for _, e := range owner.Explods {
 			if e.Visual != nil {

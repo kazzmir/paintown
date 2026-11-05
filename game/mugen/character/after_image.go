@@ -21,16 +21,28 @@ type afterImageFrame struct {
 	scale        [2]float32
 	offset       []float64
 	visible      bool
+	palettes     *palette.State
 }
 
 type afterImageHistory struct {
-	parameters engine.AfterImageParameters
-	time       int
-	gapClock   int
-	frames     []afterImageFrame // oldest first, including disabled recording slots
+	parameters      engine.AfterImageParameters
+	time            int
+	gapClock        int
+	frames          []afterImageFrame // oldest first, including disabled recording slots
+	paletteSource   *palette.State
+	paletteRevision uint64
+	paletteSnapshot *palette.State
 }
 
 func (c *Character) SetAfterImage(p engine.AfterImageParameters) error {
+	allowed, err := c.CanSetAfterImage()
+	if err != nil || !allowed {
+		return err
+	}
+	if c.World.afterImageOwners == nil {
+		c.World.afterImageOwners = map[*Character]struct{}{}
+	}
+	c.World.afterImageOwners[c] = struct{}{}
 	if p.Length <= 0 {
 		p.Length = 20
 	}
@@ -44,6 +56,20 @@ func (c *Character) SetAfterImage(p engine.AfterImageParameters) error {
 	c.afterImages = &afterImageHistory{parameters: p, time: p.Time}
 	return nil
 }
+
+// Native slots belong to contexts until their entity is destroyed or the round
+// resets. Stopping, draining, or disabling recording does not release a slot.
+// Admission precedes expression evaluation, so denied controllers have no
+// parameter side effects. Reissuing one's own context needs no additional slot.
+func (c *Character) CanSetAfterImage() (bool, error) {
+	if err := c.ensureWorld(); err != nil {
+		return false, err
+	}
+	_, owned := c.World.afterImageOwners[c]
+	return !c.destroyed && (owned || len(c.World.afterImageOwners) < c.World.AfterImageMax), nil
+}
+
+func (c *Character) HasAfterImage() bool { return c.afterImages != nil }
 
 func (c *Character) SetAfterImageTime(duration int) error {
 	if c.afterImages != nil {
@@ -75,6 +101,15 @@ func (c *Character) advanceAfterImages() {
 		frames: c.AnimationFile(), constants: c.StateFile, angleEnabled: c.AngleDrawingEnabled,
 		angle: c.DrawAngle, scale: c.DrawScale, offset: append([]float64(nil), c.DrawOffset...),
 		visible: h.time > 0 || h.time == -1}
+	if f.visible && c.Palettes != nil {
+		// Each pose retains the mappings used when recorded. Reuse immutable
+		// snapshots until the source changes; local PalFX is replaced at draw.
+		if h.paletteSource != c.Palettes || h.paletteSnapshot == nil || h.paletteRevision != c.Palettes.Revision {
+			h.paletteSource, h.paletteRevision = c.Palettes, c.Palettes.Revision
+			h.paletteSnapshot = c.Palettes.Clone()
+		}
+		f.palettes = h.paletteSnapshot
+	}
 	h.frames = append(h.frames, f)
 	if len(h.frames) > capacity {
 		copy(h.frames, h.frames[len(h.frames)-capacity:])
@@ -107,7 +142,14 @@ func (p *Player) drawAfterImages(screen *ebiten.Image, c *Character, x, y, sx, s
 	count := 0
 	for age := gap - 1; age < len(h.frames); age += gap {
 		index := len(h.frames) - 1 - age
-		if h.frames[index].visible {
+		f := h.frames[index]
+		// Blank AIR elements consume recording slots, but do not age the
+		// selected palette sequence of older drawable records.
+		if f.visible && f.frames != nil {
+			action := f.frames.Actions[f.anim]
+			if action == nil || f.elem < 0 || f.elem >= len(action.Elements) || action.Elements[f.elem].Group < 0 {
+				continue
+			}
 			selected[count] = index
 			count++
 		}
@@ -120,6 +162,7 @@ func (p *Player) drawAfterImages(screen *ebiten.Image, c *Character, x, y, sx, s
 		snapshot.X, snapshot.Y, snapshot.Facing = f.x, f.y, f.facing
 		snapshot.Anim, snapshot.AnimElem, snapshot.animationFile = f.anim, f.elem, f.frames
 		snapshot.StateFile = f.constants
+		snapshot.Palettes = f.palettes
 		snapshot.AngleDrawingEnabled, snapshot.DrawAngle, snapshot.DrawScale = f.angleEnabled, f.angle, f.scale
 		snapshot.DrawOffset = f.offset
 		snapshot.DrawTransparency = engine.Transparency{Enabled: true, Mode: "none"}

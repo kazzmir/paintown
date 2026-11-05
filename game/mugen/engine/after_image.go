@@ -71,6 +71,12 @@ func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		trans = "none"
 	}
 	return func(_ *cns.StateController, env Environment) error {
+		if admission, ok := env.(interface{ CanSetAfterImage() (bool, error) }); ok {
+			allowed, err := admission.CanSetAfterImage()
+			if err != nil || !allowed {
+				return err
+			}
+		}
 		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
 			return err
@@ -124,6 +130,9 @@ func compileAfterImageTime(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return nil, true, err
 	}
 	return func(_ *cns.StateController, env Environment) error {
+		if history, ok := env.(interface{ HasAfterImage() bool }); ok && !history.HasAfterImage() {
+			return nil
+		}
 		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
 			return err

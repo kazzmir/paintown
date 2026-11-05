@@ -902,3 +902,34 @@ authoring/clipboard diagnostics, recording/animation order, palette quantization
 and remaining ownership/capacity/projectile variants. Native, application and
 display-dependent Go checks run sequentially. Never regenerate expectations from
 Go or overwrite original native input/capture files.
+
+
+### AfterImage actor context comparisons (M4cy)
+
+The native actor corpus contains 48 independently observed programs. Read
+[the actor notes](../docs/AFTERIMAGE-ACTORS.md) for capacity, expression admission,
+recorded palette mappings, visibility and retained diagnostics. Go replay tests
+use committed source/text expectations; native/app screenshots and binaries stay
+ignored under temp and are not repository assets.
+
+The read-only `after_image_actor_render_probe.py` verifies original source,
+resource, binary, configuration and capture hashes before comparing every RGB
+pixel of the fixed crop. Native prepared/final configuration hashes are separate:
+MUGEN changes FirstRun and line endings after launch. Exact finalization ledgers
+preserve both hashes; no normalized or partial configuration match is accepted.
+
+With the retained native and completed app evidence available, a fresh comparison
+name checks the saved remapping case without launching either engine:
+
+```bash
+python3 game/mugen/tests/after_image_actor_render_probe.py \
+  --fixture trailactor-live-remap \
+  --go-run m4cy-matrix2-trailactor-live-remap \
+  --name actor-remap-recheck
+```
+
+Use a new output name on each run; do not overwrite original evidence. The final
+matrix has 46/48 exact crops and **fails** for two unwaived 45-degree current/trail
+renderer controls. Passing full scoped races and stock integration do not waive
+those image failures. Native `--record` is an authoring action for separately
+frozen new controls, not a way to replace earlier expectations.

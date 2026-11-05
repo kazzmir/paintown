@@ -1,0 +1,187 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "c0b9b66f404d7cb6d8cba21c75f6a2b082229c7d8a0dbc615cfe926083bca641",
+  "air_sha256": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "245e285cd1ec662b0ccff8ceb5be29a587acd19f294e86480cfac126e500d151",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 700,
+        "4": 9990,
+        "5": 8,
+        "6": 72,
+        "7": -120,
+        "8": 1,
+        "9": 142,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    710
+  ],
+  "afterimage_time_count": 0,
+  "helper_count": 1,
+  "root_afterimage": false,
+  "root_afterimage_overrides": {},
+  "duration_modifier": null,
+  "helper_issue_time": 0,
+  "helper_destroy_time": null,
+  "helper_move_budget": 5,
+  "stop_time": 8,
+  "AfterImageMax": null,
+  "actual_controller_counts": {
+    "AfterImage": 1,
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "Helper": 1,
+    "Pause": 1,
+    "PlayerPush": 3,
+    "PosSet": 2,
+    "ScreenBound": 3,
+    "SuperPause": 1,
+    "VarSet": 12
+  },
+  "native_afterimage_max": 16,
+  "source_intent_verified_by_cns_air_parser": true,
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "4edf597e9f987f687cf9ff11b14130706ea5ddeb2e80c2514f908f2e314efdf7"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "root",
+      "region": [
+        160,
+        140,
+        1120,
+        330
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    },
+    {
+      "entity_row": "helper1",
+      "region": [
+        160,
+        330,
+        1120,
+        450
+      ],
+      "nonbackground_pixels": 3024,
+      "bbox": [
+        1072,
+        360,
+        1120,
+        435
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            79,
+            49,
+            49
+          ],
+          "pixels": 1215
+        },
+        {
+          "rgb": [
+            255,
+            189,
+            156
+          ],
+          "pixels": 747
+        },
+        {
+          "rgb": [
+            219,
+            115,
+            90
+          ],
+          "pixels": 378
+        },
+        {
+          "rgb": [
+            255,
+            148,
+            115
+          ],
+          "pixels": 252
+        },
+        {
+          "rgb": [
+            96,
+            99,
+            165
+          ],
+          "pixels": 189
+        },
+        {
+          "rgb": [
+            162,
+            66,
+            49
+          ],
+          "pixels": 162
+        },
+        {
+          "rgb": [
+            195,
+            181,
+            222
+          ],
+          "pixels": 27
+        },
+        {
+          "rgb": [
+            195,
+            144,
+            125
+          ],
+          "pixels": 27
+        }
+      ]
+    },
+    {
+      "entity_row": "helper2",
+      "region": [
+        160,
+        450,
+        1120,
+        600
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

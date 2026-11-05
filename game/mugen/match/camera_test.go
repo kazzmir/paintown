@@ -191,19 +191,22 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				FixtureConstants bool   `json:"fixture_constants"`
 				RandomSeed       *int64 `json:"random_seed"`
 				ProjectileMax    *int   `json:"projectile_max"`
-				CNSHash          string `json:"cns_sha256"`
-				AIRHash          string `json:"air_sha256"`
-				StageHash        string `json:"stage_fixture_sha256"`
-				CMDHash          string `json:"cmd_sha256"`
-				Local            string `json:"localcoord"`
-				P2Local          string `json:"p2_localcoord"`
-				StageError       string `json:"expected_stage_error"`
-				LoadError        string `json:"expected_load_error"`
-				ErrorState       int    `json:"expected_compile_state"`
-				ErrorFile        string `json:"expected_compile_file"`
-				ReplayTicks      int    `json:"replay_ticks"`
-				RenderOnly       bool   `json:"render_only"`
-				ExplodPositions  []struct {
+				EffectLimits     struct {
+					AfterImageMax *int `json:"AfterImageMax"`
+				} `json:"effect_limits"`
+				CNSHash         string `json:"cns_sha256"`
+				AIRHash         string `json:"air_sha256"`
+				StageHash       string `json:"stage_fixture_sha256"`
+				CMDHash         string `json:"cmd_sha256"`
+				Local           string `json:"localcoord"`
+				P2Local         string `json:"p2_localcoord"`
+				StageError      string `json:"expected_stage_error"`
+				LoadError       string `json:"expected_load_error"`
+				ErrorState      int    `json:"expected_compile_state"`
+				ErrorFile       string `json:"expected_compile_file"`
+				ReplayTicks     int    `json:"replay_ticks"`
+				RenderOnly      bool   `json:"render_only"`
+				ExplodPositions []struct {
 					ID     int `json:"id"`
 					X, Y   float64
 					Facing int `json:"facing"`
@@ -312,6 +315,10 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			m := stockMatch(t, 99)
+			if reference.EffectLimits.AfterImageMax != nil {
+				m.Options.AfterImageMax = max(1, *reference.EffectLimits.AfterImageMax)
+				m.World.AfterImageMax = m.Options.AfterImageMax
+			}
 			if reference.ProjectileMax != nil {
 				m.Options.PlayerProjectileMax = max(5, *reference.ProjectileMax)
 				m.World.ProjectileMax = m.Options.PlayerProjectileMax

@@ -144,6 +144,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
 	cfg.Config.HelperMax = 56
 	cfg.Config.PlayerProjectileMax = 32
+	cfg.Config.AfterImageMax = 16
 	cfg.Video.StageFit, cfg.Video.SystemFit, cfg.Video.KeepAspect = true, true, true
 	// Set some defaults
 	cfg.Config.GameSpeed = 60

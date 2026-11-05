@@ -3,13 +3,16 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
-    "engine/after_image.go": "d1dd69aef38045db8c35ab93716604a37fb669324fa5d9ca4d47e543862729b8",
-    "character/after_image.go": "f9e568b9e830f25ef04f9aa747dfc97095c6d74db9236e530e94cef482f16abf",
+    "engine/after_image.go": "4793e97fa26debb2fb0e93fbd388e324e09fb007851930bc6cd17d5fb11a5915",
+    "character/after_image.go": "940238e9ee0009477992330b3d387e31d8aa8a6f2dc9acbfb9277c8d608bf569",
+    "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
+    "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
+    "match/match.go": "bd822531373862eeb1859007b7e8a91e8830b51c0da176bbac7fbedb7dcf8db1",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
     "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
     "character/character.go": "7ae3eef351d4d3df5a6aae871e065996a7a26a25078050bc9b0107c5c41f8c8b",
-    "character/player.go": "db99df39f0783e480f1a63f665e88a349629cbc45d8e49da8858d4684f512443",
+    "character/player.go": "64cbdf0442045780c0960e0b7d626265f66e34aa1b8a95bc2339d22fd58ba0a8",
     "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
@@ -37,13 +40,13 @@
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "b1e62cd12aaacc2a86e8888b10c15905552483d332a9bcb5a22d947b05558ab0",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "7e96db4002ce64ca66c1ecb5886971a79050ee2415908ac5f4054ac13e5613dc",
+    "system/fight_state.go": "2755f65034a268894e0963bdd402c9c441826e205d7feb79192594713d5cbf22",
     "system/hud.go": "1ceba3b260f2c3f60c6cc8409332c8f4e09fcc2932795862cbd61752ee44537f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
     "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e",
-    "character/world.go": "b85a7655a8e79fbefc8c30c6fcae36bc8fe694222c3ba90b21ed6d0c1d84c156"
+    "character/world.go": "818376eec2dc58ceeb85e32d135c40e562d56ae8fe453b61bea6fd0f10ea08e7"
   },
   "summary": {
     "manual": 89,
@@ -66,6 +69,7 @@
     ],
     "observed_assertspecial_consumers": [
       "intro",
+      "invisible",
       "noautoturn",
       "noguard",
       "nojugglecheck",
@@ -83,7 +87,7 @@
       "handler": "handleAfterImage",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "AFTERIMAGE.md: typed native schema/order and bounded recording/palette/render consumers; broader ownership/projectile variants open"
+        "AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; broader ownership/projectile variants open"
       ],
       "variants_complete": false
     },
@@ -94,7 +98,7 @@
       "handler": "handleAfterImageTime",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "AFTERIMAGE.md: native canonical/alias schema and retained history/expiry/resume consumer; wider variants open"
+        "AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open"
       ],
       "variants_complete": false
     },

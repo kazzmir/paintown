@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05; through M4cx implementation**.
+Snapshot: **2026-11-05; through M4cy implementation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -110,20 +110,22 @@ and EnvShake. The stock sweep recovery loop is fixed. Topic evidence and limits
 are recorded in the [coverage ledger](docs/COVERAGE.md) and
 [compatibility inventory](docs/COMPATIBILITY.md).
 
-AfterImage/AfterImageTime now have typed parameters and actual trail recording
-and rendering. All **141 native replay programs**, including nine load
-rejections, pass. All **132 application crops** now match beta exactly across
-**67,161,600 RGB pixels**. The fresh full race suite and stock-game gates pass. See
-[AfterImage evidence](docs/AFTERIMAGE.md). These are bounded observations.
+AfterImage/AfterImageTime include trail recording, palette aging, shared player/
+helper capacity, stopped-context retention, saved palette mappings and invisible
+current actors. All **189 native replay programs**, including nine load
+rejections, pass. The fresh actor image matrix has **46 of 48 crops exact across
+23,404,800 RGB pixels**. Its two 45-degree current/trail image failures remain
+unwaived; a current-only control reproduces the shared renderer issue without
+AfterImage. Quarter-turn trails match exactly. See
+[actor evidence](docs/AFTERIMAGE-ACTORS.md) and [history/schema evidence](docs/AFTERIMAGE.md).
 
-The latest full race suite passes **4,193 test/subtest results across36 packages**
-(25 tested and11 compiled-only), with no failures or individual skips. The stock
-keyboard run completes win → rematch → win, with82 balanced input events and
-private audio capture. The [AfterImage notes](docs/AFTERIMAGE.md) retain the
-initial failures, native corrections and exact limits. Twelve older angle/raster
-counterexamples and seven EnvShake precision profiles remain unwaived.
+The full race suite passes **4,243 test/subtest results across 36 packages**
+(25 tested and 11 compiled-only), with no failures or individual skips. Stock
+win → rematch → win is visually inspected, with 82 balanced input events and
+private audio capture. Twelve earlier angle/raster cases and seven EnvShake
+precision profiles also remain unwaived.
 
-Item 3 continues with shared trail capacity/ownership, projectile trails/shadows,
+Item 3 continues with broader trail variants, projectile trails/shadows,
 remaining Explod consumers, AssertSpecial, system animations/dust, clipboard,
 haptics and residual controller schemas. Broader modes/AI/progression, assets,
 fonts and final renderer/platform conformance remain item 4. There is no measured

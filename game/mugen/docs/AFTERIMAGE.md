@@ -109,10 +109,12 @@ No expectation or comparison tolerance was relaxed to obtain a passing result.
 
 ## Remaining consumers and limits
 
-AfterImageMax1/4/32/64 produced the same single-entity trail. Shared capacity,
-multiple owners, fully drained recording context, helper destruction and broader
-pause/movetime behavior require independent controls. Palette mapping/local
-PalFX, angle/offset/AIR transparency and actor-priority combinations also remain.
+AfterImageMax1/4/32/64 produced the same single-entity trail in M4cx. The
+separate [M4cy actor context study](AFTERIMAGE-ACTORS.md) now measures shared
+capacity, multiple owners, drained contexts, helper destruction, palette/drawing
+changes and Pause/SuperPause budgets. The complete 48-case matrix has 46 exact crops and two unwaived shared
+45-degree renderer failures; full races and stock/audio integration pass. Broader
+combinations remain bounded.
 Projectile afterimage fields and shared shadows are still separate consumers.
 These continue under item3; source routing does not close their behavior gates.
 

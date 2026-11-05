@@ -108,3 +108,6 @@ effort stay under `game/mugen/`.
 - [HitDef distance/snap constraints](HIT-CONSTRAINTS.md)
 
 - [HitDef palette effects](HIT-PALETTE.md)
+
+- [AfterImage actor contexts](AFTERIMAGE-ACTORS.md): shared capacity, expression
+  admission, lifetime, visibility, blank poses and preserved native provenance.

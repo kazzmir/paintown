@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['engine/after_image.go', 'character/after_image.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
@@ -38,8 +38,8 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
-    'afterimage': 'AFTERIMAGE.md: typed native schema/order and bounded recording/palette/render consumers; broader ownership/projectile variants open',
-    'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema and retained history/expiry/resume consumer; wider variants open',
+    'afterimage': 'AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; broader ownership/projectile variants open',
+    'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open',
     'envshake': 'ENV-SHAKE.md: native schemas/evaluation, author-local amplitude, frequency normalization, pending/current clocks and actual fixed-overlay/viewport consumers; wider variants open',
     'envcolor': 'ENV-COLOR.md: native packed RGB/evaluation/global clocks, finite overlays and negative-duration stage suppression, actor/effect/foreground/palette production consumers; wider variants open',
     'allpalfx': 'GLOBAL-PALETTE-FX.md: native independent global clock, parameter merge and two-stage actor/effect/stage/HUD/portrait/font production drawing; wider variants remain open',

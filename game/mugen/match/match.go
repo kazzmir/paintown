@@ -48,6 +48,7 @@ type Options struct {
 	PowerRules                   *combat.PowerRules
 	RandomSeed                   int64 // zero chooses a fresh session-derived seed
 	PlayerProjectileMax          int   // zero uses the default pool of 32
+	AfterImageMax                int   // zero uses the default global pool of 16
 }
 
 type Phase int
@@ -110,6 +111,9 @@ func New(request Request, options Options) (*Match, error) {
 		helperMax = 56
 	}
 	m.World = character.NewWorld(helperMax)
+	if options.AfterImageMax != 0 {
+		m.World.AfterImageMax = max(1, options.AfterImageMax)
+	}
 	if options.PlayerProjectileMax != 0 {
 		m.World.ProjectileMax = max(5, options.PlayerProjectileMax)
 	}

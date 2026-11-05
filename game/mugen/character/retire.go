@@ -21,9 +21,11 @@ func (c *Character) DestroyHelper(p engine.DestroySelfParameters) error {
 	}
 	for _, helper := range ordered {
 		helper.destroyed = true
+		helper.afterImages = nil
 		// Beta sound channels outlive DestroySelf, including recursive removal.
 		// Keep the independent audio owner; helperaudio-* pins this behavior.
 		if c.World != nil {
+			delete(c.World.afterImageOwners, helper)
 			c.World.Registry.Remove(helper.EntityID)
 		}
 		if p.RemoveExplods {

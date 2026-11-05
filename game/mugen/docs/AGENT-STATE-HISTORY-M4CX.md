@@ -692,3 +692,144 @@ and actual intent before any freeze/native observation. Actor draft prioritizes
 global capacity,drained context,helper lifetime and palette/drawing consumers;
 projectile draft covers nested fields/order and isolated shadows. These are not
 native evidence or completed implementations. Keep validation inputs unchanged.
+
+
+## M4cx completed local checkpoint handoff
+
+# Current handoff — M4cx validated, local commit next
+
+Continue ALL allocated item3 effects/controllers with documented local commits.
+Only author game/mugen;no push,binaries,agents or goals. Item4 remains unallocated.
+Read ../AGENTS.md,ITEM-3-PLAN.md and AFTERIMAGE.md. Historical snapshots are in
+AGENT-STATE-HISTORY-M4CX.md; their old hypotheses/active-run labels are superseded.
+
+## Completed validation
+
+No runtime is active. Final chain83328 completed/awaited0; separate client/input
+guard PASS.141 native programs(132accepted/9rejected),1668raw values/1524compared
+stored values/566original source-probe hashes. All native case tables/captures
+inspected before the corresponding implementation/correction. Every fresh132-app
+crop matches67,161,600RGB pixels exactly. Full scoped races PASS4193test/subtest
+results/36packages(25tested/11compiled-only),no failures/individual skips;
+Match1825.419s,total1929.442s. Four old contact/fall masks pass. Stock win/rematch/
+win visually inspected;82balanced owned events/1,921,557privatePCM frames.
+All15,751 final source/fixture/launcher inputs and provenance/module/inventory
+checks pass. Audit:temp/m4cx-final2-evidence-audit.json. BinarySHA:
+036ee456257b01d4ee9d3e45421e4e02acf7fc12765ca68c5e76c601b877c3cc.
+
+Typed schemas/order/default/errors,real entity history and trail drawing now
+work. Recording is after physics/bounds,before AIR advance. Palette age counts
+selected ENABLED records,excluding disabled slots but including clipped enabled
+records. Native red-brightness/postbright quirks and two-stage multiplier
+quantization are preserved. AfterImageTime retains history and can resume before
+it drains; fully drained context remains the next lifetime control.
+
+The first complete matrix118/120 and its two strict color failures remain
+preserved,including the hash-identical original validator. Both close against
+unchanged native expectations in the fresh132/132 matrix. Six stale clipboard
+diagnostics and original mislabelled authoring controls remain documented; see
+AFTERIMAGE.md. No original native input/resource/capture/golden was edited.
+The12M4cq and sevenM4cv raster failures remain UNWAIVED.
+
+## Immediate next action
+
+Explicit proposed731source/text paths are in temp/m4cx-proposed-commit-paths.json.
+Preflight scope/UTF8/no-NUL passed; staging is still empty. Documentation hashes
+changed to record final results,so re-audit actual staged blobs. Verify all source/
+fixture/module inputs,stage exact paths(with force only as needed),diff/check
+scope/text/no-binary,module/inventory audit,then LOCAL commit. Last committed
+checkpoint before this remains f428cd5db. Do not push or stop at this checkpoint.
+
+Then prepare the next coherent native study:shared trail capacity,fully drained
+recording context,helper lifetime,palette/drawing/ownership/pause variants;follow
+with projectile afterimage fields and shared stage shadows. Remaining Explod,
+AssertSpecial,system dust/animations,clipboard,haptics and residual schemas stay
+allocated. Source74typed/15fallback/3stubs/9partial/17bounded/60route-only is not
+whole-engine coverage. No family is promoted as variant-complete.
+
+Ignored preparation:prepare-m4cy-actor-draft.py and prepare-m4cy-projectile-draft.py
+are authored/syntax-checked but NOT EXECUTED. They write ignored draft directories
+only. Inspect actual source/controller/asset intent before freeze/native use.
+m4cy-native-research-draft.md lists missing controls,including numeric/tuple,
+long-history,shadow alpha/projection and resource variants. Do not implement
+assumptions from that planning file. Native tables/images precede changes.
+
+User disk cleanup reclaimed144GiB. The earlier safe private-cache maintenance and
+pause/resume records remain preserved. Source/native/captures were retained;
+private Go asset sharing only combines byte-identical completed app copies.
+Keep all runtime clients strictly serial;await then separate client guard before
+source/test/probe/fixture edits or another runtime. Temp Go only temp/_tmp.
+
+## M4cy baseline and first actor revision — active
+
+Baseline96590 finished1 and separate15,983input/client guard passed. Numeric
+counterexamples are denied AfterImage evaluation and missing AfterImageTime;
+intent key-case bug corrected only in new test. Initial7comparison failures
+were provenance errors, not RGB measurements. Exact reconstruction of ALL46
+native CFGs matches original prepared SHA and final bytes:FirstRun1->0,LF->CRLF.
+New afterimage-actor-config-finalization.json supplements hashes without changing
+any native input/capture/evidence/golden. Corrected read-only comparisons42197
+finished1/separate233input guard passed. RGB:capacity51,300,invisible4,284,
+blank-default8,559,global-palette3,681(maxerror1); missing-time/helper-ownpal0/
+superpause2 exact. First implementation follows these observations. Focused1
+session27561 active with frozen inputs; await then separate guard before edits.
+
+Focused1 session27561 completed/awaited0; separate15,984input/client guard PASS.
+194focused race results pass. All7actual application crops are exact3,561,600RGB
+pixels, closing all four original RGB failures unchanged. Complete46case actor
+matrix session10830 ACTIVE; freeze m4cy-matrix1-check-inputs.json plus186native
+source/probe paths. Await then separate guard before source/test/probe/fixture
+edits/another runtime. Revision1 tests cover187AfterImage native programs across
+old/new corpora; full scoped integration remains pending. Prepared ignored
+run-m4cy-integration1.py requires ALL46exact before running full races/four old
+render masks/stock-private-audio. Prepared audit-m4cy-final1.py requires those
+outputs and cannot pass prematurely. Continue allitem3 after local checkpoint.
+
+## M4cy revision2 and final validation active
+
+Complete first46matrix10830 finished/awaited1; separate15,984input/client guard
+PASS.43/46exact:root/helper-live remap each6228pixels(max52),45trail2285(max148).
+ALLcases retained; no goldens/tolerances changed. Two new independent native
+rotation originals parsed/frozen/observed95456finished0/awaited and separate10
+input/client guard PASS. Both rows and review sheet inspected before promoting
+2JSONs and separate rotation-native/finalization ledgers. Original46records stay
+unchanged. Newtotal48accepted/576values/194unique source-probe hashes.
+
+Revision2 snapshots palette mappings per recorded pose and keeps history palette
+states alive through sprite-cache pruning. Focused7147 finished/awaited1;
+separate15,996input/client guard PASS.53race results pass. Both remaps and the two
+oldM4cx reissue/default-age failures now exact.90degree trail exact. Independent
+current-only45WITHOUTAfterImage still534RGB/17maskXOR(max148); original45trail
+2285RGB/65maskXOR. These are UNWAIVED current-renderer gates alongside old12M4cq/
+sevenM4cv. No AfterImage-specific tolerance or raster workaround was introduced.
+
+Final chain session70209 ACTIVE:run-m4cy-final-chain.py; frozen matrix2 then
+integration2 drivers. Matrix48collects all and exits1 for any differing crop.
+Integration only runs if EXACTLY original45/current45 fail with identical2285/
+534pixels,max148. It does not waive them. Full scoped races40m,four old hit/fall
+masks,stockwin/rematch/win with private PCM follow STRICTLYSERIAL. AwaitENTIRE
+session then SEPARATEclient/source/driver/inputguard before Go/test/probe/fixture
+edits/another runtime. Ignoreddormant audit-m4cy-final2.py records explicit strict
+matrixFAIL/UNWAIVED fields; inspect/execute only after runtime completion.
+
+Complete48native table details and new cache lifetime are inAFTERIMAGE-ACTORS.md.
+M4cz projectile study constraints are ignoredtemp/m4cz-projectile-study-plan.md;
+49oldprojectile drafts remain unobserved/unpromoted. Do not freeze next public
+inputs during finalchain. Finish final audit/visualstock/docs/scopedstaging/local
+commit first, then continueallitem3. No push,binary,agents or goal.
+
+## M4cy final runtime and evidence acceptance
+
+Entire chain70209 finished/awaited1, preserving strict matrix FAIL for current45
+534RGB/17maskXOR and trail45 2285RGB/65maskXOR(max148), both UNWAIVED. All48cases
+collected;46exact23,404,800RGB pixels. Full scoped races PASS4243results/36pkgs
+(25tested/11compiled-only), no failures/individual skips/races;Match1858.841s,
+summed1943.381s. Four old hit/fall masks pass. Stock21win/26rematch/45win visually
+inspected;82balanced owned events/1,920,802private PCM. Separate15,999source/
+native/driver/client guard PASS. Final audit87805 finished/awaited0, then separate
+15,999input/driver/client guard PASS. All189native programs/2244raw/2100stored/
+9rejects/758original source-probe hashes and artifact/module/inventory checks
+pass. Audit:m4cy-final2-evidence-audit.json; visualreview recorded separately.
+No native input/resource/capture/golden or tolerance changed. Old12M4cq/sevenM4cv
+and two new rotation cases remain UNWAIVED. Stage explicit source/text only,
+local commit, then continueallitem3 with next projectile native study.

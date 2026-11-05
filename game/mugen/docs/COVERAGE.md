@@ -1,5 +1,31 @@
 # Current behavior coverage ledger
 
+M4cy adds global AfterImage context reservations, expression admission,
+helper retirement and round reset, invisible-current drawing, blank-pose palette
+aging, saved palette mappings and historical sprite-cache lifetime. Its 48 new
+native programs pin 576 values and 194 source/probe hashes. Together with M4cx,
+189 programs pin 2,244 raw values, 2,100 final-storage comparisons, nine load
+rejections and 758 original source/probe hashes. No old native expectation,
+resource, capture or comparison tolerance changed. Read
+[actor evidence and provenance](AFTERIMAGE-ACTORS.md).
+
+The complete fresh 48-case actual-app matrix has 46 exact crops across
+23,404,800 RGB pixels. The strict matrix retains exit 1 for two UNWAIVED
+45-degree failures: current-only 534 RGB/17 silhouette pixels and trail
+2,285 RGB/65 silhouette pixels, maximum channel error 148. The current-only
+control contains no AfterImage; 90-degree trails match exactly. These shared
+renderer gates remain open alongside the prior 12 M4cq/seven M4cv failures.
+
+Full scoped races pass 4,243 test/subtest results across 36 packages (25 tested,
+11 compiled-only), with no failures, individual skips or race reports. Match
+1858.841s; summed package time 1943.381s. Four old contact/fall render masks pass.
+Stock win/rematch/win is visually inspected, with 82 balanced owned input events
+and 1,920,802 private PCM frames. All 15,999 frozen source/native/driver inputs,
+final resource/binary/config/PNG/audio, module and inventory guards pass. Audit:
+`temp/m4cy-final2-evidence-audit.json`. Source remains 74 typed/15 fallback,
+three stubs, nine partial, 17 bounded and 60 route-only families. These are not
+whole-engine coverage. Continue all item3; item4 remains unallocated.
+
 M4cx implements typed AfterImage/AfterImageTime schemas, native evaluation
 quirks, recording after physics/bounds and before animation advance, and trail
 drawing with palette age counted over selected enabled entries.141 native

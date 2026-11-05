@@ -146,3 +146,13 @@ fouroldrenderregressions and visuallyinspectedstock/privateaudio pass. Source/
 native/artifact/module/inventory guards verify15,035inputs. Continue AfterImage
 with the prepared12first-look controls, then its measured schema/history/palette/
 ownership/projectile dependencies. Native all-case inspection precedes code.
+
+
+M4cy extends bounded AfterImage contexts and recorded palettes. All 48 native
+actor controls are retained; the final actual-app matrix is 46/48 exact, with
+current-only/trail 45-degree renderer failures explicitly unwaived. Full 4,243
+results/36 packages, four rendering regressions and visually inspected stock/
+private-audio gates pass. See AFTERIMAGE-ACTORS.md. Next: projectile nested trail
+fields and shared shadows, following native-only all-case inspection. The 49
+existing projectile drafts are not observations and remain unpromoted. Finish
+all remaining item3 groups; item4 remains unallocated.

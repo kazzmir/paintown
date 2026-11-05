@@ -89,7 +89,9 @@ func (p *Player) drawLegacyExplods(screen *ebiten.Image, screenX, screenY, scale
 
 func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy float64) {
 	p.drawAfterImages(screen, ent, x, y, sx, sy)
-	p.drawEntityWithPalette(screen, ent, x, y, sx, sy, nil)
+	if !ent.Specials["invisible"] {
+		p.drawEntityWithPalette(screen, ent, x, y, sx, sy, nil)
+	}
 }
 
 func (p *Player) drawEntityWithPalette(screen *ebiten.Image, ent *Character, x, y, sx, sy float64, override *palette.Transform) {
@@ -192,6 +194,13 @@ func (p *Player) drawEntityWithPalette(screen *ebiten.Image, ent *Character, x, 
 	}
 	if ent.Timeline != nil {
 		style.Palette = palette.Combine(style.Palette, ent.Timeline.AllPalette.Transform())
+		if override != nil {
+			// AfterImage's integer palette coefficients are quantized again
+			// after merging the global multiplier, before the first draw pass.
+			for i, coefficient := range style.Palette.Mul {
+				style.Palette.Mul[i] = float32(math.Trunc(float64(coefficient*256))) / 256
+			}
+		}
 	}
 
 	var err error
@@ -290,12 +299,21 @@ func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect boo
 }
 
 func (p *Player) pruneSpriteCache() {
-	active := map[*palette.State]bool{p.Character.Palettes: true}
-	for _, entity := range p.helpers() {
+	active := map[*palette.State]bool{}
+	retain := func(entity *Character) {
 		active[entity.Palettes] = true
+		if entity.afterImages != nil {
+			for _, frame := range entity.afterImages.frames {
+				active[frame.palettes] = true
+			}
+		}
+	}
+	retain(p.Character)
+	for _, entity := range p.helpers() {
+		retain(entity)
 	}
 	for _, entity := range p.Character.Projectiles {
-		active[entity.Palettes] = true
+		retain(entity)
 	}
 	for key, cached := range p.spriteCache {
 		if !active[key.state] || (key.state != nil && key.state.Revision != cached.revision) {

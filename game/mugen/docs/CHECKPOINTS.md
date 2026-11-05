@@ -2888,3 +2888,21 @@ negative-state edge cases, animation boundaries, physics/collision phase order
 and the transition limit. State ownership and world-level Pause/SuperPause are
 still incomplete. Typed controller parameters and animation/constant bindings
 are next; these changes are unit/regression-tested, not executable-parity claims.
+
+
+## M4cy — AfterImage context ownership and recorded palettes
+
+Global root/helper reservations now gate parameter evaluation, survive stopped
+or drained recording, and release on helper destruction/round reset. Missing
+AfterImageTime contexts skip argument evaluation. Invisible current actors keep
+their trails; blank poses do not age drawable history. Recorded poses retain
+palette mappings and their sprite-cache entries. See
+[the actor evidence](AFTERIMAGE-ACTORS.md) for native quirks and preserved failures.
+
+Validation: 48 new native programs/576 values; all 189 combined AfterImage
+programs pass in the 4,243-result/36-package full race suite. All four old
+contact/fall masks and visually inspected stock win/rematch/win with private
+audio pass. The strict actual-app matrix has 46/48 exact crops, 23,404,800 pixels;
+current/trail 45-degree failures remain unwaived, reproduced independently of
+AfterImage. Original observations and tolerances are unchanged. This is a local
+source/text checkpoint; projectile trails/shadows and all remaining item3 follow.

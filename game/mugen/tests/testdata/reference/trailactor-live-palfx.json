@@ -1,0 +1,186 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "907622faa02a5fe7c2eff2224e7db7c15dcfa43100d0f844ac644bfefac55472",
+  "air_sha256": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "b377e53205c65c4f6bd70aae54adb6b18ee11387c145ffc3bba1fb9e86f03383",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 700,
+        "4": 9100,
+        "5": 8,
+        "6": 72,
+        "7": -120,
+        "8": 1,
+        "9": 138,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_time_count": 0,
+  "helper_count": 0,
+  "root_afterimage": true,
+  "root_afterimage_overrides": {},
+  "duration_modifier": null,
+  "helper_issue_time": 0,
+  "helper_destroy_time": null,
+  "helper_move_budget": 0,
+  "stop_time": 8,
+  "AfterImageMax": null,
+  "actual_controller_counts": {
+    "AfterImage": 1,
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "PalFX": 1,
+    "Pause": 1,
+    "PlayerPush": 2,
+    "PosSet": 1,
+    "ScreenBound": 2,
+    "VarSet": 12
+  },
+  "native_afterimage_max": 16,
+  "source_intent_verified_by_cns_air_parser": true,
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "78ace19699ab84535ae5e847f75dec19f647c39fabe5c3d833be9167920d83f6"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "root",
+      "region": [
+        160,
+        140,
+        1120,
+        330
+      ],
+      "nonbackground_pixels": 29934,
+      "bbox": [
+        424,
+        240,
+        931,
+        315
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            79,
+            49,
+            49
+          ],
+          "pixels": 10422
+        },
+        {
+          "rgb": [
+            255,
+            189,
+            156
+          ],
+          "pixels": 8127
+        },
+        {
+          "rgb": [
+            219,
+            115,
+            90
+          ],
+          "pixels": 2862
+        },
+        {
+          "rgb": [
+            255,
+            148,
+            115
+          ],
+          "pixels": 2079
+        },
+        {
+          "rgb": [
+            113,
+            49,
+            49
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            96,
+            99,
+            165
+          ],
+          "pixels": 1350
+        },
+        {
+          "rgb": [
+            162,
+            66,
+            49
+          ],
+          "pixels": 1350
+        },
+        {
+          "rgb": [
+            253,
+            115,
+            90
+          ],
+          "pixels": 477
+        }
+      ]
+    },
+    {
+      "entity_row": "helper1",
+      "region": [
+        160,
+        330,
+        1120,
+        450
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    },
+    {
+      "entity_row": "helper2",
+      "region": [
+        160,
+        450,
+        1120,
+        600
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

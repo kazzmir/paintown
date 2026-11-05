@@ -1,0 +1,1254 @@
+{
+  "summary": {
+    "programs": 46,
+    "accepted": 46,
+    "rejected": 0,
+    "numeric_values": 552,
+    "source_probe_hashes": 186,
+    "all_native_rows_and_images_inspected_before_implementation": true
+  },
+  "programs": [
+    {
+      "fixture": "trailactor-blank-animation",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "56be9e3d849f693cbacb9b7854d80aed1ecff9f60ce12a67dbbcf5fb365c97a1",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9999,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-blank-animation-default-palette",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "444199da5c122b0e4e3c577eddf1eebddd63011be4c1c1ea87410fdad7466c7f",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9999,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "2ad7d428a7f8d3a7a8e79d44edfd493157916b197363a39149251aa7d9e5d524",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 2,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f8a0bb7b43573522ade7f6d4cc2c4a36c5b6b83ee26bf411531ed0be7ff5a451",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 2,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 2
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-4",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d9ea05d610b13bcfdb03b133b99d3233fd840cae6fa78eb66423a556fe1bf671",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 2,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 4
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-after-stop-11",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d4fa2c6542a4e87fee53f31087ca28176441af1c39b676c954a9b6a207ecd637",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 14,
+            "6": 48,
+            "7": -120,
+            "8": 1,
+            "9": 144,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-after-stop-4",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "11d356a9e1dd7d207202e7415ca4bf5d0ab49b1a447a5b9057f5151c49475578",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 14,
+            "6": 48,
+            "7": -120,
+            "8": 1,
+            "9": 144,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-after-stop-7",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "18235bd5bdf9d070bd5e1194842d62db53fda4a912d023f7b347fada05a2e33f",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 14,
+            "6": 48,
+            "7": -120,
+            "8": 1,
+            "9": 144,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-initially-disabled",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "85512a8d6ddd9b88c21e481ce7cfa9fbe701550ca004717210a0f7febc23ed0d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-one-length-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "dd9eeaefb4a42673bbc7fa19e5073988ca4f4823e4ea6979a1e050de440d1280",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-one-length-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "85512a8d6ddd9b88c21e481ce7cfa9fbe701550ca004717210a0f7febc23ed0d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-short-expiry-gap-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ea21d88e150a0ba17bd47a7296a9beb433dbb83b4095378ba4fe18c5ddcb4157",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-capacity-short-expiry-gap-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "aa25e9af389ca5d05e032a6cc5584f4fed947d6a53d29edcedff3ed2a4449131",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-changed-animation",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "1f43a49071fc292f813587f259440c57af8a09c6fb46ccf4f624a1f29b1a6f5d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9101,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-expired-resume-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "40c30586bebf4ad318e4741edc0a4a7bbe12cf0766a9f9976e3da0875ac95053",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-expired-resume-4",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "77ba502076af0936dcd70e28ccc7ec721224ab8b58b1609a86d123c37cabacb6",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-destroy-four",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ea35f96df25924c96b94d2d35c1a934da6fde35a70234ca38ae8a5beccfd906f",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-only",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "c5088a2407bf4bde801e4851a5ceb6340c5802f96f8f399833786b9962581bc9",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-owner-palfx-0",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ddb75b6ad6720f56ab565506b6bdd4ad8e8843865c6e255e42cc7e4e89d9a0ff",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-owner-palfx-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e829ef35bf3570d7b58f6b3e4f8e27ff31a4102c626c96f3e05b844bd24aa1e3",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-owner-remap-0",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "32d37ea061b0509b511078ebce211d5bcef7ca0e6ea703af4b5801687152cb99",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-owner-remap-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "1ad5970e49ca5b83886d9df4378852248749cc25e017156964a7962519a9d203",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-pause-budget-0",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0002f038dce632882bc5b51eb26ad754ae5f96a6a491009a4f04761b9d56fbba",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 142,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-pause-budget-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0b0e07aa2126c813a0f37f05d2c5db09668de35f700fbcd14a98b7eb7a69a99d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 142,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-pause-budget-5",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "032fa9dce572325e38fe5bac0c8e3beb80767cd54c22fd2efcd12e33794f96f3",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 142,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-superpause-budget-0",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "34e8962f93692569ceafe7e36c9943298a862de8793d2bb4e09c524973feb5e1",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 142,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-superpause-budget-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e0cf234afe4ca6e8853349c72d483a1c53315a1043a1165fbe8a7912eddeda72",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 142,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-helper-superpause-budget-5",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "245e285cd1ec662b0ccff8ceb5be29a587acd19f294e86480cfac126e500d151",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 142,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-inactive-resume-0",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "31247d858c0cd1e920df86d30a9c96227c6439055eeee414332fb9a3e58d2af5",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-inactive-resume-neg2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "fc705d4f9e689a2c540b817514b3752428e507add59af9070c22537d0698cde5",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-angle",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "704415b40332a7b182892a525ccc854c17d6da092b00c5021493f9d86f5c668d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-global-palette",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f20d67c291315845fa74dbb10840dcf1db9cbf3ad6ea5176535e3b7f0aceb8cd",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-invisible",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a97788589d211d344f629d223b4b847e5d1c7254bb016c122058986ffbd25a44",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-offset",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "061bf79af99a6797f0ef14d37357b6fa0847b13f861612dbd1f132c8a2033ea0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-palfx",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b377e53205c65c4f6bd70aae54adb6b18ee11387c145ffc3bba1fb9e86f03383",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-remap",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "855d487fc5977c886841c821d25b9d2ff2a8950093e04dcb9dbe7a7426efd48b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-live-trans",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b23092ce9f7f412251e9cc58b1d296e34becef02d1fa9c324216cc3c66977694",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-missing-context-modifier",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "54df4406456bbf1ff126eeb83e4ebe7d9de0bb214c62913406e9a3821e801a26",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-extra-denied-eval-max-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f804304ef5984d41a4d3f40870482ccc6b9b60977f101add9681780fc6abe19c",
+          "variables": {
+            "0": 0,
+            "1": 77,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-extra-denied-eval-max-4",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "bde62aac715b62dbf1e137f7bd8d9fcff8b471dd80b7b3aa3094ed604e8f357c",
+          "variables": {
+            "0": 1,
+            "1": 77,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 4
+      }
+    },
+    {
+      "fixture": "trailactor-extra-reissue-full",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "18c21dede34ffbafec0b399fb8965d640e5927defe86c9bab670fc02b7ccc08e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-extra-reuse-after-destroy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "af00dc47e33e1905c7cd137b7823dce75e061c499af33b7a18b338744e2c3c36",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 700,
+            "4": 9990,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-extra-time-eval-missing",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "42c004c6d146c277d285d1a40af1a8029922c742272d9a42a37de8d4eee4c93b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-extra-time-eval-retained",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b3fe2888104305a07af8043e03323224402716e1516f37cf61804d3650a000bd",
+          "variables": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    {
+      "fixture": "trailactor-extra-two-roots-max-1",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "73e43d1992efa660fc69fd6de1def9edef9f9c95cdaa49c1a1a31099bdfc0223",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 1
+      }
+    },
+    {
+      "fixture": "trailactor-extra-two-roots-max-2",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "fc54b104e0dead2b08bddcaa1f1438b366a0ef7970dae5d270c6a771653682ba",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 700,
+            "4": 9100,
+            "5": 8,
+            "6": 72,
+            "7": -120,
+            "8": 1,
+            "9": 138,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "effect_limits": {
+        "AfterImageMax": 2
+      }
+    }
+  ]
+}
