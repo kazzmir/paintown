@@ -21,6 +21,7 @@ type FightState struct {
 	hud                                *FightHUD
 	stageCanvas, gameCanvas, hudCanvas *ebiten.Image
 	environmentColorImage              *ebiten.Image
+	viewportBackgroundImage            *ebiten.Image
 	effectImages                       map[effectImageKey]effectImage
 	effectUsed                         map[effectImageKey]bool
 	effectWarnings                     map[string]bool
@@ -177,7 +178,30 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		}
 	}
 	world, err := coord.Project(gameSpace, target, s.engine.cfg.Video.KeepAspect)
-	world.Y += m.Timeline.ShakeOffset() * float64(gameSpace.Width) / 320 * world.ScaleY
+	shake := m.Timeline.ShakeOffset()
+	if shake != 0 && (environment.Time > 0 || allPalette.Enabled) {
+		if s.viewportBackgroundImage == nil {
+			s.viewportBackgroundImage = ebiten.NewImage(1, 1)
+		}
+		if environment.Time > 0 {
+			// The fixed EnvColor backdrop uses the same first GPU pass and
+			// framebuffer clamp as its quad in the moving world surface.
+			s.viewportBackgroundImage.Clear()
+			if err := s.linearSampler.DrawStyledImage(s.viewportBackgroundImage, s.environmentColorImage, &ebiten.DrawImageOptions{}, render.DrawStyle{DestinationFactor: -1, Palette: allPalette}); err != nil {
+				s.renderError = fmt.Errorf("EnvColor viewport backdrop: %w", err)
+				return
+			}
+		} else {
+			// Ordinary shake exposes raw black; AllPalFX applies its final
+			// viewport pass to those gaps as well as to the moving content.
+			s.viewportBackgroundImage.Fill(color.Black)
+		}
+		backdrop := world
+		backdrop.ScaleX *= float64(gameSpace.Width)
+		backdrop.ScaleY *= float64(gameSpace.Height)
+		drawFitted(s.viewportBackgroundImage, backdrop, err)
+	}
+	world.Y += shake * float64(gameSpace.Width) / 320 * world.ScaleY
 	drawFitted(s.gameCanvas, world, err)
 	hud, err := coord.HUDProject(gameSpace, motifSpace, target, s.engine.cfg.Video.KeepAspect)
 	// Native positive EnvColor covers the HUD with either under flag.

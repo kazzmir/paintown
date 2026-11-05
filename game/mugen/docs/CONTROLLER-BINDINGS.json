@@ -4,8 +4,8 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "74fdf8540efc65553e31e1386dbcfdd62ed79b6dd83cab9509bf6b7c2bacb2e0",
-    "character/character.go": "41ec580d47481b50455f3ddea7e93a864920032000f4f9504213e62e14ef7d80",
+    "engine/parameters.go": "15c69730725822361b8b3d169a0a347f4162cf4635cf8ef1fcbccfd94a67b8e8",
+    "character/character.go": "d67b143299183e67339e9f840b9773074a5e840ba114c6c5adfb4a79f3946ebc",
     "character/player.go": "b2b1468bc92297c552e032341ad1159f04b7a41dbe52c93a0fca4f84695d579d",
     "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
@@ -21,6 +21,8 @@
     "engine/trans.go": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
     "engine/palette_fx.go": "fbfe30e579171d3b9c646462edfe324fe8c1053ff1e8366684238fe3dcb209c7",
     "engine/env_color.go": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
+    "engine/env_shake.go": "4792c308034f6cbd95c9d40de4c8a4c5f529270ff075a71f0ea2a917afcd3d06",
+    "engine/shake.go": "badeca8942018cda36f154190115c52d89bed797adb2adfa848c6a3b9cc8659b",
     "engine/timeline.go": "8f4954ed3e7d351064431270f88341991bd95f59469bd09dd5196d964fcecc58",
     "engine/round_clock.go": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
     "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
@@ -32,8 +34,8 @@
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "b1e62cd12aaacc2a86e8888b10c15905552483d332a9bcb5a22d947b05558ab0",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "6afcc11fe9dfa76dcda5163dfc3420d20ca8758e50331f79c65f90232934657f",
-    "system/hud.go": "b5cea75cdc456eb151a377a88a0b432f5d497d910df20758454d3e7e362dc01f",
+    "system/fight_state.go": "7e96db4002ce64ca66c1ecb5886971a79050ee2415908ac5f4054ac13e5613dc",
+    "system/hud.go": "1ceba3b260f2c3f60c6cc8409332c8f4e09fcc2932795862cbd61752ee44537f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
@@ -43,15 +45,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 71,
-    "fallback": 18,
+    "typed": 72,
+    "fallback": 17,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 6,
+      "stub": 5,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 14,
+      "bounded-native-consumer": 15,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -320,11 +322,11 @@
     {
       "name": "envshake",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleEnvShake",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:EnvShake"
+        "ENV-SHAKE.md: native schemas/evaluation, author-local amplitude, frequency normalization, pending/current clocks and actual fixed-overlay/viewport consumers; wider variants open"
       ],
       "variants_complete": false
     },

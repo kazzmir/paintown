@@ -23,28 +23,44 @@ Use the scoped mugen.mod/mugen.sum overlay and readonly module flags. Verify
 
 ## Immediate state — read HANDOFF.md
 
-Latest committed checkpoint: **M4ct a048effa3**, native actor/owned-effect
-ordering. All16 new strict crops and four original M4cs overlaps pass unchanged
-goldens; no remaining M4cs ordering waiver. Earlier M4cq12 fractional/nonquarter
-raster failures remain unwaived separately.
+Latest commit **M4cu b8654fca3**; prior M4ct a048effa3. M4cv EnvShake is
+implemented and in validation. All72 original programs/289 source+probe hashes
+are immutable;66 accepted/792 values/six rejects. Native-only all-case table was
+inspected before implementation. Missingtime defaults0;ampl raw-4;runtime ampl
+fractions persist;frequency abs, exactzero=>.001, nonzero tiny magnitudes survive.
+Nonpositive standalone requests clear pending only, retaining active shake.
 
-**M4cu EnvColor acceptance COMPLETE; local source/text checkpoint follows.**
-Read ENV-COLOR.md and HANDOFF. All76 native controls:68 accepted/816 numeric
-readings/eight rejects/305 unique hashes. All68 final466,400-pixel crops and2,516
-samples match exactly (31,715,200 pixels). Core and189 native races123.968s pass;
-final System9.365s, ten regressions and visually inspected stock win/rematch/win
-82 balanced events/1,972,229 private PCM frames pass. All final source/native/
-resource/config/binary/PNG/audio/module/inventory guards pass; no clients/sessions
-remain. Audit:temp/m4cu-final-evidence-audit.json. Only fight drawing changed
-after core/native tests; all other frozen inputs verify unchanged. Native
-originals/captures/goldens and failed m4cu1/2/3 diagnostics remain immutable.
+**M4cv environment checkpoint validation COMPLETE; local commit next.** No
+runtime active. Full session32364 finished/awaited0; separate source/client
+checks PASS all14,998inputs.4,033test/subtest results/36packages (25tested/
+11compiled-only),Match1736.103s,no failures/individual skips. Final audit16464
+finished/awaited0:temp/m4cv-final-evidence-audit.json. Earlier audit80209 found
+stale generatedinventoryHUDhash; only that JSONsourcehash refreshed after full,
+not Go/test/native/probe/fixture code. Exception:m4cv-inventory-refresh.json;
+original fullfreeze untouched. All final provenance/module/inventory guards pass.
 
-Next EnvShake preparation `temp/prep-m4cv.py` is **not executed**. Continue it
-and all remaining item3 after the EnvColor checkpoint. Do not mark any registered
-or typed family variant-complete by inference. Current inventory71 typed/18
-fallback/6 stubs/9 partial/14 bounded/60 route-only is a source audit, not a
-whole-engine percentage. Latest full suite remains M4cs3,857 results/36 packages;
-new full integration follows the EnvShake boundary.
+All focused/native/app/regression sessions finished/awaited/guarded4295/34597/
+36095. Final38/45strict scenes exact (14,935,520pixels),1,727/1,755samples exact.
+Seven640/1280profiles retain252/876worldpixelerrors(max2RGBsteps),four1-step HUD
+sampleerrors each. Every strictfailure UNWAIVED; no sampler/expected/tolerance
+changes. Prior12M4cq raster failures remain. Stock visually inspectedwin/rematch/
+win82balanced events/1,975,603privatePCM. Source72typed/17fallback/5stubs/9partial/
+15bounded/60route-only is not whole-engine coverage. Read ENV-SHAKE.md.
+
+Next localcommit383UTF8source/textpaths after stagedscope/binary/diff audit,
+then separate idle guard, execute prepared prep-m4cw.py (12contact/fall frequency
+controls), runnativebatch/guard,inspect ALLnative table before implementation.
+Then AfterImagepilotprep-m4cx-pilot.py. These scripts PREPARED ONLY, no newfixtures
+yet. Continue ALLitem3, no checkpoint stop or push. Standalone behavior must not
+be inferred for contact/fall. Separate clippednative viewportcalibration remains
+diagnostic ONLY, never accepted numeric evidence. Native originals immutable.
+
+M4cu acceptance:76 native/68 accepted/816 values/eight rejects/305 hashes;
+68 exact crops31,715,200 pixels/2,516 samples; core+189 native races,ten regression
+apps and visually inspected stock82events/1,972,229 private PCM frames. Audit:
+temp/m4cu-final-evidence-audit.json. Latest full **M4cs**3,857 results/36packages
+predates M4ct/M4cu/M4cv. Current source72typed/17fallback/5stubs/9partial/15bounded/
+60route-only is a source-routing count, not behavioral completion.
 
 ## Native and validation workflow
 
@@ -63,7 +79,7 @@ new full integration follows the EnvShake boundary.
 5. Use focused races/apps during revisions and full scoped races at meaningful
    integration boundaries and final allocation closure. Run required checks;
    broaden/repeat only for changes/failures/unresolved concerns. Full races use
-   `--check -race -p 1 -count=1 -timeout=30m`.
+   `--check -race -p 1 -count=1 -timeout=40m`.
 6. Freeze source/test/probe/fixture/module inputs for each runtime run. **Native,
    actual-app and display-dependent Go runs are strictly serial.** Await every
    exec session, then a separate client guard before edits/another runtime.

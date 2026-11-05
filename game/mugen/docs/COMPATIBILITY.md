@@ -1,5 +1,25 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cv EnvShake has a bounded implementation and completed integration checkpoint.72 native
+programs pin792 values/six rejects and289 original/probe hashes. Typed defaults,
+evaluation order, fractional amplitudes, deferred replacement and global clocks
+reach the actual camera/viewport consumer. The complete native-only table was
+inspected before implementation. HUD AIR blends now reach rendering too.
+
+Revision2 passes38/45 strict393,040-pixel crops (14,935,520pixels),1,727/1,755RGB
+samples. Seven640/1280 profiles retain252/876 world-pixel precision errors
+(maximum two channel steps) and four one-step HUD sample errors each. These and
+the12 prior M4cq raster counterexamples remain UNWAIVED. No native inputs,
+captures, goldens or tolerances changed. See [ENV-SHAKE.md](ENV-SHAKE.md).
+Core/selected native races, finalSystem9.461s,ten EnvColor/contact/fall regression
+apps and visually inspected stockwin/rematch/win82events/1,975,603PCM pass.
+Full scoped races PASS4,033test/subtest results/36packages (25tested/11compiled-only),
+Match1736.103s;all14,998frozen inputs verified. No failures/individual skips.
+Final audit:temp/m4cv-final-evidence-audit.json, including the reviewed generated
+inventory HUD-hash refresh. Tested source/native expectations stayed unchanged.
+Source72/89typed routes(80.9%),17fallbacks,5stubs,9partial,15bounded and60route-only
+families are not whole-engine coverage. All remaining item3 continues.
+
 M4cu EnvColor (2026-11-05) now has a typed schema, native unmasked RGB
 packing/evaluation order, global lifetime and actual background/actor/effect/
 foreground/HUD/palette consumers.76 native programs pin816 values/eight rejects/

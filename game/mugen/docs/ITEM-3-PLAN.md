@@ -116,3 +116,26 @@ all-case inspection is now mandatory before implementation, following manual/
 foreground/HUD differences found in this batch. Old agent notes are archived;
 active scope/handoff are concise. Continue EnvShake (43 prepared controls), then
 all remaining item3 groups and full integration at the environment boundary.
+
+## Environment boundary — M4cv
+
+EnvShake's72 native programs establish standalone defaults/schema/order, runtime
+fractions, magnitude normalization, exact-zero fallback, replacement clocks and
+Pause/SuperPause. The production viewport gap consumer matches allsix native
+EnvColor/AllPalFX combinations. HUD AIR blending is now consumed. Revision2
+passes38/45 static scenes;seven640/1280 profiles retain252/876 world-pixel errors
+(maximum two channel steps) and four one-step HUD sample errors each. These
+remain UNWAIVED, alongside12 prior M4cq raster counterexamples. A source-only
+route count (72/89 typed) cannot close those renderer obligations. Read
+ENV-SHAKE.md for evidence and full4,033-result/36-package integration acceptance. The strict
+45-case image matrix still fails its seven explicit profiles.
+
+A separately named contact/fall frequency matrix is prepared, not executed,
+because their shared parser still clamps to a minimum rather than following the
+measured standalone normalization. Native data must decide whether that is a
+real dependent bug; do not transfer semantics by assumption or alter earlier
+HitDef/Fall expectations. This small audit follows the environment checkpoint.
+AfterImage first-look controls are also prepared without authoring frozen
+fixtures during the active full run. They isolate history spacing/lifetimes,
+neutral/default palettes and AfterImageTime before choosing implementation
+boundaries. All remaining item3 groups stay allocated.

@@ -95,6 +95,8 @@ func typedHandlerWithBottom(ctrl *cns.StateController, specs []argumentSpec, zer
 func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	name := strings.ToLower(ctrl.Type)
 	switch name {
+	case "envshake":
+		return compileEnvironmentShake(ctrl)
 	case "envcolor":
 		return compileEnvironmentColor(ctrl)
 	case "pause":

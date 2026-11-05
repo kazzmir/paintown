@@ -914,7 +914,24 @@ func (c *Character) AfterImageTime(time int) {
 }
 
 func (c *Character) EnvShake(params map[string]string) {
-	// Stub: Trigger screen shake in stage/game
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteEnvironmentShake(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("EnvShake: %w", err)
+	}
+}
+
+func (c *Character) SetEnvironmentShake(p engine.ShakeParameters) error {
+	if c.Timeline == nil {
+		return fmt.Errorf("EnvShake global timeline is unavailable")
+	}
+	// Both explicit and default amplitudes are authored in the state owner's
+	// coordinates. Quantization happens later in the shared 320-unit camera.
+	p.Amplitude = p.Amplitude * 320 / float32(c.currentStateOwner().LocalCoordinateWidth())
+	c.Timeline.RequestEnvironmentShake(p)
+	return nil
 }
 
 func (c *Character) EnvColor(params map[string]string) {

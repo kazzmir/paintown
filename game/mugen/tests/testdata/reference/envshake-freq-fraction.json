@@ -1,0 +1,42 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f91bb3c52888028e70773405bcc257f46f0a73a92294eeec41b1d0829e51f5ef",
+  "air_sha256": "89d2428a42e7824c0055f263404da4fdcde7e0318ac3411c7b02cb4511dbe7d9",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "5d8a28f4bd43237ca32609a0c7f32247301de8355516728988042af526b6274e",
+      "variables": {
+        "0": 200,
+        "1": 202,
+        "2": 203,
+        "3": 204,
+        "4": 204,
+        "5": 204,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kind": "EnvShake",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "dynamic_shake_diagnostic": "Global shake phase continues during CNSPause; original numeric trace is fixed, wall-clock image is diagnostic only"
+}

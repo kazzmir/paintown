@@ -139,3 +139,15 @@ evaluation order, positive/negative durations and layer/palette behavior; see
 ENV-COLOR.md. Audit counts are71 typed/18 fallback,6 stubs,9 partial,14 bounded,
 60 route-only.71/89 (79.8%) is parameter routing, not behavioral coverage. All
 families remain variant-incomplete. Source audit now includes engine/env_color.go.
+
+## M4cv implementation
+
+EnvShake now has a typed schema and measured standalone clock/production camera
+consumer. Counts are89 registered/72typed/17fallback,5stubs,9partial,15bounded,
+60route-only; no family is variant-complete.72/89(80.9%) is source routing.
+The72native programs and45static application comparisons provide38exactcrops;
+sevenprofile precision failures remain explicit/unwaived. Read ENV-SHAKE.md.
+The source audit now includes engine/env_shake.go and the shared shake timeline.
+Full environment integration passes4,033results/36packages; no whole-engine completion claim.
+Final audit caught/refreshed only the generated HUD source hash, preserving source
+counts/classifications and all tested code/native inputs. See ENV-SHAKE.md.
