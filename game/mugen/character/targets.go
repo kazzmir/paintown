@@ -8,7 +8,7 @@ import (
 
 func (c *Character) interruptTargets() error {
 	for _, target := range c.targetOrder {
-		if target.binding != nil && target.binding.anchor == c {
+		if target.binding != nil && !target.binding.self && target.binding.anchor == c {
 			target.releaseHitBinding()
 			if target.RuntimeError != nil {
 				return target.RuntimeError
@@ -36,7 +36,7 @@ func (c *Character) DropTargets(p engine.TargetDropParameters) error {
 		kept[target] = c.hitTargets[target]
 	}
 	for _, target := range previous {
-		if _, retained := kept[target]; !retained && target.binding != nil && target.binding.anchor == c {
+		if _, retained := kept[target]; !retained && target.binding != nil && !target.binding.self && target.binding.anchor == c {
 			target.binding = nil
 		}
 	}

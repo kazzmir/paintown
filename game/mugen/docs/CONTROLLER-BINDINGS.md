@@ -73,3 +73,10 @@ for and source/manual SHA-256 evidence. Root go.mod/go.sum guards pass. No runti
 Go code changed in this source-only checkpoint, so no full race/native rerun is
 needed here. The last integration is df59235b: 3,169 passing results across 36
 packages. Native/app/display Go work for upcoming features remains serial.
+
+## M4cl update
+
+BindToParent/Root have typed schemas and bounded native production constraints.
+The reproducible audit now counts89 registered/63 typed/26 fallback,12 stubs,
+five unconsumed actor draw families, nine partial families, three bounded-native
+and60 route-only families. All rows remain variant-incomplete. Read SELF-BINDING.md.

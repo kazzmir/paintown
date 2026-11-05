@@ -14,11 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
-           'effect/scene.go', 'system/effects.go', 'render/perspective.go']
+           'effect/scene.go', 'system/effects.go', 'render/perspective.go',
+           'engine/self_binding.go', 'character/binding.go', 'character/targets.go']
 STUBS = {
     'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
     'envshake': 'EnvShake', 'envcolor': 'EnvColor', 'trans': 'Trans',
-    'bindtoparent': 'BindToParent', 'bindtoroot': 'BindToRoot',
     'bindtotarget': 'BindToTarget', 'palfx': 'PalFX',
     'allpalfx': 'AllPalFX', 'bgpalfx': 'BGPalFX',
     'forcefeedback': 'ForceFeedback', 'gamemakeanim': 'GameMakeAnim',
@@ -38,7 +38,11 @@ PARTIAL = {
     'hitadd': 'updates ComboCount; no production reader of that field was found',
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
-BOUNDED = {'explodbindtime': 'EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open'}
+BOUNDED = {
+    'explodbindtime': 'EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open',
+    'bindtoparent': 'SELF-BINDING.md: helper constraints, phase/velocity/facing/lifecycle; wider interactions open',
+    'bindtoroot': 'SELF-BINDING.md: root constraints, phase/velocity/facing/lifecycle; wider interactions open',
+}
 
 
 def function(source, name):

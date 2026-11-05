@@ -1,12 +1,28 @@
 package character
 
-import "github.com/kazzmir/paintown/game/mugen/engine"
+import (
+	"fmt"
+
+	"github.com/kazzmir/paintown/game/mugen/engine"
+)
+
+func (c *Character) executeSelfBind(params map[string]string, root bool) {
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteSelfBindParameters(params, c.stateEnvironment(), version, root); err != nil {
+		c.RuntimeError = fmt.Errorf("self binding: %w", err)
+	}
+}
 
 type actorBinding struct {
 	anchor     *Character
 	x, y       float64 // offset in the bound actor's storage units
 	remaining  int
 	generation uint64
+	self       bool
+	facing     int
 }
 
 // Losing an anchor through retirement or an incoming hit releases a valid
@@ -16,7 +32,7 @@ func (c *Character) releaseHitBinding() {
 	if c.binding == nil {
 		return
 	}
-	valid := c.binding.generation == c.hitGeneration
+	valid := !c.binding.self && c.binding.generation == c.hitGeneration
 	c.binding = nil
 	if !c.destroyed && valid && c.MoveType == "H" {
 		if !c.updateActive {
@@ -24,6 +40,67 @@ func (c *Character) releaseHitBinding() {
 		}
 		c.stateOwner = nil
 		c.changeStateWithEntry(5050, engine.EntryOverrides{}, true)
+	}
+}
+
+// Self bindings share the exclusive constraint slot with TargetBind, but keep
+// their own phase, velocity and GetHitVar policy.
+func (c *Character) BindSelf(root bool, evaluate func() (engine.SelfBindParameters, error)) error {
+	if c.Parent == nil || c.isProjectile || c.destroyed {
+		return nil
+	}
+	anchor := c.Parent
+	if root {
+		anchor = c.rootPlayer()
+	}
+	if anchor == nil || anchor.destroyed {
+		return nil
+	}
+	p, err := evaluate()
+	if err != nil {
+		return err
+	}
+	if p.Time < -1 {
+		p.Time = 1
+	}
+	if p.Time == 0 {
+		c.binding = nil
+		c.boundThisTick = false
+		return nil
+	}
+	width := p.CoordinateWidth
+	if width <= 0 {
+		width = c.LocalCoordinateWidth()
+	}
+	scale := float32(c.LocalCoordinateWidth()) / float32(width)
+	c.binding = &actorBinding{anchor: anchor, x: float64(float32(p.X) * scale), y: float64(float32(p.Y) * scale), remaining: p.Time, generation: c.hitGeneration, self: true, facing: p.Facing}
+	c.boundThisTick = true
+	c.bindingReported = false
+	return nil
+}
+
+func (c *Character) applySelfBinding() {
+	b := c.binding
+	if b == nil || !b.self || !c.boundThisTick {
+		return
+	}
+	anchor := b.anchor
+	if anchor == nil || anchor.destroyed {
+		c.binding = nil
+		return
+	}
+	// CNS observes the previous pose. Position writes within that pass are
+	// replaced here, after forces, without replacing the actor's velocity.
+	x, y := c.PositionOf(anchor)
+	c.X, c.Y = x+b.x*float64(anchor.Facing), y+b.y
+	if b.facing != 0 {
+		face := anchor.Facing
+		if b.facing < 0 {
+			face = -face
+		}
+		if c.Facing != face {
+			c.Turn()
+		}
 	}
 }
 
@@ -63,7 +140,7 @@ func (c *Character) prepareBinding() {
 		}
 	}
 	c.boundThisTick = true
-	c.bindingReported = anchor.tickMoveType == "A"
+	c.bindingReported = !b.self && anchor.tickMoveType == "A"
 }
 
 func (c *Character) publishBindings() {
@@ -75,7 +152,7 @@ func (c *Character) publishBindings() {
 	// false; their bound physics remains suppressed while the constraint lives.
 	apply := func(target *Character) {
 		b := target.binding
-		if target.destroyed || b == nil || b.anchor != c || b.generation != target.hitGeneration {
+		if target.destroyed || b == nil || b.self || b.anchor != c || b.generation != target.hitGeneration {
 			return
 		}
 		x, y := target.PositionOf(c)

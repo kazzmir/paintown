@@ -44,13 +44,36 @@ Application runtime source inputs match the18-window run; the only subsequent
 source changes add alpha-grid tests in two test files. Stock final source builds
 with those tests present. All sessions were awaited; no clients remain.
 
+M4ck is3d44c4ba. M4cl implements BindToParent/BindToRoot constraints before the
+remaining Explod creation fields; BindToTarget follows with combat selection.
+This reorders dependencies, not allocation.84 programs/936 values/six rejections
+and336 authored hashes pin schema, phase, facing, lifetime, retirement, pauses,
+physics and14 friction traces. Read SELF-BINDING.md. The main+legacy helper/contact
+Match races pass80.996s across121 native programs; two actual windows match every
+native white pixel (7,935 each). Core/System/CNS races pass. Final full scoped races also pass3,435 results,
+24 tested+12 compiled-only packages, no failures/individual skips; Match1352.013s
+and summed package time1408.227s. Stock win/rematch/win at21/26/45s was visually
+inspected;82 balanced owned events and2,010,533 private PCM frames pass. All337
+unique native hashes,12,141 frozen full inputs, app source/config/binary/PNG/PCM
+and root-module/inventory guards pass. All sessions awaited; no clients remain.
+Final audit is temp/m4cl-final-evidence-audit.json. BindToTarget follows.
+
+All native capture sessions were awaited. New self constraints share an exclusive
+slot with combat binding but do not overwrite velocity or report combat isbound.
+Standing physics uses the measured fixed cutoff1; the beta ignores documented
+threshold fields. Coefficients use float32 precision while stored velocities
+retain precision between multiplications. The earlier per-step velocity-rounding
+attempt failed and is preserved; no native goldens/tolerances changed.
+Manifests are m4cl-{native,extra,friction,friction2}-inputs.json; metadata is
+separate. Application snapshot/audit names begin m4cl1. Preserve all originals.
+
 The old private display/audio servers were absent. New task-owned Xvfb :97 and
 private Pulse processes are recorded in temp/item3-private-servers.json; all
 credentials/runtime logs remain under temp/. The display was verified with
 xdpyinfo. Use round-task-env.py (GOTMPDIR=temp/_tmp), preserving module guards.
 Task-local Wine32 shims and development headers restore the upgraded host without
-changing system packages. The prior full suite remains df59235b;
-use focused checks until the next meaningful integration boundary.
+changing system packages. The latest full suite is M4cl; use focused checks until the next meaningful
+integration boundary.
 
 M4cj acceptance: Match races 17.690s; Engine/Effect/Character races
 1.448s/1.011s/11.333s. Eight final actual-app masks match every native white

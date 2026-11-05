@@ -85,7 +85,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 # Build/test every MUGEN package against the stock reference corpus.
 game/mugen/mugen.sh --check -p 1 -timeout=30m
 
-# Full race checks; the last full run took about seventeen minutes.
+# Full race checks; the last full run took about twenty-four minutes.
 game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m
 
 # Focused stock character loading and state compilation.
@@ -101,15 +101,16 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-04, through M4ck implementation**. Item 3 is active:
-ExplodBindTime and measured ModifyExplod mutation now have production consumers.
-All89 controller names register, but14 stubs and other partial consumers remain;
-61 have typed compiler routes. M4cj has eight exact application masks. M4ck has
-146 native programs/1,200 state readings/46 rejections, nine exact geometry masks
-and explicitly open rotation/alpha sampling differences. See
-[binding](docs/EXPLOD-BINDING.md), [mutation](docs/MODIFY-EXPLOD.md) and the
-[current audit](docs/CONTROLLER-BINDINGS.md). Focused/core races and stock replay
-pass. The full scoped baseline remains M4ch:3,169 results across36 packages.
+Snapshot: **2026-11-05, through M4cl implementation**. Item 3 is active:
+ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root actor
+binding have production consumers. The current full race suite passes **3,435**
+test/subtest results across **36 packages**. M4cl adds84 native controls/936
+readings/six load rejections, two exact window masks and corrected friction.
+See [actor binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
+[mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
+All89 controller names register;63 typed routes,12 stubs and partial consumers
+remain. Rotation sampling/alpha precision and the wider documented gates stay
+open. No whole-engine completion percentage is justified.
 
 Through M4ch, fresh native, actual
 render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have
@@ -175,7 +176,7 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
-| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only;14 stubs and other partial consumers remain.61 typed routes; not full controller compatibility. |
+| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only;12 stubs and other partial consumers remain.63 typed routes; not full controller compatibility. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |

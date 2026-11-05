@@ -111,6 +111,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileHitFallSet(ctrl)
 	case "targetbind":
 		return compileTargetBind(ctrl)
+	case "bindtoparent", "bindtoroot":
+		return compileSelfBind(ctrl, name == "bindtoroot")
 	case "explod":
 		return compileExplod(ctrl)
 	case "explodbindtime":

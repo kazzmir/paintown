@@ -25,6 +25,12 @@ MODIFY-EXPLOD.md records the146 programs, actual drawing comparisons and deferre
 shared alpha/shadow/priority/pause/ownership/sampling obligations. Continue the
 remaining Explod creation fields and dependent groups; this is not item3 closure.
 
+M4cl moves parent/root binding before the remaining Explod fields to resolve
+shared actor constraints. It adds84 native programs and a fresh full scoped
+integration. BindToTarget follows with combat selection/head/mid semantics,
+then remaining Explod and shared effects. Current counts are89 registered/63
+typed/26 fallback,12 stubs; all variant-completion gates remain explicit.
+
 ## Coherent checkpoint order
 
 1. M4ci: reproducible controller registration/compiler/consumer audit, current

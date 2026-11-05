@@ -4,28 +4,31 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "b711c5b179ce69746be8d1a9ead035fdc02936f1d89daca37c722c05e9357668",
-    "character/character.go": "cc560e4f1887b9cb18b061cdc172e44bbd15e667c3ee3bff4c909991e691a951",
+    "engine/parameters.go": "71a216db801e027c4592e346f82b085715f5ccc481ad2b2037d2958a9cbba87e",
+    "character/character.go": "bc927fcb098749c1562a3cdaca9f9550b0f5685b5858aab94a630e2ed118206c",
     "character/player.go": "485b752c748f2a461a14a1f85bc6868c272cafa447c0f28c763c1ee049808784",
     "character/explod.go": "99e4a3bc6f422b380139b588eaed964dcd925249bfb4ec9bb0757a4a696ba2e9",
     "engine/explod.go": "7cde84de6c677958aa38e61ab3c51dbdf49d46f05a9f09398b5b36c903f9dcdf",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "017ccd133f1a115d97ba110aec841f89a3f6527ef0cab6cbe62dcdae9a84ce8f",
     "system/effects.go": "0933f782761bee7e442634a4f64a6acd461a581c78ef57c656e32459211acadc",
-    "render/perspective.go": "56025e50257a5f991f73030a18ec58b1b0447a487c39561505e3660ead0c54fc"
+    "render/perspective.go": "56025e50257a5f991f73030a18ec58b1b0447a487c39561505e3660ead0c54fc",
+    "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
+    "character/binding.go": "f3360084318d214092fa42948e5edc3b19fdb5b2e1e797a8013de4e1386f3ff1",
+    "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e"
   },
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 61,
-    "fallback": 28,
+    "typed": 63,
+    "fallback": 26,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 14,
+      "stub": 12,
       "unconsumed-render-field": 5,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 1,
+      "bounded-native-consumer": 3,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -176,22 +179,22 @@
     {
       "name": "bindtoparent",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleBindToParent",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:BindToParent"
+        "SELF-BINDING.md: helper constraints, phase/velocity/facing/lifecycle; wider interactions open"
       ],
       "variants_complete": false
     },
     {
       "name": "bindtoroot",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleBindToRoot",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:BindToRoot"
+        "SELF-BINDING.md: root constraints, phase/velocity/facing/lifecycle; wider interactions open"
       ],
       "variants_complete": false
     },

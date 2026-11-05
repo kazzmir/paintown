@@ -1,5 +1,16 @@
 # Current behavior coverage ledger
 
+M4cl (2026-11-05) adds typed BindToParent/BindToRoot and their production
+constraints, with84 native programs/936 values/six load rejections and two exact
+actual-window masks. Dependent friction traces correct standing/crouch behavior.
+Full scoped races pass3,435 test/subtest results across24 tested and12 compiled-only
+packages (Match1352.013s), with no failures or individual skips. All89 names
+register;63 typed routes,12 stubs, five unconsumed actor draw families and nine
+partial families remain. These are source counts, not an engine percentage.
+Read [SELF-BINDING.md](SELF-BINDING.md) and [HANDOFF.md](HANDOFF.md). BindToTarget
+and remaining item3 work follow; item4 stays unallocated. Older status below is
+historical; the latest full integration is M4cl.
+
 2026-11-04: item3 is active. M4ci audits current consumers; M4cj adds native
 ExplodBindTime; M4ck adds measured ModifyExplod mutation/drawing. All89 manual
 names register,61 have typed routes,14 stubs and other partial consumers remain.

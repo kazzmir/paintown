@@ -1,5 +1,20 @@
 # Implementation checkpoints
 
+## M4cl: parent/root binding and dependent friction
+
+Typed BindToParent/Root now drive actor constraints with measured post-physics
+publication, duration/cancellation, facing and retirement/pause behavior.84
+native programs pin936 values/six rejections and336 original hashes plus the
+probe.14 friction controls correct native standing cutoff1 and coefficient
+precision without changing goldens/tolerances. Read SELF-BINDING.md.
+
+Focused121-program Match races80.996s/core races pass; two actual-window masks
+match7,935 native pixels each. Full scoped races pass3,435 results/36 packages,
+Match1352.013s, no failures/individual skips. Stock win/rematch/win,82 owned events/
+private PCM,337 native and12,141 full-input hashes/app/module guards pass. All
+sessions awaited; no clients remain. Only source/text under game/mugen/ is
+committed. Continue BindToTarget/remaining item3; item4 stays unallocated.
+
 ## M4ck: native Explod mutation/schema and drawing consumers
 
 Typed ModifyExplod selects all duplicate matches, evaluates each object's fields

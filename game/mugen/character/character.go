@@ -567,6 +567,7 @@ func (c *Character) finishTick() {
 			}
 			break
 		}
+		c.applySelfBinding()
 		c.constrainPosition()
 		// Contacts at the next tick use this completed simulation pose, before
 		// the animation clock selects the next CNS/display element.
@@ -940,11 +941,11 @@ func (c *Character) Trans(params map[string]string) {
 }
 
 func (c *Character) BindToParent(params map[string]string) {
-	// Logic: set position relative to parent axis
+	c.executeSelfBind(params, false)
 }
 
 func (c *Character) BindToRoot(params map[string]string) {
-	// Logic: set position relative to root axis
+	c.executeSelfBind(params, true)
 }
 
 func (c *Character) BindToTarget(params map[string]string) {
@@ -1666,9 +1667,14 @@ func (c *Character) ApplyFriction() {
 	}
 	phys := strings.ToUpper(c.Physics)
 	if phys == "S" {
-		c.VelX *= c.StateFile.Movement.StandFriction
+		c.VelX *= float64(float32(c.StateFile.Movement.StandFriction))
+		// The beta uses this fixed cutoff, ignoring the documented threshold
+		// field. Equality stays in motion; crouch physics has no such cutoff.
+		if math.Abs(c.VelX) < 1 {
+			c.VelX = 0
+		}
 	} else if phys == "C" {
-		c.VelX *= c.StateFile.Movement.CrouchFriction
+		c.VelX *= float64(float32(c.StateFile.Movement.CrouchFriction))
 	}
 }
 

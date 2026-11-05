@@ -1,0 +1,153 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 700, self binding probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, self binding probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, self binding probe]
+type=VelSet
+trigger1=Time=0
+x=2
+y=0
+[State 700, self binding probe]
+type=Helper
+trigger1=Time=0
+id=11
+stateno=710
+postype=p1
+pos=40,-20
+facing=1
+keyctrl=0
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=0
+value=Pos X
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=1
+value=Facing
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=2
+value=Helper(11),Pos X
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=3
+value=Helper(11),Pos Y
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=4
+value=Helper(11),Facing
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=Helper(11),Vel X
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=6
+value=Helper(11),Vel Y
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=7
+value=Helper(11),Time
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=8
+value=Helper(11),Var(0)
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=9
+value=Helper(11),GetHitVar(isbound)
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=10
+value=NumHelper
+[State 700, self binding probe]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=GameTime
+[State 700, self binding probe]
+type=DisplayToClipboard
+trigger1=1
+text="P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)
+[State 700, self binding probe]
+type=AppendToClipboard
+trigger1=1
+text="P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)
+[State 700, self binding probe]
+type=Pause
+trigger1=Time=8
+time=99999
+movetime=0
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 701, self binding probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, self binding probe]
+type=PosSet
+trigger1=1
+x=0
+y=0
+[Statedef 710]
+type=S
+movetype=I
+physics=S
+anim=9999
+ctrl=0
+[State 710, self binding probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 710, self binding probe]
+type=VelSet
+trigger1=Time=0
+x=3
+y=1
+[State 710, self binding probe]
+type=BindToParent
+trigger1=Time=2
+time=-1
+pos=20,-30

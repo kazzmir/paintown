@@ -26,6 +26,20 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4ck is3d44c4ba. M4cl implements BindToParent/Root before remaining Explod creation
+fields; BindToTarget follows with combat selection. Read SELF-BINDING.md:84
+programs/936 values/six rejections/336 original hashes plus probe;14 friction
+traces establish a fixed standing cutoff1/ignored threshold fields, float32
+coefficients with retained velocity precision. Main+legacy helper/contact Match
+races80.996s and two exact actual-window masks pass. Core/System/CNS races and
+final full scoped races pass3,435 results/36 packages (Match1352.013s). Stock
+win/rematch/win,82 balanced owned events/private PCM and all12,141 frozen
+source/fixture hashes plus337 unique native hashes pass. No clients remain.
+Commit M4cl, then continue BindToTarget. Native captures awaited; all
+private native/app/display Go stays serial. Preserve failed logs and originals.
+Source routing now63 typed/26 fallback,12 stubs. Continue item3; no new stop or
+item4 allocation. Full integration after the dependent binding/Explod boundary.
+
 M4ck implements measured ModifyExplod mutation and 2D/3D drawing. Read
 MODIFY-EXPLOD.md:143 programs/1,164 readings/46 rejections plus three alpha grids/
 36 readings,584 authored originals. Main Match/grid and full core/System races
