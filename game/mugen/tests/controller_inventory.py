@@ -15,6 +15,7 @@ SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'system/effects.go', 'render/perspective.go',
+           'render/alpha.go', 'render/nearest.go', 'render/linear.go',
            'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
     'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
@@ -28,7 +29,7 @@ RENDER_FIELDS = {'angleadd': 'DrawAngle', 'angledraw': 'DrawAngle',
                  'anglemul': 'DrawAngle', 'angleset': 'DrawAngle',
                  'offset': 'DrawOffset'}
 PARTIAL = {
-	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; shared alpha/shadow/priority/pause and projection sampling gates remain',
+	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; shadow/priority/pause and projection sampling gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'projectile shadow/trail fields lack complete renderer consumers',
     'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; creation palette/random/angle/trans/shadow/capacity and broader variants open',

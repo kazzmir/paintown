@@ -1,5 +1,19 @@
 # Implementation checkpoints
 
+## M4co: shared native alpha normalization and blend paths
+
+Actual indexed/RGB samplers recover native reciprocal-product color precision
+and distinguish complementary from independent blend factors.540 GPU samples /
+1,620 components match frozen native readings exactly.26 final actual apps pass:
+270 indexed readings, two exact indexed masks,16 exact RGB crops (including all
+six prior alpha failures), five exact actor regression crops. No native golden,
+input or tolerance changed. GPU/core races and all provenance guards pass.
+
+Stock win/rematch/win is visually verified;82 balanced owned events/1,987,918
+private PCM frames and source/module/inventory/app audits pass. Sessions awaited,
+no clients, source/text only. Read ALPHA-NORMALIZATION.md. Continue Trans and
+remaining item3; latest full integration remains M4cl, item4 unallocated.
+
 ## M4cn: Explod entity binding, motion and owned clocks
 
 Typed creation now consumes explicit IDs and shares corrected caller-relative /

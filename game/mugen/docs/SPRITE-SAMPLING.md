@@ -1,5 +1,12 @@
 # Fractional sprite sampling
 
+M4co update: the bounded alpha precision gates are now exact. Both M4ck indexed
+counterexamples and all six M4az RGB alpha crops pass unchanged native goldens;
+all16 RGB crops and five actor regressions pass. ALPHA-NORMALIZATION.md records
+the reciprocal normalization, independent blend path and real GPU regression.
+Rotation/full RGBA/platform/whole-frame gates remain open. Historical failures
+and rejected experiments below are preserved, not current acceptance claims.
+
 M4ay matches the measured actor sampling and viewport interpolation. Reversal
 is 931467ac (M4ax). Full 1.1 beta 1 engine,
 asset and mode compatibility remains unfinished.

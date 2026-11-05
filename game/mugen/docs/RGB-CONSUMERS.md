@@ -1,5 +1,12 @@
 # RGB HUD and fight-effect consumers
 
+M4co update: the bounded alpha precision gates are now exact. Both M4ck indexed
+counterexamples and all six M4az RGB alpha crops pass unchanged native goldens;
+all16 RGB crops and five actor regressions pass. ALPHA-NORMALIZATION.md records
+the reciprocal normalization, independent blend path and real GPU regression.
+Rotation/full RGBA/platform/whole-frame gates remain open. Historical failures
+and rejected experiments below are preserved, not current acceptance claims.
+
 M4az follows the actor sampler checkpoint d572399f. Full MUGEN 1.1 beta1
 compatibility remains unfinished. The alpha precision gaps below remain open.
 

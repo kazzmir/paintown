@@ -12,6 +12,7 @@ const nearestShader = `//kage:unit pixels
 package main
 
 var Reverse vec2
+var NativeDestination float
 
 func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	// Match the measured indexed source-address boundary bias.
@@ -19,7 +20,19 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	// Native indexes texels before reversing the source axis. At an exact
 	// boundary the reversed axis selects the texel before the boundary.
 	p = mix(floor(p), ceil(p) - vec2(1), Reverse) + vec2(0.5)
-	return imageSrc0At(imageSrc0Origin() + p) * tint
+	// Recover palette bytes before normalization. A texture unit's UNORM
+	// conversion can round below the float32 reciprocal product, changing
+	// an eight-bit alpha blend at half-integer color boundaries.
+	texel := floor(imageSrc0At(imageSrc0Origin() + p) * 255 + vec4(0.5))
+	color := texel * (1.0 / 255.0) * tint
+	if NativeDestination >= 0 {
+		// Native's independent blend uses a constant destination factor and
+		// discards fully transparent texels rather than multiplying that factor
+		// by texture alpha. Preserve that behavior on Ebitengine's blend API.
+		if texel.a == 0 { discard() }
+		color.a = NativeDestination
+	}
+	return color
 }
 `
 
@@ -27,7 +40,7 @@ func (r *Nearest) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten
 	return r.DrawImage(dst, src, &ebiten.DrawImageOptions{GeoM: geometry, ColorScale: tint})
 }
 
-func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions) error {
+func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, destination ...float32) error {
 	if options == nil {
 		options = &ebiten.DrawImageOptions{}
 	}
@@ -53,6 +66,6 @@ func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOpt
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
 		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
 			Blend: options.Blend, CompositeMode: options.CompositeMode,
-			Uniforms: map[string]any{"Reverse": reverse}})
+			Uniforms: map[string]any{"Reverse": reverse, "NativeDestination": alphaDestination(destination)}})
 	return nil
 }

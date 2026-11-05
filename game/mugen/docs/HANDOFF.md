@@ -13,6 +13,26 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
+M4co closes the two M4ck indexed alpha failures and six old M4az RGB alpha crop
+failures without changing native goldens, geometry or tolerances. Read
+ALPHA-NORMALIZATION.md. Byte recovery/reciprocal normalization and distinct
+complementary/independent blend paths reach both samplers and owned effects.
+The GPU test passes540 samples/1,620 RGB components exactly (races1.809s).
+System/Character/Background/Effect races9.239s/10.991s/1.034s/1.010s pass.
+All26 final applications pass:270 indexed RGB readings, two exact8,379-pixel
+masks,16 byte-exact RGB consumer crops and five exact actor regression crops.
+Failed incomplete candidates remain diagnostic; native source/images are frozen.
+
+Final stock21/26/45s are visually verified win/rematch/win.82 balanced owned
+input events,1,987,918 private PCM frames, binary/config/PNG/audio/source/module/
+inventory hashes and separate empty-client checks pass. Final audit:
+temp/m4co-final-evidence-audit.json; app audit temp/m4co4-app-audit.json.
+All sessions were awaited. Latest full integration remains M4cl (3,435 results,
+24 tested+12 compiled-only packages); render now adds real display-dependent GPU
+tests, so do not reuse those package categories for the next full suite.
+Continue Trans/actor AIR transparency and the remaining item3 consumers. No
+full renderer/alpha-channel/platform parity or item4 allocation is claimed.
+
 M4cn implements the bounded Explod attachment/evaluation/motion/clock slice.
 Read EXPLOD-ATTACHMENT.md:62 programs/708 readings/three rejections,49 exact
 whole-pose calibrated root positions,248 originals plus probe hash. Native
@@ -42,9 +62,8 @@ consumers, then remaining creation/dependent effects. Read-only supporting
 native disassembly is temp/item3-reference-disassembly.txt; it corroborates,
 not replaces, the native controls. Do not infer facing from a white-pixel count:
 fractional sampling can produce the same count as an integer mirrored pose.
-The alpha normalization analyses under temp/ remain a research clue only; no
-sampler fix has been applied or validated yet. Prior uniform-tint tweak failed
-and was reverted. Ordinary scene-driven cue move clocks retain their earlier
+M4co now validates and consumes alpha normalization as documented above. The
+prior uniform-tint tweak failed and remains reverted. Ordinary scene-driven cue move clocks retain their earlier
 policy pending their own matrix; the new age policy applies only to owned
 Explods. No whole-engine percentage or item4 allocation follows.
 

@@ -13,6 +13,8 @@ type Linear struct {
 const linearShader = `//kage:unit pixels
 package main
 
+var NativeDestination float
+
 func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	lo := vec2(0.5)
 	hi := imageSrc0Size() - vec2(0.5)
@@ -26,7 +28,13 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	d := floor(imageSrc0At(origin + clamp(base + vec2(1, 1), lo, hi)) * 255 + vec4(0.5))
 	top := floor((a * (256-f.x) + b * f.x + vec4(128)) / 256)
 	bottom := floor((c * (256-f.x) + d * f.x + vec4(128)) / 256)
-	return floor((top * (256-f.y) + bottom * f.y + vec4(128)) / 256) / 255 * tint
+	texel := floor((top * (256-f.y) + bottom * f.y + vec4(128)) / 256)
+	color := texel * (1.0 / 255.0) * tint
+	if NativeDestination >= 0 {
+		if texel.a == 0 { discard() }
+		color.a = NativeDestination
+	}
+	return color
 }
 `
 
@@ -35,7 +43,7 @@ func (r *Linear) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten.
 }
 
 // DrawImage retains the caller's blend operation as well as its transform/tint.
-func (r *Linear) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions) error {
+func (r *Linear) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, destination ...float32) error {
 	if options == nil {
 		options = &ebiten.DrawImageOptions{}
 	}
@@ -51,6 +59,7 @@ func (r *Linear) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOpti
 	vertices := quad(src, options.GeoM, options.ColorScale)
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
 		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
-			Blend: options.Blend, CompositeMode: options.CompositeMode})
+			Blend: options.Blend, CompositeMode: options.CompositeMode,
+			Uniforms: map[string]any{"NativeDestination": alphaDestination(destination)}})
 	return nil
 }

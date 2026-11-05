@@ -1,5 +1,12 @@
 # Native Explod mutation and drawing projections — M4ck
 
+M4co update: the bounded alpha precision gates are now exact. Both M4ck indexed
+counterexamples and all six M4az RGB alpha crops pass unchanged native goldens;
+all16 RGB crops and five actor regressions pass. ALPHA-NORMALIZATION.md records
+the reciprocal normalization, independent blend path and real GPU regression.
+Rotation/full RGBA/platform/whole-frame gates remain open. Historical failures
+and rejected experiments below are preserved, not current acceptance claims.
+
 M4cn correction: bindID-1 selects the caller, including player2/helpers. The
 first-player-only M4ck controls did not distinguish that from selecting the
 first root. Failed/nonselecting retarget IDs retain an existing anchor; the

@@ -54,7 +54,7 @@ func mapSource(dst vec2) vec2 {
 	return strings.ReplaceAll(source, "local.xy", "mapSource(dst.xy - imageDstOrigin())")
 }
 
-func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p Perspective, shader **ebiten.Shader, source string, indexed bool) error {
+func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p Perspective, shader **ebiten.Shader, source string, indexed bool, destination float32) error {
 	m := p.matrix(options.GeoM)
 	inv, ok := inverse(m)
 	if !ok {
@@ -81,6 +81,7 @@ func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p P
 		vertices[n].DstX, vertices[n].DstY = float32((m[0]*x+m[1]*y+m[2])/q), float32((m[3]*x+m[4]*y+m[5])/q)
 	}
 	uniforms := map[string]any{"SourceX": []float32{float32(inv[0]), float32(inv[1]), float32(inv[2])}, "SourceY": []float32{float32(inv[3]), float32(inv[4]), float32(inv[5])}, "Divisor": []float32{float32(inv[6]), float32(inv[7]), float32(inv[8])}}
+	uniforms["NativeDestination"] = destination
 	if indexed {
 		reverse := [2]float32{}
 		if options.GeoM.Element(0, 0) < 0 {
@@ -95,10 +96,10 @@ func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p P
 	return nil
 }
 
-func (r *Nearest) DrawProjected(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p Perspective) error {
-	return projectedDraw(dst, src, options, p, &r.projected, nearestShader, true)
+func (r *Nearest) DrawProjected(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p Perspective, destination ...float32) error {
+	return projectedDraw(dst, src, options, p, &r.projected, nearestShader, true, alphaDestination(destination))
 }
 
-func (r *Linear) DrawProjected(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p Perspective) error {
-	return projectedDraw(dst, src, options, p, &r.projected, linearShader, false)
+func (r *Linear) DrawProjected(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p Perspective, destination ...float32) error {
+	return projectedDraw(dst, src, options, p, &r.projected, linearShader, false, alphaDestination(destination))
 }

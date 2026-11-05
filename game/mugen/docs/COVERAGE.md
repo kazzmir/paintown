@@ -1,5 +1,13 @@
 # Current behavior coverage ledger
 
+M4co (2026-11-05) closes the two M4ck indexed alpha failures and six M4az RGB
+alpha crop failures against unchanged goldens. Both GPU samplers match270 native
+RGB readings (540 samples/1,620 components);26 actual apps pass three grids, two
+exact alpha masks, all16 RGB crops and five actor regressions. See
+[ALPHA-NORMALIZATION.md](ALPHA-NORMALIZATION.md). No full renderer/engine parity
+is claimed. Trans and other item3 schemas/consumers remain active; source route
+counts stay64 typed/25 fallback/11 stubs. Item4 remains unallocated.
+
 M4cn (2026-11-05) consumes Explod entity binding, retained legacy offsets,
 motion and native pause age limits.62 programs pin708 readings/three rejections
 and49 calibrated root positions. Focused236-program Match races126.003s and

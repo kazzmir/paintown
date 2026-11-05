@@ -11,8 +11,11 @@
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
-    "system/effects.go": "0933f782761bee7e442634a4f64a6acd461a581c78ef57c656e32459211acadc",
-    "render/perspective.go": "56025e50257a5f991f73030a18ec58b1b0447a487c39561505e3660ead0c54fc",
+    "system/effects.go": "3505c6db20c7c3107f7aa8d7ba0fad025e52345f1b95c47f2a47f0ae849e5d8b",
+    "render/perspective.go": "e393e9c018e5a164e78a25b3caffed64bd2c0b168e2021dbe162cdb7fbdffd50",
+    "render/alpha.go": "34563ae83eb059ef3d196da1925e500fc201a1349e985a9d4756417b5d638afd",
+    "render/nearest.go": "a3efe92aaf587c5120516254f61f229976936b976946b9983c3ffdd5b2841d3e",
+    "render/linear.go": "1502c5550b73f4dc71ff841ba6ffd17894766006988f251f67673db2a2e096e5",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
@@ -488,7 +491,7 @@
       "handler": "func",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "MODIFY-EXPLOD.md: native mutation/schema consumers; shared alpha/shadow/priority/pause and projection sampling gates remain"
+        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; shadow/priority/pause and projection sampling gates remain"
       ],
       "variants_complete": false
     },

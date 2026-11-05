@@ -26,6 +26,17 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4co closes the bounded native alpha precision gaps. Read ALPHA-NORMALIZATION.md:
+540 actual-GPU samples /1,620 exact RGB component comparisons,26 frozen actual
+apps (270 indexed readings, two exact indexed masks,16 exact RGB crops including
+six previous failures, five actor regression crops). GPU/core races pass. Stock
+win/rematch/win is visually inspected;82 balanced events/1,987,918 private PCM
+frames and all frozen hashes/module/inventory/app guards pass. Final audit:
+temp/m4co-final-evidence-audit.json. Sessions awaited/no clients. Commit M4co,
+then continue Trans and remaining item3; latest full integration remains M4cl.
+Render now has display-dependent GPU tests. No RGBA/platform/full-frame parity
+claim follows. Preserve failed diagnostic logs and immutable native originals.
+
 M4cn implements Explod entity binding, lazy animation availability, retained
 retargets, motion orientation and owned age-limit clocks.62 programs/708 values/
 three rejections/49 calibrated positions/249 unique hashes. Read
@@ -34,7 +45,7 @@ EXPLOD-ATTACHMENT.md. Focused236-program Match races126.003s and core races pass
 opponent definition and is diagnostic; m4cn2 corrected it, with both definition
 hashes verified. No runtime/source/golden changed for that correction. Stock
 win/rematch/win/82 balanced events/private PCM and all1,480 focused/app/native/
-module/inventory guards pass. Sessions awaited/no clients. Commit M4cn then
+module/inventory guards pass. Sessions awaited/no clients. M4cn is18ff83fbd;
 continue remaining creation/shared effects under item3. Next address shared
 alpha precision/Trans and palette dependencies, including unresolved ownpal/
 remap/random/angle/shadow/capacity fields. Counts64 typed/25 fallback/11 stubs;

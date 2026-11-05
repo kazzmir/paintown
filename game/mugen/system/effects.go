@@ -132,13 +132,10 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 		if instance.HasBlend {
 			blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 		}
+		nativeDestination := float32(-1)
 		switch blend {
 		case "alpha":
-			src, dst := float32(max(0, min(256, alphaSrc)))/256, float32(max(0, min(256, alphaDst)))/256
-			op.ColorScale.Scale(src, src, src, 1-dst)
-			op.Blend = ebiten.Blend{BlendOperationRGB: ebiten.BlendOperationAdd, BlendOperationAlpha: ebiten.BlendOperationAdd,
-				BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOneMinusSourceAlpha,
-				BlendFactorSourceAlpha: ebiten.BlendFactorOne, BlendFactorDestinationAlpha: ebiten.BlendFactorOneMinusSourceAlpha}
+			nativeDestination = render.ApplyAlpha(op, alphaSrc, alphaDst)
 		case "sub":
 			op.Blend = ebiten.Blend{BlendOperationRGB: ebiten.BlendOperationReverseSubtract, BlendOperationAlpha: ebiten.BlendOperationAdd,
 				BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOne,
@@ -148,20 +145,20 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 			projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
 			var err error
 			if _, indexed := sprite.Image.(*image.Paletted); indexed {
-				err = s.indexSampler.DrawProjected(screen, cached.image, op, projection)
+				err = s.indexSampler.DrawProjected(screen, cached.image, op, projection, nativeDestination)
 			} else {
-				err = s.linearSampler.DrawProjected(screen, cached.image, op, projection)
+				err = s.linearSampler.DrawProjected(screen, cached.image, op, projection, nativeDestination)
 			}
 			if err != nil {
 				s.renderError = fmt.Errorf("fight effect projection: %w", err)
 				return
 			}
 		} else if _, indexed := sprite.Image.(*image.Paletted); indexed {
-			if err := s.indexSampler.DrawImage(screen, cached.image, op); err != nil {
+			if err := s.indexSampler.DrawImage(screen, cached.image, op, nativeDestination); err != nil {
 				s.renderError = fmt.Errorf("fight effect action %d indexed sampler: %w", instance.Action, err)
 				return
 			}
-		} else if err := s.linearSampler.DrawImage(screen, cached.image, op); err != nil {
+		} else if err := s.linearSampler.DrawImage(screen, cached.image, op, nativeDestination); err != nil {
 			s.renderError = fmt.Errorf("fight effect action %d sprite %d,%d sampler: %w", instance.Action, el.Group, el.Image, err)
 			return
 		}

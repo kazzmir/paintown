@@ -1,0 +1,6508 @@
+{
+  "description": "270 flat palette samples /810 components derived only from three frozen native alpha captures",
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "native_capture_sha256": {
+    "alphamix-grid-source-zero": "c36fb371c75331fd8530f33be5375b77ebdf51d65cab14524b292961c264396a",
+    "alphamix-grid-source-half": "edeb816e27b6a7581ad05a2daeab81c84c5bad75f7115dc5950f6e3dd262a0b8",
+    "alphamix-grid-destination": "95593bcc77c3a9b3afacca6e3ae9418496c737985c8fadd70cc536e189867cba"
+  },
+  "native_input_sha256": {
+    "alphamix-grid-source-zero.json": "ff2b7546d52aac68d484fc5be0ecef6c5ed8b4a70cc12216d01d2f944196e911",
+    "alphamix-grid-source-zero.cns": "45ba756ab888426571d0c968450aee82f8b1a56284b07d8894e84a10d8431be9",
+    "alphamix-grid-source-zero.air": "29b5149c66409ecfdeb016a300e17239879e82daafca7714d5ae62ba82bb5999",
+    "alphamix-grid-source-zero.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "alphamix-grid-source-zero.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "alphamix-grid-source-half.json": "9dc75e6cc02eeabd8836a96cf1cfdb3180023d5f1088981f38efa35ee1eada0a",
+    "alphamix-grid-source-half.cns": "c650614b5b39ec1228e990ce3c7faeaea290751e88d2308628c909fd18321ffa",
+    "alphamix-grid-source-half.air": "29b5149c66409ecfdeb016a300e17239879e82daafca7714d5ae62ba82bb5999",
+    "alphamix-grid-source-half.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "alphamix-grid-source-half.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "alphamix-grid-destination.json": "3af30f413e695bbeaa51a999d6ada99fc40d640787db2f5d2c2c2044f32809bb",
+    "alphamix-grid-destination.cns": "57826f6432736b96f212b6a50d655cbbf4602776172d7d5a62adcefc08b4708e",
+    "alphamix-grid-destination.air": "29b5149c66409ecfdeb016a300e17239879e82daafca7714d5ae62ba82bb5999",
+    "alphamix-grid-destination.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "alphamix-grid-destination.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f"
+  },
+  "cases": [
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        281,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        371,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        12,
+        12,
+        12
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        461,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        24,
+        24,
+        24
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        551,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        25,
+        25
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        641,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        25,
+        25
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        731,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        37,
+        37,
+        37
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        821,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        911,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1001,
+        456
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        274,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        364,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        22,
+        22,
+        25
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        454,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        49
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        544,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        50
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        634,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        50
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        724,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        68,
+        68,
+        74
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        814,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        90,
+        99
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        904,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        90,
+        99
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        994,
+        457
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        281,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        1,
+        1
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        371,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        32,
+        37,
+        49
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        461,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        73,
+        97
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        551,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        74,
+        98
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        641,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        75,
+        99
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        731,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        96,
+        111,
+        147
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        821,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        128,
+        147,
+        195
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        911,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        128,
+        148,
+        196
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1001,
+        522
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        284,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        374,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        41,
+        45,
+        56
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        464,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        90,
+        110
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        554,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        90,
+        111
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        644,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        83,
+        91,
+        112
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        734,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        136,
+        167
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        824,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        164,
+        180,
+        221
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        914,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        165,
+        181,
+        222
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1004,
+        523
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        275,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        365,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        47,
+        29,
+        22
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        455,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        57,
+        45
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        545,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        58,
+        45
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        635,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        95,
+        58,
+        45
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        725,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        142,
+        86,
+        68
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        815,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        188,
+        115,
+        90
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        905,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        189,
+        115,
+        90
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        995,
+        417
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        286,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        376,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        52,
+        45,
+        41
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        466,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        102,
+        90,
+        82
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        556,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        103,
+        90,
+        82
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        646,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        104,
+        91,
+        83
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        736,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        155,
+        136,
+        124
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        826,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        205,
+        180,
+        164
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        916,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        206,
+        181,
+        165
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1006,
+        447
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        278,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        1,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        368,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        58,
+        37,
+        29
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        458,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        115,
+        73,
+        57
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        548,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        74,
+        58
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        638,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        75,
+        58
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        728,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        173,
+        111,
+        86
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        818,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        230,
+        147,
+        115
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        908,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        231,
+        148,
+        115
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        998,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        295,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        385,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        58,
+        54,
+        50
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        475,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        115,
+        106,
+        98
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        565,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        107,
+        99
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        655,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        108,
+        100
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        745,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        173,
+        161,
+        149
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        835,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        230,
+        213,
+        197
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        925,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        231,
+        214,
+        198
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1015,
+        448
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        313,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        403,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        60,
+        47,
+        39
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        493,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        119,
+        94,
+        77
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        583,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        94,
+        78
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        673,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        95,
+        79
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        763,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        179,
+        142,
+        117
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        853,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        238,
+        188,
+        155
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        943,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        239,
+        189,
+        156
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1033,
+        424
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        290,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        380,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 0,
+      "expected": [
+        62,
+        60,
+        58
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        470,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 0,
+      "expected": [
+        123,
+        119,
+        115
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        560,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        120,
+        116
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        650,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        120,
+        116
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        740,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 0,
+      "expected": [
+        185,
+        179,
+        173
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        830,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 0,
+      "expected": [
+        246,
+        238,
+        230
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        920,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        247,
+        239,
+        231
+      ],
+      "native_fixture": "alphamix-grid-source-zero",
+      "native_point": [
+        1010,
+        420
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        281,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        371,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        140,
+        12,
+        140
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        461,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        152,
+        24,
+        152
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        551,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        152,
+        25,
+        152
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        641,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        153,
+        25,
+        153
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        731,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        165,
+        37,
+        165
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        821,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        177,
+        49,
+        177
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        911,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        177,
+        49,
+        177
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1001,
+        456
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        274,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        364,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        150,
+        22,
+        153
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        454,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        173,
+        45,
+        177
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        544,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        172,
+        45,
+        177
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        634,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        173,
+        45,
+        178
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        724,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        196,
+        68,
+        202
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        814,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        218,
+        90,
+        227
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        904,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        218,
+        90,
+        227
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        994,
+        457
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        281,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        1,
+        129
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        371,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        160,
+        37,
+        177
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        461,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        192,
+        73,
+        225
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        551,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        191,
+        74,
+        225
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        641,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        192,
+        75,
+        227
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        731,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        224,
+        111,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        821,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        147,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        911,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        148,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1001,
+        522
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        284,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        1,
+        129
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        374,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        169,
+        45,
+        184
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        464,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        210,
+        90,
+        238
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        554,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        209,
+        90,
+        238
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        644,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        211,
+        91,
+        240
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        734,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        252,
+        136,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        824,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        180,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        914,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        181,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1004,
+        523
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        275,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        365,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        175,
+        29,
+        150
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        455,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        222,
+        57,
+        173
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        545,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        221,
+        58,
+        172
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        635,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        223,
+        58,
+        173
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        725,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        86,
+        196
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        815,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        115,
+        218
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        905,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        115,
+        218
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        995,
+        417
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        286,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        1,
+        129
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        376,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        180,
+        45,
+        169
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        466,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        230,
+        90,
+        210
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        556,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        230,
+        90,
+        209
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        646,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        232,
+        91,
+        211
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        736,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        136,
+        252
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        826,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        180,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        916,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        181,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1006,
+        447
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        278,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        1,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        368,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        186,
+        37,
+        157
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        458,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        243,
+        73,
+        185
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        548,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        243,
+        74,
+        185
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        638,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        244,
+        75,
+        186
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        728,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        111,
+        214
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        818,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        147,
+        243
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        908,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        148,
+        243
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        998,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        295,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        1,
+        129
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        385,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        186,
+        54,
+        178
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        475,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        243,
+        106,
+        226
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        565,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        243,
+        107,
+        226
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        655,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        244,
+        108,
+        228
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        745,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        161,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        835,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        213,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        925,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        214,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1015,
+        448
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        313,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        1,
+        129
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        403,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        188,
+        47,
+        167
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        493,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        247,
+        94,
+        205
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        583,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        247,
+        94,
+        205
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        673,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        248,
+        95,
+        207
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        763,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        142,
+        245
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        853,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        188,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        943,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        189,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1033,
+        424
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 0,
+      "destination_alpha": 128,
+      "expected": [
+        128,
+        0,
+        128
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        290,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 1,
+      "destination_alpha": 128,
+      "expected": [
+        129,
+        1,
+        129
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        380,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 64,
+      "destination_alpha": 128,
+      "expected": [
+        190,
+        60,
+        186
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        470,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 127,
+      "destination_alpha": 128,
+      "expected": [
+        251,
+        119,
+        243
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        560,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        251,
+        120,
+        243
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        650,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 129,
+      "destination_alpha": 128,
+      "expected": [
+        252,
+        120,
+        244
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        740,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 192,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        179,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        830,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 255,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        238,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        920,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 128,
+      "expected": [
+        255,
+        239,
+        255
+      ],
+      "native_fixture": "alphamix-grid-source-half",
+      "native_point": [
+        1010,
+        420
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        25,
+        25
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        281,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        26,
+        25,
+        26
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        371,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        89,
+        25,
+        89
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        461,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        152,
+        25,
+        152
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        551,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        152,
+        25,
+        152
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        641,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        153,
+        25,
+        153
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        731,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        216,
+        25,
+        216
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        821,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        25,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        911,
+        456
+      ]
+    },
+    {
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        25,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1001,
+        456
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        50
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        274,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        46,
+        45,
+        51
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        364,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        109,
+        45,
+        114
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        454,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        172,
+        45,
+        177
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        544,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        172,
+        45,
+        177
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        634,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        173,
+        45,
+        178
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        724,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        236,
+        45,
+        241
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        814,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        45,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        904,
+        457
+      ]
+    },
+    {
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        45,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        994,
+        457
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        74,
+        98
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        281,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        65,
+        74,
+        99
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        371,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        128,
+        74,
+        162
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        461,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        191,
+        74,
+        225
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        551,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        191,
+        74,
+        225
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        641,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        192,
+        74,
+        226
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        731,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        74,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        821,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        74,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        911,
+        522
+      ]
+    },
+    {
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        74,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1001,
+        522
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        90,
+        111
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        284,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        83,
+        90,
+        112
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        374,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        146,
+        90,
+        175
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        464,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        209,
+        90,
+        238
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        554,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        209,
+        90,
+        238
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        644,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        210,
+        90,
+        239
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        734,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        90,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        824,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        90,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        914,
+        523
+      ]
+    },
+    {
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        90,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1004,
+        523
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        58,
+        45
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        275,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        95,
+        58,
+        46
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        365,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        158,
+        58,
+        109
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        455,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        221,
+        58,
+        172
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        545,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        221,
+        58,
+        172
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        635,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        222,
+        58,
+        173
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        725,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        58,
+        236
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        815,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        58,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        905,
+        417
+      ]
+    },
+    {
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        58,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        995,
+        417
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        103,
+        90,
+        82
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        286,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        104,
+        90,
+        83
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        376,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        167,
+        90,
+        146
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        466,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        230,
+        90,
+        209
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        556,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        230,
+        90,
+        209
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        646,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        231,
+        90,
+        210
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        736,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        90,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        826,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        90,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        916,
+        447
+      ]
+    },
+    {
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        90,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1006,
+        447
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        74,
+        58
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        278,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        117,
+        74,
+        59
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        368,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        180,
+        74,
+        122
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        458,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        243,
+        74,
+        185
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        548,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        243,
+        74,
+        185
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        638,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        244,
+        74,
+        186
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        728,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        74,
+        249
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        818,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        74,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        908,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        74,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        998,
+        406
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        107,
+        99
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        295,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        117,
+        107,
+        100
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        385,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        180,
+        107,
+        163
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        475,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        243,
+        107,
+        226
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        565,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        243,
+        107,
+        226
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        655,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        244,
+        107,
+        227
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        745,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        107,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        835,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        107,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        925,
+        448
+      ]
+    },
+    {
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        107,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1015,
+        448
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        94,
+        78
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        313,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        121,
+        94,
+        79
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        403,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        184,
+        94,
+        142
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        493,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        247,
+        94,
+        205
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        583,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        247,
+        94,
+        205
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        673,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        248,
+        94,
+        206
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        763,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        94,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        853,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        94,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        943,
+        424
+      ]
+    },
+    {
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        94,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1033,
+        424
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        120,
+        116
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        290,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 1,
+      "expected": [
+        125,
+        120,
+        117
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        380,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 64,
+      "expected": [
+        188,
+        120,
+        180
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        470,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 127,
+      "expected": [
+        251,
+        120,
+        243
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        560,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 128,
+      "expected": [
+        251,
+        120,
+        243
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        650,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 129,
+      "expected": [
+        252,
+        120,
+        244
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        740,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 192,
+      "expected": [
+        255,
+        120,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        830,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 255,
+      "expected": [
+        255,
+        120,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        920,
+        420
+      ]
+    },
+    {
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 256,
+      "expected": [
+        255,
+        120,
+        255
+      ],
+      "native_fixture": "alphamix-grid-destination",
+      "native_point": [
+        1010,
+        420
+      ]
+    }
+  ]
+}
