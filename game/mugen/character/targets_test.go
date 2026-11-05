@@ -23,10 +23,15 @@ func TestNativeTargetsAndRedirectedCoordinates(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	names, err := filepath.Glob("../tests/testdata/reference/target*.json")
+	names, err := filepath.Glob("../tests/testdata/reference/target-*.json")
 	if err != nil {
 		t.Fatal(err)
 	}
+	more, err := filepath.Glob("../tests/testdata/reference/targets-*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	names = append(names, more...)
 	names = append(names, "../tests/testdata/reference/redirect-coordinates.json", "../tests/testdata/reference/redirect-arguments.json", "../tests/testdata/reference/redirect-cond-coordinates.json")
 	if len(names) != 49 {
 		t.Fatal("native target corpus is incomplete")

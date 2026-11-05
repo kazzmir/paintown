@@ -80,3 +80,10 @@ BindToParent/Root have typed schemas and bounded native production constraints.
 The reproducible audit now counts89 registered/63 typed/26 fallback,12 stubs,
 five unconsumed actor draw families, nine partial families, three bounded-native
 and60 route-only families. All rows remain variant-incomplete. Read SELF-BINDING.md.
+
+## M4cm update
+
+BindToTarget now has a typed schema and measured combat consumer. The audit
+counts89 registered/64 typed/25 fallback,11 stubs, five unconsumed actor draw
+families, nine partial families, four bounded-native and60 route-only families.
+All rows remain variant-incomplete. Read TARGET-SELF-BINDING.md.

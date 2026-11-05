@@ -949,7 +949,13 @@ func (c *Character) BindToRoot(params map[string]string) {
 }
 
 func (c *Character) BindToTarget(params map[string]string) {
-	// Logic: set position relative to target axis
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteTargetSelfBindParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("BindToTarget: %w", err)
+	}
 }
 
 func (c *Character) TargetBind(params map[string]string) {

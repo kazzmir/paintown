@@ -26,6 +26,17 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4cl is c3e810d40. M4cm implements BindToTarget with73 native programs/792
+readings/seven rejections/293 unique hashes. Read TARGET-SELF-BINDING.md:
+immediate caller position, reverse combat constraint, retained/sentinel offsets,
+game-pixel truncation and tested profiles. Focused194-program Match races125.315s
+and core/System/CNS/Character races pass; legacy target glob was narrowed after
+its discovery-only failure. Three exact white-pixel masks below HUD, stock
+win/rematch/win/82 owned events/private PCM,1,095 final hashes and provenance/
+module/inventory guards pass. All sessions awaited; no clients remain. Commit
+M4cm then continue remaining Explod/shared consumers and all item3. Latest full
+integration remains M4cl.64 typed/25 fallback/11 stubs; no full parity claim.
+
 M4ck is3d44c4ba. M4cl implements BindToParent/Root before remaining Explod creation
 fields; BindToTarget follows with combat selection. Read SELF-BINDING.md:84
 programs/936 values/six rejections/336 original hashes plus probe;14 friction
@@ -35,7 +46,7 @@ races80.996s and two exact actual-window masks pass. Core/System/CNS races and
 final full scoped races pass3,435 results/36 packages (Match1352.013s). Stock
 win/rematch/win,82 balanced owned events/private PCM and all12,141 frozen
 source/fixture hashes plus337 unique native hashes pass. No clients remain.
-Commit M4cl, then continue BindToTarget. Native captures awaited; all
+M4cl is committed as c3e810d40; continue BindToTarget. Native captures awaited; all
 private native/app/display Go stays serial. Preserve failed logs and originals.
 Source routing now63 typed/26 fallback,12 stubs. Continue item3; no new stop or
 item4 allocation. Full integration after the dependent binding/Explod boundary.

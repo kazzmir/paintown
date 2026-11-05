@@ -279,9 +279,10 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 }
 
 type hitTarget struct {
-	generation uint64
-	id         int
-	reversal   bool
+	generation   uint64
+	id           int
+	reversal     bool
+	bindX, bindY float64 // retained target offsets, in the target's storage units
 }
 
 func (c *Character) acquireTarget(target *Character, id int) {
@@ -292,7 +293,8 @@ func (c *Character) acquireTarget(target *Character, id int) {
 	if _, ok := c.hitTargets[target]; !ok {
 		c.targetOrder = append(c.targetOrder, target)
 	}
-	c.hitTargets[target] = hitTarget{generation: target.hitGeneration, id: id}
+	scale := target.ScaleFrom(c)
+	c.hitTargets[target] = hitTarget{generation: target.hitGeneration, id: id, bindX: -1025 * scale, bindY: -1025 * scale}
 }
 
 func (c *Character) acquiredTargets(id int, filter bool) []*Character {

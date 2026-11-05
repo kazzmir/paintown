@@ -15,11 +15,11 @@ SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'system/effects.go', 'render/perspective.go',
-           'engine/self_binding.go', 'character/binding.go', 'character/targets.go']
+           'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
     'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
     'envshake': 'EnvShake', 'envcolor': 'EnvColor', 'trans': 'Trans',
-    'bindtotarget': 'BindToTarget', 'palfx': 'PalFX',
+    'palfx': 'PalFX',
     'allpalfx': 'AllPalFX', 'bgpalfx': 'BGPalFX',
     'forcefeedback': 'ForceFeedback', 'gamemakeanim': 'GameMakeAnim',
     'makedust': 'MakeDust',
@@ -39,6 +39,7 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
+    'bindtotarget': 'TARGET-SELF-BINDING.md: native selection, immediate caller position, reverse constraint, retained/quantized offsets and profiles; wider interactions open',
     'explodbindtime': 'EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open',
     'bindtoparent': 'SELF-BINDING.md: helper constraints, phase/velocity/facing/lifecycle; wider interactions open',
     'bindtoroot': 'SELF-BINDING.md: root constraints, phase/velocity/facing/lifecycle; wider interactions open',

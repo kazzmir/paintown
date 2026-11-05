@@ -31,6 +31,12 @@ integration. BindToTarget follows with combat selection/head/mid semantics,
 then remaining Explod and shared effects. Current counts are89 registered/63
 typed/26 fallback,12 stubs; all variant-completion gates remain explicit.
 
+M4cm implements BindToTarget's immediate caller positioning, reverse target
+constraint, retained/quantized offsets and tested profiles. Source counts are
+89 registered/64 typed/25 fallback,11 stubs. Continue remaining Explod creation
+fields/ownership/pause/palettes and other item3 consumers; actor interaction
+variants remain explicit in their topic notes.
+
 ## Coherent checkpoint order
 
 1. M4ci: reproducible controller registration/compiler/consumer audit, current

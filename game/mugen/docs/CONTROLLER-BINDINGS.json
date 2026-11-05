@@ -4,8 +4,8 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "71a216db801e027c4592e346f82b085715f5ccc481ad2b2037d2958a9cbba87e",
-    "character/character.go": "bc927fcb098749c1562a3cdaca9f9550b0f5685b5858aab94a630e2ed118206c",
+    "engine/parameters.go": "06402b74559f537de35cd4d4f5840c66f2eb51d6971475f20892204b9d881399",
+    "character/character.go": "70dbb5690d9a875245b7c5d4ea35d3a47f23eafe43c2b4e3c3ceb76660f82144",
     "character/player.go": "485b752c748f2a461a14a1f85bc6868c272cafa447c0f28c763c1ee049808784",
     "character/explod.go": "99e4a3bc6f422b380139b588eaed964dcd925249bfb4ec9bb0757a4a696ba2e9",
     "engine/explod.go": "7cde84de6c677958aa38e61ab3c51dbdf49d46f05a9f09398b5b36c903f9dcdf",
@@ -14,21 +14,23 @@
     "system/effects.go": "0933f782761bee7e442634a4f64a6acd461a581c78ef57c656e32459211acadc",
     "render/perspective.go": "56025e50257a5f991f73030a18ec58b1b0447a487c39561505e3660ead0c54fc",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
-    "character/binding.go": "f3360084318d214092fa42948e5edc3b19fdb5b2e1e797a8013de4e1386f3ff1",
-    "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e"
+    "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
+    "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
+    "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e",
+    "character/world.go": "b85a7655a8e79fbefc8c30c6fcae36bc8fe694222c3ba90b21ed6d0c1d84c156"
   },
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 63,
-    "fallback": 26,
+    "typed": 64,
+    "fallback": 25,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 12,
+      "stub": 11,
       "unconsumed-render-field": 5,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 3,
+      "bounded-native-consumer": 4,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -201,11 +203,11 @@
     {
       "name": "bindtotarget",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleBindToTarget",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:BindToTarget"
+        "TARGET-SELF-BINDING.md: native selection, immediate caller position, reverse constraint, retained/quantized offsets and profiles; wider interactions open"
       ],
       "variants_complete": false
     },

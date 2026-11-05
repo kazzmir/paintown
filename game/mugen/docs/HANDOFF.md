@@ -13,6 +13,23 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
+M4cl is c3e810d40. M4cm adds BindToTarget with73 frozen programs/792 readings/
+seven rejections/292 authored hashes plus the probe. Read TARGET-SELF-BINDING.md.
+Its consumer moves the caller immediately and stores a reverse target constraint;
+missing axes reuse retained acquisition offsets. Fractional/profile controls
+pin game-pixel truncation. Match races pass125.315s across194 native programs.
+Engine/System/CNS races pass1.434s/9.260s/1.012s; Character passes11.183s after
+fixing an old target*.json glob to select only its original target-/targets-
+corpora. The initial failure was discovery, not a changed native observation.
+Three actual-window actor masks are exact below the HUD (8,379/7,455/3,474 pixels);
+whole-region RGB differences remain, so this does not claim full framebuffer
+conformance. All native originals/captures remain immutable. Current inventory
+is64 typed/25 fallback/11 stubs. Final stock win/rematch/win is visually verified;82 balanced owned events and
+1,971,901 private PCM frames,293 native/1,095 final source hashes and all app/
+config/binary/PNG/audio/module/inventory guards pass. Sessions were awaited; a
+separate client check is empty. Final audit is temp/m4cm-final-evidence-audit.json.
+The latest full suite remains M4cl. Continue remaining Explod/shared effects.
+
 M4cj is 6faff3f1. M4ck implements typed ModifyExplod, selected per-object mutation
 and production scale/angle/perspective/transparency consumers. Its 143 controls
 pin 1,164 values and 46 rejections; three alpha grids add 36 values and 27 alpha
@@ -44,7 +61,7 @@ Application runtime source inputs match the18-window run; the only subsequent
 source changes add alpha-grid tests in two test files. Stock final source builds
 with those tests present. All sessions were awaited; no clients remain.
 
-M4ck is3d44c4ba. M4cl implements BindToParent/BindToRoot constraints before the
+M4ck is3d44c4ba. M4cl is c3e810d40 and implements BindToParent/BindToRoot constraints before the
 remaining Explod creation fields; BindToTarget follows with combat selection.
 This reorders dependencies, not allocation.84 programs/936 values/six rejections
 and336 authored hashes pin schema, phase, facing, lifetime, retirement, pauses,

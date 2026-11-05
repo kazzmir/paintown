@@ -101,16 +101,17 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cl implementation**. Item 3 is active:
-ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root actor
-binding have production consumers. The current full race suite passes **3,435**
-test/subtest results across **36 packages**. M4cl adds84 native controls/936
-readings/six load rejections, two exact window masks and corrected friction.
-See [actor binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
+Snapshot: **2026-11-05, through M4cm implementation**. Item 3 is active:
+ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
+actor binding have production consumers. The latest full race suite (M4cl)
+passes **3,435** test/subtest results across **36 packages**. M4cm focused races
+pass194 native programs, including73 new controls/792 readings/seven rejections;
+three actor-window masks match. See [target binding](docs/TARGET-SELF-BINDING.md),
+[parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
-All89 controller names register;63 typed routes,12 stubs and partial consumers
-remain. Rotation sampling/alpha precision and the wider documented gates stay
-open. No whole-engine completion percentage is justified.
+All89 controller names register;64 typed routes,11 stubs and partial consumers
+remain. Rotation sampling/alpha precision and wider documented gates stay open.
+No whole-engine completion percentage is justified.
 
 Through M4ch, fresh native, actual
 render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have
@@ -176,7 +177,7 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
-| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only;12 stubs and other partial consumers remain.63 typed routes; not full controller compatibility. |
+| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only;11 stubs and other partial consumers remain.64 typed routes; not full controller compatibility. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |

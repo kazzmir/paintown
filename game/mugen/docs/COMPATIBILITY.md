@@ -1,5 +1,15 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cm (2026-11-05) adds typed BindToTarget and the native immediate-caller /
+reverse-target constraint.73 programs pin792 readings/seven rejections, including
+retained offsets, game-pixel quantization and mixed profiles. Focused194-program
+Match races pass125.315s; core/System/CNS and corrected Character races pass.
+Three actual-window actor masks are exact below the HUD. Read
+[TARGET-SELF-BINDING.md](TARGET-SELF-BINDING.md). Current source inventory is
+89 registered/64 typed/25 fallback,11 stubs, five unconsumed actor draw families
+and nine partial families. The latest full integration remains M4cl; remaining
+Explod and shared consumers continue under item3. No engine percentage follows.
+
 M4cl (2026-11-05) adds typed BindToParent/BindToRoot and their production
 constraints, with84 native programs/936 values/six load rejections and two exact
 actual-window masks. Dependent friction traces correct standing/crouch behavior.

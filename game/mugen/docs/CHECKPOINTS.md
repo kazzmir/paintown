@@ -1,5 +1,20 @@
 # Implementation checkpoints
 
+## M4cm: BindToTarget positioning and reverse target constraint
+
+Typed selection/evaluation, immediate caller position, reverse target binding,
+retained/sentinel offsets, finite cancellation and game-pixel quantization now
+match73 frozen native programs/792 readings/seven rejections/292 originals plus
+the probe. Mixed/foreign profile evidence is bounded in TARGET-SELF-BINDING.md.
+
+Focused194-program Match races125.315s/core races pass. A legacy discovery glob
+was narrowed to preserve its49 original cases; Character then passes11.183s.
+Three actor masks below HUD match exactly; full RGB differences stay open. Stock
+win/rematch/win/82 owned events/private PCM,293 native/1,095 final frozen hashes
+and app/module/inventory guards pass. All sessions awaited; no clients. Only
+source/text under game/mugen/ is committed. Continue remaining Explod/shared
+consumers under item3; latest full integration is M4cl, item4 unallocated.
+
 ## M4cl: parent/root binding and dependent friction
 
 Typed BindToParent/Root now drive actor constraints with measured post-physics

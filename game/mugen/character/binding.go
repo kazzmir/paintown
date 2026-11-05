@@ -2,6 +2,7 @@ package character
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/kazzmir/paintown/game/mugen/engine"
 )
@@ -109,12 +110,79 @@ func (c *Character) BindTargets(p engine.TargetBindParameters) error {
 		p.Time = 1
 	}
 	for _, target := range c.acquiredTargets(p.ID, true) {
+		scale := float32(target.LocalCoordinateWidth()) / float32(c.LocalCoordinateWidth())
+		record := c.hitTargets[target]
+		record.bindX, record.bindY = float64(float32(p.X)*scale), float64(float32(p.Y)*scale)
+		c.hitTargets[target] = record
 		if p.Time == 0 {
 			target.binding = nil
 			continue
 		}
-		scale := float32(target.LocalCoordinateWidth()) / float32(c.LocalCoordinateWidth())
-		target.binding = &actorBinding{anchor: c, x: float64(float32(p.X) * scale), y: float64(float32(p.Y) * scale), remaining: p.Time, generation: target.hitGeneration}
+		target.binding = &actorBinding{anchor: c, x: record.bindX, y: record.bindY, remaining: p.Time, generation: target.hitGeneration}
+	}
+	return nil
+}
+
+// BindToTarget moves the caller now, then constrains the selected target to the
+// caller. It is not a self constraint and does not suppress caller movement.
+func (c *Character) BindCallerToTarget(id int, evaluate func() (engine.TargetSelfBindParameters, error)) error {
+	var selected *Character
+	for _, target := range c.acquiredTargets(-1, false) {
+		if id == -1 || c.hitTargets[target].id == id {
+			selected = target
+			break
+		}
+	}
+	if selected == nil {
+		return nil
+	}
+	p, err := evaluate()
+	if err != nil {
+		return err
+	}
+	if p.Time < -1 {
+		p.Time = 1
+	}
+	width := p.CoordinateWidth
+	if width <= 0 {
+		width = c.LocalCoordinateWidth()
+	}
+	gameWidth := c.GameCoord.Width
+	if gameWidth <= 0 {
+		gameWidth = 320
+	}
+	pointX, pointY := 0.0, 0.0
+	if selected.StateFile != nil {
+		var point []int
+		if p.Point == 'h' {
+			point = selected.StateFile.Size.HeadPos
+		} else if p.Point == 'm' {
+			point = selected.StateFile.Size.MidPos
+		}
+		if len(point) >= 2 {
+			factor := float64(gameWidth) / float64(selected.LocalCoordinateWidth())
+			pointX, pointY = math.Trunc(float64(point[0])*factor), math.Trunc(float64(point[1])*factor)
+		}
+	}
+	x, y := c.PositionOf(selected)
+	record := c.hitTargets[selected]
+	toCaller := float64(c.LocalCoordinateWidth()) / float64(gameWidth)
+	toTarget := float64(selected.LocalCoordinateWidth()) / float64(gameWidth)
+	if p.HasX {
+		offset := p.X*float64(gameWidth)/float64(width) + pointX
+		c.X = x + offset*float64(selected.Facing)*toCaller
+		record.bindX = math.Trunc(-offset*float64(selected.Facing*c.Facing)) * toTarget
+	}
+	if p.HasY {
+		offset := p.Y*float64(gameWidth)/float64(width) + pointY
+		c.Y = y + offset*toCaller
+		record.bindY = math.Trunc(-offset) * toTarget
+	}
+	c.hitTargets[selected] = record
+	if p.Time == 0 {
+		selected.binding = nil
+	} else {
+		selected.binding = &actorBinding{anchor: c, x: record.bindX, y: record.bindY, remaining: p.Time, generation: selected.hitGeneration}
 	}
 	return nil
 }
