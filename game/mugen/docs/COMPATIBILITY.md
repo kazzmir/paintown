@@ -1,5 +1,23 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4ct completes bounded actor/owned-effect ordering. Sixteen frozen native
+programs pin 192 readings and 65 original/probe hashes. All 16 new 151,800-pixel
+RGB crops match exactly (2,428,800 pixels); all FOUR unchanged M4cs Explod overlap
+crops now pass both actor and stage comparisons. Read
+[EFFECT-ORDERING.md](EFFECT-ORDERING.md). Native priorities, actor/effect ties,
+creation ties, ontop, ModifyExplod and second-root/helper overlaps are consumed.
+
+Core races pass Character11.320s/System9.465s/Effect1.011s;99 native effect/global
+programs pass67.354s and14 actor-order programs pass10.476s. Four palette/raster
+regression apps and visually inspected stock win/rematch/win pass, with82
+balanced owned events/1,965,839 private PCM frames. All final source/native/
+resource/binary/config/PNG/audio/module/inventory guards pass. Latest full
+integration stays M4cs (3,857 results/36 packages); it was not repeated for this
+focused dependent checkpoint. The12 M4cq raster failures remain unwaived.
+Continue EnvColor/EnvShake and ALL remaining item3; item4 remains unallocated.
+Source70 typed/19 fallback/7 stubs/9 partial/13 bounded/60 route-only is not an
+overall engine percentage. Earlier entries are checkpoint history.
+
 M4cs (2026-11-05) adds typed AllPalFX/BGPalFX and independent global clocks,
 measured parameter merging, actor/effect/stage/HUD/font consumers and native
 complete-gray/partial-balance precision.83 programs pin948 values/four rejections

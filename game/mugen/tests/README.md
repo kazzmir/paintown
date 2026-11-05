@@ -840,3 +840,19 @@ menu/match reentry control on the private display; original recording uses
 menu timestamps are evidence, while reproduction requires exact input hashes
 and the documented same-process relationships. See
 [ENGINE-CLOCK.md](../docs/ENGINE-CLOCK.md). Keep native/app/test clients serial.
+
+## Effect ordering
+
+`effect_order_render_probe.py` strictly compares a captured Go application with
+an immutable `effectorder-*` beta control. It verifies inputs/resources/binary/
+config/capture hashes and every RGB pixel in the fixed native crop. It has no
+record/expectation-writing mode. For existing private runs:
+
+```bash
+python3 game/mugen/tests/effect_order_render_probe.py \
+  --fixture effectorder-equal-creation-0 \
+  --go-run m4ct1-effectorder-equal-creation-0 --name my-effect-order-check
+```
+
+[EFFECT-ORDERING.md](../docs/EFFECT-ORDERING.md) records the16 controls, production
+consumer, exact comparisons and remaining variants.

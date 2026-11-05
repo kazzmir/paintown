@@ -32,43 +32,27 @@ GPU colors/224 CPU colors,19 HitDef apps228 colors. Core/native races, stock
 win/rematch/win82 owned events/1,978,304 private PCM frames and final provenance/
 module/inventory/staged-text audits pass. No binaries or outside changes.
 
-M4cs AllPalFX/BGPalFX is VALIDATED/UNCOMMITTED. Read GLOBAL-PALETTE-FX.md.
-83 native programs/79 accepted/948 numeric values/four rejections/333 input
-hashes.71 static scenes pin2,795 colors; eight early sine renders remain dynamic
-diagnostics. Global clocks continue through CNS Pause; scopes cancel independently.
-Measured first-pass parameter merge and second All pass reach actors/effects/
-stage/HUD/portraits/fonts. Complete gray uses byte luminance; partial balance
-uses normalized interpolation, supported by all98 stage colors/33 profiles.
+M4cs is COMMITTED cac8c6957. Read GLOBAL-PALETTE-FX.md.83 native programs/
+948 values/four rejects/333 hashes;10,352 GPU samples;71 app palette/stage checks
+pass and67 actor crops exact, FOUR owned-Explod overlap crops UNWAIVED126 pixels
+each. Overall app RGB FALSE. Final full3,857 results/36 packages25 tested+11
+compiled-only, Match1606.364s/total1691.569s,14,164 frozen inputs.10 regressions,
+stock win/rematch/win82 owned events/1,941,379 PCM, all final source/native/artifact/
+module/inventory/staged452-text-file guards pass. No binaries/push/outside changes.
+M4cr c2e32e933. Latest full integration M4cs; earlier M4cq raster12 remain open.
 
-Final Render races27.848s cover10,352 native GPU samples. Native83 Match races
-56.064s and core races pass. All71 app palette/stage checks pass;67 actor crops
-are exact. FOUR owned-Explod crops remain UNWAIVED126 pixels each:Go covers the
-root hand while native retains it. Overall strict application RGB status is
-FALSE. Matrix/public probe correctly exit1; retain the counterexamples. Source
-binary30ca8729bea12c1028e550cd5dde4b494c70d22aabd019c57a4057a685549674;
-final app aggregate m4cs-current-app-summary.json (m4cs4/m4cs5). No source or
-original/golden/tolerance changed to accept these failures.
-
-10 regression apps pass. Stock win/rematch/win visually verified,82 balanced
-owned events/1,941,379 private PCM frames. FINAL FULL RACES PASS3,857 results/36
-packages (25 tested+11 compiled-only), no failures/individual skips; Match1606.364s,
-total1691.569s. All14,164 frozen inputs and333 native hashes plus final source/
-resource/config/binary/PNG/audio/module/inventory guards pass.54726(full)/40412
-(regression+stock)/43674(audit) awaited; separate clients empty. Final audit:
-temp/m4cs-final-evidence-audit.json explicitly records app RGB FALSE. Only MD
-changed after final passing source/app/full runs.
-
-Stage/audit/commit source/text under game/mugen only. New
-engine/global_palette_test.go needs git add -f (historical ignore). No binaries.
-Then continue ALL item3 with M4ct shared actor/owned-effect ordering BEFORE
-EnvColor. Private prep-effectorder-next.py has16 priority/tie/creation/ontop/
-ModifyExplod/helper/P2 cases and an abort guard, NOT EXECUTED. Allocate/freeze
-M4ct emission/names before removing the guard, capture once and preserve
-originals. EnvColor prep likewise NOT EXECUTED. Source70 typed/19 fallback/
-7 stubs/13 bounded/9 partial/60 route-only, no variants complete. No new stop/
-item4/agents/goals/push/outside changes. All private Go experiments in _tmp.
-Private Go executable hard-link storage preserves bytes/paths/hashes; native/
-capture/golden files are never modified. Leading HANDOFF.md is current.
+M4ct acceptance COMPLETE; source/text checkpoint. Read docs/EFFECT-ORDERING.md
+(or EFFECT-ORDERING.md from docs).16 native programs/192 readings/65 original+
+probe hashes;16 exact151,800-pixel crops and all FOUR unchanged M4cs overlaps
+fixed exactly. Core Character11.320/System9.465/Effect1.011 races,99 effect/global
+native programs67.354s and14 actor-order programs10.476s pass. Four regression
+apps and visually inspected stock win/rematch/win82 balanced inputs/1,965,839
+private PCM frames pass. All source/native/resource/binary/config/PNG/audio/
+module/inventory guards pass; no clients. Audit:m4ct-final-evidence-audit.json.
+Latest full M4cs3,857/36 remains;12 M4cq raster cases unwaived. Continue ALL item3 after the local source/text checkpoint. Next guarded preparation temp/prep-m4cu.py is NOT
+EXECUTED: EnvColor schemas/clocks/layer matrix. No original/capture/golden changes,
+no tolerance relaxation. No item4/agents/goals/push/binaries/outside authoring.
+Private Xvfb/Pulse are healthy; serial runtime and frozen-source policy remains.
 
 M4cq is934bd9203, latest full3,703 passes/36 packages (25 tested+11 compiled-only),
 13,467 frozen inputs. Twelve raster counterexamples remain unwaived. Continue

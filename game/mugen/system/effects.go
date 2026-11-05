@@ -6,6 +6,8 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -32,133 +34,170 @@ type effectImage struct {
 	image    *ebiten.Image
 }
 
-func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
+func (s *FightState) beginEffectDraw() {
 	if s.effectImages == nil {
 		s.effectImages = map[effectImageKey]effectImage{}
 	}
-	used := map[effectImageKey]bool{}
-	m := s.match
-	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
-	for _, instance := range m.Effects.Active {
+	s.effectUsed = map[effectImageKey]bool{}
+}
+
+func (s *FightState) endEffectDraw() {
+	for key, cached := range s.effectImages {
+		if !s.effectUsed[key] {
+			cached.image.Deallocate()
+			delete(s.effectImages, key)
+		}
+	}
+}
+
+func (s *FightState) ownedEffectLayers(screen *ebiten.Image) []character.SpriteLayer {
+	var layers []character.SpriteLayer
+	// Earlier-created equal-priority effects are in front, so draw later ones first.
+	for i := len(s.match.Effects.Active) - 1; i >= 0; i-- {
+		instance := s.match.Effects.Active[i]
+		if !instance.Active || !instance.OwnerDriven || instance.OnTop {
+			continue
+		}
+		layers = append(layers, character.SpriteLayer{Priority: instance.SpritePriority, Draw: func() { s.drawEffectInstance(screen, instance) }})
+	}
+	return layers
+}
+
+func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
+	for _, instance := range s.match.Effects.Active {
 		if !instance.Active {
 			continue
 		}
-		el := instance.Clock.CurrentElement()
-		if el == nil || el.Group < 0 {
-			continue
-		}
-		source := instance.Source
-		index := -1
-		for i, sprite := range source.Sprites.Sprites {
-			if int(sprite.GroupNumber) == el.Group && int(sprite.ImageNumber) == el.Image {
-				index = i
-				break
-			}
-		}
-		if index < 0 {
-			s.effectWarning(fmt.Errorf("action %d sprite %d,%d is unavailable", instance.Action, el.Group, el.Image))
-			continue
-		}
-		key := effectImageKey{source.Sprites, source.Palette, index}
-		used[key] = true
 		layer := 1
 		if instance.OnTop {
 			layer = 2
-		} else if instance.OwnerDriven && instance.SpritePriority < 0 {
-			layer = 0
+		} else if instance.OwnerDriven {
+			continue
 		}
 		if len(layers) > 0 && layer != layers[0] {
 			continue
 		}
-		revision := uint64(0)
-		if source.Palette != nil {
-			revision = source.Palette.Revision
-		}
-		cached, present := s.effectImages[key]
-		if !present || cached.revision != revision {
-			pixels := source.Sprites.Sprites[index].Image
-			if source.Palette != nil {
-				var err error
-				pixels, err = source.Palette.MappedImage(index, true)
-				if err != nil {
-					s.effectWarning(err)
-					continue
-				}
-			}
-			cached = effectImage{revision, ebiten.NewImageFromImage(pixels)}
-			s.effectImages[key] = cached
-		}
-		sprite := source.Sprites.Sprites[index]
-		sx, sy := float64(instance.Facing), 1.0
-		if instance.VFacing < 0 {
-			sy = -sy
-		}
-		if el.FlipX {
-			sx = -sx
-		}
-		if el.FlipY {
-			sy = -sy
-		}
-		op := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
-		op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
-		op.GeoM.Scale(sx, sy)
-		op.GeoM.Translate(float64(el.XOffset*instance.Facing), float64(el.YOffset))
-		op.GeoM.Scale(source.Scale, source.Scale)
-		if instance.HasScale {
-			op.GeoM.Scale(instance.ScaleX, instance.ScaleY)
-		}
-		if sx < 0 {
-			op.GeoM.Translate(1, 0)
-		}
-		if sy < 0 {
-			op.GeoM.Translate(0, 1)
-		}
-		x, y := instance.X, instance.Y
-		if _, indexed := sprite.Image.(*image.Paletted); indexed {
-			x, y = x+0.5, y+0.5
-		} else {
-			x, y = math.Trunc(x), math.Trunc(y)
-		}
-		if !instance.ScreenSpace {
-			x += float64(m.Options.GameSpace.Width)/2 - m.CameraX
-			y += m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY
-		}
-		projected := instance.XAngle != 0 || instance.YAngle != 0
-		if !projected {
-			op.GeoM.Rotate(-instance.Angle * math.Pi / 180)
-			op.GeoM.Translate(x, y)
-		}
-		blend, alphaSrc, alphaDst := el.Blend, el.AlphaSrc, el.AlphaDst
-		if instance.HasBlend {
-			blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
-		}
-		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
-		style := render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.Palette.Transform(), m.Timeline.AllPalette.Transform())}
-		if projected {
-			projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
-			var err error
-			if _, indexed := sprite.Image.(*image.Paletted); indexed {
-				err = s.indexSampler.DrawStyledProjected(screen, cached.image, op, projection, style)
-			} else {
-				err = s.linearSampler.DrawStyledProjected(screen, cached.image, op, projection, style)
-			}
-			if err != nil {
-				s.renderError = fmt.Errorf("fight effect projection: %w", err)
-				return
-			}
-		} else if _, indexed := sprite.Image.(*image.Paletted); indexed {
-			if err := s.indexSampler.DrawStyledImage(screen, cached.image, op, style); err != nil {
-				s.renderError = fmt.Errorf("fight effect action %d indexed sampler: %w", instance.Action, err)
-				return
-			}
-		} else if err := s.linearSampler.DrawStyledImage(screen, cached.image, op, style); err != nil {
-			s.renderError = fmt.Errorf("fight effect action %d sprite %d,%d sampler: %w", instance.Action, el.Group, el.Image, err)
-			return
+		s.drawEffectInstance(screen, instance)
+	}
+}
+
+func (s *FightState) drawEffectInstance(screen *ebiten.Image, instance *effect.Instance) {
+	if s.effectImages == nil {
+		s.effectImages = map[effectImageKey]effectImage{}
+	}
+	if s.effectUsed == nil {
+		s.effectUsed = map[effectImageKey]bool{}
+	}
+	m := s.match
+	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+	if !instance.Active {
+		return
+	}
+	el := instance.Clock.CurrentElement()
+	if el == nil || el.Group < 0 {
+		return
+	}
+	source := instance.Source
+	index := -1
+	for i, sprite := range source.Sprites.Sprites {
+		if int(sprite.GroupNumber) == el.Group && int(sprite.ImageNumber) == el.Image {
+			index = i
+			break
 		}
 	}
-	for key := range s.effectImages {
-		if !used[key] {
-			delete(s.effectImages, key)
+	if index < 0 {
+		s.effectWarning(fmt.Errorf("action %d sprite %d,%d is unavailable", instance.Action, el.Group, el.Image))
+		return
+	}
+	key := effectImageKey{source.Sprites, source.Palette, index}
+	s.effectUsed[key] = true
+
+	revision := uint64(0)
+	if source.Palette != nil {
+		revision = source.Palette.Revision
+	}
+	cached, present := s.effectImages[key]
+	if !present || cached.revision != revision {
+		pixels := source.Sprites.Sprites[index].Image
+		if source.Palette != nil {
+			var err error
+			pixels, err = source.Palette.MappedImage(index, true)
+			if err != nil {
+				s.effectWarning(err)
+				return
+			}
 		}
+		if present {
+			cached.image.Deallocate()
+		}
+		cached = effectImage{revision, ebiten.NewImageFromImage(pixels)}
+		s.effectImages[key] = cached
+	}
+	sprite := source.Sprites.Sprites[index]
+	sx, sy := float64(instance.Facing), 1.0
+	if instance.VFacing < 0 {
+		sy = -sy
+	}
+	if el.FlipX {
+		sx = -sx
+	}
+	if el.FlipY {
+		sy = -sy
+	}
+	op := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
+	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
+	op.GeoM.Scale(sx, sy)
+	op.GeoM.Translate(float64(el.XOffset*instance.Facing), float64(el.YOffset))
+	op.GeoM.Scale(source.Scale, source.Scale)
+	if instance.HasScale {
+		op.GeoM.Scale(instance.ScaleX, instance.ScaleY)
+	}
+	if sx < 0 {
+		op.GeoM.Translate(1, 0)
+	}
+	if sy < 0 {
+		op.GeoM.Translate(0, 1)
+	}
+	x, y := instance.X, instance.Y
+	if _, indexed := sprite.Image.(*image.Paletted); indexed {
+		x, y = x+0.5, y+0.5
+	} else {
+		x, y = math.Trunc(x), math.Trunc(y)
+	}
+	if !instance.ScreenSpace {
+		x += float64(m.Options.GameSpace.Width)/2 - m.CameraX
+		y += m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY
+	}
+	projected := instance.XAngle != 0 || instance.YAngle != 0
+	if !projected {
+		op.GeoM.Rotate(-instance.Angle * math.Pi / 180)
+		op.GeoM.Translate(x, y)
+	}
+	blend, alphaSrc, alphaDst := el.Blend, el.AlphaSrc, el.AlphaDst
+	if instance.HasBlend {
+		blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
+	}
+	nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
+	style := render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.Palette.Transform(), m.Timeline.AllPalette.Transform())}
+	if projected {
+		projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
+		var err error
+		if _, indexed := sprite.Image.(*image.Paletted); indexed {
+			err = s.indexSampler.DrawStyledProjected(screen, cached.image, op, projection, style)
+		} else {
+			err = s.linearSampler.DrawStyledProjected(screen, cached.image, op, projection, style)
+		}
+		if err != nil {
+			s.renderError = fmt.Errorf("fight effect projection: %w", err)
+			return
+		}
+	} else if _, indexed := sprite.Image.(*image.Paletted); indexed {
+		if err := s.indexSampler.DrawStyledImage(screen, cached.image, op, style); err != nil {
+			s.renderError = fmt.Errorf("fight effect action %d indexed sampler: %w", instance.Action, err)
+			return
+		}
+	} else if err := s.linearSampler.DrawStyledImage(screen, cached.image, op, style); err != nil {
+		s.renderError = fmt.Errorf("fight effect action %d sprite %d,%d sampler: %w", instance.Action, el.Group, el.Image, err)
+		return
 	}
 }

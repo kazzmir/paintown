@@ -11,7 +11,8 @@
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
-    "system/effects.go": "fa3d04fbec04dc1918094866610fd2fb95c55b5408513b12695ec654f14e38cc",
+    "character/actor_order.go": "6f7b158c1348985c8ee04d321d5b0cdd27a54aa00ee8df9d1251874fdf6de0bc",
+    "system/effects.go": "d21c64c1aae3c20075cd829268f958ceb0b46d29e37dddc23c251cec13be6da3",
     "render/perspective.go": "0ee2191a535d46cd5ca2db0d4588361cf5293f72e548153a18b902fb2c34a517",
     "render/alpha.go": "8b939718d5db8fb1bd297e59678bd8ecc138ee4ea509d0a4269f224e0d1b8ba9",
     "render/nearest.go": "5a684d4d155936a1e571f125532df3c42cd196673bdaa96f061ac2a39c6c8c4b",
@@ -30,7 +31,7 @@
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "b1e62cd12aaacc2a86e8888b10c15905552483d332a9bcb5a22d947b05558ab0",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "4cba4d9284e4d688fb54409135d1c9c78ce4939df7730f4df07f45d687eb4d05",
+    "system/fight_state.go": "518ba2b35a194b2626705cd3447ceb8bd76d9ca4936425d14130e2f05e903199",
     "system/hud.go": "b5cea75cdc456eb151a377a88a0b432f5d497d910df20758454d3e7e362dc01f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
@@ -333,7 +334,7 @@
       "handler": "handleExplod",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; creation palette/random/angle/trans/shadow/capacity and broader variants open"
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; creation palette/random/angle/trans/shadow/capacity and broader variants open"
       ],
       "variants_complete": false
     },
@@ -507,7 +508,7 @@
       "handler": "func",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; shadow/priority/pause and projection sampling gates remain"
+        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; shadow/pause/projection sampling gates remain"
       ],
       "variants_complete": false
     },

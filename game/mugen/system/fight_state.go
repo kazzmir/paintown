@@ -21,6 +21,7 @@ type FightState struct {
 	hud                                *FightHUD
 	stageCanvas, gameCanvas, hudCanvas *ebiten.Image
 	effectImages                       map[effectImageKey]effectImage
+	effectUsed                         map[effectImageKey]bool
 	effectWarnings                     map[string]bool
 	linearSampler                      render.Linear
 	indexSampler                       render.Nearest
@@ -83,6 +84,8 @@ func (s *FightState) Update() (State, error) {
 
 func (s *FightState) Draw(screen *ebiten.Image) {
 	m := s.match
+	s.beginEffectDraw()
+	defer s.endEffectDraw()
 	stageSpace, gameSpace := m.Stage.StageInfo.LocalCoord, m.Options.GameSpace
 	motifSpace := s.engine.motif.Info.LocalCoord
 	if s.stageCanvas == nil {
@@ -110,8 +113,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
-	s.drawEffects(s.gameCanvas, 0)
-	character.DrawPlayers(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY)
+	character.DrawPlayersWithSprites(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
 	s.drawEffects(s.gameCanvas, 1)
 	s.stageCanvas.Clear()
 	if err := m.Stage.DrawForegroundWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette); err != nil {

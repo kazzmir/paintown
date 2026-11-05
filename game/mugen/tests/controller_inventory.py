@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
-           'effect/scene.go', 'system/effects.go', 'render/perspective.go',
+           'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
            'render/alpha.go', 'render/nearest.go', 'render/linear.go',
            'engine/drawing.go', 'engine/trans.go', 'engine/palette_fx.go', 'engine/timeline.go', 'engine/round_clock.go',
            'palette/state.go', 'palette/controller_effect.go', 'palette/hit_effect.go',
@@ -29,10 +29,10 @@ STUBS = {
 }
 RENDER_FIELDS = {}
 PARTIAL = {
-	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; shadow/priority/pause and projection sampling gates remain',
+	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; shadow/pause/projection sampling gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'projectile shadow/trail fields lack complete renderer consumers',
-    'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; creation palette/random/angle/trans/shadow/capacity and broader variants open',
+    'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; creation palette/random/angle/trans/shadow/capacity and broader variants open',
     'assertspecial': 'only a subset of literal flags have production consumers',
     'appendtoclipboard': 'stores raw text; params/formatting absent',
     'displaytoclipboard': 'stores raw text; params/formatting absent',

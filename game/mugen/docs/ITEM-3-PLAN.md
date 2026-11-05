@@ -104,3 +104,8 @@ not frozen or executed until the palette checkpoint finishes. Then continue
 environment, afterimage, remaining creation/ownership/random/shadow/capacity,
 special flags, dust/system animations, debug/haptics and schema findings.
 This reordering follows an actual dependent consumer, with no item4 allocation.
+
+M4ct now closes the four unchanged M4cs overlap failures.16 native controls and
+20 strict applications establish actual actor/effect priority comparison,
+actor/effect ties, creation ties, ontop and modified priorities. Read
+EFFECT-ORDERING.md. Continue environment effects next, then all remaining item3.

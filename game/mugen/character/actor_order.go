@@ -13,6 +13,13 @@ type Actor struct {
 	Character *Character
 }
 
+// SpriteLayer adds a renderer-owned sprite to the shared actor priority order.
+// Equal-priority sprites are drawn before actors; their supplied order is kept.
+type SpriteLayer struct {
+	Priority int
+	Draw     func()
+}
+
 // OrderedActors returns the shared actor layer, from back to front. Priority
 // crosses root/helper ownership; equal priorities put the lower world ID in front.
 func OrderedActors(players []*Player) []Actor {
@@ -47,13 +54,28 @@ func OrderedActors(players []*Player) []Actor {
 // DrawPlayers projects all root/helper actors into one ordered fight layer.
 // floorY includes the stage floor and vertical camera offset in game units.
 func DrawPlayers(screen *ebiten.Image, players []*Player, space coord.Space, cameraX, floorY float64) {
+	DrawPlayersWithSprites(screen, players, space, cameraX, floorY, nil)
+}
+
+func DrawPlayersWithSprites(screen *ebiten.Image, players []*Player, space coord.Space, cameraX, floorY float64, sprites []SpriteLayer) {
+	sprites = append([]SpriteLayer(nil), sprites...)
+	sort.SliceStable(sprites, func(i, j int) bool { return sprites[i].Priority < sprites[j].Priority })
+	next := 0
 	for _, p := range players {
 		p.pruneSpriteCache()
 	}
 	for _, actor := range OrderedActors(players) {
 		p, c := actor.Owner, actor.Character
+		for next < len(sprites) && sprites[next].Priority <= c.SprPriority {
+			sprites[next].Draw()
+			next++
+		}
 		scale := float64(space.Width) / float64(c.LocalCoordinateWidth())
 		p.drawEntity(screen, c, float64(space.Width)/2+c.X*scale-cameraX, floorY+c.Y*scale, scale, scale)
+	}
+	for next < len(sprites) {
+		sprites[next].Draw()
+		next++
 	}
 	for _, p := range players {
 		scale, _ := p.LocalCoord.ScaleTo(space)

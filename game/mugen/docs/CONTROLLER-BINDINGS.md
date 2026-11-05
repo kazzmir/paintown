@@ -122,3 +122,11 @@ All rows remain variant-incomplete.83 native programs and71 actual scenes
 establish palette/stage behavior; four actor overlap crops expose the pending
 owned-Explod priority consumer. They remain UNWAIVED. Read GLOBAL-PALETTE-FX.md.
 This is not full engine/controller/renderer conformance or an engine percentage.
+
+## M4ct update
+
+Actor and ordinary owned effects share measured sprite ordering; all16 new
+strict crops and four unchanged M4cs overlap crops match native. The audit now
+includes character/actor_order.go and records the bounded priority consumer on
+Explod/ModifyExplod. Counts remain70 typed/19 fallback/7 stubs/9 partial/13 bounded/
+60 route-only; no family is variant-complete. Read EFFECT-ORDERING.md.

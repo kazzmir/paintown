@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cs implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4ct implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
 motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cs)
@@ -130,11 +130,13 @@ for validation and explicit global/interaction limits.
 AllPalFX/BGPalFX now have global clocks and actor/effect/stage/HUD/font consumers.
 Their83 native programs pin948 values/four rejections.71 application scenes pass
 2,795 palette samples and all71 stage crops;67 actor crops match exactly, with
-four explicit Explod priority-overlap counterexamples pending the next checkpoint.
+four explicit Explod priority-overlap counterexamples at M4cs. M4ct now closes
+all four against unchanged goldens and adds16 exact151,800-pixel ordering crops;
+see [effect ordering](docs/EFFECT-ORDERING.md).
 The render tests pass10,352 native GPU color samples. See
 [global palette effects](docs/GLOBAL-PALETTE-FX.md). Final full integration passes3,857 results across36 packages, with no failures
 or individual skips and14,164 frozen inputs verified. Remaining item3 work
-continues, starting with effect draw ordering.
+continues with EnvColor/EnvShake and remaining controller consumers.
 The final M4cs integration passes25 tested and11 compiled-only packages,
 with no failures or individual skips and all14,164 frozen inputs verified. No whole-engine completion percentage is justified.
 

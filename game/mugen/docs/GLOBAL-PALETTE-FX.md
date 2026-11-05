@@ -1,5 +1,9 @@
 # Global palette effects — M4cs
 
+Follow-up M4ct closes all four original Explod overlap failures with exact
+actor/stage comparisons and unchanged goldens; see [EFFECT-ORDERING.md](EFFECT-ORDERING.md).
+The M4cs results below remain the historical checkpoint record.
+
 AllPalFX and BGPalFX now have typed schemas, global clocks and production
 consumers. This is a bounded controller checkpoint under the continuing item3
 allocation. The palette comparisons pass; four owned-Explod overlap crops remain
