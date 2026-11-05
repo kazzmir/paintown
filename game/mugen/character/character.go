@@ -1086,16 +1086,27 @@ func (c *Character) SelfState(stateNo int, ctrl, anim int) {
 }
 
 func (c *Character) PalFX(params map[string]string) {
+	c.executePaletteFX("PalFX", params)
+}
+
+func (c *Character) executePaletteFX(kind string, params map[string]string) {
 	version := ""
 	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
 		version = owner.StateFile.States[c.StateNo].LanguageVersion
 	}
-	if err := engine.ExecutePaletteFXParameters(params, c.stateEnvironment(), version); err != nil {
-		c.RuntimeError = fmt.Errorf("PalFX: %w", err)
+	if err := engine.ExecutePaletteFXController(kind, params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("%s: %w", kind, err)
 	}
 }
 
 func (c *Character) SetPaletteEffect(p engine.PaletteFXParameters) error {
+	if p.Scope != engine.PaletteFXLocal {
+		if c.Timeline == nil {
+			return fmt.Errorf("global palette timeline is unavailable")
+		}
+		c.Timeline.SetGlobalPalette(p)
+		return nil
+	}
 	// Shared-palette helpers evaluate parameters but cannot install local effects.
 	if c.Parent != nil && c.Palettes == c.Parent.Palettes {
 		return nil
@@ -1109,11 +1120,11 @@ func (c *Character) SetPaletteEffect(p engine.PaletteFXParameters) error {
 }
 
 func (c *Character) AllPalFX(params map[string]string) {
-	// Stub: global palette effects
+	c.executePaletteFX("AllPalFX", params)
 }
 
 func (c *Character) BGPalFX(params map[string]string) {
-	// Stub: background palette effects
+	c.executePaletteFX("BGPalFX", params)
 }
 
 func (c *Character) SetPaletteMapping(source, dest [2]int) error {

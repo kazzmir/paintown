@@ -29,7 +29,7 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	top := floor((a * (256-f.x) + b * f.x + vec4(128)) / 256)
 	bottom := floor((c * (256-f.x) + d * f.x + vec4(128)) / 256)
 	texel := floor((top * (256-f.y) + bottom * f.y + vec4(128)) / 256)
-	color := applyPalette(texel * (1.0 / 255.0)) * tint
+	color := applyPalette(texel) * tint
 	if NativeDestination >= 0 {
 		if texel.a == 0 { discard() }
 		color.a = NativeDestination

@@ -15,6 +15,46 @@ type Transform struct {
 	Invert   bool
 }
 
+// The native renderer merges palette parameters before its first draw pass.
+// This differs from applying two color matrices sequentially.
+func Combine(local, global Transform) Transform {
+	if !local.Enabled {
+		return global
+	}
+	if !global.Enabled {
+		return local
+	}
+	t := Transform{Enabled: true, Color: local.Color * global.Color, Invert: local.Invert != global.Invert}
+	for i := 0; i < 3; i++ {
+		t.Add[i], t.Mul[i] = local.Add[i]+global.Add[i], local.Mul[i]*global.Mul[i]
+	}
+	return t
+}
+
+// Debug background clearing uses the beta's byte color path before the final
+// AllPalFX pass: bounded desaturation, truncation, inversion, saturating add,
+// then multiplication. Ordinary sprite transforms remain unclamped.
+func (t Transform) ClearColor(source color.Color) color.Color {
+	if !t.Enabled {
+		return source
+	}
+	c := color.NRGBAModel.Convert(source).(color.NRGBA)
+	rgb := [3]float32{float32(c.R), float32(c.G), float32(c.B)}
+	gray := rgb[0]*0.3125 + rgb[1]*0.4375 + rgb[2]*0.25
+	var result [3]uint8
+	for i, channel := range rgb {
+		if t.Color >= 0 && t.Color < 1 {
+			channel = float32(math.Trunc(float64(gray + (channel-gray)*t.Color)))
+		}
+		if t.Invert {
+			channel = 255 - channel
+		}
+		channel = max(float32(0), min(float32(255), channel+t.Add[i]*255)) * t.Mul[i]
+		result[i] = uint8(max(0, min(255, math.RoundToEven(float64(channel)))))
+	}
+	return color.NRGBA{R: result[0], G: result[1], B: result[2], A: c.A}
+}
+
 type Effect struct {
 	Time, Color, Period int
 	Add, Mul, SinAdd    [3]int

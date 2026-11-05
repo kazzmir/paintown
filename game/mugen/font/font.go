@@ -13,6 +13,8 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -32,14 +34,16 @@ const (
 )
 
 type Font struct {
-	Type     FontType
-	Width    int
-	Height   int
-	SpacingX int
-	SpacingY int
-	Colors   int
-	OffsetX  int
-	OffsetY  int
+	indexSampler  render.Nearest
+	linearSampler render.Linear
+	Type          FontType
+	Width         int
+	Height        int
+	SpacingX      int
+	SpacingY      int
+	Colors        int
+	OffsetX       int
+	OffsetY       int
 
 	Glyphs   map[rune]*Glyph
 	Palettes []color.Palette
@@ -311,6 +315,10 @@ func (f *Font) TextWidthForBank(text string, bank int) int {
 }
 
 func (f *Font) Draw(screen *ebiten.Image, text string, x, y int, bank int, align Alignment) {
+	_ = f.DrawWithPalette(screen, text, x, y, bank, align, palette.Transform{})
+}
+
+func (f *Font) DrawWithPalette(screen *ebiten.Image, text string, x, y int, bank int, align Alignment, transform palette.Transform) error {
 	width := f.TextWidthForBank(text, bank)
 	startX := x + f.OffsetX
 	// MUGEN treats Y as the baseline (bottom of the font cell), so we subtract
@@ -337,7 +345,20 @@ func (f *Font) Draw(screen *ebiten.Image, text string, x, y int, bank int, align
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(float64(currentX+glyph.OffsetX), float64(startY+glyph.OffsetY))
 			op.Filter = ebiten.FilterNearest
-			screen.DrawImage(img, op)
+			if !transform.Enabled {
+				screen.DrawImage(img, op)
+			} else {
+				style := render.DrawStyle{DestinationFactor: -1, Palette: transform}
+				var err error
+				if _, indexed := glyph.Image.(*image.Paletted); indexed {
+					err = f.indexSampler.DrawStyledImage(screen, img, op, style)
+				} else {
+					err = f.linearSampler.DrawStyledImage(screen, img, op, style)
+				}
+				if err != nil {
+					return fmt.Errorf("font palette glyph %q: %w", char, err)
+				}
+			}
 		}
 
 		if glyph != nil {
@@ -350,6 +371,7 @@ func (f *Font) Draw(screen *ebiten.Image, text string, x, y int, bank int, align
 		}
 		previous = char
 	}
+	return nil
 }
 
 // Glyph returns CPU pixels/metrics for the requested bank; missing characters

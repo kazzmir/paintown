@@ -1,5 +1,22 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cs (2026-11-05) adds typed AllPalFX/BGPalFX and independent global clocks,
+measured parameter merging, actor/effect/stage/HUD/font consumers and native
+complete-gray/partial-balance precision.83 programs pin948 values/four rejections
+and333 original/probe hashes.71 application scenes have2,795 exact palette
+samples and71 exact stage crops;67 actor crops are exact. FOUR owned-Explod
+priority overlaps remain UNWAIVED at126 pixels each, so full application RGB
+conformance is FALSE. Read [GLOBAL-PALETTE-FX.md](GLOBAL-PALETTE-FX.md).
+
+Render checks pass10,352 native GPU samples.10 regression apps and visually
+verified stock win/rematch/win,82 balanced owned inputs/1,941,379 private PCM
+frames pass. Final full scoped races PASS3,857 test/subtest results across25 tested and11
+compiled-only packages, with no failures/individual skips. Match1606.364s;
+all14,164 frozen inputs verify. Final audit:m4cs-final-evidence-audit.json. Source70 typed/19 fallback/7 stubs/13 bounded/
+9 partial/60 route-only counts do not establish an engine percentage. All
+families remain variant-incomplete. Close effect draw ordering next, then continue
+all item3 consumers; item4 remains unallocated. Earlier entries are history.
+
 M4cr implementation (2026-11-05) adds typed PalFX, native helper ownership,
 expiry/sine clocks and unclamped palette transforms through both production
 sprite samplers.53 native programs pin576 numeric values/five rejections/812

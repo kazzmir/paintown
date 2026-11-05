@@ -133,7 +133,7 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 			blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 		}
 		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
-		style := render.DrawStyle{DestinationFactor: nativeDestination, Palette: source.Palette.Transform()}
+		style := render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.Palette.Transform(), m.Timeline.AllPalette.Transform())}
 		if projected {
 			projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
 			var err error

@@ -1,0 +1,500 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f7b657e33041adea34bb39a2ed24e08fc80b2763ff97f242fa348504aac5199f",
+  "air_sha256": "89d2428a42e7824c0055f263404da4fdcde7e0318ac3411c7b02cb4511dbe7d9",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "aff634d5dafaac346f13468fb213c16f6cd7d7c5de0d9f5180865d104871134f",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "4e53c2fe4a3a31245196f0055d06b4947f32e3912df1d6bc22e95cd0325a9b3b",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kinds": {
+    "AllPalFX": 1
+  },
+  "controller_states": [
+    700
+  ],
+  "live_reset": true,
+  "global_palette_render": {
+    "calibration_json": "global-palette-points.json",
+    "calibration_sha256": "a53162fe0c6598983232d7aba4ac7c095d75fda67139de5c1bbda06c4f0c3383",
+    "native_rgb_samples": [
+      {
+        "kind": "actor",
+        "point": [
+          635,
+          286
+        ],
+        "rgb": [
+          13,
+          13,
+          13
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          626,
+          325
+        ],
+        "rgb": [
+          16,
+          25,
+          41
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          638,
+          289
+        ],
+        "rgb": [
+          22,
+          22,
+          25
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          641,
+          325
+        ],
+        "rgb": [
+          32,
+          37,
+          49
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          626,
+          331
+        ],
+        "rgb": [
+          33,
+          16,
+          13
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          620,
+          349
+        ],
+        "rgb": [
+          33,
+          27,
+          22
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          620,
+          352
+        ],
+        "rgb": [
+          41,
+          36,
+          32
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          644,
+          325
+        ],
+        "rgb": [
+          41,
+          45,
+          56
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          629,
+          331
+        ],
+        "rgb": [
+          47,
+          29,
+          22
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          617,
+          355
+        ],
+        "rgb": [
+          52,
+          45,
+          41
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          635,
+          331
+        ],
+        "rgb": [
+          58,
+          37,
+          29
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          653,
+          355
+        ],
+        "rgb": [
+          58,
+          54,
+          50
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          629,
+          334
+        ],
+        "rgb": [
+          60,
+          47,
+          39
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          659,
+          358
+        ],
+        "rgb": [
+          62,
+          60,
+          58
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          524,
+          457
+        ],
+        "rgb": [
+          13,
+          14,
+          12
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          500,
+          448
+        ],
+        "rgb": [
+          27,
+          25,
+          18
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          455,
+          286
+        ],
+        "rgb": [
+          23,
+          28,
+          26
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          515,
+          427
+        ],
+        "rgb": [
+          31,
+          29,
+          21
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          404,
+          370
+        ],
+        "rgb": [
+          31,
+          31,
+          23
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          527,
+          412
+        ],
+        "rgb": [
+          31,
+          31,
+          25
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          497,
+          442
+        ],
+        "rgb": [
+          36,
+          32,
+          22
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          536,
+          226
+        ],
+        "rgb": [
+          30,
+          34,
+          33
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          479,
+          226
+        ],
+        "rgb": [
+          40,
+          41,
+          40
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          449,
+          151
+        ],
+        "rgb": [
+          46,
+          44,
+          57
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          410,
+          241
+        ],
+        "rgb": [
+          49,
+          49,
+          55
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          326,
+          166
+        ],
+        "rgb": [
+          52,
+          51,
+          59
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1038,
+          16
+        ],
+        "rgb": [
+          13,
+          13,
+          13
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1065,
+          67
+        ],
+        "rgb": [
+          33,
+          16,
+          13
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1053,
+          28
+        ],
+        "rgb": [
+          16,
+          25,
+          41
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1056,
+          34
+        ],
+        "rgb": [
+          47,
+          29,
+          22
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1050,
+          37
+        ],
+        "rgb": [
+          58,
+          37,
+          29
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1053,
+          31
+        ],
+        "rgb": [
+          41,
+          45,
+          56
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          864,
+          57
+        ],
+        "rgb": [
+          46,
+          47,
+          50
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1062,
+          37
+        ],
+        "rgb": [
+          60,
+          47,
+          39
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          902,
+          20
+        ],
+        "rgb": [
+          64,
+          64,
+          64
+        ]
+      },
+      {
+        "kind": "clear",
+        "point": [
+          300,
+          650
+        ],
+        "rgb": [
+          64,
+          0,
+          64
+        ]
+      },
+      {
+        "kind": "outer",
+        "point": [
+          100,
+          400
+        ],
+        "rgb": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "actor_region": [
+      560,
+      270,
+      875,
+      615
+    ],
+    "native_actor_crop_sha256": "36973c6caac2bb5440e240a75ac93415cba8a97952ca40b40449ddcfd6681795"
+  }
+}

@@ -26,41 +26,49 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
-M4cr PalFX is ACTIVE/UNCOMMITTED.53 native programs captured/promoted:48
-accepted/576 readings/five rejections/812 RGB samples/213 original+probe hashes.
-Manifests m4cr-{native,extra,negative}-inputs/metadata.json. All native sessions
-36642/42802/53400 awaited; separate client checks empty. Read PALETTE-FX.md.
-No goldens/originals may change. Native time defaults0; <-1 cancels, -1forever;
-all fields evaluate even time0 in time/color/add/mul/sin/invert order. Add/mul3,
-sin3or4. Color/signed mul unclamped. Alpha-add/mul controls require unclamped
-shader math. Shared-palette helpers evaluate but ignore own PalFX; ownpal1 starts
-with no active inherited effect. Separate child-only controls disambiguate it.
+M4cr is committed as c2e32e933. Read PALETTE-FX.md:53 native programs/576
+values/five rejections/812 colors/213 hashes;48 exact apps5,216,400 pixels,504
+GPU colors/224 CPU colors,19 HitDef apps228 colors. Core/native races, stock
+win/rematch/win82 owned events/1,978,304 private PCM frames and final provenance/
+module/inventory/staged-text audits pass. No binaries or outside changes.
 
-Implementation now adds engine/palette_fx.go, palette/controller_effect.go,
-render/palette.go and shared styled sampler methods. Production actor/effect
-textures use raw mapped images and shared GPU transforms, including existing
-HitDef effects. Generic palette.Clone still copies state; new ownpal helpers
-clear effects. HitDef valid installs clear controller FX; zero/invalid contacts
-preserve existing FX. Standalone cancels replace it. Existing State.Image also
-consumes standalone effects as a clamped preview; legacy hit preview is retained.
+M4cs AllPalFX/BGPalFX is VALIDATED/UNCOMMITTED. Read GLOBAL-PALETTE-FX.md.
+83 native programs/79 accepted/948 numeric values/four rejections/333 input
+hashes.71 static scenes pin2,795 colors; eight early sine renders remain dynamic
+diagnostics. Global clocks continue through CNS Pause; scopes cancel independently.
+Measured first-pass parameter merge and second All pass reach actors/effects/
+stage/HUD/portraits/fonts. Complete gray uses byte luminance; partial balance
+uses normalized interpolation, supported by all98 stage colors/33 profiles.
 
-M4cr final validation PASSES.53-program Match races33.879s; core Engine/
-Character/System/Render/Effect races pass. Native-only252 colors/18 programs
-pass504 GPU readings/1,512 components. CPU preview float32/nearest-even fix
-passes224 opaque colors (Palette8.581s); preserve earlier failed diagnostics.
-All48 final PalFX apps m4cr2 have exact RGB crops (5,216,400 pixels)/812 samples;
-all19 prior HitDef palette/portrait apps pass228 colors. Stock win/rematch/win
-visually verified,82 balanced owned inputs/1,978,304 private PCM frames. All213
-native input hashes, final frozen source/resource/binary/config/PNG/audio/module/
-inventory guards pass (m4cr-final-evidence-audit.json). Session29215 and audit7100
-awaited; separate client check empty. Only MD changed after final passing apps.
+Final Render races27.848s cover10,352 native GPU samples. Native83 Match races
+56.064s and core races pass. All71 app palette/stage checks pass;67 actor crops
+are exact. FOUR owned-Explod crops remain UNWAIVED126 pixels each:Go covers the
+root hand while native retains it. Overall strict application RGB status is
+FALSE. Matrix/public probe correctly exit1; retain the counterexamples. Source
+binary30ca8729bea12c1028e550cd5dde4b494c70d22aabd019c57a4057a685549674;
+final app aggregate m4cs-current-app-summary.json (m4cs4/m4cs5). No source or
+original/golden/tolerance changed to accept these failures.
 
-Commit this source/text checkpoint, then continue ALL item3. Source counts68
-typed/21 fallback/9 stubs/11 bounded/9 partial/60 route-only; all variants remain
-incomplete. Read PALETTE-FX.md for contact/helper birth/global/clock/RGBA limits.
-Private temp/prep-m4cs.py is prepared but NOT EXECUTED; it creates globalfx-*
-native controls for AllPalFX/BGPalFX. Execute only after this commit, freeze and
-capture serially. Original/capture/golden/tolerance edits remain prohibited.
+10 regression apps pass. Stock win/rematch/win visually verified,82 balanced
+owned events/1,941,379 private PCM frames. FINAL FULL RACES PASS3,857 results/36
+packages (25 tested+11 compiled-only), no failures/individual skips; Match1606.364s,
+total1691.569s. All14,164 frozen inputs and333 native hashes plus final source/
+resource/config/binary/PNG/audio/module/inventory guards pass.54726(full)/40412
+(regression+stock)/43674(audit) awaited; separate clients empty. Final audit:
+temp/m4cs-final-evidence-audit.json explicitly records app RGB FALSE. Only MD
+changed after final passing source/app/full runs.
+
+Stage/audit/commit source/text under game/mugen only. New
+engine/global_palette_test.go needs git add -f (historical ignore). No binaries.
+Then continue ALL item3 with M4ct shared actor/owned-effect ordering BEFORE
+EnvColor. Private prep-effectorder-next.py has16 priority/tie/creation/ontop/
+ModifyExplod/helper/P2 cases and an abort guard, NOT EXECUTED. Allocate/freeze
+M4ct emission/names before removing the guard, capture once and preserve
+originals. EnvColor prep likewise NOT EXECUTED. Source70 typed/19 fallback/
+7 stubs/13 bounded/9 partial/60 route-only, no variants complete. No new stop/
+item4/agents/goals/push/outside changes. All private Go experiments in _tmp.
+Private Go executable hard-link storage preserves bytes/paths/hashes; native/
+capture/golden files are never modified. Leading HANDOFF.md is current.
 
 M4cq is934bd9203, latest full3,703 passes/36 packages (25 tested+11 compiled-only),
 13,467 frozen inputs. Twelve raster counterexamples remain unwaived. Continue

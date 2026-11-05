@@ -13,7 +13,9 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/logger"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
@@ -44,6 +46,10 @@ type Background struct {
 // DrawLayer selects this background's optional archive before drawing. GPU
 // images are created lazily on the drawing thread, independently of file loading.
 func (b *Background) DrawLayer(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages) {
+	_ = b.DrawLayerWithPalette(screen, layer, cameraX, cameraY, zOffset, shared, palette.Transform{})
+}
+
+func (b *Background) DrawLayerWithPalette(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages, transform palette.Transform) error {
 	images := shared
 	if b.SpriteData != nil {
 		if b.sprites == nil {
@@ -65,9 +71,26 @@ func (b *Background) DrawLayer(screen *ebiten.Image, layer int, cameraX, cameraY
 	}
 	for _, element := range b.Elements {
 		if element.GetLayerNo() == layer {
+			styled, ok := element.(interface {
+				setPalette(palette.Transform)
+				paletteError() error
+			})
+			if ok {
+				styled.setPalette(transform)
+			} else if transform.Enabled {
+				return fmt.Errorf("background %s has no palette renderer", element.GetName())
+			}
 			element.Draw(screen, cameraX, cameraY, zOffset, images)
+			if ok {
+				err := styled.paletteError()
+				styled.setPalette(palette.Transform{})
+				if err != nil {
+					return fmt.Errorf("background %s palette: %w", element.GetName(), err)
+				}
+			}
 		}
 	}
+	return nil
 }
 
 // Update advances all background elements by one tick (velocity, animation frames).
@@ -109,22 +132,25 @@ type Element interface {
 }
 
 type CommonElement struct {
-	Name     string
-	Type     ElementType
-	ID       int
-	LayerNo  int
-	Start    [2]float64
-	Delta    [2]float64
-	Mask     bool
-	Tile     [2]int
-	Spacing  [2]int
-	Window   [4]int // x1, y1, x2, y2
-	Velocity [2]float64
-	Trans    string // "none", "add", "add1", "sub", "addalpha"
-	Alpha    [2]int // s, d
-	Visible  bool
-	Enabled  bool
-	Flip     string // "H", "V", "VH"
+	paletteTransform palette.Transform
+	paletteSampler   render.Nearest
+	renderError      error
+	Name             string
+	Type             ElementType
+	ID               int
+	LayerNo          int
+	Start            [2]float64
+	Delta            [2]float64
+	Mask             bool
+	Tile             [2]int
+	Spacing          [2]int
+	Window           [4]int // x1, y1, x2, y2
+	Velocity         [2]float64
+	Trans            string // "none", "add", "add1", "sub", "addalpha"
+	Alpha            [2]int // s, d
+	Visible          bool
+	Enabled          bool
+	Flip             string // "H", "V", "VH"
 
 	// Sinusoidal movement
 	SinX [3]float64 // amplitude, period, phase
@@ -135,6 +161,34 @@ type CommonElement struct {
 	Time         int // ticks since start
 	PositionLink bool
 	Link         Element
+}
+
+func (e *CommonElement) setPalette(transform palette.Transform) {
+	e.paletteTransform, e.renderError = transform, nil
+}
+
+func (e *CommonElement) paletteError() error { return e.renderError }
+
+func (e *CommonElement) drawPaletteImage(target, source *ebiten.Image, options *ebiten.DrawImageOptions, trans string, alpha [2]int) {
+	if !e.paletteTransform.Enabled {
+		e.applyBlending(options, trans, alpha)
+		target.DrawImage(source, options)
+		return
+	}
+	destination := float32(-1)
+	switch strings.ToLower(trans) {
+	case "add":
+		destination = render.ApplyAlpha(options, 256, 256)
+	case "add1":
+		destination = render.ApplyAlpha(options, 256, 128)
+	case "addalpha":
+		destination = render.ApplyAlpha(options, alpha[0], alpha[1])
+	case "sub":
+		destination = render.ApplyBlend(options, "sub", 256, 256)
+	}
+	if err := e.paletteSampler.DrawStyledImage(target, source, options, render.DrawStyle{DestinationFactor: destination, Palette: e.paletteTransform}); err != nil {
+		e.renderError = err
+	}
 }
 
 func (e *CommonElement) Update() {
@@ -554,9 +608,8 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 					op.GeoM.Translate(tilePosX, tilePosY)
 					op.GeoM.Translate(lineDrawX-winX, lineDrawY-winY)
 
-					e.applyBlending(&op, trans, alpha)
 					line := img.SubImage(image.Rect(0, y, w, y+1)).(*ebiten.Image)
-					target.DrawImage(line, &op)
+					e.drawPaletteImage(target, line, &op, trans, alpha)
 				}
 			} else {
 				var op ebiten.DrawImageOptions
@@ -567,8 +620,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 				op.GeoM.Translate(tilePosX, tilePosY)
 				op.GeoM.Translate(baseDrawX-winX, baseDrawY-winY)
 
-				e.applyBlending(&op, trans, alpha)
-				target.DrawImage(img, &op)
+				e.drawPaletteImage(target, img, &op, trans, alpha)
 			}
 		}
 	}

@@ -27,7 +27,7 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	// conversion can round below the float32 reciprocal product, changing
 	// an eight-bit alpha blend at half-integer color boundaries.
 	texel := floor(imageSrc0At(imageSrc0Origin() + p) * 255 + vec4(0.5))
-	color := applyPalette(texel * (1.0 / 255.0)) * tint
+	color := applyPalette(texel) * tint
 	if NativeDestination >= 0 {
 		// Native's independent blend uses a constant destination factor and
 		// discards fully transparent texels rather than multiplying that factor

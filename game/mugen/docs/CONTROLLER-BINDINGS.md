@@ -112,3 +112,13 @@ zero unread actor drawing families,9 partial,11 bounded-native and60 route-only.
 All48 palette apps have exact native RGB crops; the wider global/contact/
 creation/rendering matrix remains open. All rows stay variant-incomplete.
 Read PALETTE-FX.md; registrations do not establish an engine percentage.
+
+## M4cs implementation
+
+AllPalFX/BGPalFX have typed schemas, global clocks and measured production
+palette consumers. Counts are89 registered/70 typed/19 fallback,7 stubs,
+zero unread actor drawing families,9 partial,13 bounded-native and60 route-only.
+All rows remain variant-incomplete.83 native programs and71 actual scenes
+establish palette/stage behavior; four actor overlap crops expose the pending
+owned-Explod priority consumer. They remain UNWAIVED. Read GLOBAL-PALETTE-FX.md.
+This is not full engine/controller/renderer conformance or an engine percentage.

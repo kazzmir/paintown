@@ -20,10 +20,16 @@ var PaletteAdd vec3
 var PaletteMul vec3
 var PaletteColor float
 var PaletteInvert float
-func applyPalette(color vec4) vec4 {
+func applyPalette(texel vec4) vec4 {
+ color := texel * (1.0 / 255.0)
  if PaletteEnabled != 0 {
   if PaletteColor != 1 {
    grey := dot(color.rgb, vec3(0.3125,0.4375,0.25))
+   // Complete desaturation has distinct native rounding. Partial color
+   // balance retains normalized interpolation; full gray uses byte luminance.
+   if PaletteColor == 0 {
+    grey = dot(texel.rgb, vec3(0.3125,0.4375,0.25)) * (1.0 / 255.0)
+   }
    color.rgb = mix(vec3(grey),color.rgb,PaletteColor)
   }
   if PaletteInvert != 0 { color.rgb = vec3(color.a)-color.rgb }

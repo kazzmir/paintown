@@ -13,35 +13,92 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
-M4cr PalFX implementation is active/uncommitted. Read leading AGENTS.md and
-PALETTE-FX.md.53 native programs are captured/promoted:48 accepted/576 values,
-five rejections/812 RGB readings/213 unique original+probe hashes. Native
-manifests m4cr-{native,extra,negative}-inputs.json. Sessions36642/42802/53400 were
-awaited and separate client checks empty. No original/golden may change.
+M4cr committed c2e32e933. PALETTE-FX.md records53 native programs/576 values/
+five rejections/812 RGB readings/213 hashes;48 exact crops5,216,400 pixels,504
+GPU samples/224 CPU colors,19 prior HitDef color/portrait apps228 colors. Core/
+Match races, visually checked stock win/rematch/win82 owned inputs/1,978,304 PCM,
+all final hashes/module/inventory/staged-text guards pass. No clients remain.
 
-Go now has typed PalFX, palette clocks, shared unclamped GPU color transforms
-and raw-mapped actor/effect textures, including HitDef palette effects. Native
-helper rules are measured with independent child-only/evaluation/inheritance
-controls. M4cr final validation PASSES:53-program Match33.879s/core races,504 exact GPU
-colors/1,512 components and224 opaque CPU preview colors (Palette8.581s).
-All48 PalFX apps have exact RGB crops5,216,400 pixels/812 samples. All19 prior
-HitDef color/portrait apps pass228 colors. Stock win/rematch/win visually
-verified,82 balanced owned events/1,978,304 private PCM frames. All213 native
-input hashes/final frozen sources/binary/config/PNG/resource/audio/module/
-inventory guards pass; m4cr-final-evidence-audit.json. All sessions awaited,
-separate empty-client check; only MD after final passing apps. Commit source/
-text under game/mugen (engine/palette_fx.go needs git add -f), then continue ALL
-item3. No binaries/push/agents/goals/outside changes.
+M4cs AllPalFX/BGPalFX native54 completed/awaited, separate clients empty.
+Originals/manifests m4cs-native-inputs/metadata.json immutable, no promotion or
+implementation.50 accepted numeric snapshots/four rejections. AllPalFX shows
+two color stages; BGPalFX stages once, sampled actors/HUD unchanged. Global
+clocks continue through CNS Pause, so eight initial sine renders are dynamic
+diagnostics, not static age goldens. All/BG states compose independently and
+controller order agrees. Local/global arithmetic and debug-fill path still
+need final interpretation.
 
-Next private prep-m4cs.py is prepared, NOT EXECUTED: AllPalFX/BGPalFX native
-controls. Freeze/capture after M4cr commit. Measure separate global clocks,
-local/global composition, backgrounds/HUD/helpers and whether the global
-channels replace or compose; do not infer these rules from PalFX. Color sine
-stability during world Pause also needs verification before claiming age rules.
-Further contact/helper-birth/Explod/pause/filtered-RGBA variants remain explicit.
-Inventory68 typed/21 fallback/9 stubs/11 bounded/9 partial/60 route-only, no
-variant-complete rows. Latest full remains M4cq934bd9203 (3,703/36),12 raster cases
-unwaived. Item4 remains unallocated. Read leading AGENTS.md and PALETTE-FX.md.
+Additional13 native controls completed58922/awaited, separate empty clients.
+Totals67 programs/63 accepted/756 values/four rejections/269 input hashes.
+Continuous issue demonstrates global age0/duration1 visible; clocks keep aging
+in CNS Pause. All/BG cancel independently. All-invert+alpha251,247,243 proves a
+second All pass after alpha/framebuffer clamp. Debug fill has separate first
+byte quantization/add saturation; source shader model still needs closure.
+
+Native67 promoted:63 accepted/756 values/four rejects/55 static programs/2,091
+RGB samples, eight dynamic sine diagnostics.269 original/probe hashes verified.
+Native-only global-palette-points.json uses14 actor/12 stage/9 actual available
+flat HUD/one clear/one outer points. First promotion failed before any writes
+(arbitrary12-HUD-color assertion); actual native count resolves it, no golden
+changed. Do not rerun promotion. Baseline93189 completed/awaited, separate clients
+empty: actor/HUD/clear/outer exact,12 stage colors differ1–4 because current
+FilterLinear stage fit smooths indexed plateaus. Fix production sampling, never
+the native expectations. No Go implementation yet.
+
+M4cs now has83 native programs (79 accepted/948 values/four rejects),333 input
+hashes,71 static programs/2,795 RGB samples; eight initial sine renders dynamic
+only. Ownpal0/1 Explod/Projectile consumers add8 native controls. Native-only
+separate global-palette-crops.json pins a full stage ROI without changing original
+JSON/crops. Read-only public global_palette_render_probe.py checks all actor/
+stage samples/crops and full prepared asset/config/source/native/binary hashes.
+Final focused Match races83 programs56.064s pass; GPU6.049s/Engine1.442s pass:
+2,376 color/clear checks,7,128 components. Core8-package races pass. Selected8
+apps m4cs1 have exact crops/296 points; stage-layer probes also pass.
+
+M4cs arithmetic history is in leading AGENTS.md. Normalized gray fails6 new
+GPU cases; explicit source expression leaves4. Byte-luma fixes all-gray actual
+app, but m4cs3/session51355 stops at combined color after4 passes:stage108 RGB
+differences, actor0, samples37 exact. Failed artifacts/goldens preserved.
+Native-only photo supplement3,234 cases covers98 flat stage colors over33
+profiles. Five full models (33705 awaited/separate clients empty) identify ONLY
+zero-only as matching gray/local/global/photo data: full gray uses byte luminance,
+partial balance uses normalized interpolation. Production now matches this
+model with no epsilon or baked color values. Original native data unchanged.
+
+Final zero-only correction races PASSED58990/awaited/separate clients empty:
+Render27.848s and10,352 native GPU comparisons; other core6-package races pass.
+M4cs4 app11025 stopped STRICTLY at51st scene after50 exact full crops. Explod
+scene has all51 palette points/stage exact,126 actor overlap differences/XOR36
+at712,351..726,377. Native retains root hand pixels at every difference versus
+the no-effect control; Go draws default Explod over them. This is the known
+allocated Explod relative-priority consumer. No crop/golden/tolerance changed.
+
+All71 current-shader observations complete:71 exact stage crops/2,795 exact
+points,67 exact actor crops,4 UNWAIVED owned-Explod crops126 differences each.
+Overall strict RGB conformance FALSE; matrix/probe exit1 as required. No source
+change across m4cs4/m4cs5, aggregate m4cs-current-app-summary.json. Both sessions
+awaited/separate clients empty. Next close relative draw ordering before EnvColor.
+Regression40412 PASS10 apps (5 PalFX/3 HitDef/2 raster) and visually verified
+stock win/rematch/win82 balanced owned input events/1,941,379 private PCM frames.
+Awaited, separate clients empty; m4cs-stock-review.png is the contact sheet.
+
+M4cs FINAL FULL RACES PASS3,857 results/36 packages (25 tested+11 compiled-only),
+no failures/individual skips; Match1606.364s, total1691.569s. All14,164 frozen
+inputs/root modules verify. Session54726 awaited; separate clients empty. Final
+audit43674 also awaited/PASS:333 native hashes, all source/native/resource/
+config/binary/PNG/audio/module/inventory guards. Audit explicitly records full
+app RGB FALSE for4 priority crops; do not change/waive them. Only MD changed
+after passing source/app/full runs. Final audit:m4cs-final-evidence-audit.json.
+
+Commit this bounded source/text M4cs checkpoint locally (engine/global_palette_test.go needs git add -f), then continue ALL item3. Next M4ct closes shared
+actor/owned-effect relative ordering before EnvColor. Private prep-effectorder-
+next.py has16 proposed native controls plus an abort guard and has NOT EXECUTED.
+Remove preparation guard only after allocating freeze emission and naming,
+then capture once, preserve originals and validate priority/tie/creation/ontop/
+ModifyExplod/helper/P2 behavior. EnvColor private prep remains NOT EXECUTED.
+No agents/goals/push/binaries/outside authoring; all private Go under _tmp.
+Source70 typed/19 fallback/7 stubs/13 bounded/9 partial/60 route-only, no family
+variant-complete. Item4 remains unallocated. Leading AGENTS.md is current.
 
 M4cq implements bounded native angle/scale/Offset schemas/state/production
 drawing. Read ANGLES-OFFSET.md for arithmetic, lifetime, coordinates, native

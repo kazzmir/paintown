@@ -27,6 +27,7 @@ type FightHUD struct {
 	cue           string
 	cueTime       int
 	linearSampler render.Linear
+	indexSampler  render.Nearest
 	renderError   error
 }
 
@@ -153,7 +154,19 @@ func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy
 	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 	op.GeoM.Scale(sx, sy)
 	op.GeoM.Translate(x, y)
-	if _, indexed := sprite.Image.(*image.Paletted); indexed {
+	transform := h.match.Timeline.AllPalette.Transform()
+	if transform.Enabled {
+		style := render.DrawStyle{DestinationFactor: -1, Palette: transform}
+		var err error
+		if _, indexed := sprite.Image.(*image.Paletted); indexed {
+			err = h.indexSampler.DrawStyledImage(screen, img, op, style)
+		} else {
+			err = h.linearSampler.DrawStyledImage(screen, img, op, style)
+		}
+		if err != nil {
+			h.renderError = fmt.Errorf("fight HUD palette: %w", err)
+		}
+	} else if _, indexed := sprite.Image.(*image.Paletted); indexed {
 		screen.DrawImage(img, op)
 	} else if err := h.linearSampler.DrawImage(screen, img, op); err != nil {
 		h.renderError = fmt.Errorf("fight HUD sprite %d,%d sampler: %w", sprite.GroupNumber, sprite.ImageNumber, err)
@@ -223,7 +236,9 @@ func (h *FightHUD) label(screen *ebiten.Image, section, key, text string, x, y f
 	} else if info[2] < 0 {
 		align = font.AlignRight
 	}
-	h.match.Fight.Fonts[index].Draw(screen, text, int(x+offset[0]), int(y+offset[1]), int(info[1]), align)
+	if err := h.match.Fight.Fonts[index].DrawWithPalette(screen, text, int(x+offset[0]), int(y+offset[1]), int(info[1]), align, h.match.Timeline.AllPalette.Transform()); err != nil {
+		h.renderError = err
+	}
 }
 
 func (h *FightHUD) bar(screen *ebiten.Image, section, prefix string, fraction float64) {

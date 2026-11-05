@@ -53,4 +53,7 @@ func (s *RoundSlowdown) Advance() {
 
 // Real ticks continue while KO slowdown suppresses the simulation. Pending
 // requests, pause duration, palette and shake clocks belong to simulation.
-func (t *Timeline) SkipSimulationFrame() { t.GameTime++ }
+func (t *Timeline) SkipSimulationFrame() {
+	t.AdvanceGlobalPalette()
+	t.GameTime++
+}

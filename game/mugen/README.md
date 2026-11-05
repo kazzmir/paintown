@@ -85,7 +85,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 # Build/test every MUGEN package against the stock reference corpus.
 game/mugen/mugen.sh --check -p 1 -timeout=30m
 
-# Full race checks; the last full run took about twenty-six minutes.
+# Full race checks; the last full run took about twenty-eight minutes.
 game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m
 
 # Focused stock character loading and state compilation.
@@ -101,18 +101,18 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cr implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cs implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
-motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cq)
-passes **3,703** test/subtest results across **36 packages**. M4cm focused races
+motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cs)
+passes **3,857** test/subtest results across **36 packages**. M4cm focused races
 pass194 native programs, including73 new controls/792 readings/seven rejections;
 three actor-window masks match. M4cn adds62 controls/708 readings/three rejections,
 49 calibrated positions and17 exact effect-window masks. See
 [effect attachment](docs/EXPLOD-ATTACHMENT.md), [target binding](docs/TARGET-SELF-BINDING.md),
 [parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
-All89 controller names register;68 typed routes,9 stubs and partial consumers
+All89 controller names register;70 typed routes,7 stubs and partial consumers
 remain. The two indexed and six RGB alpha counterexamples now pass unchanged goldens;
 see [alpha precision](docs/ALPHA-NORMALIZATION.md). Rotation sampling and wider
 documented gates stay open.
@@ -127,8 +127,16 @@ rejections/812 color observations; all48 actual PalFX crops match exactly
 (5,216,400 RGB pixels). Both GPU samplers pass504 native color checks;224 opaque
 CPU preview colors match too. See [standalone palette effects](docs/PALETTE-FX.md)
 for validation and explicit global/interaction limits.
-The final M4cq drawing integration passes25 tested and11 compiled-only packages,
-with no failures or individual skips and all13,467 frozen inputs verified. No whole-engine completion percentage is justified.
+AllPalFX/BGPalFX now have global clocks and actor/effect/stage/HUD/font consumers.
+Their83 native programs pin948 values/four rejections.71 application scenes pass
+2,795 palette samples and all71 stage crops;67 actor crops match exactly, with
+four explicit Explod priority-overlap counterexamples pending the next checkpoint.
+The render tests pass10,352 native GPU color samples. See
+[global palette effects](docs/GLOBAL-PALETTE-FX.md). Final full integration passes3,857 results across36 packages, with no failures
+or individual skips and14,164 frozen inputs verified. Remaining item3 work
+continues, starting with effect draw ordering.
+The final M4cs integration passes25 tested and11 compiled-only packages,
+with no failures or individual skips and all14,164 frozen inputs verified. No whole-engine completion percentage is justified.
 
 Through M4ch, fresh native, actual
 render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have

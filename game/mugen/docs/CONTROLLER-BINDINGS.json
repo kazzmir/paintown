@@ -4,27 +4,34 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "28f79451630a36d25a2a9a253804b27a1bc97e4d8754d9779a6a811beb9febcc",
-    "character/character.go": "c212987f2ce5e1c2b551ce539ad9db5ca943e36978c28f4d837e8cdf65ded2cd",
-    "character/player.go": "ece7c0547165bf3f401fd62266716cdee68ecd93bae6ed327f2f1dcc6f39ce8c",
+    "engine/parameters.go": "50ef615e549465fbc2c2f572d4fc7aec237c37eb4f435521a2a032b53fdcefdf",
+    "character/character.go": "a22c1b46eb149594c1791b8eed0987ea662017b7387242fe7a8475dc66a06c8f",
+    "character/player.go": "b2b1468bc92297c552e032341ad1159f04b7a41dbe52c93a0fca4f84695d579d",
     "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
-    "system/effects.go": "ef8fe9c60ceb275d9e1c05851907876952f2e8abaae6ede593879b1f3fa0860b",
+    "system/effects.go": "fa3d04fbec04dc1918094866610fd2fb95c55b5408513b12695ec654f14e38cc",
     "render/perspective.go": "0ee2191a535d46cd5ca2db0d4588361cf5293f72e548153a18b902fb2c34a517",
     "render/alpha.go": "8b939718d5db8fb1bd297e59678bd8ecc138ee4ea509d0a4269f224e0d1b8ba9",
-    "render/nearest.go": "2de1373c98489c87169b734eed95e887b4fd663bbf6fe141f060dadf24eacfd4",
-    "render/linear.go": "4e91de0c792a98401597309c3598b693ae7ad4a5c931562ad142278812d28621",
+    "render/nearest.go": "5a684d4d155936a1e571f125532df3c42cd196673bdaa96f061ac2a39c6c8c4b",
+    "render/linear.go": "5a3c1ff8c295d5e3c2700805c3a5d5a0080ad9e1f63f6849657cf8d574681850",
     "engine/drawing.go": "160df41e6afb94a1e34a9e850f553aac3a3a666e882eb483d92db79c52d16cf0",
     "engine/trans.go": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
-    "engine/palette_fx.go": "393a02df516df7214aeb80049451dd23827e2ad91def5740eaff692de29e32e6",
+    "engine/palette_fx.go": "fbfe30e579171d3b9c646462edfe324fe8c1053ff1e8366684238fe3dcb209c7",
+    "engine/timeline.go": "28d0f9b5e2304d30e398755c11b78ece6b8fe09951a30d712c675423beefbd96",
+    "engine/round_clock.go": "28279e87709a5726bca68351f0c09335861dc09b0ba55cd78a58f50fbde239da",
     "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
-    "palette/controller_effect.go": "fe3c1db1f7d399bc6810395ab49fda30f3dd31e17c04f65107838cd828fa7b8b",
+    "palette/controller_effect.go": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
     "palette/hit_effect.go": "14f801c3823004401e2f8183cd25e536ffd9ea32dca7d230dcc38c35816d978f",
-    "render/palette.go": "c54963eb7ea677811c748312c60d4e584db22d55ff3f617416a56855c295ff04",
+    "render/palette.go": "1dd6cb5409191921c4adb2a7d12b9ac6a4b004191f2df86559e6314304bf8c8d",
     "character/helper.go": "c1818f63af4509c9401dcaf336e359db82ba1d4193595f5d6a9ca23d8e90998f",
     "character/tick.go": "3308abab23954d1452c61bd20794b20fd84efad5707d74cda3f6347fd59c4e33",
+    "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
+    "stage/stage.go": "b1e62cd12aaacc2a86e8888b10c15905552483d332a9bcb5a22d947b05558ab0",
+    "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
+    "system/fight_state.go": "4cba4d9284e4d688fb54409135d1c9c78ce4939df7730f4df07f45d687eb4d05",
+    "system/hud.go": "b5cea75cdc456eb151a377a88a0b432f5d497d910df20758454d3e7e362dc01f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
@@ -34,15 +41,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 68,
-    "fallback": 21,
+    "typed": 70,
+    "fallback": 19,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 9,
+      "stub": 7,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 11,
+      "bounded-native-consumer": 13,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -87,11 +94,11 @@
     {
       "name": "allpalfx",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleAllPalFX",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:AllPalFX"
+        "GLOBAL-PALETTE-FX.md: native independent global clock, parameter merge and two-stage actor/effect/stage/HUD/portrait/font production drawing; wider variants remain open"
       ],
       "variants_complete": false
     },
@@ -182,11 +189,11 @@
     {
       "name": "bgpalfx",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleBGPalFX",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:BGPalFX"
+        "GLOBAL-PALETTE-FX.md: native global clock and stage-only palette pass, independent cancellation/composition; sampled actors/HUD unchanged despite manual wording"
       ],
       "variants_complete": false
     },

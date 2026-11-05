@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -77,14 +78,22 @@ func (s *Stage) Update() {
 }
 
 func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
+	_ = s.DrawWithPalette(screen, cameraX, cameraY, palette.Transform{}, palette.Transform{})
+}
+
+func (s *Stage) DrawWithPalette(screen *ebiten.Image, cameraX, cameraY float64, background, clear palette.Transform) error {
 	if s.DebugBG {
-		screen.Fill(color.RGBA{R: 255, B: 255, A: 255})
+		screen.Fill(clear.ClearColor(color.RGBA{R: 255, B: 255, A: 255}))
 	}
-	s.Background.DrawLayer(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
+	return s.Background.DrawLayerWithPalette(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, background)
 }
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
 	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
+}
+
+func (s *Stage) DrawForegroundWithPalette(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform) error {
+	return s.Background.DrawLayerWithPalette(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, transform)
 }
 
 // ResetBackground restores authored element/controller clocks between rounds.

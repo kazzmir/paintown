@@ -2,12 +2,22 @@ package engine
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
+type PaletteFXScope uint8
+
+const (
+	PaletteFXLocal PaletteFXScope = iota
+	PaletteFXAll
+	PaletteFXBackground
+)
+
 type PaletteFXParameters struct {
+	Scope               PaletteFXScope
 	Time, Color, Period int
 	Add, Mul, SinAdd    [3]int
 	Invert              bool
@@ -64,6 +74,12 @@ func compilePaletteFX(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			return err
 		}
 		p := PaletteFXParameters{Color: 256, Mul: [3]int{256, 256, 256}}
+		switch strings.ToLower(ctrl.Type) {
+		case "allpalfx":
+			p.Scope = PaletteFXAll
+		case "bgpalfx":
+			p.Scope = PaletteFXBackground
+		}
 		if v, ok := values["time"]; ok {
 			p.Time = int(v.Number())
 		}
@@ -91,14 +107,18 @@ func compilePaletteFX(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			SetPaletteEffect(PaletteFXParameters) error
 		})
 		if !ok {
-			return fmt.Errorf("PalFX actor context is unavailable")
+			return fmt.Errorf("%s actor context is unavailable", ctrl.Type)
 		}
 		return context.SetPaletteEffect(p)
 	}, true, nil
 }
 
 func ExecutePaletteFXParameters(params map[string]string, env Environment, version string) error {
-	ctrl := &cns.StateController{Type: "PalFX", Params: params, LanguageVersion: version}
+	return ExecutePaletteFXController("PalFX", params, env, version)
+}
+
+func ExecutePaletteFXController(kind string, params map[string]string, env Environment, version string) error {
+	ctrl := &cns.StateController{Type: kind, Params: params, LanguageVersion: version}
 	handler, _, err := compilePaletteFX(ctrl)
 	if err != nil {
 		return err

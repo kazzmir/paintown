@@ -182,6 +182,9 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 	}
 	destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
 	style := render.DrawStyle{DestinationFactor: destination, Palette: ent.Palettes.Transform()}
+	if ent.Timeline != nil {
+		style.Palette = palette.Combine(style.Palette, ent.Timeline.AllPalette.Transform())
+	}
 
 	var err error
 	if indexed {
@@ -315,7 +318,24 @@ func (p *Player) DrawSprite(screen *ebiten.Image, entity *Character, group, item
 	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 	op.GeoM.Scale(sx, sy)
 	op.GeoM.Translate(x, y)
-	screen.DrawImage(img, op)
+	transform := palette.Transform{}
+	if entity.Timeline != nil {
+		transform = entity.Timeline.AllPalette.Transform()
+	}
+	if !transform.Enabled {
+		screen.DrawImage(img, op)
+		return
+	}
+	style := render.DrawStyle{DestinationFactor: -1, Palette: transform}
+	var err error
+	if _, indexed := sprite.Image.(*image.Paletted); indexed {
+		err = p.indexSampler.DrawStyledImage(screen, img, op, style)
+	} else {
+		err = p.rgbSampler.DrawStyledImage(screen, img, op, style)
+	}
+	if err != nil {
+		entity.RuntimeError = fmt.Errorf("HUD portrait palette: %w", err)
+	}
 }
 
 func (p *Player) FindSprite(group, image int) *sff.Sprite {

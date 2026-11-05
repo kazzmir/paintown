@@ -11,6 +11,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/render"
 )
 
@@ -92,10 +93,16 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	toStage, _ := gameSpace.ScaleTo(stageSpace)
 	stageToGame, _ := stageSpace.ScaleTo(gameSpace)
 	cameraX, cameraY := m.CameraX*toStage, (m.CameraY-m.Viewport.CropY)*toStage
-	s.stageCanvas.Fill(color.Black)
-	m.Stage.Draw(s.stageCanvas, cameraX, cameraY)
-	s.gameCanvas.Fill(color.Black)
-	backgroundOptions := &ebiten.DrawImageOptions{Filter: ebiten.FilterLinear}
+	allPalette := m.Timeline.AllPalette.Transform()
+	backgroundPalette := palette.Combine(m.Timeline.BackgroundPalette.Transform(), allPalette)
+	s.stageCanvas.Fill(allPalette.ClearColor(color.Black))
+	if err := m.Stage.DrawWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette); err != nil {
+		s.renderError = err
+		return
+	}
+	s.gameCanvas.Fill(allPalette.ClearColor(color.Black))
+	// Indexed stage pixels remain plateaus through the viewport fit.
+	backgroundOptions := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
 	tint := m.Timeline.SceneTint()
 	backgroundOptions.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
@@ -107,7 +114,10 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	character.DrawPlayers(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY)
 	s.drawEffects(s.gameCanvas, 1)
 	s.stageCanvas.Clear()
-	m.Stage.DrawForeground(s.stageCanvas, cameraX, cameraY)
+	if err := m.Stage.DrawForegroundWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette); err != nil {
+		s.renderError = err
+		return
+	}
 	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
 	s.drawEffects(s.gameCanvas, 2)
 	s.hudCanvas.Clear()
@@ -124,7 +134,8 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		}
 		options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
 		options.GeoM.Translate(transform.X, transform.Y)
-		if err := s.linearSampler.Draw(screen, surface, options.GeoM, options.ColorScale); err != nil {
+		// The beta applies AllPalFX again after scene blending/clamping.
+		if err := s.linearSampler.DrawStyledImage(screen, surface, options, render.DrawStyle{DestinationFactor: -1, Palette: allPalette}); err != nil {
 			s.renderError = fmt.Errorf("fight viewport sampler: %w", err)
 		}
 	}

@@ -16,14 +16,14 @@ SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'system/effects.go', 'render/perspective.go',
            'render/alpha.go', 'render/nearest.go', 'render/linear.go',
-           'engine/drawing.go', 'engine/trans.go', 'engine/palette_fx.go',
+           'engine/drawing.go', 'engine/trans.go', 'engine/palette_fx.go', 'engine/timeline.go', 'engine/round_clock.go',
            'palette/state.go', 'palette/controller_effect.go', 'palette/hit_effect.go',
            'render/palette.go', 'character/helper.go', 'character/tick.go',
+           'background/background.go', 'stage/stage.go', 'font/font.go', 'system/fight_state.go', 'system/hud.go',
            'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
     'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
     'envshake': 'EnvShake', 'envcolor': 'EnvColor',
-    'allpalfx': 'AllPalFX', 'bgpalfx': 'BGPalFX',
     'forcefeedback': 'ForceFeedback', 'gamemakeanim': 'GameMakeAnim',
     'makedust': 'MakeDust',
 }
@@ -40,6 +40,8 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
+    'allpalfx': 'GLOBAL-PALETTE-FX.md: native independent global clock, parameter merge and two-stage actor/effect/stage/HUD/portrait/font production drawing; wider variants remain open',
+    'bgpalfx': 'GLOBAL-PALETTE-FX.md: native global clock and stage-only palette pass, independent cancellation/composition; sampled actors/HUD unchanged despite manual wording',
     'palfx': 'PALETTE-FX.md: native schemas/evaluation, helper ownership, expiry/sine, unclamped indexed/RGB production drawing; wider global/contact/creation combinations open',
     'angleset': 'ANGLES-OFFSET.md: native persistent float32 angle register, omitted zero and production drawing activation; wider combinations open',
     'angleadd': 'ANGLES-OFFSET.md: native persistent float32 angle addition and renderer consumer; wider combinations open',

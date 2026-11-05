@@ -89,3 +89,18 @@ background/HUD/actor/effect consumers. Remaining environment, afterimage,
 creation/ownership/pause/shadow/capacity, special flags, dust/system animations,
 debug/haptics and residual schemas remain allocated; this is not item3 closure.
 Current source68 typed/21 fallback/9 stubs is not a behavioral percentage.
+
+## Next dependent boundary — effect ordering
+
+M4cs completes bounded global palette schemas/clocks/consumers:83 native programs,
+948 values/four rejections,10,352 GPU samples and71 application observations.
+All palette/stage checks pass, while four owned-Explod overlap crops each differ
+126 pixels because Go draws the default Explod over the root's hand. Preserve
+those counterexamples; do not call the whole application RGB-conformant.
+
+Close shared actor/owned-effect priority/tie/creation/ontop/ModifyExplod ordering
+next, before EnvColor layering. The prepared native matrix has16 cases but is
+not frozen or executed until the palette checkpoint finishes. Then continue
+environment, afterimage, remaining creation/ownership/random/shadow/capacity,
+special flags, dust/system animations, debug/haptics and schema findings.
+This reordering follows an actual dependent consumer, with no item4 allocation.

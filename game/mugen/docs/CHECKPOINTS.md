@@ -1,5 +1,25 @@
 # Implementation checkpoints
 
+## M4cs: global palette scopes, clocks and precision
+
+AllPalFX/BGPalFX now compile native schemas and drive independent global clocks,
+parameter merging and actor/effect/stage/HUD/portrait/font consumers. Native83
+programs pin948 values/four rejections/333 input hashes. Numerical paths for
+complete gray and partial balance pass10,352 native GPU comparisons. Separate
+native-only flat/crop artifacts preserve all originals and failed experiments.
+71 actual scenes pass2,795 colors and71 stage crops;67 actor crops are exact.
+FOUR owned-Explod overlap crops remain UNWAIVED at126 pixels each:Go covers the
+root hand while native retains it. Overall strict app RGB status remains FALSE;
+priority ordering is the next dependent checkpoint before EnvColor layering.
+
+10 regression apps and visually verified stock win/rematch/win pass, with82
+balanced owned inputs/1,941,379 private PCM frames. FINAL FULL RACES PASS3,857
+results/36 packages (25 tested+11 compiled-only), no failures/individual skips;
+Match1606.364s, total1691.569s. All14,164 frozen inputs,333 native hashes,
+resource/config/binary/PNG/audio/module/inventory guards pass. Final audit:
+temp/m4cs-final-evidence-audit.json. Only source/text is committed; no binaries
+or pushes. Read GLOBAL-PALETTE-FX.md/HANDOFF.md for limits and continuation.
+
 ## M4cr: standalone palette effects and shared color transforms
 
 Typed PalFX now consumes native evaluation/default/error rules, helper palette

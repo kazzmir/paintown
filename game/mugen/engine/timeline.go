@@ -1,5 +1,7 @@
 package engine
 
+import "github.com/kazzmir/paintown/game/mugen/palette"
+
 // PauseActor is an identity independent of input/player IDs. Helpers can share
 // input slots while keeping distinct pause movement allowances.
 type PauseActor struct{ token byte }
@@ -20,16 +22,43 @@ type pauseClock struct {
 // Timeline is simulation-owned. Requests take effect after the issuing tick;
 // nested entity adapters share its frame instead of advancing GameTime again.
 type Timeline struct {
-	GameTime              int32
-	TicksPerSecond        int32 // Zero uses the standalone default of 60.
-	pause, super          pauseClock
-	pending, pendingSuper *pauseClock
-	depth                 int
-	shake                 ShakeParameters
-	pendingShake          *ShakeParameters
+	AllPalette, BackgroundPalette *palette.State
+	GameTime                      int32
+	TicksPerSecond                int32 // Zero uses the standalone default of 60.
+	pause, super                  pauseClock
+	pending, pendingSuper         *pauseClock
+	depth                         int
+	shake                         ShakeParameters
+	pendingShake                  *ShakeParameters
 }
 
-func (t *Timeline) BeginFrame() { t.depth++ }
+func (t *Timeline) BeginFrame() {
+	if t.depth == 0 {
+		t.AdvanceGlobalPalette()
+	}
+	t.depth++
+}
+
+// Global palette clocks keep running during CNS Pause and SuperPause.
+func (t *Timeline) AdvanceGlobalPalette() {
+	if t.AllPalette != nil {
+		t.AllPalette.AdvanceHitEffect()
+	}
+	if t.BackgroundPalette != nil {
+		t.BackgroundPalette.AdvanceHitEffect()
+	}
+}
+
+func (t *Timeline) SetGlobalPalette(p PaletteFXParameters) {
+	state := &t.AllPalette
+	if p.Scope == PaletteFXBackground {
+		state = &t.BackgroundPalette
+	}
+	if *state == nil {
+		*state = palette.New(nil)
+	}
+	(*state).SetEffect(palette.Effect{Time: p.Time, Color: p.Color, Period: p.Period, Add: p.Add, Mul: p.Mul, SinAdd: p.SinAdd, Invert: p.Invert})
+}
 
 func (t *Timeline) EndFrame() {
 	t.depth--
