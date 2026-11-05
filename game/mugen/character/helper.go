@@ -42,6 +42,7 @@ func (c *Character) CreateHelper(p engine.HelperParameters) error {
 	h.PaletteNo, h.Palettes = c.PaletteNo, c.Palettes
 	if p.OwnPalette && c.Palettes != nil {
 		h.Palettes = c.Palettes.Clone()
+		h.Palettes.ClearEffects()
 		if p.RemapPalette[0] != -1 {
 			if err := h.SetPaletteMapping([2]int{1, 1}, p.RemapPalette); err != nil {
 				return err

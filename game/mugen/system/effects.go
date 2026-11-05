@@ -79,7 +79,7 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 			pixels := source.Sprites.Sprites[index].Image
 			if source.Palette != nil {
 				var err error
-				pixels, err = source.Palette.Image(index, true)
+				pixels, err = source.Palette.MappedImage(index, true)
 				if err != nil {
 					s.effectWarning(err)
 					continue
@@ -133,24 +133,25 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 			blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 		}
 		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
+		style := render.DrawStyle{DestinationFactor: nativeDestination, Palette: source.Palette.Transform()}
 		if projected {
 			projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
 			var err error
 			if _, indexed := sprite.Image.(*image.Paletted); indexed {
-				err = s.indexSampler.DrawProjected(screen, cached.image, op, projection, nativeDestination)
+				err = s.indexSampler.DrawStyledProjected(screen, cached.image, op, projection, style)
 			} else {
-				err = s.linearSampler.DrawProjected(screen, cached.image, op, projection, nativeDestination)
+				err = s.linearSampler.DrawStyledProjected(screen, cached.image, op, projection, style)
 			}
 			if err != nil {
 				s.renderError = fmt.Errorf("fight effect projection: %w", err)
 				return
 			}
 		} else if _, indexed := sprite.Image.(*image.Paletted); indexed {
-			if err := s.indexSampler.DrawImage(screen, cached.image, op, nativeDestination); err != nil {
+			if err := s.indexSampler.DrawStyledImage(screen, cached.image, op, style); err != nil {
 				s.renderError = fmt.Errorf("fight effect action %d indexed sampler: %w", instance.Action, err)
 				return
 			}
-		} else if err := s.linearSampler.DrawImage(screen, cached.image, op, nativeDestination); err != nil {
+		} else if err := s.linearSampler.DrawStyledImage(screen, cached.image, op, style); err != nil {
 			s.renderError = fmt.Errorf("fight effect action %d sprite %d,%d sampler: %w", instance.Action, el.Group, el.Image, err)
 			return
 		}

@@ -26,14 +26,14 @@ def main():
     parser.add_argument('--name', required=True)
     parser.add_argument('--original-region', action='store_true', help='Check the preserved wider diagnostic crop')
     args = parser.parse_args()
-    if not re.fullmatch(r'(?:actortrans|actordraw)-[a-z0-9-]+|render-world-overlay-empty', args.fixture):
-        parser.error('Use an authored actortrans or actordraw fixture')
-    native_name = args.native_run or ('m4cp-' if args.fixture.startswith('actortrans-') else 'm4cq-') + args.fixture
+    if not re.fullmatch(r'(?:actortrans|actordraw|palettefx)-[a-z0-9-]+|render-world-overlay-empty', args.fixture):
+        parser.error('Use an authored actortrans, actordraw or palettefx fixture')
+    native_name = args.native_run or ('m4cp-' if args.fixture.startswith('actortrans-') else 'm4cr-' if args.fixture.startswith('palettefx-') else 'm4cq-') + args.fixture
     if not all(re.fullmatch(r'[a-z0-9_-]+', x) for x in [args.go_run, native_name, args.name]):
         parser.error('Use simple lowercase run names')
     stem = root / 'tests/testdata/reference' / args.fixture
     expected = json.loads(stem.with_suffix('.json').read_text())
-    spec = expected.get('trans_render') or expected.get('drawing_render')
+    spec = expected.get('trans_render') or expected.get('drawing_render') or expected.get('palette_render')
     if expected.get('load_error') or not spec:
         parser.error('Use an accepted fixture with frozen drawing evidence')
     crop_source = stem.with_suffix('.json').name

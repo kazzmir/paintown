@@ -123,6 +123,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileModifyExplod(ctrl)
 	case "trans":
 		return compileTrans(ctrl)
+	case "palfx":
+		return compilePaletteFX(ctrl)
 	case "angleset", "angleadd", "anglemul", "angledraw", "offset":
 		return compileDrawing(ctrl, name)
 	case "screenbound":

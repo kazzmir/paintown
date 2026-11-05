@@ -76,3 +76,16 @@ boundaries and final closure. Commit source/text only under game/mugen/; no push
 No reliable overall completion percentage or token estimate follows from route
 counts. Item 3 is roughly ten substantial groups; modes, assets and final
 conformance will still require additional milestones after it.
+
+## Current palette boundary — M4cr
+
+Standalone PalFX now reaches typed compilation, helper/palette ownership,
+expiry/sine clocks and shared unclamped indexed/RGB shaders.53 programs pin576
+values/five rejections/812 colors; all48 actual PalFX crops match exactly.
+All19 previous hit palette/portrait apps and stock input/private PCM/provenance
+gates pass. M4cr closes this bounded slice and continues the allocation.
+Next AllPalFX/BGPalFX need separate native global clocks, composition and
+background/HUD/actor/effect consumers. Remaining environment, afterimage,
+creation/ownership/pause/shadow/capacity, special flags, dust/system animations,
+debug/haptics and residual schemas remain allocated; this is not item3 closure.
+Current source68 typed/21 fallback/9 stubs is not a behavioral percentage.

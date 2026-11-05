@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cq implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cr implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
 motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cq)
@@ -112,7 +112,7 @@ three actor-window masks match. M4cn adds62 controls/708 readings/three rejectio
 [effect attachment](docs/EXPLOD-ATTACHMENT.md), [target binding](docs/TARGET-SELF-BINDING.md),
 [parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
-All89 controller names register;67 typed routes,10 stubs and partial consumers
+All89 controller names register;68 typed routes,9 stubs and partial consumers
 remain. The two indexed and six RGB alpha counterexamples now pass unchanged goldens;
 see [alpha precision](docs/ALPHA-NORMALIZATION.md). Rotation sampling and wider
 documented gates stay open.
@@ -121,7 +121,13 @@ see [actor transparency](docs/TRANS.md). Angle/scale/Offset now drive drawing,
 including persistent angle state and native frame-local values. Their62 native
 programs and58 actual apps provide46 exact RGB crops/54 exact white masks;
 12 raster counterexamples remain unwaived. See [angles/offsets](docs/ANGLES-OFFSET.md).
-The final drawing integration passes25 tested and11 compiled-only packages,
+Standalone PalFX now has typed schemas, helper ownership, expiry/sine clocks
+and unclamped indexed/RGB drawing. Its53 native programs pin576 values/five
+rejections/812 color observations; all48 actual PalFX crops match exactly
+(5,216,400 RGB pixels). Both GPU samplers pass504 native color checks;224 opaque
+CPU preview colors match too. See [standalone palette effects](docs/PALETTE-FX.md)
+for validation and explicit global/interaction limits.
+The final M4cq drawing integration passes25 tested and11 compiled-only packages,
 with no failures or individual skips and all13,467 frozen inputs verified. No whole-engine completion percentage is justified.
 
 Through M4ch, fresh native, actual

@@ -13,6 +13,36 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
+M4cr PalFX implementation is active/uncommitted. Read leading AGENTS.md and
+PALETTE-FX.md.53 native programs are captured/promoted:48 accepted/576 values,
+five rejections/812 RGB readings/213 unique original+probe hashes. Native
+manifests m4cr-{native,extra,negative}-inputs.json. Sessions36642/42802/53400 were
+awaited and separate client checks empty. No original/golden may change.
+
+Go now has typed PalFX, palette clocks, shared unclamped GPU color transforms
+and raw-mapped actor/effect textures, including HitDef palette effects. Native
+helper rules are measured with independent child-only/evaluation/inheritance
+controls. M4cr final validation PASSES:53-program Match33.879s/core races,504 exact GPU
+colors/1,512 components and224 opaque CPU preview colors (Palette8.581s).
+All48 PalFX apps have exact RGB crops5,216,400 pixels/812 samples. All19 prior
+HitDef color/portrait apps pass228 colors. Stock win/rematch/win visually
+verified,82 balanced owned events/1,978,304 private PCM frames. All213 native
+input hashes/final frozen sources/binary/config/PNG/resource/audio/module/
+inventory guards pass; m4cr-final-evidence-audit.json. All sessions awaited,
+separate empty-client check; only MD after final passing apps. Commit source/
+text under game/mugen (engine/palette_fx.go needs git add -f), then continue ALL
+item3. No binaries/push/agents/goals/outside changes.
+
+Next private prep-m4cs.py is prepared, NOT EXECUTED: AllPalFX/BGPalFX native
+controls. Freeze/capture after M4cr commit. Measure separate global clocks,
+local/global composition, backgrounds/HUD/helpers and whether the global
+channels replace or compose; do not infer these rules from PalFX. Color sine
+stability during world Pause also needs verification before claiming age rules.
+Further contact/helper-birth/Explod/pause/filtered-RGBA variants remain explicit.
+Inventory68 typed/21 fallback/9 stubs/11 bounded/9 partial/60 route-only, no
+variant-complete rows. Latest full remains M4cq934bd9203 (3,703/36),12 raster cases
+unwaived. Item4 remains unallocated. Read leading AGENTS.md and PALETTE-FX.md.
+
 M4cq implements bounded native angle/scale/Offset schemas/state/production
 drawing. Read ANGLES-OFFSET.md for arithmetic, lifetime, coordinates, native
 setup corrections and all raster limits.62 promoted programs pin696 readings/
@@ -55,8 +85,7 @@ Full21196/stock20967 sessions awaited; separate client check empty. Only MD
 changed after final passing source/app runs. Commit source/text under game/mugen/;
 engine/drawing.go needs git add -f. No push, binaries, agents or goals.
 
-Continue ALL item3 after the bounded checkpoint. Next temp/author-m4cr.py is
-prepared for45 PalFX controls, NOT executed/frozen. Then remaining palette/global,
+Continue ALL item3 after the bounded checkpoint. The leading active block records M4cr native progress. Then remaining palette/global,
 environment/afterimage/creation/dependent and residual controllers. Counts67 typed/
 22 fallback/10 stubs/zero unread actor draw families/nine partial rows are not
 an engine percentage. Item4 remains unallocated. M4cp acfdbb1dc/M4co33098c939.

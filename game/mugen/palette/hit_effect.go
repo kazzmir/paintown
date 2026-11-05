@@ -16,11 +16,22 @@ func (s *State) SetHitEffect(time int, mul, add [3]int) {
 	if time <= 0 && time != -1 {
 		return
 	}
+	s.controllerFX = Effect{}
 	s.hitFX = HitEffect{Time: time, Mul: mul, Add: add}
 	s.Revision++
 }
 
 func (s *State) AdvanceHitEffect() {
+	if s.controllerFX.Time != 0 {
+		s.controllerFX.age++
+		if s.controllerFX.Time > 0 {
+			s.controllerFX.Time--
+			if s.controllerFX.Time == 0 {
+				s.Revision++
+			}
+		}
+	}
+
 	if s.hitFX.Time > 0 {
 		s.hitFX.Time--
 		if s.hitFX.Time == 0 {

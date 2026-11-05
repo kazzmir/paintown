@@ -26,6 +26,47 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4cr PalFX is ACTIVE/UNCOMMITTED.53 native programs captured/promoted:48
+accepted/576 readings/five rejections/812 RGB samples/213 original+probe hashes.
+Manifests m4cr-{native,extra,negative}-inputs/metadata.json. All native sessions
+36642/42802/53400 awaited; separate client checks empty. Read PALETTE-FX.md.
+No goldens/originals may change. Native time defaults0; <-1 cancels, -1forever;
+all fields evaluate even time0 in time/color/add/mul/sin/invert order. Add/mul3,
+sin3or4. Color/signed mul unclamped. Alpha-add/mul controls require unclamped
+shader math. Shared-palette helpers evaluate but ignore own PalFX; ownpal1 starts
+with no active inherited effect. Separate child-only controls disambiguate it.
+
+Implementation now adds engine/palette_fx.go, palette/controller_effect.go,
+render/palette.go and shared styled sampler methods. Production actor/effect
+textures use raw mapped images and shared GPU transforms, including existing
+HitDef effects. Generic palette.Clone still copies state; new ownpal helpers
+clear effects. HitDef valid installs clear controller FX; zero/invalid contacts
+preserve existing FX. Standalone cancels replace it. Existing State.Image also
+consumes standalone effects as a clamped preview; legacy hit preview is retained.
+
+M4cr final validation PASSES.53-program Match races33.879s; core Engine/
+Character/System/Render/Effect races pass. Native-only252 colors/18 programs
+pass504 GPU readings/1,512 components. CPU preview float32/nearest-even fix
+passes224 opaque colors (Palette8.581s); preserve earlier failed diagnostics.
+All48 final PalFX apps m4cr2 have exact RGB crops (5,216,400 pixels)/812 samples;
+all19 prior HitDef palette/portrait apps pass228 colors. Stock win/rematch/win
+visually verified,82 balanced owned inputs/1,978,304 private PCM frames. All213
+native input hashes, final frozen source/resource/binary/config/PNG/audio/module/
+inventory guards pass (m4cr-final-evidence-audit.json). Session29215 and audit7100
+awaited; separate client check empty. Only MD changed after final passing apps.
+
+Commit this source/text checkpoint, then continue ALL item3. Source counts68
+typed/21 fallback/9 stubs/11 bounded/9 partial/60 route-only; all variants remain
+incomplete. Read PALETTE-FX.md for contact/helper birth/global/clock/RGBA limits.
+Private temp/prep-m4cs.py is prepared but NOT EXECUTED; it creates globalfx-*
+native controls for AllPalFX/BGPalFX. Execute only after this commit, freeze and
+capture serially. Original/capture/golden/tolerance edits remain prohibited.
+
+M4cq is934bd9203, latest full3,703 passes/36 packages (25 tested+11 compiled-only),
+13,467 frozen inputs. Twelve raster counterexamples remain unwaived. Continue
+ALL item3, then stop only at its completion or concrete issue needing input.
+No agents/goals/push/binaries/outside authoring. Private wrapper/servers as below.
+
 M4cq consumes native angle/scale/Offset state and drawing. Read ANGLES-OFFSET.md.
 62 promoted programs/696 readings/four controller rejections;282 original/probe/
 stock-constant/empty-world hashes remain immutable. Seven incomplete-Data drafts
@@ -52,7 +93,7 @@ temp/m4cq-final-evidence-audit.json records application conformance FALSE for th
 Commit the bounded M4cq checkpoint, then continue ALL item3. Engine/drawing.go
 needs explicit git add -f (historical ignore); source/text only, no push/binaries.
 
-Next temp/author-m4cr.py is PREPARED45 PalFX cases, NOT executed/frozen. Continue
+M4cr now follows as recorded in the leading active block. Continue
 palette/shared effects, environment/afterimages, remaining creation/dependencies
 and residual controllers. Source67 typed/22 fallback/10 stubs/zero unread actor
 draw families/nine partial rows is not whole-engine coverage. Item4 remains

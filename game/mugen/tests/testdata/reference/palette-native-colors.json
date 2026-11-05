@@ -1,0 +1,11636 @@
+{
+  "description": "252 native PalFX flat color readings across18 frozen programs, preserving source/alpha/sine conditions",
+  "native_input_sha256": {
+    "actortrans-baseline.json": "9e61995bea548041fcea880312dbe0eec44b164a5c0a9d3dc2ac971eaa5de177",
+    "palettefx-add.json": "78d199321fef2164686907f58f11c27a349c2ab92a94f0f3084a57c5b5abe860",
+    "palettefx-add.cns": "149f67b1108b9a923de926224d32599cc11ac02ee33cd73a2a1b5911c126148e",
+    "palettefx-mul.json": "503f201b0e0ce2d887c1b7ba616bc33b9253d353d6aa98e3d72457244fd2ba1b",
+    "palettefx-mul.cns": "4b7b406c9bc5694f01a50c283fa1b949dd2f24678352f0fc666adcc17224a9f9",
+    "palettefx-gray.json": "4efeddaaac29d0c821b063b575dc92693edec303c6605e3e723ee8d8acd105c3",
+    "palettefx-gray.cns": "d3ff44097d9f9057926cea675d99d493bac9b2f0939d0cd8803a59336b6a2128",
+    "palettefx-half-color.json": "08e58042f23a80be075a84fa5babfb5d572ade7c8b4c44609dee94ddfb810826",
+    "palettefx-half-color.cns": "5e246998b8b85d47f7c0c505e844326f18a11710f23f5ac5fbde578cb4c9af7d",
+    "palettefx-negative-color.json": "fecf324650438ac8ff08356505fe408e7cd5c1c9d135d44d7be9ba06af4f0c56",
+    "palettefx-negative-color.cns": "cb9f4c5417d8eb2261e3fc231862c151424a5cd892e750b1bb20cfb2b69902a5",
+    "palettefx-over-color.json": "2964bf29bc236afcacb985d66ba39712709259578bbe416098085b674ce9c91c",
+    "palettefx-over-color.cns": "9bd8701f85137fd5a8a3dc1365c3b22300a91e7e413dc126bac2cb3fe09820fa",
+    "palettefx-invert.json": "56c2c21079477c32945eb9682c0cc2ca3e0b1e0a9b0c670e097b5b3fca14113e",
+    "palettefx-invert.cns": "43d89ffcebeab4c0ded097e065544facd15817a9e104b784cdd7d92b94386e68",
+    "palettefx-invert-negative.json": "209e04d2a0c92fa28f9eae818c454b3415641f6997352ab6794179744c95c475",
+    "palettefx-invert-negative.cns": "daa68581a6b0f63be581cbfcf2ef1a4d85654b1130aa831bf6f163ef11c7ac7a",
+    "palettefx-combined.json": "4daca4d4843617e4a7cf4d0b2fab503420fc3fe4a21f56cf81594cd5c6209b68",
+    "palettefx-combined.cns": "f19756285abf1f74b358e4a52c3f575a6a7a57fdcd66bc64fd22b09bb2d36ccd",
+    "palettefx-negative-mul.json": "a871c1ff2865d117a521d5d1f4ee7db525570e16a0e98537d94343ee2e4bde10",
+    "palettefx-negative-mul.cns": "a0a3d06fc83da3f7eddb86ec1f3b96d04e2acf6c5a053ef2288047131116bf45",
+    "palettefx-range-add.json": "1624bf7cc47c4cd31858c9119d6beffe0cdd4b422af7314ad26249ebf200186f",
+    "palettefx-range-add.cns": "e3ee3e864430867ecf57f1135f153a32e03083220d12c8157e43c3789909fec2",
+    "palettefx-alpha-add.json": "6c7777aed2012a395c1eeacd41a55cab770d4f3306e0410e1366d57edfbbf22c",
+    "palettefx-alpha-add.cns": "3840d1495c31efcd514bd6d1f48bd329ab8a2ed97cb713e8d35ed7fbafb82650",
+    "palettefx-alpha-mul.json": "dfd3ea0dd522304fa5856f5a8f6d200774bb524cf4530f0462666ffd9029f0db",
+    "palettefx-alpha-mul.cns": "40c1433cb1c68393b10ef1dbfa464981e445f9d6eddf52a0fe7cf2218eb53e3f",
+    "palettefx-sine-0.json": "dcad134f5852dbdd90c6019dc31b718195566f671dc0337edcb2826d62d98d27",
+    "palettefx-sine-0.cns": "294d88bde8e013674d9608cfa43fe29b00f18ffc6dacacc9e8a9f381e83f7b31",
+    "palettefx-sine-1.json": "df36f64e2a869465fb7418dd26cf0513b8dbc0ffda02bf8c64b7ad4084ddb7f1",
+    "palettefx-sine-1.cns": "b9a611985e873aec3d2d1c6d662667a8599ecb82f8f0cdd87ca9a60fda27a3de",
+    "palettefx-sine-2.json": "962517cde4d0be91143df7ab01b0f20e33171cc0ff27bec291e0b26c48808a3d",
+    "palettefx-sine-2.cns": "a26ab5ef1864c162cd0b95dd4e9f3b04c91843ead3201dc36cd6a3c09b5f0b68",
+    "palettefx-sine-3.json": "7114b9459e9a2eeab0c0fe196fe4bb3bca02c6de699a91c83eb5c9a8fdab49c9",
+    "palettefx-sine-3.cns": "bd11ac81e554aa8ced15951980b2cddb003e82449aeb6f560728795003f26a52",
+    "palettefx-sine-4.json": "b6703ef33d16bdbc351e57dff7bf4df656227413f273405a00a0b2188cdd9f90",
+    "palettefx-sine-4.cns": "e7626014aa55697a9b8da23c5b26c310f278af30e1c21829dc08ad0e23c9e5fd"
+  },
+  "cases": [
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        69,
+        19,
+        89
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        86,
+        69,
+        205
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        110,
+        60,
+        139
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        148,
+        118,
+        236
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        152,
+        36,
+        89
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        152,
+        77,
+        130
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        185,
+        114,
+        165
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        185,
+        151,
+        255
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        209,
+        85,
+        130
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        226,
+        151,
+        205
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        251,
+        118,
+        155
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        251,
+        184,
+        238
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        255,
+        159,
+        196
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        255,
+        209,
+        255
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        49,
+        74
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        33,
+        99,
+        248
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        90,
+        149
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        148,
+        255
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        66,
+        74
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        107,
+        135
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        144,
+        188
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        181,
+        255
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        115,
+        135
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        103,
+        181,
+        248
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        148,
+        173
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        214,
+        255
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        189,
+        234
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        239,
+        255
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        105,
+        105,
+        105
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        92,
+        92,
+        92
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        154,
+        154,
+        154
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        82,
+        82
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        111,
+        111,
+        111
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        146,
+        146,
+        146
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        186,
+        186,
+        186
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        132,
+        132,
+        132
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        185,
+        185,
+        185
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        166,
+        166,
+        166
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        215,
+        215,
+        215
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        196,
+        196,
+        196
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-gray",
+      "params": {
+        "Time": -1,
+        "Color": 0,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        240,
+        240,
+        240
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        86,
+        102,
+        135
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        91,
+        91,
+        96
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        141,
+        151,
+        175
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        107,
+        74,
+        66
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        121,
+        109,
+        100
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        155,
+        145,
+        135
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        176,
+        184,
+        204
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        160,
+        123,
+        111
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        195,
+        183,
+        175
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        198,
+        157,
+        140
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        223,
+        215,
+        207
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        218,
+        193,
+        176
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-half-color",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        243,
+        239,
+        235
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        105,
+        105,
+        105
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        92,
+        92,
+        92
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        154,
+        154,
+        154
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        82,
+        83
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        110,
+        111,
+        111
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        146,
+        146,
+        146
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        186,
+        186,
+        186
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        132,
+        132,
+        132
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        185,
+        185,
+        185
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        165,
+        166,
+        166
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        215,
+        215,
+        215
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        196,
+        196,
+        197
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-color",
+      "params": {
+        "Time": -1,
+        "Color": -1,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        239,
+        240,
+        240
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        59,
+        98,
+        175
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        90,
+        100
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        147,
+        203
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        141,
+        63,
+        43
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        136,
+        106,
+        86
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        168,
+        144,
+        121
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        161,
+        180,
+        228
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        199,
+        112,
+        83
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        210,
+        180,
+        162
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        242,
+        145,
+        106
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        234,
+        214,
+        195
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        246,
+        188,
+        149
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-over-color",
+      "params": {
+        "Time": -1,
+        "Color": 300,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        248,
+        239,
+        230
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        206,
+        206,
+        206
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        189,
+        156,
+        90
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        165,
+        165,
+        156
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        127,
+        107,
+        59
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        123,
+        189,
+        206
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        123,
+        148,
+        165
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        111,
+        130
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        74,
+        33
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        140,
+        165
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        74,
+        90
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        24,
+        107,
+        140
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        24,
+        41,
+        57
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        16,
+        66,
+        99
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-invert",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        8,
+        16,
+        24
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        206,
+        206,
+        206
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        189,
+        156,
+        90
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        165,
+        165,
+        156
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        127,
+        107,
+        59
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        123,
+        189,
+        206
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        123,
+        148,
+        165
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        111,
+        130
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        74,
+        33
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        140,
+        165
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        74,
+        90
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        24,
+        107,
+        140
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        24,
+        41,
+        57
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        16,
+        66,
+        99
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-invert-negative",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        8,
+        16,
+        24
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        113,
+        176,
+        255
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        95,
+        123,
+        240
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        92,
+        134,
+        255
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        67,
+        74,
+        180
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        84,
+        151,
+        255
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        77,
+        116,
+        255
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        60,
+        80,
+        239
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        50,
+        41,
+        136
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        57,
+        102,
+        255
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        40,
+        42,
+        180
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        38,
+        68,
+        232
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        26,
+        10,
+        133
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        29,
+        32,
+        178
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-combined",
+      "params": {
+        "Time": -1,
+        "Color": 128,
+        "Add": [
+          20,
+          -30,
+          40
+        ],
+        "Mul": [
+          128,
+          256,
+          384
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": true
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        16,
+        0,
+        90
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        25,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        50,
+        165
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        45,
+        99
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        74,
+        196
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        33,
+        49
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        54,
+        90
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        72,
+        125
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        90,
+        222
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        58,
+        90
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        90,
+        165
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        74,
+        115
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        107,
+        198
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        94,
+        156
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-negative-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          -1,
+          128,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        120,
+        231
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        49,
+        255
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        99,
+        255
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        90,
+        255
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        148,
+        255
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        66,
+        255
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        107,
+        255
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        144,
+        255
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        181,
+        255
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        115,
+        255
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        181,
+        255
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        148,
+        255
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        214,
+        255
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        189,
+        255
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-range-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          -500,
+          0,
+          500
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        239,
+        255
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        133,
+        150,
+        183
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        145,
+        145,
+        150
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        164,
+        174,
+        198
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        166,
+        133,
+        124
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        166,
+        154,
+        145
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        183,
+        172,
+        163
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        183,
+        191,
+        211
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        195,
+        158,
+        145
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        203,
+        191,
+        183
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        216,
+        174,
+        158
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        216,
+        207,
+        199
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        220,
+        195,
+        178
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-add",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          200,
+          200,
+          200
+        ],
+        "Mul": [
+          256,
+          256,
+          256
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        224,
+        220,
+        216
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        99,
+        165
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        90,
+        90,
+        99
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        128,
+        148,
+        196
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        132,
+        66,
+        49
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        132,
+        107,
+        90
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        165,
+        144,
+        125
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        165,
+        181,
+        222
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        189,
+        115,
+        90
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        206,
+        181,
+        165
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        231,
+        148,
+        115
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        231,
+        214,
+        198
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        239,
+        189,
+        156
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-alpha-mul",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          512,
+          512,
+          512
+        ],
+        "SinAdd": [
+          0,
+          0,
+          0
+        ],
+        "Period": 0,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 128,
+      "destination_alpha": 0,
+      "expected": [
+        247,
+        239,
+        231
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        25,
+        25
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        33,
+        50,
+        82
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        50
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        74,
+        98
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        33,
+        25
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        54,
+        45
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        72,
+        63
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        90,
+        111
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        58,
+        45
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        103,
+        90,
+        82
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        74,
+        58
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        107,
+        99
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        94,
+        78
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-0",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 0,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        120,
+        116
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        57,
+        41,
+        0
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        65,
+        66,
+        50
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        77,
+        61,
+        18
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        96,
+        90,
+        66
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        98,
+        49,
+        0
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        98,
+        70,
+        13
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        114,
+        88,
+        31
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        114,
+        106,
+        79
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        126,
+        74,
+        13
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        135,
+        106,
+        50
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        148,
+        90,
+        26
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        148,
+        123,
+        67
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        152,
+        110,
+        46
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-1",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 1,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        156,
+        136,
+        84
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        25,
+        25
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        33,
+        50,
+        82
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        50
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        74,
+        98
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        33,
+        25
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        54,
+        45
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        72,
+        63
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        90,
+        111
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        58,
+        45
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        103,
+        90,
+        82
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        74,
+        58
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        107,
+        99
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        94,
+        78
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-2",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 2,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        120,
+        116
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        0,
+        9,
+        57
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        1,
+        34,
+        114
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        13,
+        29,
+        82
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        32,
+        58,
+        130
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        34,
+        17,
+        57
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        34,
+        38,
+        77
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        50,
+        56,
+        94
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        50,
+        74,
+        143
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        62,
+        42,
+        77
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        71,
+        74,
+        114
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        84,
+        58,
+        90
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        84,
+        91,
+        131
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        88,
+        78,
+        110
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-3",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 3,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        92,
+        104,
+        148
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        25,
+        25,
+        25
+      ],
+      "native_point": [
+        635,
+        286
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        33,
+        50,
+        82
+      ],
+      "native_point": [
+        626,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        45,
+        45,
+        50
+      ],
+      "native_point": [
+        638,
+        289
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        64,
+        74,
+        98
+      ],
+      "native_point": [
+        641,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        33,
+        25
+      ],
+      "native_point": [
+        626,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        66,
+        54,
+        45
+      ],
+      "native_point": [
+        620,
+        349
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        72,
+        63
+      ],
+      "native_point": [
+        620,
+        352
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        82,
+        90,
+        111
+      ],
+      "native_point": [
+        644,
+        325
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        94,
+        58,
+        45
+      ],
+      "native_point": [
+        629,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        103,
+        90,
+        82
+      ],
+      "native_point": [
+        617,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        74,
+        58
+      ],
+      "native_point": [
+        635,
+        331
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        116,
+        107,
+        99
+      ],
+      "native_point": [
+        653,
+        355
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        120,
+        94,
+        78
+      ],
+      "native_point": [
+        629,
+        334
+      ]
+    },
+    {
+      "fixture": "palettefx-sine-4",
+      "params": {
+        "Time": -1,
+        "Color": 256,
+        "Add": [
+          0,
+          0,
+          0
+        ],
+        "Mul": [
+          128,
+          128,
+          128
+        ],
+        "SinAdd": [
+          64,
+          32,
+          -64
+        ],
+        "Period": 4,
+        "Invert": false
+      },
+      "age": 4,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "destination": [
+        255,
+        0,
+        255
+      ],
+      "source_alpha": 256,
+      "destination_alpha": 0,
+      "expected": [
+        124,
+        120,
+        116
+      ],
+      "native_point": [
+        659,
+        358
+      ]
+    }
+  ]
+}

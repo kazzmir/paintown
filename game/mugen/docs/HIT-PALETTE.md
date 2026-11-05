@@ -1,5 +1,15 @@
 # HitDef palette effects (M4br)
 
+M4cr update: production HitDef effects now use the shared unclamped GPU palette
+transform over raw mapped textures. The19 earlier color/portrait applications
+pass unchanged228 native garment samples. PALETTE-FX.md adds standalone PalFX
+and a wider color corpus: normalized float32 and nearest-even framebuffer
+conversion replace the former production integer/byte-image route. Earlier
+"half values round upward" wording below describes the limited garment controls,
+not a general framebuffer rounding rule. The legacy CPU HitEffect preview
+remains limited to its earlier pinned colors. Global/contact/ownership
+combinations remain explicit gates; older standalone-stub statements are history.
+
 Target: immutable local M.U.G.E.N 1.1 beta 1. This checkpoint covers palfx.time,
 palfx.mul and palfx.add, including an actual palette/rendering consumer. Numeric
 routing becomes 64/81; nine literal schemas bring typed coverage to 73/81

@@ -29,7 +29,7 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	top := floor((a * (256-f.x) + b * f.x + vec4(128)) / 256)
 	bottom := floor((c * (256-f.x) + d * f.x + vec4(128)) / 256)
 	texel := floor((top * (256-f.y) + bottom * f.y + vec4(128)) / 256)
-	color := texel * (1.0 / 255.0) * tint
+	color := applyPalette(texel * (1.0 / 255.0)) * tint
 	if NativeDestination >= 0 {
 		if texel.a == 0 { discard() }
 		color.a = NativeDestination
@@ -44,11 +44,15 @@ func (r *Linear) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten.
 
 // DrawImage retains the caller's blend operation as well as its transform/tint.
 func (r *Linear) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, destination ...float32) error {
+	return r.DrawStyledImage(dst, src, options, DrawStyle{DestinationFactor: alphaDestination(destination)})
+}
+
+func (r *Linear) DrawStyledImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, style DrawStyle) error {
 	if options == nil {
 		options = &ebiten.DrawImageOptions{}
 	}
 	if r.shader == nil {
-		shader, err := ebiten.NewShader([]byte(linearShader))
+		shader, err := ebiten.NewShader([]byte(withPaletteShader(linearShader)))
 		if err != nil {
 			return err
 		}
@@ -60,6 +64,6 @@ func (r *Linear) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOpti
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
 		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
 			Blend: options.Blend, CompositeMode: options.CompositeMode,
-			Uniforms: map[string]any{"NativeDestination": alphaDestination(destination)}})
+			Uniforms: style.uniforms()})
 	return nil
 }

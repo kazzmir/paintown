@@ -1,5 +1,20 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cr implementation (2026-11-05) adds typed PalFX, native helper ownership,
+expiry/sine clocks and unclamped palette transforms through both production
+sprite samplers.53 native programs pin576 numeric values/five rejections/812
+RGB observations. All48 actual PalFX applications have exact108,675-pixel RGB
+crops (5,216,400 pixels);504 GPU samples/1,512 RGB components and224 opaque
+CPU preview colors match native. Read [PALETTE-FX.md](PALETTE-FX.md). All19 legacy
+HitDef color/portrait checks pass228 samples. Stock win/rematch/win,82 balanced
+owned input events/1,978,304 private PCM frames and all final provenance/source/
+module/inventory guards pass. Core and53-program Match races pass.
+Source counts68 typed/21 fallback/9 stubs/11 bounded-native/9 partial/60 route-only
+are source facts; no family is variant-complete. AllPalFX/BGPalFX and remaining
+item3 consumers continue. Latest completed full integration remains M4cq
+(3,703 results/36 packages), including its12 explicitly unwaived raster cases.
+Item4 remains unallocated. Earlier entries below are historical evidence.
+
 M4cq implementation (2026-11-05) adds angle/scale/Offset production consumers,
 persistent native float32 angles, cumulative frame scales, partial offsets and
 constant/facing/profile handling.62 programs pin696 values/four rejections.

@@ -27,7 +27,7 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	// conversion can round below the float32 reciprocal product, changing
 	// an eight-bit alpha blend at half-integer color boundaries.
 	texel := floor(imageSrc0At(imageSrc0Origin() + p) * 255 + vec4(0.5))
-	color := texel * (1.0 / 255.0) * tint
+	color := applyPalette(texel * (1.0 / 255.0)) * tint
 	if NativeDestination >= 0 {
 		// Native's independent blend uses a constant destination factor and
 		// discards fully transparent texels rather than multiplying that factor
@@ -44,6 +44,10 @@ func (r *Nearest) Draw(dst, src *ebiten.Image, geometry ebiten.GeoM, tint ebiten
 }
 
 func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, destination ...float32) error {
+	return r.DrawStyledImage(dst, src, options, DrawStyle{DestinationFactor: alphaDestination(destination)})
+}
+
+func (r *Nearest) DrawStyledImage(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, style DrawStyle) error {
 	if options == nil {
 		options = &ebiten.DrawImageOptions{}
 	}
@@ -52,7 +56,7 @@ func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOpt
 		return nil
 	}
 	if r.shader == nil {
-		shader, err := ebiten.NewShader([]byte(nearestShader))
+		shader, err := ebiten.NewShader([]byte(withPaletteShader(nearestShader)))
 		if err != nil {
 			return err
 		}
@@ -60,10 +64,12 @@ func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOpt
 	}
 	vertices := paddedQuad(src, geometry, tint)
 	reverse := sourceReversal(geometry)
+	uniforms := style.uniforms()
+	uniforms["Reverse"] = reverse
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
 		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
 			Blend: options.Blend, CompositeMode: options.CompositeMode,
-			Uniforms: map[string]any{"Reverse": reverse, "NativeDestination": alphaDestination(destination)}})
+			Uniforms: uniforms})
 	return nil
 }
 

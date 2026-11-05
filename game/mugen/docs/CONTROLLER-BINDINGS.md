@@ -103,3 +103,12 @@ families, nine partial rows, ten bounded-native and60 route-only families.
 All rows remain variant-incomplete;12 raster counterexamples remain unwaived.
 Read ANGLES-OFFSET.md. Final full integration passes3,703 results/36 packages with no failures or
 individual skips; all13,467 frozen inputs verify.
+
+## M4cr implementation
+
+PalFX now has a typed schema, palette-owned clocks/helper rules and unclamped
+production rendering. Counts are89 registered/68 typed/21 fallback,9 stubs,
+zero unread actor drawing families,9 partial,11 bounded-native and60 route-only.
+All48 palette apps have exact native RGB crops; the wider global/contact/
+creation/rendering matrix remains open. All rows stay variant-incomplete.
+Read PALETTE-FX.md; registrations do not establish an engine percentage.

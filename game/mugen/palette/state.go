@@ -12,10 +12,11 @@ import (
 type ID [2]int
 
 type State struct {
-	Archive  *sff.SFF
-	Revision uint64
-	mappings map[ID]ID
-	hitFX    HitEffect
+	Archive      *sff.SFF
+	Revision     uint64
+	mappings     map[ID]ID
+	hitFX        HitEffect
+	controllerFX Effect
 }
 
 func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: map[ID]ID{}} }
@@ -24,6 +25,7 @@ func (s *State) Clone() *State {
 	copy := New(s.Archive)
 	copy.Revision = s.Revision
 	copy.hitFX = s.hitFX
+	copy.controllerFX = s.controllerFX
 	for source, dest := range s.mappings {
 		copy.mappings[source] = dest
 	}
@@ -107,8 +109,14 @@ func (s *State) Destination(source ID) ID {
 
 func (s *State) Image(index int, masked bool) (image.Image, error) {
 	pixels, err := s.MappedImage(index, masked)
-	if err != nil || pixels == nil || s.hitFX.Time == 0 {
+	if err != nil || pixels == nil {
 		return pixels, err
+	}
+	if s.controllerFX.Time != 0 {
+		return s.Transform().Image(pixels), nil
+	}
+	if s.hitFX.Time == 0 {
+		return pixels, nil
 	}
 	return s.hitFX.Image(pixels), nil
 }

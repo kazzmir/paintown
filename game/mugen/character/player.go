@@ -181,12 +181,13 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 		blend, alphaSrc, alphaDst = ent.DrawTransparency.Mode, ent.DrawTransparency.Source, ent.DrawTransparency.Destination
 	}
 	destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
+	style := render.DrawStyle{DestinationFactor: destination, Palette: ent.Palettes.Transform()}
 
 	var err error
 	if indexed {
-		err = p.indexSampler.DrawImage(screen, ebitenSprite, opts, destination)
+		err = p.indexSampler.DrawStyledImage(screen, ebitenSprite, opts, style)
 	} else {
-		err = p.rgbSampler.DrawImage(screen, ebitenSprite, opts, destination)
+		err = p.rgbSampler.DrawStyledImage(screen, ebitenSprite, opts, style)
 	}
 	if err != nil {
 		ent.RuntimeError = fmt.Errorf("%s sprite %d,%d shader: %w", p.DefPath, currentElement.Group, currentElement.Image, err)
@@ -263,11 +264,7 @@ func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect boo
 	pixels := p.SFF.Sprites[index].Image
 	if state != nil {
 		var err error
-		if hitEffect {
-			pixels, err = state.Image(index, true)
-		} else {
-			pixels, err = state.MappedImage(index, true)
-		}
+		pixels, err = state.MappedImage(index, true)
 		if err != nil {
 			entity.RuntimeError = fmt.Errorf("%s sprite %d,%d: %w", p.DefPath, g, i, err)
 			return nil

@@ -1086,7 +1086,26 @@ func (c *Character) SelfState(stateNo int, ctrl, anim int) {
 }
 
 func (c *Character) PalFX(params map[string]string) {
-	// Stub: palette effects
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecutePaletteFXParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("PalFX: %w", err)
+	}
+}
+
+func (c *Character) SetPaletteEffect(p engine.PaletteFXParameters) error {
+	// Shared-palette helpers evaluate parameters but cannot install local effects.
+	if c.Parent != nil && c.Palettes == c.Parent.Palettes {
+		return nil
+	}
+	if c.Palettes == nil {
+		c.EvaluationWarning("PalFX: palette archive unavailable")
+		return nil
+	}
+	c.Palettes.SetEffect(palette.Effect{Time: p.Time, Color: p.Color, Period: p.Period, Add: p.Add, Mul: p.Mul, SinAdd: p.SinAdd, Invert: p.Invert})
+	return nil
 }
 
 func (c *Character) AllPalFX(params map[string]string) {

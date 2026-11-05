@@ -1,5 +1,23 @@
 # Implementation checkpoints
 
+## M4cr: standalone palette effects and shared color transforms
+
+Typed PalFX now consumes native evaluation/default/error rules, helper palette
+ownership, finite/sine clocks and unclamped indexed/RGB rendering.53 frozen
+programs pin576 values/five rejections/812 RGB observations and213 input hashes.
+All48 actual app crops match exactly (5,216,400 pixels),504 GPU samples/1,512 RGB
+components and224 opaque CPU preview colors pass.19 earlier HitDef palette/
+portrait apps pass228 samples. Core/53-program Match races pass33.879s; CPU
+Palette races8.581s. Stock win/rematch/win is visually verified with82 balanced
+owned events and1,978,304 private PCM frames. Final frozen source/resource/
+binary/config/PNG/audio/module/inventory audits pass; no clients remain.
+
+Read PALETTE-FX.md for native rules, CPU-rounding diagnostics and explicit
+contact/global/ownership/RGBA limits. AllPalFX/BGPalFX are next; the item3
+allocation continues. Source68 typed/21 fallback/9 stubs/11 bounded/9 partial/
+60 route-only is not an engine percentage. Latest full integration remains
+M4cq3,703/36; its12 raster counterexamples remain unwaived. No binaries/push.
+
 ## M4cq: actor angle, scale and display offsets
 
 Typed angle/scale/Offset state now reaches player drawing, including persistent
