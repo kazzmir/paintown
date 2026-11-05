@@ -1,0 +1,900 @@
+{
+  "target": "Elecbyte M.U.G.E.N 1.1 beta 1",
+  "scope": "source routes and audited gaps; not behavioral coverage",
+  "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
+  "source_sha256": {
+    "engine/statemachine.go": "9f27e1771e23c6f9896b6a2ec3199837af9d6bb297f5ae52b9c3c612412fcc45",
+    "engine/parameters.go": "7d308f9dc4d00137cc04cec6018bb9db5a88735def952fddb15985094ef2783a",
+    "character/character.go": "cc560e4f1887b9cb18b061cdc172e44bbd15e667c3ee3bff4c909991e691a951",
+    "character/player.go": "485b752c748f2a461a14a1f85bc6868c272cafa447c0f28c763c1ee049808784",
+    "character/explod.go": "d1166891e5139ac1aefc2333d322f6d8bedcf452891f49bfaf1f782b3a6fba39",
+    "engine/explod.go": "1c34028f1c103363300f0a2ce0ab35653b57f75356bacf9222a51abf8b76a4f1"
+  },
+  "summary": {
+    "manual": 89,
+    "registered": 87,
+    "typed": 59,
+    "fallback": 28,
+    "missing": [
+      "explodbindtime",
+      "modifyexplod"
+    ],
+    "consumer_status_counts": {
+      "stub": 14,
+      "unconsumed-render-field": 5,
+      "partial-consumer": 7,
+      "missing-dispatcher": 2,
+      "route-only": 61
+    },
+    "extra_registered_aliases": [
+      "fvaradd",
+      "fvarrangeset",
+      "fvarset"
+    ],
+    "observed_assertspecial_consumers": [
+      "intro",
+      "noautoturn",
+      "noguard",
+      "nojugglecheck",
+      "nokoslow",
+      "nokosnd",
+      "roundnotover",
+      "timerfreeze"
+    ]
+  },
+  "controllers": [
+    {
+      "name": "afterimage",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAfterImage",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:AfterImage"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "afterimagetime",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAfterImageTime",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:AfterImageTime"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "allpalfx",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAllPalFX",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:AllPalFX"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "angleadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleAdd",
+      "consumer_status": "unconsumed-render-field",
+      "evidence": [
+        "character/player.go lacks DrawAngle"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "angledraw",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAngleDraw",
+      "consumer_status": "unconsumed-render-field",
+      "evidence": [
+        "character/player.go lacks DrawAngle"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "anglemul",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleMul",
+      "consumer_status": "unconsumed-render-field",
+      "evidence": [
+        "character/player.go lacks DrawAngle"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "angleset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleSet",
+      "consumer_status": "unconsumed-render-field",
+      "evidence": [
+        "character/player.go lacks DrawAngle"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "appendtoclipboard",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAppendToClipboard",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "stores raw text; params/formatting absent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "assertspecial",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAssertSpecial",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "only a subset of literal flags have production consumers"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "attackdist",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "attackmulset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAttackMulSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "bgpalfx",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleBGPalFX",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:BGPalFX"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bindtoparent",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleBindToParent",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:BindToParent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bindtoroot",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleBindToRoot",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:BindToRoot"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bindtotarget",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleBindToTarget",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:BindToTarget"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "changeanim",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleChangeAnim",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "changeanim2",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleChangeAnim2",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "changestate",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleChangeState",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "clearclipboard",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleClearClipboard",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "ctrlset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleCtrlSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "defencemulset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleDefenceMulSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "destroyself",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleDestroySelf",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "displaytoclipboard",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleDisplayToClipboard",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "stores raw text; params/formatting absent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "envcolor",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleEnvColor",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:EnvColor"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "envshake",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleEnvShake",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:EnvShake"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "explod",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleExplod",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "bindID explicitly unsupported; remaining parameters and consumers open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "explodbindtime",
+      "registered": false,
+      "parameter_route": "missing",
+      "handler": null,
+      "consumer_status": "missing-dispatcher",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "fallenvshake",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleFallEnvShake",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "forcefeedback",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleForceFeedback",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:ForceFeedback"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gamemakeanim",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleGameMakeAnim",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:GameMakeAnim"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gravity",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleGravity",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "helper",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHelper",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitAdd",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "updates ComboCount; no production reader of that field was found"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitby",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitdef",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitDef",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfalldamage",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleHitFallDamage",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfallset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitFallSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfallvel",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleHitFallVel",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitoverride",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitvelset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitVelSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "lifeadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleLifeAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "lifeset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleLifeSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "makedust",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleMakeDust",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:MakeDust"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "modifyexplod",
+      "registered": false,
+      "parameter_route": "missing",
+      "handler": null,
+      "consumer_status": "missing-dispatcher",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "movehitreset",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleMoveHitReset",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "nothitby",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "null",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "offset",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleOffset",
+      "consumer_status": "unconsumed-render-field",
+      "evidence": [
+        "character/player.go lacks DrawOffset"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "palfx",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handlePalFX",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:PalFX"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "parentvaradd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "parentvarset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "pause",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePause",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "playerpush",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "playsnd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePlaySnd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "posadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePosAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "posfreeze",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePosFreeze",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "posset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePosSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "poweradd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePowerAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "powerset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePowerSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "projectile",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleProjectile",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "projectile shadow/trail fields lack complete renderer consumers"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "remappal",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleRemapPal",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "removeexplod",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleRemoveExplod",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "reversaldef",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleReversalDef",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "screenbound",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleScreenBound",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "selfstate",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSelfState",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "sndpan",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSndPan",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "sprpriority",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSprPriority",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "statetypeset",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleStateTypeSet",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "fallback literal handling; full schema/version/error matrix open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "stopsnd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleStopSnd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "superpause",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSuperPause",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetbind",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetBind",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetdrop",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetDrop",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetfacing",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetFacing",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetlifeadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetLifeAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetpoweradd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetPowerAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetstate",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetState",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetveladd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetVelAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetvelset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetVelSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "trans",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleTrans",
+      "consumer_status": "stub",
+      "evidence": [
+        "character/character.go:Trans"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "turn",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleTurn",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varrandom",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarRandom",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varrangeset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarRangeSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "veladd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVelAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "velmul",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVelMul",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "velset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVelSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "victoryquote",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVictoryQuote",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "width",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleWidth",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    }
+  ]
+}

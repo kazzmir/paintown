@@ -1,5 +1,18 @@
 # Implementation checkpoints
 
+## M4ci: current controller consumer audit / item 3 allocation
+
+Reconciles all 89 beta manual names with actual registered/typed/fallback routes
+and named sinks. 87 registered, 59 typed, 28 fallback; two absent names. Concrete
+outstanding obligations span 14 stubs, five unconsumed drawing fields, seven
+partial consumers and two missing controllers. Extra aliases are separated.
+The generator pins manual/source hashes and passed write/comparison checks;
+root module guards pass. No runtime Go changed; prior full integration remains
+df59235b. Read CONTROLLER-BINDINGS.md and ITEM-3-PLAN.md. The user authorized
+completing item 3 with local checkpoints; item 4 remains unallocated. No binaries
+or push. The isolated display/audio harness was restored for subsequent probes.
+
+
 ## M4ch: native character reversals and MoveReversed
 
 Typed required masks/full HitDef reader, Clsn1 character contact selection,

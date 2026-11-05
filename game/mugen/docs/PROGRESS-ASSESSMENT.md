@@ -1,5 +1,14 @@
 # Current progress assessment
 
+2026-11-04 refresh: df59235b is unchanged and the scoped working tree was clean.
+The user authorized completion of remaining effects/controllers (item 3).
+[CONTROLLER-BINDINGS.md](CONTROLLER-BINDINGS.md) records 28 families with concrete
+schema/consumer gaps: 14 stubs, five unconsumed draw-field families, seven partial
+consumers and two missing names. 59/89 have typed routes, not full acceptance.
+The work is roughly ten substantial groups with multiple possible checkpoints.
+Item 4 remains unallocated. See [ITEM-3-PLAN.md](ITEM-3-PLAN.md).
+
+
 M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
 replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
 The seven render probes retain84 additional early clipboard readings. Source

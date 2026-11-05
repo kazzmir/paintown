@@ -1,5 +1,24 @@
 # Current handoff
 
+## Active item 3 allocation — 2026-11-04
+
+The user selected complete remaining effects/controllers, not a two-checkpoint
+stop. Continue through ITEM-3-PLAN.md with local commits and no agents/push/
+binaries/out-of-scope edits. Earlier item 1–2 stop conditions are historical.
+Item 4 still needs a separate allocation. M4ci establishes CONTROLLER-BINDINGS.md
+and its reproducible JSON/source audit; no runtime code has changed yet.
+Next close ExplodBindTime/ModifyExplod and required Explod binding/geometry
+consumers, then remaining effects/controllers. Keep frozen native originals and
+actual controller-kind assertions. Native/app/display Go runs stay serial.
+
+The old private display/audio servers were absent. New task-owned Xvfb :97 and
+private Pulse processes are recorded in temp/item3-private-servers.json; all
+credentials/runtime logs remain under temp/. The display was verified with
+xdpyinfo. Use round-task-env.py (GOTMPDIR=temp/_tmp), preserving module guards.
+No native/app/test clients are active. The prior full suite remains df59235b;
+use focused checks until the next meaningful integration boundary.
+
+
 ## Items 1–2 complete — paused for user testing/allocation
 
 The user authorized assessment items 1–2 with local checkpoint commits. All

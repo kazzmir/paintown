@@ -1,14 +1,30 @@
 # MUGEN Go port
 
-## Latest allocation complete — stop boundary
+## Active allocation — item 3
 
-Assessment items 1–2 are COMPLETE. All scalar/projectile/reversal checkpoints
-are locally committed or ready for the final M4ch commit. Full scoped races
-pass 3,169 results across 36 packages; all fresh native/app/render/provenance/
-module gates pass. Read the current HANDOFF.md and REVERSALS.md, including the
-corrected genuine Projectile exclusion and preserved diagnostics. There are no
-running sessions/clients. Do not start items 3–4 without new user authorization.
-No push, binaries, agents or authored changes outside game/mugen/.
+On 2026-11-04 the user selected "Complete remaining effects/controllers (item 3)".
+Continue autonomously through this allocation with documented local checkpoints
+and commits. Items 1–2 completed at df59235b are historical; their stop condition
+is superseded for item 3 only. Item 4 (modes/AI/BGM, asset validation and final
+renderer/font/platform conformance) remains unallocated. Keep dependent runtime
+consumers in item 3 and record exact variant/evidence limits instead of counting
+registrations as implemented behavior. Do not stop after two checkpoints.
+
+Start with M4ci: reproducible current controller/schema/consumer inventory;
+then close ExplodBindTime/ModifyExplod and the Explod surface, actor binding,
+palette effects, EnvShake/EnvColor, draw transforms/transparency, afterimages
+(including dependent projectile effects), AssertSpecial consumers, dust/system
+animations, debug formatting and force-feedback commands. Audit nominally typed
+controllers for dead/partial consumers too. Split/reorder coherent batches when
+native findings require it. Each feature checkpoint needs frozen native originals,
+focused tests/actual production consumption, findings/limits and a local commit.
+Use full scoped races at meaningful integration boundaries and final allocation
+closure, not every small revision. Preserve original inputs/captures and reference
+binary. Private native/app/display-dependent Go runs stay serial. GOTMPDIR must
+use an underscore-prefixed directory under temp/ so interrupted builds cannot
+be discovered as packages. Stop after item 3 or a concrete issue needing input.
+
+No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
 
 ## Current authorization
