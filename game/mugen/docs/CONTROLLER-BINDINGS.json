@@ -4,18 +4,19 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
-    "engine/parameters.go": "f00ebe84a6e5bc5b8139ddd9a4aebda897d6a73b4babbc209d75fffd86fcf930",
-    "character/character.go": "a307abe8c8470badafc236fbee3754c673f06666e570acbbb1bff510e1013ac9",
-    "character/player.go": "5e64fa11ea259bc5e058ccf7df3d6a122dfa5c5ae69e9037bcbf263dcc4bc3e3",
+    "engine/parameters.go": "87af1c3cf6cc6ff1147dd0f355619ca7ded1a3d3b44e42de1ca1b2081561bbae",
+    "character/character.go": "955d4ba9c726b697833331310d33ef17b3fb47d0c3f4b03363eb39a1200b9480",
+    "character/player.go": "7d5570e847b691301698645674ee0d23aa779b2d935fc3424818cc80a452e225",
     "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
     "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
     "system/effects.go": "604f44e14c7ab64f42699968516258a53750679783fd200ddaa85a144d8de21c",
-    "render/perspective.go": "e393e9c018e5a164e78a25b3caffed64bd2c0b168e2021dbe162cdb7fbdffd50",
+    "render/perspective.go": "109cf4ee15eb5661c7ea3dfb02d516bc494e149662c32b426781e817bba43221",
     "render/alpha.go": "8b939718d5db8fb1bd297e59678bd8ecc138ee4ea509d0a4269f224e0d1b8ba9",
-    "render/nearest.go": "a3efe92aaf587c5120516254f61f229976936b976946b9983c3ffdd5b2841d3e",
+    "render/nearest.go": "a0d4ca0568a7fc8c110c37a5be4af606199f2c5c716d4836a038abd8c7841bce",
     "render/linear.go": "1502c5550b73f4dc71ff841ba6ffd17894766006988f251f67673db2a2e096e5",
+    "engine/drawing.go": "160df41e6afb94a1e34a9e850f553aac3a3a666e882eb483d92db79c52d16cf0",
     "engine/trans.go": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
@@ -26,15 +27,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 65,
-    "fallback": 24,
+    "typed": 67,
+    "fallback": 22,
     "missing": [],
     "consumer_status_counts": {
       "stub": 10,
-      "unconsumed-render-field": 5,
+      "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 5,
+      "bounded-native-consumer": 10,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -92,20 +93,20 @@
       "registered": true,
       "parameter_route": "typed",
       "handler": "handleAngleAdd",
-      "consumer_status": "unconsumed-render-field",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/player.go lacks DrawAngle"
+        "ANGLES-OFFSET.md: native persistent float32 angle addition and renderer consumer; wider combinations open"
       ],
       "variants_complete": false
     },
     {
       "name": "angledraw",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleAngleDraw",
-      "consumer_status": "unconsumed-render-field",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/player.go lacks DrawAngle"
+        "ANGLES-OFFSET.md: native activation, cumulative frame scales, value/scale evaluation and production rotation; final raster gates explicit"
       ],
       "variants_complete": false
     },
@@ -114,9 +115,9 @@
       "registered": true,
       "parameter_route": "typed",
       "handler": "handleAngleMul",
-      "consumer_status": "unconsumed-render-field",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/player.go lacks DrawAngle"
+        "ANGLES-OFFSET.md: native persistent float32 multiplication and omitted-zero behavior; wider combinations open"
       ],
       "variants_complete": false
     },
@@ -125,9 +126,9 @@
       "registered": true,
       "parameter_route": "typed",
       "handler": "handleAngleSet",
-      "consumer_status": "unconsumed-render-field",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/player.go lacks DrawAngle"
+        "ANGLES-OFFSET.md: native persistent float32 angle register, omitted zero and production drawing activation; wider combinations open"
       ],
       "variants_complete": false
     },
@@ -526,11 +527,11 @@
     {
       "name": "offset",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleOffset",
-      "consumer_status": "unconsumed-render-field",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/player.go lacks DrawOffset"
+        "ANGLES-OFFSET.md: native frame-local partial updates, constants/facing/profile geometry and production drawing; wider combinations open"
       ],
       "variants_complete": false
     },

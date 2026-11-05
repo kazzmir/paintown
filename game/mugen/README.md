@@ -85,7 +85,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 # Build/test every MUGEN package against the stock reference corpus.
 game/mugen/mugen.sh --check -p 1 -timeout=30m
 
-# Full race checks; the last full run took about twenty-four minutes.
+# Full race checks; the last full run took about twenty-six minutes.
 game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m
 
 # Focused stock character loading and state compilation.
@@ -101,23 +101,28 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4cp implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cq implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
-motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cl)
-passes **3,435** test/subtest results across **36 packages**. M4cm focused races
+motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cq)
+passes **3,703** test/subtest results across **36 packages**. M4cm focused races
 pass194 native programs, including73 new controls/792 readings/seven rejections;
 three actor-window masks match. M4cn adds62 controls/708 readings/three rejections,
 49 calibrated positions and17 exact effect-window masks. See
 [effect attachment](docs/EXPLOD-ATTACHMENT.md), [target binding](docs/TARGET-SELF-BINDING.md),
 [parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
-All89 controller names register;65 typed routes,10 stubs and partial consumers
+All89 controller names register;67 typed routes,10 stubs and partial consumers
 remain. The two indexed and six RGB alpha counterexamples now pass unchanged goldens;
 see [alpha precision](docs/ALPHA-NORMALIZATION.md). Rotation sampling and wider
 documented gates stay open.
 Actor AIR transparency and typed Trans now reach the shared native blend path;
-see [actor transparency](docs/TRANS.md). No whole-engine completion percentage is justified.
+see [actor transparency](docs/TRANS.md). Angle/scale/Offset now drive drawing,
+including persistent angle state and native frame-local values. Their62 native
+programs and58 actual apps provide46 exact RGB crops/54 exact white masks;
+12 raster counterexamples remain unwaived. See [angles/offsets](docs/ANGLES-OFFSET.md).
+The final drawing integration passes25 tested and11 compiled-only packages,
+with no failures or individual skips and all13,467 frozen inputs verified. No whole-engine completion percentage is justified.
 
 Through M4ch, fresh native, actual
 render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have

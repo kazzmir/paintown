@@ -1,0 +1,66 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "9d7a679a5385bdf33c3d0ca1a7e61d8cfc0e09b853516b1db84d3ea5c0e8e040",
+  "air_sha256": "89d2428a42e7824c0055f263404da4fdcde7e0318ac3411c7b02cb4511dbe7d9",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "b8a0e6bce52351409fb765b017f2ed6aeb9bb228f25b149d72dcef035df6491f",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": -75,
+        "8": -1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "fixture_constants": true,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_state": 700,
+  "controller_counts": {
+    "AngleSet": 0,
+    "AngleAdd": 0,
+    "AngleMul": 0,
+    "AngleDraw": 0,
+    "Offset": 0
+  },
+  "drawing_render": {
+    "region": [
+      160,
+      110,
+      1120,
+      690
+    ],
+    "native_crop_sha256": "6beff1c17a9d4cefe16aa89e920d35ba0520104a7aae7abd97199c2e621507dc",
+    "white_rgb": [
+      247,
+      239,
+      231
+    ],
+    "white_pixels": 7900,
+    "white_bounds": [
+      551,
+      110,
+      670,
+      303
+    ]
+  }
+}

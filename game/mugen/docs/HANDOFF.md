@@ -13,6 +13,57 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
+M4cq implements bounded native angle/scale/Offset schemas/state/production
+drawing. Read ANGLES-OFFSET.md for arithmetic, lifetime, coordinates, native
+setup corrections and all raster limits.62 promoted programs pin696 readings/
+four controller rejections.282 unique hashes include all source/probe/stock-
+constant/empty-world inputs. Seven minimal-Data drafts remain unpromoted;
+seven complete-constant replacements capture, followed by a driver metadata
+KeyError on provenance kfm.cns. Iteration is corrected and the separate constants
+audit verifies all seven without recapture. No original was changed or deleted.
+
+Final apps m4cq4 use binary6015e0612326d1694408d8a27617511d1080792a4a3a43dc887e4e64ad36ec43.
+46 of58 RGB crops match exactly (21,454,400 pixels);54 white masks are exact.
+Twelve fractional/nonquarter raster counterexamples remain UNWAIVED. The strict
+58-case runner exited1; this is not full application RGB conformance. See the
+exact counts/maxima in ANGLES-OFFSET.md and m4cq4-app-audit.json. Positive and
+mirrored quarter turns are exact after dominant-axis addressing and screen-space
+flipped bias. The36-case GPU experiment reproduces old production and isolates
+this correction. Worse inverse projection was reverted; m4cq1/2/3 are diagnostics.
+
+Original62 JSON goldens/wider diagnostic regions remain immutable. Their broad
+region includes native debug text and viewport-border sampling. A separate empty
+native world/matching Go app calibrate ROI200,140..1080,670. Separate
+actor-drawing-crops.json pins58 native-only crop hashes plus original JSON/PNG
+hashes and calibration. No allowance changed. Public drawing_render_probe.py
+passes quarters and correctly fails fractional RGB; --original-region retains
+the broader diagnostic. The native resources also expose a BOM after leading
+blank lines; Go now accepts it before the first section. Launcher uses _tmp.
+
+FINAL FULL SCOPED RACES PASS3,703 test/subtest results:25 tested+11 compiled-only
+packages, no failures/individual skips; Match1490.670s, summed1547.931s.36-package
+preflight and all13,467 frozen inputs pass. Artifacts are m4cq-full-{packages.json,
+inputs.json,race.jsonl,race.stderr.log}. The run integrates M4cm/M4cn/M4co/M4cp
+and final M4cq sampling/BOM changes. It supersedes M4cl as completed full baseline.
+
+Stock21/26/45s is visually inspected win/rematch/win (m4cq-stock-review.png and
+original captures).82 balanced owned input events and1,995,181 private PCM frames,
+all282 native hashes/full/app/resources/binary/config/PNG/PCM/module/inventory
+hashes verify. Final audit is temp/m4cq-final-evidence-audit.json; it explicitly
+records overall_application_rgb_conformance_passed=false for the12 known cases.
+Full21196/stock20967 sessions awaited; separate client check empty. Only MD
+changed after final passing source/app runs. Commit source/text under game/mugen/;
+engine/drawing.go needs git add -f. No push, binaries, agents or goals.
+
+Continue ALL item3 after the bounded checkpoint. Next temp/author-m4cr.py is
+prepared for45 PalFX controls, NOT executed/frozen. Then remaining palette/global,
+environment/afterimage/creation/dependent and residual controllers. Counts67 typed/
+22 fallback/10 stubs/zero unread actor draw families/nine partial rows are not
+an engine percentage. Item4 remains unallocated. M4cp acfdbb1dc/M4co33098c939.
+Current private servers/wrapper: item3-private-servers.json / round-task-env.py.
+Never overlap native/app/display Go or edit frozen Go/test/probe/fixture inputs.
+All builds use temp/_tmp; preserve immutable originals and failed diagnostics.
+
 M4cp implements typed Trans and the missing actor AIR transparency consumer.
 Read TRANS.md.56 promoted native programs pin492 numeric readings/15 rejections/
 630 native RGB samples.233 unique hashes preserve all originals/probe, including

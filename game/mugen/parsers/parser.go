@@ -18,7 +18,7 @@ func Parse(r io.Reader) (*File, error) {
 	for scanner.Scan() {
 		lineNo++
 		line := scanner.Text()
-		if lineNo == 1 {
+		if section == nil {
 			line = strings.TrimPrefix(line, "\ufeff")
 		}
 		column := len(line) - len(strings.TrimLeft(line, " \t")) + 1

@@ -94,3 +94,12 @@ Trans has a typed native schema and per-actor rendering consumer. AIR blends
 also reach actor drawing. Counts are89 registered/65 typed/24 fallback,10 stubs,
 five unconsumed angle/offset families, nine partial rows, five bounded-native
 and60 route-only families. All rows remain variant-incomplete. Read TRANS.md.
+
+## M4cq implementation
+
+AngleSet/Add/Mul/Draw and Offset now have bounded native drawing consumers.
+Counts are89 registered/67 typed/22 fallback,10 stubs, zero unread actor drawing
+families, nine partial rows, ten bounded-native and60 route-only families.
+All rows remain variant-incomplete;12 raster counterexamples remain unwaived.
+Read ANGLES-OFFSET.md. Final full integration passes3,703 results/36 packages with no failures or
+individual skips; all13,467 frozen inputs verify.

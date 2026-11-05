@@ -210,9 +210,11 @@ type Character struct {
 	receivedFallCount int32
 
 	// Visual/Drawing State
-	DrawTransparency engine.Transparency
-	DrawAngle        float64
-	DrawOffset       []float64
+	DrawTransparency    engine.Transparency
+	DrawAngle           float64
+	AngleDrawingEnabled bool
+	DrawScale           [2]float32
+	DrawOffset          []float64
 
 	// System/Debug
 	Clipboard string
@@ -428,7 +430,8 @@ func (c *Character) runStateTick() bool {
 	c.cameraDisabled = [2]bool{c.screenBoundsDisabled, c.screenBoundsDisabled}
 	c.frameWidths = engine.WidthParameters{}
 	c.DrawTransparency = engine.Transparency{}
-	c.DrawAngle = 0
+	c.AngleDrawingEnabled = false
+	c.DrawScale = [2]float32{1, 1}
 	c.DrawOffset = []float64{0, 0}
 	// Clear stale debug info globally so we only see current frame actions.
 	if input.GlobalManager != nil {
@@ -1105,26 +1108,43 @@ func (c *Character) SetPaletteMapping(source, dest [2]int) error {
 	return nil
 }
 
+// The angle register survives active frames. Activation, scale and display
+// offsets belong to the current frame; later angle controllers affect drawing.
 func (c *Character) AngleAdd(angle float64) {
-	c.DrawAngle += angle
+	c.DrawAngle = float64(float32(c.DrawAngle) + float32(angle))
 }
-
+func (c *Character) AngleMul(value float64) {
+	c.DrawAngle = float64(float32(c.DrawAngle) * float32(value))
+}
+func (c *Character) AngleSet(angle float64) { c.DrawAngle = float64(float32(angle)) }
 func (c *Character) AngleDraw(angle float64) {
-	// Logic: set drawing angle for the current frame
-	c.DrawAngle = angle
+	c.SetAngleDrawing(engine.AngleDrawing{HasValue: true, Value: angle, Scale: [2]float32{1, 1}})
 }
-
-func (c *Character) AngleMul(mul float64) {
-	c.DrawAngle *= mul
+func (c *Character) SetAngleDrawing(p engine.AngleDrawing) {
+	if !c.AngleDrawingEnabled {
+		c.DrawScale = [2]float32{1, 1}
+	}
+	c.AngleDrawingEnabled = true
+	// The beta uses this exact float32 sentinel for an omitted angle.
+	if p.HasValue && float32(p.Value) != -math.MaxFloat32 {
+		c.AngleSet(p.Value)
+	}
+	c.DrawScale[0] *= p.Scale[0]
+	c.DrawScale[1] *= p.Scale[1]
 }
-
-func (c *Character) AngleSet(angle float64) {
-	c.DrawAngle = angle
+func (c *Character) SetDrawingOffset(p engine.DrawingOffset) {
+	if len(c.DrawOffset) < 2 {
+		c.DrawOffset = []float64{0, 0}
+	}
+	scale := c.ScaleFrom(c.currentStateOwner())
+	if p.X != nil {
+		c.DrawOffset[0] = *p.X * scale
+	}
+	if p.Y != nil {
+		c.DrawOffset[1] = *p.Y * scale
+	}
 }
-
-func (c *Character) Offset(x, y float64) {
-	c.DrawOffset = []float64{x, y}
-}
+func (c *Character) Offset(x, y float64) { c.SetDrawingOffset(engine.DrawingOffset{X: &x, Y: &y}) }
 
 func (c *Character) AppendToClipboard(text string) {
 	c.Clipboard += "\n" + text

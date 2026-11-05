@@ -1,5 +1,26 @@
 # Implementation checkpoints
 
+## M4cq: actor angle, scale and display offsets
+
+Typed angle/scale/Offset state now reaches player drawing, including persistent
+float32 angles, omitted-zero values, cumulative frame scales, partial frame
+offsets and facing-relative constants.62 native programs/696 values/four
+controller rejections and282 original/probe/constant/calibration hashes pin the
+bounded behavior. Source addressing follows dominant screen axes; flipped bias
+stays in screen coordinates after rotation. Quarter-turn crops are exact.
+
+All58 actual apps retain46 exact RGB crops/54 exact white masks and12 explicitly
+UNWAIVED raster cases. Strict matrix exits1; no full RGB claim. A separately
+calibrated actor crop preserves all original wider goldens unchanged. Public
+read-only verification, leading-BOM parsing and _tmp launcher are included.
+
+Final full scoped races pass3,703 results/36 packages,25 tested+11 compiled-only,
+Match1490.670s, no failures/individual skips. All13,467 frozen inputs verify.
+Stock win/rematch/win is visually checked;82 balanced events/1,995,181 private PCM
+frames and all native/app/module/inventory/provenance guards pass. Sessions
+awaited/no clients. Source/text only. Read ANGLES-OFFSET.md and HANDOFF.md;
+continue all item3 with PalFX next, item4 unallocated.
+
 ## M4cp: Trans schemas and actor AIR transparency
 
 Typed Trans now drives per-actor frame overrides; actor AIR blend values also

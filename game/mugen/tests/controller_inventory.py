@@ -16,7 +16,7 @@ SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'system/effects.go', 'render/perspective.go',
            'render/alpha.go', 'render/nearest.go', 'render/linear.go',
-           'engine/trans.go', 'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
+           'engine/drawing.go', 'engine/trans.go', 'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
     'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
     'envshake': 'EnvShake', 'envcolor': 'EnvColor',
@@ -25,9 +25,7 @@ STUBS = {
     'forcefeedback': 'ForceFeedback', 'gamemakeanim': 'GameMakeAnim',
     'makedust': 'MakeDust',
 }
-RENDER_FIELDS = {'angleadd': 'DrawAngle', 'angledraw': 'DrawAngle',
-                 'anglemul': 'DrawAngle', 'angleset': 'DrawAngle',
-                 'offset': 'DrawOffset'}
+RENDER_FIELDS = {}
 PARTIAL = {
 	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; shadow/priority/pause and projection sampling gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
@@ -40,6 +38,12 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
+    'angleset': 'ANGLES-OFFSET.md: native persistent float32 angle register, omitted zero and production drawing activation; wider combinations open',
+    'angleadd': 'ANGLES-OFFSET.md: native persistent float32 angle addition and renderer consumer; wider combinations open',
+    'anglemul': 'ANGLES-OFFSET.md: native persistent float32 multiplication and omitted-zero behavior; wider combinations open',
+    'angledraw': 'ANGLES-OFFSET.md: native activation, cumulative frame scales, value/scale evaluation and production rotation; final raster gates explicit',
+    'offset': 'ANGLES-OFFSET.md: native frame-local partial updates, constants/facing/profile geometry and production drawing; wider combinations open',
+
     'trans': 'TRANS.md: native schemas/evaluation, AIR defaults, per-actor overrides, expiry/frozen frame/transition and shared blend consumer; wider pause/RGBA combinations open',
     'bindtotarget': 'TARGET-SELF-BINDING.md: native selection, immediate caller position, reverse constraint, retained/quantized offsets and profiles; wider interactions open',
     'explodbindtime': 'EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open',

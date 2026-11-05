@@ -1,6 +1,9 @@
 package render
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"math"
+)
 
 // Nearest preserves sprite-local sampling precision and fractional geometry.
 type Nearest struct {
@@ -56,16 +59,25 @@ func (r *Nearest) DrawImage(dst, src *ebiten.Image, options *ebiten.DrawImageOpt
 		r.shader = shader
 	}
 	vertices := paddedQuad(src, geometry, tint)
-	reverse := [2]float32{}
-	if geometry.Element(0, 0) < 0 {
-		reverse[0] = 1
-	}
-	if geometry.Element(1, 1) < 0 {
-		reverse[1] = 1
-	}
+	reverse := sourceReversal(geometry)
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,
 		&ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src},
 			Blend: options.Blend, CompositeMode: options.CompositeMode,
 			Uniforms: map[string]any{"Reverse": reverse, "NativeDestination": alphaDestination(destination)}})
 	return nil
+}
+
+// Source addressing follows each local axis along its dominant screen direction.
+// A quarter turn can reverse an axis even when its diagonal component is zero.
+func sourceReversal(geometry ebiten.GeoM) (reverse [2]float32) {
+	for axis := 0; axis < 2; axis++ {
+		a, b := geometry.Element(0, axis), geometry.Element(1, axis)
+		if math.Abs(b) > math.Abs(a) {
+			a = b
+		}
+		if a < 0 {
+			reverse[axis] = 1
+		}
+	}
+	return reverse
 }

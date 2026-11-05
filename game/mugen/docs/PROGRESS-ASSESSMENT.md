@@ -1,5 +1,16 @@
 # Current progress assessment
 
+M4cq implementation (2026-11-05) adds angle/scale/Offset production consumers,
+persistent native float32 angles, cumulative frame scales, partial offsets and
+constant/facing/profile handling.62 programs pin696 values/four rejections.
+46 of58 actual-app RGB crops and54 white masks match exactly;12 raster cases
+remain explicitly unwaived. See [ANGLES-OFFSET.md](ANGLES-OFFSET.md). Final full scoped races pass3,703 test/subtest results across25 tested and11
+compiled-only packages, with no failures/individual skips; Match1490.670s.
+All13,467 frozen inputs and root-module guards pass.
+Source counts67 typed/22 fallback/10 stubs, zero unread actor draw families and
+nine partial rows are not a whole-engine percentage. Item3 continues; item4 is
+unallocated. Earlier entries below are historical checkpoint evidence.
+
 M4cp (2026-11-05) adds typed Trans and the missing actor AIR transparency
 consumer.56 native programs pin492 readings/15 rejections/630 RGB samples;
 core/GPU/Match races pass. Read [TRANS.md](TRANS.md) and HANDOFF.md for final

@@ -8,10 +8,10 @@ set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Keep the root module read-only and all disposable build/test files in scope.
-mkdir -p "$DIR/temp/go-build" "$DIR/temp/tmp"
+mkdir -p "$DIR/temp/go-build" "$DIR/temp/_tmp"
 export GOCACHE="$DIR/temp/go-build"
-export GOTMPDIR="$DIR/temp/tmp"
-export TMPDIR="$DIR/temp/tmp"
+export GOTMPDIR="$DIR/temp/_tmp"
+export TMPDIR="$DIR/temp/_tmp"
 export GOFLAGS="${GOFLAGS:+$GOFLAGS }-modfile=$DIR/mugen.mod -mod=readonly"
 cd "$DIR/../.."
 

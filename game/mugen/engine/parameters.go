@@ -123,6 +123,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileModifyExplod(ctrl)
 	case "trans":
 		return compileTrans(ctrl)
+	case "angleset", "angleadd", "anglemul", "angledraw", "offset":
+		return compileDrawing(ctrl, name)
 	case "screenbound":
 		return compileScreenBound(ctrl)
 	case "width":
@@ -296,7 +298,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			env.VictoryQuote(quote)
 			return nil
 		})
-	case "attackmulset", "defencemulset", "angleadd", "angleset", "anglemul":
+	case "attackmulset", "defencemulset":
 		return typedHandler(ctrl, []argumentSpec{{"value", false, true}}, func(env Environment, v map[string]evaluator.Value) error {
 			n := v["value"].Number()
 			switch name {
@@ -304,12 +306,6 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 				env.SetAttackMul(n)
 			case "defencemulset":
 				env.SetDefenceMul(n)
-			case "angleadd":
-				env.AngleAdd(n)
-			case "angleset":
-				env.AngleSet(n)
-			case "anglemul":
-				env.AngleMul(n)
 			}
 			return nil
 		})

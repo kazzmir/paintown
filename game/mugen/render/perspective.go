@@ -83,13 +83,7 @@ func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p P
 	uniforms := map[string]any{"SourceX": []float32{float32(inv[0]), float32(inv[1]), float32(inv[2])}, "SourceY": []float32{float32(inv[3]), float32(inv[4]), float32(inv[5])}, "Divisor": []float32{float32(inv[6]), float32(inv[7]), float32(inv[8])}}
 	uniforms["NativeDestination"] = destination
 	if indexed {
-		reverse := [2]float32{}
-		if options.GeoM.Element(0, 0) < 0 {
-			reverse[0] = 1
-		}
-		if options.GeoM.Element(1, 1) < 0 {
-			reverse[1] = 1
-		}
+		reverse := sourceReversal(options.GeoM)
 		uniforms["Reverse"] = reverse
 	}
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, *shader, &ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src}, Blend: options.Blend, CompositeMode: options.CompositeMode, Uniforms: uniforms})

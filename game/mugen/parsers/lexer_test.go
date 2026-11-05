@@ -17,3 +17,12 @@ func TestUTF8BOM(t *testing.T) {
 		t.Fatalf("name = %q", got)
 	}
 }
+
+// Frozen actordraw-constants native resources retain a BOM after the reference
+// preparer's leading newline. Native accepts it before the first section.
+func TestUTF8BOMAfterLeadingBlankLines(t *testing.T) {
+	file, err := Parse(strings.NewReader("\n\ufeff\n[Info]\nname=\"fixture\"\n"))
+	if err != nil || len(file.Sections) != 1 || file.Sections[0].Line != 3 {
+		t.Fatal(file, err)
+	}
+}

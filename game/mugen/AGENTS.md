@@ -26,6 +26,43 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4cq consumes native angle/scale/Offset state and drawing. Read ANGLES-OFFSET.md.
+62 promoted programs/696 readings/four controller rejections;282 original/probe/
+stock-constant/empty-world hashes remain immutable. Seven incomplete-Data drafts
+are unpromoted; seven replacements capture successfully before a post-loop
+provenance-name KeyError, corrected by metadata iteration and a separate audit.
+All originals/diagnostics are preserved. Original62 JSON wider crop goldens stay
+unchanged; separate empty-native/Go-calibrated actor crops are native-only.
+
+Final58 actual apps:46 exact RGB crops/21,454,400 pixels and54 exact white masks.
+12 fractional/nonquarter raster counterexamples remain UNWAIVED; strict matrix
+correctly exits1. Do not call all58 RGB-conformant. Positive/mirrored quarter
+turns are exact after dominant-axis addressing and screen-space flipped bias.
+Inverse projection was worse/reverted. New read-only drawing_render_probe.py
+checks source/resources/binary/config/PNG/crop hashes and preserves diagnostic
+regions via --original-region. Leading-BOM loading and _tmp launcher are fixed.
+
+FINAL FULL SCOPED RACES PASS3,703 results/36 packages (25 tested/11 compiled-only),
+no failures/individual skips; Match1490.670s, total1547.931s. All13,467 frozen
+inputs verify. Stock win/rematch/win is visually inspected (contact sheet plus
+originals),82 balanced owned input events/1,995,181 private PCM frames. All282
+native/full/app/module/inventory/provenance guards pass. Final audit:
+temp/m4cq-final-evidence-audit.json records application conformance FALSE for the
+12 cases. Sessions21196(full)/20967(stock) awaited; separate client checks empty.
+Commit the bounded M4cq checkpoint, then continue ALL item3. Engine/drawing.go
+needs explicit git add -f (historical ignore); source/text only, no push/binaries.
+
+Next temp/author-m4cr.py is PREPARED45 PalFX cases, NOT executed/frozen. Continue
+palette/shared effects, environment/afterimages, remaining creation/dependencies
+and residual controllers. Source67 typed/22 fallback/10 stubs/zero unread actor
+draw families/nine partial rows is not whole-engine coverage. Item4 remains
+unallocated; full raster/font/platform conformance stays explicitly bounded.
+M4cp acfdbb1dc/M4co33098c939; latest completed full suite is M4cq. No agents/goals/
+out-of-scope authoring. Private host: item3-private-servers.json, round-task-env.py.
+All native/app/display-dependent Go stays serial; await then separately check
+clients. Never edit Go/tests/probes/fixtures during a frozen run. Preserve native
+originals/captures/goldens and all failed diagnostics. No tolerance changes.
+
 M4cp consumes actor AIR transparency and typed Trans overrides. Read TRANS.md:
 56 promoted programs/492 readings/15 rejections/630 colors,233 original/probe
 hashes including two preserved unpublished-transition diagnostics. All41 actual

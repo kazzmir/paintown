@@ -3,6 +3,7 @@ package character
 import (
 	"fmt"
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
@@ -138,14 +139,34 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 
 	opts.GeoM.Translate(float64(currentElement.XOffset*ent.Facing), float64(currentElement.YOffset))
 	characterScaleX, characterScaleY := ent.spriteScale()
+	if ent.AngleDrawingEnabled {
+		characterScaleX = float64(float32(characterScaleX) * ent.DrawScale[0])
+		characterScaleY = float64(float32(characterScaleY) * ent.DrawScale[1])
+	}
 	opts.GeoM.Scale(sx*characterScaleX, sy*characterScaleY)
-	// Native offsets an effective flipped axis by one game-surface pixel.
-	// Apply this after local scaling; the final viewport fit samples it.
-	if elementFlipX {
+	if ent.AngleDrawingEnabled {
+		opts.GeoM.Rotate(-ent.DrawAngle * float64(ent.Facing) * math.Pi / 180)
+	}
+	// Native flipped-axis bias remains in screen coordinates after rotation.
+	if elementFlipX != (characterScaleX < 0) {
 		opts.GeoM.Translate(1, 0)
 	}
-	if elementFlipY {
+	if elementFlipY != (characterScaleY < 0) {
 		opts.GeoM.Translate(0, 1)
+	}
+	// Constant draw.offset follows facing; frame Offset uses screen-oriented X.
+	// Both translate the axis after rotation/scaling and leave collision unchanged.
+	if ent.StateFile != nil {
+		if d := ent.StateFile.Size.DrawOffset; len(d) > 0 {
+			x += float64(d[0]*ent.Facing) * sx
+			if len(d) > 1 {
+				y += float64(d[1]) * sy
+			}
+		}
+	}
+	if len(ent.DrawOffset) > 1 {
+		x += ent.DrawOffset[0] * sx
+		y += ent.DrawOffset[1] * sy
 	}
 	// Indexed sampling uses integer game pixel centers. RGB textures use the
 	// usual half-pixel centers and retain fractional axes.
