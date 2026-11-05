@@ -1,5 +1,13 @@
 # Current behavior coverage ledger
 
+M4cp (2026-11-05) adds typed Trans and the missing actor AIR transparency
+consumer.56 native programs pin492 readings/15 rejections/630 RGB samples;
+core/GPU/Match races pass. Read [TRANS.md](TRANS.md) and HANDOFF.md for final
+actual-window/stock acceptance. Source counts are89 registered/65 typed/24
+fallback,10 stubs, five unconsumed angle/offset families and nine partial rows.
+These are source routes, not an overall percentage. Item3 continues; item4 is
+unallocated. Latest full integration remains M4cl.
+
 M4co (2026-11-05) closes the two M4ck indexed alpha failures and six M4az RGB
 alpha crop failures against unchanged goldens. Both GPU samplers match270 native
 RGB readings (540 samples/1,620 components);26 actual apps pass three grids, two

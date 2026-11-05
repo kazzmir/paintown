@@ -155,11 +155,17 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 	}
 	opts.GeoM.Translate(x, y)
 
+	blend, alphaSrc, alphaDst := currentElement.Blend, currentElement.AlphaSrc, currentElement.AlphaDst
+	if ent.DrawTransparency.Enabled {
+		blend, alphaSrc, alphaDst = ent.DrawTransparency.Mode, ent.DrawTransparency.Source, ent.DrawTransparency.Destination
+	}
+	destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
+
 	var err error
 	if indexed {
-		err = p.indexSampler.Draw(screen, ebitenSprite, opts.GeoM, opts.ColorScale)
+		err = p.indexSampler.DrawImage(screen, ebitenSprite, opts, destination)
 	} else {
-		err = p.rgbSampler.Draw(screen, ebitenSprite, opts.GeoM, opts.ColorScale)
+		err = p.rgbSampler.DrawImage(screen, ebitenSprite, opts, destination)
 	}
 	if err != nil {
 		ent.RuntimeError = fmt.Errorf("%s sprite %d,%d shader: %w", p.DefPath, currentElement.Group, currentElement.Image, err)

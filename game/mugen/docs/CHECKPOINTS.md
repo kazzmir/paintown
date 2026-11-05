@@ -1,5 +1,18 @@
 # Implementation checkpoints
 
+## M4cp: Trans schemas and actor AIR transparency
+
+Typed Trans now drives per-actor frame overrides; actor AIR blend values also
+reach the shared native rendering path.56 native programs/492 readings/15
+rejections/630 color samples and233 original/probe hashes pin schema, evaluation,
+ownership, expiry/frozen rendering and issuing-frame state transitions.
+All41 accepted programs match actual-app RGB crops exactly (4,455,675 pixels).
+Core/GPU races and56-program Match races29.023s pass. Stock win/rematch/win is
+visually verified;82 balanced events/1,943,231 private PCM frames and all607
+frozen source/app/module/inventory guards pass. Sessions awaited/no clients.
+Source/text only. Read TRANS.md; continue angle/scale/Offset and remaining item3.
+Latest full integration remains M4cl; item4 stays unallocated.
+
 ## M4co: shared native alpha normalization and blend paths
 
 Actual indexed/RGB samplers recover native reciprocal-product color precision

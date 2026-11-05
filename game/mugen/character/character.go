@@ -210,8 +210,9 @@ type Character struct {
 	receivedFallCount int32
 
 	// Visual/Drawing State
-	DrawAngle  float64
-	DrawOffset []float64
+	DrawTransparency engine.Transparency
+	DrawAngle        float64
+	DrawOffset       []float64
 
 	// System/Debug
 	Clipboard string
@@ -426,6 +427,7 @@ func (c *Character) runStateTick() bool {
 	c.screenBoundsDisabled = c.Parent != nil && !c.PlayerHelper
 	c.cameraDisabled = [2]bool{c.screenBoundsDisabled, c.screenBoundsDisabled}
 	c.frameWidths = engine.WidthParameters{}
+	c.DrawTransparency = engine.Transparency{}
 	c.DrawAngle = 0
 	c.DrawOffset = []float64{0, 0}
 	// Clear stale debug info globally so we only see current frame actions.
@@ -936,8 +938,16 @@ func (c *Character) Width(params map[string]string) {
 	}
 }
 
+func (c *Character) SetTransparency(p engine.Transparency) { c.DrawTransparency = p }
+
 func (c *Character) Trans(params map[string]string) {
-	// Stub
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteTransParameters(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("Trans: %w", err)
+	}
 }
 
 func (c *Character) BindToParent(params map[string]string) {

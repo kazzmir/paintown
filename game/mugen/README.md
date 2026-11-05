@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05, through M4co implementation**. Item 3 is active:
+Snapshot: **2026-11-05, through M4cp implementation**. Item 3 is active:
 ExplodBindTime, measured ModifyExplod mutation/drawing and parent/root/target
 actor binding have production consumers. Explicit Explod entity binding, native
 motion/clock behavior and caller-relative retargeting now work too. The latest full race suite (M4cl)
@@ -112,11 +112,12 @@ three actor-window masks match. M4cn adds62 controls/708 readings/three rejectio
 [effect attachment](docs/EXPLOD-ATTACHMENT.md), [target binding](docs/TARGET-SELF-BINDING.md),
 [parent/root binding](docs/SELF-BINDING.md), [effect binding](docs/EXPLOD-BINDING.md),
 [mutation](docs/MODIFY-EXPLOD.md) and the [audit](docs/CONTROLLER-BINDINGS.md).
-All89 controller names register;64 typed routes,11 stubs and partial consumers
+All89 controller names register;65 typed routes,10 stubs and partial consumers
 remain. The two indexed and six RGB alpha counterexamples now pass unchanged goldens;
 see [alpha precision](docs/ALPHA-NORMALIZATION.md). Rotation sampling and wider
 documented gates stay open.
-No whole-engine completion percentage is justified.
+Actor AIR transparency and typed Trans now reach the shared native blend path;
+see [actor transparency](docs/TRANS.md). No whole-engine completion percentage is justified.
 
 Through M4ch, fresh native, actual
 render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have

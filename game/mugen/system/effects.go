@@ -132,15 +132,7 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 		if instance.HasBlend {
 			blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 		}
-		nativeDestination := float32(-1)
-		switch blend {
-		case "alpha":
-			nativeDestination = render.ApplyAlpha(op, alphaSrc, alphaDst)
-		case "sub":
-			op.Blend = ebiten.Blend{BlendOperationRGB: ebiten.BlendOperationReverseSubtract, BlendOperationAlpha: ebiten.BlendOperationAdd,
-				BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOne,
-				BlendFactorSourceAlpha: ebiten.BlendFactorZero, BlendFactorDestinationAlpha: ebiten.BlendFactorOne}
-		}
+		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
 		if projected {
 			projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
 			var err error

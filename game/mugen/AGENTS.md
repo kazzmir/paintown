@@ -26,14 +26,28 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4cp consumes actor AIR transparency and typed Trans overrides. Read TRANS.md:
+56 promoted programs/492 readings/15 rejections/630 colors,233 original/probe
+hashes including two preserved unpublished-transition diagnostics. All41 actual
+apps match every RGB pixel in108,675-pixel crops (4,455,675 pixels total).
+Core/GPU races and56-program Match races29.023s pass. Stock win/rematch/win is
+visually inspected;82 balanced events/1,943,231 private PCM frames and all607
+focused/app frozen source hashes/module/inventory/artifact guards pass. Final
+audit: temp/m4cp-final-evidence-audit.json. All sessions awaited/no clients.
+Commit M4cp, then continue angle/scale/Offset and remaining item3. Next private
+author script is temp/author-m4cq.py; it is prepared, not executed or frozen.
+Counts65 typed/24 fallback/10 stubs, five unconsumed draw families/nine partial
+rows; no overall completion claim. Latest full integration remains M4cl.
+M4co is33098c939. No pushes, agents, binaries or out-of-scope authoring.
+
 M4co closes the bounded native alpha precision gaps. Read ALPHA-NORMALIZATION.md:
 540 actual-GPU samples /1,620 exact RGB component comparisons,26 frozen actual
 apps (270 indexed readings, two exact indexed masks,16 exact RGB crops including
 six previous failures, five actor regression crops). GPU/core races pass. Stock
 win/rematch/win is visually inspected;82 balanced events/1,987,918 private PCM
 frames and all frozen hashes/module/inventory/app guards pass. Final audit:
-temp/m4co-final-evidence-audit.json. Sessions awaited/no clients. Commit M4co,
-then continue Trans and remaining item3; latest full integration remains M4cl.
+temp/m4co-final-evidence-audit.json. Sessions awaited/no clients. M4co is33098c939;
+continue Trans and remaining item3; latest full integration remains M4cl.
 Render now has display-dependent GPU tests. No RGBA/platform/full-frame parity
 claim follows. Preserve failed diagnostic logs and immutable native originals.
 

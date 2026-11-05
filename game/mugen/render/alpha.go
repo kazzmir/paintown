@@ -28,3 +28,17 @@ func alphaDestination(values []float32) float32 {
 	}
 	return -1
 }
+
+// ApplyBlend consumes an AIR blend or a controller override using the shared
+// native alpha path. Empty/none leave the ordinary texture-alpha blend intact.
+func ApplyBlend(options *ebiten.DrawImageOptions, mode string, source, destination int) float32 {
+	switch mode {
+	case "alpha":
+		return ApplyAlpha(options, source, destination)
+	case "sub":
+		options.Blend = ebiten.Blend{BlendOperationRGB: ebiten.BlendOperationReverseSubtract, BlendOperationAlpha: ebiten.BlendOperationAdd,
+			BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOne,
+			BlendFactorSourceAlpha: ebiten.BlendFactorZero, BlendFactorDestinationAlpha: ebiten.BlendFactorOne}
+	}
+	return -1
+}

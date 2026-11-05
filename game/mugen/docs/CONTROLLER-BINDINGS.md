@@ -87,3 +87,10 @@ BindToTarget now has a typed schema and measured combat consumer. The audit
 counts89 registered/64 typed/25 fallback,11 stubs, five unconsumed actor draw
 families, nine partial families, four bounded-native and60 route-only families.
 All rows remain variant-incomplete. Read TARGET-SELF-BINDING.md.
+
+## M4cp update
+
+Trans has a typed native schema and per-actor rendering consumer. AIR blends
+also reach actor drawing. Counts are89 registered/65 typed/24 fallback,10 stubs,
+five unconsumed angle/offset families, nine partial rows, five bounded-native
+and60 route-only families. All rows remain variant-incomplete. Read TRANS.md.

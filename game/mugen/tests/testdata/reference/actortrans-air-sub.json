@@ -1,0 +1,204 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "6ef5f882ef224d297c83109e93f0ebb8edb2488971d8602100fa58ba018c1021",
+  "air_sha256": "c3612d9b7d2f0c520fcbfcb7f1146a6c1960a9f7691fd5f29b6788033862be18",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "245db3e8b5988426364e01fd19a438cab8885b1c6a2aff6ac1bf7fa75cce3a4a",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kind": "Trans",
+  "controller_state": 700,
+  "controller_count": 0,
+  "trans_render": {
+    "region": [
+      560,
+      270,
+      875,
+      615
+    ],
+    "native_crop_sha256": "853974c6cb9cb89dced7e094041f3ad71a908c7260e4bc778e124c19f2d518d0",
+    "native_rgb_samples": [
+      {
+        "point": [
+          635,
+          286
+        ],
+        "rgb": [
+          206,
+          0,
+          206
+        ]
+      },
+      {
+        "point": [
+          626,
+          325
+        ],
+        "rgb": [
+          189,
+          0,
+          90
+        ]
+      },
+      {
+        "point": [
+          638,
+          289
+        ],
+        "rgb": [
+          165,
+          0,
+          156
+        ]
+      },
+      {
+        "point": [
+          641,
+          325
+        ],
+        "rgb": [
+          127,
+          0,
+          59
+        ]
+      },
+      {
+        "point": [
+          626,
+          331
+        ],
+        "rgb": [
+          123,
+          0,
+          206
+        ]
+      },
+      {
+        "point": [
+          620,
+          349
+        ],
+        "rgb": [
+          123,
+          0,
+          165
+        ]
+      },
+      {
+        "point": [
+          620,
+          352
+        ],
+        "rgb": [
+          90,
+          0,
+          130
+        ]
+      },
+      {
+        "point": [
+          644,
+          325
+        ],
+        "rgb": [
+          90,
+          0,
+          33
+        ]
+      },
+      {
+        "point": [
+          629,
+          331
+        ],
+        "rgb": [
+          66,
+          0,
+          165
+        ]
+      },
+      {
+        "point": [
+          617,
+          355
+        ],
+        "rgb": [
+          49,
+          0,
+          90
+        ]
+      },
+      {
+        "point": [
+          635,
+          331
+        ],
+        "rgb": [
+          24,
+          0,
+          140
+        ]
+      },
+      {
+        "point": [
+          653,
+          355
+        ],
+        "rgb": [
+          24,
+          0,
+          57
+        ]
+      },
+      {
+        "point": [
+          629,
+          334
+        ],
+        "rgb": [
+          16,
+          0,
+          99
+        ]
+      },
+      {
+        "point": [
+          659,
+          358
+        ],
+        "rgb": [
+          8,
+          0,
+          24
+        ]
+      }
+    ]
+  }
+}

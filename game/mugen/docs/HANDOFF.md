@@ -13,6 +13,33 @@ Next continue the remaining Explod fields and shared controller/effect consumers
 Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
 
+M4cp implements typed Trans and the missing actor AIR transparency consumer.
+Read TRANS.md.56 promoted native programs pin492 numeric readings/15 rejections/
+630 native RGB samples.233 unique hashes preserve all originals/probe, including
+two stale-publication transition diagnostics. A separate published target-state
+snapshot corrects the setup without changing either original. All41 accepted
+programs have exact actual-app RGB crops:108,675 pixels each/4,455,675 total.
+Both source and destination alpha evaluate even in modes ignoring their values;
+default preserves earlier overrides, and actor ownership is independent of
+palette sharing. Issuing-frame state transition and frozen drawing are measured.
+
+Core races Engine1.426s/Character11.134s/System9.376s/Render1.666s/Effect1.011s
+pass;56-program Match races29.023s pass. Production apps use m4cp1 (five initial
+cases) and m4cp2 (the remaining36); no source change occurred between them.
+Final stock21/26/45s are visually inspected win/rematch/win, with82 balanced owned
+input events and1,943,231 private PCM frames. All607 focused/app source hashes,
+233 originals/probe hashes, source/config/binary/PNG/audio/module/inventory guards
+pass. Final audit: temp/m4cp-final-evidence-audit.json. All sessions awaited/no
+clients. Only source/text under game/mugen/ is authored/committed; no push.
+
+Continue all item3: angle/scale/Offset next (private author-m4cq.py is prepared
+but has not been executed), then palette/environment/afterimage/dependent
+creation and other controller consumers. Counts65 typed/24 fallback/10 stubs,
+five unconsumed actor draw families/nine partial rows. Wider RGBA/hitpause/
+foreign-state/palette composition interactions remain explicit gates. Latest
+full integration remains M4cl; use a full suite at the next drawing boundary.
+Item4 remains unallocated. M4co is33098c939.
+
 M4co closes the two M4ck indexed alpha failures and six old M4az RGB alpha crop
 failures without changing native goldens, geometry or tolerances. Read
 ALPHA-NORMALIZATION.md. Byte recovery/reciprocal normalization and distinct
