@@ -1,5 +1,12 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4ck adds typed ModifyExplod and selected per-object mutation/drawing consumers.
+Its146 native programs (including three alpha research grids) pin1,200 state
+readings/46 rejections. Nine exact geometry masks and seven nonexact rotation
+masks/two alpha color differences are explicitly separated. Read
+[MODIFY-EXPLOD.md](MODIFY-EXPLOD.md). All89 names now register;61 typed routes,
+14 stubs and partial consumers remain. Item3 continues; item4 is unallocated.
+
 M4cj adds typed ExplodBindTime and its production consumer: 28 native programs,
 288 numeric readings, four rejections, 28 calibrated positions and eight exact
 actual-app masks. See [EXPLOD-BINDING.md](EXPLOD-BINDING.md). The current audit has

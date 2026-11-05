@@ -205,6 +205,9 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["explodbindtime"] = func(*cns.StateController, Environment) error {
 		return fmt.Errorf("ExplodBindTime requires compiled parameters")
 	}
+	sm.controllers["modifyexplod"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("ModifyExplod requires compiled parameters")
+	}
 	sm.controllers["removeexplod"] = handleRemoveExplod
 	sm.controllers["afterimage"] = handleAfterImage
 	sm.controllers["afterimagetime"] = handleAfterImageTime

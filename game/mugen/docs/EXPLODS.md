@@ -1,5 +1,12 @@
 # Explod resources, lifetime and owned rendering
 
+M4cj/M4ck update: ExplodBindTime and a bounded ModifyExplod path now compile and
+reach production effects. Read EXPLOD-BINDING.md and MODIFY-EXPLOD.md for native
+defaults/order/errors, actual geometry and explicit shared-rendering limits.
+Creation's full bindID/random/palette/other fields and dependent consumers remain
+in active item3. The M4ae notes below are historical bounds, not current absence
+claims for those two mutation controllers.
+
 M4ae adds 27 native programs: 636 numeric observations, two load rejections
 and nine original RGB marker placements. The typed Explod path replaces the legacy literal parser
 that converted F(expression) to own action 0 and left it indefinitely visible.

@@ -4,8 +4,11 @@
 (item 3). M4ci committed the reproducible audit; M4cj adds ExplodBindTime with
 28 native programs / 288 readings / four rejections / eight exact actual-app
 masks. Focused Match/core races pass. [CONTROLLER-BINDINGS.md](CONTROLLER-BINDINGS.md)
-now records 88 registered and 60 typed routes, 14 stubs, five unconsumed drawing
-families, eight partial families and one absent name (ModifyExplod). A newly
+now records 89 registered and 61 typed routes, 14 stubs, five unconsumed drawing
+families and nine partial families. M4ck adds measured ModifyExplod mutation and
+draw consumers with143 controls/1,164 readings/46 rejections; three alpha grids
+add36 state readings. Nine exact geometry masks, seven nonexact rotation masks
+and two alpha color differences are explicit in MODIFY-EXPLOD.md. A newly
 observed VarSet literal-float gap is explicit. These are not full acceptance.
 The work is roughly ten substantial groups with multiple possible checkpoints.
 Item 4 remains unallocated. See [ITEM-3-PLAN.md](ITEM-3-PLAN.md).
@@ -77,7 +80,7 @@ compatibility or a whole-engine percentage. Broad interactions remain open.
 | Scope | Current count | What it establishes |
 | --- | ---: | --- |
 | HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
-| Controller registration | 88/89 (98.9%) | Dispatcher names only; includes partial implementations and stubs. ModifyExplod remains unregistered. |
+| Controller registration | 89/89 (100%) | Dispatcher names only; 14 stubs and partial implementations remain. Typed routes are61/89; no full variant percentage follows. |
 | Trigger runtime routes | 120/127 (94.5%) | Candidate source handlers; seven absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
 | Scalar clocks/random | HitPauseTime plus21 RNG controls/192 readings | Own pause clock, shared Park–Miller stream, VarRandom schemas/ranges/order and helper/redirect ownership. |
 | Projectile corpus |257 programs across setup/contact/coordinate/query slices | Typed setup and native lifecycle, cancellation/capacity/ownership/query behavior. Detailed bounded evidence in PROJECTILES.md, PROJECTILE-CONTACTS.md, PROJECTILE-COORDINATES.md and PROJECTILE-QUERIES.md. |

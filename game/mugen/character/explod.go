@@ -103,6 +103,85 @@ func (c *Character) SetExplodBindTime(p engine.ExplodBindTimeParameters) error {
 	return nil
 }
 
+func (c *Character) ModifyExplods(id int, evaluate func(bool) (engine.ExplodModification, error)) error {
+	for _, e := range c.Explods {
+		if e.Visual == nil || !e.Visual.Active || id != -1 && e.ID != id {
+			continue
+		}
+		v := e.Visual
+		p, err := evaluate(v.OnTop)
+		if err != nil {
+			return err
+		}
+		if p.ScaleX != nil {
+			v.ScaleX, v.HasScale = *p.ScaleX, true
+		}
+		if p.ScaleY != nil {
+			v.ScaleY, v.HasScale = *p.ScaleY, true
+		}
+		if p.Angle != nil {
+			v.Angle = *p.Angle
+		}
+		if p.XAngle != nil {
+			v.XAngle = *p.XAngle
+		}
+		if p.YAngle != nil {
+			v.YAngle = *p.YAngle
+		}
+		if p.BindTime != nil {
+			e.BindingTime = *p.BindTime
+		}
+		if p.BindID != nil && *p.BindID != -2 {
+			e.Anchor = nil
+			if c.World != nil {
+				if *p.BindID == -1 && len(c.World.Roots) > 0 {
+					e.Anchor = c.World.Roots[0]
+				}
+				if *p.BindID >= 0 {
+					if actor, found := c.World.Registry.Lookup(int32(*p.BindID)); found {
+						e.Anchor = actor
+					}
+				}
+			}
+		}
+		if p.OnTop != nil {
+			v.OnTop = *p.OnTop
+		}
+		if p.RemoveTime != nil {
+			e.Time = *p.RemoveTime
+			// Creation's -2 animation sentinel is not reused by modification.
+			if e.Time < -1 {
+				e.Time = 0
+			}
+		}
+		if p.SuperMoveTime != nil {
+			v.SuperMoveTime, v.IgnoreSuperPause = *p.SuperMoveTime, false
+		}
+		if p.SuperMove != nil {
+			v.IgnoreSuperPause = *p.SuperMove
+		}
+		if p.PauseMoveTime != nil {
+			v.PauseMoveTime = *p.PauseMoveTime
+		}
+		if p.SpritePriority != nil {
+			v.SpritePriority = *p.SpritePriority
+		}
+		if p.Shadow != nil {
+			v.Shadow = *p.Shadow != 0
+		}
+		if p.RemoveOnGetHit != nil {
+			e.RemoveOnGetHit = *p.RemoveOnGetHit
+		}
+		if p.IgnoreHitPause != nil {
+			e.IgnoreHitPause = *p.IgnoreHitPause
+		}
+		if p.HasBlend {
+			v.HasBlend, v.Blend, v.AlphaSrc, v.AlphaDst = true, p.Blend, p.AlphaSrc, p.AlphaDst
+		}
+	}
+	return nil
+}
+
 func (c *Character) advanceExplods(paused, superPaused bool) error {
 	keep := c.Explods[:0]
 	for _, e := range c.Explods {

@@ -3,26 +3,28 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
-    "engine/statemachine.go": "5665d20aac08482d13c08bbe03fa5bb0b5a419d10ad382437fe9997659becc01",
-    "engine/parameters.go": "94697f17b373bdde143b7c1271e77a0270125e2596acaa28e564a7019f412e68",
+    "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
+    "engine/parameters.go": "b711c5b179ce69746be8d1a9ead035fdc02936f1d89daca37c722c05e9357668",
     "character/character.go": "cc560e4f1887b9cb18b061cdc172e44bbd15e667c3ee3bff4c909991e691a951",
     "character/player.go": "485b752c748f2a461a14a1f85bc6868c272cafa447c0f28c763c1ee049808784",
-    "character/explod.go": "d5d8d6cdf3d97a1d9ded503111bfa5e2af4dbb5c053b3c664481db6105f2ab90",
-    "engine/explod.go": "7cde84de6c677958aa38e61ab3c51dbdf49d46f05a9f09398b5b36c903f9dcdf"
+    "character/explod.go": "99e4a3bc6f422b380139b588eaed964dcd925249bfb4ec9bb0757a4a696ba2e9",
+    "engine/explod.go": "7cde84de6c677958aa38e61ab3c51dbdf49d46f05a9f09398b5b36c903f9dcdf",
+    "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
+    "effect/scene.go": "017ccd133f1a115d97ba110aec841f89a3f6527ef0cab6cbe62dcdae9a84ce8f",
+    "system/effects.go": "0933f782761bee7e442634a4f64a6acd461a581c78ef57c656e32459211acadc",
+    "render/perspective.go": "56025e50257a5f991f73030a18ec58b1b0447a487c39561505e3660ead0c54fc"
   },
   "summary": {
     "manual": 89,
-    "registered": 88,
-    "typed": 60,
+    "registered": 89,
+    "typed": 61,
     "fallback": 28,
-    "missing": [
-      "modifyexplod"
-    ],
+    "missing": [],
     "consumer_status_counts": {
       "stub": 14,
       "unconsumed-render-field": 5,
-      "partial-consumer": 8,
-      "missing-dispatcher": 1,
+      "partial-consumer": 9,
+      "missing-dispatcher": 0,
       "bounded-native-consumer": 1,
       "route-only": 60
     },
@@ -476,11 +478,13 @@
     },
     {
       "name": "modifyexplod",
-      "registered": false,
-      "parameter_route": "missing",
-      "handler": null,
-      "consumer_status": "missing-dispatcher",
-      "evidence": [],
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "MODIFY-EXPLOD.md: native mutation/schema consumers; shared alpha/shadow/priority/pause and projection sampling gates remain"
+      ],
       "variants_complete": false
     },
     {

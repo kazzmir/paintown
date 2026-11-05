@@ -1,0 +1,138 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 700, mutation probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, mutation probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, mutation probe]
+type=VelSet
+trigger1=Time=0
+x=2
+y=0
+[State 700, mutation probe]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=7
+postype=p1
+pos=20,-20
+bindtime=0
+removetime=-1
+[State 700, mutation probe]
+type=ModifyExplod
+trigger1=Time=3
+id=7
+supermove=UndefinedTrigger
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=0
+value=Pos X
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=1
+value=Pos Y
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=2
+value=Facing
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=3
+value=NumExplod
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=4
+value=Var(0)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=Var(1)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=6
+value=Var(2)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=7
+value=Var(3)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=8
+value=Enemy,Pos X
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=9
+value=Enemy,Pos Y
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=10
+value=Time
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=GameTime
+[State 700, mutation probe]
+type=DisplayToClipboard
+trigger1=1
+text="P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)
+[State 700, mutation probe]
+type=AppendToClipboard
+trigger1=1
+text="P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)
+[State 700, mutation probe]
+type=Pause
+trigger1=Time=8
+time=99999
+movetime=0
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 701, mutation probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, mutation probe]
+type=PosSet
+trigger1=1
+x=0
+y=0

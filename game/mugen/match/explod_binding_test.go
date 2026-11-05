@@ -15,8 +15,18 @@ func TestNativeExplodBindTimePrograms(t *testing.T) {
 
 // Labels are not controller types. Keep the observed binding corpus honest.
 func TestNativeExplodBindTimeIntent(t *testing.T) {
-	paths, err := filepath.Glob("../tests/testdata/reference/explodbind-*.json")
-	if err != nil || len(paths) != 28 {
+	assertNativeControllerKind(t, "explodbind-*.json", "ExplodBindTime", 28)
+}
+
+func assertNativeControllerKind(t *testing.T, pattern, kind string, total int) {
+	t.Helper()
+	assertNativeControllerCount(t, pattern, kind, total, 1)
+}
+
+func assertNativeControllerCount(t *testing.T, pattern, kind string, total, expected int) {
+	t.Helper()
+	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
+	if err != nil || len(paths) != total {
 		t.Fatal(len(paths), err)
 	}
 	for _, path := range paths {
@@ -32,12 +42,12 @@ func TestNativeExplodBindTimeIntent(t *testing.T) {
 		}
 		count := 0
 		for _, ctrl := range data.States[700].Controllers {
-			if strings.EqualFold(ctrl.Type, "ExplodBindTime") {
+			if strings.EqualFold(ctrl.Type, kind) {
 				count++
 			}
 		}
-		if count != 1 {
-			t.Fatal(path, "expected one real ExplodBindTime", count)
+		if count != expected {
+			t.Fatal(path, "expected", expected, "real", kind, "got", count)
 		}
 	}
 }

@@ -26,6 +26,17 @@ be discovered as packages. Stop after item 3 or a concrete issue needing input.
 
 No pushes, binaries, agents, goals or authored changes outside game/mugen/.
 
+M4ck implements measured ModifyExplod mutation and 2D/3D drawing. Read
+MODIFY-EXPLOD.md:143 programs/1,164 readings/46 rejections plus three alpha grids/
+36 readings,584 authored originals. Main Match/grid and full core/System races
+pass.18 windows retain nine exact geometry masks and explicit seven rotation/
+two alpha discrepancies. Shared alpha precision must be revisited with Trans;
+do not claim full renderer/color parity or change goldens/tolerances to pass it.
+Uniform-tint experiment failed and was reverted. Stock replay/82 events/private
+PCM, all585 unique native hashes and guards pass. All89 names now register;
+61 typed routes,14 stubs and partial consumers remain. Continue the remaining
+Explod creation fields and dependent consumers, then other item3 groups.
+
 M4ci is c9066e64. M4cj completes the bounded ExplodBindTime slice: 28 native
 programs/288 readings/four rejections/28 calibrated positions, eight exact
 actual-app masks, focused Match and full Engine/Effect/Character races pass.

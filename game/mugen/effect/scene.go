@@ -29,6 +29,11 @@ type Request struct {
 	OnTop                         bool
 	ScaleX, ScaleY                float64
 	HasScale                      bool
+	Angle, XAngle, YAngle         float64
+	Shadow                        bool
+	HasBlend                      bool
+	Blend                         string
+	AlphaSrc, AlphaDst            int
 }
 
 type Instance struct {

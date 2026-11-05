@@ -6,7 +6,8 @@ import "github.com/hajimehoshi/ebiten/v2"
 // Linear retains fractional geometry, clamps to the texture's edge and uses
 // the eight-bit interpolation weights of the reference OpenGL renderer.
 type Linear struct {
-	shader *ebiten.Shader
+	shader    *ebiten.Shader
+	projected *ebiten.Shader
 }
 
 const linearShader = `//kage:unit pixels

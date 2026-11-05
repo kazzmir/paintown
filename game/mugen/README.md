@@ -101,7 +101,17 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-10-19, through M4ch implementation**; full scoped races pass 3,169 results across 36 packages. Fresh native, actual
+Snapshot: **2026-11-04, through M4ck implementation**. Item 3 is active:
+ExplodBindTime and measured ModifyExplod mutation now have production consumers.
+All89 controller names register, but14 stubs and other partial consumers remain;
+61 have typed compiler routes. M4cj has eight exact application masks. M4ck has
+146 native programs/1,200 state readings/46 rejections, nine exact geometry masks
+and explicitly open rotation/alpha sampling differences. See
+[binding](docs/EXPLOD-BINDING.md), [mutation](docs/MODIFY-EXPLOD.md) and the
+[current audit](docs/CONTROLLER-BINDINGS.md). Focused/core races and stock replay
+pass. The full scoped baseline remains M4ch:3,169 results across36 packages.
+
+Through M4ch, fresh native, actual
 render, stock win/rematch and provenance checks also pass. Items 1–2 are complete. Random/VarRandom now share the native match stream. Projectiles have
 typed setup, motion/lifetime/pause clocks, multiple hits, cancellation, capacity,
 root ownership, foreign-state coordinate profiles and event queries. ReversalDef
@@ -165,7 +175,7 @@ results through M4cb). See [complete match validation](docs/COMPLETE-MATCHES.md)
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
-| Documented controller names with dispatcher registrations | 87 / 89 | **97.8%** | Includes partial implementations and stubs; complete parameter/runtime support remains open. |
+| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only;14 stubs and other partial consumers remain.61 typed routes; not full controller compatibility. |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |

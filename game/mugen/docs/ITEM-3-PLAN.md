@@ -4,7 +4,7 @@ Authorized 2026-11-04 after df59235b. Complete this allocation with local
 checkpoint commits; item 4 remains a separate decision. The current playable
 one-on-one engine is a foundation, not full beta compatibility.
 
-## Current source facts
+## M4ci baseline source facts
 
 The beta manual lists 89 controllers. 87 names are registered; ModifyExplod and
 ExplodBindTime are absent. 59 manual families reach the typed compiler and 28
@@ -13,6 +13,17 @@ call stubs, parse only literals, store unconsumed fields, or implement a subset.
 These counts are source-routing facts, not semantic completion percentages.
 Seven trigger families remain unbound in the mode/stage allocation. Existing
 81/81 HitDef schemas and 120/127 trigger routes retain their separate denominators.
+
+M4ci is c9066e64; M4cj is 6faff3f1. ExplodBindTime now has a typed consumer and
+28 native controls, leaving ModifyExplod unregistered. Current counts are
+88 registered/60 typed/28 fallback. The newly exposed VarSet literal-float gap
+joins the residual schema audit. See EXPLOD-BINDING.md for measured bounds.
+
+M4ck adds ModifyExplod's measured mutation/schema and drawing consumers. Counts
+are now89 registered/61 typed/28 fallback, with14 stubs and partial rows remaining.
+MODIFY-EXPLOD.md records the146 programs, actual drawing comparisons and deferred
+shared alpha/shadow/priority/pause/ownership/sampling obligations. Continue the
+remaining Explod creation fields and dependent groups; this is not item3 closure.
 
 ## Coherent checkpoint order
 

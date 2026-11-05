@@ -57,6 +57,15 @@ the seven M4ci rows were not exhaustive. One bounded native row is distinct from
 60 route-only rows. No row is variant-complete. These are source/audit counts,
 not an engine completion percentage.
 
+## M4ck update
+
+ModifyExplod now has a typed route and a partial native consumer; see
+MODIFY-EXPLOD.md. Counts are89 registered,61 typed and28 fallback, with no missing
+dispatcher names. Fourteen stubs, five unconsumed actor draw families and nine
+partial families remain. The native mutation corpus and drawing consumers do not
+close shared alpha/shadow/priority/pause or final sampling gates. All89 rows remain
+variant-incomplete. Registering the last name is not a full coverage claim.
+
 ## M4ci validation
 
 The generator passed write and comparison modes, with all 89 names accounted

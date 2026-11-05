@@ -7,6 +7,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -122,10 +123,18 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 			x += float64(m.Options.GameSpace.Width)/2 - m.CameraX
 			y += m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY
 		}
-		op.GeoM.Translate(x, y)
-		switch el.Blend {
+		projected := instance.XAngle != 0 || instance.YAngle != 0
+		if !projected {
+			op.GeoM.Rotate(-instance.Angle * math.Pi / 180)
+			op.GeoM.Translate(x, y)
+		}
+		blend, alphaSrc, alphaDst := el.Blend, el.AlphaSrc, el.AlphaDst
+		if instance.HasBlend {
+			blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
+		}
+		switch blend {
 		case "alpha":
-			src, dst := float32(max(0, min(256, el.AlphaSrc)))/256, float32(max(0, min(256, el.AlphaDst)))/256
+			src, dst := float32(max(0, min(256, alphaSrc)))/256, float32(max(0, min(256, alphaDst)))/256
 			op.ColorScale.Scale(src, src, src, 1-dst)
 			op.Blend = ebiten.Blend{BlendOperationRGB: ebiten.BlendOperationAdd, BlendOperationAlpha: ebiten.BlendOperationAdd,
 				BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOneMinusSourceAlpha,
@@ -135,7 +144,19 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 				BlendFactorSourceRGB: ebiten.BlendFactorOne, BlendFactorDestinationRGB: ebiten.BlendFactorOne,
 				BlendFactorSourceAlpha: ebiten.BlendFactorZero, BlendFactorDestinationAlpha: ebiten.BlendFactorOne}
 		}
-		if _, indexed := sprite.Image.(*image.Paletted); indexed {
+		if projected {
+			projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
+			var err error
+			if _, indexed := sprite.Image.(*image.Paletted); indexed {
+				err = s.indexSampler.DrawProjected(screen, cached.image, op, projection)
+			} else {
+				err = s.linearSampler.DrawProjected(screen, cached.image, op, projection)
+			}
+			if err != nil {
+				s.renderError = fmt.Errorf("fight effect projection: %w", err)
+				return
+			}
+		} else if _, indexed := sprite.Image.(*image.Paletted); indexed {
 			if err := s.indexSampler.DrawImage(screen, cached.image, op); err != nil {
 				s.renderError = fmt.Errorf("fight effect action %d indexed sampler: %w", instance.Action, err)
 				return

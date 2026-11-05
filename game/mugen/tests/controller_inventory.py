@@ -13,7 +13,8 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ['engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
-           'character/explod.go', 'engine/explod.go']
+           'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
+           'effect/scene.go', 'system/effects.go', 'render/perspective.go']
 STUBS = {
     'afterimage': 'AfterImage', 'afterimagetime': 'AfterImageTime',
     'envshake': 'EnvShake', 'envcolor': 'EnvColor', 'trans': 'Trans',
@@ -27,6 +28,7 @@ RENDER_FIELDS = {'angleadd': 'DrawAngle', 'angledraw': 'DrawAngle',
                  'anglemul': 'DrawAngle', 'angleset': 'DrawAngle',
                  'offset': 'DrawOffset'}
 PARTIAL = {
+	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; shared alpha/shadow/priority/pause and projection sampling gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'projectile shadow/trail fields lack complete renderer consumers',
     'explod': 'bindID explicitly unsupported; remaining parameters and consumers open',

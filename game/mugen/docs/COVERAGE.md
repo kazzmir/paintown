@@ -1,5 +1,14 @@
 # Current behavior coverage ledger
 
+2026-11-04: item3 is active. M4ci audits current consumers; M4cj adds native
+ExplodBindTime; M4ck adds measured ModifyExplod mutation/drawing. All89 manual
+names register,61 have typed routes,14 stubs and other partial consumers remain.
+M4ck's146 programs pin1,200 state readings/46 rejections; nine exact geometry
+masks coexist with explicitly open rotation/alpha sampling limits. See
+MODIFY-EXPLOD.md, CONTROLLER-BINDINGS.md and HANDOFF.md. Focused/core races pass;
+full integration baseline remains M4ch. Older status paragraphs below are
+historical. Item4 remains unallocated; no whole-engine percentage is justified.
+
 M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
 replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
 The seven render probes retain84 additional early clipboard readings. Source

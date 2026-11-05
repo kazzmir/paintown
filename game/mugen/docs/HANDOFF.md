@@ -9,9 +9,40 @@ Item 4 still needs a separate allocation. M4ci (c9066e64) establishes
 CONTROLLER-BINDINGS.md and its reproducible JSON/source audit. M4cj implements
 ExplodBindTime with 28 native programs / 288 readings / four load rejections /
 28 isolated effect positions and 112 pinned inputs. Read EXPLOD-BINDING.md.
-Next close ModifyExplod and required Explod binding/geometry consumers, then
-remaining effects/controllers. Keep frozen native originals and
+Next continue the remaining Explod fields and shared controller/effect consumers.
+Keep frozen native originals and
 actual controller-kind assertions. Native/app/display Go runs stay serial.
+
+M4cj is 6faff3f1. M4ck implements typed ModifyExplod, selected per-object mutation
+and production scale/angle/perspective/transparency consumers. Its 143 controls
+pin 1,164 values and 46 rejections; three alpha grids add 36 values and 27 alpha
+pairings. There are 584 authored original hashes plus the probe hash. Read
+MODIFY-EXPLOD.md, including the preserved duplicate-parameter drafts. Source
+routes are now89/89 registered and61 typed, with14 stubs/nine partial consumers/
+five unconsumed actor draw families. This is not full controller coverage.
+
+The main mutation/prior-binding Match races pass85.278s; alpha grid/intent races
+pass3.171s. Full Engine/Effect/Character/System races pass1.430s/1.011s/11.129s/
+9.318s; Render compiles. Eighteen application windows demonstrate nine exact
+nonrotated masks, seven explicitly nonexact rotation masks and two alpha colors
+one unit below native. See the topic table; no tolerance/golden was changed.
+The strict app audit intentionally reports the alpha failures. A uniform-tint
+experiment did not improve them and was reverted. Shared alpha precision remains
+for Trans; shadow/priority/pause/ownership/full Explod fields remain active item3
+dependencies. Final platform sampling conformance remains item4.
+
+Native manifests are temp/m4ck-{native,supp,sequence,check,policy,alpha}-inputs.json.
+Native runs use m4ck-*; accepted geometry-window evidence uses m4ck3-*.
+Preserve originals, failed builds/shader runs and the reverted m4ck4 experiment.
+Native/app/display Go work remains serial; await sessions and check clients
+separately. Full scoped races follow the Explod integration boundary.
+
+M4ck final stock replay passes four PNG/config/binary/private-PCM checks with82
+balanced owned key events,1,959,250 PCM frames and nonzero audio. All six native
+manifests (590 total entries/585 unique hashes) and module/inventory guards pass.
+Application runtime source inputs match the18-window run; the only subsequent
+source changes add alpha-grid tests in two test files. Stock final source builds
+with those tests present. All sessions were awaited; no clients remain.
 
 The old private display/audio servers were absent. New task-owned Xvfb :97 and
 private Pulse processes are recorded in temp/item3-private-servers.json; all

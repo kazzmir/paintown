@@ -4,7 +4,8 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 // Nearest preserves sprite-local sampling precision and fractional geometry.
 type Nearest struct {
-	shader *ebiten.Shader
+	shader    *ebiten.Shader
+	projected *ebiten.Shader
 }
 
 const nearestShader = `//kage:unit pixels

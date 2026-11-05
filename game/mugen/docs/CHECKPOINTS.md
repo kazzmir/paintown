@@ -1,5 +1,22 @@
 # Implementation checkpoints
 
+## M4ck: native Explod mutation/schema and drawing consumers
+
+Typed ModifyExplod selects all duplicate matches, evaluates each object's fields
+in measured order and preserves the beta's parsed-but-unevaluated distinctions.
+Lifetime mutation, retargeting, partial scale, transparency and 2D/3D drawing
+reach production.143 programs/1,164 readings/46 rejections plus three research
+alpha grids/36 readings/27 pairings pin584 authored originals. Intent checks
+verify actual controller kinds/counts. Main Match races85.278s, grid races3.171s
+and full Engine/Effect/Character/System races pass.18 windows provide nine exact
+geometry masks and explicit seven rotation/two alpha precision discrepancies;
+MODIFY-EXPLOD.md preserves every number rather than changing tolerances. Full
+shared alpha/shadow/priority/pause/ownership and creation fields remain active
+dependencies. Stock win/rematch replay,82 balanced events/private PCM, all585
+unique native input/probe hashes and module/inventory guards pass. No clients,
+push or binaries. All89 names register;61 typed routes do not imply completion.
+Continue remaining item3; full races at the Explod integration boundary.
+
 ## M4cj: ExplodBindTime schema and production binding consumer
 
 Twenty-eight frozen native programs / 288 readings / four load rejections /
