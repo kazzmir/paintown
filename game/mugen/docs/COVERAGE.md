@@ -1,5 +1,24 @@
 # Current behavior coverage ledger
 
+M4dc adds character-resource Explod ownership/remapping and measured expression
+phases. **63/63 native numeric/schema programs pass**, including seven expected
+load rejections; **56/56 application crops match exactly (100% of this corpus)**
+across 28,492,800 RGB pixels. All pairs were visually reviewed. The initial
+21 numeric/schema failures and seven visible app failures remain preserved.
+[Palette evidence and bounds](EXPLOD-CREATION-PALETTES.md).
+
+Fresh race checks pass 846 engine/character and 416 selected native Match
+results. Five older palette/order applications, four shake masks and visually
+reviewed stock win/rematch/win pass, with 82 balanced inputs and 1,973,637 private
+PCM frames. The audit verifies 17,727 frozen paths, 1,390 original native inputs,
+all 63 configuration finalizations, 41 canonical archives and 2,583 native
+resource copies. The latest full suite remains M4da 4,506/36; earlier strict
+shadow/angle/EnvShake failures remain unwaived. Common/helper palette contexts,
+other Explod fields/pools and the remaining item 3 groups continue. Item 4 remains
+unallocated. Route counts remain 74 typed/15 fallback, two stubs, nine partial,
+18 bounded and 60 route-only; these are not whole-engine coverage percentages.
+
+
 M4db establishes ForceFeedback as a Null operation in the supplied beta,
 independent of device availability.18 native programs/216 values/80 original
 input hashes prove ignored optional fields and active generic triggers, including

@@ -1,8 +1,38 @@
-# Current handoff — M4da shared shadows
+# Current handoff — M4dc Explod creation palettes
 
 Continue ALL item3 effects/controllers with documented local commits. Author only
 game/mugen; no pushes, binaries, agents or goals. Item4 remains unallocated.
 Read ../AGENTS.md and SHADOWS.md. Do not stop automatically at a checkpoint.
+
+## Immediate state — M4dc complete, continue M4dd
+
+No active runtimes. M4dc focused21536/final42494 completed/awaited0; SEPARATE
+17724/17725-input/client guardsPASS. Audit2743 completed/awaited0.63 originals
+reviewed/promoted ONCE:56accepted/7rejects/672values. All56apps exact/28,492,800px,
+all pairs reviewed.846core/416native races pass; five old palette/order apps,
+four masks and stock21win/26FIGHTrematch/45win visually reviewed.82events/
+1,973,637PCMframes. Source/text local checkpoint record temp/m4dc-commit-record.json.
+Read EXPLOD-CREATION-PALETTES.md. Audits temp/m4dc-final-evidence-audit.json and
+m4dc-final-visual-review.json. Original109files/41archives/2583nativecopies and
+17,727current frozen paths/1390original inputs pass. Latest FULL suite M4da4506/36.
+Old strict shadow/angle/EnvShake failures remain UNWAIVED.
+
+Production engine/explod.go typed ownpal/remappal; early anim/ownpal/remap then
+animation gate then id/facing/vfacing/pos/other args. Owned character palettes
+clone current mapping, clear localFX, force remap on clone; shared palette live.
+Common-resource behavior awaits native study. Baseline21numeric/schema and7/8
+app failures preserved; first app-ledger-name collision preserved separately.
+
+NEXT independent35 drafts temp/m4dd-palette-context-draft UNOBSERVED/unfrozen.
+Private full-intent parser prepared temp/_tmp/m4dd-palette-context-intent/main.go
+but NOT RUN. Freeze its inputs, verify full state headers/constants/controller
+kinds/triggers/params/AIR/CMD/ENTIREstage, await then SEPARATE elevated input/client
+guard before public copy/freeze/native observation. Common F3 defaults/FX/remap,
+helper ownership x Explod ownership, runtimefloat coercion and prior-map overrides.
+Add separately named one-component remap over prior map control if needed to
+distinguish omitted second component (main M4dc one-component2 has no group2).
+Continue all item3; no stop/reapproval at checkpoints. Broader item4 unallocated.
+
 
 ## Completed M4da validation; local commit next
 
@@ -65,10 +95,33 @@ temp/m4db-final-evidence-audit.json; visual review recorded separately.
 No active runtime. Production handler returnsnil without host/device dispatch;
 generic triggers unchanged. State-language fixture option defaults1.1 as before.
 Source74typed/15fallback/2stubs/9partial/18bounded/60route-only, not enginecoverage.
-NEXT: scoped source/text stage audit/local commit, then Explod palette creation
+M4db COMMITTED locally11662054e4268a81ac5e95370e6314d6cdee3646,110source/text
+paths, no binaries/push; scoped tree clean after commit. Record temp/m4db-commit-record.json.
+NEXT: Explod palette creation
 study in temp/m4dc-explod-palette-study-plan.md. Continue all item3 autonomously.
 
 
+
+
+M4dc Native55 session23433 COMPLETE/awaited0; ACTIVE extra8 session40035: temp/run-m4dc-creationpal-native.py.
+Original228-input freeze temp/m4dc-creationpal-inputs.json. FULL55 CNS kinds,
+triggers, parameter/state intent, inherited AIR/CMD and ENTIRE stage attributes
+verified by private parser; SEPARATE247-input/client guardPASS before public copy/
+freeze. Character-resource palettes only: ownpal/remappal, initial/later local/
+global FX/remap, retained maps, invalid mappings, ordered/conditional evaluation,
+schema errors and1.0 profiles. Stage Shadow intensity0 isolates palette pixels.
+NO M4dc production changes/expectations. Native55 SEPARATE1345-original-input/client guardPASS. ALL55 rows/four sheets
+inspected;48accepted/7rejects/576values, promoted ONCE; all55 config finalizations
+exact. ACTIVE8 session40035, temp/run-m4dc-phase-native.py,40-input original freeze
+temp/m4dc-phase-inputs.json. Full8intent parser verified and separate48-input
+guardPASS. Await ENTIRE40035, then SEPARATE elevated
+original-input/client guard before source/test/probe/fixture edits or any runtime.
+Inspect EVERY native numeric/color/consumer row and sheet BEFORE promotion/fix.
+Early numeric facts:missing-action still evaluates palette fields(1,1,2),
+order control13452=anim/ownpal/remapX/remapY/pos. Color rules unreviewed; do not
+implement before ALL55 rows/sheets. Extra id/facing/vfacing phase controls needed.
+Only MD/independent ignored prep while active. Common/helper resources, angles/
+trans/random/pools and other allocated groups remain. Continue all item3.
 
 ## Private environment and independent preparation
 

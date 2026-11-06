@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05; through M4cz validation**.
+Snapshot: **2026-11-06; through M4dc validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -145,6 +145,13 @@ programs and four exact application controls. It ignores optional fields,
 evaluates ordinary triggers and makes no host/device call. This target behavior
 reduces the source stub count to two. [Evidence](docs/FORCE-FEEDBACK.md).
 
+Explod creation now compiles ownership/remapping with the beta's expression
+phases and character-resource palette consumer. All **63 native numeric/schema
+programs pass**, including seven expected rejections. All **56/56 app crops match
+exactly (100% of this corpus)** across **28,492,800 RGB pixels**. Fresh focused
+races and stock win/rematch/win with audio pass.
+[Evidence and bounds](docs/EXPLOD-CREATION-PALETTES.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
@@ -153,6 +160,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| Explod creation palette numeric/schema programs in M4dc | 63 / 63 | **100%** | Recorded corpus, including seven expected rejections. |
+| Explod creation palette application crops in M4dc | 56 / 56 | **100%** | Exact pixels in this corpus; common/helper contexts remain separate. |
 | Shadow native numeric/schema programs in M4da | 98 / 98 | **100%** | This recorded corpus only; includes three expected load rejections. |
 | Exact shadow image crops in M4da | 35 / 95 | **36.8%** | Strict pixels; 60 one/two-byte fringe/scale failures remain. No tolerance relaxed. |
 | Projectile image programs in the historical M4cz corpus | 152 / 154 | **98.7%** | M4cz result; M4da separately fixes both missing-shadow controls. The whole image corpus was not rerun here. |

@@ -14,6 +14,8 @@ type ExplodParameters struct {
 	X, Y, VelX, VelY, AccelX, AccelY, ScaleX, ScaleY           float64
 	Common, ScreenSpace, IgnoreHitPause, RemoveOnGetHit, OnTop bool
 	SpaceSpecified, Shadow                                     bool
+	OwnPalette                                                 bool
+	RemapPalette                                               [2]int
 	PosType                                                    string
 }
 
@@ -88,6 +90,28 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, fmt.Errorf("anim: %w", err)
 	}
 	args := []argument{{argumentSpec{"anim", true, true}, expr}}
+	paletteArgs, err := compileArguments(ctrl, []argumentSpec{{"ownpal", true, false}})
+	if err != nil {
+		return nil, true, err
+	}
+	args = append(args, paletteArgs...)
+	if raw, present := ctrl.Params["remappal"]; present {
+		tuple, err := evaluator.ParseReferenceTupleForVersion(raw, 2, ctrl.LanguageVersion)
+		if err != nil {
+			if single, singleErr := evaluator.ParseReferenceTupleForVersion(raw, 1, ctrl.LanguageVersion); singleErr == nil {
+				tuple, err = append(single, &evaluator.Number{Value: 0}), nil
+			}
+		}
+		if err != nil {
+			return nil, true, fmt.Errorf("remappal: %w", err)
+		}
+		for index, expr := range tuple {
+			args = append(args, argument{argumentSpec{fmt.Sprintf("remappal%d", index), true, true}, expr})
+		}
+	}
+	// The beta evaluates palette fields before checking animation availability.
+	// ID, facing, position and the later fields remain behind that gate.
+	paletteEnd := len(args)
 	scalars, err := compileArguments(ctrl, []argumentSpec{{"id", true, false}, {"facing", true, false}, {"vfacing", true, false}})
 	if err != nil {
 		return nil, true, err
@@ -141,11 +165,11 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		v, err := evaluateArgumentsWithBottom(args[:1], env, true)
+		early, err := evaluateArgumentsWithBottom(args[:paletteEnd], env, true)
 		if err != nil {
 			return err
 		}
-		action := max(0, int(v["anim"].Number()))
+		action := max(0, int(early["anim"].Number()))
 		context, ok := env.(interface {
 			CreateExplodEvaluated(int, bool, func() (ExplodParameters, error)) error
 		})
@@ -153,7 +177,7 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			return fmt.Errorf("Explod context is unavailable")
 		}
 		return context.CreateExplodEvaluated(action, common, func() (ExplodParameters, error) {
-			v, err := evaluateArgumentsWithBottom(args[1:], env, true)
+			v, err := evaluateArgumentsWithBottom(args[paletteEnd:], env, true)
 			if err != nil {
 				return ExplodParameters{}, err
 			}
@@ -168,6 +192,11 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				p.IgnoreHitPause = ctrl.IgnoreHitPause != 0
 			}
 			p.SpaceSpecified = explicitSpace
+			p.OwnPalette = early["ownpal"].Number() != 0
+			p.RemapPalette = [2]int{-1, 0}
+			if value, present := early["remappal0"]; present {
+				p.RemapPalette = [2]int{int(value.Number()), int(early["remappal1"].Number())}
+			}
 			if value, present := v["scale0"]; present {
 				p.ScaleX, p.ScaleY = value.Number(), v["scale1"].Number()
 			}

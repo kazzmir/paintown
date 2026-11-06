@@ -20,62 +20,32 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4da validation complete, preparing local commit
+## Immediate state — M4dc complete, M4dd next
 
-M4cz is committed as3255f127cc10217127bd8c1a0a892949ad20cf18. M4da shared shadows
-is COMMITTED locally asabdc5ca49ede6a366a86122291ff3f0837cdb1f3,522UTF8 source/text
-paths, no binaries/push; scoped tree clean immediately after commit.
-Read docs/SHADOWS.md and docs/HANDOFF.md. No active runtime.
+M4dc source/text checkpoint: record temp/m4dc-commit-record.json. No active runs.
+Focused21536/final42494 complete/awaited0; separate17724/17725-input guardsPASS.
+846core/416native races;63originals(56accepted/7rejects/672values);56exactapps/
+28,492,800RGBpixels;5oldpalette/order/4masks/stock win-rematch-win pass. All56pairs
+and stock21/26/45 reviewed,82balanced events/1,973,637privatePCMframes. Final
+17,727frozen paths/1390originals/109manifestfiles/41archives/2583copies pass.
+Latest FULL scoped suite remains M4da4506/36. Prior strict pixels stay UNWAIVED.
 
-Integration92761 completed/awaited1: full4,506-result/36-package races PASS;
-all95apps run,35exact/60strict UNWAIVED fringe/scale failures (max1; scaled actor
-max2). Both old projectile shadow controls now exact. Four shake masks and
-visually reviewed stock21/26/45 win/rematch/win pass;82balanced keyboard events,
-1,973,562private PCM frames. Modules/inventory pass. SEPARATE17317-input/client
-guard PASS. Audit24754 completed/awaited0:17,312unique final frozen paths,
-52,979hash checks,1,043original native inputs,98native configs,41canonical assets/
-4,018native resource copies. All109manifest files unchanged. All95 compact rows/
-five paired sheets and three stock screens inspected. Records temp/m4da-final-*.
+Read docs/HANDOFF.md and EXPLOD-CREATION-PALETTES.md. Next35 ignored palette-context
+drafts UNOBSERVED/unfrozen; prepared private full-intent parser NOT RUN. Freeze/
+verify/await/SEPARATE elevated guard before public copying/native observation.
+Common-resource/helper-issued effects, prior-map/float edge controls next.
+Typed creation palettes and character-resource consumers implemented; native
+originals and failed baseline diagnostics remain immutable. Continue all item3.
 
-Native98 originals promoted ONCE:95accepted/3rejected,1140numeric values. Every
-native row/seven sheets inspected before promotion/fixes. No expectation/tolerance
-changed. Shared shadows and typed Explod shadow validation/order are implemented;
-viewport interpolation remains unchanged. Earlier angle/EnvShake and new pixel
-failures remain UNWAIVED. No whole-engine coverage percentage.
-Source74typed/15fallback/3stubs/9partial/17bounded/60route-only.
+Source74typed/15fallback/2stubs/9partial/18bounded/60route-only is not behavioral
+coverage. Continue ALL remaining item3 with local checkpoints; no stop/reapproval.
+Remaining Explod fields/pools, AssertSpecial, system effects, clipboard and residual
+schemas; common/helper palette variants still unmeasured. Item4 unallocated.
 
-NEXT: M4db ForceFeedback/Null study; continue all remaining item3 autonomously.
-M4da commit record temp/m4da-commit-record.json. Stage audit temp/m4da-staged-audit.json. Independent18 UNOBSERVED
-ForceFeedback/Null drafts and unexecuted intent parser are under temp/m4db-* /
-temp/_tmp/m4db-forcefeedback-intent. Full parser/trigger/resource verification,
-freeze and native observations required before implementation/no-op claims.
-Device absence/nojoy is not proof. Static Null-kind evidence is only preparation.
-
-Default sandbox ps HIDES host processes. All real client/server guards MUST use
-the elevated wrapper. Original private Xvfb/Pulse30218/30219 remain alive.
-A daemon restart lost native detail session20143: all26 originals and normal
-completion marker verified, but do not invent observed exit0. No recovery/rerun.
-
-
-M4db native18 session40200 completed/awaited0; SEPARATE1120-original guardPASS.
-ALL18 rows/sheet inspected BEFORE promotion/fix.18accepted/216values,80original
-inputs, exact18 config finalizations. Parameters ignored, trigger assignment9.
-CompilerNullkind evidence pinned; version checker is not runtime dispatcher.
-Baseline2 native18pass. First count20vs18 metadata-glob diagnostic preserved;
-device-boundary baseline proves1wronghostcall in EACH1.0/1.1profile.
-
-M4db focused60923 completed/awaited0; SEPARATE17409-input/client guardPASS.
-846engine/character races and119native Match results pass. Four actual app crops
-exact/2,035,200pixels. Stock21/26/45 win/rematch/win visually reviewed,82balanced
-events and1,912,813privatePCMframes. Module/inventory/provenance pass. Audit:
-temp/m4db-final-evidence-audit.json; visual review recorded separately.
-No active runtime. Production handler returnsnil without host/device dispatch;
-generic triggers unchanged. State-language fixture option defaults1.1 as before.
-Source74typed/15fallback/2stubs/9partial/18bounded/60route-only, not enginecoverage.
-NEXT: scoped source/text stage audit/local commit, then Explod palette creation
-study in temp/m4dc-explod-palette-study-plan.md. Continue all item3 autonomously.
-
-
+Default sandbox ps HIDES host processes: ALWAYS use elevated wrapper for guards.
+Original private Xvfb/Pulse30218/30219 alive. Old native detail20143 tool session
+lost during daemon restart; complete original evidence/normal marker verified,
+but never claim observed exit0. No server recovery/rerun performed.
 
 ## Native and validation workflow
 

@@ -6,6 +6,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 )
 
 func (c *Character) CreateExplodEvaluated(action int, common bool, evaluate func() (engine.ExplodParameters, error)) error {
@@ -38,6 +39,15 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 		source = effect.Source{Animations: c.AirFile, Palette: c.Palettes, Scale: scale}
 		if c.Palettes != nil {
 			source.Sprites = c.Palettes.Archive
+			if p.OwnPalette {
+				source.Palette = c.Palettes.Clone()
+				source.Palette.ClearEffects()
+				if p.RemapPalette[0] != -1 {
+					if err := source.Palette.Remap(palette.ID{1, 1}, palette.ID(p.RemapPalette)); err != nil {
+						c.EvaluationWarning("Explod remappal: " + err.Error())
+					}
+				}
+			}
 		}
 	}
 	if source.Animations == nil || source.Animations.Actions[p.Action] == nil {

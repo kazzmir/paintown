@@ -189,3 +189,15 @@ ignored parameters/ordinary triggers and corrected no-device-dispatch boundary.
 18 native programs, focused races, four exact apps and stock/private audio pass.
 No haptics invented from the older manual. Two source stubs remain: GameMakeAnim
 and MakeDust; broader Explod/AssertSpecial/clipboard/residual schemas continue.
+
+
+## M4dc — character-resource Explod creation palettes
+
+[EXPLOD-CREATION-PALETTES.md](EXPLOD-CREATION-PALETTES.md) records typed ownership/
+remapping, independent owned palettes, live shared palettes and measured early
+palette versus late creation phases. All 63 native programs and 56 actual-app
+crops pass, with focused regressions and stock input/private audio. Continue the
+separately prepared common-resource/helper context study, then remaining Explod
+creation fields/pools, AssertSpecial, system effects, clipboard and residual
+schemas. No original expectations or comparison tolerances changed; previous
+strict renderer failures stay open. Item 4 remains unallocated.

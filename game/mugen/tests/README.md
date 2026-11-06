@@ -987,3 +987,17 @@ identity and ignored parameter observations are pinned in forcefeedback-native-l
 The strict forcefeedback_render_probe.py compares original resources/config/
 binary/capture hashes and every pixel. All four focused app crops match exactly;
 this does not waive any earlier shadow/angle/EnvShake difference.
+
+
+## Explod creation palette reference programs
+
+TestNativeExplodCreationPalettes replays 55 creationpal and eight creationphase
+original programs. Seven reject at load; 56 accepted programs capture 672 values.
+The two native ledgers and disjoint configuration-finalization ledgers preserve
+original source/probe hashes and exact beta configuration changes.
+
+creation_palette_render_probe.py is a strict read-only comparator for all
+508,800 pixels per accepted scene. It checks native/Go binary, source, resource,
+config and capture provenance. All 56 final scenes match exactly; baseline
+21 numeric/schema and seven visible failures remain preserved. See
+../docs/EXPLOD-CREATION-PALETTES.md for evidence, evaluation gates and limits.

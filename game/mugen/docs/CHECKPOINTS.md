@@ -2954,3 +2954,20 @@ with four exact app crops/2,035,200 pixels. Stock win/rematch/win is visually
 reviewed;82balanced input events,1,912,813private PCM frames and provenance/
 module/inventory checks pass. Full suite remains M4da4,506/36; no prior strict
 pixel failure waived. Source/text only, no binary/push. Continue all item3.
+
+
+## M4dc — character-resource Explod creation palettes
+
+Typed ownpal/remappal and split evaluation phases now reach independent owned
+palettes or live shared palettes, with creation mapping retained, local PalFX
+cleared for owned effects and global composition preserved. The missing-action
+palette phase differs from the later shadow/position gate. [Evidence](EXPLOD-CREATION-PALETTES.md).
+
+63 original programs / 672 values include seven expected rejections. Fresh
+846 core and 416 selected native race results pass. All 56 app crops match
+exactly / 28,492,800 pixels. Five old palette/order apps, four masks and visually
+reviewed stock win/rematch/win pass, with 82 balanced events / 1,973,637 PCM
+frames. Original resources, configurations, modules, binaries and captures are
+verified. Failed baselines remain immutable; no earlier renderer failure waived.
+Source/text only; no binaries or push. Continue common/helper palette contexts
+and all remaining item 3 without stopping for reapproval.
