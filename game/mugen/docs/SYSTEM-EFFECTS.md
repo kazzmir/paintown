@@ -387,3 +387,113 @@ Private final records: `m4dm-final-evidence-audit.json`, `m4dm-final-visual-revi
 baseline failures and scope corrections are preserved. MakeDust17, nokotime14,
 direct renderer10 and invalid walk3 raw programs remain unpromoted/unstaged.
 Continue MakeDust, clipboard, residual schemas/flags and item3 strict obligations.
+
+
+## M4dn native dust research in progress (unpromoted)
+
+Two new batches,47 dustschema and35 dustphase, completed native7874/68471 with
+exit0 and separate589/469-original/client guards. Independent complete-intent
+runs and separate guards also passed. All82 numeric/grammar/RNG/resource/geometry/
+color rows and14 full-scene/rejection sheets are reviewed. They contain62 accepted
+programs/744 numeric values and20 expected native load rejections. No promotion,
+Go baseline or production dust implementation yet; old17 raw dust controls stay
+unchanged. Full common-AIR replacement affects ONLY action120 plus9996appendix;
+allothercanonicalactions/assets untouched. Persistent120,5 normalblend makes a
+black asymmetric cloud; this provesresources/drawing, notanimationclocks. Real
+F120Explodpositive hasdifferent native X thanDust/Game, so is notposition-equivalent.
+
+First position requires integer fields (bare floats reject, runtime floats accept);
+second position accepts floats. Both allow one expression or one expression plus
+trailing comma, defaultY0; empty/full-two-plus-trailing/extra/empty-first/comma-only/
+quoted/unknown-used forms reject. Unknown unused keys are ignored. Pos2zero creates
+a second cloud; two clouds consume four creation draws. Axisphase brackets prove
+spacing expressionRandom2, posX3/creation4, posY5/creation6, pos2X7/creation8,
+pos2Y9/creation10, thenRandom11/12, with initialRandom1 and sideeffect51234.
+
+Spacing is shared, not a per-controller cooldown; same-tickrequests bothcreate.
+Default3 createsTime2/GameTime132 butskips0/1/3. Runtime spacing2.5 atTime8/Game138
+SKIPS. Explicit2/5and delayed-entry controls further disprove directGameTime or
+controllerTime modulo. KO controls captureRoundState3andreset the spacingphase;
+minimalopponentCNS generates an invalidstate5000 warning, so these do not establish
+deathanimation behavior. Spacing7at activeTime0/5/6/7ALLskip, which also disproves
+an oversimpleTime+1 candidate. Staticfield12760resets withnativephase;12764increments
+without thosephase resets. The likelyactivecounter includes30fight-callframes,
+activeTime+31/GameTime-99. Moreprime/intro/reset positives mustverify thisbeforecode.
+The Go Match's internal PhaseTime splits are not automaticallynativeclock resets.
+
+Next independent prime/intro/complete-KO controls will add only inertownAIR0 and
+state5000 toremovefixturewarnings. Resource/facing/profile/geometry/pool/helper/
+slot2/palette/actualoverlap and Pause/SuperPause/realframeclock consumers remain
+required before implementation. Native-only receipts and tables remain under
+`temp/m4dn-dustschema-*` and `temp/m4dn-dustphase-*`; no coverage percentage is
+claimed from preparatory raw files.
+
+
+### M4dn complete native MakeDust corpus and scope corrections
+
+158 valid programs (136 accepted,22 expected rejects) pin1,632 numeric values.
+All original source/parsed intent, numeric/RNG/error/resource/color/geometry/layer/
+clock rows and fullscene sheets were reviewed before Go baseline/implementation.
+Six native ledgers preserve exact configuration finalization and original paths.
+The21 empty-state setup failures and two unreached continuity-7-28/29 observers
+are diagnostics, not coverage. A final promotion count caught abbreviated exclusion
+names; mistaken derived expectations/ledgers were archived unchanged privately,
+valid JSON bytes checked before corrected ledgers. No native originals changed.
+
+Facing changes offset sign but dust's asymmetric sprite stays unflipped; a facing
+control and a fractional positive control normalize to identical1,953 RGB pixels.
+Dust shares ordinary Explod slots, remains NumExplod0 and survives helper removal;
+GameMakeAnim uses its separate pool. Full8ordinary slots still consume spacing,
+all first/second axis expressions and four jitter draws. Missing common action120
+uses no slot; an action with an unavailable sprite occupies a slot. Own action120
+does not replace the common resource. Dust ignores localPalFX/BGPalFX and follows
+AllPalFX. Actual visible actors/backgrounds and overlap prove scope/layer behavior.
+A real two-frame common120 shows that Pause/PauseBG0/SuperPauseBG0 freeze its clock;
+unpaused reaches the displaced second frame. Persistent-frame tests alone cannot
+establish that behavior.
+
+Preintro spacing3/5/7 positives atGame2/4/6, together with earlier negatives, pin
+GameTime+1. Intro+RoundCall shareGameTime-29; FightCall+Active shareGameTime-99;
+KO resets. Go internal RoundCall/startActive transitions must not reset this clock.
+Early native Dustonly/Gameonly controls expose CameraPos20 atGame1 versus80 at4
+and matching cue shifts with visible actors/ScreenPos160. Go starts atstage80;
+this is a shared camera-startup obligation, not evidence for a cueScreenSpace hack.
+
+Correction to earlier notes: enlarged KO warning is invalid **5080**, not5000;
+base own AIR actions are9999/9100, while9996 is common. Inert5080+Null in context
+probes removes the warning but does not implement a real death pose. Original
+erroneous interpretations/captures remain preserved with a correction receipt.
+
+
+## M4dn implementation and final acceptance
+
+[MAKE-DUST.md](MAKE-DUST.md) records the typed producer/aggregate phase clock,
+166 native programs/1,728 values,163 passing cases and three unwaived initial
+CameraPos values. All144 actual worlds run;116 are exact/59,020,800 RGB pixels.
+The28 remaining full-world failures cover seven startup/paused-pose scenes, twelve
+held match overlays, two maximum-one RGB cases, one654-pixel/max8 overlap control
+and six360–526-pixel/max32 finite-frame controls. All144 pairs/24 sheets, three
+enlarged diagnostics, old nine controls and stock win/rematch/win were reviewed.
+Silhouette masks match in the enlarged overlap/finite/fringe samples; color cause
+is not assigned without independent controls. No sampler/tolerance changed.
+
+Final82981 completed/awaited1; separate21,503 outer/21,500 matrix frozen-input and
+client guards pass. Core890 passes; combined native357cases354pass/3fail,378total
+results373pass/5fail includingparents. Allold138Game+53pool pass. Other21 final
+gates pass; stock82balanced inputs/1,973,590 PCMframes pass. All154 applications
+share binary43c055c3c1acc075286a9823373cbb128f31e62d56a5820daf766c9a69f5f5de.
+Native/config/resource/source/actualRGB/input/PCM audit-r2 completed0 after the
+initial passive audit's tool receipt was omitted; its complete report remains
+intact. R2 repeats passive checks only, with a separately named report. It checks
+3,584 original paths,166 configurations,149 full AIR replacements and6,806 native
+binary-resource copies/109 canonical manifest files. All185 production Go files
+are byte-identical to the validated core revision. No executable is added to Git.
+
+Sixteen raw camera-only Null controls remain unpromoted and uncounted. They
+disprove a constant20-step explanation: stage40/-80 initially reports10/-20;
+local640/1280 initially reports40/80 forstage80, then proper conversion atGame2.
+Native visible actor poses also retain their prior positions on issuing Pause.
+HUD clocks already advance under Pause; the draw consumers lack displaytime/
+one-pass expiry. These remain measured shared follow-ups, alongside exact finite/
+overlap color isolation, clipboard, residual schemas/flags and prior strict gates.
+Item4 remains unallocated. Routing77/89typed is source routing only.

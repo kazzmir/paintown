@@ -87,10 +87,10 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 
 ```bash
 # Build/test production MUGEN packages against the stock reference corpus.
-game/mugen/mugen.sh --check -p 1 -timeout=40m
+game/mugen/mugen.sh --check -p 1 -timeout=50m
 
-# Full race checks; allow roughly forty minutes for the full native replay corpus.
-game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=40m
+# Full race checks; allow roughly fifty minutes for the enlarged replay corpus.
+game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=50m
 
 # Focused stock character loading and state compilation.
 game/mugen/mugen.sh --check -run '^TestStockPlayerLoadAndCompilationInventory$' -v
@@ -105,18 +105,24 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through the bounded M4dm checkpoint**.
+Snapshot: **2026-11-06; bounded MakeDust implementation (M4dn)**.
 
-GameMakeAnim now has typed schemas, production drawing, independent effect
-admission, native negative-action behavior and measured integer coordinate origins.
-All **138 native programs pass**, pinning **1,548 values**. The new dependency
-image corpus is **39/54 exact (72.2%)**;15 maximum-one RGB failures and two older
-fractional color failures remain open. Focused races pass **890 core /205 selected
-native results**, with older rendering controls and stock win/rematch/audio also
-passing. The preceding M4dl full production suite passed **5,028 results /36
-packages**; that full run was not repeated here. MakeDust remains the sole source
-stub and is next, followed by clipboard and residual controller/flag work.
-[Measured results and limits](docs/SYSTEM-EFFECTS.md).
+MakeDust now has typed expressions, ordered jitter, a real common-resource
+producer and measured round-phase spacing/pause/pool consumers. It replaces the
+last source controller stub. **163/166 native replay cases pass (98.2%)**, with
+three shared early-camera values still failing strictly. All **144 application
+scenes run; 116 match exactly (80.6%)**. The 28 failures cover startup/pause
+presentation, held match overlays and finite/overlapping dust colors. All remain
+open. [Evidence, corrected setups and limits](docs/MAKE-DUST.md).
+
+**890 core race results** and all **138 older GameMakeAnim / 53 pool programs**
+pass. Nine older render controls and stock win/rematch/input/private audio pass.
+The latest full scoped suite remains M4dl's historical **5,028 results /36
+packages**; a new full-suite pass is not claimed. Clipboard, residual schemas,
+flags and strict renderer/HUD/audio obligations remain item 3 work.
+
+Source routing is **77/89 typed (86.5%)**, with zero source stubs. Routing counts
+and bounded native percentages do not establish overall engine completion.
 
 M4dk corrects KO voices and echoes under NoKO while preserving independent
 contact sound interruption. All **10 new CPU/native programs pass**; production
@@ -170,7 +176,7 @@ private audio. Earlier angle/EnvShake/actor 45-degree failures remain unwaived.
 ForceFeedback now matches the supplied beta's Null operation, with18 native
 programs and four exact application controls. It ignores optional fields,
 evaluates ordinary triggers and makes no host/device call. This target behavior
-reduces the source stub count to two. [Evidence](docs/FORCE-FEEDBACK.md).
+reduced the source stub count to two at that checkpoint; M4dn now replaces the last remaining stub. [Evidence](docs/FORCE-FEEDBACK.md).
 
 Explod creation now compiles ownership/remapping with the beta's expression
 phases and character-resource palette consumer. All **63 native numeric/schema
@@ -223,6 +229,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| MakeDust/control native replay cases in M4dn | 163 / 166 | **98.2%** | Includes22 expected rejections; three early-camera cases still fail. |
+| MakeDust/control application world crops in M4dn | 116 / 144 | **80.6%** | All144 run;28 strict presentation/color failures remain open. |
 | GameMakeAnim recorded native programs through M4dm | 138 / 138 | **100%** | Numeric/schema corpus including nine rejections; unmeasured variants remain. |
 | New GameMakeAnim dependency world crops in M4dm | 39 / 54 | **72.2%** | 15 maximum-one RGB sampling/shadow failures remain strict; broader evidence, not a regression rate against the old corpus. |
 | GameMakeAnim corpus native programs in M4dl | 84 / 84 | **100%** | Recorded numeric/schema corpus including nine rejections and positive controls; unmeasured variants remain. |
@@ -248,7 +256,7 @@ remain item 4. There is no measured whole-engine completion percentage. The
 | Exact shadow image crops in M4da | 35 / 95 | **36.8%** | Strict pixels; 60 one/two-byte fringe/scale failures remain. No tolerance relaxed. |
 | Projectile image programs in the historical M4cz corpus | 152 / 154 | **98.7%** | M4cz result; M4da separately fixes both missing-shadow controls. The whole image corpus was not rerun here. |
 | Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; one stub and other partial consumers remain. Not full controller compatibility. |
-| Documented controller names with typed compiler routes | 76 / 89 | **85.4%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
+| Documented controller names with typed compiler routes | 77 / 89 | **86.5%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |

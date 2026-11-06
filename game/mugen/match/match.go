@@ -194,6 +194,7 @@ func (m *Match) Setting(section, key string, fallback int) int {
 
 func (m *Match) resetRound() error {
 	m.Timeline.ClearPauses()
+	m.Timeline.ResetRoundEffectClock()
 	m.Timeline.ClearShake()
 	m.Effects.Clear()
 	// A fresh round retires its voices/cache before new entry controllers emit
@@ -296,6 +297,7 @@ func (m *Match) enter(phase Phase) {
 	}
 }
 func (m *Match) roundState(value int) {
+	m.Timeline.ResetRoundEffectClock()
 	for _, p := range m.Players {
 		p.Character.RoundState = value
 	}

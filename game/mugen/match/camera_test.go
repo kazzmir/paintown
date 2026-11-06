@@ -188,9 +188,10 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				FixtureConstants bool   `json:"fixture_constants"`
-				RandomSeed       *int64 `json:"random_seed"`
-				ProjectileMax    *int   `json:"projectile_max"`
+				FixtureConstants bool            `json:"fixture_constants"`
+				RandomSeed       *int64          `json:"random_seed"`
+				DustRender       json.RawMessage `json:"dust_render"`
+				ProjectileMax    *int            `json:"projectile_max"`
 				EffectLimits     struct {
 					AfterImageMax *int `json:"AfterImageMax"`
 					ExplodMax     *int `json:"ExplodMax"`
@@ -421,10 +422,31 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					}
 				}
 			}
+			// stockMatch was created with its stock stage. Replacing that
+			// stage must also refresh the production ground transform before
+			// reset/controllers, including observers paused before Active.
+			stageScale, err := background.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+			if err != nil {
+				t.Fatal(err)
+			}
+			m.Viewport.GroundY = background.StageInfo.ZOffset * stageScale
 			if err := m.resetRound(); err != nil {
 				t.Fatal(err)
 			}
-			advanceUntil(t, m, Active, 600)
+			if reference.DustRender != nil {
+				// These native observers deliberately freeze during preintro,
+				// intro or fight-call. Waiting for Active would never finish.
+				for tick := 0; tick < 600 && m.Phase != Active && !m.Timeline.Paused(); tick++ {
+					if err := m.Update(); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if m.Phase != Active && !m.Timeline.Paused() {
+					t.Fatal("dust observer did not reach active or its native pause")
+				}
+			} else {
+				advanceUntil(t, m, Active, 600)
+			}
 			ticks := reference.ReplayTicks
 			if ticks == 0 {
 				ticks = 90

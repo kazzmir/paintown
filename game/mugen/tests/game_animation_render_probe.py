@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Strict read-only comparison of GameMakeAnim controller outcomes with frozen beta captures."""
+"""Strict read-only comparison of GameMakeAnim/MakeDust controller outcomes with frozen beta captures."""
 import argparse
 import hashlib
 import json
@@ -30,14 +30,14 @@ def main():
     parser.add_argument('--go-run', required=True)
     parser.add_argument('--name', required=True)
     args = parser.parse_args()
-    if not re.fullmatch('(?:systemanim-game|systemearly-game|systemresource|gameanim|gameoverlap|gamephase|gamecontext|gameedge|gameorigin|gamevertical)-[a-z0-9-]+', args.fixture):
-        parser.error('Use an authored GameMakeAnim observer fixture')
+    if not re.fullmatch('(?:systemanim-(?:game|dust)|systemearly-dust|dustschema|dustphase|dustintrovalid|dustcontext|dustgeometry|dustpause|dustpauselate|systemearly-game|systemresource|gameanim|gameoverlap|gamephase|gamecontext|gameedge|gameorigin|gamevertical)-[a-z0-9-]+', args.fixture):
+        parser.error('Use an authored system animation observer fixture')
     if any(not re.fullmatch('[a-z0-9_-]+', value) for value in [args.go_run, args.name]):
         parser.error('Use simple lowercase run names')
     root = Path(__file__).resolve().parents[1]
     bank = root / 'tests/testdata/reference'
     expected = json.loads((bank / (args.fixture + '.json')).read_text())
-    spec = expected.get('game_animation_render')
+    spec = expected.get('game_animation_render') or expected.get('dust_render')
     if spec is None:
         parser.error('Rejected controls have no fixed-image expectation')
     for ext, key in [('.cns', 'cns_sha256'), ('.air', 'air_sha256'),
@@ -53,7 +53,7 @@ def main():
     if digest(native / 'stock/mugen.exe') != expected['engine_sha256']:
         raise RuntimeError('Reference executable changed')
     configurations = {}
-    for ledger in ['gamefirst-native-config-finalization.json','gameresource-native-config-finalization.json','gameschema-native-config-finalization.json','gameoverlap-native-config-finalization.json','gamephase-native-config-finalization.json','gamecontext-native-config-finalization.json','gameedge-native-config-finalization.json','gameorigin-native-config-finalization.json','gamevertical-native-config-finalization.json']:
+    for ledger in ['gamefirst-native-config-finalization.json','gameresource-native-config-finalization.json','gameschema-native-config-finalization.json','gameoverlap-native-config-finalization.json','gamephase-native-config-finalization.json','gamecontext-native-config-finalization.json','gameedge-native-config-finalization.json','gameorigin-native-config-finalization.json','gamevertical-native-config-finalization.json','dustfirst-native-config-finalization.json','dustschema-native-config-finalization.json','dustphase-native-config-finalization.json','dustintrovalid-native-config-finalization.json','dustcontext-native-config-finalization.json','dustgeometry-native-config-finalization.json','dustpause-native-config-finalization.json','dustpauselate-native-config-finalization.json']:
         for name, recipe in json.loads((bank / ledger).read_text())['programs'].items():
             if name in configurations: raise RuntimeError('Duplicate native configuration recipe')
             configurations[name] = recipe
@@ -149,7 +149,7 @@ def main():
     }, indent=2) + '\n')
     print(json.dumps(results), flush=True)
     if any(row['rgb_differences'] for row in results):
-        raise SystemExit('Strict native GameMakeAnim outcome comparison failed; goldens unchanged')
+        raise SystemExit('Strict native system animation outcome comparison failed; goldens unchanged')
 
 
 if __name__ == '__main__':

@@ -28,6 +28,7 @@ type Timeline struct {
 	NoBackground, NoForeground, NoBarDisplay bool
 	NoKO                                     bool
 	GameTime                                 int32
+	roundEffectOrigin                        int32
 	TicksPerSecond                           int32 // Zero uses the standalone default of 60.
 	pause, super                             pauseClock
 	pending, pendingSuper                    *pauseClock
@@ -35,6 +36,12 @@ type Timeline struct {
 	shake                                    ShakeParameters
 	pendingShake                             *ShakeParameters
 }
+
+// RoundEffectTime includes fight-call and paused game passes. Match's internal
+// phase splits do not all reset the native spacing clock.
+func (t *Timeline) RoundEffectTime() int32 { return t.GameTime - t.roundEffectOrigin + 1 }
+
+func (t *Timeline) ResetRoundEffectClock() { t.roundEffectOrigin = t.GameTime }
 
 func (t *Timeline) BeginFrame() {
 	if t.depth == 0 {

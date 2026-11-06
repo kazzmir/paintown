@@ -1,0 +1,60 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "98a6df8a4c359721e8f61c11839ffbd92922eb39f485cc0a5851f4334bd145aa",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "1945390ab81ce69f61c5d66a8f795e2884dc6cc52ceecc441b26eaa5e5b967ec",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "random_seed": 686581101,
+  "seed_log_sha256": "0b9e60fe4b7e3d317a29a37cbdd8af6d5fb0ea19f2469d6e9b264d45a8a5c66b",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4dl-systemanim-dust-spacing-1",
+  "native_scope_notes": "Old KO warning actually5080,not5000; base ownAIR9999/9100,common9996. Original erroneous interpretations preserved withcorrection receipt. Context probes use inert5080Null,not death animation conformance.",
+  "dust_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "b4723a030488fa4eaee8e1e72c5fc366200f302ae97c2c63385bd2f7e7d8b214",
+    "scope": "Full world fixed native-only before Go baseline. Strict exact RGB; no tolerance."
+  }
+}

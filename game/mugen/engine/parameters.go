@@ -107,6 +107,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileEnvironmentColor(ctrl)
 	case "gamemakeanim":
 		return compileGameAnimation(ctrl)
+	case "makedust":
+		return compileDust(ctrl)
 	case "pause":
 		return compilePause(ctrl)
 	case "superpause":

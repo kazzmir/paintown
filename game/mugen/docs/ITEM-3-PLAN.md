@@ -462,3 +462,21 @@ warns against sharing Game's position helper with dust based only on their commo
 assets. Then clipboard formatting/display, residual VarSet/aliases/StateTypeSet/
 HitAdd and wider flags. Finish independent item3 before asking about item4 BGM or
 other actual dependencies. No checkpoint pause or renewed permission is needed.
+
+
+## M4dn — MakeDust producer; shared presentation follow-ups
+
+[MAKE-DUST.md](MAKE-DUST.md) records typed dust/round-phase spacing and166 native
+programs/1,728 values.163 native cases and116/144 application worlds pass; three
+startup camera values and28 strict world failures remain unwaived. Core890, all
+old191 Game/pool programs, nine render controls and stock/input/private PCM pass.
+The final outer exit1 is retained. Source routing77/89typed (86.5%) haszero stubs;
+this does not establish overall compatibility.
+
+Continue shared startup camera publication/paused poses, measured HUD component
+expiry and finite/overlap color isolation, then clipboard formatting/debug display,
+Var aliases/StateTypeSet/HitAdd, wider flags and prior strict obligations. Native
+Pause/ScrollLock frame stepping is documented by the supplied target and may
+improve deterministic future observers after independent verification. Keep old
+recorders/inputs/goldens unchanged. Item4 BGM/modes/assets remain unallocated;
+finish independent item3 before a concrete dependency question. No checkpoint pause.

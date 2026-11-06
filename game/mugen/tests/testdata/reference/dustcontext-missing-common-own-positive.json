@@ -1,0 +1,69 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "64e1770b792598927df7116813331a06b710723340fe9f27e425b4ef3bb4c8a1",
+  "air_sha256": "d9109671691ee062704984ccbe40a36af23a9f23d1d0b08025735621ae69c208",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "618f1878516b239f165540d39522df8e0770a9e02c39e06dcf5791d084610f45",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 250,
+        "10": 776,
+        "11": 913
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "config_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+  "effect_limits": {
+    "ExplodMax": 16,
+    "SysExplodMax": 16,
+    "AfterImageMax": 16
+  },
+  "common_air_override": {
+    "path": "data/fightfx.air",
+    "canonical_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "replacement_sha256": "95f98efdf01d7f58b3010477dc65be0597aeef1c59d138df30ee8941dc5ffa3d",
+    "prepared_sha256": "95f98efdf01d7f58b3010477dc65be0597aeef1c59d138df30ee8941dc5ffa3d",
+    "canonical_unchanged": true
+  },
+  "random_seed": 992703799,
+  "seed_log_sha256": "16383c57cdeb104901ac2a890860199d7543a0bdd236654caed9efdff6e89703",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4dn-dustcontext-missing-common-own-positive",
+  "native_scope_notes": "Old KO warning actually5080,not5000; base ownAIR9999/9100,common9996. Original erroneous interpretations preserved withcorrection receipt. Context probes use inert5080Null,not death animation conformance.",
+  "dust_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "a1c6b07edec3680c1be3f512ff5e096f8b9881d370d249f75c961add022245f5",
+    "scope": "Full world fixed native-only before Go baseline. Strict exact RGB; no tolerance."
+  }
+}

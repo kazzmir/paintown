@@ -733,3 +733,141 @@ programs (44sidecars) and rejected ExplodBindRuntime1 (four sidecars). All227 ar
 excluded from this checkpoint and untouched. Staging67857 validated all351 source/
 text blobs before its held-count assertion failed; corrected manifest and review
 are recorded in m4dm-staging-held-path-correction.json. No production/runtime change.
+
+## M4dm committed; M4dn dustschema native7874 ACTIVE — current
+
+M4dm source/text checkpoint977bee612a98d8085328b7ca05f809296146e150 committed locally,
+351UTF8/exact-index paths,no binaries/push; tracked tree clean atreceipt. All prior
+validation complete; do not repeat it. Actual227 oldraw held/excluded; additional
+48 overlooked in earlier abbreviated179 were Reversal11/ExplodBindRuntime1
+sidecars, all untouched/unpromoted. m4dm-staged-audit.json and-commit-record.json.
+
+NEW47 raw dustschema programs/235public sidecars from gamecontext-normal; canonical
+common120 frameblock only replaced by persistent asymmetric120,5 +9996appendix;
+allotheractions/ownAIR/CMD/stage immutable. Cases cover defaults/schema/errors,
+global spacing atTime0..3, independent same-tick requests, per-axis Random versus
+creation jitter and real Explod/Game positives. No expected acceptance behavior
+assumed. COMPLETE independent47-case Go intent35665 passedfirsttry; separate832-
+input/client guardPASS. Checks WHOLE source, parsedstates/controllers/params/
+triggers/defaults/observer rewrites/resources and mirrors. No production edits.
+
+ACTIVE7874 run-m4dn-dustschema-native.py,47 serial native7sec/FVarpage0/CMDdump/
+delay0/1.1/fixedstage/explicit3limits. Newprivate dustschema-reference-probe.py;
+old recorders untouched. Original/intentmaps areOBJECT{source_git,files}, Git977bee6,
+nativepins intentmapJSON not mutableGo. Await ENTIRE7874, then SEPARATE elevated
+original-input/client guard BEFORE source/test/probe/fixture edits/newruntime.
+Review ALL numeric/RNG/rejection/resource/color/geometry rows and all fullscene
+sheets BEFORE promotion/baseline/implementation.
+
+Then separately measured dust contexts: pos2zero presence, asymfacing/profiles/
+negativeabsolute coordinates, ordinarypool+firstfailure/secondphase, commonmissing/
+ownpositive resources, helpers/lifetime/ownership, palettes/actual overlap, Pause/
+SuperPause and changed animationframes. Do NOTshareGameorigin conversion byguess:
+staticDustdouble1f8/200 axis+jitter conversion differsGamefloatpresentation1434/
+1438+origins before random. Detailedunmeasured design SYSTEM-EFFECTS.md. Existing
+17oldDust raw andother227oldpaths remainunpromoted. Continueallitem3noapproval/
+checkpointpause. Item4unallocated. No binaries/push/agents/goals/outsidechanges.
+
+## M4dn — typed MakeDust validated with strict gaps retained; commit next
+
+Last local commit is977bee612a98d8085328b7ca05f809296146e150 (M4dm). Current M4dn
+changes are ready for the explicit source/text staging audit and local commit.
+Do not push or pause for approval. Continue all allocated item3 after committing.
+
+MakeDust now compiles spacing/defaults/int/float tuples/known errors, evaluates
+axis expressions with interleaved RNG, creates common120 scene cues and shares
+ordinary Explod admission without NumExplod ownership. Helpers can retire while
+the cue survives. Facing offsets do not flip sprites; palette/layer/pause and
+one-pass consumers are measured. Timeline spacing usesGameTime-origin+1, reset
+at actual RoundState transitions; internal RoundCall/startActive do not reset it.
+Two moving-owner Pause/SuperPause passes prove spacing advances despite pause;
+the independent actual animation clock freezes. SeeMAKE-DUST.md.
+
+166 native programs (144accepted,22expected rejects) pin1,728 values. All independent
+complete intents, native runs, original input guards, native-only rows/images and
+one-time valid promotion are complete. Public eight ledgers/config finalizations:
+dustfirst17,dustschema47,dustphase35,dustintrovalid19,dustcontext36,dustgeometry4,
+dustpause4,dustpauselate4. Initial native recipes/configs/captures remain immutable.
+
+Baselines84784 and14602 completed1 with separate21,365/21,417 guards. First baseline
+had43/158 passing cases and8/9 strictworld failures; allpairs/three sheets reviewed.
+Revision11262 completed1/separate21,419guard:890core results pass,351/357native
+cases pass,11/12actualworlds exact. All12pairs/four sheets reviewed. Six early
+coordinate failures exposed stale stock-stageGroundY in replay plus native startup.
+Harness now refreshes actual stageGroundY and respects early deliberatePause before
+Active; functions live inmatch/dust_test.go. Ground-r260669 whole1/separate21,420
+checks:37/40pass, onlythree initial CameraPos failures remain. Production source
+has not changed since the validated core revision.
+
+Final integration82981 completed/awaited1. The SEPARATE elevated outer21,503/matrix
+21,500 frozen-input/client guards pass. No runtime remains active.
+
+| Gate | Final result |
+| --- | --- |
+| Core races | 890 passed across4packages, from revision11262;185 productionGo files byte-identical. |
+| Native replays | 354/357cases pass:163/166dust plus all138Game and53pool.378test/subtest results373pass/5fail includingparents. |
+| Unwaived numeric cases | context-early-geometry-1,geometry-dust-1,geometry-game-1:CameraPos80 versus native20 atGame1. |
+| New applications | All144 run;116exact/80.6%/59,020,800RGB pixels.28strict failures retained. |
+| Legacy render | All5palette/order and4shake controls pass. |
+| Stock | Reviewedwin/rematch/win,82balanced ownedinputs,1,973,590stereo44.1kHz PCMframes. |
+| Final statuses |23gates: native/matrix1, other21zero; actualouter1 retained. |
+
+ALL144pairs/24sheets, three enlarged colour diagnostics, nine old controls/three
+sheets and three stock screenshots were VIEWED. The28 world failures comprise
+seven startup/paused poses, twelve heldRound/Fight/KO displays, two max1RGB cases,
+one654pixel/max8 overlap control, six360–526pixel/max32 finite controls. Enlarged
+overlap/finite/fringe samples have matching silhouette masks but differingcolours;
+do not assign cause or change a sampler without independent controls. No region,
+expectation or tolerance changed. All prior strict raster/HUD/audio failures stay.
+
+Passive final audit-r292515 completed/awaited0. It checks3,584original paths,
+166exact configs,149full commonAIR replacements,6,806native binary-resource copies,
+109canonical manifest files, allseeds/captures/recomputedRGB/sharedbinary/stockinput/
+PCM and185production source bytes. The original passive auditor's session receipt
+was omitted; its completed report is preserved and exitunclaimed. R2 repeated only
+passive checks under a separate output name with observed0. Records:
+`temp/m4dn-final-evidence-audit-r2.json`, `m4dn-final-visual-review.json`,
+`m4dn-final1-separate-guard.json`, `m4dn-final-audit-receipt-note.json`.
+All154final apps use43c055c3c1acc075286a9823373cbb128f31e62d56a5820daf766c9a69f5f5de.
+StockPCM SHA b305f56da4fd160014ddd83a6363e80b1dd1d9e8d725f7f4024e8333da4ec3ac.
+Root modules unchanged. No executable is staged. LatestFULL remains M4dl5028/36;
+current checks are focused. Next shared integration may need50m package timeout
+because oldMatch2346.7sec plus the enlarged corpus exceeds40m.
+
+Invalid/mis-scoped controls remain diagnostics:21dustintro programs rejected empty
+state5000; continuity-7-28/29 never reached their observer and returnall12zero.
+Promotion attempt1 abbreviated exclusions, caught by finalcount BEFORE runtime;
+two generatedJSON/two ledgers archived byte-identically. R2 corrected names but
+stopped on preexisting validJSON; r3 verified existing19exactbytes and generated
+corrected ledgers. Originals unchanged; m4dn-promotion-scope-correction documentsit.
+Actual KOwarning is5080,not5000; ownAIR9999/9100,notcommon9996. Old interpretations
+and raw captures remain in immutable private receipts. Inert5080Null is notdeathpose
+implementation. Source routing now77typed/12fallback/0stub/9partial/20bounded/
+60route-only,86.5%ROUTING only; no overall completionclaim.
+
+Sixteen extra CAMERA-ONLY Null controls (duststartup8/startupunit8) are all reviewed,
+fully guarded and RAW/UNPROMOTED, NOT dustcoverage. SourceNative61169 and74097
+both completed0/separate199guards. They disprove20-step easing: initialG1camera
+israw commonunits, stage40->10,-80->-20, local640/1280->40/80 forstage80; atG2 it
+usesproperconversion40/-80/160/320. Native actor poses retain prior positions on
+issuing PosSet+Pause. Needboot/multi-entity publication and paused-presentation
+counterexamples before production camera/cache changes; no screen-space cue hack.
+`m4dn-camera-startup-native-only-review.json` pinsall16rows/four sheets.
+
+Next finish the local source/text commit, then continue measured startup/pause
+presentation, HUDcomponent displaytime/one-pass expiry, finite/overlapcolour
+isolation, clipboard, variable aliases, StateTypeSet/HitAdd and widerflags/strict
+obligations. HUDUpdate already advances cueTime/clocks duringPause; itsdraw
+consumers lack expiry. Do not mislabel that as an absentclock. CLIPBOARD-PLAN.md
+records pending schema/format/buffer/ownership/debug-render work. The supplied
+manual documents Pause/ScrollLock frame stepping; independently verify it before
+using a NEW deterministic recorder. Old recorders remain immutable. Nativefont
+maps94characters to68glyph masks (casepairs alias); preserve equivalence/positions.
+Existing numericP0/P6 prefixes are(10,706)/(10,712) despite bothtexts ending\n;
+that is a bounded example, not a general Append rule. No clipboardprobe/codeyet.
+
+Expected heldraw count354 (old159+invalid115+camera80), VERIFYactual at staging.
+Only166valid corpus cases, their sidecars/16ledgers, actualGo/test/probe changes and
+reviewed docs belong in this commit. Exclude alltemp/binary/invalid/unpromotedraw.
+AGENTS.md has the source-only/noagents/nooutside/noapprovalpause constraints.
+Item4modes/BGM/assets/fonts remains unallocated; finishindependentitem3 first.

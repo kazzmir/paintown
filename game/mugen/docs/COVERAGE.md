@@ -1,5 +1,28 @@
 # Current behavior coverage ledger
 
+## M4dn — typed dust, strict presentation gaps retained
+
+MakeDust now has typed int/float tuples, spacing/default/error handling, ordered
+axis/jitter evaluation, common120 production drawing, ordinary shared admission,
+helper lifetime and measured palette/facing/pause consumers. The new aggregate
+round clock resets at native phase boundaries, including KO, while preserving
+fight-call/active continuity and paused movement passes.
+
+The166-program corpus pins1,728 numeric values: **163 cases pass**, with three
+initial CameraPos values still failing. All138 older GameMakeAnim and53 pool
+programs pass;890 core race results pass. All144 actual scenes run; **116 are
+pixel-exact (80.6%),59,020,800 RGB pixels**. Twenty-eight strict startup/paused-pose,
+HUD lifetime and finite/overlap color failures remain unwaived. All pairs/images,
+old nine render controls and stock win/rematch/win were reviewed. Stock passes82
+balanced inputs and1,973,590 private PCM frames. The final outer exit1 preserves
+the native/matrix failures; all other21 gates and frozen/provenance guards pass.
+
+No original expectation, region or tolerance changed. The latest full suite is
+still historical M4dl5,028/36; current checks are focused. Source routing is now
+**77/89 typed (86.5%),zero stubs**, with12 fallbacks,nine partial,20 bounded and60
+route-only consumers. This is not overall completion. [Evidence and next work](MAKE-DUST.md).
+
+
 ## M4dm — independent game-animation admission and integer origins
 
 GameMakeAnim now uses a pool independent of ordinary Explods, resolves negative

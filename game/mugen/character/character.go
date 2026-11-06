@@ -1292,7 +1292,13 @@ func (c *Character) GameMakeAnim(params map[string]string) {
 }
 
 func (c *Character) MakeDust(params map[string]string) {
-	// Stub: dust particles
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteDust(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("MakeDust: %w", err)
+	}
 }
 
 func (c *Character) VarRangeSet(min, max int, val int) {

@@ -1,0 +1,329 @@
+{
+  "native_finalization": "Exact prepared configuration; FirstRun1->0 and LF->CRLF only. Originals unchanged.",
+  "programs": {
+    "dustcontext-actor-x-negative": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-actor-x-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-actor-y-negative": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-actor-y-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-baseline": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-camera-zero": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-clock1-none": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-clock1-pause": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-clock1-pausebg0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-clock1-super": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-dust-7-then-explod": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-dust-8-then-explod": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-dust-eight-then-game": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-early-geometry-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-early-geometry-4": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-facing": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-full-explods-two-dust": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-games-eight-then-dust": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-helper-retire": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-layer-dust": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-layer-none": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-legacy640": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-local1280": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-local640": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-missing-action-pool": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-missing-common-own-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-missing-sprite-pool": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-palette-all": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-palette-background": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-palette-local": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-preintro-clock-2-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-preintro-clock-4-5": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-preintro-clock-6-7": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-second-fraction": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-second-local640": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustcontext-slot2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    }
+  }
+}

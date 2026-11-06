@@ -3,6 +3,8 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
+    "engine/dust.go": "89850174a33a160d632c0fe6a293df0db56bbe363ba51f629e85faed8e44dcdd",
+    "character/dust.go": "1f8940618b3b9cd93e6a246414fe173b9e22b2b0e50c63740355b47b3cd490c1",
     "engine/game_animation.go": "a625607cff6b8e45d56564b0e2d8a629c18d3789d068474da2096171d6ba016c",
     "character/game_animation.go": "dc07d0f822240637310933d49e0b7843f4071e85515a65df326c630166f170e1",
     "character/ko_sound.go": "6e46efe88d2ff2d29a6acf1df471f358b32646bc162e2dd0a6e573e28c715910",
@@ -20,11 +22,11 @@
     "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
     "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
-    "match/match.go": "5f2a7af8b59522819bfe768ba9656df6997c998837fbe1868b906716080de819",
+    "match/match.go": "e92ecf2e065a36e1ad3fe6879de76ba556de3be24b2e1ef0c617dbb39aa71968",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
-    "engine/parameters.go": "c125729637757737a31ca6d752c59563d7f7bd0d3d1d0d64ee571aa518c92b3a",
-    "character/character.go": "4334b9e94fd6ead8274d04ea909b513aadef76cc96c6a16f7956e1c99170494d",
+    "engine/parameters.go": "931d0a3473a9f398d44dd121b7883da57e2f886cf9d318ec889cdba42069eb32",
+    "character/character.go": "05ff7e6bd3662001902dd1b9f43d849915dbab99e16fb314147834140688fa16",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
     "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
@@ -44,7 +46,7 @@
     "engine/env_color.go": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
     "engine/env_shake.go": "4792c308034f6cbd95c9d40de4c8a4c5f529270ff075a71f0ea2a917afcd3d06",
     "engine/shake.go": "badeca8942018cda36f154190115c52d89bed797adb2adfa848c6a3b9cc8659b",
-    "engine/timeline.go": "b3d6e50056957d81a6a8995b1819411080b70ff0292a4e0dedc20d8d6323242d",
+    "engine/timeline.go": "5e8a6480a32dc404eef3ab04ad1124ad22907148f35bfee29fbbf3ac40fa126a",
     "engine/round_clock.go": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
     "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
     "palette/controller_effect.go": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
@@ -66,15 +68,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 76,
-    "fallback": 13,
+    "typed": 77,
+    "fallback": 12,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 1,
+      "stub": 0,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 19,
+      "bounded-native-consumer": 20,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -528,11 +530,11 @@
     {
       "name": "makedust",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleMakeDust",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:MakeDust"
+        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values observed, three shared early-camera numeric failures and early paused-pose world differences remain strict; broader camera/KO-slowdown/resource/round variants remain"
       ],
       "variants_complete": false
     },

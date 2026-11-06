@@ -183,3 +183,14 @@ rows remain variant-incomplete. The JSON's three changed production hashes were
 regenerated after preserving the exact report used by runtime checks; classifications
 are identical.54 new native programs/648values pass;39/54 world crops exact and15
 strict one-level RGB failures remain. See SYSTEM-EFFECTS.md. MakeDust is next.
+
+
+## M4dn update
+
+MakeDust's typed schema/ordered producer/round spacing clock replaces the final
+source stub. Current routing is89registered,77typed,12fallback,zero stubs,nine
+partial consumers,20 bounded consumers and60 route-only rows. This is86.5%typed
+routing, not behavioral completion. [MAKE-DUST.md](MAKE-DUST.md) retains the
+three native CameraPos and28 whole-world failures; no variant is marked complete.
+Clipboard, variable aliases, StateTypeSet/HitAdd, wider flags and all strict
+renderer/HUD/audio obligations remain allocated. Item4 remains separate.

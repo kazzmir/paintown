@@ -20,62 +20,71 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dm validated; commit then continue MakeDust
+## Immediate state — M4dn source/text commit next; no runtime active
 
-M4dl remains committed1e71278833c19ccee4d070dde416b008399fa31d. M4dm production now
-separates Game admission from ordinary Explods (pending/active/standalone), warns
-and resolves negative actions to0, and integerizes with absolute half-game-width/
-stage-ground origins before random displacement and later camera subtraction.
-No SysExplodMax restriction is guessed. New checked full common-AIR replacement
-replay/probe support is separate from the old append recipe. All old goldens,
-regions, samplers, tolerances and native inputs remain unchanged.
+Last local commit is977bee612a98d8085328b7ca05f809296146e150 (M4dm).
+M4dn typed MakeDust, ordered actual-position/jitter producer and aggregate round
+spacing clock are implemented. Full details/results/corrections: docs/MAKE-DUST.md
+and latest docs/HANDOFF.md. Continue ALL item3; no checkpoint approval/pause.
 
-All54 new native programs accepted/648 values, four independent native/config
-ledgers; all11native sheets/rows reviewed before promotion/fix. Native12154,
-18510,55813,91360 complete0; separate499/199/159/159original/client guardsPASS.
-Native origin +/-half/zero scenes EXACTequal with negativecamera; +fullunit differs
-on BOTHaxes. Worldzero and leftedge originals retained; leftedge samebbox doesNOT
-mean sameRGB. Visible AIR9999 belongs to BOTHfighters. Perentitynoshadow suppresses
-P1shadow only; P2shadow remains. Once-Time8 globalnoshadow resets after pause and
-original namedno-shadow cases stillcast shadows. All scope corrections documented.
+166valid native programs144accepted/22rejects/1728values, eight publicledgers and
+configfinalizations. All independent full intents/native runs/separate guards and
+native-only rows/images reviewed. Spacing advances underPause/SuperPause; actual
+animation freezes. Common120 only; ordinary sharedpool/noNumExplod; unflipped
+sprite/facing offsets; helper retirement; measured palette/layer/lifetime bounds.
+ClockGameTime-origin+1 resets onRoundState, NOTRoundCall/startActive.
 
-Baselines57559/63474/59631 complete/guarded, all12pairs reviewed. Revision96964
-ENTIREcomplete0; separate20,375frozen/client guardPASS. Core890results/4packages
-and205native results (138Game+53oldpool+14parents)PASS. All8 targeted revision
-worlds EXACT4,070,400RGBpixels; bothsheets reviewed. Production Go/test/probe bytes
-UNCHANGED after revision. Final37394 ENTIREcomplete1; separate20,378outer/20,375
-matrix frozen-input/client guardPASS. New39/54worlds EXACT19,843,200RGBpixels;
-15strictmaximum-oneRGB failures UNWAIVED. Oldfraction/single failures unchanged
-41/18pixels maximum1. All56pairs/14matrixsheets +old9pairs/3sheets +stock3screens
-FULLYVIEWED. Old5palette/order+4shake gatesPASS. Stock82balancedkeys,
-1,974,462PCMframes/4311fee96f646b78d6f2d0f2d39d85ca29a714f9996f4d15b87eaba3cbe60de2.
-All66apps samebinary6cd51c6be3b39fd8f33f1cd094042adc908756f73b405402841ae97c9c4e4a2d.
-No binary added to Git. Allpriorrenderer/HUD/echo/heldKOtext obligations UNWAIVED.
+Final82981 ENTIREcompleted/awaited1; SEPARATE elevated21,503outer/21,500matrix
+frozen/client guardsPASS. All144apps run;116worldexact80.6%/59,020,800RGB pixels,
+28strictfailures UNWAIVED. ALL144pairs/24sheets+threeenlargeddiagnostics VIEWED.
+Core890pass; all185productionGo bytes identical. Native357cases354pass/3initial
+CameraPos80vs20fail;378testresults373pass5failinclparents. Allold138Game+53pool
+PASS. ReplayharnessStageGroundY refreshed/earlyPause respected; no goldenedits.
+Old9render controls andstockwin/rematch/win PASS/VIEWED:82balancedkeys and1,973,590
+privatePCMframes. All23finalgates realstatuses native/matrix1,others21zero,outer1.
+Sourceinventory77typed/12fallback/0stub/9partial/20bounded/60route-only,86.5%routing
+ONLY. LatestFULL historicalM4dl5028/36; no newfullsuite claim. Futuremeaningful
+sharedintegration mayneed50m ratherthan40m (oldMatch2346.7sec+newnativeprograms).
 
-Finalinventorygate realexit1 preserved: onlythree changedproduction source SHAs,
-classifications identical. AFTERwholeguard exact oldreport archived under
-temp/_tmp/m4dm-final-run-source, validatedagainstGit1e,
-versionmap m4dm-final-run-source-versions.json. Regeneratedreport/currentinventory
-PASS; separate61,128-entry/source/client guardPASS. No validatedsource/test/probe/
-fixture/module edits. Passiveaudit7609 ENTIREcomplete0: all6,096original paths,
-390Git/archiveversions,138configs,65AIRappendices/54fullreplacements,5,658native
-resourcecopies/109canonicalmanifest, seed/capture/measuredRGB/binary/stockPCM/module
-checksPASS. Receipts m4dm-final-evidence-audit.json and-final-visual-review.json,
--final1-separate-guard.json and-current-metadata-separate-guard.json. Docs/README/
-COVERAGE/COMPAT/CHECKPOINTS/ITEM3/topic/index/test/sourceinventory updated. Source
-counts76typed/13fallback/1stub/9partial/19bounded/60route-only,85.4%routingONLY.
-Latest FULLrace remains historicalM4dl5,028/36; do not repeat merelyfor this batch.
+Passive finalaudit-r292515ENTIRE0 verifies3584original paths,166configs,149common
+AIRreplacements,6806nativebinaryresource copies/109canonicalfiles,allseeds/caps/
+recomputedRGB/shared154appbinary/input/PCM/productionbytes. Initialpassiveaudit
+receipt omitted; completeoriginalreport preserved/exitunclaimed, R2observed0.
+CPU source-sprite review12input/clientguardPASS. Rootmodules unchanged. Seeprivate
+m4dn-final-evidence-audit-r2,final-visual-review,final1-separate-guard receipts.
+No runtime active. Do not rerun completed tests merely to make another checkpoint.
 
-NEXT explicit UTF8/noNUL/exactindex source/text path audit, LOCALcheckpointcommit
-(no push). If gitlog already shows M4dm don't redo commit/checks. Then continueALL
-item3: MakeDust17oldnative-only raw controls plus new complete typed/globalspacing/
-interleavedaxisRNG/commonresource/facing/geometry/helper/pool/palette/clock consumers.
-Detailed unmeasured design in SYSTEM-EFFECTS.md. Static Dust reads double positions
-at0x1f8/0x200, unlikeGamefloatpresentation1434/1438+origins; doNOTsharecoordinate
-helper without independent native proofs. Then clipboard/residualschemas/aliases/
-StateTypeSet/HitAdd/widerflags and strict obligations. No approval/checkpoint pause.
-Old179raw (MakeDust17,nokotime14,direct10,invalidwalk3) remain UNPROMOTED/UNSTAGED.
-No active runtime. No push/binaries/agents/goals/outside edits. Item4 unallocated.
+Ready: explicit stage/audit UTF8/noNUL/exact index bytes; ONLY valid166 corpus+16
+ledgers/sidecars, source/test/probe and docs. No binary/temp/outside/invalidraw.
+Expectedheldraw354=old159+invalid115+camera80; verifyactual. No commit yet.
+Then localcommit and CONTINUE noapprovalpause. Neverpush. Do not edit canonical
+native resources/oldrecorders/inputs/captures/goldens or relaxstrictcomparisons.
+
+Native21empty5000setup and2continuity-7-28/29unreached observers stayunpromoted.
+Promotion abbreviated-exclusion mistake caughtbyfinalcountBEFOREruntime; archived
+two derivedJSON/twoledgers unchanged, r3checkedexisting19exactbytes beforecorrect
+ledgers. Originalsnativeneverchanged. ActualKOwarning5080not5000, ownAIR9100not
+common9996; correction receipts preserve earlierinterpretations. Inert5080Null
+is notdeathpose implementation. Do not count failedsetups/missed observers.
+
+16camera-only Null programs duststartup8/startupunit8 are RAW/UNPROMOTED, notdust
+coverage; allnative/intent/guards/rows/foursheets complete. Initialraw cameraG1:
+stage40->10,-80->-20; local640/1280->40/80 forstage80, thenproperconversionG2.
+Disproves20-step/easing. Issue-framePause retains native prioractorposes/positions.
+Requireboot/multi-entity publication+pausedpose controls beforecamera/cache edits;
+no specializedcue screenmode. Current28worldfailures:7startup/pose,12heldHUD,
+2max1colour,one654pix/max8overlap,6finite360–526pix/max32. Enlargedcolourmasks
+match silhouette, causeunassigned. NativeCueTTL needs independentdefaults/delays/
+loop/infinite/explicit/SuperPause controls. HUDUpdate alreadyclocks duringPause;
+Draw lacksdisplaytime/onepass expiry. NoHUD/camera/samplerproductionedit yet.
+
+Next measured sharedpresentation/HUD/finiteoverlap gaps, thenclipboard andremaining
+item3 schemas/flags/strictobligations. CLIPBOARD-PLAN.md ispreparationonly. Native
+manualPause/ScrollLock framestepping documented, NOTyetexercised; verifyactual
+counters in aNEWrecorder beforeusing it. Originaldebugfont94characters/68masks
+casealiases; fullglyphobserver mustpreserveequivalences/positions, neveroverwrite
+testedclipboard witholdnumeric injector. No clipboardprobes/codeyet. Item4 BGM/
+modes/assets/fonts unallocated; finishindependentitem3 beforedependencyquestion.
 
 ## Native source provenance exception
 
@@ -101,7 +110,7 @@ Later system-effect ledgers hash the authoring map JSON, not live Go paths.
    real exit status and collect all failures. Do not call a partial matrix exact.
 5. Focused races/apps during revisions; full scoped races at meaningful shared
    integration boundaries and final item-3 closure. Full races use
-   `--check -race -p 1 -count=1 -timeout=40m`. Required stock selection/fight/
+   `--check -race -p 1 -count=1 -timeout=50m`. Required stock selection/fight/
    results/rematch and task-owned private PCM checks remain acceptance gates.
 6. Native, actual-app and display-dependent Go runs are STRICTLY SERIAL. Await
    every exec session and run a SEPARATE client/frozen-input guard before edits
@@ -134,12 +143,7 @@ Read docs/HANDOFF.md and docs/ITEM-3-PLAN.md. Prior 12 M4cq, seven M4cv, two M4c
 samplers or tolerances without independent native evidence and old exact controls.
 The native VarSet literal 7.9 rejects; fix conflicting unit setup with 7.9+0.0
 expressions without changing native goldens. FVar aliases need native acceptance.
-GameMakeAnim is under final validation; MakeDust remains the sole stub. ForceFeedback is native Null-kind,
-not a haptics stub. Broader modes/teams/AI/BGM/assets/triggers remain item 4.
+GameMakeAnim and MakeDust have bounded native implementations with retained strict gaps.
+ForceFeedback is native Null-kind, not a haptics stub. Broader modes/teams/AI/BGM/assets/triggers remain item 4.
 
-Current staging audit correction: actual held raw count is227, not the abbreviated
-179 tracked in the preceding notes. The extra48 are older unpromoted Reversal11
-programs (44sidecars) and rejected ExplodBindRuntime1 (four sidecars). All227 are
-excluded from this checkpoint and untouched. Staging67857 validated all351 source/
-text blobs before its held-count assertion failed; corrected manifest and review
-are recorded in m4dm-staging-held-path-correction.json. No production/runtime change.
+
