@@ -1,5 +1,27 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4dd extends Explod palettes to common animations, helper issuers and forced
+mapping replacement. **42/42 new native programs and 42/42 new app crops pass**
+(100% of each recorded corpus); the new crops compare 21,369,600 RGB pixels
+exactly. Four earlier M4dc palette scenes also match, giving 46 final crops /
+23,404,800 pixels. All native/Go pairs were visually reviewed.
+[Evidence and bounds](EXPLOD-PALETTE-CONTEXTS.md).
+
+The new consumer shares local PalFX separately from common sprite mappings when
+ownpal=0 is explicit; common defaults to owned. Forced destinations replace prior
+mappings, including wildcard maps, with native base fallback for invalid or
+incompatible destinations. Seven original app counterexamples are preserved.
+Fresh races pass 868 core results across engine/character/effect/system and 248
+selected native Match results. Five older palette/order apps, four masks and
+visually reviewed stock win/rematch/win pass, with 82 balanced events and
+1,971,399 private PCM frames. Audit: 17,941 frozen paths, 1,564 original native
+inputs, all 42 configs, 41 canonical archives and 1,722 native resource copies.
+The latest full suite remains M4da 4,506/36. All earlier strict renderer failures
+remain unwaived. Creation angles/trans/alpha/random/pools and the other item 3
+groups continue; item 4 remains unallocated. Source route counts are unchanged
+and do not measure whole-engine compatibility.
+
+
 M4dc adds character-resource Explod ownership/remapping and measured expression
 phases. **63/63 native numeric/schema programs pass**, including seven expected
 load rejections; **56/56 application crops match exactly (100% of this corpus)**

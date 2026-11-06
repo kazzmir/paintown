@@ -201,3 +201,14 @@ separately prepared common-resource/helper context study, then remaining Explod
 creation fields/pools, AssertSpecial, system effects, clipboard and residual
 schemas. No original expectations or comparison tolerances changed; previous
 strict renderer failures stay open. Item 4 remains unallocated.
+
+
+## M4dd — palette ownership contexts
+
+[EXPLOD-PALETTE-CONTEXTS.md](EXPLOD-PALETTE-CONTEXTS.md) records native common
+ownership defaults/local effects, helper issuer ownership and forced mapping
+replacement over explicit/wildcard maps. All 42 new native/app controls pass;
+four prior palette apps, focused races and stock/audio/provenance checks pass.
+Next 41 unobserved creation angle/trans/alpha/AIR/profile drafts need full intent
+verification and native-only review before implementation. Random/capacity and
+all other item 3 groups follow. Prior strict renderer differences stay open.

@@ -2971,3 +2971,20 @@ frames. Original resources, configurations, modules, binaries and captures are
 verified. Failed baselines remain immutable; no earlier renderer failure waived.
 Source/text only; no binaries or push. Continue common/helper palette contexts
 and all remaining item 3 without stopping for reapproval.
+
+
+## M4dd — common/helper palettes and forced-map fallback
+
+Common animations default to owned palettes; explicit shared palettes follow
+local PalFX independently of the common sprite bank. Forced remapping replaces
+inherited mappings, including wildcard maps; invalid/depth mismatch destinations
+return to native base colors. [Evidence](EXPLOD-PALETTE-CONTEXTS.md).
+
+42 native programs / 504 values and five native review sheets precede production
+changes. Seven failed baseline app cases remain immutable. Fresh races pass
+868 core / 248 native results; all 42 new app crops and four old M4dc controls
+are exact / 23,404,800 pixels. Five older palette/order apps, four masks and
+visually reviewed stock win/rematch/win pass, with 82 balanced inputs and
+1,971,399 private PCM frames. All source/resource/config/module/binary/capture
+provenance checks pass. Source/text only; no binaries/push. Continue creation
+angles/trans/alpha/random/pools and all remaining item 3 without reapproval.

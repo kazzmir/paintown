@@ -16,12 +16,12 @@
     "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
     "character/character.go": "30f06bdd7216242f1e293aa1c0924667222455d966329692283b98e8bb5476e8",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
-    "character/explod.go": "6afd75dd4939084a0734913883f490fb18d77f72b315ee4d3b7a74d3db5826c1",
-    "engine/explod.go": "47f545ff98290c6d1eb2288ea10d96642b59e9bd4be5318609b7d7753328bd40",
+    "character/explod.go": "9dc3a8a919bd98eaaa2393142564b668395aa4d3e2c919887e9eadad8549fd6c",
+    "engine/explod.go": "b2c8b9661649b3bd3b3703ed6954ce6537a7e949feb4984a3d79384800c04f9f",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
-    "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
+    "effect/scene.go": "ff2770da67a5b58bb7621187467716dd1958946326f62969c920f7d30c16588b",
     "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
-    "system/effects.go": "7960bee5f10cfbb645d03281182d73fb86319d309746c7f58000e4ef653ac52f",
+    "system/effects.go": "db01e749703ea0976669c790e85b36c6018d773e6ac90266efedf6f8844b6e57",
     "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
     "render/shadow.go": "8b3bf8c5b95e0835472bd43a9c3054ce5531c6e61c4ac489ad44ccba540e1285",
     "stage/loader.go": "514411a8c51f301fb3f6e4e3aa3a464529d84324c2d79df9a7cc632cc6bc6cc5",
@@ -351,7 +351,7 @@
       "handler": "handleExplod",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; creation palette/random/angle/trans/capacity and broader variants open"
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; random/angle/trans/capacity and broader variants open"
       ],
       "variants_complete": false
     },

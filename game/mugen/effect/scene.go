@@ -11,10 +11,18 @@ import (
 )
 
 type Source struct {
-	Sprites    *sff.SFF
-	Animations *air.Data
-	Palette    *palette.State
-	Scale      float64 // common game units per sprite pixel
+	Sprites      *sff.SFF
+	Animations   *air.Data
+	Palette      *palette.State
+	LocalEffects *palette.State // Optional local color effect owner, separate from sprite mappings.
+	Scale        float64        // common game units per sprite pixel
+}
+
+func (source Source) PaletteTransform() palette.Transform {
+	if source.LocalEffects != nil {
+		return source.LocalEffects.Transform()
+	}
+	return source.Palette.Transform()
 }
 
 type Request struct {

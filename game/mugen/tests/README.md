@@ -1001,3 +1001,14 @@ creation_palette_render_probe.py is a strict read-only comparator for all
 config and capture provenance. All 56 final scenes match exactly; baseline
 21 numeric/schema and seven visible failures remain preserved. See
 ../docs/EXPLOD-CREATION-PALETTES.md for evidence, evaluation gates and limits.
+
+
+## Explod palette ownership contexts
+
+TestNativeExplodPaletteContexts replays 36 programs and
+TestNativeExplodPaletteEdges replays six wildcard follow-ups. All 42 accepted
+programs preserve 504 values and exact configuration-finalization recipes.
+creation_palette_render_probe.py also supports palettecontext-/paletteedge-
+controls and their disjoint ledgers. All 42 new app crops and four old M4dc
+controls match exactly. Archived earlier comparator/driver versions and seven
+failing app baselines remain in temp/. Read ../docs/EXPLOD-PALETTE-CONTEXTS.md.

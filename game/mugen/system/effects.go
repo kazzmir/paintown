@@ -205,7 +205,7 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		}
 	} else {
 		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
-		style = render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.Palette.Transform(), m.Timeline.AllPalette.Transform())}
+		style = render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.PaletteTransform(), m.Timeline.AllPalette.Transform())}
 	}
 
 	if projected {

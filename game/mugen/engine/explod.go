@@ -192,7 +192,10 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				p.IgnoreHitPause = ctrl.IgnoreHitPause != 0
 			}
 			p.SpaceSpecified = explicitSpace
-			p.OwnPalette = early["ownpal"].Number() != 0
+			p.OwnPalette = common
+			if value, present := early["ownpal"]; present {
+				p.OwnPalette = value.Number() != 0
+			}
 			p.RemapPalette = [2]int{-1, 0}
 			if value, present := early["remappal0"]; present {
 				p.RemapPalette = [2]int{int(value.Number()), int(early["remappal1"].Number())}

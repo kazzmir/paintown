@@ -20,22 +20,28 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dc complete, M4dd next
+## Immediate state — M4dd complete; continue M4de
 
-M4dc source/text checkpoint: record temp/m4dc-commit-record.json. No active runs.
-Focused21536/final42494 complete/awaited0; separate17724/17725-input guardsPASS.
-846core/416native races;63originals(56accepted/7rejects/672values);56exactapps/
-28,492,800RGBpixels;5oldpalette/order/4masks/stock win-rematch-win pass. All56pairs
-and stock21/26/45 reviewed,82balanced events/1,973,637privatePCMframes. Final
-17,727frozen paths/1390originals/109manifestfiles/41archives/2583copies pass.
-Latest FULL scoped suite remains M4da4506/36. Prior strict pixels stay UNWAIVED.
+No active runtimes. M4dd source/text local checkpoint record temp/m4dd-commit-record.json.
+Focused17071/final63345 complete/awaited0; separate17938/17939-input guardsPASS;
+passive audit19927 complete0.42original programs/504values;42new+4oldM4dc apps
+exact/23,404,800RGBpixels;868core4pkgs/248native races,5oldpalette/order/4masks/
+stock win-rematch-win pass. All46pairs and stock21/26/45 viewed.82events/
+1,971,399privatePCMframes. Audit17941frozen paths/1564originals/109files/41archives/
+1722nativecopies PASS. Earlier strict pixels UNWAIVED; latest FULL M4da4506/36.
 
-Read docs/HANDOFF.md and EXPLOD-CREATION-PALETTES.md. Next35 ignored palette-context
-drafts UNOBSERVED/unfrozen; prepared private full-intent parser NOT RUN. Freeze/
-verify/await/SEPARATE elevated guard before public copying/native observation.
-Common-resource/helper-issued effects, prior-map/float edge controls next.
-Typed creation palettes and character-resource consumers implemented; native
-originals and failed baseline diagnostics remain immutable. Continue all item3.
+M4dc committed039ead67963e80adab7d3ebab4ad3d5c083e65b7. Read docs/HANDOFF.md,
+EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md. M4dd default common
+owned, optional separate live LocalEffects color pointer and inherited mapping
+replacement before forced remap. Seven original app failures preserved.
+
+NEXT41 UNOBSERVED draft controls temp/m4de-explod-draw-draft and prepared private
+full intent verifier temp/_tmp/m4de-explod-draw-intent/main.go NOT RUN/frozen.
+Freeze/verify/await/SEPARATE elevated guard before public copying/native run.
+CNS kinds/triggers/params, full state headers/constants and entire AIR/CMD/stage
+intent required. AIR adds explicit normal/add/sub portrait controls. Three1.0
+profiles. Inspect ALL native rows/sheets BEFORE promotion/production changes.
+Continue all item3 without checkpoint stop/reapproval. No binaries/push/agents.
 
 Source74typed/15fallback/2stubs/9partial/18bounded/60route-only is not behavioral
 coverage. Continue ALL remaining item3 with local checkpoints; no stop/reapproval.

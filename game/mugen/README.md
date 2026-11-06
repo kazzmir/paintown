@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4dc validation**.
+Snapshot: **2026-11-06; through M4dd validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -152,6 +152,13 @@ exactly (100% of this corpus)** across **28,492,800 RGB pixels**. Fresh focused
 races and stock win/rematch/win with audio pass.
 [Evidence and bounds](docs/EXPLOD-CREATION-PALETTES.md).
 
+Common-resource and helper palette contexts now include native common ownership
+defaults, explicit shared local PalFX and forced-map replacement/base fallback.
+All **42 new programs and 42 new app crops pass (100% of each corpus)**;
+21,369,600 new RGB pixels compare exactly. Four earlier palette crops, focused
+races, stock rematch and private audio also pass.
+[Context evidence](docs/EXPLOD-PALETTE-CONTEXTS.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
@@ -160,6 +167,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| Explod palette context native programs in M4dd | 42 / 42 | **100%** | Common/helper/wildcard context corpus; broader asset/profile variants remain open. |
+| Explod palette context app crops in M4dd | 42 / 42 | **100%** | Exact pixels in this new corpus; four additional old controls also pass. |
 | Explod creation palette numeric/schema programs in M4dc | 63 / 63 | **100%** | Recorded corpus, including seven expected rejections. |
 | Explod creation palette application crops in M4dc | 56 / 56 | **100%** | Exact pixels in this corpus; common/helper contexts remain separate. |
 | Shadow native numeric/schema programs in M4da | 98 / 98 | **100%** | This recorded corpus only; includes three expected load rejections. |

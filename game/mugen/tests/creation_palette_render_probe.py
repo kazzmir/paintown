@@ -30,7 +30,7 @@ def main():
     parser.add_argument('--go-run', required=True)
     parser.add_argument('--name', required=True)
     args = parser.parse_args()
-    if not re.fullmatch('(?:creationpal|creationphase)-[a-z0-9-]+', args.fixture):
+    if not re.fullmatch('(?:creationpal|creationphase|palettecontext|paletteedge)-[a-z0-9-]+', args.fixture):
         parser.error('Use an authored Explod palette fixture')
     if any(not re.fullmatch('[a-z0-9_-]+', value) for value in [args.go_run, args.name]):
         parser.error('Use simple lowercase run names')
@@ -44,14 +44,14 @@ def main():
                      ('.cmd', 'cmd_sha256'), ('.stage.def', 'stage_fixture_sha256')]:
         if digest(bank / (args.fixture + ext)) != expected[key]:
             raise RuntimeError('Authored source changed: ' + ext)
-    native = root / 'temp/reference-runs' / ('m4dc-' + args.fixture)
+    native = root / 'temp/reference-runs' / (('m4dd-' if args.fixture.startswith(('palettecontext-', 'paletteedge-')) else 'm4dc-') + args.fixture)
     nd = json.loads((native / 'evidence.json').read_text())
     if nd['captures'] != expected['captures'] or nd.get('load_error'):
         raise RuntimeError('Native numeric/capture evidence differs')
     if digest(native / 'stock/mugen.exe') != expected['engine_sha256']:
         raise RuntimeError('Reference executable changed')
     configurations = {}
-    for ledger in ['creationpal-native-config-finalization.json', 'creationphase-native-config-finalization.json']:
+    for ledger in ['creationpal-native-config-finalization.json', 'creationphase-native-config-finalization.json', 'palettecontext-native-config-finalization.json', 'paletteedge-native-config-finalization.json']:
         for name, recipe in json.loads((bank / ledger).read_text())['programs'].items():
             if name in configurations: raise RuntimeError('Duplicate native configuration recipe')
             configurations[name] = recipe

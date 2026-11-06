@@ -23,15 +23,63 @@ clone current mapping, clear localFX, force remap on clone; shared palette live.
 Common-resource behavior awaits native study. Baseline21numeric/schema and7/8
 app failures preserved; first app-ledger-name collision preserved separately.
 
-NEXT independent35 drafts temp/m4dd-palette-context-draft UNOBSERVED/unfrozen.
-Private full-intent parser prepared temp/_tmp/m4dd-palette-context-intent/main.go
-but NOT RUN. Freeze its inputs, verify full state headers/constants/controller
-kinds/triggers/params/AIR/CMD/ENTIREstage, await then SEPARATE elevated input/client
-guard before public copy/freeze/native observation. Common F3 defaults/FX/remap,
-helper ownership x Explod ownership, runtimefloat coercion and prior-map overrides.
-Add separately named one-component remap over prior map control if needed to
-distinguish omitted second component (main M4dc one-component2 has no group2).
-Continue all item3; no stop/reapproval at checkpoints. Broader item4 unallocated.
+M4dc committed039ead67963e80adab7d3ebab4ad3d5c083e65b7,333scoped source/text paths;
+scoped tree clean at commit, no binaries/push. Continue all item3 without pause.
+
+## Immediate state — M4dd complete; no active runtimes
+
+Local source/text checkpoint record temp/m4dd-commit-record.json. Focused17071/
+final63345 complete/awaited0; separate17938/17939-input guardsPASS. Passive audit
+19927 completed0.868core4pkgs(engine188/character658/effect5/system17),248native
+results pass. All42new+4oldM4dc apps exact/23,404,800pixels (new21,369,600).
+ALL46pairs/four sheets and stock21win/26FIGHTrematch/45secondwin viewed.
+Five old palette/order apps, four masks,82balanced inputs/1,971,399PCMframes pass.
+Audit17941frozen paths/71745hashchecks/1564original inputs/109manifestfiles/
+41archives/1722nativecopies pass. Latest FULL scoped suite remains M4da4506/36;
+all earlier strict renderer differences remain UNWAIVED. Read new topic docs.
+
+Native36+edge6 original programs reviewed/promoted ONCE:42accepted/504values,
+all42 config finalizations exact. Context3 sheets plus extra FULL common-spark
+sheet and edge sheet viewed BEFORE promotion/fix. Initial thumbnails clipped
+sparse F3 islands; extra full sheet fixes review, and golden ROI covers ALL918px.
+All original recorders/sources/assets/captures/goldens and failed diagnostics stay.
+
+Baseline main64927 complete1:846core/101native pass,4/8apps fail; commonFXown0
+initial/later918RGB/max32 and priorforcedinvalid/single3123/max52. Separate17906
+guardPASS. Edge60200 complete1:3/6fail3123/max52,3exact. Separate17935guardPASS.
+All14baseline pairs viewed. Old comparator/driver versions archived before
+extensions in temp/m4dc-final-creation-palette-render-probe.py and m4dd-baseline1*.
+
+Production engine/explod.go defaults OwnPalette=common with explicit integer
+override; character/explod.go attaches LocalEffects for shared common sprites,
+keeps common mappings separate. effect.Source.PaletteTransform and system renderer
+consume it. Forced remaps clear inherited mappings first (including wildcard)
+and apply valid same-depth dest; invalid/identity/depth mismatchbase,group-1retain.
+No helper code change needed. New all105palette creation/context/edge programs
+pass under race with olderPalFX/global groups. Source counts74typed15fallback,
+2stubs9partial18bounded60route-only; no whole-engine percentage.
+
+Bounds: stockcommon remap1,2 no visible change, arbitrary customcommon mappings
+unmeasured. Sharedhelper cannot installlocalFX, roots/h1children own as measured.
+One-component remap accepted/base but omittedsecond STILL ambiguous (invalid0
+and identity1 bothbase). KFM six32-color1,1..6 plus256-color9000,1; commonfightfx
+isSFFv1, so don't use v2 offsets to infer palette absence.
+
+NEXT41 UNOBSERVED draw drafts temp/m4de-explod-draw-draft; author
+prepare-m4de-explod-draw-draft.py. Prepared full private verifier
+ temp/_tmp/m4de-explod-draw-intent/main.go NOT RUN/frozen. Full headers/constants/
+controller kinds/triggers/params, inheritedCMD/stage and wholeAIR plus parsed
+sprite/blend required. AIR inherits blank/normal portrait and appends explicit
+add/sub9101/9102. Three1.0 profiles. Freeze before parser run; await then SEPARATE
+elevated input/client guard before public copy/freeze/native observation. Inspect
+ALL native numeric/color/consumer rows and sheets BEFORE promotion or fixes.
+Finish Explod draw fields, then random/pools and remaining item3; no stop at
+checkpoint. Item4 unallocated. M4dc commit039ead67963e80adab7d3ebab4ad3d5c083e65b7.
+
+Independent16systemanim first-look drafts UNOBSERVED/unverified in
+ temp/systemanim-firstlook-draft. RNG controls need pinned native Match seed/log
+recipe (M4cd flow). GameMakeAnim/MakeDust have real native kinds203/215, not Null.
+Finish remaining Explod checkpoints first; no systemanim runtime/expectations yet.
 
 
 ## Completed M4da validation; local commit next

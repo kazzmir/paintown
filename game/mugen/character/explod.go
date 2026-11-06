@@ -43,12 +43,19 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 				source.Palette = c.Palettes.Clone()
 				source.Palette.ClearEffects()
 				if p.RemapPalette[0] != -1 {
+					// A forced destination replaces inherited mappings, including
+					// wildcard maps. Invalid destinations also leave the base palette.
+					source.Palette.Remap(palette.ID{-1, 0}, palette.ID{-1, 0})
 					if err := source.Palette.Remap(palette.ID{1, 1}, palette.ID(p.RemapPalette)); err != nil {
 						c.EvaluationWarning("Explod remappal: " + err.Error())
 					}
 				}
 			}
 		}
+	} else if !p.OwnPalette {
+		// Common sprites keep their own bank; only the issuer's live local
+		// color effect is shared. Character palette mappings cannot select it.
+		source.LocalEffects = c.Palettes
 	}
 	if source.Animations == nil || source.Animations.Actions[p.Action] == nil {
 		c.EvaluationWarning(fmt.Sprintf("Explod action %d is unavailable", p.Action))
