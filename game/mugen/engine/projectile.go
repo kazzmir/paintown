@@ -9,7 +9,7 @@ import (
 )
 
 // ProjectileParameters keeps projectile state separate from its HitDef payload.
-// Afterimage rendering and the shared stage-shadow renderer remain separate gates.
+// Its optional trail uses the same schema and palette policy as actor trails.
 type ProjectileParameters struct {
 	CoordinateWidth                                                    int // Active CNS owner's units, including foreign states.
 	ID, Action, HitAnimation, RemoveAnimation, CancelAnimation         int
@@ -20,6 +20,7 @@ type ProjectileParameters struct {
 	PauseMoveTime, SuperMoveTime                                       int
 	Remove, Shadow, OwnPalette                                         bool
 	RemapPalette                                                       [2]int
+	AfterImage                                                         *AfterImageParameters
 	PosType                                                            string
 }
 
@@ -155,6 +156,20 @@ func compileProjectile(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 	if err != nil {
 		return nil, true, err
 	}
+	// The beta ignores every nested sibling unless time is explicitly present.
+	var trail func(Environment) (AfterImageParameters, error)
+	if _, present := ctrl.Params["afterimage.time"]; present {
+		params := map[string]string{}
+		for key, value := range ctrl.Params {
+			if strings.HasPrefix(key, "afterimage.") {
+				params[strings.TrimPrefix(key, "afterimage.")] = value
+			}
+		}
+		trail, err = compileAfterImageValues(&cns.StateController{Params: params, LanguageVersion: ctrl.LanguageVersion})
+		if err != nil {
+			return nil, true, fmt.Errorf("afterimage: %w", err)
+		}
+	}
 	// Tagged beta output places its HitDef evaluation between scale and offset.
 	order := []string{"projid", "projremove", "projremovetime", "projshadow", "projmisstime", "projhits", "projpriority", "projhitanim", "projremanim", "projcancelanim", "velocity", "velmul", "remvelocity", "accel", "projscale", "offset", "projsprpriority", "projstagebound", "projedgebound", "projheightbound", "projanim", "pausemovetime", "supermovetime", "ownpal", "remappal"}
 	byName := map[string][]argument{}
@@ -198,6 +213,22 @@ func compileProjectile(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		}
 		parameters := projectileParameters(values, postype, width)
 		parameters.CoordinateWidth = width
+		if trail != nil {
+			allowed := true
+			if admission, ok := env.(interface{ CanCreateProjectileAfterImage() (bool, error) }); ok {
+				allowed, err = admission.CanCreateProjectileAfterImage()
+				if err != nil {
+					return err
+				}
+			}
+			if allowed {
+				image, err := trail(env)
+				if err != nil {
+					return err
+				}
+				parameters.AfterImage = &image
+			}
+		}
 		return context.CreateProjectile(parameters, hitValues)
 	}, true, nil
 }

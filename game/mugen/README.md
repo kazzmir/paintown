@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-05; through M4cy implementation**.
+Snapshot: **2026-11-05; through M4cz validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -119,21 +119,29 @@ unwaived; a current-only control reproduces the shared renderer issue without
 AfterImage. Quarter-turn trails match exactly. See
 [actor evidence](docs/AFTERIMAGE-ACTORS.md) and [history/schema evidence](docs/AFTERIMAGE.md).
 
-The full race suite passes **4,243 test/subtest results across 36 packages**
-(25 tested and 11 compiled-only), with no failures or individual skips. Stock
-win → rematch → win is visually inspected, with 82 balanced input events and
-private audio capture. Twelve earlier angle/raster cases and seven EnvShake
-precision profiles also remain unwaived.
+Projectile trails now include typed nested fields, global actor/projectile
+capacity, ordered admission, saved palettes and measured motion/recording/expiry
+clocks. All **159 new behavioral programs**, including five schema rejections,
+pass alongside older Projectile/AfterImage regressions. The fresh projectile
+image matrix has **152 of 154 crops exact (98.7% of this corpus)** across
+77,337,600 RGB pixels. Its two missing-shadow cases remain unwaived. See
+[projectile evidence](docs/PROJECTILE-TRAILS.md).
 
-Item 3 continues with broader trail variants, projectile trails/shadows,
-remaining Explod consumers, AssertSpecial, system animations/dust, clipboard,
-haptics and residual controller schemas. Broader modes/AI/progression, assets,
-fonts and final renderer/platform conformance remain item 4. There is no measured
-whole-engine completion percentage. The [previous progress narrative](docs/PROGRESS-HISTORY-M4CW.md)
-preserves earlier checkpoint details.
+M4cz's fresh race checks pass **843 engine/character results** and **625 native
+Match results**. The latest full scoped run, M4cy, passed **4,243 results across
+36 packages** (25 tested, 11 compiled-only). Stock win → rematch → win is visually
+inspected, with 82 balanced input events and private audio. Earlier 12 angle/
+raster, seven EnvShake and two actor 45-degree cases remain unwaived.
+
+Item 3 continues with shared shadows, remaining Explod consumers, AssertSpecial,
+system animations/dust, clipboard, haptics and residual controller schemas.
+Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
+remain item 4. There is no measured whole-engine completion percentage. The
+[previous progress narrative](docs/PROGRESS-HISTORY-M4CW.md) preserves earlier details.
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| Projectile image programs in the M4cz native corpus | 152 / 154 | **98.7%** | Exact images in this named corpus; two missing-shadow failures remain. Not engine coverage. |
 | Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; three stubs and other partial consumers remain. Not full controller compatibility. |
 | Documented controller names with typed compiler routes | 74 / 89 | **83.1%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |

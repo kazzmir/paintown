@@ -8,9 +8,10 @@ import (
 type projectileState struct {
 	parameters               engine.ProjectileParameters
 	scale                    [2]float64
-	pauseMove, superMove     int
+	afterImageRemaining      int // -1 is indefinite; decremented on active projectile passes.
 	hits, cooldown, priority int
 	removing, newAnimation   bool
+	historyPaused            bool // Pause state before this frame's new contacts.
 	prepared                 bool
 	preparedTick             int32
 }
@@ -29,7 +30,7 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 	}
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	p.isProjectile = true
-	p.projectile = &projectileState{parameters: parameters, scale: parameters.Scale, pauseMove: parameters.PauseMoveTime, superMove: parameters.SuperMoveTime}
+	p.projectile = &projectileState{parameters: parameters, scale: parameters.Scale, afterImageRemaining: -1}
 	p.projectile.hits = parameters.Hits
 	if p.projectile.hits < 0 {
 		p.projectile.hits = 1
@@ -59,6 +60,7 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 	p.Palettes, p.PaletteNo = c.Palettes, c.PaletteNo
 	if parameters.OwnPalette && p.Palettes != nil {
 		p.Palettes = p.Palettes.Clone()
+		p.Palettes.ClearEffects()
 		if parameters.RemapPalette[0] != -1 {
 			if err := p.SetPaletteMapping([2]int{1, 1}, parameters.RemapPalette); err != nil {
 				return err
@@ -95,6 +97,18 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 		p.projectileLifetime = 1
 	}
 	p.HitDef(hit)
+	if parameters.AfterImage != nil && p.RuntimeError == nil {
+		if err := p.SetAfterImage(*parameters.AfterImage); err != nil {
+			return err
+		}
+		if p.afterImages != nil && parameters.AfterImage.Time != -1 {
+			duration := parameters.AfterImage.Time
+			if duration < 0 {
+				duration = 1
+			}
+			p.projectile.afterImageRemaining = duration + p.afterImages.parameters.Length*p.afterImages.parameters.TimeGap
+		}
+	}
 	owner.Projectiles = append(owner.Projectiles, p)
 	return p.RuntimeError
 }
@@ -110,22 +124,26 @@ func (p *Character) prepareProjectileTick() {
 	}
 	p.worldFrozen = p.Timeline != nil && p.Timeline.Paused()
 	if p.worldFrozen && p.projectile != nil {
-		allowance := &p.projectile.pauseMove
+		allowance := p.projectile.parameters.PauseMoveTime
 		if p.Timeline.SuperPaused() {
-			allowance = &p.projectile.superMove
+			allowance = p.projectile.parameters.SuperMoveTime
 		}
-		if *allowance > 0 {
-			if !newborn {
-				*allowance--
-			}
-			p.worldFrozen = false
-		}
+		// The allowance includes the pass at its completed-age boundary;
+		// zero still freezes a projectile born during an existing pause.
+		p.worldFrozen = p.rootPlayer().worldFrozen || allowance <= 0 || p.Time > allowance
 	}
+	if p.projectile != nil && p.projectile.afterImageRemaining == 0 {
+		p.releaseProjectileAfterImages()
+	}
+
 	wasHitPaused := p.HitPauseTime > 0
 	if !p.worldFrozen && !newborn && p.HitPauseTime > 0 {
 		p.HitPauseTime--
 	}
 	p.pausedThisTick = p.HitPauseTime > 0
+	if p.projectile != nil {
+		p.projectile.historyPaused = p.pausedThisTick
+	}
 	if s := p.projectile; s != nil && !s.removing {
 		if p.projectileLifetime == 0 {
 			p.removeProjectile("expiry")
@@ -201,6 +219,7 @@ func (p *Character) removeProjectile(reason string) {
 		return
 	}
 	s.removing = true
+	p.releaseProjectileAfterImages()
 	p.HitDefActive = false
 	action := s.parameters.RemoveAnimation
 	if reason == "hit" {
@@ -219,4 +238,27 @@ func (p *Character) removeProjectile(reason string) {
 	p.ChangeAnim(action)
 	s.newAnimation = true
 	p.VelX, p.VelY = s.parameters.RemoveVelocity[0], s.parameters.RemoveVelocity[1]
+}
+
+// Admission checks run on the issuing root/helper, before nested expressions.
+// A projectile always needs a new slot, even if its issuer already owns one.
+func (c *Character) CanCreateProjectileAfterImage() (bool, error) {
+	if err := c.ensureWorld(); err != nil {
+		return false, err
+	}
+	limit := c.World.ProjectileMax
+	if limit == 0 {
+		limit = 32
+	}
+	return c.rootPlayer().numProjectiles(0, false) < max(5, limit) && len(c.World.afterImageOwners) < c.World.AfterImageMax, nil
+}
+
+func (p *Character) releaseProjectileAfterImages() {
+	if p.World != nil {
+		delete(p.World.afterImageOwners, p)
+	}
+	p.afterImages = nil
+	if p.projectile != nil {
+		p.projectile.afterImageRemaining = -1
+	}
 }

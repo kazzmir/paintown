@@ -3,8 +3,11 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
-    "engine/after_image.go": "4793e97fa26debb2fb0e93fbd388e324e09fb007851930bc6cd17d5fb11a5915",
-    "character/after_image.go": "940238e9ee0009477992330b3d387e31d8aa8a6f2dc9acbfb9277c8d608bf569",
+    "engine/projectile.go": "e14a2afbcd12e977bdd437582ae2cec6d264a7e352491c5a207a1ced6fa8ab70",
+    "character/projectile.go": "bf8a8cf11497e0e4e2a1212ea3e35978dbf34ebc4da5a83d94ab9f6d1b9ceb5e",
+    "character/hit_chain.go": "32d3f02bbab9aed408961f0f964b9711b610c97ed19a2c47fd90d8491095fd07",
+    "engine/after_image.go": "21231466aa235bacad93cf1abb467432c0f6dfcf8d70967637fb43dbd0bf6f61",
+    "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
     "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
     "match/match.go": "bd822531373862eeb1859007b7e8a91e8830b51c0da176bbac7fbedb7dcf8db1",
@@ -87,7 +90,7 @@
       "handler": "handleAfterImage",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; broader ownership/projectile variants open"
+        "AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; PROJECTILE-TRAILS.md adds projectile admission/lifetime/palette/phase coverage; broader resource/profile variants open"
       ],
       "variants_complete": false
     },
@@ -668,7 +671,7 @@
       "handler": "handleProjectile",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "projectile shadow/trail fields lack complete renderer consumers"
+        "PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; shared stage shadows remain missing"
       ],
       "variants_complete": false
     },

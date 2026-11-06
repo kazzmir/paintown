@@ -77,11 +77,13 @@ func (c *Character) advanceProjectiles() {
 	active := c.Projectiles[:0]
 	for _, p := range c.Projectiles {
 		if p.destroyed {
+			p.releaseProjectileAfterImages()
 			continue
 		}
 		p.prepareProjectileTick()
 		s := p.projectile
 		if p.destroyed {
+			p.releaseProjectileAfterImages()
 			continue
 		}
 		if !p.worldFrozen && !p.pausedThisTick {
@@ -107,15 +109,25 @@ func (c *Character) advanceProjectiles() {
 			if p.destroyed {
 				continue
 			}
+			if s != nil && s.afterImageRemaining > 0 {
+				s.afterImageRemaining--
+			}
 			p.Time++
 			if s == nil || !s.newAnimation {
 				p.UpdateAnimation()
 			}
+			// Projectile trails retain the completed AIR pose; actors record before it.
+			p.advanceAfterImages()
 			p.contactFrameReady = false
-			if s != nil && s.removing && p.GetAnimTime() == 0 {
+			// Infinite removal actions also finish: their native AnimTime is positive.
+			if s != nil && s.removing && p.GetAnimTime() >= 0 {
 				p.destroyed = true
+				p.releaseProjectileAfterImages()
 				continue
 			}
+		}
+		if !p.worldFrozen && p.pausedThisTick {
+			p.advanceAfterImages()
 		}
 		if s != nil {
 			s.newAnimation = false

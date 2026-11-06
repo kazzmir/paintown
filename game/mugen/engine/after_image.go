@@ -25,7 +25,7 @@ func DefaultAfterImageParameters() AfterImageParameters {
 		Add: [3]int{10, 10, 25}, Mul: [3]float32{.65, .65, .75}, Trans: "none"}
 }
 
-func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) {
+func compileAfterImageValues(ctrl *cns.StateController) (func(Environment) (AfterImageParameters, error), error) {
 	var args []argument
 	for _, field := range []struct {
 		key      string
@@ -43,7 +43,7 @@ func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		}
 		tuple, err := evaluator.ParseReferenceTupleForVersion(raw, field.arity, ctrl.LanguageVersion)
 		if err != nil {
-			return nil, true, fmt.Errorf("%s: %w", field.key, err)
+			return nil, fmt.Errorf("%s: %w", field.key, err)
 		}
 		for i, expr := range tuple {
 			key := field.key
@@ -51,10 +51,10 @@ func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 				key += "." + strconv.Itoa(i)
 			}
 			if !field.floating && integerFieldFloatLiteral(expr) {
-				return nil, true, fmt.Errorf("%s: expected int value and read float", key)
+				return nil, fmt.Errorf("%s: expected int value and read float", key)
 			}
 			if err := evaluator.ValidateKnownTriggers(expr); err != nil {
-				return nil, true, fmt.Errorf("%s: %w", key, err)
+				return nil, fmt.Errorf("%s: %w", key, err)
 			}
 			// The beta parses/validates red brightness, but does not evaluate it.
 			if field.key == "palbright" && i == 0 {
@@ -70,16 +70,10 @@ func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		// Unknown/quoted literals load and select the ordinary draw path.
 		trans = "none"
 	}
-	return func(_ *cns.StateController, env Environment) error {
-		if admission, ok := env.(interface{ CanSetAfterImage() (bool, error) }); ok {
-			allowed, err := admission.CanSetAfterImage()
-			if err != nil || !allowed {
-				return err
-			}
-		}
+	return func(env Environment) (AfterImageParameters, error) {
 		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
-			return err
+			return AfterImageParameters{}, err
 		}
 		p := DefaultAfterImageParameters()
 		for key, dst := range map[string]*int{"time": &p.Time, "length": &p.Length, "timegap": &p.TimeGap,
@@ -105,6 +99,26 @@ func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 			}
 		}
 		p.Trans = trans
+		return p, nil
+	}, nil
+}
+
+func compileAfterImage(ctrl *cns.StateController) (ControllerFunc, bool, error) {
+	values, err := compileAfterImageValues(ctrl)
+	if err != nil {
+		return nil, true, err
+	}
+	return func(_ *cns.StateController, env Environment) error {
+		if admission, ok := env.(interface{ CanSetAfterImage() (bool, error) }); ok {
+			allowed, err := admission.CanSetAfterImage()
+			if err != nil || !allowed {
+				return err
+			}
+		}
+		p, err := values(env)
+		if err != nil {
+			return err
+		}
 		ctx, ok := env.(interface {
 			SetAfterImage(AfterImageParameters) error
 		})

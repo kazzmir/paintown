@@ -2906,3 +2906,20 @@ audio pass. The strict actual-app matrix has 46/48 exact crops, 23,404,800 pixel
 current/trail 45-degree failures remain unwaived, reproduced independently of
 AfterImage. Original observations and tolerances are unchanged. This is a local
 source/text checkpoint; projectile trails/shadows and all remaining item3 follow.
+
+
+## M4cz — projectile AfterImage fields and clocks
+
+Typed nested schemas, ordered issuer-side evaluation/admission, global actor/
+projectile contexts, retirement/removal, owned/saved palettes and completed AIR
+poses now reach production. Native hitpause separates sampling, duration and
+expiry clocks. Inclusive pause allowance and infinite removal-animation cleanup
+fix unchanged counterexamples. [Evidence and limits](PROJECTILE-TRAILS.md).
+
+161 original programs/1848values;159 behavioral programs plus two preserved
+authoring diagnostics. Fresh843engine/character and625native Match results pass
+under race detection.154apps run,152exact/77,337,600RGBpixels; strict exit1 keeps
+two missing-shadow cases UNWAIVED. Four masks, stock win/rematch/win,82balanced
+inputs and1,918,419private PCMframes pass. Original109files/6601resourcecopies and
+source/module/inventory/provenance checks pass. Source/text only; no binaries or
+push. Shared shadows and all remaining item3 continue after this local checkpoint.

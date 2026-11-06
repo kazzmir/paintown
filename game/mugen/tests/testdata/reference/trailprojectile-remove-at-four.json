@@ -1,0 +1,154 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "59e53a90aa9231e91fa06a0617735ab1a76a1cbba3724020d76b0726e508e26d",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "a9e64ba44276674f9c97bda384894e3e24ec5512bf19aca7efa169b86f535c42",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9990,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "controller_kind": "Projectile",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_parameters": {
+    "time": "99999",
+    "length": "60",
+    "timegap": "1",
+    "framegap": "1",
+    "palcolor": "256",
+    "palinvertall": "0",
+    "palbright": "0,0,0",
+    "palcontrast": "256,256,256",
+    "palpostbright": "0,0,0",
+    "paladd": "0,0,0",
+    "palmul": "1,1,1",
+    "trans": "none"
+  },
+  "projectile_fields": {
+    "projid": "77",
+    "projanim": "9100",
+    "postype": "p1",
+    "offset": "-160,-80",
+    "velocity": "30,0",
+    "projremove": "0",
+    "projremovetime": "4",
+    "projedgebound": "4000",
+    "projstagebound": "4000",
+    "projheightbound": "-4000,4000",
+    "projremanim": "-1",
+    "afterimage.time": "99999",
+    "afterimage.length": "60",
+    "afterimage.timegap": "1",
+    "afterimage.framegap": "1",
+    "afterimage.palcolor": "256",
+    "afterimage.palinvertall": "0",
+    "afterimage.palbright": "0,0,0",
+    "afterimage.palcontrast": "256,256,256",
+    "afterimage.palpostbright": "0,0,0",
+    "afterimage.paladd": "0,0,0",
+    "afterimage.palmul": "1,1,1",
+    "afterimage.trans": "none"
+  },
+  "projectile_overrides": {
+    "projremovetime": "4",
+    "projremanim": "-1"
+  },
+  "snapshot_expressions": [
+    "Var(0)",
+    "Var(1)",
+    "Var(2)",
+    "Var(3)",
+    "NumProj",
+    "NumProjID(77)",
+    "Pos X",
+    "Pos Y",
+    "Facing",
+    "Time",
+    "Anim",
+    "GameTime"
+  ],
+  "actual_controller_counts": {
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "Pause": 1,
+    "PlayerPush": 2,
+    "PosSet": 1,
+    "Projectile": 1,
+    "ScreenBound": 2,
+    "VarSet": 12
+  },
+  "native_afterimage_max": 16,
+  "source_intent_verified_by_cns_air_parser": true,
+  "initial_projectile_offset": [
+    -160,
+    -80
+  ],
+  "projectile_trail_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "f17b8f73e90ea279eb628aeb08c43e4f143d61b0e31feb8b0a4cdd825a76a18b"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "sprite",
+      "region": [
+        160,
+        140,
+        1120,
+        540
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    },
+    {
+      "entity_row": "ground-shadow",
+      "region": [
+        160,
+        540,
+        1120,
+        670
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

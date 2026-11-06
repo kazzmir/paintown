@@ -1,0 +1,198 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "8b68992cdd89535cb86137d9789cc6da2cd9d02b5dbd79f3ebd35b0b52a5fc87",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "ca23019940a6e48f5206b904eda68254d426d26f12c1df02aa42289d79d220be",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 1,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9990,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "controller_kind": "Projectile",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_parameters": {
+    "time": "-1"
+  },
+  "projectile_fields": {
+    "projid": "77",
+    "projanim": "9100",
+    "postype": "p1",
+    "offset": "-160,-80",
+    "velocity": "30,0",
+    "projremove": "0",
+    "projremovetime": "-1",
+    "projedgebound": "4000",
+    "projstagebound": "4000",
+    "projheightbound": "-4000,4000",
+    "afterimage.time": "-1"
+  },
+  "projectile_overrides": {},
+  "snapshot_expressions": [
+    "Var(0)",
+    "Var(1)",
+    "Var(2)",
+    "Var(3)",
+    "NumProj",
+    "NumProjID(77)",
+    "Pos X",
+    "Pos Y",
+    "Facing",
+    "Time",
+    "Anim",
+    "GameTime"
+  ],
+  "actual_controller_counts": {
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "Pause": 1,
+    "PlayerPush": 2,
+    "PosSet": 1,
+    "Projectile": 1,
+    "ScreenBound": 2,
+    "VarSet": 12
+  },
+  "native_afterimage_max": 16,
+  "source_intent_verified_by_cns_air_parser": true,
+  "initial_projectile_offset": [
+    -160,
+    -80
+  ],
+  "projectile_trail_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "e759b287ece582e5ad0e19eabbbe8079b434022194aa75f82309d2fd15d053ac"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "sprite",
+      "region": [
+        160,
+        140,
+        1120,
+        540
+      ],
+      "nonbackground_pixels": 12852,
+      "bbox": [
+        340,
+        360,
+        1045,
+        435
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            27,
+            27,
+            67
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            37,
+            37,
+            68
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            49,
+            49,
+            49
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            84,
+            69,
+            136
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            126,
+            103,
+            160
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            239,
+            189,
+            156
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            69,
+            47,
+            93
+          ],
+          "pixels": 477
+        },
+        {
+          "rgb": [
+            103,
+            68,
+            103
+          ],
+          "pixels": 477
+        }
+      ]
+    },
+    {
+      "entity_row": "ground-shadow",
+      "region": [
+        160,
+        540,
+        1120,
+        670
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

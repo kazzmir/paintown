@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
@@ -29,7 +29,7 @@ RENDER_FIELDS = {}
 PARTIAL = {
 	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; shadow/pause/projection sampling gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
-    'projectile': 'projectile shadow/trail fields lack complete renderer consumers',
+    'projectile': 'PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; shared stage shadows remain missing',
     'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; creation palette/random/angle/trans/shadow/capacity and broader variants open',
     'assertspecial': 'only a subset of literal flags have production consumers',
     'appendtoclipboard': 'stores raw text; params/formatting absent',
@@ -38,7 +38,7 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
-    'afterimage': 'AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; broader ownership/projectile variants open',
+    'afterimage': 'AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; PROJECTILE-TRAILS.md adds projectile admission/lifetime/palette/phase coverage; broader resource/profile variants open',
     'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open',
     'envshake': 'ENV-SHAKE.md: native schemas/evaluation, author-local amplitude, frequency normalization, pending/current clocks and actual fixed-overlay/viewport consumers; wider variants open',
     'envcolor': 'ENV-COLOR.md: native packed RGB/evaluation/global clocks, finite overlays and negative-duration stage suppression, actor/effect/foreground/palette production consumers; wider variants open',

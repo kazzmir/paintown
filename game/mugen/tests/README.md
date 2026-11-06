@@ -933,3 +933,21 @@ matrix has 46/48 exact crops and **fails** for two unwaived 45-degree current/tr
 renderer controls. Passing full scoped races and stock integration do not waive
 those image failures. Native `--record` is an authoring action for separately
 frozen new controls, not a way to replace earlier expectations.
+
+
+## Projectile trail reference programs
+
+`TestNativeProjectileTrail*` replays49 `trailprojectile`,58 `trailpool` and52
+`trailphase` behavioral programs and checks authored controller/state/parameter
+intent. Five target schema rejections are included; two empty-state authoring
+failures are preserved separately in the additional native ledger. These tests
+read frozen observations; they do not execute Wine automatically. Use the normal
+scoped launcher/display setup above.
+
+`projectile_trail_render_probe.py` compares a fresh app run against original
+native captures and disjoint base/additional/boundary configuration ledgers. It
+verifies source/resource/config/binary/capture hashes and every pixel of the
+508800pixel region. It never records expectations or relaxes tolerances. Every
+RGB failure exits nonzero; collect all cases and retain the whole matrix failure.
+M4cz has152/154 exact crops; shadow1/-1 remain UNWAIVED. See
+[the research and validation note](../docs/PROJECTILE-TRAILS.md).

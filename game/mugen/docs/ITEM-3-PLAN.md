@@ -156,3 +156,16 @@ private-audio gates pass. See AFTERIMAGE-ACTORS.md. Next: projectile nested trai
 fields and shared shadows, following native-only all-case inspection. The 49
 existing projectile drafts are not observations and remain unpromoted. Finish
 all remaining item3 groups; item4 remains unallocated.
+
+
+## M4cz projectile trail checkpoint
+
+Nested AfterImage fields, ordered global/projectile admission, saved palette
+ownership and separate recording/expiry/animation/pause phases have measured
+production consumers.625 old/new native results and843core results pass;152/154
+fresh actual-app crops are exact, with the two missing-shadow cases UNWAIVED.
+All native originals and intermediate failure statuses remain unchanged.
+PROJECTILE-TRAILS.md records161programs/1848values and explicit bounds. Source
+routing remains74typed/15fallback. Next shared-shadow geometry/alpha/fade/flags/
+layers need new complete-visibility native controls; independent ignored drafts
+are preparation, not coverage. Continue all remaining item3 after local commits.

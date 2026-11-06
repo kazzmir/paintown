@@ -1,5 +1,27 @@
 # Current behavior coverage ledger
 
+M4cz adds typed projectile AfterImage fields, admission before nested expression
+evaluation, global actor/projectile capacity and retirement, owned/saved palettes,
+post-AIR pose recording and distinct pause/hitpause clocks.161 original native
+programs give1848 values/646 source-probe hashes:154 accepted, five target schema
+rejects and two preserved empty-state authoring diagnostics. All159 behavioral
+programs pass; originals/captures/goldens/tolerances are unchanged. See
+[projectile evidence](PROJECTILE-TRAILS.md).
+
+Fresh races pass843 engine/character results and625 old/new native Match results.
+All154 actual apps run;152 crops are exact across77,337,600RGBpixels. The strict
+matrix retains exit1 for two UNWAIVED missing-shadow cases,294RGBpixels/max32
+each. Four old masks and visually inspected stock win/rematch/win,82balanced
+inputs/1,918,419private PCMframes pass. Module and refreshed inventory checks pass.
+Audit verifies16,814unique frozen paths,109original files and6601native resource
+copies. Records:temp/m4cz-final-evidence-audit.json and resource/stock-review
+ledgers. The latest full36-package race remains M4cy below; current checks are
+focused integration. Source counts remain74typed/15fallback/3stubs/9partial/
+17bounded/60route-only, not engine percentages. Shared shadows and all remaining
+item3 follow; item4 remains unallocated. Earlier nonquarter/EnvShake failures
+stay UNWAIVED. Initial and intermediate failures remain preserved.
+
+
 M4cy adds global AfterImage context reservations, expression admission,
 helper retirement and round reset, invisible-current drawing, blank-pose palette
 aging, saved palette mappings and historical sprite-cache lifetime. Its 48 new
@@ -291,7 +313,7 @@ does not promote an entire controller from one passing parameter/default.
 | Guard distance | M4bn compiles guard.dist with native integer/coercion/bottom/order rules, preserves omitted/negative range, resets it on state entry and verifies facing/boundary/height/profile consumers. GUARD-DISTANCE.md. | Broad input/entity/foreign/pause combinations and other AttackDist variants. |
 | Projectiles/reversals | M4ce setup/motion/ownership plus M4cf hit/miss/phase/cancellation, active capacity and helper birth ordering. 104+91 controls and nine exact opaque/phase app masks. PROJECTILES.md, PROJECTILE-CONTACTS.md. ReversalDef still stores data. | Foreign-coordinate corrections, event/legacy queries and consumed reversals remain in this allocation. Broader combinations stay explicit; afterimages/shadows defer to effects/rendering. |
 | Contact shake | M4bs native schemas/defaults/order, fractional amplitude, asymmetric rounding, issuing-frame duration, global clock, profile conversions, ScreenPosY and world-only rendering. M4bt adds stored fall payload, typed getters, positive-duration consumption and guard/fall=0 rules. HIT-SHAKE.md, FALL-SHAKE.md. | M4cv implements standalone EnvShake; seven precision profiles and broader request/entity/pause/zoom combinations remain open. |
-| Effects/palettes | Typed Explod mutation/binding, palette effects, angles/offset/transparency and environment effects have bounded production consumers. M4cx AfterImage/AfterImageTime is under final integration after141 native replay passes and132 exact application crops. See CONTROLLER-BINDINGS.json and the corresponding topic notes. | Shared trail capacity/ownership and projectile trails/shadows, remaining Explod creation/ownership/capacity, AssertSpecial and system effects remain item3 gates. Native variant limits and existing raster failures stay explicit. |
+| Effects/palettes | Typed Explod mutation/binding, palette effects, angles/offset/transparency and environment effects have bounded production consumers. M4cy actor history and M4cz projectile trails have bounded native production consumers; see their separate numeric/image denominators. See CONTROLLER-BINDINGS.json and the corresponding topic notes. | Shared shadows, broader trail/profile interactions, remaining Explod creation/ownership/capacity, AssertSpecial and system effects remain item3 gates. Native variant limits and existing raster failures stay explicit. |
 | Drawing/camera | Shared world/HUD paths, horizontal camera, mixed coordinates and exact bounded sprite crops. CAMERA.md, COORDINATES.md, SPRITE-SAMPLING.md. | Six M4az alpha failures, two M4bd spark raster failures; broad vertical camera/zoom/angle/background/effect parity. |
 | Assets/fonts | Stock SFF v1/v2/v2.01, sound, bitmap/outline fonts and resource lookup; corpus/malformed-input tests. `tests/`, BUILD.md. | Required Data-constant load validation and all format/animation/resource variants; absent Windows font payloads use a visible fallback and lack native glyph/metric parity. |
 | Audio | Production command queue/mixer, channel ownership, pan/volume/voice/cues and owned native PCM controls. AUDIO.md. | BGM, broader configuration/resource/clock combinations; ForceFeedback remains an empty method. |

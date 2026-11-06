@@ -57,8 +57,8 @@ func (c *Character) SetAfterImage(p engine.AfterImageParameters) error {
 	return nil
 }
 
-// Native slots belong to contexts until their entity is destroyed or the round
-// resets. Stopping, draining, or disabling recording does not release a slot.
+// Actor slots last until destruction or round reset. Projectiles additionally
+// retire a finite recording context after its configured drain interval.
 // Admission precedes expression evaluation, so denied controllers have no
 // parameter side effects. Reissuing one's own context needs no additional slot.
 func (c *Character) CanSetAfterImage() (bool, error) {
@@ -81,13 +81,18 @@ func (c *Character) SetAfterImageTime(duration int) error {
 
 func (c *Character) advanceAfterImages() {
 	h := c.afterImages
-	if h == nil || c.worldFrozen || c.pausedThisTick {
+	if h == nil || c.worldFrozen || c.pausedThisTick && !c.isProjectile {
 		return
 	}
-	if h.time > 0 {
+	// Duration observes the precontact pause state. A new hit's own pass still
+	// consumes duration; subsequent frozen passes retain it.
+	durationPaused := c.isProjectile && c.projectile != nil && c.projectile.historyPaused
+	if h.time > 0 && !durationPaused {
 		h.time--
 	}
-	record := h.gapClock == 0
+	// Projectile hitpause forces a pose regardless of the advancing sample phase.
+	// Its allocation drain clock freezes separately from both recording clocks.
+	record := h.gapClock == 0 || c.isProjectile && c.pausedThisTick
 	h.gapClock = (h.gapClock + 1) % h.parameters.TimeGap
 	if !record {
 		return

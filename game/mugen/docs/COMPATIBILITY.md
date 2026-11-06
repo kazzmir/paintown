@@ -1,5 +1,27 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4cz adds typed projectile AfterImage fields, admission before nested expression
+evaluation, global actor/projectile capacity and retirement, owned/saved palettes,
+post-AIR pose recording and distinct pause/hitpause clocks.161 original native
+programs give1848 values/646 source-probe hashes:154 accepted, five target schema
+rejects and two preserved empty-state authoring diagnostics. All159 behavioral
+programs pass; originals/captures/goldens/tolerances are unchanged. See
+[projectile evidence](PROJECTILE-TRAILS.md).
+
+Fresh races pass843 engine/character results and625 old/new native Match results.
+All154 actual apps run;152 crops are exact across77,337,600RGBpixels. The strict
+matrix retains exit1 for two UNWAIVED missing-shadow cases,294RGBpixels/max32
+each. Four old masks and visually inspected stock win/rematch/win,82balanced
+inputs/1,918,419private PCMframes pass. Module and refreshed inventory checks pass.
+Audit verifies16,814unique frozen paths,109original files and6601native resource
+copies. Records:temp/m4cz-final-evidence-audit.json and resource/stock-review
+ledgers. The latest full36-package race remains M4cy below; current checks are
+focused integration. Source counts remain74typed/15fallback/3stubs/9partial/
+17bounded/60route-only, not engine percentages. Shared shadows and all remaining
+item3 follow; item4 remains unallocated. Earlier nonquarter/EnvShake failures
+stay UNWAIVED. Initial and intermediate failures remain preserved.
+
+
 M4cy adds global AfterImage context reservations, expression admission,
 helper retirement and round reset, invisible-current drawing, blank-pose palette
 aging, saved palette mappings and historical sprite-cache lifetime. Its 48 new
