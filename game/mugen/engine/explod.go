@@ -12,6 +12,7 @@ type ExplodParameters struct {
 	Action, ID, RemoveTime, Facing, VFacing, SpritePriority    int
 	PauseMoveTime, SuperMoveTime, BindID, BindTime             int
 	X, Y, VelX, VelY, AccelX, AccelY, ScaleX, ScaleY           float64
+	RandomX, RandomY                                           float64 // Evaluated world-axis displacements, in issuer units.
 	Common, ScreenSpace, IgnoreHitPause, RemoveOnGetHit, OnTop bool
 	SpaceSpecified, Shadow                                     bool
 	OwnPalette                                                 bool
@@ -121,14 +122,26 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		return nil, true, err
 	}
 	args = append(args, scalars...)
-	for _, key := range []string{"pos", "vel", "accel", "scale"} {
-		if raw, present := ctrl.Params[key]; present {
+	for _, key := range []string{"pos", "random", "vel", "accel", "scale"} {
+		raw, present := ctrl.Params[key]
+		if key == "random" && !present {
+			// Both zero-width components still draw from the match stream.
+			raw, present = "0,0", true
+		}
+		if present {
 			tuple, err := evaluator.ParseReferenceTupleForVersion(raw, 2, ctrl.LanguageVersion)
+			if err != nil && key == "random" {
+				// A scalar, with or without one trailing comma, defaults Y to zero.
+				single := strings.TrimSuffix(strings.TrimSpace(raw), ",")
+				if values, singleErr := evaluator.ParseReferenceTupleForVersion(single, 1, ctrl.LanguageVersion); singleErr == nil {
+					tuple, err = append(values, &evaluator.Number{Value: 0}), nil
+				}
+			}
 			if err != nil {
 				return nil, true, fmt.Errorf("%s: %w", key, err)
 			}
 			for index, expr := range tuple {
-				args = append(args, argument{argumentSpec{fmt.Sprintf("%s%d", key, index), false, true}, expr})
+				args = append(args, argument{argumentSpec{fmt.Sprintf("%s%d", key, index), key == "random", true}, expr})
 			}
 		}
 	}
@@ -207,6 +220,19 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				if err != nil {
 					return ExplodParameters{}, err
 				}
+				if arg.name == "random0" || arg.name == "random1" {
+					context, ok := env.(interface{ ExplodRandomOffset(int) (int, error) })
+					if !ok {
+						return ExplodParameters{}, fmt.Errorf("Explod random context is unavailable")
+					}
+					// Native draws immediately after each component expression,
+					// before evaluating the next component or any later fields.
+					offset, err := context.ExplodRandomOffset(int(values[arg.name].Number()))
+					if err != nil {
+						return ExplodParameters{}, fmt.Errorf("%s: %w", arg.name, err)
+					}
+					values[arg.name] = evaluator.Int(int32(offset))
+				}
 				v[arg.name] = values[arg.name]
 			}
 			integer := func(key string, fallback int) int {
@@ -220,6 +246,7 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				p.IgnoreHitPause = ctrl.IgnoreHitPause != 0
 			}
 			p.SpaceSpecified = explicitSpace
+			p.RandomX, p.RandomY = v["random0"].Number(), v["random1"].Number()
 			p.Angle, p.XAngle, p.YAngle = v["angle"].Number(), v["xangle"].Number(), v["yangle"].Number()
 			if additive {
 				p.HasBlend, p.Blend = true, "alpha"

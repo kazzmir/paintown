@@ -49,6 +49,7 @@ type Options struct {
 	RandomSeed                   int64 // zero chooses a fresh session-derived seed
 	PlayerProjectileMax          int   // zero uses the default pool of 32
 	AfterImageMax                int   // zero uses the default global pool of 16
+	ExplodMax                    int   // zero uses MaxEffects, then the default global pool of 256
 }
 
 type Phase int
@@ -111,6 +112,15 @@ func New(request Request, options Options) (*Match, error) {
 		helperMax = 56
 	}
 	m.World = character.NewWorld(helperMax)
+	limit := options.ExplodMax
+	if limit == 0 {
+		limit = options.MaxEffects
+	}
+	if limit == 0 {
+		limit = 256
+	}
+	options.ExplodMax = max(8, limit)
+	m.World.ExplodMax = options.ExplodMax
 	if options.AfterImageMax != 0 {
 		m.World.AfterImageMax = max(1, options.AfterImageMax)
 	}
@@ -148,7 +158,9 @@ func New(request Request, options Options) (*Match, error) {
 	if err != nil {
 		return nil, fmt.Errorf("match fight screen: %w", err)
 	}
-	m.Effects = effect.NewScene(options.MaxEffects)
+	m.Effects = effect.NewScene(options.ExplodMax)
+	m.World.UnownedExplodCount = m.Effects.UnownedCount
+	m.Effects.Queue.Admit = m.World.CanCreateExplod
 	motifWidth := options.MotifSpace.Width
 	if motifWidth <= 0 {
 		motifWidth = 320

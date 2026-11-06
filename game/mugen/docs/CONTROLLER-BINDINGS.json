@@ -10,16 +10,16 @@
     "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
     "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
-    "match/match.go": "bd822531373862eeb1859007b7e8a91e8830b51c0da176bbac7fbedb7dcf8db1",
+    "match/match.go": "7c1cb5096a9d9a9d3a46762014597dd8b3844c13dea790405e0b19f8e31633a7",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "60d131c59f06c8d2b542ee59be053d3baab41387b36605aa5a64e30f1c995927",
     "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
     "character/character.go": "30f06bdd7216242f1e293aa1c0924667222455d966329692283b98e8bb5476e8",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
-    "character/explod.go": "551e7c79d39e8ed479f0c6120beb795f7b706338097bf3a916242e8f97b7bd60",
-    "engine/explod.go": "5e70f9053e4b2ddfdc96fb3fe360a7665b816764122f347f65063173ea259c21",
+    "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
+    "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
-    "effect/scene.go": "ff2770da67a5b58bb7621187467716dd1958946326f62969c920f7d30c16588b",
+    "effect/scene.go": "a1e1c82e29fb4634f95bdbef7b6448d05168a5b7ad9a6d029c6b50b8631b6336",
     "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
     "system/effects.go": "db01e749703ea0976669c790e85b36c6018d773e6ac90266efedf6f8844b6e57",
     "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
@@ -45,13 +45,13 @@
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "f44f4fc4fd38ad75e45d9c887819a00fdffe079b7530838eff3ff317a301e1d7",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "ff6b51a541c09e92825c56fc41d8eaec7cfe5f21b6bb4f732d03210f44365ac5",
+    "system/fight_state.go": "fe2c8898e547aa81645b9b969b48c0d295e7f779c391fa615005437984cbcc24",
     "system/hud.go": "1ceba3b260f2c3f60c6cc8409332c8f4e09fcc2932795862cbd61752ee44537f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
     "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e",
-    "character/world.go": "818376eec2dc58ceeb85e32d135c40e562d56ae8fe453b61bea6fd0f10ea08e7"
+    "character/world.go": "1549fa3ba6d09b350db72e31f80bf89ec28b153832531e747f757d95c70061e2"
   },
   "summary": {
     "manual": 89,
@@ -351,7 +351,7 @@
       "handler": "handleExplod",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; EXPLOD-CREATION-DRAWING.md adds typed creation angles/trans/alpha and conditional priority evaluation; random/capacity and broader variants open"
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; EXPLOD-CREATION-DRAWING.md adds typed creation angles/trans/alpha and conditional priority evaluation; EXPLOD-CAPACITY-RANDOM.md adds typed ordered random displacements, global root/helper/retired-owner and hitspark admission, zero-range draw phases and config binding; broader variants and strict sampling differences remain"
       ],
       "variants_complete": false
     },

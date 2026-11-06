@@ -1,5 +1,25 @@
 # Current behavior coverage ledger
 
+## M4df — Explod admission and random displacement
+
+Typed random components now draw in the native order, including zero defaults.
+Global admission counts roots/helpers/retired owners and live/queued hit sparks;
+saturated requests skip late expressions and new cues drop without a game exit.
+ExplodMax binds this pool with minimum eight. Hit sparks consume no RNG draws.
+An optional match-seed launch flag makes native visual replays reproducible.
+
+**53/53 native programs pass**, including eight rejections / 540 numeric values.
+**45/45 new application crops match exactly (100% of this corpus)** across
+22,896,000 RGB pixels. Full races pass **4,743 results / 36 packages** (25 tested,
+11 compiled-only); focused races pass 869 core / 236 selected native results.
+Five older palette/order apps, four masks, quarter-turn and visually reviewed
+stock win/rematch/win pass with 82 inputs / 1,971,594 PCM frames. The old45degree
+strict failure remains 534 RGB pixels / maximum148, with actual exit1 preserved.
+No prior renderer failure is waived. [Evidence and bounds](EXPLOD-CAPACITY-RANDOM.md).
+All item3 work continues; item4 remains unallocated. Route counts are unchanged.
+
+
+
 
 ## M4de — Explod creation drawing
 

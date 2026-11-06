@@ -33,11 +33,14 @@ def main():
     parser.add_argument('--seconds', type=int, nargs='+', default=[2, 6, 16])
     parser.add_argument('--match', nargs=2, help='Quick-match character DEF paths in the disposable distribution')
     parser.add_argument('--stage', default='stages/kfm.def')
+    parser.add_argument('--match-seed', type=int, help='Reproduce a logged initial match RNG seed in a quick match')
     parser.add_argument('--stock-input', action='store_true', help='Exercise stock keyboard attacks, results and rematch in the owned window (2%% life, one win)')
     parser.add_argument('--audio', action='store_true', help='Also record the task-owned private null sink, using a private ALSA configuration')
     parser.add_argument('--width',type=int,default=320)
     parser.add_argument('--height',type=int,default=240)
     args = parser.parse_args()
+    if args.match_seed is not None and (not args.match or not 1 <= args.match_seed < 2147483647):
+        parser.error('A seeded smoke run requires a quick match and a seed in1..2147483646')
     if not 64<=args.width<=4096 or not 64<=args.height<=4096:
         parser.error('Smoke window dimensions must be in 64..4096')
     if args.stock_input and (args.match != ['chars/kfm/kfm.def','chars/kfm720/kfm720.def'] or max(args.seconds)<45):
@@ -93,6 +96,8 @@ def main():
                 'motif': args.motif, 'window':[args.width,args.height], 'captures': []}
     if args.match:
         metadata.update(players=args.match, stage=args.stage)
+    if args.match_seed is not None:
+        metadata['match_random_seed'] = args.match_seed
     schedule=[(seconds,'capture',None) for seconds in args.seconds]
     if args.stock_input:
         metadata['stock_input']={'life_percent':2,'wins_required':1,'fight_sha256':prepared_fight,'events':[]}
@@ -109,6 +114,8 @@ def main():
         command = [str(binary), '--data-dir', str(stock)]
         if args.match:
             command += ['--quick-match', ','.join(args.match), '--stage', args.stage]
+        if args.match_seed is not None:
+            command += ['--match-seed', str(args.match_seed)]
         process = subprocess.Popen(command, cwd=project.parents[1], env=env, stdout=log, stderr=log)
         started = time.monotonic()
         recorder, recording = None, None

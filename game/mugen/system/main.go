@@ -20,21 +20,28 @@ import (
 )
 
 type Engine struct {
-	cfg           *config.MugenConfig
-	motif         *motif.Motif
-	dataDir       string
-	screenWidth   int // Window width
-	screenHeight  int // Window height
-	logicalWidth  int // Game logic width (e.g. 320)
-	logicalHeight int // Game logic height (e.g. 240)
-	currentState  State
-	gameTime      int32 // Process ticks, including menus and finished-match waits.
-	sprites       map[string]*background.SpriteImages
-	sound         *engineSound
-	random        *engine.RandomStream
+	cfg              *config.MugenConfig
+	motif            *motif.Motif
+	dataDir          string
+	screenWidth      int // Window width
+	screenHeight     int // Window height
+	logicalWidth     int // Game logic width (e.g. 320)
+	logicalHeight    int // Game logic height (e.g. 240)
+	currentState     State
+	gameTime         int32 // Process ticks, including menus and finished-match waits.
+	sprites          map[string]*background.SpriteImages
+	sound            *engineSound
+	random           *engine.RandomStream
+	pendingMatchSeed int64
 }
 
 func (e *Engine) nextMatchSeed() int64 {
+	if e.pendingMatchSeed != 0 {
+		seed := e.pendingMatchSeed
+		e.pendingMatchSeed = 0
+		e.random = engine.NewRandomStream(seed)
+		return seed
+	}
 	if e.random == nil {
 		e.random = engine.NewRandomStream(time.Now().Unix())
 	}
@@ -105,7 +112,11 @@ func main() {
 	dataDir := flag.String("data-dir", "data-new/mugen", "Path to the MUGEN data directory")
 	quickMatch := flag.String("quick-match", "", "Start a versus match with two character DEF paths, separated by a comma")
 	quickStage := flag.String("stage", "stages/kfm.def", "Stage DEF for --quick-match")
+	matchSeed := flag.Int64("match-seed", 0, "Initial match RNG seed for reproducible runs (1..2147483646; zero uses the clock)")
 	flag.Parse()
+	if *matchSeed < 0 || *matchSeed >= 2147483647 {
+		log.Fatal("match-seed must be zero or between 1 and 2147483646")
+	}
 
 	// Verify data directory
 	if _, err := os.Stat(*dataDir); os.IsNotExist(err) {
@@ -141,15 +152,16 @@ func main() {
 	}
 
 	engine := &Engine{
-		random:        engine.NewRandomStream(time.Now().Unix()),
-		cfg:           cfg,
-		motif:         m,
-		dataDir:       *dataDir,
-		screenWidth:   width,
-		screenHeight:  height,
-		logicalWidth:  m.Info.LocalCoord.Width,
-		logicalHeight: m.Info.LocalCoord.Height,
-		sprites:       make(map[string]*background.SpriteImages),
+		pendingMatchSeed: *matchSeed,
+		random:           engine.NewRandomStream(time.Now().Unix()),
+		cfg:              cfg,
+		motif:            m,
+		dataDir:          *dataDir,
+		screenWidth:      width,
+		screenHeight:     height,
+		logicalWidth:     m.Info.LocalCoord.Width,
+		logicalHeight:    m.Info.LocalCoord.Height,
+		sprites:          make(map[string]*background.SpriteImages),
 	}
 	if err := engine.startSoundDevice(); err != nil {
 		log.Fatal(err)

@@ -1028,3 +1028,21 @@ rotation failures. Focused races pass868core/157selectednative results. Ten
 additional reviewed direct-resolution controls remain unpromoted; private
 sampling experiments are diagnostic only. Read
 ../docs/EXPLOD-CREATION-DRAWING.md before interpreting these counts as coverage.
+
+
+## Explod pool and random reference programs
+
+TestNativeExplodCreationPool/Extras/Cues/CueRandom replay53 immutable native
+programs (45accepted/eight expected load rejections,540numericvalues). Four
+disjoint native/configuration ledgers pin complete source/recorder/capture/seed
+provenance. The generic geometry replay applies explicit ExplodMax and original
+Match RNG seeds before simulation.
+
+creation_pool_render_probe.py compares all508,800RGBpixels per accepted scene,
+configuration limits and source/asset/executable/capture hashes. Seeded cases
+also verify the actual production Match RNG seed log. app_smoke.py --match-seed
+forwards and records that initial seed; normal runs keep their default behavior.
+All45new app crops match exactly. Full scoped races pass4,743results/36packages.
+The old45degree comparator still fails534pixels/max148; the enclosing acceptance
+driver keeps exit1. No expectation/tolerance was changed. See
+../docs/EXPLOD-CAPACITY-RANDOM.md for actual draw/admission phases and limits.

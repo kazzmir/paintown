@@ -121,3 +121,7 @@ effort stay under `game/mugen/`.
 
 - [Explod creation drawing](EXPLOD-CREATION-DRAWING.md): typed angles and blend
   defaults, AIR overrides, conditional evaluation and strict renderer limits.
+
+
+- [Explod capacity and random displacement](EXPLOD-CAPACITY-RANDOM.md): global
+  pool admission, exact RNG phases, reproducible matches and full acceptance.

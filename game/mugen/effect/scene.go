@@ -57,9 +57,15 @@ type queuedRequest struct {
 	instance *Instance
 }
 
-type Queue struct{ requests []queuedRequest }
+type Queue struct {
+	requests []queuedRequest
+	Admit    func() bool // Optional shared simulation admission for scene-owned cues.
+}
 
 func (q *Queue) Push(request Request) error {
+	if q.Admit != nil && !q.Admit() {
+		return nil
+	}
 	if len(q.requests) >= 16384 {
 		return fmt.Errorf("undrained effect queue exceeds 16384 entries")
 	}
@@ -74,6 +80,8 @@ func (q *Queue) PushOwned(instance *Instance) error {
 	if len(q.requests) >= 16384 {
 		return fmt.Errorf("undrained effect queue exceeds 16384 entries")
 	}
+	// The owner admitted this instance before evaluating its creation fields.
+	// Rechecking here would count the new instance against its own last slot.
 	q.requests = append(q.requests, queuedRequest{instance: instance})
 	return nil
 }
@@ -144,6 +152,23 @@ type Scene struct {
 	Limit  int
 }
 
+// UnownedCount includes pending cues so later CNS creation sees admission in
+// the same pass. Owner-driven instances are already counted by their World.
+func (s *Scene) UnownedCount() int {
+	count := 0
+	for _, instance := range s.Active {
+		if instance.Active && !instance.OwnerDriven {
+			count++
+		}
+	}
+	for _, entry := range s.Queue.requests {
+		if entry.instance == nil || entry.instance.Active && !entry.instance.OwnerDriven {
+			count++
+		}
+	}
+	return count
+}
+
 func NewScene(limit int) *Scene {
 	if limit <= 0 {
 		limit = 256
@@ -186,7 +211,7 @@ func (s *Scene) Flush() error {
 			}
 			request = instance.Request
 		}
-		if len(s.Active) >= s.Limit {
+		if s.Queue.Admit == nil && len(s.Active) >= s.Limit {
 			return fmt.Errorf("fight effect limit %d reached", s.Limit)
 		}
 		if request.Source.Sprites == nil || request.Source.Animations == nil {

@@ -27,6 +27,15 @@ type parameterHost struct {
 	pushEnabled                bool
 	hitParams                  map[string]string
 	explod                     ExplodParameters
+	random                     *RandomStream
+}
+
+func (h *parameterHost) ExplodRandomOffset(size int) (int, error) {
+	if h.random == nil {
+		h.random = NewRandomStream(1)
+	}
+	size = max(0, size)
+	return int(h.random.Range(-int32((size+1)/2), int32(size/2))), nil
 }
 
 func newParameterHost() *parameterHost {

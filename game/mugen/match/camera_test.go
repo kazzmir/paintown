@@ -193,6 +193,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				ProjectileMax    *int   `json:"projectile_max"`
 				EffectLimits     struct {
 					AfterImageMax *int `json:"AfterImageMax"`
+					ExplodMax     *int `json:"ExplodMax"`
 				} `json:"effect_limits"`
 				CNSHash         string `json:"cns_sha256"`
 				AIRHash         string `json:"air_sha256"`
@@ -320,6 +321,10 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			m := stockMatch(t, 99)
+			if reference.EffectLimits.ExplodMax != nil {
+				m.Options.ExplodMax = max(8, *reference.EffectLimits.ExplodMax)
+				m.World.ExplodMax = m.Options.ExplodMax
+			}
 			if reference.EffectLimits.AfterImageMax != nil {
 				m.Options.AfterImageMax = max(1, *reference.EffectLimits.AfterImageMax)
 				m.World.AfterImageMax = m.Options.AfterImageMax

@@ -1,0 +1,26 @@
+{
+  "native_finalization": "Every prepared config and exact FirstRun1->0/LF->CRLF finalization verified",
+  "programs": {
+    "creationpoolcuerng-contact-before-creation": {
+      "prepared_sha256": "9fef30d87c438556cd4d77cfdb773c118069153a2b20fd78ff0827c5e020bcfe",
+      "final_sha256": "e15bc25be1f04efd46cc624ea348996eb279ae1ca0514a53864a86ba53ee0c84",
+      "ExplodMax": 8,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpoolcuerng-full-before-contact": {
+      "prepared_sha256": "9fef30d87c438556cd4d77cfdb773c118069153a2b20fd78ff0827c5e020bcfe",
+      "final_sha256": "e15bc25be1f04efd46cc624ea348996eb279ae1ca0514a53864a86ba53ee0c84",
+      "ExplodMax": 8,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpoolcuerng-space-before-contact": {
+      "prepared_sha256": "bec967418c3c07a7721f6a22d432fcbcf9a16df7933cb7a28457614f39720b19",
+      "final_sha256": "56866298f838264eb2d0b4d4541156893ec72e1faf5a2761c1b0c5a16438597e",
+      "ExplodMax": 9,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    }
+  }
+}

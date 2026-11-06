@@ -44,6 +44,10 @@ game/mugen/mugen.sh --game \
   --stage stages/kfm.def
 ```
 
+For a reproducible initial match, add `--match-seed 16807` to the launch command.
+The game logs the actual seed. Omit the option for normal clock-based startup;
+later matches advance the independent session sequence.
+
 The launcher compiles/runs the Go application and keeps build caches under
 `game/mugen/temp/`. Quick match uses two human-controlled players. Single-player
 menu selection has a basic opponent policy; full arcade progression and AI
@@ -85,7 +89,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 # Build/test every MUGEN package against the stock reference corpus.
 game/mugen/mugen.sh --check -p 1 -timeout=40m
 
-# Full race checks; allow roughly thirty minutes for the full native replay corpus.
+# Full race checks; allow roughly forty minutes for the full native replay corpus.
 game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=40m
 
 # Focused stock character loading and state compilation.
@@ -101,7 +105,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4de validation**.
+Snapshot: **2026-11-06; through M4df validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -135,7 +139,7 @@ crops match exactly (36.8% of this corpus)**. The other 60 retain strict failure
 59 have maximum RGB error 1; the scaled actor has maximum error 2. Both old
 projectile-shadow controls now match exactly. [Shadow evidence](docs/SHADOWS.md).
 
-M4da's full scoped race run passes **4,506 results across 36 packages**
+M4df's full scoped race run passes **4,743 results across 36 packages**
 (25 tested, 11 compiled-only). All four old shake masks pass. Stock
 win → rematch → win is visually inspected with 82 balanced input events and
 private audio. Earlier angle/EnvShake/actor 45-degree failures remain unwaived.
@@ -166,6 +170,14 @@ crops match exactly (85.7% of this corpus)**; six fractional/projected rotation
 cases retain strict pixel failures. The sampling experiments remain outside
 production. [Drawing evidence and bounds](docs/EXPLOD-CREATION-DRAWING.md).
 
+Explod random displacement and capacity now use the native expression/draw order
+and a shared pool for roots, helpers, retired owners and hit sparks. Low limits
+clamp to eight; saturation drops new objects without terminating the game. All
+**53 native programs pass**, including eight expected rejections; **45/45 new
+app crops match exactly (100% of this corpus)** across **22,896,000 RGB pixels**.
+The full suite and fresh stock rematch/audio checks pass.
+[Admission and random evidence](docs/EXPLOD-CAPACITY-RANDOM.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
@@ -174,6 +186,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| Explod admission/random native programs in M4df | 53 / 53 | **100%** | Recorded schema/phase/count/RNG corpus, including eight expected rejections. |
+| Explod admission/random app crops in M4df | 45 / 45 | **100%** | Exact pixels in this corpus; earlier shared sampling failures remain open. |
 | Explod creation drawing native programs in M4de | 47 / 47 | **100%** | Recorded numeric/schema corpus, including five expected rejections. |
 | Explod creation drawing app crops in M4de | 36 / 42 | **85.7%** | Six strict fractional/projected sampling failures remain; no tolerance changed. |
 | Explod palette context native programs in M4dd | 42 / 42 | **100%** | Common/helper/wildcard context corpus; broader asset/profile variants remain open. |

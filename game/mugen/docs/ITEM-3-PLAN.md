@@ -225,3 +225,16 @@ Ten complete direct-resolution native controls are reviewed but unpromoted.
 This checkpoint adds measured creation behavior; it does not close shared raster
 obligations. Continue Explod random/capacity, all remaining independent item3
 consumers and the unresolved rendering gates. Item4 remains unallocated.
+
+
+## M4df — admission and random phases
+
+[EXPLOD-CAPACITY-RANDOM.md](EXPLOD-CAPACITY-RANDOM.md) records53 native programs,
+45 accepted/eight rejections/540 values. Ordered per-component draw, shared
+root/helper/orphan/hitspark pool admission and production config binding now have
+measured consumers. All45new apps match exactly /22,896,000pixels; full4,743-result/
+36-package races and stock/privateaudio pass. Older strict renderer differences
+remain unwaived. Continue the separately prepared ModifyExplod enum dependency,
+AssertSpecial flags, GameMakeAnim/MakeDust, clipboard and residual schemas. The
+20enum/32flag/16aged+20earlysystem-effect drafts are unobserved, not coverage.
+No automatic checkpoint stop; item4 remains unallocated.

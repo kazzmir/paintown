@@ -20,42 +20,37 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4de creation drawing validation
+## Immediate state — M4df validated; local checkpoint next
 
-Latest committed checkpoint: M4dd f48dfdb8aef751a69a1b4105b857a3d6bc2a2c7b.
-M4de47 originals reviewed/promoted once:42accepted/5reject/504numeric values,
-47exact native configurations. Typed creation angles/trans/alpha and conditional
-priority evaluation implemented. Focused races868core/157native pass. Fifteen
-focused apps12exact/3UNWAIVED:45deg534RGB/max148,x30208/max57,combined537/max171.
-Native/app source and strict comparisons are immutable; production sampling unchanged.
+No active runtimes. M4de364916511e3e46e36bc650491a95e9b99624cb18 committed255UTF8
+source/text paths. M4df revision1 passes53native programs (45accept8reject540values),
+869core/236selectednative focused races andALL45new apps exact/22,896,000RGBpixels.
+Full scoped races PASS4,743results/36packages (25tested11compiled-only), Match
+2211.607seconds. Five oldpalette/order, quarterturn,fourmasks,stock82inputs/
+1,971,594PCMframes PASS; all images reviewed. Old45 still534RGB/max148 UNWAIVED.
 
-M4de final69433 COMPLETE/awaited1:42apps36exact/6strictUNWAIVED; five old
-palette/order apps, four masks, stock82inputs/1,973,200PCMframes, modules/inventory
-PASS. SEPARATE18220-input/36435-hash/client guardPASS. Passiveaudit59151 and
-reviewgeneration38369 completed/awaited0. Audit18222frozen paths/72789checks/
-1758originalinputs/47configs/41archives/1927nativecopies/109manifestfiles PASS.
-ALL42pairs/seven sheets, nine old app images and stock21win/26FIGHT/45win viewed.
-No active runtime. Local source/text checkpoint next, then continue all item3.
-Read topicdoc/hand off. Ten direct raw sets remain unpromoted and unstaged.
+Focused34141 complete0; final57254 complete1 solelyold45strictcomparison. SEPARATE
+18495focused and18496final input/clientguardsPASS. Audit38432/review80547 complete0;
+18498currentfrozenpaths/73973hashchecks/2036originalinputs/53configs/41archives/
+2173nativecopies/109manifestfilesPASS. Records temp/m4df-final-evidence-audit.json
+andm4df-final-visual-review.json. Read HANDOFF andEXPLOD-CAPACITY-RANDOM.md.
 
-Private reversal/precision/quad/screen-bias experiments retained, no production
-sampling fix. Screen-bias experiment complete18rows but original exec session ID
-lost due response overflow; no observed exit0 claim. Elevated no-runtime check and
-separate376-input/client guard passed; recovery note retained. Improvements still
-fail strict pixels. Direct640/1280native controls10complete and reviewed, not promoted.
-The original1280capture clipped to947rows; diagnostic preserved. Fresh r2controls
-used task-owned Xvfb98(1600x1200), metadata temp/m4de-large-display-r2/metadata.json.
-Original97/Pulse30218/30219 unchanged; auth private.
+Typed random tuple/ordered component draws, world-axis offsets, globalroot/helper/
+orphan/live+queuedcue admission andcorrectExplodMaxclamp8 binding implemented.
+Hitsparks share slots butdrawNO RNG; Explodsdraw2evenzero. --match-seed supports
+strict reproducibleactualapps. No source changes since passing integration,
+except MD. Local source/text checkpoint next; then continue ALL item3. Keep ten
+unpromoted direct native raw sets unstaged. No automatic pause/reapproval.
 
-Continue all item3: remaining Explod random/capacity and measured dependencies,
-AssertSpecial, system effects, clipboard and residual schemas. Item4 unallocated.
-Prior12M4cq/sevenM4cv/twoM4cy and60M4da strict renderer failures stay UNWAIVED.
-Source74typed/15fallback/2stubs/9partial/18bounded/60route-only is not behavioral
-coverage. Latest full suite remains M4da4506results/36packages. No stop/reapproval.
-
-Default sandbox ps hides host processes; use elevated wrapper guards. Original
-native detail20143 lost session during daemon restart has original evidence/normal
-marker audited; never claim observed exit0 or replace its native evidence.
+Prepared but UNOBSERVED next20ModifyExplodenum,32AssertSpecial(rev2),16aged+20early
+system-effect drafts underignoredtemp; fullintent/native-only review required.
+Remaining clipboard/debugsink andresidualschemas/HitAddHUD continue. Item4unallocated.
+Prior strict renderer failures stayUNWAIVED; no sampler/tolerance changes. Source
+74typed15fallback2stubs9partial18bounded60route-only isnotbehavioralcoverage.
+Task-owned Xvfb98large-displaymetadata temp/m4de-large-display-r2/metadata.json;
+authprivate. Original97/Pulse30218/30219 unchanged. Default sandboxps hideshost
+clients; useelevatedwrapperguards. See HANDOFF for retained failed/lost-session
+records; never claim observed exits that were not actually observed.
 
 ## Native and validation workflow
 

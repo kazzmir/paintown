@@ -18,12 +18,28 @@ func (c *Character) CreateExplodEvaluated(action int, common bool, evaluate func
 		c.EvaluationWarning(fmt.Sprintf("Explod action %d is unavailable", action))
 		return nil
 	}
+	if err := c.ensureWorld(); err != nil {
+		return err
+	}
+	// Animation/palette expressions have already run. Saturation skips all
+	// later expressions, including the two implicit random draws.
+	if !c.World.CanCreateExplod() {
+		return nil
+	}
 	p, err := evaluate()
 	if err != nil {
 		return err
 	}
 	p.Action, p.Common = action, common
 	return c.CreateExplod(p)
+}
+
+func (c *Character) ExplodRandomOffset(size int) (int, error) {
+	if err := c.ensureWorld(); err != nil {
+		return 0, err
+	}
+	width := int64(max(0, size)) + 1
+	return int(c.World.random.Next()%width - width/2), nil
 }
 
 func (c *Character) CreateExplod(p engine.ExplodParameters) error {
@@ -129,6 +145,9 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 	if e.BindingTime < -1 {
 		e.BindingTime = -1
 	}
+	// Random displacement follows world axes, independently of issuer facing.
+	x, y = x+p.RandomX, y+p.RandomY
+	e.OffsetX, e.OffsetY = e.OffsetX+p.RandomX, e.OffsetY+p.RandomY
 	c.retargetExplod(e, p.BindID, screen)
 	e.X, e.Y, e.Facing = x, y, face
 	request := effect.Request{Source: source, Action: p.Action, Facing: face, X: x * scale, Y: y * scale, RemoveTime: &e.Time, SpritePriority: p.SpritePriority, VFacing: p.VFacing, ScreenSpace: screen, OnTop: p.OnTop, Shadow: p.Shadow, PauseMoveTime: p.PauseMoveTime, SuperMoveTime: p.SuperMoveTime, ScaleX: p.ScaleX, ScaleY: p.ScaleY, HasScale: true}

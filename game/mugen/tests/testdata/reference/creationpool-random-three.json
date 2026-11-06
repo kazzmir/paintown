@@ -1,0 +1,60 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "bfc3736105cc0ef577a1a74e1d5d89ab8c3a277cce60d80d85491045c722b266",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "cf6914d9348f19e1485cd2dd69b3ecc048684d48eb29ceda1860d783c96c844b",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 494,
+        "9": 426,
+        "10": 744,
+        "11": 442
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "effect_limits": {
+    "ExplodMax": 256,
+    "SysExplodMax": 128,
+    "AfterImageMax": 16
+  },
+  "random_seed": 239061112,
+  "seed_log_sha256": "987e2528b1bc274ec9d05d3edfcbe2ffd2a0576f7f325b938e2cfe2b550db9f6",
+  "state_language_version": "1.1",
+  "full_cns_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "creation_pool_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "f82c8b197e737c9af3d4a8e84240ec4eb3422656caf8c91a47069b6007ce3a87",
+    "requires_match_seed": true
+  }
+}
