@@ -37,6 +37,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	}
 	stage.StageInfo.LocalCoord = coord.Default()
 	stage.StageInfo.ResetBG = true
+	stage.Shadow.Intensity, stage.Shadow.YScale = 128, .4
 	stageDir := filepath.Dir(absPath)
 
 	var currentDef *background.BGCtrlDef
@@ -162,6 +163,8 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					if len(v) >= 3 {
 						stage.Shadow.Color = [3]int{v[0], v[1], v[2]}
 					}
+				case "xshear":
+					stage.Shadow.XShear = background.GetFloat(attr.Value)
 				case "yscale":
 					stage.Shadow.YScale = background.GetFloat(attr.Value)
 				case "fade.range":

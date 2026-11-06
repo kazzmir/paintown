@@ -133,6 +133,11 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 			s.renderError = fmt.Errorf("EnvColor sampler: %w", err)
 		}
 	}
+	if !m.Timeline.GlobalNoShadow {
+		shadow := render.Shadow{Intensity: m.Stage.Shadow.Intensity, YScale: m.Stage.Shadow.YScale, XShear: m.Stage.Shadow.XShear, FadeRange: m.Stage.Shadow.FadeRange, FloorY: m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY}
+		character.DrawPlayerShadows(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, shadow)
+		s.drawEffectShadows(s.gameCanvas, shadow)
+	}
 	if environment.Time > 0 && environment.Under {
 		drawEnvironment()
 	}

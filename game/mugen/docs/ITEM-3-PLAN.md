@@ -169,3 +169,14 @@ PROJECTILE-TRAILS.md records161programs/1848values and explicit bounds. Source
 routing remains74typed/15fallback. Next shared-shadow geometry/alpha/fade/flags/
 layers need new complete-visibility native controls; independent ignored drafts
 are preparation, not coverage. Continue all remaining item3 after local commits.
+
+
+## M4da — bounded shared shadows
+
+[SHADOWS.md](SHADOWS.md) records98 native programs, typed Explod creation shadow,
+shared current-pose rendering, stage/flag/alpha/fade/layer consumers and completed
+full integration. Full4,506-result races, old2shadow controls, four masks and stock
+input/private audio pass. The95-app strict matrix has35exact/60UNWAIVED fringe/
+scale failures. These and earlier renderer differences remain open; no coverage
+percentage claims full compatibility. Continue remaining Explod fields/pools,
+AssertSpecial, system effects, clipboard, target haptics and residual schemas.

@@ -951,3 +951,25 @@ verifies source/resource/config/binary/capture hashes and every pixel of the
 RGB failure exits nonzero; collect all cases and retain the whole matrix failure.
 M4cz has152/154 exact crops; shadow1/-1 remain UNWAIVED. See
 [the research and validation note](../docs/PROJECTILE-TRAILS.md).
+
+
+## Shared shadow reference programs
+
+TestNativeShadowPrograms and TestNativeShadowCreationSchema replay98 original
+programs (95accepted/three expected load errors), checking frozen source hashes
+and1,140 captured numeric values. Native originals remain under temp/reference-runs;
+they are never regenerated during Go tests. [Research/limits](../docs/SHADOWS.md).
+
+The read-only shadow_render_probe.py verifies source/resources/config/binary/
+capture hashes and every RGB pixel, using the original physical image dimensions.
+One native case is640x480; the others are1280x720. It never rescales expectations.
+With original and completed app evidence available, use a fresh report name:
+
+```bash
+python3 game/mugen/tests/shadow_render_probe.py   --fixture shadowshape-intensity-64   --go-run m4da-matrix2-shadowshape-intensity-64   --name shadow-intensity64-recheck
+```
+
+All95 apps run;35crops match exactly. The matrix retains exit1 for60UNWAIVED
+one/two-byte fringe/scale differences. Both old projectile-shadow1/-1 controls
+now pass against their unchanged expectations. Do not relabel partial RGB results
+as exact, replace goldens, or relax tolerances.

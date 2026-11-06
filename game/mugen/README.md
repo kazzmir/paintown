@@ -124,16 +124,23 @@ capacity, ordered admission, saved palettes and measured motion/recording/expiry
 clocks. All **159 new behavioral programs**, including five schema rejections,
 pass alongside older Projectile/AfterImage regressions. The fresh projectile
 image matrix has **152 of 154 crops exact (98.7% of this corpus)** across
-77,337,600 RGB pixels. Its two missing-shadow cases remain unwaived. See
+77,337,600 RGB pixels. Its two missing-shadow cases were unwaived at M4cz; M4da now matches both controls. See
 [projectile evidence](docs/PROJECTILE-TRAILS.md).
 
-M4cz's fresh race checks pass **843 engine/character results** and **625 native
-Match results**. The latest full scoped run, M4cy, passed **4,243 results across
-36 packages** (25 tested, 11 compiled-only). Stock win → rematch → win is visually
-inspected, with 82 balanced input events and private audio. Earlier 12 angle/
-raster, seven EnvShake and two actor 45-degree cases remain unwaived.
+Shared floor shadows now render for players/helpers and flagged projectiles/
+Explods, with measured stage geometry/fade, palette/blend behavior, suppression
+flags and creation schemas. All **98 native numeric/schema programs pass**,
+including three load rejections. All **95 visual applications run**; **35/95
+crops match exactly (36.8% of this corpus)**. The other 60 retain strict failures:
+59 have maximum RGB error 1; the scaled actor has maximum error 2. Both old
+projectile-shadow controls now match exactly. [Shadow evidence](docs/SHADOWS.md).
 
-Item 3 continues with shared shadows, remaining Explod consumers, AssertSpecial,
+M4da's full scoped race run passes **4,506 results across 36 packages**
+(25 tested, 11 compiled-only). All four old shake masks pass. Stock
+win → rematch → win is visually inspected with 82 balanced input events and
+private audio. Earlier angle/EnvShake/actor 45-degree failures remain unwaived.
+
+Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard, haptics and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
 remain item 4. There is no measured whole-engine completion percentage. The
@@ -141,7 +148,9 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
-| Projectile image programs in the M4cz native corpus | 152 / 154 | **98.7%** | Exact images in this named corpus; two missing-shadow failures remain. Not engine coverage. |
+| Shadow native numeric/schema programs in M4da | 98 / 98 | **100%** | This recorded corpus only; includes three expected load rejections. |
+| Exact shadow image crops in M4da | 35 / 95 | **36.8%** | Strict pixels; 60 one/two-byte fringe/scale failures remain. No tolerance relaxed. |
+| Projectile image programs in the historical M4cz corpus | 152 / 154 | **98.7%** | M4cz result; M4da separately fixes both missing-shadow controls. The whole image corpus was not rerun here. |
 | Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; three stubs and other partial consumers remain. Not full controller compatibility. |
 | Documented controller names with typed compiler routes | 74 / 89 | **83.1%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |

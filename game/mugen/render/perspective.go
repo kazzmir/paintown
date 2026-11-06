@@ -12,6 +12,7 @@ import (
 type Perspective struct {
 	X, Y, CenterX, CenterY, Distance float64
 	Angle, XAngle, YAngle            float64
+	Post                             ebiten.GeoM // Common-surface projection applied after perspective division.
 }
 
 func (p Perspective) matrix(local ebiten.GeoM) [9]float64 {
@@ -24,7 +25,9 @@ func (p Perspective) matrix(local ebiten.GeoM) [9]float64 {
 		x, y = x*cz+y*sz, -x*sz+y*cz
 		x, z := x*cy, x*sy
 		y, z = y*cx+z*sx, -y*sx+z*cx
-		return [3]float64{p.Distance*(p.X+x) + p.CenterX*z, p.Distance*(p.Y+y) + p.CenterY*z, p.Distance + z}
+		q := p.Distance + z
+		u, v = p.Distance*(p.X+x)+p.CenterX*z, p.Distance*(p.Y+y)+p.CenterY*z
+		return [3]float64{p.Post.Element(0, 0)*u + p.Post.Element(0, 1)*v + p.Post.Element(0, 2)*q, p.Post.Element(1, 0)*u + p.Post.Element(1, 1)*v + p.Post.Element(1, 2)*q, q}
 	}
 	a, b, c := project(0, 0), project(1, 0), project(0, 1)
 	return [9]float64{b[0] - a[0], c[0] - a[0], a[0], b[1] - a[1], c[1] - a[1], a[1], b[2] - a[2], c[2] - a[2], a[2]}
@@ -86,6 +89,9 @@ func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p P
 	}
 	if indexed {
 		reverse := sourceReversal(options.GeoM)
+		if style.SourceReversal != nil {
+			reverse = *style.SourceReversal
+		}
 		uniforms["Reverse"] = reverse
 	}
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, *shader, &ebiten.DrawTrianglesShaderOptions{Images: [4]*ebiten.Image{src}, Blend: options.Blend, CompositeMode: options.CompositeMode, Uniforms: uniforms})

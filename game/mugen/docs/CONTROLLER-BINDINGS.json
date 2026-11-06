@@ -14,17 +14,19 @@
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
     "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
-    "character/character.go": "7ae3eef351d4d3df5a6aae871e065996a7a26a25078050bc9b0107c5c41f8c8b",
-    "character/player.go": "64cbdf0442045780c0960e0b7d626265f66e34aa1b8a95bc2339d22fd58ba0a8",
-    "character/explod.go": "cafe0555cc2fa030ac4a3a91b778d38b6c3c12f0538e99171404555141457556",
-    "engine/explod.go": "0690b78417a65f709bcd1641ea087adbea7da4a0f433a220819db52a6444c10d",
+    "character/character.go": "3da7140981eb8d5a028905700b7e8560a42522f09e3aae7b818cbe23ded7e06d",
+    "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
+    "character/explod.go": "0a8b230dce32357d67cb906b30b280a050ed733157842c3b7bc5b07ee7133ec5",
+    "engine/explod.go": "beee6da4a1062ebc6098c35ce2110b525b9dd643e8f18f90c3234d7ecfebb6d7",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "97a6b04e686ac8f74316f3b707c859836b2da787486063e85cc44dc13932d90b",
-    "character/actor_order.go": "6f7b158c1348985c8ee04d321d5b0cdd27a54aa00ee8df9d1251874fdf6de0bc",
-    "system/effects.go": "d21c64c1aae3c20075cd829268f958ceb0b46d29e37dddc23c251cec13be6da3",
-    "render/perspective.go": "0ee2191a535d46cd5ca2db0d4588361cf5293f72e548153a18b902fb2c34a517",
+    "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
+    "system/effects.go": "7960bee5f10cfbb645d03281182d73fb86319d309746c7f58000e4ef653ac52f",
+    "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
+    "render/shadow.go": "8b3bf8c5b95e0835472bd43a9c3054ce5531c6e61c4ac489ad44ccba540e1285",
+    "stage/loader.go": "514411a8c51f301fb3f6e4e3aa3a464529d84324c2d79df9a7cc632cc6bc6cc5",
     "render/alpha.go": "8b939718d5db8fb1bd297e59678bd8ecc138ee4ea509d0a4269f224e0d1b8ba9",
-    "render/nearest.go": "5a684d4d155936a1e571f125532df3c42cd196673bdaa96f061ac2a39c6c8c4b",
+    "render/nearest.go": "3c81318886a482d7c3c88604813209e0b8517aadcc85691e97dc292c92cc17b8",
     "render/linear.go": "5a3c1ff8c295d5e3c2700805c3a5d5a0080ad9e1f63f6849657cf8d574681850",
     "engine/drawing.go": "160df41e6afb94a1e34a9e850f553aac3a3a666e882eb483d92db79c52d16cf0",
     "engine/trans.go": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
@@ -32,18 +34,18 @@
     "engine/env_color.go": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
     "engine/env_shake.go": "4792c308034f6cbd95c9d40de4c8a4c5f529270ff075a71f0ea2a917afcd3d06",
     "engine/shake.go": "badeca8942018cda36f154190115c52d89bed797adb2adfa848c6a3b9cc8659b",
-    "engine/timeline.go": "8f4954ed3e7d351064431270f88341991bd95f59469bd09dd5196d964fcecc58",
+    "engine/timeline.go": "4da7451e2f03227fffee97bee2d39860301adf56d9a2b2298bd09f0ed2d913e4",
     "engine/round_clock.go": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
     "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
     "palette/controller_effect.go": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
     "palette/hit_effect.go": "14f801c3823004401e2f8183cd25e536ffd9ea32dca7d230dcc38c35816d978f",
-    "render/palette.go": "1dd6cb5409191921c4adb2a7d12b9ac6a4b004191f2df86559e6314304bf8c8d",
+    "render/palette.go": "1b628fbb7df6b671492bdc501a990036af79f42338de41e058ab4dde04628dd6",
     "character/helper.go": "c1818f63af4509c9401dcaf336e359db82ba1d4193595f5d6a9ca23d8e90998f",
     "character/tick.go": "3308abab23954d1452c61bd20794b20fd84efad5707d74cda3f6347fd59c4e33",
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
-    "stage/stage.go": "b1e62cd12aaacc2a86e8888b10c15905552483d332a9bcb5a22d947b05558ab0",
+    "stage/stage.go": "f44f4fc4fd38ad75e45d9c887819a00fdffe079b7530838eff3ff317a301e1d7",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "2755f65034a268894e0963bdd402c9c441826e205d7feb79192594713d5cbf22",
+    "system/fight_state.go": "ff6b51a541c09e92825c56fc41d8eaec7cfe5f21b6bb4f732d03210f44365ac5",
     "system/hud.go": "1ceba3b260f2c3f60c6cc8409332c8f4e09fcc2932795862cbd61752ee44537f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
@@ -71,6 +73,7 @@
       "fvarset"
     ],
     "observed_assertspecial_consumers": [
+      "globalnoshadow",
       "intro",
       "invisible",
       "noautoturn",
@@ -78,6 +81,7 @@
       "nojugglecheck",
       "nokoslow",
       "nokosnd",
+      "noshadow",
       "roundnotover",
       "timerfreeze"
     ]
@@ -178,7 +182,7 @@
       "handler": "handleAssertSpecial",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "only a subset of literal flags have production consumers"
+        "only a subset of literal flags have production consumers; SHADOWS.md adds noshadow, per-game-tick globalnoshadow and invisible shadow suppression"
       ],
       "variants_complete": false
     },
@@ -347,7 +351,7 @@
       "handler": "handleExplod",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; creation palette/random/angle/trans/shadow/capacity and broader variants open"
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; creation palette/random/angle/trans/capacity and broader variants open"
       ],
       "variants_complete": false
     },
@@ -521,7 +525,7 @@
       "handler": "func",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; shadow/pause/projection sampling gates remain"
+        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; SHADOWS.md adds shared shadow drawing; broader pause/projection variants and unwaived raster gates remain"
       ],
       "variants_complete": false
     },
@@ -671,7 +675,7 @@
       "handler": "handleProjectile",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; shared stage shadows remain missing"
+        "PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; SHADOWS.md adds measured current-only stage shadows, alpha/fade/geometry/flags/layer consumers; wider resource/profile variants and unwaived raster differences remain"
       ],
       "variants_complete": false
     },

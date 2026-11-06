@@ -2923,3 +2923,20 @@ two missing-shadow cases UNWAIVED. Four masks, stock win/rematch/win,82balanced
 inputs and1,918,419private PCMframes pass. Original109files/6601resourcecopies and
 source/module/inventory/provenance checks pass. Source/text only; no binaries or
 push. Shared shadows and all remaining item3 continue after this local checkpoint.
+
+
+## M4da — shared floor shadows
+
+Players/helpers, flagged projectiles and Explods now share measured stage shadow
+geometry, defaults/fade, transparency/palette policy, ordering and local/global
+suppression. Explod creation compiles shadow with native errors, evaluation order
+and missing-animation admission. [Evidence and strict limits](SHADOWS.md).
+
+98 original programs/1,140 numeric values; all pass, including three expected
+rejections. Full scoped race:4,506 results/36 packages. All95 actual apps run;
+35 exact/17,325,600 pixels,60 strict UNWAIVED fringe/scale differences(max1 or2).
+Both old missing-projectile-shadow controls now match exactly. Four masks and
+visually inspected stock win/rematch/win pass, with82balanced inputs and
+1,973,562private PCM frames. Native resources, sources, configurations, captures,
+modules, inventory and binary provenance pass. Source/text only; no binary/push.
+All remaining item3 continues after this local checkpoint.

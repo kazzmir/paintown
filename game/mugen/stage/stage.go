@@ -60,6 +60,7 @@ type Stage struct {
 		Intensity int
 		Color     [3]int
 		YScale    float64
+		XShear    float64
 		FadeRange [2]float64
 	}
 

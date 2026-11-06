@@ -13,7 +13,7 @@ type ExplodParameters struct {
 	PauseMoveTime, SuperMoveTime, BindID, BindTime             int
 	X, Y, VelX, VelY, AccelX, AccelY, ScaleX, ScaleY           float64
 	Common, ScreenSpace, IgnoreHitPause, RemoveOnGetHit, OnTop bool
-	SpaceSpecified                                             bool
+	SpaceSpecified, Shadow                                     bool
 	PosType                                                    string
 }
 
@@ -104,7 +104,7 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 	}
-	scalars, err = compileArguments(ctrl, []argumentSpec{{"bindtime", true, false}, {"bindid", true, false}, {"ontop", true, false}, {"removetime", true, false}, {"supermovetime", true, false}, {"pausemovetime", true, false}, {"sprpriority", true, false}, {"removeongethit", true, false}})
+	scalars, err = compileArguments(ctrl, []argumentSpec{{"bindtime", true, false}, {"bindid", true, false}, {"ontop", true, false}, {"removetime", true, false}, {"supermovetime", true, false}, {"pausemovetime", true, false}, {"sprpriority", true, false}, {"shadow", true, false}, {"removeongethit", true, false}})
 	if err != nil {
 		return nil, true, err
 	}
@@ -163,7 +163,7 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				}
 				return fallback
 			}
-			p := ExplodParameters{Action: action, ID: integer("id", 0), RemoveTime: integer("removetime", -2), Facing: integer("facing", 1), VFacing: integer("vfacing", 1), SpritePriority: integer("sprpriority", 0), PauseMoveTime: integer("pausemovetime", 0), SuperMoveTime: integer("supermovetime", 0), BindID: integer("bindid", -2), BindTime: integer("bindtime", 1), X: v["pos0"].Number(), Y: v["pos1"].Number(), VelX: v["vel0"].Number(), VelY: v["vel1"].Number(), AccelX: v["accel0"].Number(), AccelY: v["accel1"].Number(), ScaleX: 1, ScaleY: 1, Common: common, PosType: postype, ScreenSpace: screen, IgnoreHitPause: true, RemoveOnGetHit: integer("removeongethit", 0) != 0, OnTop: integer("ontop", 0) != 0}
+			p := ExplodParameters{Action: action, ID: integer("id", 0), RemoveTime: integer("removetime", -2), Facing: integer("facing", 1), VFacing: integer("vfacing", 1), SpritePriority: integer("sprpriority", 0), PauseMoveTime: integer("pausemovetime", 0), SuperMoveTime: integer("supermovetime", 0), BindID: integer("bindid", -2), BindTime: integer("bindtime", 1), X: v["pos0"].Number(), Y: v["pos1"].Number(), VelX: v["vel0"].Number(), VelY: v["vel1"].Number(), AccelX: v["accel0"].Number(), AccelY: v["accel1"].Number(), ScaleX: 1, ScaleY: 1, Common: common, PosType: postype, ScreenSpace: screen, IgnoreHitPause: true, RemoveOnGetHit: integer("removeongethit", 0) != 0, OnTop: integer("ontop", 0) != 0, Shadow: integer("shadow", 0) != 0}
 			if ctrl.IgnoreHitPauseSource != "" {
 				p.IgnoreHitPause = ctrl.IgnoreHitPause != 0
 			}

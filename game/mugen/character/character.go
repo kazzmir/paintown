@@ -883,7 +883,11 @@ func (c *Character) Projectile(params map[string]string) {
 }
 
 func (c *Character) AssertSpecial(flag string) {
-	c.Specials[strings.ToLower(flag)] = true
+	flag = strings.ToLower(flag)
+	c.Specials[flag] = true
+	if flag == "globalnoshadow" && c.Timeline != nil {
+		c.Timeline.GlobalNoShadow = true
+	}
 }
 
 func (c *Character) Explod(params map[string]string) {

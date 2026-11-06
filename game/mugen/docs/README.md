@@ -111,3 +111,6 @@ effort stay under `game/mugen/`.
 
 - [AfterImage actor contexts](AFTERIMAGE-ACTORS.md): shared capacity, expression
   admission, lifetime, visibility, blank poses and preserved native provenance.
+
+- [Shared shadows](SHADOWS.md): stage geometry/fade/flags, current-pose consumers,
+  Explod creation schema and exact native/app results with unwaived pixel limits.

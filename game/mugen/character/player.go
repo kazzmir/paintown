@@ -95,6 +95,10 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 }
 
 func (p *Player) drawEntityWithPalette(screen *ebiten.Image, ent *Character, x, y, sx, sy float64, override *palette.Transform) {
+	p.drawEntityPose(screen, ent, x, y, sx, sy, override, nil)
+}
+
+func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, sy float64, override *palette.Transform, shadow *render.Shadow) {
 	animNo := ent.GetAnim()
 	frames := ent.AnimationFile()
 	if frames == nil {
@@ -187,18 +191,36 @@ func (p *Player) drawEntityWithPalette(screen *ebiten.Image, ent *Character, x, 
 	if ent.DrawTransparency.Enabled {
 		blend, alphaSrc, alphaDst = ent.DrawTransparency.Mode, ent.DrawTransparency.Source, ent.DrawTransparency.Destination
 	}
-	destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
-	style := render.DrawStyle{DestinationFactor: destination, Palette: ent.Palettes.Transform()}
-	if override != nil {
-		style.Palette = *override
-	}
-	if ent.Timeline != nil {
-		style.Palette = palette.Combine(style.Palette, ent.Timeline.AllPalette.Transform())
+	var style render.DrawStyle
+	if shadow != nil {
+		opacity := shadow.Opacity(ent.Y*sy, blend, alphaDst)
+		if opacity <= 0 {
+			return
+		}
+		offset := 0.0
+		if ent.StateFile != nil && !ent.isProjectile {
+			offset = float64(ent.StateFile.Size.ShadowOffset) * sy
+		}
+		reverse := shadow.SamplingReversal(opts.GeoM, offset, indexed, elementFlipY != (characterScaleY < 0))
+		style.SourceReversal = &reverse
+		opts.GeoM = shadow.SpriteGeometry(opts.GeoM, offset, indexed, elementFlipY != (characterScaleY < 0))
+		opts.ColorScale.Reset()
+		opts.ColorScale.Scale(0, 0, 0, opacity)
+		style.DestinationFactor = -1
+	} else {
+		destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
+		style = render.DrawStyle{DestinationFactor: destination, Palette: ent.Palettes.Transform()}
 		if override != nil {
-			// AfterImage's integer palette coefficients are quantized again
-			// after merging the global multiplier, before the first draw pass.
-			for i, coefficient := range style.Palette.Mul {
-				style.Palette.Mul[i] = float32(math.Trunc(float64(coefficient*256))) / 256
+			style.Palette = *override
+		}
+		if ent.Timeline != nil {
+			style.Palette = palette.Combine(style.Palette, ent.Timeline.AllPalette.Transform())
+			if override != nil {
+				// AfterImage's integer palette coefficients are quantized again
+				// after merging the global multiplier, before the first draw pass.
+				for i, coefficient := range style.Palette.Mul {
+					style.Palette.Mul[i] = float32(math.Trunc(float64(coefficient*256))) / 256
+				}
 			}
 		}
 	}

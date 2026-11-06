@@ -20,37 +20,40 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4cz validated, local checkpoint next
+## Immediate state — M4da validation complete, preparing local commit
 
-No active runtime. Last committed checkpoint is M4cy3270a56ee8be00d80742c0df9eeceb795c96509d.
-M4cz final integration10305 completed/awaited1, with only two UNWAIVED missing-
-shadow RGB cases. SEPARATE16,814frozen-input/clientguard PASS. Final evidence
-and resource audits pass. Read docs/HANDOFF.md and docs/PROJECTILE-TRAILS.md.
+M4cz is committed as3255f127cc10217127bd8c1a0a892949ad20cf18. M4da shared shadows
+is implemented/validated and preparing its source/text-only local checkpoint.
+Read docs/SHADOWS.md and docs/HANDOFF.md. No active runtime.
 
-Fresh final source:843engine/character and625old/new native Match results pass
-under race detection.154apps run,152crops exact/77,337,600RGBpixels; shadow1/-1
-remain294RGB/max32 each, strict matrix exit1 preserved. Four masks and visually
-inspected stock21win/26FIGHT rematch/45secondwin,82balanced events/1,918,419PCMframes
-pass. Module/inventory checks pass. Source audit counts remain74typed/15fallback,
-3stubs/9partial/17bounded/60route-only. Native corpus161original programs,
-154accepted/5target schema rejects/2preserved authoring rejects,1848values and646
-original source-probe hashes. All161 rows/11sheets inspected before promotion.
+Integration92761 completed/awaited1: full4,506-result/36-package races PASS;
+all95apps run,35exact/60strict UNWAIVED fringe/scale failures (max1; scaled actor
+max2). Both old projectile shadow controls now exact. Four shake masks and
+visually reviewed stock21/26/45 win/rematch/win pass;82balanced keyboard events,
+1,973,562private PCM frames. Modules/inventory pass. SEPARATE17317-input/client
+guard PASS. Audit24754 completed/awaited0:17,312unique final frozen paths,
+52,979hash checks,1,043original native inputs,98native configs,41canonical assets/
+4,018native resource copies. All109manifest files unchanged. All95 compact rows/
+five paired sheets and three stock screens inspected. Records temp/m4da-final-*.
 
-NEXT finish scoped UTF8/noNUL staging audit and local M4cz commit, record it in
- temp/m4cz-commit-record.json (check if it already exists), then CONTINUE item3.
-No pushes/binaries. Do not stop at checkpoint or ask for routine reapproval.
-Docs/evidence are complete; all original inputs, goldens and failure artifacts
-remain unchanged. Audit: temp/m4cz-final-evidence-audit.json,
-m4cz-reference-resource-audit.json, m4cz-final-stock-visual-review.json.
+Native98 originals promoted ONCE:95accepted/3rejected,1140numeric values. Every
+native row/seven sheets inspected before promotion/fixes. No expectation/tolerance
+changed. Shared shadows and typed Explod shadow validation/order are implemented;
+viewport interpolation remains unchanged. Earlier angle/EnvShake and new pixel
+failures remain UNWAIVED. No whole-engine coverage percentage.
+Source74typed/15fallback/3stubs/9partial/17bounded/60route-only.
 
-Next shared shadows: independent temp/m4da-shadow-draft3 has62UNOBSERVED,
-UNPROMOTED drafts. FULL CNS/AIR/STAGE intent parser verification is required
-before public freezing/native observation. No shadow runtime or renderer work
-has started. Inspect ALL native-only rows/images BEFORE implementation. Existing
-294pixel shadow crops cannot establish full geometry/alpha/fade/ordering.
-Native/app/display-Go always serial; await session and SEPARATEinput/clientguard
-before source/test/probe/fixture edits or another runtime. Go experiments ONLY
- temp/_tmp. The incomplete older shadow drafts and all diagnostics are preserved.
+NEXT: audit/stage explicit UTF8/noNUL scoped source/text paths; local commit.
+Then continue remaining item3 without a checkpoint stop. Independent18 UNOBSERVED
+ForceFeedback/Null drafts and unexecuted intent parser are under temp/m4db-* /
+temp/_tmp/m4db-forcefeedback-intent. Full parser/trigger/resource verification,
+freeze and native observations required before implementation/no-op claims.
+Device absence/nojoy is not proof. Static Null-kind evidence is only preparation.
+
+Default sandbox ps HIDES host processes. All real client/server guards MUST use
+the elevated wrapper. Original private Xvfb/Pulse30218/30219 remain alive.
+A daemon restart lost native detail session20143: all26 originals and normal
+completion marker verified, but do not invent observed exit0. No recovery/rerun.
 
 ## Native and validation workflow
 

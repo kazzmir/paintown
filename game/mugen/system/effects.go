@@ -82,6 +82,18 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 }
 
 func (s *FightState) drawEffectInstance(screen *ebiten.Image, instance *effect.Instance) {
+	s.drawEffectPose(screen, instance, nil)
+}
+
+func (s *FightState) drawEffectShadows(screen *ebiten.Image, shadow render.Shadow) {
+	for _, instance := range s.match.Effects.Active {
+		if instance.Active && instance.Shadow {
+			s.drawEffectPose(screen, instance, &shadow)
+		}
+	}
+}
+
+func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Instance, shadow *render.Shadow) {
 	if s.effectImages == nil {
 		s.effectImages = map[effectImageKey]effectImage{}
 	}
@@ -177,10 +189,30 @@ func (s *FightState) drawEffectInstance(screen *ebiten.Image, instance *effect.I
 	if instance.HasBlend {
 		blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 	}
-	nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
-	style := render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.Palette.Transform(), m.Timeline.AllPalette.Transform())}
+	var style render.DrawStyle
+	if shadow != nil {
+		opacity := shadow.Opacity(instance.Y, blend, alphaDst)
+		if opacity <= 0 {
+			return
+		}
+		op.ColorScale.Scale(0, 0, 0, opacity)
+		style.DestinationFactor = -1
+		if !projected {
+			_, indexed := sprite.Image.(*image.Paletted)
+			reverse := shadow.SamplingReversal(op.GeoM, 0, indexed, sy < 0)
+			style.SourceReversal = &reverse
+			op.GeoM = shadow.SpriteGeometry(op.GeoM, 0, indexed, sy < 0)
+		}
+	} else {
+		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
+		style = render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.Palette.Transform(), m.Timeline.AllPalette.Transform())}
+	}
+
 	if projected {
 		projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
+		if shadow != nil {
+			projection.Post = shadow.Projection(0)
+		}
 		var err error
 		if _, indexed := sprite.Image.(*image.Paletted); indexed {
 			err = s.indexSampler.DrawStyledProjected(screen, cached.image, op, projection, style)

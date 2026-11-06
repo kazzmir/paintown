@@ -1,5 +1,32 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+M4da adds shared current-pose shadows for roots/helpers, flagged projectiles
+and Explods, stage intensity/fade/scale/shear defaults, local/global flag
+consumers and typed Explod shadow validation/evaluation. Its98 native programs
+pin1,140 numeric values, including three load rejections. All98 pass in the
+fresh4,506-result full scoped race run across36 packages (25tested/11compiled-only).
+No original input, capture, golden or tolerance changed. [Evidence](SHADOWS.md).
+
+All95 accepted application programs opened and captured successfully; all rows
+and five paired native/Go sheets were inspected.35 crops are pixel-exact across
+17,325,600RGBpixels. The strict matrix FAILS for60 UNWAIVED crops:59 have a maximum
+channel difference1, and the scaled actor differs468pixels/max2. Both old M4cz
+projectile-shadow crops now match exactly; the whole old154-case image matrix
+was not rerun. Four old shake masks and visually reviewed stock win/rematch/win
+pass, with82balanced input events and1,973,562private PCM frames.
+
+The final audit checks17,312unique frozen paths/52,979hash comparisons,
+1,043original native inputs,98 final native configs,41canonical resource archives
+and4,018native resource copies. All109 original manifest files are unchanged.
+Binary/source/config/capture/audio/module/inventory provenance passes.
+Records:temp/m4da-final-evidence-audit.json and final visual/resource review.
+Source routes remain74typed/15fallback,3stubs/9partial/17bounded/60route-only.
+These counts and corpus percentages do not measure whole-engine compatibility.
+Earlier nonquarter/EnvShake failures and new fringe differences remain UNWAIVED.
+Continue all remaining item3; item4 remains unallocated.
+
+## Previous checkpoints (historical)
+
 M4cz adds typed projectile AfterImage fields, admission before nested expression
 evaluation, global actor/projectile capacity and retirement, owned/saved palettes,
 post-AIR pose recording and distinct pause/hitpause clocks.161 original native

@@ -24,6 +24,7 @@ type pauseClock struct {
 type Timeline struct {
 	EnvironmentColor              EnvironmentColorParameters
 	AllPalette, BackgroundPalette *palette.State
+	GlobalNoShadow                bool // Reset every game tick, including paused frames.
 	GameTime                      int32
 	TicksPerSecond                int32 // Zero uses the standalone default of 60.
 	pause, super                  pauseClock
@@ -35,6 +36,7 @@ type Timeline struct {
 
 func (t *Timeline) BeginFrame() {
 	if t.depth == 0 {
+		t.GlobalNoShadow = false
 		t.AdvanceGlobalPalette()
 		t.AdvanceEnvironmentColor()
 	}

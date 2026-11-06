@@ -1,0 +1,651 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "7bcadf3e177fe60467d350fc524c9e66ec058f6256e6e998106bd49d180e37b1",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "d9e7391273d173a2daa3affd8f5791ea86f8c22d6c6edfcd38cd06432b2b43e7",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": -40,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "9417cea2eaf0db33e63cd3275c4a4c7db983cdd681e2430b45d0e6088a474ee0",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "consumer": "root",
+  "height": -40,
+  "root_x": 0,
+  "helper_x": 0,
+  "root_visible": false,
+  "root_height": 10,
+  "declared_states": [
+    0,
+    700,
+    701,
+    5900
+  ],
+  "actual_controller_counts": {
+    "ChangeState": 2,
+    "PlayerPush": 2,
+    "ScreenBound": 2,
+    "PosSet": 2,
+    "Trans": 1,
+    "VarSet": 12,
+    "DisplayToClipboard": 1,
+    "AppendToClipboard": 1,
+    "Pause": 1
+  },
+  "full_controller_intent": [
+    {
+      "state": 5900,
+      "type": "ChangeState",
+      "params": {
+        "value": "0"
+      }
+    },
+    {
+      "state": 0,
+      "type": "ChangeState",
+      "params": {
+        "value": "IfElse(TeamSide=1,700,701)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "PlayerPush",
+      "params": {
+        "value": "0"
+      }
+    },
+    {
+      "state": 700,
+      "type": "ScreenBound",
+      "params": {
+        "value": "0",
+        "movecamera": "0,0"
+      }
+    },
+    {
+      "state": 700,
+      "type": "PosSet",
+      "params": {
+        "x": "0",
+        "y": "-40"
+      }
+    },
+    {
+      "state": 700,
+      "type": "Trans",
+      "params": {
+        "trans": "addalpha",
+        "alpha": "64,128"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "0",
+        "value": "NumProj"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "1",
+        "value": "NumHelper"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "2",
+        "value": "NumExplod"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "3",
+        "value": "Time"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "4",
+        "value": "Pos X"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "5",
+        "value": "Pos Y"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "6",
+        "value": "Facing"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "7",
+        "value": "GameTime"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "8",
+        "value": "Var(0)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "9",
+        "value": "Var(1)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "10",
+        "value": "Var(2)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "11",
+        "value": "Var(3)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "DisplayToClipboard",
+      "params": {
+        "text": "\"P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\"",
+        "params": "FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "AppendToClipboard",
+      "params": {
+        "text": "\"P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\"",
+        "params": "FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "Pause",
+      "params": {
+        "time": "99999",
+        "movetime": "0"
+      }
+    },
+    {
+      "state": 701,
+      "type": "PlayerPush",
+      "params": {
+        "value": "0"
+      }
+    },
+    {
+      "state": 701,
+      "type": "ScreenBound",
+      "params": {
+        "value": "0",
+        "movecamera": "0,0"
+      }
+    },
+    {
+      "state": 701,
+      "type": "PosSet",
+      "params": {
+        "x": "0",
+        "y": "0"
+      }
+    }
+  ],
+  "snapshot_expressions": [
+    "NumProj",
+    "NumHelper",
+    "NumExplod",
+    "Time",
+    "Pos X",
+    "Pos Y",
+    "Facing",
+    "GameTime",
+    "Var(0)",
+    "Var(1)",
+    "Var(2)",
+    "Var(3)"
+  ],
+  "stage_fields": {},
+  "stage_mode": "fields",
+  "native_afterimage_max": 16,
+  "air_portrait_intent": {
+    "group": 9000,
+    "image": 0,
+    "x": 0,
+    "y": 0,
+    "time": -1,
+    "flip_x": false,
+    "flip_y": false,
+    "blend": "none",
+    "alpha_src": 0,
+    "alpha_dst": 0
+  },
+  "stage_overrides": {},
+  "source_intent_verified_by_cns_air_stage_parser": true,
+  "shadow_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "1e5dcdc4ac8f38b36f4d0d84b1661eac9ec0671bf279b2360f6c005893abdbf7"
+  },
+  "native_observed_regions": [
+    {
+      "label": "whole_world",
+      "region": [
+        160,
+        140,
+        1120,
+        670
+      ],
+      "nonbackground_pixels": 6102,
+      "bbox": [
+        640,
+        360,
+        715,
+        529
+      ],
+      "unique_nonbackground_colors": 16,
+      "top_colors": [
+        {
+          "rgb": [
+            140,
+            12,
+            140
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            191,
+            0,
+            191
+          ],
+          "pixels": 1620
+        },
+        {
+          "rgb": [
+            188,
+            47,
+            167
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            175,
+            29,
+            150
+          ],
+          "pixels": 477
+        },
+        {
+          "rgb": [
+            186,
+            37,
+            157
+          ],
+          "pixels": 297
+        },
+        {
+          "rgb": [
+            144,
+            25,
+            169
+          ],
+          "pixels": 225
+        },
+        {
+          "rgb": [
+            161,
+            16,
+            140
+          ],
+          "pixels": 225
+        },
+        {
+          "rgb": [
+            244,
+            0,
+            244
+          ],
+          "pixels": 90
+        },
+        {
+          "rgb": [
+            202,
+            0,
+            202
+          ],
+          "pixels": 90
+        },
+        {
+          "rgb": [
+            169,
+            36,
+            159
+          ],
+          "pixels": 54
+        }
+      ],
+      "rgb_sha256": "1e5dcdc4ac8f38b36f4d0d84b1661eac9ec0671bf279b2360f6c005893abdbf7"
+    },
+    {
+      "label": "upper_world",
+      "region": [
+        160,
+        140,
+        1120,
+        480
+      ],
+      "nonbackground_pixels": 4284,
+      "bbox": [
+        640,
+        360,
+        715,
+        435
+      ],
+      "unique_nonbackground_colors": 12,
+      "top_colors": [
+        {
+          "rgb": [
+            140,
+            12,
+            140
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            188,
+            47,
+            167
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            175,
+            29,
+            150
+          ],
+          "pixels": 477
+        },
+        {
+          "rgb": [
+            186,
+            37,
+            157
+          ],
+          "pixels": 297
+        },
+        {
+          "rgb": [
+            144,
+            25,
+            169
+          ],
+          "pixels": 225
+        },
+        {
+          "rgb": [
+            161,
+            16,
+            140
+          ],
+          "pixels": 225
+        },
+        {
+          "rgb": [
+            169,
+            36,
+            159
+          ],
+          "pixels": 54
+        },
+        {
+          "rgb": [
+            169,
+            45,
+            184
+          ],
+          "pixels": 45
+        },
+        {
+          "rgb": [
+            160,
+            37,
+            177
+          ],
+          "pixels": 27
+        },
+        {
+          "rgb": [
+            186,
+            54,
+            178
+          ],
+          "pixels": 18
+        }
+      ],
+      "rgb_sha256": "72d2dadc3b9a9048d3e0c763d0483e889637efd5575e95a5a76a45831be1a944"
+    },
+    {
+      "label": "lower_world",
+      "region": [
+        160,
+        480,
+        1120,
+        670
+      ],
+      "nonbackground_pixels": 1818,
+      "bbox": [
+        640,
+        498,
+        715,
+        529
+      ],
+      "unique_nonbackground_colors": 4,
+      "top_colors": [
+        {
+          "rgb": [
+            191,
+            0,
+            191
+          ],
+          "pixels": 1620
+        },
+        {
+          "rgb": [
+            244,
+            0,
+            244
+          ],
+          "pixels": 90
+        },
+        {
+          "rgb": [
+            202,
+            0,
+            202
+          ],
+          "pixels": 90
+        },
+        {
+          "rgb": [
+            223,
+            0,
+            223
+          ],
+          "pixels": 18
+        }
+      ],
+      "rgb_sha256": "ab146feb4b97b868d2453d47e8f923da6afd55dd0e6b888b369d7e7da71ff5b2"
+    },
+    {
+      "label": "overlap_probe",
+      "region": [
+        610,
+        420,
+        760,
+        640
+      ],
+      "nonbackground_pixels": 2754,
+      "bbox": [
+        640,
+        420,
+        715,
+        529
+      ],
+      "unique_nonbackground_colors": 14,
+      "top_colors": [
+        {
+          "rgb": [
+            191,
+            0,
+            191
+          ],
+          "pixels": 1620
+        },
+        {
+          "rgb": [
+            188,
+            47,
+            167
+          ],
+          "pixels": 234
+        },
+        {
+          "rgb": [
+            140,
+            12,
+            140
+          ],
+          "pixels": 207
+        },
+        {
+          "rgb": [
+            175,
+            29,
+            150
+          ],
+          "pixels": 207
+        },
+        {
+          "rgb": [
+            161,
+            16,
+            140
+          ],
+          "pixels": 117
+        },
+        {
+          "rgb": [
+            244,
+            0,
+            244
+          ],
+          "pixels": 90
+        },
+        {
+          "rgb": [
+            202,
+            0,
+            202
+          ],
+          "pixels": 90
+        },
+        {
+          "rgb": [
+            169,
+            36,
+            159
+          ],
+          "pixels": 54
+        },
+        {
+          "rgb": [
+            186,
+            37,
+            157
+          ],
+          "pixels": 45
+        },
+        {
+          "rgb": [
+            144,
+            25,
+            169
+          ],
+          "pixels": 36
+        }
+      ],
+      "rgb_sha256": "ae3d7d4643056296069de7de91a2e18a3ec86fcbd5292b5a7552ed7d5bd56642"
+    }
+  ]
+}

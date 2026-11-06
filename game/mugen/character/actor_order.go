@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/render"
 )
 
 // Actor keeps the entity's sprite bank with its world-owned state.
@@ -81,5 +82,18 @@ func DrawPlayersWithSprites(screen *ebiten.Image, players []*Player, space coord
 		scale, _ := p.LocalCoord.ScaleTo(space)
 		c := p.Character
 		p.drawLegacyExplods(screen, float64(space.Width)/2+c.X*scale-cameraX, floorY+c.Y*scale, scale, scale)
+	}
+}
+
+// DrawPlayerShadows is a separate floor layer; historical AfterImage poses do
+// not cast shadows, and an issuer's local flags do not hide its subordinates.
+func DrawPlayerShadows(screen *ebiten.Image, players []*Player, space coord.Space, cameraX float64, shadow render.Shadow) {
+	for _, actor := range OrderedActors(players) {
+		c := actor.Character
+		if c.Specials["invisible"] || c.Specials["noshadow"] || (c.isProjectile && !c.projectile.parameters.Shadow) {
+			continue
+		}
+		scale := float64(space.Width) / float64(c.LocalCoordinateWidth())
+		actor.Owner.drawEntityPose(screen, c, float64(space.Width)/2+c.X*scale-cameraX, shadow.FloorY+c.Y*scale, scale, scale, nil, &shadow)
 	}
 }

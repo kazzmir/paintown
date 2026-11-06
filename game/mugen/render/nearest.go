@@ -64,6 +64,9 @@ func (r *Nearest) DrawStyledImage(dst, src *ebiten.Image, options *ebiten.DrawIm
 	}
 	vertices := paddedQuad(src, geometry, tint)
 	reverse := sourceReversal(geometry)
+	if style.SourceReversal != nil {
+		reverse = *style.SourceReversal
+	}
 	uniforms := style.uniforms()
 	uniforms["Reverse"] = reverse
 	dst.DrawTrianglesShader(vertices[:], []uint16{0, 1, 2, 1, 3, 2}, r.shader,

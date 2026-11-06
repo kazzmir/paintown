@@ -8,6 +8,7 @@ import (
 
 type DrawStyle struct {
 	DestinationFactor float32
+	SourceReversal    *[2]float32 // Optional indexed addressing before a floor shear.
 	Palette           palette.Transform
 }
 

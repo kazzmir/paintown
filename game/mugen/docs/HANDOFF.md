@@ -1,36 +1,93 @@
-# Current handoff — M4cz validated, shared shadows next
+# Current handoff — M4da shared shadows
 
-Continue ALL item3 effects/controllers with documented local commits. Only author
-under game/mugen; no pushes, binaries, agents or goals. Item4 remains unallocated.
-Read ../AGENTS.md. Do not stop automatically at a checkpoint.
+Continue ALL item3 effects/controllers with documented local commits. Author only
+game/mugen; no pushes, binaries, agents or goals. Item4 remains unallocated.
+Read ../AGENTS.md and SHADOWS.md. Do not stop automatically at a checkpoint.
 
-## Runtime status and next action
+## Completed M4da validation; local commit next
 
-No active runtime. Final integration10305 completed/awaited1; SEPARATE16,814
-frozen-input/clientguard PASS. The complete154-app matrix has152exact crops,
-77,337,600RGBpixels. ONLY missing-shadow1/-1 remain294RGB/max32 each; strict exit1
-preserved. All625full native test results pass; all843engine/character results
-pass this exact source in focused4. Four old masks pass. Final stock21win,
-26FIGHT rematch and45secondwin screenshots visually inspected;82balanced owned
-inputs and1,918,419private PCMframes, no run error. Modules/inventory pass.
+M4cz3255f127cc10217127bd8c1a0a892949ad20cf18 is committed. M4da is preparing its
+source/text-only checkpoint. No active runtime. Integration92761 completed/
+awaited1; SEPARATE17317frozen-input/client guardPASS.
 
-Final evidence audit35042 completed0. temp/m4cz-final-evidence-audit.json checks
-67,882 frozen-source entries/16,814unique paths,646 original native source/probe
-hashes and all final native/config/binary/capture/audio/module/inventory evidence.
-Additional temp/m4cz-reference-resource-audit.json verifies109 original manifest
-files and6601 native sprite/sound/font/palette copies. Final visual record is
- temp/m4cz-final-stock-visual-review.json. No native original/golden changed.
-Final binarySHA256:2ee879965eedf7ec4230c72c13b8fce8af8103d49bf746611b79bd90e0a69f94.
+Full scoped race passes4,506test/subtest results across36packages (25tested/
+11compiled-only), no failures/individual skips/race reports; Match2021.992s.
+All95shadow apps run,35exact/17,325,600pixels. Strict matrix fails60UNWAIVED:
+59max1; scaled actor468px/max2. Ordinary90px/max1; shear112/104px/max1. All95
+compact rows/five paired sheets inspected. Viewport sampler UNCHANGED fromM4cz.
+Private precision trials failed broader controls and were NOT adopted.
 
-NEXT scoped staging audit(UTF8/noNUL source/text, only game/mugen) and local M4cz
-commit; record hash/path count in temp/m4cz-commit-record.json. Check whether it
-already exists before committing again. No push. Continue ALLitem3 immediately
-with shared shadows. README, COVERAGE, COMPATIBILITY, CHECKPOINTS, test docs,
-ITEM-3-PLAN, inventory and PROJECTILE-TRAILS have current evidence and limits.
+Both unchanged old projectile shadow controls now exact (508800pixels each).
+Four old contact/fall masks pass. Stock21/26/45 visually reviewed win/rematch/win,
+82balanced owned keyboard events and1,973,562private PCM frames. Module/inventory
+checks pass. Audit24754 completed/awaited0, checking17,312unique final frozen paths/
+52,979hashes;1,043original inputs,98native configs,41canonical assets and4,018native
+resource copies. All109original manifest files unchanged. Final validated binary:
+e43f146e45ab430757087533b13b75b32f43e64f89d1989c58065511e042ec57.
+Records temp/m4da-final-evidence-audit.json and m4da-final-visual-resource-review.json.
+
+Native98 originals promoted ONCE:95accepted/3rejects,1140numeric values. Original88
+source/probe hashes354; schema10 recording inputs43. Every native row/seven sheets
+inspected BEFORE promotion/fixes. Configs exactly FirstRun1->0 and LF->CRLF. No
+golden/source/resource/capture/tolerance changed. New match/shadow_test.go and
+tests/shadow_render_probe.py; read SHADOWS.md for measured facts and strict limits.
+
+Production: render/shadow.go and shared current-pose root/helper/projectile/Explod
+pass before under EnvColor; stage defaults128/.4/xshear; per-game-tick global flag
+reset including Pause; typed Explod creation shadow/order and scene forwarding;
+indexed center/flip/shear-origin and pre-shear source addressing. Perspective post
+projection exists, wider variants unmeasured. Source counts74typed/15fallback,
+3stubs/9partial/17bounded/60route-only; not whole-engine coverage.
+
+Baseline8 apps had7missing-shadow failures. Schema10 baseline had5failed cases:
+three validation rejections, expression order and side effect. Focused98native
+races pass. Matrix1 all88 had31exact/57failures (four absent Explod shadows1818px,
+shear161/363px max54/89). All original/failing artifacts remain unchanged.
+
+NEXT: audit/stage explicit scoped UTF8/noNUL source/text only and commit locally;
+then update state and continue all remaining item3 without stopping/reapproval.
+README/COVERAGE/COMPATIBILITY/CHECKPOINTS/ITEM-3-PLAN/test docs/SHADOWS updated.
+No pushes or binaries. Preserve all previous nonquarter/EnvShake failures too.
+
+## Private environment and independent preparation
+
+Default sandbox ps HIDES host processes: use ELEVATED wrapper for real guards.
+Original Xvfb/Pulse30218/30219 still alive. Native detail26 session20143 survived
+daemon restart, tool session lost;26complete originals plus normal completion
+marker and separate998-input/client guard verified. Do not claim observed exit0.
+No server recovery performed. temp/m4da-daemon-recovery-state.json records this.
+
+Initial62 native session12556 completed/awaited0, separate894-input guardPASS.
+Schema10 native60424 completed/awaited0, separate1043-original-input guardPASS.
+All outputs inspected before promotion. Geometry8 completed0 and separate104-input
+guardPASS; its apparent odd-rounding fit fails intensity controls, so it is only
+a preserved diagnostic, not a new renderer rule.
+
+18 UNOBSERVED ForceFeedback/Null drafts and creator are under
+temp/m4db-forcefeedback-draft / prepare-m4db-forcefeedback-draft.py.
+Full CNS/trigger/parameter/inherited-resource parser intent verification and
+original freeze/native observations are still required. No public inputs or code
+for that group yet. Static compiler branches both store type0 like Null; exact
+runtime/schema/dispatch proof still needed. See static files below. No inference
+from absent devices/nojoy. Continue independent allocated work before scope issues.
+
+## Completed M4cz evidence
+
+Final10305 completed/awaited1; separate16,814frozen-input/clientguardPASS.
+All843engine/character and625native results pass.154apps152exact/77,337,600pixels;
+strict exit1 retains ONLY missing-shadow1/-1,294RGB/max32 each. Four masks, stock
+21win/26FIGHT rematch/45secondwin visually inspected;82balanced events and
+1,918,419private PCMframes. Modules/inventory pass. Audit35042 completed0:
+ temp/m4cz-final-evidence-audit.json checks67,882frozen entries/16,814unique paths,
+646original native sources and final config/binary/capture/audio provenance.
+Resource audit pins109original manifest files/6601native resource copies; final
+stock review recorded. BinarySHA:
+ 2ee879965eedf7ec4230c72c13b8fce8af8103d49bf746611b79bd90e0a69f94.
+Full checkpoint docs/README/coverage/compatibility/test/inventory records committed.
 
 ## Current implementation
 
-Previous checkpoint M4cy3270a56ee8be00d80742c0df9eeceb795c96509d. M4cz production files:
+M4cz3255f127cc10217127bd8c1a0a892949ad20cf18 production files:
 engine/after_image.go, engine/projectile.go, character/after_image.go,
 character/projectile.go, character/hit_chain.go. New match/projectile_trail_test.go
 and tests/projectile_trail_render_probe.py plus native source/text corpus.

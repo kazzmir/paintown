@@ -15,7 +15,7 @@ SOURCES = ['engine/projectile.go', 'character/projectile.go', 'character/hit_cha
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
-           'render/alpha.go', 'render/nearest.go', 'render/linear.go',
+           'render/shadow.go', 'stage/loader.go', 'render/alpha.go', 'render/nearest.go', 'render/linear.go',
            'engine/drawing.go', 'engine/trans.go', 'engine/palette_fx.go', 'engine/env_color.go', 'engine/env_shake.go', 'engine/shake.go', 'engine/timeline.go', 'engine/round_clock.go',
            'palette/state.go', 'palette/controller_effect.go', 'palette/hit_effect.go',
            'render/palette.go', 'character/helper.go', 'character/tick.go',
@@ -27,11 +27,11 @@ STUBS = {
 }
 RENDER_FIELDS = {}
 PARTIAL = {
-	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; shadow/pause/projection sampling gates remain',
+	'modifyexplod': 'MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; SHADOWS.md adds shared shadow drawing; broader pause/projection variants and unwaived raster gates remain',
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
-    'projectile': 'PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; shared stage shadows remain missing',
-    'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; creation palette/random/angle/trans/shadow/capacity and broader variants open',
-    'assertspecial': 'only a subset of literal flags have production consumers',
+    'projectile': 'PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; SHADOWS.md adds measured current-only stage shadows, alpha/fade/geometry/flags/layer consumers; wider resource/profile variants and unwaived raster differences remain',
+    'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; creation palette/random/angle/trans/capacity and broader variants open',
+    'assertspecial': 'only a subset of literal flags have production consumers; SHADOWS.md adds noshadow, per-game-tick globalnoshadow and invisible shadow suppression',
     'appendtoclipboard': 'stores raw text; params/formatting absent',
     'displaytoclipboard': 'stores raw text; params/formatting absent',
     'hitadd': 'updates ComboCount; no production reader of that field was found',
@@ -113,6 +113,9 @@ def inventory():
         for path in (ROOT/directory).glob('*.go'):
             if not path.name.endswith('_test.go'):
                 flags.update(re.findall(r'Specials\["([^"]+)"\]', path.read_text()))
+    # Global flags use a timeline sink rather than a persistent actor-map read.
+    if 'flag == \"globalnoshadow\"' in sources['character/character.go'] and 'm.Timeline.GlobalNoShadow' in sources['system/fight_state.go']:
+        flags.add('globalnoshadow')
     counts = {key: sum(row['consumer_status'] == key for row in rows)
               for key in ['stub', 'unconsumed-render-field', 'partial-consumer',
                           'missing-dispatcher', 'bounded-native-consumer', 'route-only']}
