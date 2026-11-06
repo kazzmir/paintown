@@ -1067,8 +1067,9 @@ func handleDisplayToClipboard(ctrl *cns.StateController, env Environment) error 
 	return nil
 }
 
-func handleForceFeedback(ctrl *cns.StateController, env Environment) error {
-	env.ForceFeedback(ctrl.Params)
+// The supplied 1.1 beta lowers this name to Null. Optional parameters are
+// neither compiled nor evaluated, and no host/device hook is dispatched.
+func handleForceFeedback(_ *cns.StateController, _ Environment) error {
 	return nil
 }
 

@@ -6,8 +6,8 @@ Read ../AGENTS.md and SHADOWS.md. Do not stop automatically at a checkpoint.
 
 ## Completed M4da validation; local commit next
 
-M4cz3255f127cc10217127bd8c1a0a892949ad20cf18 is committed. M4da is preparing its
-source/text-only checkpoint. No active runtime. Integration92761 completed/
+M4cz3255f127cc10217127bd8c1a0a892949ad20cf18 is committed. M4da is COMMITTED locally asabdc5ca49ede6a366a86122291ff3f0837cdb1f3,522UTF8
+source/text paths, no binaries/push; scoped tree clean after commit. No active runtime. Integration92761 completed/
 awaited1; SEPARATE17317frozen-input/client guardPASS.
 
 Full scoped race passes4,506test/subtest results across36packages (25tested/
@@ -44,10 +44,31 @@ three validation rejections, expression order and side effect. Focused98native
 races pass. Matrix1 all88 had31exact/57failures (four absent Explod shadows1818px,
 shear161/363px max54/89). All original/failing artifacts remain unchanged.
 
-NEXT: audit/stage explicit scoped UTF8/noNUL source/text only and commit locally;
-then update state and continue all remaining item3 without stopping/reapproval.
+NEXT: M4db ForceFeedback/Null study; continue all remaining item3 without
+stopping/reapproval. M4da record temp/m4da-commit-record.json; stage audit recorded.
 README/COVERAGE/COMPATIBILITY/CHECKPOINTS/ITEM-3-PLAN/test docs/SHADOWS updated.
 No pushes or binaries. Preserve all previous nonquarter/EnvShake failures too.
+
+
+M4db native18 session40200 completed/awaited0; SEPARATE1120-original guardPASS.
+ALL18 rows/sheet inspected BEFORE promotion/fix.18accepted/216values,80original
+inputs, exact18 config finalizations. Parameters ignored, trigger assignment9.
+CompilerNullkind evidence pinned; version checker is not runtime dispatcher.
+Baseline2 native18pass. First count20vs18 metadata-glob diagnostic preserved;
+device-boundary baseline proves1wronghostcall in EACH1.0/1.1profile.
+
+M4db focused60923 completed/awaited0; SEPARATE17409-input/client guardPASS.
+846engine/character races and119native Match results pass. Four actual app crops
+exact/2,035,200pixels. Stock21/26/45 win/rematch/win visually reviewed,82balanced
+events and1,912,813privatePCMframes. Module/inventory/provenance pass. Audit:
+temp/m4db-final-evidence-audit.json; visual review recorded separately.
+No active runtime. Production handler returnsnil without host/device dispatch;
+generic triggers unchanged. State-language fixture option defaults1.1 as before.
+Source74typed/15fallback/2stubs/9partial/18bounded/60route-only, not enginecoverage.
+NEXT: scoped source/text stage audit/local commit, then Explod palette creation
+study in temp/m4dc-explod-palette-study-plan.md. Continue all item3 autonomously.
+
+
 
 ## Private environment and independent preparation
 

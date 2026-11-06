@@ -2940,3 +2940,17 @@ visually inspected stock win/rematch/win pass, with82balanced inputs and
 1,973,562private PCM frames. Native resources, sources, configurations, captures,
 modules, inventory and binary provenance pass. Source/text only; no binary/push.
 All remaining item3 continues after this local checkpoint.
+
+
+## M4db — ForceFeedback target operation and device boundary
+
+The supplied beta compiles ForceFeedback as Null; malformed/unknown optional
+parameters are ignored, while generic triggers remain active. The dispatcher
+stops forwarding the controller to a host/device hook. [Evidence](FORCE-FEEDBACK.md).
+
+18 native programs/216 values and an old-dispatch failing counterexample pin
+the behavior. Focused846 engine/character and119 native Match results pass,
+with four exact app crops/2,035,200 pixels. Stock win/rematch/win is visually
+reviewed;82balanced input events,1,912,813private PCM frames and provenance/
+module/inventory checks pass. Full suite remains M4da4,506/36; no prior strict
+pixel failure waived. Source/text only, no binary/push. Continue all item3.

@@ -180,3 +180,12 @@ input/private audio pass. The95-app strict matrix has35exact/60UNWAIVED fringe/
 scale failures. These and earlier renderer differences remain open; no coverage
 percentage claims full compatibility. Continue remaining Explod fields/pools,
 AssertSpecial, system effects, clipboard, target haptics and residual schemas.
+
+
+## M4db — supplied target ForceFeedback behavior
+
+[FORCE-FEEDBACK.md](FORCE-FEEDBACK.md) pins the beta's Null-kind compilation,
+ignored parameters/ordinary triggers and corrected no-device-dispatch boundary.
+18 native programs, focused races, four exact apps and stock/private audio pass.
+No haptics invented from the older manual. Two source stubs remain: GameMakeAnim
+and MakeDust; broader Explod/AssertSpecial/clipboard/residual schemas continue.

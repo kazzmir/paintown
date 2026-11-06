@@ -12,9 +12,9 @@
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
     "match/match.go": "bd822531373862eeb1859007b7e8a91e8830b51c0da176bbac7fbedb7dcf8db1",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
-    "engine/statemachine.go": "59e433eec74729738e82970384cee6bf846031af8ba2de8fdbd02f304bc66b62",
+    "engine/statemachine.go": "60d131c59f06c8d2b542ee59be053d3baab41387b36605aa5a64e30f1c995927",
     "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
-    "character/character.go": "3da7140981eb8d5a028905700b7e8560a42522f09e3aae7b818cbe23ded7e06d",
+    "character/character.go": "30f06bdd7216242f1e293aa1c0924667222455d966329692283b98e8bb5476e8",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
     "character/explod.go": "0a8b230dce32357d67cb906b30b280a050ed733157842c3b7bc5b07ee7133ec5",
     "engine/explod.go": "beee6da4a1062ebc6098c35ce2110b525b9dd643e8f18f90c3234d7ecfebb6d7",
@@ -60,11 +60,11 @@
     "fallback": 15,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 3,
+      "stub": 2,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 17,
+      "bounded-native-consumer": 18,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -380,9 +380,9 @@
       "registered": true,
       "parameter_route": "fallback",
       "handler": "handleForceFeedback",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:ForceFeedback"
+        "FORCE-FEEDBACK.md: exact supplied beta compiler lowers this name to Null;18 native programs prove ignored parameters/ordinary triggers across1.0/1.1 profiles; no host/device dispatch"
       ],
       "variants_complete": false
     },

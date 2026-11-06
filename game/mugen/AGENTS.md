@@ -23,7 +23,8 @@ Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs i
 ## Immediate state — M4da validation complete, preparing local commit
 
 M4cz is committed as3255f127cc10217127bd8c1a0a892949ad20cf18. M4da shared shadows
-is implemented/validated and preparing its source/text-only local checkpoint.
+is COMMITTED locally asabdc5ca49ede6a366a86122291ff3f0837cdb1f3,522UTF8 source/text
+paths, no binaries/push; scoped tree clean immediately after commit.
 Read docs/SHADOWS.md and docs/HANDOFF.md. No active runtime.
 
 Integration92761 completed/awaited1: full4,506-result/36-package races PASS;
@@ -43,8 +44,8 @@ viewport interpolation remains unchanged. Earlier angle/EnvShake and new pixel
 failures remain UNWAIVED. No whole-engine coverage percentage.
 Source74typed/15fallback/3stubs/9partial/17bounded/60route-only.
 
-NEXT: audit/stage explicit UTF8/noNUL scoped source/text paths; local commit.
-Then continue remaining item3 without a checkpoint stop. Independent18 UNOBSERVED
+NEXT: M4db ForceFeedback/Null study; continue all remaining item3 autonomously.
+M4da commit record temp/m4da-commit-record.json. Stage audit temp/m4da-staged-audit.json. Independent18 UNOBSERVED
 ForceFeedback/Null drafts and unexecuted intent parser are under temp/m4db-* /
 temp/_tmp/m4db-forcefeedback-intent. Full parser/trigger/resource verification,
 freeze and native observations required before implementation/no-op claims.
@@ -54,6 +55,27 @@ Default sandbox ps HIDES host processes. All real client/server guards MUST use
 the elevated wrapper. Original private Xvfb/Pulse30218/30219 remain alive.
 A daemon restart lost native detail session20143: all26 originals and normal
 completion marker verified, but do not invent observed exit0. No recovery/rerun.
+
+
+M4db native18 session40200 completed/awaited0; SEPARATE1120-original guardPASS.
+ALL18 rows/sheet inspected BEFORE promotion/fix.18accepted/216values,80original
+inputs, exact18 config finalizations. Parameters ignored, trigger assignment9.
+CompilerNullkind evidence pinned; version checker is not runtime dispatcher.
+Baseline2 native18pass. First count20vs18 metadata-glob diagnostic preserved;
+device-boundary baseline proves1wronghostcall in EACH1.0/1.1profile.
+
+M4db focused60923 completed/awaited0; SEPARATE17409-input/client guardPASS.
+846engine/character races and119native Match results pass. Four actual app crops
+exact/2,035,200pixels. Stock21/26/45 win/rematch/win visually reviewed,82balanced
+events and1,912,813privatePCMframes. Module/inventory/provenance pass. Audit:
+temp/m4db-final-evidence-audit.json; visual review recorded separately.
+No active runtime. Production handler returnsnil without host/device dispatch;
+generic triggers unchanged. State-language fixture option defaults1.1 as before.
+Source74typed/15fallback/2stubs/9partial/18bounded/60route-only, not enginecoverage.
+NEXT: scoped source/text stage audit/local commit, then Explod palette creation
+study in temp/m4dc-explod-palette-study-plan.md. Continue all item3 autonomously.
+
+
 
 ## Native and validation workflow
 

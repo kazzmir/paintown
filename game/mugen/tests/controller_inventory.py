@@ -22,7 +22,7 @@ SOURCES = ['engine/projectile.go', 'character/projectile.go', 'character/hit_cha
            'background/background.go', 'stage/stage.go', 'font/font.go', 'system/fight_state.go', 'system/hud.go',
            'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
-    'forcefeedback': 'ForceFeedback', 'gamemakeanim': 'GameMakeAnim',
+    'gamemakeanim': 'GameMakeAnim',
     'makedust': 'MakeDust',
 }
 RENDER_FIELDS = {}
@@ -38,6 +38,7 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
+    'forcefeedback': 'FORCE-FEEDBACK.md: exact supplied beta compiler lowers this name to Null;18 native programs prove ignored parameters/ordinary triggers across1.0/1.1 profiles; no host/device dispatch',
     'afterimage': 'AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; PROJECTILE-TRAILS.md adds projectile admission/lifetime/palette/phase coverage; broader resource/profile variants open',
     'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open',
     'envshake': 'ENV-SHAKE.md: native schemas/evaluation, author-local amplitude, frequency normalization, pending/current clocks and actual fixed-overlay/viewport consumers; wider variants open',

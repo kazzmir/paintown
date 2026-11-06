@@ -140,8 +140,13 @@ M4da's full scoped race run passes **4,506 results across 36 packages**
 win → rematch → win is visually inspected with 82 balanced input events and
 private audio. Earlier angle/EnvShake/actor 45-degree failures remain unwaived.
 
+ForceFeedback now matches the supplied beta's Null operation, with18 native
+programs and four exact application controls. It ignores optional fields,
+evaluates ordinary triggers and makes no host/device call. This target behavior
+reduces the source stub count to two. [Evidence](docs/FORCE-FEEDBACK.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
-system animations/dust, clipboard, haptics and residual controller schemas.
+system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
 remain item 4. There is no measured whole-engine completion percentage. The
 [previous progress narrative](docs/PROGRESS-HISTORY-M4CW.md) preserves earlier details.
@@ -151,7 +156,7 @@ remain item 4. There is no measured whole-engine completion percentage. The
 | Shadow native numeric/schema programs in M4da | 98 / 98 | **100%** | This recorded corpus only; includes three expected load rejections. |
 | Exact shadow image crops in M4da | 35 / 95 | **36.8%** | Strict pixels; 60 one/two-byte fringe/scale failures remain. No tolerance relaxed. |
 | Projectile image programs in the historical M4cz corpus | 152 / 154 | **98.7%** | M4cz result; M4da separately fixes both missing-shadow controls. The whole image corpus was not rerun here. |
-| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; three stubs and other partial consumers remain. Not full controller compatibility. |
+| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; two stubs and other partial consumers remain. Not full controller compatibility. |
 | Documented controller names with typed compiler routes | 74 / 89 | **83.1%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |

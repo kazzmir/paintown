@@ -173,7 +173,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 	paths, err := filepath.Glob(filepath.Join("../tests/testdata/reference", pattern))
 	programs := paths[:0]
 	for _, path := range paths {
-		if !strings.HasSuffix(path, ".input.json") {
+		if !strings.HasSuffix(path, ".input.json") && !strings.HasSuffix(path, "-native-ledger.json") && !strings.HasSuffix(path, "-native-config-finalization.json") {
 			programs = append(programs, path)
 		}
 	}
@@ -211,11 +211,12 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					X, Y   float64
 					Facing int `json:"facing"`
 				} `json:"explod_positions"`
-				RecipeHash         string             `json:"recipe_sha256"`
-				GameWidth          int                `json:"game_width"`
-				Rules              map[string]float64 `json:"rules"`
-				ExtraHashes        map[string]string  `json:"extra_sha256"`
-				ProjectilePosition *struct {
+				RecipeHash           string             `json:"recipe_sha256"`
+				GameWidth            int                `json:"game_width"`
+				StateLanguageVersion string             `json:"state_language_version"`
+				Rules                map[string]float64 `json:"rules"`
+				ExtraHashes          map[string]string  `json:"extra_sha256"`
+				ProjectilePosition   *struct {
 					Offset [2]float64 `json:"offset_from_owner"`
 					Facing int        `json:"facing"`
 				} `json:"projectile_position"`
@@ -267,7 +268,11 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			file.SetLanguageVersion("1.1")
+			language := reference.StateLanguageVersion
+			if language == "" {
+				language = "1.1"
+			}
+			file.SetLanguageVersion(language)
 			var commands *cmd.Data
 			if reference.CMDHash != "" {
 				data := checked(stem+".cmd", reference.CMDHash)
@@ -279,7 +284,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				states.SetLanguageVersion("1.1")
+				states.SetLanguageVersion(language)
 				for number, state := range states.States {
 					if file.States[number] == nil {
 						file.States[number] = state

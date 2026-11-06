@@ -114,3 +114,6 @@ effort stay under `game/mugen/`.
 
 - [Shared shadows](SHADOWS.md): stage geometry/fade/flags, current-pose consumers,
   Explod creation schema and exact native/app results with unwaived pixel limits.
+
+- [ForceFeedback target boundary](FORCE-FEEDBACK.md): native Null operation,
+  ignored parameters, language profiles and no host/device dispatch.

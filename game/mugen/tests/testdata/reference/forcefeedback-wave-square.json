@@ -1,0 +1,336 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "4305545176d2e9a795d212cc4b6e26dd511ec98205ef199f0ab3752ea5ba273e",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "7035e870ab494c178caf78e2405fecd474d69612e672001c84e10c145a6b06a6",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "9417cea2eaf0db33e63cd3275c4a4c7db983cdd681e2430b45d0e6088a474ee0",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "kind": "ForceFeedback",
+  "trigger": "1",
+  "params": {
+    "waveform": "square"
+  },
+  "question": "Native compile/runtime parameter handling relative to Null; no no-op conclusion from absent devices or -nojoy",
+  "expected_kind_count": 1,
+  "actual_controller_counts": {
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "ForceFeedback": 1,
+    "Pause": 1,
+    "PlayerPush": 2,
+    "PosSet": 2,
+    "ScreenBound": 2,
+    "VarSet": 12
+  },
+  "all_inherited_air_command_stage_bytes_unchanged": true,
+  "all_non_target_controllers_unchanged": true,
+  "all_trigger_intent_matches": true,
+  "full_controller_intent": [
+    {
+      "State": 0,
+      "Type": "ChangeState",
+      "Params": {
+        "value": "IfElse(TeamSide=1,700,701)"
+      },
+      "Triggers": [
+        "trigger1 = RoundState=2 && Ctrl"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "PlayerPush",
+      "Params": {
+        "value": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "ScreenBound",
+      "Params": {
+        "movecamera": "0,0",
+        "value": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "PosSet",
+      "Params": {
+        "x": "0",
+        "y": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "ForceFeedback",
+      "Params": {
+        "waveform": "square"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "0",
+        "value": "NumProj"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "1",
+        "value": "NumHelper"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "2",
+        "value": "NumExplod"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "3",
+        "value": "Time"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "4",
+        "value": "Pos X"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "5",
+        "value": "Pos Y"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "6",
+        "value": "Facing"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "7",
+        "value": "GameTime"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "8",
+        "value": "Var(0)"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "9",
+        "value": "Var(1)"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "10",
+        "value": "Var(2)"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "11",
+        "value": "Var(3)"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "DisplayToClipboard",
+      "Params": {
+        "params": "FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)",
+        "text": "\"P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\""
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "AppendToClipboard",
+      "Params": {
+        "params": "FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)",
+        "text": "\"P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\""
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 700,
+      "Type": "Pause",
+      "Params": {
+        "movetime": "0",
+        "time": "99999"
+      },
+      "Triggers": [
+        "trigger1 = Time=8"
+      ]
+    },
+    {
+      "State": 701,
+      "Type": "PlayerPush",
+      "Params": {
+        "value": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 701,
+      "Type": "ScreenBound",
+      "Params": {
+        "movecamera": "0,0",
+        "value": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 701,
+      "Type": "PosSet",
+      "Params": {
+        "x": "0",
+        "y": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    },
+    {
+      "State": 5900,
+      "Type": "ChangeState",
+      "Params": {
+        "value": "0"
+      },
+      "Triggers": [
+        "trigger1 = 1"
+      ]
+    }
+  ],
+  "state_language_version": "1.1",
+  "forcefeedback_render": {
+    "image_size": [
+      1280,
+      720
+    ],
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "f17b8f73e90ea279eb628aeb08c43e4f143d61b0e31feb8b0a4cdd825a76a18b"
+  }
+}

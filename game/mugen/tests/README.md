@@ -973,3 +973,17 @@ All95 apps run;35crops match exactly. The matrix retains exit1 for60UNWAIVED
 one/two-byte fringe/scale differences. Both old projectile-shadow1/-1 controls
 now pass against their unchanged expectations. Do not relabel partial RGB results
 as exact, replace goldens, or relax tolerances.
+
+
+## ForceFeedback reference programs
+
+TestNativeForceFeedbackPrograms reads18 immutable native programs/216 numeric
+values, with explicit state_language_version1.0/1.1 profiles. The generic replay
+default stays1.1. Native metadata ledgers are excluded from program globs.
+
+TestNativeForceFeedbackHasNoDeviceDispatch verifies that an embedding host receives
+zero device calls while the ordinary trigger assignment executes. Native compiler
+identity and ignored parameter observations are pinned in forcefeedback-native-ledger.
+The strict forcefeedback_render_probe.py compares original resources/config/
+binary/capture hashes and every pixel. All four focused app crops match exactly;
+this does not waive any earlier shadow/angle/EnvShake difference.

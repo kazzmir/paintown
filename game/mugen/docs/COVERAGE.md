@@ -1,5 +1,21 @@
 # Current behavior coverage ledger
 
+M4db establishes ForceFeedback as a Null operation in the supplied beta,
+independent of device availability.18 native programs/216 values/80 original
+input hashes prove ignored optional fields and active generic triggers, including
+a1.0 profile. The old Character stub happened to do nothing; an embedding-host
+counterexample exposed one wrong device call. The dispatcher now makes none.
+[Evidence and target boundary](FORCE-FEEDBACK.md).
+
+Fresh846 engine/character and119 native Match race results pass. Four actual
+application crops are exact/2,035,200 pixels. Visually reviewed stock win/rematch/
+win,82balanced owned events and1,912,813private PCM frames pass, with module/
+inventory/config/resource/binary/capture provenance. All17,409 frozen paths pass.
+The latest full suite remains M4da4,506/36; prior strict pixel failures are
+UNWAIVED. Source74typed/15fallback/2stubs/9partial/18bounded/60route-only is not
+behavioral coverage. Continue remaining item3, including Explod palettes/creation,
+AssertSpecial, system effects, clipboard and residual schemas. Item4 unallocated.
+
 M4da adds shared current-pose shadows for roots/helpers, flagged projectiles
 and Explods, stage intensity/fade/scale/shear defaults, local/global flag
 consumers and typed Explod shadow validation/evaluation. Its98 native programs

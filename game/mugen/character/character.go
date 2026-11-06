@@ -1234,8 +1234,9 @@ func (c *Character) DisplayToClipboard(text string) {
 	c.Clipboard = text
 }
 
-func (c *Character) ForceFeedback(params map[string]string) {
-	// Stub: Rumble/Haptics
+func (c *Character) ForceFeedback(_ map[string]string) {
+	// Compatibility entry point: the supplied beta treats this controller as Null.
+	// Executable controllers use the no-device dispatcher in engine.
 }
 
 func (c *Character) SuperPause(params map[string]string) {
