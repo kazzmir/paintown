@@ -35,10 +35,36 @@ def main():
     parser.add_argument('--stage', default='stages/kfm.def')
     parser.add_argument('--match-seed', type=int, help='Reproduce a logged initial match RNG seed in a quick match')
     parser.add_argument('--stock-input', action='store_true', help='Exercise stock keyboard attacks, results and rematch in the owned window (2%% life, one win)')
+    parser.add_argument('--input-recipe', type=Path, help='Replay a frozen owned-window input recipe under mugen/')
     parser.add_argument('--audio', action='store_true', help='Also record the task-owned private null sink, using a private ALSA configuration')
     parser.add_argument('--width',type=int,default=320)
     parser.add_argument('--height',type=int,default=240)
     args = parser.parse_args()
+    input_schedule = []
+    input_recipe = None
+    if args.input_recipe is not None:
+        path = args.input_recipe.resolve()
+        if args.stock_input or not args.match or not path.is_relative_to(project):
+            parser.error('A fixture input recipe requires a quick match, a path under mugen/, and no stock input')
+        input_recipe = json.loads(path.read_text())
+        when = input_recipe['settle_seconds']
+        if not isinstance(when, (int, float)) or not math.isfinite(when) or not 0 <= when <= 30:
+            parser.error('Invalid recipe settle time')
+        for event in input_recipe['events']:
+            keys, hold, gap = event['keys'], event['hold_seconds'], event['gap_seconds']
+            if (not keys or len(set(keys)) != len(keys)
+                    or any(not isinstance(key, str) or not re.fullmatch('[A-Za-z0-9_]+', key) for key in keys)
+                    or any(not isinstance(value, (int, float)) or not math.isfinite(value) for value in [hold, gap])
+                    or not 0 < hold <= 5 or not 0 <= gap <= 5):
+                parser.error('Invalid owned-input event')
+            input_schedule.extend((when, 'keydown', key) for key in keys)
+            when += hold
+            input_schedule.extend((when, 'keyup', key) for key in keys)
+            when += gap
+        tail = input_recipe['tail_seconds']
+        if (not isinstance(tail, (int, float)) or not math.isfinite(tail)
+                or not 0 <= tail <= 10 or not args.seconds or when + tail > min(args.seconds)):
+            parser.error('Capture must follow the complete input recipe and tail')
     if args.match_seed is not None and (not args.match or not 1 <= args.match_seed < 2147483647):
         parser.error('A seeded smoke run requires a quick match and a seed in1..2147483646')
     if not 64<=args.width<=4096 or not 64<=args.height<=4096:
@@ -99,6 +125,10 @@ def main():
     if args.match_seed is not None:
         metadata['match_random_seed'] = args.match_seed
     schedule=[(seconds,'capture',None) for seconds in args.seconds]
+    if input_recipe is not None:
+        metadata['input_recipe'] = {'path': str(args.input_recipe), 'sha256': digest(args.input_recipe),
+                                    'recipe': input_recipe, 'events': []}
+        schedule.extend(input_schedule)
     if args.stock_input:
         metadata['stock_input']={'life_percent':2,'wins_required':1,'fight_sha256':prepared_fight,'events':[]}
         for start in [5,28]:
@@ -119,6 +149,7 @@ def main():
         process = subprocess.Popen(command, cwd=project.parents[1], env=env, stdout=log, stderr=log)
         started = time.monotonic()
         recorder, recording = None, None
+        held, input_window = set(), None
         try:
             if args.audio:
                 recording = (work / 'capture.s16le').open('wb')
@@ -137,7 +168,10 @@ def main():
                     raise RuntimeError('Expected exactly one visible window belonging to the spawned application')
                 if operation!='capture':
                     subprocess.run(['xdotool',operation,'--window',windows[0],key],check=True,timeout=5,stdout=log,stderr=log)
-                    metadata['stock_input']['events'].append({'seconds':seconds,'operation':operation,'key':key,'window':windows[0],'pid':process.pid})
+                    held.add(key) if operation == 'keydown' else held.discard(key)
+                    input_window = windows[0]
+                    field = 'stock_input' if args.stock_input else 'input_recipe'
+                    metadata[field]['events'].append({'seconds':seconds,'operation':operation,'key':key,'window':windows[0],'pid':process.pid})
                     continue
                 output = work / ('at-' + str(seconds) + 's.png')
                 subprocess.run(['import', '-window', windows[0], str(output)], check=True, timeout=5, stdout=log, stderr=log)
@@ -152,6 +186,12 @@ def main():
             metadata['error'] = str(error)
             raise
         finally:
+            if held and input_window is not None and process.poll() is None:
+                for key in sorted(held):
+                    subprocess.run(['xdotool','keyup','--window',input_window,key],check=False,timeout=5,stdout=log,stderr=log)
+                    field = 'stock_input' if args.stock_input else 'input_recipe'
+                    metadata[field]['events'].append({'seconds':time.monotonic()-started,'operation':'keyup',
+                                                       'key':key,'window':input_window,'pid':process.pid,'cleanup':True})
             process.terminate()
             try:
                 process.wait(timeout=3)

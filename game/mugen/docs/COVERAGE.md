@@ -1,5 +1,32 @@
 # Current behavior coverage ledger
 
+## M4di — guard, walking and missing-state controls
+
+Posture-specific flags now prevent automatic guard entry while preserving
+scripted guard poses. Attacker unguardable changes guard contacts into hits;
+nowalk prevents forward/backward walk entry. Canonical Command comparisons work,
+and the native-rejected function syntax reports a source-context error.
+Actual keyboard testing exposed a resource dependency: blank and omitted
+stcommon load no common file; undefined internal states warn and continue with
+retained attributes. Separate native marker controls establish this correction.
+
+All **51 new native programs pass** (50 accepted, one expected rejection,
+**600 numeric values**). All **16 new application world crops match exactly**
+(**100% of this bounded corpus**), across **8,140,800 RGB pixels**. Full scoped
+races pass **4,870 results across 36 packages** (25 tested, 11 compiled-only),
+with no individual skips or races. Five older palette/order applications, four
+shake masks and visually reviewed stock win/rematch/win pass, with **82 balanced
+inputs / 1,971,685 private PCM frames**. All 22 final gates and the outer driver
+exit zero. Frozen-input, resource, artifact and source-only scope audits pass.
+[Evidence and remaining bounds](ASSERT-SPECIAL-CONTROLS.md).
+
+The 35 prior HUD failures and all earlier strict renderer failures remain
+unwaived. Noko lifetime, wider flag variants, system animations/dust, clipboard,
+residual schemas and rendering obligations remain item 3 work. Source routing
+remains 75/89 typed (84.3%); this is not behavioral completion. Item 4 remains
+unallocated.
+
+
 ## M4dh — AssertSpecial schema and global visibility
 
 Typed literal validation now matches the beta's documented flags, accepted

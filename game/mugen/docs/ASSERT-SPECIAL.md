@@ -73,8 +73,9 @@ m4dh-final-visual-review.json and m4dh-final1-separate-guard.json. App SHA256:
 Latest full integration remains M4df 4,743 results / 36 packages at its preceding
 source boundary. This checkpoint uses focused acceptance; no full rerun claimed.
 
-Remaining dedicated consumers include guard posture, unguardable, walk/input,
-KO prevention, timer/intro/end clocks and audio. NoMusic has no native BGM/audio
+M4di adds dedicated guard posture, unguardable and walk/input controls in
+[ASSERT-SPECIAL-CONTROLS.md](ASSERT-SPECIAL-CONTROLS.md). Wider flag variants,
+KO prevention, timer/intro/end clocks and audio remain. NoMusic has no native BGM/audio
 observation yet. Round-announcement behavior under nobardisplay is unmeasured.
 Broader modes/AI/assets/BGM remain unallocated item 4. Shared renderer differences
 from earlier checkpoints remain unwaived. New source inventory has 75 typed /

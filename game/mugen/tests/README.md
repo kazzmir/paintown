@@ -1067,3 +1067,23 @@ world/HUD regions exactly; it preserves failure for any differing pixel. All
 pixels. No golden, region or tolerance changed after promotion. Native ledgers
 and config-finalization records pin originals and native config transitions.
 See ../docs/ASSERT-SPECIAL.md for strict statuses, audits and remaining consumers.
+
+## AssertSpecial guard/walk and resource controls (M4di)
+
+The five assertguard/assertinput/assertinputfx/assertcommand/assertstate native
+ledgers pin 51 programs, 600 values and exact configuration recipes. The public
+stock_input_reference_probe.py preserves the original measured stock-constants
+recorder bytes. The original recovery/reference recorders remain unchanged.
+
+The new Go replays use facing-relative logical inputs translated from physical
+arrow names in immutable .input.json files. Actual applications replay the
+physical recipe to the owned window using app_smoke.py --input-recipe PATH.
+assert_control_render_probe.py checks recipe/hash/schedule/ownership, prepared
+assets and strict native world pixels. New observer scope is world only;
+existing HUD regions and old strict failures are unchanged. Use a fresh --name
+for every run. Native images/evidence must be retained in their recorded temp
+paths for actual-image comparisons; the Go numeric replays use committed values.
+
+Full M4di validation passes 4,870 race results / 36 packages, 16 exact new world
+crops / 8,140,800 RGB pixels, older palette/order/mask controls and stock win/
+rematch/private PCM. See [findings and limits](../docs/ASSERT-SPECIAL-CONTROLS.md).

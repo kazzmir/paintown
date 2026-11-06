@@ -1,0 +1,80 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f011f2c11617aa6c2c9d30b033fff196fb4131f8dd47c154ea5ce2038df97802",
+  "cmd_sha256": "3a19ec693e43dfbc5789994dcaa45a72262f45c5aa072fa426e3f3bff8b4ec05",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "recipe_sha256": "4711072948c17ff5b9a06cfacf2393e142b04377c6057a540564bbffc15097c8",
+  "probe_sha256": "09cf72de5d040329b17019963f4a1f59a817577ef46de5d4c02494e6592abd0f",
+  "reference_probe_sha256": "7c5ba2b9a1ed8f063e291be7db2577f7638ce7ab223c6295c1c9bf61657689f4",
+  "fixture_constants": false,
+  "bank": "fvar",
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "owned_pid": 1647603,
+  "owned_window": "12582913",
+  "events": [
+    {
+      "pid": 1647603,
+      "window": "12582913",
+      "action": "keydown",
+      "keys": [
+        "Right"
+      ]
+    },
+    {
+      "pid": 1647603,
+      "window": "12582913",
+      "action": "keyup",
+      "keys": [
+        "Right"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "page": 0,
+      "path": "recovery.png",
+      "sha256": "bdcb921f8a457a74a28febb0b2d7a226ad0f8a6709538b729d189e648519be7c",
+      "variables": {
+        "0": 20,
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/recovery-input-runs/m4di-visual-assertwalkfx-forward-baseline",
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "full_native_input_and_go_recipe_intent_verified": true,
+  "assert_controls_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "6979cff41be48c1c0e3683d9903e7e1228c34f1b174c685bf250a8ca6e63e997",
+    "native_rgb": [
+      0,
+      200,
+      0
+    ],
+    "scope": "Actual guard/walk/input outcome in the world. Region chosen native-only before Go baseline; original images and older HUD gates unchanged."
+  }
+}

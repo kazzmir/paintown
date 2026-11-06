@@ -405,7 +405,27 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 						var inputs []string
 						for _, event := range inputRecipe.Inputs {
 							if completed >= event.At && completed < event.At+event.Duration {
-								inputs = append(inputs, event.Inputs...)
+								// The archived keyboard recipes use physical arrows;
+								// InputSource supplies directions relative to this actor.
+								for _, input := range event.Inputs {
+									switch input {
+									case "Left", "Right":
+										forward := input == "Right"
+										if facing < 0 {
+											forward = !forward
+										}
+										if forward {
+											input = "DirForward"
+										} else {
+											input = "DirBack"
+										}
+									case "Up":
+										input = "DirUp"
+									case "Down":
+										input = "DirDown"
+									}
+									inputs = append(inputs, input)
+								}
 							}
 						}
 						return inputs

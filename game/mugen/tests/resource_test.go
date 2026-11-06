@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 )
 
 type resourceCase struct {
@@ -165,6 +166,66 @@ func TestReferenceCharacterResources(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestReferenceUndefinedStateResources(t *testing.T) {
+	paths, err := filepath.Glob("testdata/reference/assertstate-*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var programs []string
+	for _, path := range paths {
+		if !strings.Contains(filepath.Base(path), "-native-") {
+			programs = append(programs, path)
+		}
+	}
+	if len(programs) != 6 {
+		t.Fatal("incomplete native common/undefined-state corpus", len(programs))
+	}
+	for _, path := range programs {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			var reference resourceCase
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal(data, &reference); err != nil {
+				t.Fatal(err)
+			}
+			dir := t.TempDir()
+			fixture := strings.TrimSuffix(filepath.Base(path), ".json")
+			definition := resourceDefinition(t, dir, fixture, reference)
+			player, err := character.LoadPlayerWithOptions(dir, filepath.Base(definition), character.LoadOptions{RootDir: referenceRoot(t)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			c := player.Character
+			c.Timeline = &engine.Timeline{}
+			c.ChangeState(5900, -1, -1)
+			if err := player.Update(); err != nil {
+				t.Fatal(err)
+			}
+			// Native startup grants control after its initial state setup.
+			// The program then enters 700 and observes forty negative passes.
+			c.Ctrl = true
+			for tick := 0; tick < 90; tick++ {
+				if err := player.Update(); err != nil {
+					t.Fatal(err)
+				}
+			}
+			for _, capture := range reference.Captures {
+				for index, want := range capture.Variables {
+					i, err := strconv.Atoi(index)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if got := c.GetFVar(i); got != float64(want) {
+						t.Errorf("fvar(%d)=%g native=%d", i, got, want)
+					}
+				}
+			}
+		})
 	}
 }
 

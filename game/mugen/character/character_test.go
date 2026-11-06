@@ -109,9 +109,15 @@ func TestEntryCombatPersistence(t *testing.T) {
 
 func TestRuntimeStateErrorsStopExecution(t *testing.T) {
 	c := fixtureCharacter(t, "[State 7, idle]\ntype=Null\ntrigger1=1\n")
+	// Missing ordinary destinations warn and continue in the supplied beta;
+	// a malformed defined program still stops execution with an error.
+	broken := cns.NewStateDef(999)
+	broken.Type = "?"
+	broken.Controllers = []cns.StateController{{Type: "Null", Triggers: []string{"trigger1 = 1"}}}
+	c.StateFile.States[999] = broken
 	c.ChangeState(999, -1, -1)
 	if c.RuntimeError == nil {
-		t.Fatal("missing state was silently accepted")
+		t.Fatal("malformed state was silently accepted")
 	}
 	c.Update()
 	if c.Time != 0 {

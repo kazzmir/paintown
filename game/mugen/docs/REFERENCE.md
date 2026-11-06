@@ -532,7 +532,11 @@ below. The harness hashes and copies a
 fixture's authored .extra directory and pins --state-file-order on replay.
 
 Additional resource-load cases show blank st9 and blank sound succeed. Common
-cases for blank, omitted and explicit stcommon reach common state 0. The initial
+cases for blank, omitted and explicit stcommon reach state number 0. This did
+not prove that its common-file body was loaded: M4di separately measured that
+blank and omitted declarations load no common file, while an explicit name
+loads its distinctive body. Undefined destinations warn and continue; see
+[the corrected resource/state evidence](ASSERT-SPECIAL-CONTROLS.md). The initial
 probe entered 5900 as soon as RoundState=2; the round's later control grant made
 its ctrl observation differ from an already-running Go host. Requiring ctrl as
 well before the forced transition removes that interference. Go begins at the

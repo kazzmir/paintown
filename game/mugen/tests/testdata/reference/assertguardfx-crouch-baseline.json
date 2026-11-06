@@ -1,0 +1,62 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "331fb851b1e80c7736a260e29f0006cb11a532063db4f678c148c0e73bcf8c36",
+  "air_sha256": "55283a4205ad73a8f4bf7b93ed95b17e6242b8871ff4f12731698dd73bcf662b",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "5e9405fa40336eb7a91405a74c9efbb3b9db0c28beb4ab5adae8c6532dfc9477",
+      "variables": {
+        "0": 152,
+        "1": 997,
+        "2": -1.25,
+        "3": 0,
+        "4": 1.25,
+        "5": 0,
+        "6": 1.25,
+        "7": 0,
+        "8": -82.5,
+        "9": 0,
+        "10": 0,
+        "11": 67
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4di-visual-assertguardfx-crouch-baseline",
+  "assert_controls_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "6979cff41be48c1c0e3683d9903e7e1228c34f1b174c685bf250a8ca6e63e997",
+    "native_rgb": [
+      0,
+      200,
+      0
+    ],
+    "scope": "Actual guard/walk/input outcome in the world. Region chosen native-only before Go baseline; original images and older HUD gates unchanged."
+  }
+}

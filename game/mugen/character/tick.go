@@ -134,7 +134,7 @@ func TickCharacters(players []*Character) error {
 				if tickCollision(attacker, defender) {
 					hit := attacker.CurrentHitDef
 					hit.Attr = attacker.attributesForHit(hit)
-					rawContacts = append(rawContacts, contact{attacker, defender, hit, attacker.HitGuard, defender.guardsHit(hit), attacker != c})
+					rawContacts = append(rawContacts, contact{attacker, defender, hit, attacker.HitGuard, defender.guardsHitFrom(attacker, hit), attacker != c})
 					if attacker != c {
 						break
 					}

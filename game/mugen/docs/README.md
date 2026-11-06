@@ -129,3 +129,7 @@ effort stay under `game/mugen/`.
 - [ModifyExplod transparency tokens](MODIFY-EXPLOD-ENUMS.md): native quoted modes, skipped alpha compilation/evaluation and exact application controls.
 
 - [AssertSpecial global visibility](ASSERT-SPECIAL.md): literal schemas, global pause/reset consumers, 40 exact world regions and 35 open strict HUD gates.
+
+[Guard, walk and missing-state controls](ASSERT-SPECIAL-CONTROLS.md) records the
+M4di keyboard/contact comparisons, corrected common-file inference and full
+4,870-result integration checkpoint.

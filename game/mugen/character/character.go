@@ -1700,8 +1700,12 @@ func (c *Character) HandleBuiltinTransitions() {
 	// Jump and landing controllers belong to the character/common CNS. Physics
 	// A supplies the automatic landing entry independently of the state number.
 
-	// Guarding Transitions (States 120-132)
-	if c.Ctrl && !c.Specials["noguard"] && c.GetInGuardDist() && c.Command("holdback") {
+	// Posture flags prevent automatic guard entry. An authored guard state
+	// still guards; unguardable is checked on the attacker at contact instead.
+	guardDisabled := c.StateType == "S" && c.Specials["nostandguard"] ||
+		c.StateType == "C" && c.Specials["nocrouchguard"] ||
+		c.StateType == "A" && c.Specials["noairguard"]
+	if c.Ctrl && !guardDisabled && c.GetInGuardDist() && c.Command("holdback") {
 		if c.StateNo < 120 || c.StateNo > 155 {
 			c.ChangeState(120, -1, -1)
 			return
@@ -1742,17 +1746,17 @@ func (c *Character) HandleBuiltinTransitions() {
 			c.ChangeState(40, -1, -1)
 		} else if c.Ctrl && c.Command("holddown") && c.StateNo != 10 && c.StateNo != 11 {
 			c.ChangeState(10, -1, -1)
-		} else if c.Ctrl && c.Command("holdfwd") && c.StateNo != 20 && c.StateNo != 100 {
+		} else if c.Ctrl && !c.Specials["nowalk"] && c.Command("holdfwd") && c.StateNo != 20 && c.StateNo != 100 {
 			c.ChangeState(20, -1, -1)
-		} else if c.Ctrl && c.Command("holdback") && c.StateNo != 20 && c.StateNo != 105 {
+		} else if c.Ctrl && !c.Specials["nowalk"] && c.Command("holdback") && c.StateNo != 20 && c.StateNo != 105 {
 			c.ChangeState(20, -1, -1)
 		} else if c.StateNo == 20 && c.Ctrl && !c.Command("holdfwd") && !c.Command("holdback") {
 			// Walk -> Stand
 			c.ChangeState(0, -1, -1)
 		}
 	} else if st == "C" && phys == "C" {
-		if c.Ctrl && !c.Command("holddown") && c.StateNo != 12 {
-			c.ChangeState(12, -1, -1) // Crouch to Stand
+		if c.Ctrl && !c.Command("holddown") && (c.StateNo != 12 || c.MissingStateAllowed(12)) {
+			c.ChangeState(12, -1, -1) // Crouch to Stand, including an undefined exit.
 		}
 	}
 
@@ -1898,7 +1902,7 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 		return
 	}
 	next, found := owner.StateFile.States[stateNo]
-	if (!found && !external) || stateNo < 0 {
+	if stateNo < 0 {
 		c.RuntimeError = fmt.Errorf("state %d is not defined for player %d", stateNo, c.InputSlot)
 		return
 	}
@@ -1910,7 +1914,7 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 			return
 		}
 	} else {
-		c.EvaluationWarning(fmt.Sprintf("external transition: state %d is missing from the state owner", stateNo))
+		c.EvaluationWarning(fmt.Sprintf("state transition: state %d is missing from the state owner", stateNo))
 	}
 	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, name)
 	c.PrevStateNo = c.StateNo
@@ -1937,6 +1941,19 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 	if external {
 		c.pendingStateEntry = next
 		c.pendingMissingEntry = !found
+		return
+	}
+	if !found {
+		// Native undefined internal entries install the destination number,
+		// retain entry attributes, and continue negative states without the
+		// previous positive controller block. Time advances normally.
+		if overrides.HasCtrl {
+			c.SetCtrl(overrides.Ctrl)
+		}
+		if overrides.HasAnim {
+			c.ChangeAnim(overrides.Anim)
+		}
+		c.BeginStateEntry(false, false, false)
 		return
 	}
 	if err := c.SM.EnterState(next, c.stateEnvironment(), overrides); err != nil {
@@ -2081,7 +2098,7 @@ func (c *Character) HandleHit(other *Character) {
 	if c.HitGuard[int(other.EntityID)] || (hit.HitOnce && len(c.HitGuard) > 0) {
 		return // Already hit this target this swing
 	}
-	if other.metadataOnlyHit(hit, other.guardsHit(hit)) {
+	if other.metadataOnlyHit(hit, other.guardsHitFrom(c, hit)) {
 		c.HitGuard[int(other.EntityID)] = true
 		other.prepareContact(c, hit, false)
 		return
@@ -2089,7 +2106,7 @@ func (c *Character) HandleHit(other *Character) {
 	c.HitGuard[int(other.EntityID)] = true
 
 	// 1. Mark attacker results
-	guarded := other.guardsHit(hit)
+	guarded := other.guardsHitFrom(c, hit)
 	c.MoveHit = 1
 	c.MoveContact = 1
 	c.MoveGuarded = 0
@@ -2115,7 +2132,7 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 	if c.excludesCustomHit(hit) {
 		return
 	}
-	damage := c.prepareContact(attacker, hit, c.guardsHit(hit))
+	damage := c.prepareContact(attacker, hit, c.guardsHitFrom(attacker, hit))
 	c.applyHitDamage(damage)
 }
 
@@ -2126,6 +2143,10 @@ func (c *Character) applyHitDamage(damage int) {
 		return
 	}
 	c.SetLife(c.Life - damage)
+}
+
+func (c *Character) guardsHitFrom(attacker *Character, hit cns.HitDef) bool {
+	return !attacker.Specials["unguardable"] && c.guardsHit(hit)
 }
 
 // HitOverride suppresses guarding; guard flags then select eligible postures.

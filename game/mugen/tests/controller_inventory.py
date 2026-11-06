@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['engine/assert_special.go', 'engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['character/loader.go', 'evaluator/validate.go', 'engine/assert_special.go', 'engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
@@ -31,7 +31,7 @@ PARTIAL = {
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; SHADOWS.md adds measured current-only stage shadows, alpha/fade/geometry/flags/layer consumers; wider resource/profile variants and unwaived raster differences remain',
     'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; EXPLOD-CREATION-DRAWING.md adds typed creation angles/trans/alpha and conditional priority evaluation; EXPLOD-CAPACITY-RANDOM.md adds typed ordered random displacements, global root/helper/retired-owner and hitspark admission, zero-range draw phases and config binding; broader variants and strict sampling differences remain',
-    'assertspecial': 'ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; dedicated guard/walk/KO/music/round variants remain; SHADOWS.md adds shared shadow suppression',
+    'assertspecial': 'ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; ASSERT-SPECIAL-CONTROLS.md adds native posture-specific automatic guard entry, scripted-guard preservation, attacker unguardable and nowalk entry with owned keyboard replay/render evidence; broader helper/projectile/pause, KO/music/round variants remain; SHADOWS.md adds shared shadow suppression',
     'appendtoclipboard': 'stores raw text; params/formatting absent',
     'displaytoclipboard': 'stores raw text; params/formatting absent',
     'hitadd': 'updates ComboCount; no production reader of that field was found',

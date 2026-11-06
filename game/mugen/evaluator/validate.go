@@ -34,6 +34,9 @@ func validateConstants(expr Expression) error {
 		}
 	case *Call:
 		name := strings.ToLower(e.Name)
+		if name == "command" {
+			return fmt.Errorf("Command requires comparison syntax: Command = \"name\"")
+		}
 		if projectileIDFunction(name) && len(e.Arguments) != 1 {
 			return fmt.Errorf("%s requires one expression", e.Name)
 		}

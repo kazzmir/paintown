@@ -1,0 +1,257 @@
+[Statedef 5900]
+[State 5900, intent]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, intent]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=C
+movetype=I
+physics=C
+anim=9990
+ctrl=1
+[State 700, intent]
+type=Null
+trigger1=1
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9999
+ctrl=0
+[State 701, intent]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=HLMA
+damage=10,3
+pausetime=0,0
+guard.pausetime=0,0
+guard.dist=240
+ground.type=High
+ground.hittime=300
+ground.slidetime=300
+ground.velocity=0,0
+air.hittime=300
+air.velocity=0,0
+guard.hittime=300
+guard.ctrltime=300
+guard.slidetime=300
+guard.velocity=0
+airguard.ctrltime=300
+airguard.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1,0
+guardsound=-1,0
+[State 701, intent]
+type=ChangeAnim
+trigger1=(Enemy,Var(0))>=3 && Anim!=9992
+value=9992
+[Statedef 120]
+type=U
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 120, intent]
+type=ChangeState
+trigger1=Time>=1
+value=IfElse(StateType=A,132,IfElse(StateType=C,131,130))
+[Statedef 130]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 130, intent]
+type=Null
+trigger1=1
+[Statedef 131]
+type=C
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 131, intent]
+type=Null
+trigger1=1
+[Statedef 132]
+type=A
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 132, intent]
+type=Null
+trigger1=1
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, intent]
+type=Null
+trigger1=1
+[Statedef 152]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 152, intent]
+type=Null
+trigger1=1
+[Statedef 154]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 154, intent]
+type=Null
+trigger1=1
+[Statedef 5000]
+type=U
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, intent]
+type=Null
+trigger1=1
+[Statedef 5010]
+type=U
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, intent]
+type=Null
+trigger1=1
+[Statedef 5020]
+type=U
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, intent]
+type=Null
+trigger1=1
+[Statedef 20]
+type=U
+movetype=I
+physics=N
+anim=9990
+ctrl=1
+[State 20, intent]
+type=Null
+trigger1=1
+[Statedef 10]
+type=C
+movetype=I
+physics=N
+anim=9990
+ctrl=1
+[State 10, intent]
+type=Null
+trigger1=1
+[Statedef 11]
+type=C
+movetype=I
+physics=N
+anim=9990
+ctrl=1
+[State 11, intent]
+type=Null
+trigger1=1
+[Statedef -3]
+[State -3, intent]
+type=AssertSpecial
+trigger1=TeamSide=1
+flag=nocrouchguard
+[State -3, intent]
+type=PosSet
+trigger1=1
+x=IfElse(TeamSide=1,0,40)
+y=IfElse(TeamSide=1 && StateType=A,-40,0)
+[State -3, intent]
+type=PlayerPush
+trigger1=1
+value=0
+[State -3, intent]
+type=VarAdd
+trigger1=TeamSide=1 && (Command = "holdback")
+v=0
+value=1
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=0
+value=Life
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=1
+value=StateNo
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=2
+value=GetHitVar(damage)
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=3
+value=(Enemy,MoveGuarded)>0
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=4
+value=(Enemy,MoveHit)>0
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=5
+value=Var(0)>=3
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=6
+value=StateType=A
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=7
+value=StateType=C
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=8
+value=(Command = "holdback")
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=9
+value=1
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+fv=10
+value=Ctrl
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && MoveType=H && Var(59)=0
+v=59
+value=1

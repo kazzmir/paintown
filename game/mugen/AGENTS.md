@@ -20,25 +20,34 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dh validated; source/text commit next
+## Immediate state — M4di complete; continue item 3
 
-M4dg committed5dbfe71129c2948fd310563846b3f249c0c3a835 (117 scoped UTF8 paths).
-M4dh final75098 completed/awaited1 solely strict image matrix:869core/228selected
-native pass;48new native programs pass;40/40world regions exact20,352,000pixels.
-Only5/40entire crops exact;35HUDfailures UNWAIVED, including no-flags baseline.
-Old5palette/order,4masks,stock82inputs/1,971,877PCM pass;ALL40pairs/eight sheets,
-old9images/3stock captures reviewed. Separate18,846+18,843input/client guard PASS;
-audit18,847unique inputs/2,464originals/48configs/41archives/1,968copies/109manifest
-PASS. Read ASSERT-SPECIAL.md/HANDOFF. No active runtime. Commit source/text then
-continue all independent item3. No reapproval. Latest full remains M4df4,743/36
-at its earlier source boundary. No sampler/golden/region/tolerance changes.
+M4di closes measured guard/walk entry, scripted-guard preservation, attacker
+unguardable and Command-call rejection. Actual keyboard controls exposed and
+resolved blank/omitted common-file loading and undefined internal-state entry.
+All 51 native programs pass (50 accepted, one rejection, 600 values). All 16
+new application world crops are exact / 8,140,800 RGB pixels. See
+ASSERT-SPECIAL-CONTROLS.md; original failures and all native evidence immutable.
 
-Next15guard-contact drafts/full-intent helper prepared NOT run/frozen;4walk-input
-and8noko-contact drafts unverified. Then36system-effect drafts, other flag
-consumers, clipboard/debug sink, residual schemas and open HUD/renderer gates.
-Item4 remains unallocated. Ten direct-render source sets stay unpromoted/unstaged.
-LargerXvfb:98metadata temp/m4de-large-display-r2/metadata.json;authprivate.
-Original:97/Pulse30218/30219 unchanged. Host guards use elevatedwrapper.
+Full serial34865 completed/awaited0:4,870 race results/36packages (25 tested,
+11 compiled-only); Match2286.677s. All22gates pass, old5palette/order+4masks and
+visually reviewed stock21/26/45win/rematch/win:82keys/1,971,685privatePCMframes.
+Separate final19190/revision19189/nested19187 input/client guardPASS. Audit
+19192unique/3000originals/51configs/41archives/2091resourcecopies/109manifest.
+All16pairs/four sheets+old9+stock3 reviewed. Records m4di-final-evidence-audit.json,
+m4di-final-visual-review.json and m4di-final1-separate-guard.json. No live runtime.
+Binary50bb38a3e2121ba500250289075dc21a65081ae07456fa39ee64d4adaa4fecbd;
+no binary/push. Local source/text commit record:temp/m4di-commit-record.json.
+
+Next: separate native noko lifetime/death/global/frozen-owner controls BEFORE
+implementation. Initial8 native observations are reviewed but UNPROMOTED:life0/
+Alive1 with active attacker/defender/both, expired flags/directzero controls.
+Do not clamp life1 or assume late-enable revival/global reset/death semantics.
+Then finish all remaining AssertSpecial/system effects/clipboard/residual schemas
+and rendering obligations. Existing36system-effect drafts/helpers are prepared,
+not observed/frozen. Ten direct-render rawsets, noko8 and three unpromoted old
+walkrawsets stay UNSTAGED. Old35HUD/allrenderer failures UNWAIVED. Latest full
+suite is now M4di4870/36, at this source boundary. Continue without reapproval.
 
 ## Native and validation workflow
 

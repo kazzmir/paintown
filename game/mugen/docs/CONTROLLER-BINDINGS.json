@@ -3,10 +3,12 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
+    "character/loader.go": "0eb5be41fbd347491b9e2dcdabf48e4626b8740364b36f801cdb7396b632a0d4",
+    "evaluator/validate.go": "8513131b59cdf3950928e3e5d5a19fe5d1c8f5ef8f0308f6c4a62b500f110c06",
     "engine/assert_special.go": "f32c4532ceacac8fbe779d0e25c22003baf211ad9a4c744cd10640048ae5e7cc",
     "engine/projectile.go": "e14a2afbcd12e977bdd437582ae2cec6d264a7e352491c5a207a1ced6fa8ab70",
     "character/projectile.go": "bf8a8cf11497e0e4e2a1212ea3e35978dbf34ebc4da5a83d94ab9f6d1b9ceb5e",
-    "character/hit_chain.go": "32d3f02bbab9aed408961f0f964b9711b610c97ed19a2c47fd90d8491095fd07",
+    "character/hit_chain.go": "e110798c10d7f4707482d73f632fb36a92df730826222e641b62afe24894b7d9",
     "engine/after_image.go": "21231466aa235bacad93cf1abb467432c0f6dfcf8d70967637fb43dbd0bf6f61",
     "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
     "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
@@ -15,7 +17,7 @@
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
     "engine/parameters.go": "06ed182c5fc75874ea4d2e473e0b971bc9cf7818bd6d266bed76a28bb9d628ff",
-    "character/character.go": "d94fdb902a5f2773523bd9de541f4b37016a13aca61203b4873a77804b3a9e4b",
+    "character/character.go": "7c3481351c3ae84b9634a856f649495894ef70784681688310b91863a8a1dd3d",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
     "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
@@ -42,7 +44,7 @@
     "palette/hit_effect.go": "14f801c3823004401e2f8183cd25e536ffd9ea32dca7d230dcc38c35816d978f",
     "render/palette.go": "1b628fbb7df6b671492bdc501a990036af79f42338de41e058ab4dde04628dd6",
     "character/helper.go": "c1818f63af4509c9401dcaf336e359db82ba1d4193595f5d6a9ca23d8e90998f",
-    "character/tick.go": "3308abab23954d1452c61bd20794b20fd84efad5707d74cda3f6347fd59c4e33",
+    "character/tick.go": "0f78fa69b7644f1b05a0a885020c754dea60ebba7f11434510d3ed872cc17598",
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "f44f4fc4fd38ad75e45d9c887819a00fdffe079b7530838eff3ff317a301e1d7",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
@@ -77,17 +79,21 @@
       "globalnoshadow",
       "intro",
       "invisible",
+      "noairguard",
       "noautoturn",
       "nobardisplay",
       "nobg",
+      "nocrouchguard",
       "nofg",
-      "noguard",
       "nojugglecheck",
       "nokoslow",
       "nokosnd",
       "noshadow",
+      "nostandguard",
+      "nowalk",
       "roundnotover",
-      "timerfreeze"
+      "timerfreeze",
+      "unguardable"
     ]
   },
   "controllers": [
@@ -186,7 +192,7 @@
       "handler": "handleAssertSpecial",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; dedicated guard/walk/KO/music/round variants remain; SHADOWS.md adds shared shadow suppression"
+        "ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; ASSERT-SPECIAL-CONTROLS.md adds native posture-specific automatic guard entry, scripted-guard preservation, attacker unguardable and nowalk entry with owned keyboard replay/render evidence; broader helper/projectile/pause, KO/music/round variants remain; SHADOWS.md adds shared shadow suppression"
       ],
       "variants_complete": false
     },

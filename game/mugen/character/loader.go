@@ -59,9 +59,6 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	resolve := func(key string, directories ...string) (string, error) {
 		name, declared := def.Files[key]
-		if key == "stcommon" && strings.TrimSpace(name) == "" {
-			name, declared = "common1.cns", true
-		}
 		if !declared || strings.TrimSpace(name) == "" {
 			return "", context(key, fmt.Errorf("required file is missing or blank"))
 		}
@@ -150,14 +147,16 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	stateFiles = append(stateFiles, stateFile{"cmd", commandStates})
 	merge(commandStates)
-	// A blank/omitted stcommon uses the standard common file. A supplied
-	// filename must resolve; silently dropping common states hides broken chars.
-	common, err := loadCNS("stcommon", baseDir, options.MotifDir, filepath.Join(options.RootDir, "data"), options.RootDir)
-	if err != nil {
-		return nil, err
+	// Blank and omitted stcommon load no common states. An explicit filename
+	// still must resolve and compile, including definitions shadowed above.
+	if strings.TrimSpace(def.Files["stcommon"]) != "" {
+		common, err := loadCNS("stcommon", baseDir, options.MotifDir, filepath.Join(options.RootDir, "data"), options.RootDir)
+		if err != nil {
+			return nil, err
+		}
+		stateFiles = append(stateFiles, stateFile{"stcommon", common})
+		merge(common)
 	}
-	stateFiles = append(stateFiles, stateFile{"stcommon", common})
-	merge(common)
 	version := strings.TrimSpace(def.Info["mugenversion"])
 	if version == "" {
 		version = "legacy"

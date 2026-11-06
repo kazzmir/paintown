@@ -47,7 +47,7 @@ func (c *Character) juggleAlreadyPaid(attacker *Character) bool {
 }
 
 func (c *Character) allowsJuggle(attacker *Character, hit cns.HitDef) bool {
-	if !c.juggleRelevant(hit) || c.guardsHit(hit) || attacker.Specials["nojugglecheck"] || c.juggleAlreadyPaid(attacker) {
+	if !c.juggleRelevant(hit) || c.guardsHitFrom(attacker, hit) || attacker.Specials["nojugglecheck"] || c.juggleAlreadyPaid(attacker) {
 		return true
 	}
 	return c.StateType != "A" && c.StateType != "L" || c.juggleBudget() >= c.juggleCost(attacker, hit)

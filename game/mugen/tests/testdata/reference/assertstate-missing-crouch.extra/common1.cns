@@ -1,0 +1,11 @@
+[Statedef 777]
+type=C
+movetype=I
+physics=N
+anim=9992
+ctrl=0
+[State 777, dependency]
+type=VarSet
+trigger1=1
+fv=20
+value=777

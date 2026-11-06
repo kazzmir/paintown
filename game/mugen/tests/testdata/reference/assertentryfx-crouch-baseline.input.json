@@ -1,0 +1,24 @@
+{
+  "settle_seconds": 4,
+  "events": [
+    {
+      "keys": [
+        "Left",
+        "Down"
+      ],
+      "hold_seconds": 1,
+      "gap_seconds": 0.2
+    }
+  ],
+  "tail_seconds": 0.5,
+  "go_inputs": [
+    {
+      "at": 10,
+      "duration": 60,
+      "inputs": [
+        "Left",
+        "Down"
+      ]
+    }
+  ]
+}

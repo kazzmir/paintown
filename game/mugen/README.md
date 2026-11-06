@@ -105,7 +105,14 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4dh validation**.
+Snapshot: **2026-11-06; through M4di validation**.
+
+M4di adds native-backed guard/walk flags and corrects common-file loading and
+undefined-state continuation. All **51 new native programs** pass; **16/16 new
+application world crops are exact (100% of this bounded corpus)**. The fresh
+full race suite passes **4,870 results across 36 packages**. Stock win/rematch/
+win and private audio pass. [Evidence and limits](docs/ASSERT-SPECIAL-CONTROLS.md).
+Earlier HUD and renderer differences remain unwaived.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -139,7 +146,7 @@ crops match exactly (36.8% of this corpus)**. The other 60 retain strict failure
 59 have maximum RGB error 1; the scaled actor has maximum error 2. Both old
 projectile-shadow controls now match exactly. [Shadow evidence](docs/SHADOWS.md).
 
-M4df's full scoped race run passes **4,743 results across 36 packages**
+M4di's full scoped race run passes **4,870 results across 36 packages**
 (25 tested, 11 compiled-only). All four old shake masks pass. Stock
 win → rematch → win is visually inspected with 82 balanced input events and
 private audio. Earlier angle/EnvShake/actor 45-degree failures remain unwaived.
