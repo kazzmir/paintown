@@ -1012,3 +1012,19 @@ creation_palette_render_probe.py also supports palettecontext-/paletteedge-
 controls and their disjoint ledgers. All 42 new app crops and four old M4dc
 controls match exactly. Archived earlier comparator/driver versions and seven
 failing app baselines remain in temp/. Read ../docs/EXPLOD-PALETTE-CONTEXTS.md.
+
+
+## Explod creation drawing
+
+TestNativeExplodCreationDrawing and TestNativeExplodCreationDrawingExtra replay
+41+6 original programs:42accepted, five expected load rejections,504numeric
+values. Disjoint creationdraw/creationextra native and configuration ledgers pin
+original sources, recorders, captures and exact FirstRun/newline finalization.
+
+creation_draw_render_probe.py is a strict read-only comparator for508,800RGB
+pixels per accepted scene, including executable/config/resource/capture provenance.
+The final42-case matrix has36exact crops and six UNWAIVED fractional/projected
+rotation failures. Focused races pass868core/157selectednative results. Ten
+additional reviewed direct-resolution controls remain unpromoted; private
+sampling experiments are diagnostic only. Read
+../docs/EXPLOD-CREATION-DRAWING.md before interpreting these counts as coverage.

@@ -2988,3 +2988,20 @@ visually reviewed stock win/rematch/win pass, with 82 balanced inputs and
 1,971,399 private PCM frames. All source/resource/config/module/binary/capture
 provenance checks pass. Source/text only; no binaries/push. Continue creation
 angles/trans/alpha/random/pools and all remaining item 3 without reapproval.
+
+
+## M4de — Explod creation angles, blend overrides and evaluation
+
+Typed creation angle/xangle/yangle/trans/alpha fields now reach effect requests;
+measured defaults, AIR overrides, ignored modes and ontop priority evaluation
+match 47 native programs (42 accepted / five rejections / 504 values).
+[Evidence and strict limits](EXPLOD-CREATION-DRAWING.md).
+
+Fresh races: 868 core / 157 selected native results pass. All 42 accepted apps
+run; 36 exact crops / 18,316,800 pixels, six fractional/projected strict failures
+retained with exit 1. All pairs and stock win/rematch/win visually reviewed.
+Five older palette/order apps, four masks, 82 balanced inputs / 1,973,200 private
+PCM frames, module/inventory and original evidence/resource audits pass. Full
+suite remains M4da 4,506/36. Sampling experiments were not adopted; ten reviewed
+direct controls remain unpromoted. Source/text only, no binaries or push.
+Continue all item 3 with Explod random/capacity and remaining consumers.

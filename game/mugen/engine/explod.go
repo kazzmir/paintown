@@ -17,6 +17,10 @@ type ExplodParameters struct {
 	OwnPalette                                                 bool
 	RemapPalette                                               [2]int
 	PosType                                                    string
+	Angle, XAngle, YAngle                                      float64
+	HasBlend                                                   bool
+	Blend                                                      string
+	AlphaSrc, AlphaDst                                         int
 }
 
 type ExplodBindTimeParameters struct {
@@ -128,11 +132,28 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			}
 		}
 	}
-	scalars, err = compileArguments(ctrl, []argumentSpec{{"bindtime", true, false}, {"bindid", true, false}, {"ontop", true, false}, {"removetime", true, false}, {"supermovetime", true, false}, {"pausemovetime", true, false}, {"sprpriority", true, false}, {"shadow", true, false}, {"removeongethit", true, false}})
+	scalars, err = compileArguments(ctrl, []argumentSpec{{"angle", false, false}, {"yangle", false, false}, {"xangle", false, false}, {"bindtime", true, false}, {"bindid", true, false}, {"ontop", true, false}, {"removetime", true, false}, {"supermovetime", true, false}, {"pausemovetime", true, false}, {"sprpriority", true, false}, {"shadow", true, false}, {"removeongethit", true, false}})
 	if err != nil {
 		return nil, true, err
 	}
 	args = append(args, scalars...)
+	// Unlike several other enum fields, the beta does not unquote this one.
+	// An absent or unrecognized mode also leaves alpha entirely unparsed.
+	trans := strings.ToLower(strings.TrimSpace(ctrl.Params["trans"]))
+	additive := trans == "add" || trans == "add1" || trans == "addalpha"
+	readsAlpha := additive || trans == "none" || trans == "sub" || trans == "default"
+	if raw, present := ctrl.Params["alpha"]; present && readsAlpha {
+		tuple, err := evaluator.ParseReferenceTupleForVersion(raw, 2, ctrl.LanguageVersion)
+		if err != nil {
+			tuple, err = evaluator.ParseReferenceTupleForVersion(raw, 1, ctrl.LanguageVersion)
+		}
+		if err != nil {
+			return nil, true, fmt.Errorf("alpha: %w", err)
+		}
+		for index, expr := range tuple {
+			args = append(args, argument{argumentSpec{fmt.Sprintf("alpha%d", index), true, true}, expr})
+		}
+	}
 	for _, arg := range args {
 		if err := evaluator.ValidateKnownTriggers(arg.expr); err != nil {
 			return nil, true, fmt.Errorf("%s: %w", arg.name, err)
@@ -177,9 +198,16 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			return fmt.Errorf("Explod context is unavailable")
 		}
 		return context.CreateExplodEvaluated(action, common, func() (ExplodParameters, error) {
-			v, err := evaluateArgumentsWithBottom(args[paletteEnd:], env, true)
-			if err != nil {
-				return ExplodParameters{}, err
+			v := make(map[string]evaluator.Value, len(args)-paletteEnd)
+			for _, arg := range args[paletteEnd:] {
+				if arg.name == "sprpriority" && v["ontop"].Number() != 0 {
+					continue
+				}
+				values, err := evaluateArgumentsWithBottom([]argument{arg}, env, true)
+				if err != nil {
+					return ExplodParameters{}, err
+				}
+				v[arg.name] = values[arg.name]
 			}
 			integer := func(key string, fallback int) int {
 				if value, present := v[key]; present {
@@ -192,6 +220,21 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				p.IgnoreHitPause = ctrl.IgnoreHitPause != 0
 			}
 			p.SpaceSpecified = explicitSpace
+			p.Angle, p.XAngle, p.YAngle = v["angle"].Number(), v["xangle"].Number(), v["yangle"].Number()
+			if additive {
+				p.HasBlend, p.Blend = true, "alpha"
+				destination := 0
+				if trans == "add" {
+					destination = 256
+				} else if trans == "add1" {
+					destination = 128
+				}
+				p.AlphaSrc = max(0, min(256, integer("alpha0", 256)))
+				p.AlphaDst = max(0, min(256, integer("alpha1", destination)))
+			} else if trans == "none" || trans == "sub" {
+				p.HasBlend, p.Blend = true, trans
+				p.AlphaSrc, p.AlphaDst = 256, 256
+			}
 			p.OwnPalette = common
 			if value, present := early["ownpal"]; present {
 				p.OwnPalette = value.Number() != 0

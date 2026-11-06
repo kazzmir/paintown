@@ -1,5 +1,19 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+
+## M4de — Explod creation drawing
+
+Typed creation angles/trans/alpha, measured AIR overrides and conditional
+expression evaluation now reach the production effect consumer.47native
+numeric/schema programs pass (42accepted/five expected rejections,504values).
+Fresh strict apps:36/42exact (85.7% of this corpus); six fractional/projected
+sampling failures remain UNWAIVED. This is bounded behavior evidence, not full
+Explod or whole-engine compatibility. Source routes remain74typed/15fallback.
+See [native findings and bounds](EXPLOD-CREATION-DRAWING.md). Item3 continues
+through random/capacity, special flags, system effects, clipboard and residual
+schemas, with shared rendering obligations still open. Item4 unallocated.
+
+
 M4dd extends Explod palettes to common animations, helper issuers and forced
 mapping replacement. **42/42 new native programs and 42/42 new app crops pass**
 (100% of each recorded corpus); the new crops compare 21,369,600 RGB pixels

@@ -212,3 +212,16 @@ four prior palette apps, focused races and stock/audio/provenance checks pass.
 Next 41 unobserved creation angle/trans/alpha/AIR/profile drafts need full intent
 verification and native-only review before implementation. Random/capacity and
 all other item 3 groups follow. Prior strict renderer differences stay open.
+
+
+## M4de — creation drawing fields, shared sampling still open
+
+[EXPLOD-CREATION-DRAWING.md](EXPLOD-CREATION-DRAWING.md) records47native programs,
+42accepted/five rejections/504numeric values. Typed angles/trans/alpha, AIR blend
+overrides and conditional priority evaluation reach production.36/42fresh app
+crops match exactly; six fractional/projected cases retain strict failures.
+Private source-axis/precision/quad/screen-bias experiments were not adopted.
+Ten complete direct-resolution native controls are reviewed but unpromoted.
+This checkpoint adds measured creation behavior; it does not close shared raster
+obligations. Continue Explod random/capacity, all remaining independent item3
+consumers and the unresolved rendering gates. Item4 remains unallocated.

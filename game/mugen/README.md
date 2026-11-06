@@ -101,7 +101,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4dd validation**.
+Snapshot: **2026-11-06; through M4de validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -159,6 +159,13 @@ All **42 new programs and 42 new app crops pass (100% of each corpus)**;
 races, stock rematch and private audio also pass.
 [Context evidence](docs/EXPLOD-PALETTE-CONTEXTS.md).
 
+Explod creation drawing now includes typed angles, transparency/alpha defaults,
+AIR blend overrides and conditional expression evaluation. All **47 native
+numeric/schema programs pass**, including five expected rejections. **36/42 app
+crops match exactly (85.7% of this corpus)**; six fractional/projected rotation
+cases retain strict pixel failures. The sampling experiments remain outside
+production. [Drawing evidence and bounds](docs/EXPLOD-CREATION-DRAWING.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
@@ -167,6 +174,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| Explod creation drawing native programs in M4de | 47 / 47 | **100%** | Recorded numeric/schema corpus, including five expected rejections. |
+| Explod creation drawing app crops in M4de | 36 / 42 | **85.7%** | Six strict fractional/projected sampling failures remain; no tolerance changed. |
 | Explod palette context native programs in M4dd | 42 / 42 | **100%** | Common/helper/wildcard context corpus; broader asset/profile variants remain open. |
 | Explod palette context app crops in M4dd | 42 / 42 | **100%** | Exact pixels in this new corpus; four additional old controls also pass. |
 | Explod creation palette numeric/schema programs in M4dc | 63 / 63 | **100%** | Recorded corpus, including seven expected rejections. |

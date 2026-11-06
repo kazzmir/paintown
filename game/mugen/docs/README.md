@@ -117,3 +117,7 @@ effort stay under `game/mugen/`.
 
 - [ForceFeedback target boundary](FORCE-FEEDBACK.md): native Null operation,
   ignored parameters, language profiles and no host/device dispatch.
+
+
+- [Explod creation drawing](EXPLOD-CREATION-DRAWING.md): typed angles and blend
+  defaults, AIR overrides, conditional evaluation and strict renderer limits.

@@ -16,8 +16,8 @@
     "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
     "character/character.go": "30f06bdd7216242f1e293aa1c0924667222455d966329692283b98e8bb5476e8",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
-    "character/explod.go": "9dc3a8a919bd98eaaa2393142564b668395aa4d3e2c919887e9eadad8549fd6c",
-    "engine/explod.go": "b2c8b9661649b3bd3b3703ed6954ce6537a7e949feb4984a3d79384800c04f9f",
+    "character/explod.go": "551e7c79d39e8ed479f0c6120beb795f7b706338097bf3a916242e8f97b7bd60",
+    "engine/explod.go": "5e70f9053e4b2ddfdc96fb3fe360a7665b816764122f347f65063173ea259c21",
     "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
     "effect/scene.go": "ff2770da67a5b58bb7621187467716dd1958946326f62969c920f7d30c16588b",
     "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
@@ -351,7 +351,7 @@
       "handler": "handleExplod",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; random/angle/trans/capacity and broader variants open"
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; EXPLOD-CREATION-DRAWING.md adds typed creation angles/trans/alpha and conditional priority evaluation; random/capacity and broader variants open"
       ],
       "variants_complete": false
     },

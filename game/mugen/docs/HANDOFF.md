@@ -1,341 +1,109 @@
-# Current handoff — M4dc Explod creation palettes
+# Current handoff — M4de Explod creation drawing
 
-Continue ALL item3 effects/controllers with documented local commits. Author only
-game/mugen; no pushes, binaries, agents or goals. Item4 remains unallocated.
-Read ../AGENTS.md and SHADOWS.md. Do not stop automatically at a checkpoint.
+Continue ALL allocated item3 with documented local source/text commits. Author
+only game/mugen; no pushes, binaries, agents or goals. Item4 unallocated. Read
+../AGENTS.md, ITEM-3-PLAN.md and EXPLOD-CREATION-DRAWING.md.
 
-## Immediate state — M4dc complete, continue M4dd
+## Completed validation; local checkpoint next
 
-No active runtimes. M4dc focused21536/final42494 completed/awaited0; SEPARATE
-17724/17725-input/client guardsPASS. Audit2743 completed/awaited0.63 originals
-reviewed/promoted ONCE:56accepted/7rejects/672values. All56apps exact/28,492,800px,
-all pairs reviewed.846core/416native races pass; five old palette/order apps,
-four masks and stock21win/26FIGHTrematch/45win visually reviewed.82events/
-1,973,637PCMframes. Source/text local checkpoint record temp/m4dc-commit-record.json.
-Read EXPLOD-CREATION-PALETTES.md. Audits temp/m4dc-final-evidence-audit.json and
-m4dc-final-visual-review.json. Original109files/41archives/2583nativecopies and
-17,727current frozen paths/1390original inputs pass. Latest FULL suite M4da4506/36.
-Old strict shadow/angle/EnvShake failures remain UNWAIVED.
+Final69433 COMPLETE/awaited1: all42apps run,36exact/18,316,800RGBpixels;
+six strict fractional/projected failures remain UNWAIVED with exit1. Five old
+palette/order apps, four masks, modules/inventory, stock82inputs/1,973,200PCMframes
+PASS. SEPARATE18220-input/36435hash/client guardPASS. Passiveaudit59151 and
+reviewgenerator38369 complete/awaited0. Audit18222frozen paths/72789hashchecks/
+1758originalinputs/47exactconfigs/41archives/1927nativecopies/109manifestfilesPASS.
+ALL42pairs/seven sheets, nine old app images and stock21win/26FIGHT/45secondwin
+viewed. Records temp/m4de-final-evidence-audit.json,m4de-final-visual-review.json.
+No active runtimes. Commit source/text checkpoint, then continue item3 without
+reapproval. Ten unpromoted direct raw sets remain unstaged.
 
-Production engine/explod.go typed ownpal/remappal; early anim/ownpal/remap then
-animation gate then id/facing/vfacing/pos/other args. Owned character palettes
-clone current mapping, clear localFX, force remap on clone; shared palette live.
-Common-resource behavior awaits native study. Baseline21numeric/schema and7/8
-app failures preserved; first app-ledger-name collision preserved separately.
+M4de47native originals reviewed before promotion once:42accept5reject504values,
+all47configuration finalizations exact. Original maps m4de-explod-draw-inputs.json
+(169) and m4de-explod-draw-extra-inputs.json(29). All47numeric/color/consumer rows
+and five native sheets viewed. Source state headers/controller kinds/triggers/
+params/AIR/CMD/stage verified. Three1.0profiles. Baseline main67920/extra57322
+retained with actual strict failures. Focused7411 complete/awaited1:868core4pkgs,
+157selectednative results pass;15apps12exact/3UNWAIVED(45deg534RGB/max148/mask17,
+x30208/max57,combined537/max171/mask22). Separate18179guardPASS.
 
-M4dc committed039ead67963e80adab7d3ebab4ad3d5c083e65b7,333scoped source/text paths;
-scoped tree clean at commit, no binaries/push. Continue all item3 without pause.
+Production revision1 engine/explod.go and character/explod.go typed creation
+angles/trans/alpha, priority evaluation skip under ontop, request forwarding.
+Quotedadd ignored including alpha; default/none/sub alpha expressions evaluated,
+none barefloatreject; default keepsAIR,noneopaque,add/add1/addalpha defaults
+256/256,256/128,256/0,singlealpha keepsmodeDst. Missinganim skipslate fields.
+Ninefieldtrace123456789 roundsFVar123456792, uniquelyresolved among362880label
+permutations in m4de-trace-fvar-rounding-analysis.json. Read topic doc for bounds.
 
-## Immediate state — M4dd complete; no active runtimes
+## Shared renderer diagnostics — no production sampling change
 
-Local source/text checkpoint record temp/m4dd-commit-record.json. Focused17071/
-final63345 complete/awaited0; separate17938/17939-input guardsPASS. Passive audit
-19927 completed0.868core4pkgs(engine188/character658/effect5/system17),248native
-results pass. All42new+4oldM4dc apps exact/23,404,800pixels (new21,369,600).
-ALL46pairs/four sheets and stock21win/26FIGHTrematch/45secondwin viewed.
-Five old palette/order apps, four masks,82balanced inputs/1,971,399PCMframes pass.
-Audit17941frozen paths/71745hashchecks/1564original inputs/109manifestfiles/
-41archives/1722nativecopies pass. Latest FULL scoped suite remains M4da4506/36;
-all earlier strict renderer differences remain UNWAIVED. Read new topic docs.
+Private reversal74858,precision88341,quad28575,direct10378 runs complete/awaited0
+with separate guardsPASS. Reversal/precision/quad variants rejected; bit4best,
+normal paddingbest. Faithfully reproduce shared45deg/3D failures before proposing
+changes. Source/captures/results retained under temp/_tmp/m4de-* and temp/m4de-*.
+Screen-bias18row experiment improves somecases but still fails strictpixels; not
+adopted. Its exec response overflow lostsessionID; complete results present,
+elevated no-runtime check and separate376-input/client guardPASS. Recovery note
+m4de-screen-bias-run-recovery.json; no observed original exit0 claim.
 
-Native36+edge6 original programs reviewed/promoted ONCE:42accepted/504values,
-all42 config finalizations exact. Context3 sheets plus extra FULL common-spark
-sheet and edge sheet viewed BEFORE promotion/fix. Initial thumbnails clipped
-sparse F3 islands; extra full sheet fixes review, and golden ROI covers ALL918px.
-All original recorders/sources/assets/captures/goldens and failed diagnostics stay.
+Ten direct native640/1280 controls completed/reviewed, NOT promoted. Names
+creationpoint-* and creationnative1280-*, raw four-file sets in reference bank.
+Native64076911complete0/separate1781guardPASS; isolatedROI240,150..440,340 (first
+wide table includeddebug; preserved). Native1280fresh r224163complete0/separate
+1807guardPASS;ROI500,350..850,700; ALL5native rows/sheet reviewed. Counts1280:
+0/907616,457667,x306866,y306403, purepalettecolors. Originalfirst1280attempt52001
+failed exactclipboarddecoder because Xvfb97 clippedclientto947rows; failedcapture
+preserved as environmentdiagnostic, not golden. New task-owned Xvfb98(1600x1200)
+metadata temp/m4de-large-display-r2/metadata.json; authprivate. Original97/Pulse
+30218/30219 unchanged. Native1280prefix m4de-direct1280-r2-, original28-inputmap.
 
-Baseline main64927 complete1:846core/101native pass,4/8apps fail; commonFXown0
-initial/later918RGB/max32 and priorforcedinvalid/single3123/max52. Separate17906
-guardPASS. Edge60200 complete1:3/6fail3123/max52,3exact. Separate17935guardPASS.
-All14baseline pairs viewed. Old comparator/driver versions archived before
-extensions in temp/m4dc-final-creation-palette-render-probe.py and m4dd-baseline1*.
+DirectGPU proves45deg errors previewport (61pixels640,123pixels1280), identity
+linear copy unchanged. At1280x30only2pixelsdifferent,y30exact; laterlinearfit
+addsone-step differences.640projectiondistance scaling mayneed native study.
+CPU source-bias model matchesnative45 but GPU stillfails; do not infer parity.
+Native sources/recipes/captures/goldens/tolerances immutable, including failures.
 
-Production engine/explod.go defaults OwnPalette=common with explicit integer
-override; character/explod.go attaches LocalEffects for shared common sprites,
-keeps common mappings separate. effect.Source.PaletteTransform and system renderer
-consume it. Forced remaps clear inherited mappings first (including wildcard)
-and apply valid same-depth dest; invalid/identity/depth mismatchbase,group-1retain.
-No helper code change needed. New all105palette creation/context/edge programs
-pass under race with olderPalFX/global groups. Source counts74typed15fallback,
-2stubs9partial18bounded60route-only; no whole-engine percentage.
+## Prior committed boundaries
 
-Bounds: stockcommon remap1,2 no visible change, arbitrary customcommon mappings
-unmeasured. Sharedhelper cannot installlocalFX, roots/h1children own as measured.
-One-component remap accepted/base but omittedsecond STILL ambiguous (invalid0
-and identity1 bothbase). KFM six32-color1,1..6 plus256-color9000,1; commonfightfx
-isSFFv1, so don't use v2 offsets to infer palette absence.
+M4dd f48dfdb8aef751a69a1b4105b857a3d6bc2a2c7b:231UTF8paths.42native accepted/
+504values;42new+4old exactapps23,404,800pixels;868core248native races;5palette/order,
+4masks,stock82inputs/1,971,399PCMframes. Common-owned palette default, sharedcommon
+localFX separate frombank, forcedcharacterremap replaces inheritedmaps. Read
+EXPLOD-PALETTE-CONTEXTS.md. Commoncustombanks and omittedsecondremap ambiguity open.
 
-NEXT41 UNOBSERVED draw drafts temp/m4de-explod-draw-draft; author
-prepare-m4de-explod-draw-draft.py. Prepared full private verifier
- temp/_tmp/m4de-explod-draw-intent/main.go NOT RUN/frozen. Full headers/constants/
-controller kinds/triggers/params, inheritedCMD/stage and wholeAIR plus parsed
-sprite/blend required. AIR inherits blank/normal portrait and appends explicit
-add/sub9101/9102. Three1.0 profiles. Freeze before parser run; await then SEPARATE
-elevated input/client guard before public copy/freeze/native observation. Inspect
-ALL native numeric/color/consumer rows and sheets BEFORE promotion or fixes.
-Finish Explod draw fields, then random/pools and remaining item3; no stop at
-checkpoint. Item4 unallocated. M4dc commit039ead67963e80adab7d3ebab4ad3d5c083e65b7.
+M4dc039ead67963e80adab7d3ebab4ad3d5c083e65b7:63programs56accept7reject672values,
+56exactapps28,492,800pixels;846core416native races;stock1,973,637PCMframes. Typed
+ownpal/remap earlyphase, clonedownedcharacterpalette and livesharedmaps. Read
+EXPLOD-CREATION-PALETTES.md. M4db1166205 adds nativeNullForceFeedback behavior18
+programs216values/fourexactapps; nohosthook. M4daabdc5ca sharedshadows98programs,
+95apps35exact60UNWAIVED; old2projectileshadow controls separatelyfixed. Latest
+FULL scoped races remain M4da4506results/36packages;25tested11compiled-only.
+All original109manifestfiles/41canonicalarchives remain unchanged; evidence
+and localcommit records underignoredtemp. Priorchecks in topic docs/Git history.
 
-Independent16systemanim first-look drafts UNOBSERVED/unverified in
- temp/systemanim-firstlook-draft. RNG controls need pinned native Match seed/log
-recipe (M4cd flow). GameMakeAnim/MakeDust have real native kinds203/215, not Null.
-Finish remaining Explod checkpoints first; no systemanim runtime/expectations yet.
+## Next work
 
+M4de acceptance/audits/docs complete. Commit explicit UTF8/noNUL source/text paths. Keep ten unpromoted direct draft sets unstaged.
+Then continue Explod random/capacity with native seed/log/admission phases,
+AssertSpecialflags, GameMakeAnim/MakeDust, clipboardformat/debugsink and residual
+StateTypeSet/VarSet/FVar/HitAdd consumers. No automatic checkpointpause/reapproval.
 
-## Completed M4da validation; local commit next
+Unobserved draft16systemanimations in temp/systemanim-firstlook-draft needsfull
+intent/seed verification; kinds203/215 realnativeparsers, notNull. Pool/RNGstudy
+questions temp/explod-remaining-pool-rng-study-notes.md. NativeVarSetliteral7.9
+rejectknown; latercorrect conflicting unit inputs to7.9+0.0expression without
+changingnativegoldens. ModifyExplodquotedtrans potentialgap mustbe separately
+measured before changingcompiler; Explod-only evidence doesn'tproveit.
 
-M4cz3255f127cc10217127bd8c1a0a892949ad20cf18 is committed. M4da is COMMITTED locally asabdc5ca49ede6a366a86122291ff3f0837cdb1f3,522UTF8
-source/text paths, no binaries/push; scoped tree clean after commit. No active runtime. Integration92761 completed/
-awaited1; SEPARATE17317frozen-input/client guardPASS.
-
-Full scoped race passes4,506test/subtest results across36packages (25tested/
-11compiled-only), no failures/individual skips/race reports; Match2021.992s.
-All95shadow apps run,35exact/17,325,600pixels. Strict matrix fails60UNWAIVED:
-59max1; scaled actor468px/max2. Ordinary90px/max1; shear112/104px/max1. All95
-compact rows/five paired sheets inspected. Viewport sampler UNCHANGED fromM4cz.
-Private precision trials failed broader controls and were NOT adopted.
-
-Both unchanged old projectile shadow controls now exact (508800pixels each).
-Four old contact/fall masks pass. Stock21/26/45 visually reviewed win/rematch/win,
-82balanced owned keyboard events and1,973,562private PCM frames. Module/inventory
-checks pass. Audit24754 completed/awaited0, checking17,312unique final frozen paths/
-52,979hashes;1,043original inputs,98native configs,41canonical assets and4,018native
-resource copies. All109original manifest files unchanged. Final validated binary:
-e43f146e45ab430757087533b13b75b32f43e64f89d1989c58065511e042ec57.
-Records temp/m4da-final-evidence-audit.json and m4da-final-visual-resource-review.json.
-
-Native98 originals promoted ONCE:95accepted/3rejects,1140numeric values. Original88
-source/probe hashes354; schema10 recording inputs43. Every native row/seven sheets
-inspected BEFORE promotion/fixes. Configs exactly FirstRun1->0 and LF->CRLF. No
-golden/source/resource/capture/tolerance changed. New match/shadow_test.go and
-tests/shadow_render_probe.py; read SHADOWS.md for measured facts and strict limits.
-
-Production: render/shadow.go and shared current-pose root/helper/projectile/Explod
-pass before under EnvColor; stage defaults128/.4/xshear; per-game-tick global flag
-reset including Pause; typed Explod creation shadow/order and scene forwarding;
-indexed center/flip/shear-origin and pre-shear source addressing. Perspective post
-projection exists, wider variants unmeasured. Source counts74typed/15fallback,
-3stubs/9partial/17bounded/60route-only; not whole-engine coverage.
-
-Baseline8 apps had7missing-shadow failures. Schema10 baseline had5failed cases:
-three validation rejections, expression order and side effect. Focused98native
-races pass. Matrix1 all88 had31exact/57failures (four absent Explod shadows1818px,
-shear161/363px max54/89). All original/failing artifacts remain unchanged.
-
-NEXT: M4db ForceFeedback/Null study; continue all remaining item3 without
-stopping/reapproval. M4da record temp/m4da-commit-record.json; stage audit recorded.
-README/COVERAGE/COMPATIBILITY/CHECKPOINTS/ITEM-3-PLAN/test docs/SHADOWS updated.
-No pushes or binaries. Preserve all previous nonquarter/EnvShake failures too.
+Source74typed15fallback2stubs9partial18bounded60route-only isnotbehavioralcoverage.
+Prior12M4cq/sevenM4cv/twoM4cy/M4da60strict failures UNWAIVED. Originalmoduleoverlay
+guard sha256sum-c temp/upstream-post-merge-module.sha256. Default sandboxps hides
+hostclients; guardsuse elevated round-task-env.py. TempGoonlytemp/_tmp; use
+rg--files--no-ignore. Stage explicit UTF8paths only, nevertempassets/directories.
 
 
-M4db native18 session40200 completed/awaited0; SEPARATE1120-original guardPASS.
-ALL18 rows/sheet inspected BEFORE promotion/fix.18accepted/216values,80original
-inputs, exact18 config finalizations. Parameters ignored, trigger assignment9.
-CompilerNullkind evidence pinned; version checker is not runtime dispatcher.
-Baseline2 native18pass. First count20vs18 metadata-glob diagnostic preserved;
-device-boundary baseline proves1wronghostcall in EACH1.0/1.1profile.
-
-M4db focused60923 completed/awaited0; SEPARATE17409-input/client guardPASS.
-846engine/character races and119native Match results pass. Four actual app crops
-exact/2,035,200pixels. Stock21/26/45 win/rematch/win visually reviewed,82balanced
-events and1,912,813privatePCMframes. Module/inventory/provenance pass. Audit:
-temp/m4db-final-evidence-audit.json; visual review recorded separately.
-No active runtime. Production handler returnsnil without host/device dispatch;
-generic triggers unchanged. State-language fixture option defaults1.1 as before.
-Source74typed/15fallback/2stubs/9partial/18bounded/60route-only, not enginecoverage.
-M4db COMMITTED locally11662054e4268a81ac5e95370e6314d6cdee3646,110source/text
-paths, no binaries/push; scoped tree clean after commit. Record temp/m4db-commit-record.json.
-NEXT: Explod palette creation
-study in temp/m4dc-explod-palette-study-plan.md. Continue all item3 autonomously.
-
-
-
-
-M4dc Native55 session23433 COMPLETE/awaited0; ACTIVE extra8 session40035: temp/run-m4dc-creationpal-native.py.
-Original228-input freeze temp/m4dc-creationpal-inputs.json. FULL55 CNS kinds,
-triggers, parameter/state intent, inherited AIR/CMD and ENTIRE stage attributes
-verified by private parser; SEPARATE247-input/client guardPASS before public copy/
-freeze. Character-resource palettes only: ownpal/remappal, initial/later local/
-global FX/remap, retained maps, invalid mappings, ordered/conditional evaluation,
-schema errors and1.0 profiles. Stage Shadow intensity0 isolates palette pixels.
-NO M4dc production changes/expectations. Native55 SEPARATE1345-original-input/client guardPASS. ALL55 rows/four sheets
-inspected;48accepted/7rejects/576values, promoted ONCE; all55 config finalizations
-exact. ACTIVE8 session40035, temp/run-m4dc-phase-native.py,40-input original freeze
-temp/m4dc-phase-inputs.json. Full8intent parser verified and separate48-input
-guardPASS. Await ENTIRE40035, then SEPARATE elevated
-original-input/client guard before source/test/probe/fixture edits or any runtime.
-Inspect EVERY native numeric/color/consumer row and sheet BEFORE promotion/fix.
-Early numeric facts:missing-action still evaluates palette fields(1,1,2),
-order control13452=anim/ownpal/remapX/remapY/pos. Color rules unreviewed; do not
-implement before ALL55 rows/sheets. Extra id/facing/vfacing phase controls needed.
-Only MD/independent ignored prep while active. Common/helper resources, angles/
-trans/random/pools and other allocated groups remain. Continue all item3.
-
-## Private environment and independent preparation
-
-Default sandbox ps HIDES host processes: use ELEVATED wrapper for real guards.
-Original Xvfb/Pulse30218/30219 still alive. Native detail26 session20143 survived
-daemon restart, tool session lost;26complete originals plus normal completion
-marker and separate998-input/client guard verified. Do not claim observed exit0.
-No server recovery performed. temp/m4da-daemon-recovery-state.json records this.
-
-Initial62 native session12556 completed/awaited0, separate894-input guardPASS.
-Schema10 native60424 completed/awaited0, separate1043-original-input guardPASS.
-All outputs inspected before promotion. Geometry8 completed0 and separate104-input
-guardPASS; its apparent odd-rounding fit fails intensity controls, so it is only
-a preserved diagnostic, not a new renderer rule.
-
-18 UNOBSERVED ForceFeedback/Null drafts and creator are under
-temp/m4db-forcefeedback-draft / prepare-m4db-forcefeedback-draft.py.
-Full CNS/trigger/parameter/inherited-resource parser intent verification and
-original freeze/native observations are still required. No public inputs or code
-for that group yet. Static compiler branches both store type0 like Null; exact
-runtime/schema/dispatch proof still needed. See static files below. No inference
-from absent devices/nojoy. Continue independent allocated work before scope issues.
-
-## Completed M4cz evidence
-
-Final10305 completed/awaited1; separate16,814frozen-input/clientguardPASS.
-All843engine/character and625native results pass.154apps152exact/77,337,600pixels;
-strict exit1 retains ONLY missing-shadow1/-1,294RGB/max32 each. Four masks, stock
-21win/26FIGHT rematch/45secondwin visually inspected;82balanced events and
-1,918,419private PCMframes. Modules/inventory pass. Audit35042 completed0:
- temp/m4cz-final-evidence-audit.json checks67,882frozen entries/16,814unique paths,
-646original native sources and final config/binary/capture/audio provenance.
-Resource audit pins109original manifest files/6601native resource copies; final
-stock review recorded. BinarySHA:
- 2ee879965eedf7ec4230c72c13b8fce8af8103d49bf746611b79bd90e0a69f94.
-Full checkpoint docs/README/coverage/compatibility/test/inventory records committed.
-
-## Current implementation
-
-M4cz3255f127cc10217127bd8c1a0a892949ad20cf18 production files:
-engine/after_image.go, engine/projectile.go, character/after_image.go,
-character/projectile.go, character/hit_chain.go. New match/projectile_trail_test.go
-and tests/projectile_trail_render_probe.py plus native source/text corpus.
-Controller inventory sources/findings regenerated after deliberate review;
-74typed/15fallback/3stubs/9partial/17bounded/60route-only, no overall percentage.
-
-Nested Projectile AfterImage uses an explicit time-presence compilation gate.
-Missing time ignores siblings entirely; explicit zero still validates them.
-Ordered nested expressions run on issuer variables after admission to both
-projectile and GLOBAL root/helper/projectile history pools. A new projectile
-needs its own slot even if its issuer already owns one. Core args still evaluate
-when either pool denies admission; ordinary projectile creation survives an
-AfterImage-only denial. Owned palette creation clears initial localFX, keeps maps;
-recorded mappings are immutable snapshots. Initial red brightness is validated
-but never evaluated. Defaults/palette/blend policy share the actor compiler.
-
-Actors retain slots after stop/drain. Finite projectile contexts release after
-configured duration+length*timegap active passes (negative time<-1 uses1 for
-expiry but shows no old poses). Removal/cancellation frees history immediately;
-helper-created projectiles become root-owned and outlive their creator. Owner
-freeze gates projectile motion/history. Positive Pause/SuperPause allowance is
-inclusive at p.Time==allowance; zero freezes even a newborn during existing pause.
-
-Projectile history captures completed AIR AFTER advancement; actors record
-before it. Hitpause has THREE clocks: samples are forced regardless of timegap,
-and sample phase advances. Duration uses precontact pause state: new-contact
-pass consumes duration, subsequent paused passes retain it. Allocation expiry
-uses POSTcontact state and freezes on all paused passes. Do not reuse disproved
-early inference that the gap phase freezes or that duration always advances.
-
-Revision4 fixes two final boundaries: inclusive positive allowance and removal
-cleanup at nonnegative AnimTime. Infinite AIR gives positive(time+1), so ==0 kept
-an extra removal sprite. Finite and infinite target controls remain immutable.
-
-## Native corpus and preserved revisions
-
-161 original native programs:154accepted, five target schema rejections, TWO
-empty-state AUTHORING rejections.1848captured values/646 unique original source-
-probe hashes. ALL161rows and11review sheets inspected before promotion ONCE.
-Base49, additional106accepted and boundary4 expectations are in separate ledgers;
-two authoring errors stay in the additional ledger, without behavioral JSONs.
-All161prepared/final configs exactly reconstruct FirstRun1->0 and LF->CRLF only.
-Original recorders/sources/resources/captures/goldens are immutable.
-
-Groups and ledgers under tests/testdata/reference:
-- trailprojectile49; projectile-trail-native-ledger.json and
-  projectile-trail-config-finalization.json.
-- trailpool58/trailphase48 originally; additional native/config-finalization
-  ledgers hold108programs,106accepted plus two authoring diagnostics.
-- Four new trailphase-boundary cases; separate boundary native/config ledgers.
-  Current replay counts:trailpool58,trailphase52,base49; additional intent110.
-
-All frozen temp inputs groups: m4cz-{projectile,extra,timing,followup,finalcontrols,
-boundary}-inputs.json. Native final sessions completed/awaited and separate
-646-input/client guard PASS. Boundary four budgets5/6 at valid-owner pauseTime4
-show6/7 moving poses, bboxright559/613, in both pause kinds.
-
-Initial baselines preserved:13base numeric failures/eight app cases;
-99additional numeric failures/four app cases; boundary four real app failures
-8019RGBpixels/max214 each, session34357 completed/awaited1, separate16808input/
-clientguardPASS. Previous strict probe versions archived in temp/m4cz-baseline-
-render-probe.py and m4cz-r3-render-probe.py before disjoint ledger extensions.
-No pixel tolerance changed; final captures4seconds versus earlier7 compare the
-SAME original crops, with the fixture world frozen at Time8/10/16.
-
-Revision1:162focused results pass;20apps17exact/3failures(animated21612,
-finite-hitpause21420, hitpause-gap2 4284RGB). Revision2:8apps7exact; finite
-palette12852/max50 remained. Revision3:allthreecounterexamples exact/1526400px.
-These diagnostics are preserved, including native age-candidate analyses that
-did not uniquely distinguish the clocks.
-
-Integration1 session72254 completed/awaited1; separate16789input/clientguardPASS:
-843engine/character results pass;616native pass/5failed results(three subcases
-plus two wrapper failures),397.936s. Subcases projspawn-pause-move,
-projspawn-super-move, projclock-birth-paused-lifetime-1 exposed allowance edge.
-Full150apps144exact/6UNWAIVED: removal-visible and timing-removal-visible3/4/5
-4359RGB/max214 each; shadow1/-1 294/max32 each. Native LEFT has no removal sprite,
-Go RIGHT extra (see temp/m4cz-matrix1-removal-visible-counterexample.png).
-Four old masks pass; stock21win/26FIGHT rematch/45secondwin visually inspected;
-82events/1919886PCMframes; modules pass. Inventory failed stale source hashes;
-it was deliberately refreshed after final fixes, not to waive behavioral errors.
-
-Focused4 session12039 completed/awaited0, separate16811input/clientguardPASS.
-All843unit results,117selected native results and12targeted actual apps pass,
-6105600RGBpixels exact. This resolves the old three native subcases and allfour
-visible-removal failures. All baseline/failing artifacts remain unchanged.
-Final full validation10305 is complete as recorded above.
-
-## Subsequent allocated work and independent preparation
-
-Shared shadow rendering next. temp/m4da-shadow-study-plan.md lists required
-geometry/alpha/fade/palette/flags/layer controls. The original294pixel presence
-controls clip most of the shadow; new stages must bring the WHOLE shadow into
-view. Do not infer shadow math from Trans or from actor defaults.
-
-Latest independent preparation is temp/m4da-shadow-draft3,62UNOBSERVED/
-UNPROMOTED drafts. It fixes additive AIR field placement and adds explicit AIR
-intent, root/helper/projectile trail-shadow separation, helper shadowoffset+/-10
-and shadow/root overlap at three priorities. FULL CNS/AIR/STAGE intent parser
-verification is required before freezing public inputs or native observation.
-Old drafts remain unchanged, including the first count-assert authoring error.
-Foreground/background layer overlap still needs calibrated controls. No shadow
-runtime or implementation yet. See temp/item3-residual-research-queue.md.
-
-Independent static ForceFeedback preparation:
- temp/item3-forcefeedback-static-findings.json and
- temp/item3-controller-static-xrefs.json. Exact supplied PE hash records successful
-ForceFeedback and Null compiler-name matches storing the same ESI value at
-controller kind+0x10 then jumping to common0x4472c2, without parameter parsing.
-Store sites0x447f5a/0x4485c9. This is stronger than absent /dev/input or -nojoy,
-but runtime schema/evaluation controls and dispatch review are STILL REQUIRED
-before a demonstrated native no-op/complete claim. No implementation yet.
-Do not invent gamepad vibration behavior ahead of the supplied beta target.
-
-Continue remaining Explod creation/ownership/remap/random/angle/trans/shadow/
-capacity, all AssertSpecial consumers, GameMakeAnim/MakeDust, clipboard formatting,
-haptics/device/target boundary, residual StateTypeSet/VarSet/FVar schemas/aliases,
-HitAddHUD. Native VarSetliteral7.9 rejects; later fix conflicting old unit inputs
-to7.9+0.0 expressions without modifying native goldens. All item3 remains allocated.
-Item4(modes/teams/AI/BGM/assets, remaining triggers, final font/renderer/platform)
-remains unallocated. No source-route percentage proves engine completion.
-
-## Preserved previous checkpoint limits
-
-M4cy committed269 scoped UTF8source/text paths, no binaries/push. Full scoped race
-4243results/36packages(25tested/11compiled-only), four masks, stock82inputs and
-1920802PCMframes pass. Actor apps46/48exact: current-only45degree534RGB/17maskXOR,
-trail45degree2285/65,max148, remain UNWAIVED with old12M4cq/sevenM4cv. Quarter-turn
-trail exact. Read AFTERIMAGE-ACTORS.md. Integration never waives strict failures.
+Next prepared28pool/RNG drafts: temp/m4df-explod-pool-rng-draft/DRAFT-NOTES.json.
+Not copied to public bank, verified, frozen or observed yet. Full intent helper
+temp/_tmp/m4df-explod-pool-intent/main.go and private config/seed recorder
+pool-reference-probe.py/run-m4df-native.py prepared, not run. Verify all headers,
+controller kinds/params/resources before native. Config minima may clamp; do not
+infer from manual. Need later helper/opponent/system-pool sharing/cleanup cases.

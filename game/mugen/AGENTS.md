@@ -20,38 +20,42 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dd complete; continue M4de
+## Immediate state — M4de creation drawing validation
 
-No active runtimes. M4dd source/text local checkpoint record temp/m4dd-commit-record.json.
-Focused17071/final63345 complete/awaited0; separate17938/17939-input guardsPASS;
-passive audit19927 complete0.42original programs/504values;42new+4oldM4dc apps
-exact/23,404,800RGBpixels;868core4pkgs/248native races,5oldpalette/order/4masks/
-stock win-rematch-win pass. All46pairs and stock21/26/45 viewed.82events/
-1,971,399privatePCMframes. Audit17941frozen paths/1564originals/109files/41archives/
-1722nativecopies PASS. Earlier strict pixels UNWAIVED; latest FULL M4da4506/36.
+Latest committed checkpoint: M4dd f48dfdb8aef751a69a1b4105b857a3d6bc2a2c7b.
+M4de47 originals reviewed/promoted once:42accepted/5reject/504numeric values,
+47exact native configurations. Typed creation angles/trans/alpha and conditional
+priority evaluation implemented. Focused races868core/157native pass. Fifteen
+focused apps12exact/3UNWAIVED:45deg534RGB/max148,x30208/max57,combined537/max171.
+Native/app source and strict comparisons are immutable; production sampling unchanged.
 
-M4dc committed039ead67963e80adab7d3ebab4ad3d5c083e65b7. Read docs/HANDOFF.md,
-EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md. M4dd default common
-owned, optional separate live LocalEffects color pointer and inherited mapping
-replacement before forced remap. Seven original app failures preserved.
+M4de final69433 COMPLETE/awaited1:42apps36exact/6strictUNWAIVED; five old
+palette/order apps, four masks, stock82inputs/1,973,200PCMframes, modules/inventory
+PASS. SEPARATE18220-input/36435-hash/client guardPASS. Passiveaudit59151 and
+reviewgeneration38369 completed/awaited0. Audit18222frozen paths/72789checks/
+1758originalinputs/47configs/41archives/1927nativecopies/109manifestfiles PASS.
+ALL42pairs/seven sheets, nine old app images and stock21win/26FIGHT/45win viewed.
+No active runtime. Local source/text checkpoint next, then continue all item3.
+Read topicdoc/hand off. Ten direct raw sets remain unpromoted and unstaged.
 
-NEXT41 UNOBSERVED draft controls temp/m4de-explod-draw-draft and prepared private
-full intent verifier temp/_tmp/m4de-explod-draw-intent/main.go NOT RUN/frozen.
-Freeze/verify/await/SEPARATE elevated guard before public copying/native run.
-CNS kinds/triggers/params, full state headers/constants and entire AIR/CMD/stage
-intent required. AIR adds explicit normal/add/sub portrait controls. Three1.0
-profiles. Inspect ALL native rows/sheets BEFORE promotion/production changes.
-Continue all item3 without checkpoint stop/reapproval. No binaries/push/agents.
+Private reversal/precision/quad/screen-bias experiments retained, no production
+sampling fix. Screen-bias experiment complete18rows but original exec session ID
+lost due response overflow; no observed exit0 claim. Elevated no-runtime check and
+separate376-input/client guard passed; recovery note retained. Improvements still
+fail strict pixels. Direct640/1280native controls10complete and reviewed, not promoted.
+The original1280capture clipped to947rows; diagnostic preserved. Fresh r2controls
+used task-owned Xvfb98(1600x1200), metadata temp/m4de-large-display-r2/metadata.json.
+Original97/Pulse30218/30219 unchanged; auth private.
 
+Continue all item3: remaining Explod random/capacity and measured dependencies,
+AssertSpecial, system effects, clipboard and residual schemas. Item4 unallocated.
+Prior12M4cq/sevenM4cv/twoM4cy and60M4da strict renderer failures stay UNWAIVED.
 Source74typed/15fallback/2stubs/9partial/18bounded/60route-only is not behavioral
-coverage. Continue ALL remaining item3 with local checkpoints; no stop/reapproval.
-Remaining Explod fields/pools, AssertSpecial, system effects, clipboard and residual
-schemas; common/helper palette variants still unmeasured. Item4 unallocated.
+coverage. Latest full suite remains M4da4506results/36packages. No stop/reapproval.
 
-Default sandbox ps HIDES host processes: ALWAYS use elevated wrapper for guards.
-Original private Xvfb/Pulse30218/30219 alive. Old native detail20143 tool session
-lost during daemon restart; complete original evidence/normal marker verified,
-but never claim observed exit0. No server recovery/rerun performed.
+Default sandbox ps hides host processes; use elevated wrapper guards. Original
+native detail20143 lost session during daemon restart has original evidence/normal
+marker audited; never claim observed exit0 or replace its native evidence.
 
 ## Native and validation workflow
 

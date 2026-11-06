@@ -132,6 +132,8 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 	c.retargetExplod(e, p.BindID, screen)
 	e.X, e.Y, e.Facing = x, y, face
 	request := effect.Request{Source: source, Action: p.Action, Facing: face, X: x * scale, Y: y * scale, RemoveTime: &e.Time, SpritePriority: p.SpritePriority, VFacing: p.VFacing, ScreenSpace: screen, OnTop: p.OnTop, Shadow: p.Shadow, PauseMoveTime: p.PauseMoveTime, SuperMoveTime: p.SuperMoveTime, ScaleX: p.ScaleX, ScaleY: p.ScaleY, HasScale: true}
+	request.Angle, request.XAngle, request.YAngle = p.Angle, p.XAngle, p.YAngle
+	request.HasBlend, request.Blend, request.AlphaSrc, request.AlphaDst = p.HasBlend, p.Blend, p.AlphaSrc, p.AlphaDst
 	e.Visual = &effect.Instance{Request: request, Clock: clock, Active: true, OwnerDriven: true}
 	c.Explods = append(c.Explods, e)
 	// State-only hosts can model lifetime/counts without a graphics archive.
