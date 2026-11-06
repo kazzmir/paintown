@@ -1,5 +1,30 @@
 # Current behavior coverage ledger
 
+## M4dk — NoKO voice and independent contact interruption
+
+KO voices and echoes now require committed death. A protected Life0/Alive1
+actor emits neither. Contact still interrupts channel0, while a direct LifeSet0
+under NoKO leaves the ordinary channel playing. Ten original native programs
+pin120 numeric values and36 stable PCM segments, using an existing tone-bank
+alias without adding a binary asset. All ten CPU/native programs pass within
+889 core race results; all44 NoKO lifecycle programs also pass (48 results).
+
+Production audio comparisons pass **9/10 (90% of this bounded corpus)**. The
+ordinary echo control drops a short silent interval from its measured segment
+sequence; that strict gate remains **UNWAIVED**, with the actual outer exit1
+retained. All six protected NoKO cases pass. A native-only phase experiment did
+not reproduce the failure, so no comparator, sample grid or tolerance changed.
+Held KO text also remains an open presentation difference. All ten image pairs,
+five older palette/order apps, four masks and stock win/rematch/win are reviewed.
+Stock input/private audio pass:82 balanced keys/1,972,873 PCM frames.
+
+The other42 final gates pass. Frozen-input, native/source-version, resource and
+module audits pass. Latest full suite remains M4dj's4,918/36 at9c35b389; the
+current one-condition sound change has focused integration evidence. Earlier
+strict HUD/raster failures remain unwaived. [Evidence and bounds](NO-KO-AUDIO.md).
+Item3 continues; route counts75/89 typed(84.3%) are not behavioral completion.
+
+
 ## M4dj — NoKO lifetime, death state and paused KO
 
 The beta's accepted undocumented `noko` flag now preserves zero-life actors

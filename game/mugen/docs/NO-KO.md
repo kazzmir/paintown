@@ -81,7 +81,8 @@ No executable or asset binary is committed. Records in temp:
 `m4dj-final1-separate-guard.json`; original failures and intermediate captures
 remain immutable. No region, threshold or earlier expectation changed.
 
-Native KO-audio behavior under noko, helper/projectile assertion contexts,
+M4dk subsequently measures [NoKO voice/echo behavior](NO-KO-AUDIO.md).
+Helper/projectile assertion contexts,
 additional round/time-over combinations and broader profiles remain independent
 measurements. NoMusic/BGM still belongs to its concrete dependent allocation.
 Earlier strict HUD/raster failures remain unwaived. Source routes remain75/89

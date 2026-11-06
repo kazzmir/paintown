@@ -4,13 +4,15 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
-// Root KO voices follow the simulation's shared post-damage phase. Native
-// Pause/SuperPause, helper KO ownership and revival latching remain to verify.
+// Root KO voices require committed death in the shared post-damage phase.
+// NoKO can retain Life 0 without a KO voice or echo. Contact independently
+// interrupts channel 0; a protected direct LifeSet does not interrupt it.
+// Pause/SuperPause and helper KO ownership remain to verify.
 func (c *Character) updateKOSound(suppressed bool) error {
 	if c.Parent != nil {
 		return nil
 	}
-	if c.Life > 0 {
+	if c.IsAlive() {
 		c.koSoundStarted, c.koSoundAge = false, 0
 		return nil
 	}

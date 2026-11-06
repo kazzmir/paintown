@@ -105,15 +105,19 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4dj validation**.
+Snapshot: **2026-11-06; through M4dk validation**.
 
-M4dj adds native-backed NoKO lifetime, retained death state, self-KO/corpse-contact
-and paused-KO behavior. All **44 new native programs** pass; **30/30 new world
-crops are exact (100% of this bounded corpus)** across **15,264,000 RGB pixels**.
-The fresh full race suite passes **4,918 results across 36 packages**. Stock
-win/rematch/win and private audio pass. [Evidence and limits](docs/NO-KO.md).
-Earlier guard/walk and missing-state corrections remain covered; earlier HUD
-and renderer differences remain unwaived.
+M4dk corrects KO voices and echoes under NoKO while preserving independent
+contact sound interruption. All **10 new CPU/native programs pass**; production
+audio comparisons pass **9/10 (90% of this bounded corpus)**. One ordinary echo
+interval failure remains unwaived; no tolerance or sampling change was adopted.
+Focused races pass **889 core / 48 NoKO results**, and stock win/rematch/audio
+passes. [Evidence and limits](docs/NO-KO-AUDIO.md).
+
+The latest full scoped race suite, at M4dj's preceding source boundary, passes
+**4,918 results across 36 packages**. Its **44 new native programs** and **30/30
+world crops** pass across **15,264,000 RGB pixels**. [Lifecycle evidence](docs/NO-KO.md).
+Earlier guard/walk corrections remain covered; HUD and renderer failures remain open.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -208,6 +212,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| NoKO voice CPU/native programs in M4dk | 10 / 10 | **100%** | Recorded life/channel/voice/echo corpus; broader contexts remain. |
+| NoKO voice production audio comparisons in M4dk | 9 / 10 | **90%** | One ordinary echo-window failure remains unwaived; original sampler/tolerances retained. |
 | NoKO native lifetime/contact/entry programs in M4dj | 44 / 44 | **100%** | This recorded corpus; audio and wider entity/round variants remain. |
 | NoKO world outcome crops in M4dj | 30 / 30 | **100%** | Exact fixed world observers; earlier HUD/raster obligations stay open. |
 | AssertSpecial numeric/schema programs in M4dh | 48 / 48 | **100%** | Recorded literal/global-clock corpus, including eight expected rejections; other consumers remain. |

@@ -3,6 +3,7 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
+    "character/ko_sound.go": "6e46efe88d2ff2d29a6acf1df471f358b32646bc162e2dd0a6e573e28c715910",
     "character/life.go": "9a033713d5527c6f70b2fc494261a1ea39481905dd3051925ae766b354e0be75",
     "character/power.go": "dd885692cab05d47d254c546943702ec47bc567c7896d4a0943ce6ef9396fcbe",
     "character/hit_damage.go": "8e89689375963981e73b6f3b0af787799ebaae921301c97481c547fb8fc3456d",
@@ -197,7 +198,7 @@
       "handler": "handleAssertSpecial",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; ASSERT-SPECIAL-CONTROLS.md adds native posture-specific automatic guard entry, scripted-guard preservation, attacker unguardable and nowalk entry with owned keyboard replay/render evidence; NO-KO.md adds measured per-entity non-reviving death latches, current-pass global NoKO assertions, self-KO entry/corpse-contact and paused-KO lifecycle; broader helper/projectile/KOaudio/music/round variants remain; SHADOWS.md adds shared shadow suppression"
+        "ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; ASSERT-SPECIAL-CONTROLS.md adds native posture-specific automatic guard entry, scripted-guard preservation, attacker unguardable and nowalk entry with owned keyboard replay/render evidence; NO-KO.md adds measured per-entity non-reviving death latches, current-pass global NoKO assertions, self-KO entry/corpse-contact and paused-KO lifecycle; NO-KO-AUDIO.md adds measured committed-death KOvoice/echo gating with contact-independent channel0 interruption and native/private-application PCM; broader helper/projectile/pause/music/round variants remain; SHADOWS.md adds shared shadow suppression"
       ],
       "variants_complete": false
     },

@@ -136,3 +136,6 @@ M4di keyboard/contact comparisons, corrected common-file inference and full
 
 [NoKO and retained death state](NO-KO.md): entity-order/global assertions, frozen
 owners, self-KO/corpse contacts and full4,918-result integration acceptance.
+
+[NoKO voice and channel behavior](NO-KO-AUDIO.md): ten native PCM programs,
+committed-death voice/echo gating and one unwaived production echo comparison.

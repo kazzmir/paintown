@@ -20,37 +20,41 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dj complete; continue item 3
+## Immediate state — M4dk complete; continue item 3
 
-M4di committed80e076127e8c33c00358b44dcbe06aeca3621f03 (321scoped UTF8 paths).
-M4dj acceptance complete:44native/528values/44configs,30exact world crops/
-15,264,000RGBpixels,full4,918results/36packages(25tested11compiled-only),
-Match2294.916s. Entire32712 completed/awaited0,all23gates0. Five oldpalette/order
-apps,four masks and stock21win/26FIGHTrematch/45secondwin reviewed;82balancedkeys/
-1,973,087privatePCMframes. ALL30pairs/sixsheets+old9+stock3 reviewed. Separate
-final19445/matrix19442/revision19444/nested19442input/client guardPASS. Auditor
-38573completed0:19,448unique/3,506originals/44configs/41resources/1,804copies/
-109manifest. No live runtime. Records temp/m4dj-final-evidence-audit.json,
-m4dj-final-visual-review.json,m4dj-final1-separate-guard.json. Localcommit record
-will be temp/m4dj-commit-record.json; source/text only,no binary/push.
+M4dj committed9c35b389 (251 source/text paths):44 native/528values/30exact world
+crops, full4,918 race results/36packages. M4dk adds10 native voice programs/
+120values/36segments. All ten CPU programs pass within889core race results;
+NoKO44+4parents48pass. Final33638 completed/awaited1 solely for strict ordinary
+KOecho audio comparison:9/10 production cases pass,all six NoKO cases pass.
+Other42gates0. Original failure UNWAIVED; no sampler/tolerance/golden changes.
+Five native phase shifts at50/10ms did NOT reproduce it; hypothesis unadopted.
 
-NO-KO.md records current-pass global NoKO, perentity nonreviving deathlatch,
-Alive latched insideCNS/deathcommit afterownCNS+damage, frozenretention,
-selfKO5030 gating/missing5030 retainedattributes, corpsecontactduringdamagegrace,
-protectedLife0lethalmetadata/no powerfordead, andpausedmovingownerKO. No guessed
-selfKOfall! Native sixentrycontrols prove originalfall1camefromlatercontact.
-KOaudio leftunchanged pending independent nativePCM. All44promoted ONCE; original
-14GameTime diagnostics UNPROMOTED/UNSTAGED, plus10directrenderer/3oldwalkrawsets.
-OriginalinvalidPause60/99999scope explicitlycorrected byseparate60/60controls.
-Allsource/native/recorders/configs/captures/goldensimmutable. Prior35HUD/allstrict
-raster failures UNWAIVED; no tolerances or regions changed. No wholeengine%.
+All10pairs/fivesheets+old9+stock3 reviewed; oldpalette/order/masks and stockwin/
+rematch/win82keys/1,972,873PCMpass. Separate19,478 frozen/clientguardPASS.
+Passive auditor57293completed0:3,994original paths,390archive+Git versions,
+10configs,41resources/410copies/109manifest. No live runtime. Currenttopic
+NO-KO-AUDIO.md; records temp/m4dk-final-evidence-audit.json,final-visual-review,
+final1-separate-guard. Localtextcommit record temp/m4dk-commit-record.json.
+Latest full4,918/36 remains M4dj source boundary; M4dk focused checks only.
 
-Next: independently measure native NoKO KOvoice/channel/echo behavior, then
-remaining AssertSpecial/helper/global/timer/round/music consumers; systemeffects
-GameMakeAnim/MakeDust (36unobserved drafts/helpers), clipboard/debug formatting,
-VarSet/FVaraliases/StateTypeSet/HitAdd schemas/consumers and strict renderer gates.
-See HANDOFF.md for details. Continue until allallocated item3complete or concrete
-userdependency; item4BGM/modes/assets/font/platform remainsunallocated.
+IMPORTANT nokovoice ledger authoring Go/parser/unused probe versions are checked
+using nokovoice-authoring-source-archive.json against BOTH original Git9c35b389
+and byte-identical private snapshots. Native-used recorders/programs/resources/
+configs/captures/PCM still immutable ORIGINAL paths. Do not compare archived
+versioned authoring hashes against current port source or change originalledger.
+Future native ledgers should separate immutable native inputs from versioned
+port/parser authoring dependencies; preserve exact versions before later edits.
+
+Next: remaining special flags actual helper/global/timer/round consumers and
+system GameMakeAnim/MakeDust (16aged+20early drafts/helpers prepared NOT observed),
+clipboard/debug formatting, VarSet/FVaraliases/StateTypeSet/HitAdd and shared
+strict renderer/HUD/audio/presentation failures. Item3 continues without approval;
+item4 BGM/modes/assets/fonts/platform remainsunallocated. NoMusic depends on native
+BGM evidence; finish independent item3 before concrete allocation question.
+Original14nokotime diagnostics,10directrenderer and3invalidwalk rawsets stay
+UNPROMOTED/UNSTAGED. All35HUD/priorraster/echo-window/heldKOtext failures UNWAIVED.
+Source75typed14fallback2stubs9partial18bounded60route-only is not enginecoverage%.
 
 ## Native and validation workflow
 

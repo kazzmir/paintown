@@ -1,0 +1,2345 @@
+{
+  "scope": "Versioned Go/parser and unused probe authoring dependencies captured by the whole intent freeze. Native-used reference_probe.py/sound_probe.py, actual native programs/resources/configs/captures/PCM remain checked at original immutable paths. No original ledger or expected observation changed.",
+  "files": {
+    "game/mugen/font/font_test.go": {
+      "sha256": "770ae6196f187716d5e976a943e3be2efb9641adc33eb8c61ff446661a86710c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/font/font_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/font/font_test.go"
+    },
+    "game/mugen/font/font.go": {
+      "sha256": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/font/font.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/font/font.go"
+    },
+    "game/mugen/font/v2.go": {
+      "sha256": "8d14846ecb1131e410ea1355f3c13d107a3f681c5e235e53245edc9f6f26f34d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/font/v2.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/font/v2.go"
+    },
+    "game/mugen/font/truetype.go": {
+      "sha256": "068027d84fb1deadffe53994b38846ae7c04aae1f2771c82cd07a7f0bf84600d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/font/truetype.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/font/truetype.go"
+    },
+    "game/mugen/character/tick_test.go": {
+      "sha256": "11b0684ed116834c8602507348e1721afb27f4f81a27268dd1fa1edd5f30de74",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/tick_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/tick_test.go"
+    },
+    "game/mugen/character/world.go": {
+      "sha256": "1549fa3ba6d09b350db72e31f80bf89ec28b153832531e747f757d95c70061e2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/world.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/world.go"
+    },
+    "game/mugen/character/hit_coordinates_test.go": {
+      "sha256": "7f5e126aa2406abca6f33d9d60493e40fde37d9ae1a183656c489ebdd2173f81",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_coordinates_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_coordinates_test.go"
+    },
+    "game/mugen/character/hit_chain.go": {
+      "sha256": "e110798c10d7f4707482d73f632fb36a92df730826222e641b62afe24894b7d9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_chain.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_chain.go"
+    },
+    "game/mugen/character/retire.go": {
+      "sha256": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/retire.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/retire.go"
+    },
+    "game/mugen/character/retire_test.go": {
+      "sha256": "46cde2be95700455b279632bd708baed2db3eb8b8e60ccaad17c3894c39fc03c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/retire_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/retire_test.go"
+    },
+    "game/mugen/character/after_image_test.go": {
+      "sha256": "b00a67ed38ff5163338ae94f3d626a733aa96054fd084fa798d3d9b99f6add4e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/after_image_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/after_image_test.go"
+    },
+    "game/mugen/character/screen_bound.go": {
+      "sha256": "b958b71d1db8cde22b1114f841737d842b1e6ce837ed5df01cd8679c4daecdb9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/screen_bound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/screen_bound.go"
+    },
+    "game/mugen/character/state_chain_test.go": {
+      "sha256": "39037da641d044264a833aaf486fd3abe7bafda9a9cf12a3a025e2232776eb7a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/state_chain_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/state_chain_test.go"
+    },
+    "game/mugen/character/hit_velocity.go": {
+      "sha256": "31e048b870b0ca7cb3d3e8f1b6b8f0592f5129917771202105ffafb77e617b6e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_velocity.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_velocity.go"
+    },
+    "game/mugen/character/constants_test.go": {
+      "sha256": "9be4052ebaeb59c3a645337cf8bcad2ecddb83681760cc9e2ac47f63a861aa64",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/constants_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/constants_test.go"
+    },
+    "game/mugen/character/constants.go": {
+      "sha256": "990d046a7c6672dcbcfb73dcfcc1a59960b272adf99121cbaddc43b4c89066ef",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/constants.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/constants.go"
+    },
+    "game/mugen/character/palette_test.go": {
+      "sha256": "f7869c52b5ee068199bc30aaa1765169dea1368810e77ef6d9c1327081f30dbf",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/palette_test.go"
+    },
+    "game/mugen/character/power.go": {
+      "sha256": "dd885692cab05d47d254c546943702ec47bc567c7896d4a0943ce6ef9396fcbe",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/power.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/power.go"
+    },
+    "game/mugen/character/liedown.go": {
+      "sha256": "cb911ff75228f200cf1ef4d234c25122376e63093ed54d9b46987c3374b284af",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/liedown.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/liedown.go"
+    },
+    "game/mugen/character/after_image.go": {
+      "sha256": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/after_image.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/after_image.go"
+    },
+    "game/mugen/character/coordinates_test.go": {
+      "sha256": "da09ecae913ea528cf3cf67ef5270fbc62a1f8400c6cafb11a9cfabd72f7f4ed",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/coordinates_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/coordinates_test.go"
+    },
+    "game/mugen/character/reversal.go": {
+      "sha256": "c72eb7586f8dc9b2ba12621c78d0f91d7ac62fef1b769a7110728a465a19b4ea",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/reversal.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/reversal.go"
+    },
+    "game/mugen/character/sound.go": {
+      "sha256": "d5a8ba71b636691eb3f73a51f80ba948549e654dbe96721b2150cbbba9095707",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/sound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/sound.go"
+    },
+    "game/mugen/character/width.go": {
+      "sha256": "4b35378b15fe1dfae4f307d4af54d6adec5102da8112d247d0aade97ff19fffb",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/width.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/width.go"
+    },
+    "game/mugen/character/context.go": {
+      "sha256": "abc5e4cdc271c12eeee1e778af5b95badf2d4e73a54d6eca58514a95a1c8ebb1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/context.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/context.go"
+    },
+    "game/mugen/character/hit_coordinates.go": {
+      "sha256": "8c7f092ab0c41ebcfd57694f27d36a515d01f2ae509d7ef5e57dc3b7ee3cdc5b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_coordinates.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_coordinates.go"
+    },
+    "game/mugen/character/ko_sound.go": {
+      "sha256": "56b5447d40c6744c73aab9ca60c881e535e7b483b965b4b1e597424eb85c8fc3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/ko_sound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/ko_sound.go"
+    },
+    "game/mugen/character/character_test.go": {
+      "sha256": "589223469c4a72a053182e391112e0a2d533c637277aa45d11dc25f2a5d2fd66",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/character_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/character_test.go"
+    },
+    "game/mugen/character/actor_order.go": {
+      "sha256": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/actor_order.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/actor_order.go"
+    },
+    "game/mugen/character/reference_test.go": {
+      "sha256": "fed62d5a4462c892df6e396ce37aed93adbc8487cd8d91e486c7d448a247f8e0",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/reference_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/reference_test.go"
+    },
+    "game/mugen/character/targets_test.go": {
+      "sha256": "947b422173a7acbdfeb11530fa35ca1514a5690398c6a066948ccab741471aca",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/targets_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/targets_test.go"
+    },
+    "game/mugen/character/superpause_test.go": {
+      "sha256": "fd82d3c9bd7ab1e986d76f99a7cc0d52ae5ce6ceca82292312909ef065b2e401",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/superpause_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/superpause_test.go"
+    },
+    "game/mugen/character/hitfilter.go": {
+      "sha256": "1a237d06075bc65d5a2bf4dab60f479485e2456025151e981bfcdd491c8fe29d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hitfilter.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hitfilter.go"
+    },
+    "game/mugen/character/hit_constraints.go": {
+      "sha256": "e93f5038db61a5c12d4adad8ee6933c10b2acad845bd8630b6c467cbda555f72",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_constraints.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_constraints.go"
+    },
+    "game/mugen/character/loader.go": {
+      "sha256": "0eb5be41fbd347491b9e2dcdabf48e4626b8740364b36f801cdb7396b632a0d4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/loader.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/loader.go"
+    },
+    "game/mugen/character/projectile_cancel.go": {
+      "sha256": "e4b377a9c7779e010ca2142af8aae2a0a7f452c7c14810af9dc88ab4b02c178e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/projectile_cancel.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/projectile_cancel.go"
+    },
+    "game/mugen/character/animation.go": {
+      "sha256": "1062f67edd6d73183d9b2f3b0cb9439e596663026ede03dbd48bf0d5511de836",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/animation.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/animation.go"
+    },
+    "game/mugen/character/character.go": {
+      "sha256": "e1b05263694e0c09cbd42c58111fdecfb944884241728ca0c64154059b31b50f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/character.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/character.go"
+    },
+    "game/mugen/character/collision.go": {
+      "sha256": "16971be086751da88240b6f890e9c4472bf7c7d691e0ae54c32fac1674d3e9d4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/collision.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/collision.go"
+    },
+    "game/mugen/character/commands.go": {
+      "sha256": "5c44d38b55965faff3d0fa4a8fe0a8a92f82b596970d63227eebd9f5ed147187",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/commands.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/commands.go"
+    },
+    "game/mugen/character/physics_reference_test.go": {
+      "sha256": "525881691a645ed19546294b4f307d06db55cbb9123c349869dddba9fe2bc46e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/physics_reference_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/physics_reference_test.go"
+    },
+    "game/mugen/character/hit_timing.go": {
+      "sha256": "f31d0cfdb3d51213afb1161cf03447d6e206e98cf5ecc23d22859a9a054ee834",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_timing.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_timing.go"
+    },
+    "game/mugen/character/hit_damage.go": {
+      "sha256": "8e89689375963981e73b6f3b0af787799ebaae921301c97481c547fb8fc3456d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_damage.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_damage.go"
+    },
+    "game/mugen/character/effects_test.go": {
+      "sha256": "7474e25b18b20ee2f343ca4fc71a681ef9953ec20404b2151be44a231713bf89",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/effects_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/effects_test.go"
+    },
+    "game/mugen/character/trans_test.go": {
+      "sha256": "762c51dc952e2f1a94b6daac91920ae5f4db27197d01f88d596ffcf184efe53e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/trans_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/trans_test.go"
+    },
+    "game/mugen/character/tick.go": {
+      "sha256": "d6770675c30d22d7d05079ab8c8a2679610eb1eecc8149a0d8ee7a02823c24c1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/tick.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/tick.go"
+    },
+    "game/mugen/character/projectile_event.go": {
+      "sha256": "60c49d1273a7ed1a62df235237c70aa74b852b3ae828c304333578e60e0a3201",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/projectile_event.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/projectile_event.go"
+    },
+    "game/mugen/character/clash.go": {
+      "sha256": "8929a9ca2caa2eb02d56374774963ab73a74a2cc2473abb6078ee10b26551db8",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/clash.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/clash.go"
+    },
+    "game/mugen/character/hitflag.go": {
+      "sha256": "2c1f3f170d0d65bc91edc0110250822bc8677bdb83daf339886b4576638bdba5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hitflag.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hitflag.go"
+    },
+    "game/mugen/character/ownership.go": {
+      "sha256": "b00530cdcd519d93a545ed0caa501470365c95b4f80dede3ed32bf59c7d0bddc",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/ownership.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/ownership.go"
+    },
+    "game/mugen/character/random_test.go": {
+      "sha256": "83410402e6b478afa3d499c4d15c58de470538e31c743de9138400eb1912ee86",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/random_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/random_test.go"
+    },
+    "game/mugen/character/hit_shake.go": {
+      "sha256": "f5051fd0338c529d5f4d3660f4283e445af35e00bb5aee85816f8650f47d9e6f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_shake.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_shake.go"
+    },
+    "game/mugen/character/hit_recovery_test.go": {
+      "sha256": "f340e96294850854d97e06f2d1b6e57ca2487f05aafc4665b3d9594225949489",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_recovery_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_recovery_test.go"
+    },
+    "game/mugen/character/animation_test.go": {
+      "sha256": "bbdea84adbb0ef2b0a306152fcb6b6a71973279e7ce9e506055659f5fa855845",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/animation_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/animation_test.go"
+    },
+    "game/mugen/character/corner_push.go": {
+      "sha256": "7cf3ec97637968db590bd389358a6b02b4f6adcb1f89080569ebe3aa4c289396",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/corner_push.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/corner_push.go"
+    },
+    "game/mugen/character/statemachine.go": {
+      "sha256": "1ed0645236e53a0ed150de41bdc27e8ba102ea011adf02ac7d6ab13590d0d190",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/statemachine.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/statemachine.go"
+    },
+    "game/mugen/character/effects.go": {
+      "sha256": "aa0e055bd43269f4d225aa76c0d1509940e0a4de410770cdbb982a2b47316895",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/effects.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/effects.go"
+    },
+    "game/mugen/character/binding.go": {
+      "sha256": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/binding.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/binding.go"
+    },
+    "game/mugen/character/coordinates.go": {
+      "sha256": "3e68d141657890d329783f63f60dce87c1653112bdfdebaa6c47cc306be41114",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/coordinates.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/coordinates.go"
+    },
+    "game/mugen/character/ownership_test.go": {
+      "sha256": "39503f0dde62f09b3027ffccd36ff381a98ea18f99f4b2bb1e1e34fdfd52ac66",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/ownership_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/ownership_test.go"
+    },
+    "game/mugen/character/helper.go": {
+      "sha256": "c1818f63af4509c9401dcaf336e359db82ba1d4193595f5d6a9ca23d8e90998f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/helper.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/helper.go"
+    },
+    "game/mugen/character/player.go": {
+      "sha256": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/player.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/player.go"
+    },
+    "game/mugen/character/pause_test.go": {
+      "sha256": "d10031e47246d7e9e5335b4c042cc845c7ecb954ab75430b26e4101d1aa791c3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/pause_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/pause_test.go"
+    },
+    "game/mugen/character/pause.go": {
+      "sha256": "4492f991b666f7716af31401dbb204009d69b21b303d2bd07b21250392f9c01c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/pause.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/pause.go"
+    },
+    "game/mugen/character/targets.go": {
+      "sha256": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/targets.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/targets.go"
+    },
+    "game/mugen/character/sound_test.go": {
+      "sha256": "8fa04cc0ef26a94159342a4f30e691b47da4ab80ec6c6ce492838d2d8a55189f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/sound_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/sound_test.go"
+    },
+    "game/mugen/character/hit_shake_test.go": {
+      "sha256": "076dbb7a271ee1a4e998ca6083c50bc8e630f5de8ef547cbe8e903897d7ed395",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_shake_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_shake_test.go"
+    },
+    "game/mugen/character/hitpause_var_test.go": {
+      "sha256": "242ceec57f9b5c026996b86ff86e2c1f9f5149a4de81b5719916fa43e2db1fed",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hitpause_var_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hitpause_var_test.go"
+    },
+    "game/mugen/character/explod.go": {
+      "sha256": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/explod.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/explod.go"
+    },
+    "game/mugen/character/projectile.go": {
+      "sha256": "bf8a8cf11497e0e4e2a1212ea3e35978dbf34ebc4da5a83d94ab9f6d1b9ceb5e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/projectile.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/projectile.go"
+    },
+    "game/mugen/character/hit_palette_test.go": {
+      "sha256": "1fe703403b3c6ed97664df40527157650e3815a39c2e96ac4f378f5f56dcbfcd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hit_palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hit_palette_test.go"
+    },
+    "game/mugen/character/redirect.go": {
+      "sha256": "96e41c30d79faae8f521f6844791b18d40ac7a17195a7dfd80a409b5fddab406",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/redirect.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/redirect.go"
+    },
+    "game/mugen/character/viewport_test.go": {
+      "sha256": "42e8dfa584e3494d93ea369b1301dfbc6429935b304d9b64e78512eda3bfb221",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/viewport_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/viewport_test.go"
+    },
+    "game/mugen/character/hitoverride.go": {
+      "sha256": "3f3addcea296e990e9a4616624c6ccf51b3122ac4983899e82de8544f3e4afc7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/hitoverride.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/hitoverride.go"
+    },
+    "game/mugen/character/drawing_test.go": {
+      "sha256": "5ffc97afc543eeeec3de5366c7ac328e2ff6e36c6818b5a6f4a1edbdcece2b58",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/drawing_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/drawing_test.go"
+    },
+    "game/mugen/character/life.go": {
+      "sha256": "9a033713d5527c6f70b2fc494261a1ea39481905dd3051925ae766b354e0be75",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/life.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/life.go"
+    },
+    "game/mugen/character/guard_test.go": {
+      "sha256": "4f6f59d43b037acaaec0422bc0f3cdb60f450042410ab0760f8f9b468b1fb807",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/guard_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/guard_test.go"
+    },
+    "game/mugen/character/world_test.go": {
+      "sha256": "9bc8c38110fea86721a6822e5f9e5cdb00b0e21181e58a77658270c69b926c21",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/character/world_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/character/world_test.go"
+    },
+    "game/mugen/effect/scene_test.go": {
+      "sha256": "95c2dabf92a70d3e1e8fb8f963ff36dd9927169607b4613fd71ab89e0523eb60",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/effect/scene_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/effect/scene_test.go"
+    },
+    "game/mugen/effect/scene.go": {
+      "sha256": "a1e1c82e29fb4634f95bdbef7b6448d05168a5b7ad9a6d029c6b50b8631b6336",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/effect/scene.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/effect/scene.go"
+    },
+    "game/mugen/evaluator/evaluator.go": {
+      "sha256": "01ecef7f0d8fd17076d5a9a5c965bbdb56d34ae284fcb17d4eebef261d1359c2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/evaluator.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/evaluator.go"
+    },
+    "game/mugen/evaluator/ast.go": {
+      "sha256": "c3f1b469c0281338a459aef09d8c90f5a999d55cfc4fa29bb5cb5d0bd53a479f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/ast.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/ast.go"
+    },
+    "game/mugen/evaluator/gethitvar_test.go": {
+      "sha256": "445b406140f328428286d4c6071edf6a6c07d27b9ce7efad95b6606adf23bee9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/gethitvar_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/gethitvar_test.go"
+    },
+    "game/mugen/evaluator/names.go": {
+      "sha256": "7c35075d2f74faef0c29931725d12b86bad09bbb0ff6dfc286962a8d1b09f6b9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/names.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/names.go"
+    },
+    "game/mugen/evaluator/validate_test.go": {
+      "sha256": "7836f951c4189a869f5e6a0ab9879d41d39094f4483ae471ff9ed6b2939e909d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/validate_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/validate_test.go"
+    },
+    "game/mugen/evaluator/runtime.go": {
+      "sha256": "80ef1f0293e9bb5d6a438c7caf973f769f2108e41baee73f6ad3ce903864caa3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/runtime.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/runtime.go"
+    },
+    "game/mugen/evaluator/round_result_test.go": {
+      "sha256": "9039cebac69e7fcfeadcc829e41ae919330e5edd50af1fd07d17292bd250a8ee",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/round_result_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/round_result_test.go"
+    },
+    "game/mugen/evaluator/recovery_test.go": {
+      "sha256": "d98eae84f4c6d6b9092bcad63c710c88dae81ec00f8311591d9fccf1c0eba9d7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/recovery_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/recovery_test.go"
+    },
+    "game/mugen/evaluator/value.go": {
+      "sha256": "c76759793318f69f0cd4d1d0d1735b1cecd416e9e8e9de732c5e3e03b631154e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/value.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/value.go"
+    },
+    "game/mugen/evaluator/validate.go": {
+      "sha256": "8513131b59cdf3950928e3e5d5a19fe5d1c8f5ef8f0308f6c4a62b500f110c06",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/validate.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/validate.go"
+    },
+    "game/mugen/evaluator/evaluator_test.go": {
+      "sha256": "66f55880d3b945ba64f810774b56db87b1f3702943b04ce9e89786f78301d1eb",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/evaluator_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/evaluator_test.go"
+    },
+    "game/mugen/evaluator/native_bottom_test.go": {
+      "sha256": "6844c5309d1e10aee93898ea50cb0156b7415b08244dd9f0edc3cf4a28325cbe",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/native_bottom_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/native_bottom_test.go"
+    },
+    "game/mugen/evaluator/version.go": {
+      "sha256": "e0f1dca31fd4f155656c6c1d14bf6c4269ba2d37c0460fcbd0e74d147c86a4ae",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/version.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/version.go"
+    },
+    "game/mugen/evaluator/native_redirect_test.go": {
+      "sha256": "0fc55f1e072134a51011e9c63da6ec9fb6fa47b3d7a92bcca6ada1f144e59f40",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/native_redirect_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/native_redirect_test.go"
+    },
+    "game/mugen/evaluator/tuple_test.go": {
+      "sha256": "446ed372be25c8ce79231cd91fdef74261fe760deb2b6f7ceaf60787e3ba872b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/tuple_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/tuple_test.go"
+    },
+    "game/mugen/evaluator/parser.go": {
+      "sha256": "d08410b11b912f50f63779eca488bbd20da80f0ab719fd7a8c278d99274cc697",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/evaluator/parser.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/evaluator/parser.go"
+    },
+    "game/mugen/sff/pcx_test.go": {
+      "sha256": "864e4565cf8b9c30bf6e79b307f02e71199d8fd2d8258a34bd6926d0084799d7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sff/pcx_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sff/pcx_test.go"
+    },
+    "game/mugen/sff/pcx.go": {
+      "sha256": "ab7239f352e125aff638594a7b13735798506376016a8a9c2e96c2838b8859e1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sff/pcx.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sff/pcx.go"
+    },
+    "game/mugen/sff/images.go": {
+      "sha256": "fecf91c05d6c082a1a4534363f6b2b0fd9d8dbf8fb404997aa9b53681b2cbdf6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sff/images.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sff/images.go"
+    },
+    "game/mugen/sff/v2.go": {
+      "sha256": "44f3fb0fd653304326b103c90ca0d1f116b64f249b737f8765603263e92081d9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sff/v2.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sff/v2.go"
+    },
+    "game/mugen/sff/sff.go": {
+      "sha256": "e7c9751b175bffa712883ffb87e26eb8da541a5bbf323617be92b08c98d65ad2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sff/sff.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sff/sff.go"
+    },
+    "game/mugen/sff/v2_test.go": {
+      "sha256": "0666858768e2ae0929bf2b4184f815c288b9d7d061816b6d9d59ea4c21c70ff8",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sff/v2_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sff/v2_test.go"
+    },
+    "game/mugen/palette/state_test.go": {
+      "sha256": "9854e10398bc0b2316740407fc564401bd31fd7eb397b828c8ae2d634a2d6b67",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/palette/state_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/palette/state_test.go"
+    },
+    "game/mugen/palette/controller_effect_test.go": {
+      "sha256": "51e64fce7b349be9fa1d42790bafc9e7bd8e980fa71ca3018ec93d6044e885e4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/palette/controller_effect_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/palette/controller_effect_test.go"
+    },
+    "game/mugen/palette/controller_effect.go": {
+      "sha256": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/palette/controller_effect.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/palette/controller_effect.go"
+    },
+    "game/mugen/palette/hit_effect_test.go": {
+      "sha256": "b97b245c4ec4dab2e2a777ed4580c304e610038c279f8e8aabf2ad4da5ef2c9e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/palette/hit_effect_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/palette/hit_effect_test.go"
+    },
+    "game/mugen/palette/hit_effect.go": {
+      "sha256": "14f801c3823004401e2f8183cd25e536ffd9ea32dca7d230dcc38c35816d978f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/palette/hit_effect.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/palette/hit_effect.go"
+    },
+    "game/mugen/palette/state.go": {
+      "sha256": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/palette/state.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/palette/state.go"
+    },
+    "game/mugen/storyboard/storyboard_test.go": {
+      "sha256": "3af18c2f029b232958b23488d3a390a485b75516699c11234334063596f37cdd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/storyboard/storyboard_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/storyboard/storyboard_test.go"
+    },
+    "game/mugen/storyboard/loader.go": {
+      "sha256": "6bedb23395911f35a30da2e1f2e8e3e885659f345c57bcf364e0436ae326eda7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/storyboard/loader.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/storyboard/loader.go"
+    },
+    "game/mugen/storyboard/storyboard.go": {
+      "sha256": "76a32c3a992954ec3a17f49071515dbb2ee5901c23f19b5e84ad78b659a199a8",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/storyboard/storyboard.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/storyboard/storyboard.go"
+    },
+    "game/mugen/storyboard/render_test.go": {
+      "sha256": "fa1963a769fd9bd2a8bca5b90c8b59a68d9aad17a844621e11580d5cb7dd3705",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/storyboard/render_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/storyboard/render_test.go"
+    },
+    "game/mugen/air/air.go": {
+      "sha256": "e2f4036808378b6b41bf322f4a250ee461b7ca70ca5af0b5d2b11f43ea6f8759",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/air/air.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/air/air.go"
+    },
+    "game/mugen/air/clock_test.go": {
+      "sha256": "2a174e4e1d4774ffd9eb84f9b55a84d311eec9d56ab878e9178a6e6b9581feb7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/air/clock_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/air/clock_test.go"
+    },
+    "game/mugen/air/clock.go": {
+      "sha256": "78ee0eedb6646e8ef4702887c65007990f2d60df5baa2990d3d34d17a9258924",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/air/clock.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/air/clock.go"
+    },
+    "game/mugen/air/blend_test.go": {
+      "sha256": "9f1f4aec3822cad9cc348563fc34c7a4a13e27e7e21b08728826d987accab256",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/air/blend_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/air/blend_test.go"
+    },
+    "game/mugen/stage/loader.go": {
+      "sha256": "514411a8c51f301fb3f6e4e3aa3a464529d84324c2d79df9a7cc632cc6bc6cc5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/stage/loader.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/stage/loader.go"
+    },
+    "game/mugen/stage/reset_test.go": {
+      "sha256": "41b4e5cf67d10550253c79fd9f52878cfefdb2d5a8adc4d09f923054d1fae1a9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/stage/reset_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/stage/reset_test.go"
+    },
+    "game/mugen/stage/stage.go": {
+      "sha256": "f44f4fc4fd38ad75e45d9c887819a00fdffe079b7530838eff3ff317a301e1d7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/stage/stage.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/stage/stage.go"
+    },
+    "game/mugen/coord/video_test.go": {
+      "sha256": "99531ded7051e61ccd6003940209a1da85cfda0ff34d0a28e259e386957bc07e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/coord/video_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/coord/video_test.go"
+    },
+    "game/mugen/coord/space.go": {
+      "sha256": "f36de4c71ede29084a0dedd93559213efbdf1f93ec248846a9511019e1ff8d0c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/coord/space.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/coord/space.go"
+    },
+    "game/mugen/coord/space_test.go": {
+      "sha256": "9a1cda2c379b429eae07de94663d5af5cff30bbc1dd0474039d4e55616ba6ab5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/coord/space_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/coord/space_test.go"
+    },
+    "game/mugen/coord/viewport.go": {
+      "sha256": "2a7e70d737aa856a8eec97c1e8551ad456ee17c19591f11c068abb020f98c466",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/coord/viewport.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/coord/viewport.go"
+    },
+    "game/mugen/coord/viewport_test.go": {
+      "sha256": "4a9f3e1e2feef4a315255247e0d3333b69230e24fc51fd93b756d27420891fcf",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/coord/viewport_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/coord/viewport_test.go"
+    },
+    "game/mugen/match/camera.go": {
+      "sha256": "2e5e70aed68b400dbd13cc3113a0496a50f52ccebeafa1405bf0c03f1bb24024",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/camera.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/camera.go"
+    },
+    "game/mugen/match/modify_explod_test.go": {
+      "sha256": "b3f2b8a4e7fe7512af1a3ced90ec676a5eacc7ce92009f9ddd670d574f4ee5e4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/modify_explod_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/modify_explod_test.go"
+    },
+    "game/mugen/match/target_self_binding_test.go": {
+      "sha256": "0fcc6c2bf710532169a30dea9a52d4ae710c06524f7cbdb1edc2ed0372cd3509",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/target_self_binding_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/target_self_binding_test.go"
+    },
+    "game/mugen/match/after_image_test.go": {
+      "sha256": "4ac0d87838be0277ff9cd00fea0708717cea997d9d6f28302688867035a382fe",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/after_image_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/after_image_test.go"
+    },
+    "game/mugen/match/effect_order_test.go": {
+      "sha256": "9ac969a80cf42f92f9ff70273f3a2597aedfb88037e0a3ed069d0e7093957582",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/effect_order_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/effect_order_test.go"
+    },
+    "game/mugen/match/explod_attachment_test.go": {
+      "sha256": "2abd12e3f749adef8eccbaf23bdaa49eb82b0861cf5a79c4aed0075770ccb90b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/explod_attachment_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/explod_attachment_test.go"
+    },
+    "game/mugen/match/after_image_actor_test.go": {
+      "sha256": "ac875c11ad464b8170a8434d556ea3dd039f25ee3871cf64617dc7feaadf69b7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/after_image_actor_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/after_image_actor_test.go"
+    },
+    "game/mugen/match/self_binding_test.go": {
+      "sha256": "4500ff0dafa4949036d9aaf93500c4e64bb590dc9992613136feebccf440ae0d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/self_binding_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/self_binding_test.go"
+    },
+    "game/mugen/match/explod_binding_test.go": {
+      "sha256": "81fade7327269bbd16b28961b1b2acfec3f31b4110adcb2628e2d321165937d2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/explod_binding_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/explod_binding_test.go"
+    },
+    "game/mugen/match/round_result_test.go": {
+      "sha256": "70dcf3dbe19ba1f6e81eb1bb7f1c7437d419889042115bec08e395b9c774b69a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/round_result_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/round_result_test.go"
+    },
+    "game/mugen/match/creation_pool_test.go": {
+      "sha256": "c4b29f48a5c6ac6fb63ed90de26ad0268b583d01624c86d204dfe500ed202a03",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/creation_pool_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/creation_pool_test.go"
+    },
+    "game/mugen/match/reversal_test.go": {
+      "sha256": "6d4ef0541f17d427532470a949ce15048f07b02e55103dc796f1c4c0951e479e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/reversal_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/reversal_test.go"
+    },
+    "game/mugen/match/assert_special_test.go": {
+      "sha256": "40db936f3494ca8e137ffdf3937f0968cd8794b96879cd7d1313507a45c3debd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/assert_special_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/assert_special_test.go"
+    },
+    "game/mugen/match/camera_test.go": {
+      "sha256": "ec4eb3075ed39f747492590e9251ade51e8cb3f50f137bff3d809fd8f381cf84",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/camera_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/camera_test.go"
+    },
+    "game/mugen/match/match.go": {
+      "sha256": "5f2a7af8b59522819bfe768ba9656df6997c998837fbe1868b906716080de819",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/match.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/match.go"
+    },
+    "game/mugen/match/match_test.go": {
+      "sha256": "9377eb37818f4b413f36a914f64fc7ac73f86a53ef25b0c29cfff1e7ae9ac100",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/match_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/match_test.go"
+    },
+    "game/mugen/match/trans_test.go": {
+      "sha256": "5ca6eced751c776a1a58d371cc65daa1976dc528cfd10c7ad3d398bc22a1671d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/trans_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/trans_test.go"
+    },
+    "game/mugen/match/ai.go": {
+      "sha256": "267fec0cd738c1de93210cbd37c5b0ad81c45eff946fbc0225efe03cd7393170",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/ai.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/ai.go"
+    },
+    "game/mugen/match/creation_palette_test.go": {
+      "sha256": "0b0dd30b06548338ef6817c82e04feea4f328055b1373f6dea7c692c2939149b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/creation_palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/creation_palette_test.go"
+    },
+    "game/mugen/match/shake_frequency_test.go": {
+      "sha256": "c182d4dd2d6a8b6ec568ac8e359d9539dd2c1fd3625bc993f846447e05654b62",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/shake_frequency_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/shake_frequency_test.go"
+    },
+    "game/mugen/match/random_test.go": {
+      "sha256": "a2438b5cce70aa0abc39a1670d411a9e7aadbaab17062f481593bdf5ce3c8e18",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/random_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/random_test.go"
+    },
+    "game/mugen/match/creation_draw_test.go": {
+      "sha256": "61e0e1576a56800bfeb9eb8656afff0d07e7cae51ea52f8a08f9fd0fb2094a48",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/creation_draw_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/creation_draw_test.go"
+    },
+    "game/mugen/match/sweep_test.go": {
+      "sha256": "b5b7c3608f0f1ca4b12f2fdb8dd6a8ef4d1676db306c204cfbacfcc5520fefdd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/sweep_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/sweep_test.go"
+    },
+    "game/mugen/match/complete_match_test.go": {
+      "sha256": "94bb00ea9f4d70d7e48ee91c0df422f1dcd71cb92d4b17cd883c8eee0a397ea3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/complete_match_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/complete_match_test.go"
+    },
+    "game/mugen/match/projectile_test.go": {
+      "sha256": "39c700007b3414029d0d64c1a5fd75330c331666fefd6de91be9c856861edf7c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/projectile_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/projectile_test.go"
+    },
+    "game/mugen/match/shadow_test.go": {
+      "sha256": "8fc0fb3189e8955e3146ca558dadb1976c3abd6b62efc91254759d9a6408959c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/shadow_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/shadow_test.go"
+    },
+    "game/mugen/match/gethit_metadata_test.go": {
+      "sha256": "36efaf5399a934007e3dafd812cea0fb854e05969c6579f0bf4646854162597a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/gethit_metadata_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/gethit_metadata_test.go"
+    },
+    "game/mugen/match/liedown_test.go": {
+      "sha256": "a89c58d5feb410a95e59791100a731ec9095cd09657c2673c1ab08bc3942c4c2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/liedown_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/liedown_test.go"
+    },
+    "game/mugen/match/global_palette_fx_test.go": {
+      "sha256": "27d0aadc2171b68a289b023f470e19f9fcbbd8e8d116b9ff165aec1bf9ea3b15",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/global_palette_fx_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/global_palette_fx_test.go"
+    },
+    "game/mugen/match/modify_enum_test.go": {
+      "sha256": "e1db94ee16903f9f77796a7c349ff803f62c3fd08c7b29d0212ff020e7b96398",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/modify_enum_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/modify_enum_test.go"
+    },
+    "game/mugen/match/projectile_trail_test.go": {
+      "sha256": "81c53b40d18811befd924d3804b8876e2ba5cfb0c39527284e7c60ed5df1a62e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/projectile_trail_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/projectile_trail_test.go"
+    },
+    "game/mugen/match/palette_fx_test.go": {
+      "sha256": "92996dd6c5751f3ebc872fe2dc294cbb88e6ad99fdb76bb487451e857bfbde89",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/palette_fx_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/palette_fx_test.go"
+    },
+    "game/mugen/match/hitpause_var_test.go": {
+      "sha256": "074b13e9c9daf57d5676b30d6ae7edd8ca4440bdbeb69e243d987e6aab1d412c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/hitpause_var_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/hitpause_var_test.go"
+    },
+    "game/mugen/match/round_clock_test.go": {
+      "sha256": "a0fdd8ba9cc1b3a334704c4246441448be96ea7f205bfbb13db7c5dcefb52eba",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/round_clock_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/round_clock_test.go"
+    },
+    "game/mugen/match/noko_test.go": {
+      "sha256": "962b9da9e7e81b9d18cb3562eea84cfbf9afc39212ca5c0e8dfaef8d6043e563",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/noko_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/noko_test.go"
+    },
+    "game/mugen/match/drawing_test.go": {
+      "sha256": "6376dd4f1075cee5d7b82fc2a0178d360d34c4a06564843080cad43c4a7b0119",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/drawing_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/drawing_test.go"
+    },
+    "game/mugen/match/forcefeedback_test.go": {
+      "sha256": "fc194eb594fc9e7d2e780bc6c7e675cca9b386db04c29094e1bbd50d9159eefb",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/forcefeedback_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/forcefeedback_test.go"
+    },
+    "game/mugen/match/world_test.go": {
+      "sha256": "825c1a2a49af438c28ff0b30a72922d3bf8dc3f8a7c93e5b7c718d847e279ce2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/world_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/world_test.go"
+    },
+    "game/mugen/match/env_color_test.go": {
+      "sha256": "e151a1c133fa9fe0c3bd8a077744ef534c5ba5af18636b060fea9ef9f3f3afa9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/env_color_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/env_color_test.go"
+    },
+    "game/mugen/match/legacy_hitvel_test.go": {
+      "sha256": "af8cba0665eaceb911617a01402303231d70f125d4541a7ad7602542a4571b04",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/legacy_hitvel_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/legacy_hitvel_test.go"
+    },
+    "game/mugen/match/env_shake_test.go": {
+      "sha256": "6207852279d625fc9e00f3c3f4cbc653efe77083e468132f145bcde4b260ca23",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/match/env_shake_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/match/env_shake_test.go"
+    },
+    "game/mugen/config/video_test.go": {
+      "sha256": "25b6a3874fbea818d542beb8f8dfa8bfa9001ab277f663204aa64ba4186342d5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/video_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/video_test.go"
+    },
+    "game/mugen/config/keys_test.go": {
+      "sha256": "c2aa720ac5595210bb9ffbf6db07ff12b5c650d24ee3314b437eab1897b82a2c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/keys_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/keys_test.go"
+    },
+    "game/mugen/config/extended.go": {
+      "sha256": "fa46307b008507fc45055adb51fbbf1debe390c3038049b86cdde88eac384108",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/extended.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/extended.go"
+    },
+    "game/mugen/config/sound.go": {
+      "sha256": "2c6d9ed61d6db081cb83eea85b27d97f764488fc04c4da188253dc962855a306",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/sound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/sound.go"
+    },
+    "game/mugen/config/config.go": {
+      "sha256": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/config.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/config.go"
+    },
+    "game/mugen/config/keys.go": {
+      "sha256": "31da0412dbcf07b883c87306f48b65bf3fa07b63e17019632989261222b456c1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/keys.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/keys.go"
+    },
+    "game/mugen/config/sound_test.go": {
+      "sha256": "f01c0254db0a4471d4aa8293e71196eb49105bf8e8bcd7d5b4ce840dca722e71",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/config/sound_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/config/sound_test.go"
+    },
+    "game/mugen/combat/power.go": {
+      "sha256": "bc0a9e544f0c122a43d394aa11b41010f3a9d65ca4d3d7196697d577ad7551df",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/combat/power.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/combat/power.go"
+    },
+    "game/mugen/combat/attribute.go": {
+      "sha256": "07a1b21b7ae2855eff9f185979220178323062070c4b2628e6a862a452c9ba9a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/combat/attribute.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/combat/attribute.go"
+    },
+    "game/mugen/combat/attribute_test.go": {
+      "sha256": "72ec674b403aa88a91950a87039d2688f755c95278316d53066915580f3b373c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/combat/attribute_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/combat/attribute_test.go"
+    },
+    "game/mugen/motif/motif.go": {
+      "sha256": "3372d822a73b73a6828f236df03510600ae0d747fb7695d9a5dbadf9e1011bbc",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/motif/motif.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/motif/motif.go"
+    },
+    "game/mugen/input/manager.go": {
+      "sha256": "11e2fc4edf00b5e6365803969fd951615fb104a2289a25f11d5e7c2ec3cec850",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/input/manager.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/input/manager.go"
+    },
+    "game/mugen/input/manager_test.go": {
+      "sha256": "e7ec2396961b60d0323b553b2cc75cb4b5ef8126c311ecc299e71a53c504d0c5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/input/manager_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/input/manager_test.go"
+    },
+    "game/mugen/cns/constant_specs.go": {
+      "sha256": "6a3af0a08689a3f8d984af17b29ee411fb8e0981e4f717a43168f3501158bbc3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/constant_specs.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/constant_specs.go"
+    },
+    "game/mugen/cns/constants_test.go": {
+      "sha256": "d59245a351590f21d8b672b8b91e9c309760d14f3c3e556d117a23edba475ad4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/constants_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/constants_test.go"
+    },
+    "game/mugen/cns/constants.go": {
+      "sha256": "0d4f6f26cf797bfea7a066f070081e1dda326f6267c53fc17bf4dc8ae37fab18",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/constants.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/constants.go"
+    },
+    "game/mugen/cns/hit_timing_test.go": {
+      "sha256": "16d5097388877d0a8bd396256584c3b99271dbc773b2aba4abcb53babe07cb31",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/hit_timing_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/hit_timing_test.go"
+    },
+    "game/mugen/cns/cns.go": {
+      "sha256": "44a4e0860a2dd2589112b531e2da5647a7230d135b9699452bae7cd51c80a238",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/cns.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/cns.go"
+    },
+    "game/mugen/cns/cns_test.go": {
+      "sha256": "cc07d1002f5ca88358e0056c8b0fd538ee3839a8c5d7b332e3f4925b89dfd348",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/cns_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/cns_test.go"
+    },
+    "game/mugen/cns/hit_shake.go": {
+      "sha256": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/hit_shake.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/hit_shake.go"
+    },
+    "game/mugen/cns/hit_recovery_test.go": {
+      "sha256": "12c5cb66aa890f5a2a465449fd4dd06ced2c817392790b1a7858aa6092425988",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cns/hit_recovery_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cns/hit_recovery_test.go"
+    },
+    "game/mugen/system/main.go": {
+      "sha256": "f55b8161be4e9fb29ac9be5f416cf902f8ae7347533e8ca871da042f5126f49c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/main.go"
+    },
+    "game/mugen/system/sound.go": {
+      "sha256": "8e908553b601385bdb43c23118ba47c1beb829d00e5aa23cdcf8ea98955a8394",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/sound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/sound.go"
+    },
+    "game/mugen/system/flow_test.go": {
+      "sha256": "acc27012623854f6d9494987c5e15841ad3416af16586199d2a1eb85d8df2e3a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/flow_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/flow_test.go"
+    },
+    "game/mugen/system/hud.go": {
+      "sha256": "5f94f33cb0f2247e3b5dc8637a041d7c367d255d6d4f151107064ae65b995cdc",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/hud.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/hud.go"
+    },
+    "game/mugen/system/fight_state.go": {
+      "sha256": "c26a8a793731ac95e79fe9ab7561d0542d2b10778974436e7cf38aff9795d6e2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/fight_state.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/fight_state.go"
+    },
+    "game/mugen/system/gametime_test.go": {
+      "sha256": "5fe100eed01c7ca822ac15015f134eca7bea0736e50f1e49632d8e94bc390b4c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/gametime_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/gametime_test.go"
+    },
+    "game/mugen/system/charloader.go": {
+      "sha256": "a3fe0dc3dd412f3a8f6b5ca6c957b70edcff834ffc971264e73a169064805bbd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/charloader.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/charloader.go"
+    },
+    "game/mugen/system/versus.go": {
+      "sha256": "01ab9033d828de7150ca962afe35c8be3af9856d8d81134aeb229df9ce810615",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/versus.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/versus.go"
+    },
+    "game/mugen/system/storyboard_state.go": {
+      "sha256": "9f6bfca8c3a9c6c374e432559614abd56e91c140628c15933e289a7584e741d6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/storyboard_state.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/storyboard_state.go"
+    },
+    "game/mugen/system/random_test.go": {
+      "sha256": "961d4026bba1541c3fe035131e26d673623a47a97823c303c2524fc111ec9c67",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/random_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/random_test.go"
+    },
+    "game/mugen/system/effects.go": {
+      "sha256": "db01e749703ea0976669c790e85b36c6018d773e6ac90266efedf6f8844b6e57",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/effects.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/effects.go"
+    },
+    "game/mugen/system/options.go": {
+      "sha256": "23d32176233da489f0d269636b9fc77d22c34270cb6317ff3a6704df0ad07f13",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/options.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/options.go"
+    },
+    "game/mugen/system/resources_test.go": {
+      "sha256": "304838c8a6962d60980febba87c5f60159d1a6b794dea07b82776d5a4ef2a281",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/resources_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/resources_test.go"
+    },
+    "game/mugen/system/sound_test.go": {
+      "sha256": "2ef2add2ebbb252382b601cbd55980505cc222d4a4bf48f27fbad5243540bad6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/sound_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/sound_test.go"
+    },
+    "game/mugen/system/random_seed_test.go": {
+      "sha256": "1d0b04016aed337b2c87998a9228716e25411cce66d611c76ebd12e12a4a7f5f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/random_seed_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/random_seed_test.go"
+    },
+    "game/mugen/system/system.go": {
+      "sha256": "677c24d78602282793324975c0b86436682015220d194eb44dfeec801af6fb8e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/system.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/system.go"
+    },
+    "game/mugen/system/select.go": {
+      "sha256": "a4ea1b3022a75093947aa6d41ff0672409e1245da4f9a6dc2cc699322ab95e42",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/system/select.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/system/select.go"
+    },
+    "game/mugen/cmd/cmd.go": {
+      "sha256": "a5410b252137324320ab7510c90cda44ec11dc69905223446e5f483f4f002a8e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/cmd/cmd.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/cmd/cmd.go"
+    },
+    "game/mugen/engine/round_clock.go": {
+      "sha256": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/round_clock.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/round_clock.go"
+    },
+    "game/mugen/engine/target_self_binding.go": {
+      "sha256": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/target_self_binding.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/target_self_binding.go"
+    },
+    "game/mugen/engine/env_color.go": {
+      "sha256": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/env_color.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/env_color.go"
+    },
+    "game/mugen/engine/version_test.go": {
+      "sha256": "ada0c260031d333218f0c0f10707eb672166a24add5e91adf66c4f748861f9bf",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/version_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/version_test.go"
+    },
+    "game/mugen/engine/hit_fall_vectors_test.go": {
+      "sha256": "cb502b36103ce94876113a98e6bb8b9592d05a0bcbbafc829bf26e3fc206e45b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_fall_vectors_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_fall_vectors_test.go"
+    },
+    "game/mugen/engine/runtime_error_test.go": {
+      "sha256": "fd54125eca81d6869397650639c56e614e5490af4133ac9736e212caa3ecc8af",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/runtime_error_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/runtime_error_test.go"
+    },
+    "game/mugen/engine/hit_fall.go": {
+      "sha256": "a7c8dbffb7bc3755892be6ecd2c4d223226e70ab33536f581966857e0a91f1e6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_fall.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_fall.go"
+    },
+    "game/mugen/engine/after_image_test.go": {
+      "sha256": "df21cbc1d18bfc951698b0485728439d113423cd22b4db2a254cd75a79dd04d3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/after_image_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/after_image_test.go"
+    },
+    "game/mugen/engine/screen_bound.go": {
+      "sha256": "0d847b0929fda272ed0ba885ea7776a5fed43679ccc4bf65f10999f1db4952cb",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/screen_bound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/screen_bound.go"
+    },
+    "game/mugen/engine/hit_velocity.go": {
+      "sha256": "16ffc5b4341033f9637064c08c7b64fac4f3acca20a43464210b8af1d735486e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_velocity.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_velocity.go"
+    },
+    "game/mugen/engine/timeline_test.go": {
+      "sha256": "ebc0cef80182159f9b05d6b28a494e1bb48e44d63a1e0ef0a44c5ca6f3078089",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/timeline_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/timeline_test.go"
+    },
+    "game/mugen/engine/random.go": {
+      "sha256": "79c083c6dd2789d089101d8ad7261de4435e6a6e07d9309be73f2bdf8a17081b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/random.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/random.go"
+    },
+    "game/mugen/engine/after_image.go": {
+      "sha256": "21231466aa235bacad93cf1abb467432c0f6dfcf8d70967637fb43dbd0bf6f61",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/after_image.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/after_image.go"
+    },
+    "game/mugen/engine/hit_power_test.go": {
+      "sha256": "9ccda6b5f47ee9fb321cc280496d9447ed071ee51b92e0f15cf6d10810407768",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_power_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_power_test.go"
+    },
+    "game/mugen/engine/destroy_self.go": {
+      "sha256": "9e852c12e20316467368ffc2fdde85cde1adcba6ec3aab4d35f7a43cca3a2fa4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/destroy_self.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/destroy_self.go"
+    },
+    "game/mugen/engine/registry_test.go": {
+      "sha256": "8db998541d9b7f139d9dcf316390f34e31d94e695b1bd783232d308f7d86820a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/registry_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/registry_test.go"
+    },
+    "game/mugen/engine/hit_timing_test.go": {
+      "sha256": "03efe05154a2a26de7988f005382ddd5f814a861f0ef74258d2384eb4b7e709f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_timing_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_timing_test.go"
+    },
+    "game/mugen/engine/reversal.go": {
+      "sha256": "d479a7d402eb42cdbab909791840a0d0bd2b3233a0e8077b2975c122e48892eb",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/reversal.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/reversal.go"
+    },
+    "game/mugen/engine/hit_pause.go": {
+      "sha256": "ee99498f58319f2517a52c0ca86962f12ecd67c09396de8e1072b66db106d882",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_pause.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_pause.go"
+    },
+    "game/mugen/engine/sound.go": {
+      "sha256": "6bd311dc7b68fab47397ef180498f24498edc2327bc69c0cb18530374a71d565",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/sound.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/sound.go"
+    },
+    "game/mugen/engine/statemachine_test.go": {
+      "sha256": "50adcdda78917fa6eaa78d60ecafe4471ba585868738b2efac0be6c3b877b2cd",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/statemachine_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/statemachine_test.go"
+    },
+    "game/mugen/engine/width.go": {
+      "sha256": "575d9e66543c1c3fb9f7b4afdb0214bef0045938a1a4c3bfb88edf9807754ee4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/width.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/width.go"
+    },
+    "game/mugen/engine/parameters_test.go": {
+      "sha256": "26c2edaf2d213891a9b00dd122720351c5a06bb6e884db61acc5431893bf95d1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/parameters_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/parameters_test.go"
+    },
+    "game/mugen/engine/hit_guard_distance_test.go": {
+      "sha256": "4942e0c842cedb55d326ccc54a8b7f64f8f3b153bb1d2d4953d0b4cc2c1165db",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_guard_distance_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_guard_distance_test.go"
+    },
+    "game/mugen/engine/target.go": {
+      "sha256": "0f7e25a071b5a255182afa39557735667dcecdce9b5973acc9f1aec26f905fc4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/target.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/target.go"
+    },
+    "game/mugen/engine/registry.go": {
+      "sha256": "6709c1e2ee39408f1777f49c8e58737f423364698a32dbed4e95ac3ea1a9e195",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/registry.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/registry.go"
+    },
+    "game/mugen/engine/hit_power.go": {
+      "sha256": "336720f38db68eb5c69fc936e3248ac68f945eeb6532e643059dd4e1f9e4cb7d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_power.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_power.go"
+    },
+    "game/mugen/engine/helper_test.go": {
+      "sha256": "6bf114c4b68aa6c090056bbf0adb48276c1af443db4095974e4a0f692708350f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/helper_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/helper_test.go"
+    },
+    "game/mugen/engine/superpause_test.go": {
+      "sha256": "1826137eac7a39c5b33204699f2fd586da9da6e93f7dc77a00c5406e8b2edb06",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/superpause_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/superpause_test.go"
+    },
+    "game/mugen/engine/hitfilter.go": {
+      "sha256": "4373a49ea7d00f97b912c53e45756f4c77818be258c8d874ecdf0eed6c556673",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hitfilter.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hitfilter.go"
+    },
+    "game/mugen/engine/hit_constraints.go": {
+      "sha256": "08cfe0bef36d9841935d306968d18df149074fed4de7181aea46f6a8a89ff14e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_constraints.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_constraints.go"
+    },
+    "game/mugen/engine/hitdef.go": {
+      "sha256": "a6269311470107cff60ac9825f0162f37884ad241e3024d031d9087f24beaa26",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hitdef.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hitdef.go"
+    },
+    "game/mugen/engine/self_binding.go": {
+      "sha256": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/self_binding.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/self_binding.go"
+    },
+    "game/mugen/engine/pass_test.go": {
+      "sha256": "29d3ca8fc9cabe43c51c595ca719fe34fb6e387cacd514e8a852b4557f8d3d4a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/pass_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/pass_test.go"
+    },
+    "game/mugen/engine/drawing.go": {
+      "sha256": "160df41e6afb94a1e34a9e850f553aac3a3a666e882eb483d92db79c52d16cf0",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/drawing.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/drawing.go"
+    },
+    "game/mugen/engine/hit_fall_set.go": {
+      "sha256": "01237f32d15097962db88cc448773a5b51a065d078fd038445bbaf16209c8e91",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_fall_set.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_fall_set.go"
+    },
+    "game/mugen/engine/hit_constraints_test.go": {
+      "sha256": "50f5c6cc7d7647400c9f5282638271b94958eb3914f2ddd0c202696db6fad617",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_constraints_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_constraints_test.go"
+    },
+    "game/mugen/engine/hit_timing.go": {
+      "sha256": "c721d40c4b5c630166265f288ff539b20573a9bc68af11b1b7e648b093e13522",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_timing.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_timing.go"
+    },
+    "game/mugen/engine/hit_fall_vectors.go": {
+      "sha256": "e8ad63eef2f7c92c0e701e28b7f5204debbbbc7c9d3cb7b68581dcb3343ff700",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_fall_vectors.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_fall_vectors.go"
+    },
+    "game/mugen/engine/entry.go": {
+      "sha256": "42fcf446e453af76bdcdf5b88191160dc57cadacf0f3f93688ba9c12a7de12db",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/entry.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/entry.go"
+    },
+    "game/mugen/engine/hit_fall_test.go": {
+      "sha256": "f433b2e4324bbbdbdb6633d10c297ccdb1945575132ecf9f069838c778dc5798",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_fall_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_fall_test.go"
+    },
+    "game/mugen/engine/width_test.go": {
+      "sha256": "8bd3067c68e8afcd45ff1a60285e2b64f3aafb4505b284bf74cdcbcd0f24e1e2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/width_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/width_test.go"
+    },
+    "game/mugen/engine/shake_test.go": {
+      "sha256": "908f50062cbd5095e2b4b3c57fcfe051f7de4514021faa04222a0705153da8b2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/shake_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/shake_test.go"
+    },
+    "game/mugen/engine/hit_down_bounce_test.go": {
+      "sha256": "b8ff2c176135309644209effcfaa6af170eb66716624caf809b9eaf4ee004a30",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_down_bounce_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_down_bounce_test.go"
+    },
+    "game/mugen/engine/random_test.go": {
+      "sha256": "9f364d42e4c8ebd6f21c0d3b64b473f96d90e3b829d484fb6211fc15d624ebc3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/random_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/random_test.go"
+    },
+    "game/mugen/engine/hit_shake.go": {
+      "sha256": "d025357f0ebf028aa7376be823e2876bf583e537bc7a621d7642183474263a72",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_shake.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_shake.go"
+    },
+    "game/mugen/engine/palette.go": {
+      "sha256": "4796a21b60df68d44a365bf9c5d21299d53f16daa0ee885d57cfce3afea817c3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/palette.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/palette.go"
+    },
+    "game/mugen/engine/hit_fall_set_test.go": {
+      "sha256": "2076cbcb1dfa5ab139649c0a8776c3b9d8ffc794092399a043b8437fc7ad7dbf",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_fall_set_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_fall_set_test.go"
+    },
+    "game/mugen/engine/statemachine.go": {
+      "sha256": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/statemachine.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/statemachine.go"
+    },
+    "game/mugen/engine/hit_literals_test.go": {
+      "sha256": "e17ae0fd73d3d10c8ba76dab663f015a5ed193af412fddce3121124426dc7d5f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_literals_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_literals_test.go"
+    },
+    "game/mugen/engine/binding.go": {
+      "sha256": "d2f4941230311567ca8a61523c4a8fb306f9359044295ccdd6d8b293737ca855",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/binding.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/binding.go"
+    },
+    "game/mugen/engine/env_shake.go": {
+      "sha256": "4792c308034f6cbd95c9d40de4c8a4c5f529270ff075a71f0ea2a917afcd3d06",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/env_shake.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/env_shake.go"
+    },
+    "game/mugen/engine/destroy_self_test.go": {
+      "sha256": "bee7f701621fd94566cf30cee65b4523ce35f74a42db89d25d223851283ee392",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/destroy_self_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/destroy_self_test.go"
+    },
+    "game/mugen/engine/hit_pause_test.go": {
+      "sha256": "98a242e477c87672cf34dddd0c467408790b4240a0b511aaec5743d088cf1171",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_pause_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_pause_test.go"
+    },
+    "game/mugen/engine/pass.go": {
+      "sha256": "16179ed6606d459dd079e000cfdb5ca15256f57f709444c253f175923b3b72ca",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/pass.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/pass.go"
+    },
+    "game/mugen/engine/hit_literals.go": {
+      "sha256": "7e778a091a676a38be1ca8cf3656c92202407f598dcd3d852080758ed10d8b5a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_literals.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_literals.go"
+    },
+    "game/mugen/engine/entry_test.go": {
+      "sha256": "2bc5613a8a6917d2acbee68d1550e92864494f0ecaa1ee21aa488b3a25324ace",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/entry_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/entry_test.go"
+    },
+    "game/mugen/engine/helper.go": {
+      "sha256": "d476c679eaababa1631f546bb073d9d4ca026db81614032fe8f0cc23b451f02b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/helper.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/helper.go"
+    },
+    "game/mugen/engine/screen_bound_test.go": {
+      "sha256": "4c8b65d4cec4ceef60336cc58dc69c65ff20edd8642eb1852650337476023b8a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/screen_bound_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/screen_bound_test.go"
+    },
+    "game/mugen/engine/superpause.go": {
+      "sha256": "0ce684dffbd91e18d5f96aa467c17f97f4cd741f8fa34c5885256f1feb2a5386",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/superpause.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/superpause.go"
+    },
+    "game/mugen/engine/pause.go": {
+      "sha256": "4d3cfc042b463ff8f68bf3a440bc49fcda602b8e263efaf50ff283ef8c61a813",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/pause.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/pause.go"
+    },
+    "game/mugen/engine/timeline.go": {
+      "sha256": "b3d6e50056957d81a6a8995b1819411080b70ff0292a4e0dedc20d8d6323242d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/timeline.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/timeline.go"
+    },
+    "game/mugen/engine/hit_shake_test.go": {
+      "sha256": "aadc17d181b57db6a8b1681956313509a839d16aedeae26d86113021ab6c6547",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_shake_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_shake_test.go"
+    },
+    "game/mugen/engine/hit_vectors.go": {
+      "sha256": "2bf6583ff985117d7472f70ae75c0bd06578e70de3a0ad7faae9e843b55a7f9d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_vectors.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_vectors.go"
+    },
+    "game/mugen/engine/explod.go": {
+      "sha256": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/explod.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/explod.go"
+    },
+    "game/mugen/engine/trans.go": {
+      "sha256": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/trans.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/trans.go"
+    },
+    "game/mugen/engine/projectile.go": {
+      "sha256": "e14a2afbcd12e977bdd437582ae2cec6d264a7e352491c5a207a1ced6fa8ab70",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/projectile.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/projectile.go"
+    },
+    "game/mugen/engine/modify_explod.go": {
+      "sha256": "b9ecd4380e92c3a33cd41bd3ca9b8ed539e12034f98ce71f1b63f36b0f648fc8",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/modify_explod.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/modify_explod.go"
+    },
+    "game/mugen/engine/parameters.go": {
+      "sha256": "06ed182c5fc75874ea4d2e473e0b971bc9cf7818bd6d266bed76a28bb9d628ff",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/parameters.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/parameters.go"
+    },
+    "game/mugen/engine/var_random.go": {
+      "sha256": "c510395f00e4da9ebcbe062f10f25d69df0e567750e3ed1ea8418822c9f6f012",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/var_random.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/var_random.go"
+    },
+    "game/mugen/engine/round_clock_test.go": {
+      "sha256": "fe247b410e9f6d223b7860a7b8e766e854e5d29feea7b9f63a2d5da40b2e255f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/round_clock_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/round_clock_test.go"
+    },
+    "game/mugen/engine/hit_chain_test.go": {
+      "sha256": "23ad45c2b6ccc9b1230ad2846d2cc05a55c6e913dfb7e36382f375ac9a594b1c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_chain_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_chain_test.go"
+    },
+    "game/mugen/engine/hit_palette_test.go": {
+      "sha256": "62b878ba7c3ce9dfa2fe99dfd21613a9789b1f714b82f456c3a093384f063c4f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_palette_test.go"
+    },
+    "game/mugen/engine/hitoverride.go": {
+      "sha256": "4d07590c6ce91ee4dc59781310cae40a27111174ab169a470b4e4c80b8b60d6b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hitoverride.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hitoverride.go"
+    },
+    "game/mugen/engine/forcefeedback_test.go": {
+      "sha256": "ee604257bd0f8273d479e6acf3ab26f41a90d7a286453c9dd38b2ff9cff6f97d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/forcefeedback_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/forcefeedback_test.go"
+    },
+    "game/mugen/engine/shake.go": {
+      "sha256": "badeca8942018cda36f154190115c52d89bed797adb2adfa848c6a3b9cc8659b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/shake.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/shake.go"
+    },
+    "game/mugen/engine/hit_palette.go": {
+      "sha256": "5414267ffa25f8215d34e505f99c6fe40046a34e8a5859efa074a5ebe8f7ecee",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/hit_palette.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/hit_palette.go"
+    },
+    "game/mugen/engine/global_palette_test.go": {
+      "sha256": "a60c314eba156d4b552547e56e83983e435afc7d2babcdf162d980b878655776",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/global_palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/global_palette_test.go"
+    },
+    "game/mugen/engine/env_color_test.go": {
+      "sha256": "6b4e48c1291f5e6ca3cc3840e6e8878572de669e6d5a91bb9c9a486f2d4fd63e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/env_color_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/env_color_test.go"
+    },
+    "game/mugen/engine/palette_fx.go": {
+      "sha256": "fbfe30e579171d3b9c646462edfe324fe8c1053ff1e8366684238fe3dcb209c7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/palette_fx.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/palette_fx.go"
+    },
+    "game/mugen/engine/assert_special.go": {
+      "sha256": "f32c4532ceacac8fbe779d0e25c22003baf211ad9a4c744cd10640048ae5e7cc",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/assert_special.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/assert_special.go"
+    },
+    "game/mugen/engine/compile.go": {
+      "sha256": "5800696c362ba7dfb2d5677a6f3c050ab68af6f573487b04291e7ca5d32f6b8b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/compile.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/compile.go"
+    },
+    "game/mugen/engine/env_shake_test.go": {
+      "sha256": "17a2b2cacf70ac461d88fc454f1d919ae5b8d22d5595ba888c9df1cfba089d4a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/env_shake_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/env_shake_test.go"
+    },
+    "game/mugen/engine/sprpriority.go": {
+      "sha256": "dd94601ea951a86a3b594e000e3a758f0206353ecc77a476698ab4dd1a66f0cf",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/engine/sprpriority.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/engine/sprpriority.go"
+    },
+    "game/mugen/resource/path_test.go": {
+      "sha256": "4d718f7c6088d81069a1b5ca8682eb35fb2baca80a27334d50c1ad1200077472",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/resource/path_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/resource/path_test.go"
+    },
+    "game/mugen/resource/path.go": {
+      "sha256": "f420594bc7bcf3b6bf97cd0621d9388ddb14c6646e275f169c62378e27dde112",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/resource/path.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/resource/path.go"
+    },
+    "game/mugen/tests/cmd_test.go": {
+      "sha256": "1b30d0d54ec39266936b5c2e2dd33a3bf7d46c4779fcc782ee09d0d15ddecab0",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/cmd_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/cmd_test.go"
+    },
+    "game/mugen/tests/input_test.go": {
+      "sha256": "ccdaf0868502e0b1de7789833e12599b7ce349e2f94312441264aa6d845ce641",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/input_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/input_test.go"
+    },
+    "game/mugen/tests/coordinates_test.go": {
+      "sha256": "ec68dee9822e4cb774c88fe5e18717a50e4e48e6ed3e63755e1234878ce6e774",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/coordinates_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/coordinates_test.go"
+    },
+    "game/mugen/tests/resource_test.go": {
+      "sha256": "89a3fa0c6944455d6c1cb9327b6b21453992d4a0499be31730a2f95c3d2da28d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/resource_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/resource_test.go"
+    },
+    "game/mugen/tests/expression_corpus_test.go": {
+      "sha256": "92e3f24565df3cdf42491041336a3a150533077cb205917946b4aa24d5a08e3e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/expression_corpus_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/expression_corpus_test.go"
+    },
+    "game/mugen/tests/reference_test.go": {
+      "sha256": "c94af9ba07efb15a7c9cc0431cf3e36325c9d6be09db8b60d32e257a4015dd09",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/reference_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/reference_test.go"
+    },
+    "game/mugen/tests/storyboard_test.go": {
+      "sha256": "122e347b75aee7cad80e7889c843b972e2396555312aa9fb379db5a821fb51f4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/storyboard_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/storyboard_test.go"
+    },
+    "game/mugen/tests/cns_test.go": {
+      "sha256": "8bfd686df7a7de99af484d5010bf0a67f8823d66aa34f8c2f2e879f7861ec72e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/cns_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/cns_test.go"
+    },
+    "game/mugen/tests/asset_loading_test.go": {
+      "sha256": "4378c458c860012f38ccd16892162d0622d6d29c5ce195383f001414abb4fa94",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/asset_loading_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/asset_loading_test.go"
+    },
+    "game/mugen/tests/font_test.go": {
+      "sha256": "ebd31a13cae450f08fef649eae59bc691ab63b1eb818257d75e12953c01204e9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/font_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/font_test.go"
+    },
+    "game/mugen/tests/diagnostics_test.go": {
+      "sha256": "b361fe8819f0bbd6a8ea20ae83b5f2d4982c9cca71d6eba90661d2e2fba20bb1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/diagnostics_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/diagnostics_test.go"
+    },
+    "game/mugen/tests/player_test.go": {
+      "sha256": "b7ecd4bbfe7451ed3bcc0639a3236ec25750a2b0f73e6d0a3ff3494ecd0629cc",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/player_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/player_test.go"
+    },
+    "game/mugen/tests/motif_test.go": {
+      "sha256": "e1c2881e1edc2dec9f65092c4378a68ca9b0a5ad3b61eec7928d271a9095dd6e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/motif_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/motif_test.go"
+    },
+    "game/mugen/tests/constant_test.go": {
+      "sha256": "7534d918198d1a0335444de97e12363eabf7c45d5767e7571d54c9fdbd41a37b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/constant_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/constant_test.go"
+    },
+    "game/mugen/tests/config_test.go": {
+      "sha256": "d207592472115a111a3f717d10b7f6d43195a549ca46d8ddad134f4c3c0d88b4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/config_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/config_test.go"
+    },
+    "game/mugen/tests/snd_test.go": {
+      "sha256": "116bbdf0ccb76e91c8b8fba7f8d8e17726c342d3a1c67445ae7e130aac496302",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/snd_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/snd_test.go"
+    },
+    "game/mugen/tests/parser_test.go": {
+      "sha256": "31c0773337aa665a837b00707f0cf194edbc793e950d8546c67e0bd1c4ed1d17",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/parser_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/parser_test.go"
+    },
+    "game/mugen/tests/fight_test.go": {
+      "sha256": "bb2a2d7693c5570f4f9a5670945730fb1c513f797c04ac862850cff5998c6655",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/fight_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/fight_test.go"
+    },
+    "game/mugen/tests/loader_test.go": {
+      "sha256": "affcdf97a23ab4a0068eda857967e4b1c5fa7782511912a9be8f433fec235479",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/loader_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/loader_test.go"
+    },
+    "game/mugen/tests/air_test.go": {
+      "sha256": "2dddb0211aaec8acf1bd34ea0e4e4135b14e719e1e17e35619cbb55e012232cb",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/air_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/air_test.go"
+    },
+    "game/mugen/sound/commands.go": {
+      "sha256": "6eb24d4bafa5823fddb3a3c82800483b08ab73b5c0aad615b51d51d4c02bcca5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sound/commands.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sound/commands.go"
+    },
+    "game/mugen/sound/mixer_test.go": {
+      "sha256": "953714d1841db048ffbc4f708cba57747991401d7bc357ad9a61093b3d0c2822",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sound/mixer_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sound/mixer_test.go"
+    },
+    "game/mugen/sound/mixer.go": {
+      "sha256": "90a2cd3fb0da460386bf38906b7d12eb1b790bdd8a3274a270e2bd8d2c0da415",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/sound/mixer.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/sound/mixer.go"
+    },
+    "game/mugen/render/nearest.go": {
+      "sha256": "3c81318886a482d7c3c88604813209e0b8517aadcc85691e97dc292c92cc17b8",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/nearest.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/nearest.go"
+    },
+    "game/mugen/render/shadow.go": {
+      "sha256": "8b3bf8c5b95e0835472bd43a9c3054ce5531c6e61c4ac489ad44ccba540e1285",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/shadow.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/shadow.go"
+    },
+    "game/mugen/render/palette_test.go": {
+      "sha256": "6c5fb40c8eb4d16a532b78828e14600791729375b5cbb132ae11a9a26ca38bad",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/palette_test.go"
+    },
+    "game/mugen/render/alpha.go": {
+      "sha256": "8b939718d5db8fb1bd297e59678bd8ecc138ee4ea509d0a4269f224e0d1b8ba9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/alpha.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/alpha.go"
+    },
+    "game/mugen/render/alpha_test.go": {
+      "sha256": "9f5d72b4fd31ed0e179a160c2e748d6dcecc52905f5dc53d039676d3c48c68b4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/alpha_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/alpha_test.go"
+    },
+    "game/mugen/render/perspective.go": {
+      "sha256": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/perspective.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/perspective.go"
+    },
+    "game/mugen/render/linear.go": {
+      "sha256": "5a3c1ff8c295d5e3c2700805c3a5d5a0080ad9e1f63f6849657cf8d574681850",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/linear.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/linear.go"
+    },
+    "game/mugen/render/palette.go": {
+      "sha256": "1b628fbb7df6b671492bdc501a990036af79f42338de41e058ab4dde04628dd6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/palette.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/palette.go"
+    },
+    "game/mugen/render/quad.go": {
+      "sha256": "7d50635506fb71c99adbe747e93b00d85d99b37eae4fd43ea706a377201bc9f4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/quad.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/quad.go"
+    },
+    "game/mugen/render/gray_precision_test.go": {
+      "sha256": "949c968172410b780452f8f7e2bfbb59dbbbbefa5915203f2d1e9fbed90a5dc7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/gray_precision_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/gray_precision_test.go"
+    },
+    "game/mugen/render/global_palette_test.go": {
+      "sha256": "f57aa3cb8f096a9d9af1c37fe26bfa83ab77acc43dfa9eff7c1277de963ef42b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/render/global_palette_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/render/global_palette_test.go"
+    },
+    "game/mugen/parsers/selectdef.go": {
+      "sha256": "ab34317a8b39a9415f96092da017e108840e0abf724903bea0d757afa411a2fa",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/selectdef.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/selectdef.go"
+    },
+    "game/mugen/parsers/ast.go": {
+      "sha256": "67afa54c82b4b8b93630d22a39ab93c96c5cd8d60dd9a0865ab4807594c03b91",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/ast.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/ast.go"
+    },
+    "game/mugen/parsers/values.go": {
+      "sha256": "a058c8dd5ee7b52a78b4b247a117da89cb61076c4eb7758fbaeff7a81023c23e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/values.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/values.go"
+    },
+    "game/mugen/parsers/def_test.go": {
+      "sha256": "bd2b91b3786e53c2e35d045aab3c493d3b1f1caa9d243a087689c64d5a3eb7d0",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/def_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/def_test.go"
+    },
+    "game/mugen/parsers/storyboard_test.go": {
+      "sha256": "54746e5da3c4e45c4b90b5d9cf14a27084ffaba7299172034c74edd36bbf5ea5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/storyboard_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/storyboard_test.go"
+    },
+    "game/mugen/parsers/def.go": {
+      "sha256": "b5c27548d423daa9f00edcb216e236f0f78e8b75ab9832159eb6f3444699178c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/def.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/def.go"
+    },
+    "game/mugen/parsers/lexer.go": {
+      "sha256": "53786c38856f2a61487df18acbcb3e0f54b3f901f069ef809d906920e8def468",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/lexer.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/lexer.go"
+    },
+    "game/mugen/parsers/storyboard.go": {
+      "sha256": "8cda7d7abc749886ffa8f050baed552602646d2ad74cd53fb2d284ebb0888793",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/storyboard.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/storyboard.go"
+    },
+    "game/mugen/parsers/lexer_test.go": {
+      "sha256": "d56946f0ce5ce929a19ee6b83e23e728202d0697d1dcd3264ec30cfe03304ad3",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/lexer_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/lexer_test.go"
+    },
+    "game/mugen/parsers/parser_test.go": {
+      "sha256": "72dbc4cc2b5349a199c34053cfa60790a7e49468dc84c0a9d5f99bf691a8556b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/parser_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/parser_test.go"
+    },
+    "game/mugen/parsers/parser.go": {
+      "sha256": "ff9206da0ddbe00d23a156b0928c23414c6b691d3f28cac184cb24c2c991e4c2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/parsers/parser.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/parsers/parser.go"
+    },
+    "game/mugen/fight/definition.go": {
+      "sha256": "c63994f14f7ad1fc7c280017cad5929ec052725eb1c79acd5c677c48416cf033",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/fight/definition.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/fight/definition.go"
+    },
+    "game/mugen/snd/snd_test.go": {
+      "sha256": "8b9d19063fdf36faad6ea445d50e286eeebb14d94096b170773012aee5d2fb58",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/snd/snd_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/snd/snd_test.go"
+    },
+    "game/mugen/snd/snd.go": {
+      "sha256": "140546da2ae7097be44679df51b86e0da016920250eb9a4350d026c07f0c12a5",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/snd/snd.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/snd/snd.go"
+    },
+    "game/mugen/snd/wav.go": {
+      "sha256": "052f543ce8ed3a3580569c5947b35690d569fc6d900be87f58b9a29afca7bbee",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/snd/wav.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/snd/wav.go"
+    },
+    "game/mugen/background/background_test.go": {
+      "sha256": "6849431b49a2203c0c9ddcb68dfa38a2fd688c96ed47f50bae5ac32a1cc884a4",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/background/background_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/background/background_test.go"
+    },
+    "game/mugen/background/background.go": {
+      "sha256": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/background/background.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/background/background.go"
+    },
+    "game/mugen/logger/logger.go": {
+      "sha256": "e4f84900614fc6fb7d86dd95681c7135ead267dc3318043296533cbfa8fc76ea",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/logger/logger.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/logger/logger.go"
+    },
+    "game/mugen/internal/exprfixture/fixture.go": {
+      "sha256": "fe2973e6fff2ec22a85fb57c1fac15fb29488263fd8072e6b383979d9ac22874",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/internal/exprfixture/fixture.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/internal/exprfixture/fixture.go"
+    },
+    "game/mugen/tests/character/main.go": {
+      "sha256": "9350baab71fe5573c31a69162478bbb5b8f36435b61d1db057ac9c0f814e76b2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/character/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/character/main.go"
+    },
+    "game/mugen/tests/fetch-all-data/main.go": {
+      "sha256": "1f0e4d606b9478c09991d0d4896a6752e86d8ee210a3e8146bdb2fb45ec86522",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/fetch-all-data/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/fetch-all-data/main.go"
+    },
+    "game/mugen/tests/snd_player/main.go": {
+      "sha256": "f1f43785eac0728efbdf703d4a24b5bbab7850b828bc3e2ad2bdef0893df7e07",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/snd_player/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/snd_player/main.go"
+    },
+    "game/mugen/tests/stage/main.go": {
+      "sha256": "ef5dfb0f160e28ed9b3f4d70f2bbbd8e0016ac6143bb1f1c76f090b299586d5d",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/stage/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/stage/main.go"
+    },
+    "game/mugen/tests/physics_check/main.go": {
+      "sha256": "b7c84399f51e30629ddf64d51fc7fb7729a3e459cacd0f5edeaebb1bf0b67f20",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/physics_check/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/physics_check/main.go"
+    },
+    "game/mugen/tests/air_player/main.go": {
+      "sha256": "8778e9e5653c59587dbe40e2fb1f58fa8df3e6bb76ee6293ebf52c62482a3ed1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/air_player/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/air_player/main.go"
+    },
+    "game/mugen/tests/expressions/main.go": {
+      "sha256": "009a87fb2e2ebf5632c2d327e6edb33c367f34c4bcb12963adfcd9313ed995b0",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/expressions/main.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/expressions/main.go"
+    },
+    "game/mugen/tests/expressions/main_test.go": {
+      "sha256": "d9459cfb0702142bd6408d30bec33948cfd3300c1935d9e7a92661255c440cf6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/expressions/main_test.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/expressions/main_test.go"
+    },
+    "game/mugen/tests/reference_text/main_windows.go": {
+      "sha256": "22909b0ffe43624e746262a6de19575c373b0c71577c0dd4cf63fa8611679d07",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/reference_text/main_windows.go",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/reference_text/main_windows.go"
+    },
+    "game/mugen/tests/video_render_probe.py": {
+      "sha256": "9757e8a3e73df693bd807b65fa4baf6973ad6dc7c8a86750443fcded4b7b30d9",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/video_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/video_render_probe.py"
+    },
+    "game/mugen/tests/recovery_probe.py": {
+      "sha256": "4237ae4482fd2c67450b7ad5e2e8344152f54bb2b7a4012b370b181d2a612e2f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/recovery_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/recovery_probe.py"
+    },
+    "game/mugen/tests/storyboard_probe.py": {
+      "sha256": "20127ce5de0485a11abef309eae77cf90794cf143ab1484c14b069fed7f81a4e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/storyboard_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/storyboard_probe.py"
+    },
+    "game/mugen/tests/shadow_render_probe.py": {
+      "sha256": "3377a4304f16ddb3e97891ab97f515d44bf8f55ad80ae8c824f9c2aecfb3857b",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/shadow_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/shadow_render_probe.py"
+    },
+    "game/mugen/tests/raster_render_probe.py": {
+      "sha256": "69746b7c34f2ce735375a399953db1e1f0829a616392d7eac5696395ae810f38",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/raster_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/raster_render_probe.py"
+    },
+    "game/mugen/tests/sprite_render_probe.py": {
+      "sha256": "2568d3c3083994ea602f733a7a15f47c4165e1432a430e5fd37bf62b039cbaee",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/sprite_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/sprite_render_probe.py"
+    },
+    "game/mugen/tests/assert_special_render_probe.py": {
+      "sha256": "7e4fd69d5dcddb5826cdae32529e61e05668c33e6179757a9d84220168e5734c",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/assert_special_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/assert_special_render_probe.py"
+    },
+    "game/mugen/tests/stage_clear_probe.py": {
+      "sha256": "57852b93f77dc84364748c6a9691252ed93a38b113f30ea9726f9f1e4b181d84",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/stage_clear_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/stage_clear_probe.py"
+    },
+    "game/mugen/tests/spark_probe.py": {
+      "sha256": "325fa77200496ef910a689e5a76b7ba82f2ab0ea79e91bcb5576231ac72fdba7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/spark_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/spark_probe.py"
+    },
+    "game/mugen/tests/generate_raster_markers.py": {
+      "sha256": "e1ce784235c2dc5c3bfe695218a46a2c63ebbf633287db93095edfed73f0d171",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/generate_raster_markers.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/generate_raster_markers.py"
+    },
+    "game/mugen/tests/modify_enum_render_probe.py": {
+      "sha256": "4b9e95b481e90efc0139bc7a7aaa591184bbbab36d8dd661f4327c82645089bf",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/modify_enum_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/modify_enum_render_probe.py"
+    },
+    "game/mugen/tests/generate_actor_markers.py": {
+      "sha256": "48857d8768a2349ba40b8519323f06e11da1ca4ce4e84f835cbd678b1b5cf3b7",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/generate_actor_markers.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/generate_actor_markers.py"
+    },
+    "game/mugen/tests/drawing_render_probe.py": {
+      "sha256": "93a7d62a737aaed2078220341bcad3b1946cdc0ad339a44e6258a24b6cb92749",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/drawing_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/drawing_render_probe.py"
+    },
+    "game/mugen/tests/generate_sound_bank.py": {
+      "sha256": "6dd27979a272c26826811c0f8f86a9cb757024edb5d10d3d723f155f0b590943",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/generate_sound_bank.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/generate_sound_bank.py"
+    },
+    "game/mugen/tests/hit_effect_probe.py": {
+      "sha256": "9630bc41576f5fcb83969ea127ddcc879bcb71dc1aa8f9f144ae3d5f48d420fc",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/hit_effect_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/hit_effect_probe.py"
+    },
+    "game/mugen/tests/creation_pool_render_probe.py": {
+      "sha256": "d2db085167a211fdeb0dddcac0325d14ec024fd02518752308200ce422211f22",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/creation_pool_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/creation_pool_render_probe.py"
+    },
+    "game/mugen/tests/super_render_probe.py": {
+      "sha256": "1b976598c9ba905eceda33c3d7e094594bbc59804e7752a64ee9280625a21580",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/super_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/super_render_probe.py"
+    },
+    "game/mugen/tests/assert_control_render_probe.py": {
+      "sha256": "5ea9943efbf4d7c4feb7a21664ec8c49754cfcddfd9a1a260bf8d8dca45dfd4e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/assert_control_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/assert_control_render_probe.py"
+    },
+    "game/mugen/tests/global_palette_render_probe.py": {
+      "sha256": "77efc810106442400f1f4e153218b1a0ac687028b0a7f8ee044c7049d485f2f6",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/global_palette_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/global_palette_render_probe.py"
+    },
+    "game/mugen/tests/round_probe.py": {
+      "sha256": "7dab8d080ae5bce98c57cb7b008b3ba0493358985c9a0c55c3c7cf148d420b1a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/round_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/round_probe.py"
+    },
+    "game/mugen/tests/after_image_actor_render_probe.py": {
+      "sha256": "12430dafa3a38c5ae0f81b66b3240b4622a4966c97d0b0a2ce5b8b4702ec6ee1",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/after_image_actor_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/after_image_actor_render_probe.py"
+    },
+    "game/mugen/tests/env_color_render_probe.py": {
+      "sha256": "201ee3a000479568deed03d360651e71596633523803f6123c2fabd61ee692fe",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/env_color_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/env_color_render_probe.py"
+    },
+    "game/mugen/tests/projectile_trail_render_probe.py": {
+      "sha256": "d0e5bb36b785cd9fa80be63af8dd0623a68b0c4376124cea8d04978c415b6453",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/projectile_trail_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/projectile_trail_render_probe.py"
+    },
+    "game/mugen/tests/app_smoke.py": {
+      "sha256": "42bdb281d4eeebaca7ddbb70c83fa6068eb0f8fcf5d5200aa96f4f67fb0b0245",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/app_smoke.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/app_smoke.py"
+    },
+    "game/mugen/tests/forcefeedback_render_probe.py": {
+      "sha256": "71b099bd310b05b9d7ed1884ee97d3db00437bf2cd8e0fb7310ad16a57d83dc2",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/forcefeedback_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/forcefeedback_render_probe.py"
+    },
+    "game/mugen/tests/controller_inventory.py": {
+      "sha256": "bbce01f25cf359fc1d2d22665acf2cdb8a6a6ad706ff9fa5e48ef1ab2f6d1717",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/controller_inventory.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/controller_inventory.py"
+    },
+    "game/mugen/tests/gametime_probe.py": {
+      "sha256": "f1e9640d277d1efdb7d084c53dc5f55abb1ba97cdad17d3bf51c998967a57422",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/gametime_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/gametime_probe.py"
+    },
+    "game/mugen/tests/after_image_render_probe.py": {
+      "sha256": "f59d4048f45f698ce09bdac7f8adcaa81310e92887649a77f6d81b9427bebb4e",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/after_image_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/after_image_render_probe.py"
+    },
+    "game/mugen/tests/after_image_reference_probe.py": {
+      "sha256": "3d8680801496508789b16f0fd4b1e9b8f0408d80f72d73d6ca082df1abfc2412",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/after_image_reference_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/after_image_reference_probe.py"
+    },
+    "game/mugen/tests/recovery_evidence.py": {
+      "sha256": "de791fc327b034c42cdf45074323a0e6c06f8355fbe03b667ffb0fbbaf0b7b81",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/recovery_evidence.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/recovery_evidence.py"
+    },
+    "game/mugen/tests/noko_render_probe.py": {
+      "sha256": "17486a160f6add217a56ed1ab066bfcc7e566c6fd0d5a373c6cb5e509c90c976",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/noko_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/noko_render_probe.py"
+    },
+    "game/mugen/tests/creation_palette_render_probe.py": {
+      "sha256": "ef4ebc99bac6d2730406a28b5b55d319eef21fdda781773ceddf7b8a049501ab",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/creation_palette_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/creation_palette_render_probe.py"
+    },
+    "game/mugen/tests/trigger_inventory.py": {
+      "sha256": "6f6b28c228f1d37bb5a36e4356ef014458e25c443b51495d1e99ad04264d416a",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/trigger_inventory.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/trigger_inventory.py"
+    },
+    "game/mugen/tests/stock_input_reference_probe.py": {
+      "sha256": "09cf72de5d040329b17019963f4a1f59a817577ef46de5d4c02494e6592abd0f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/stock_input_reference_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/stock_input_reference_probe.py"
+    },
+    "game/mugen/tests/creation_draw_render_probe.py": {
+      "sha256": "ed7a3e944654f283c1448afff0f0ef676fbfb11688a49ae22dc95befcecea040",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/creation_draw_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/creation_draw_render_probe.py"
+    },
+    "game/mugen/tests/env_shake_render_probe.py": {
+      "sha256": "cb52e2fe610e5a9646f3475fcf1fc81582d1742e61b4c379e1c7a67c9bbb744f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/env_shake_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/env_shake_render_probe.py"
+    },
+    "game/mugen/tests/actor_render_probe.py": {
+      "sha256": "d463305c7b837269e66a767715a7e557bb7e55a608af3308cb246f3e54bde425",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/actor_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/actor_render_probe.py"
+    },
+    "game/mugen/tests/effect_order_render_probe.py": {
+      "sha256": "4c910545c923d42e69d05e3cb26b5272b3cceb8cdc12f4462cbf99f31e004f7f",
+      "archive_path": "game/mugen/temp/m4dk-authoring-source/tests/effect_order_render_probe.py",
+      "git_commit": "9c35b389b60bc9fa9cb6bea7a5a06f0b558a8fe7",
+      "git_path": "game/mugen/tests/effect_order_render_probe.py"
+    }
+  }
+}

@@ -1101,3 +1101,20 @@ programs remain unpromoted diagnostics, not runtime observations for missed slot
 The final full suite passes4,918 results/36 packages; all30 world crops, five old
 palette/order apps, four masks and reviewed stock win/rematch/private PCM pass.
 Read [the measured lifecycle and remaining bounds](../docs/NO-KO.md).
+
+## NoKO voice and production PCM (M4dk)
+
+`TestNativeSoundControllerPCM` adds ten native programs/120 values/36 segments,
+using a strictly checked alias to the existing ko-sound bank. No new SND is
+required. `noko_voice_probe.py` checks source/config/quiet-HUD/bank/capture/PCM
+provenance, segment levels and relative timing with the original8/.35 tolerances.
+The frozen numeric/audio catalogue is not rewritten during comparison.
+
+All ten CPU programs pass; nine of ten production audio comparisons pass. The
+ordinary echo gap comparator still fails and remains unwaived. A native-only
+phase experiment did not reproduce it; no sampler change was adopted. The native
+ledger's390 versioned Go/parser/unused-probe authoring sources are pinned by
+`nokovoice-authoring-source-archive.json` to Git9c35b389 and byte-identical private
+snapshots. Validate these archived versions; native-used recorders, native
+programs/resources/configs/captures/PCM remain immutable at original paths.
+Read [the results and limits](../docs/NO-KO-AUDIO.md) before claiming audio parity.

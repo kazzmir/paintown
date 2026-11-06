@@ -1,0 +1,191 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "cea747689cb991d147753ad53c99a7f19287518510c5d669c20dbc7c44fd3762",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "48c41279ec32beeaed7e3fee331930484513a1ab9ce274ce8419a6d5a8674da1",
+          "variables": {
+            "0": 1,
+            "1": 5000,
+            "2": 0,
+            "3": 1,
+            "4": 1000,
+            "5": 1,
+            "6": 5000,
+            "7": 701,
+            "8": 0,
+            "9": 1,
+            "10": 1000,
+            "11": 1
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "file_sha256": {
+        "sound": {
+          "path": "chars/kfm/probe.snd",
+          "sha256": "81f366476130ee7ebaa1c262c219226ac7cf1cc00f084e7d8ff373dfa0ec265b"
+        }
+      },
+      "fixture_constants": true,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441,
+          882,
+          1323,
+          3528
+        ],
+        "frames": 517295,
+        "pcm_sha256": "d89a24a8126a0f5ea60743a7f88188e1c84f767cd88ba28e116f8c7477d84520",
+        "analysis_window_ms": 100,
+        "analysis_step_ms": 50,
+        "segments": [
+          {
+            "start": 2.55,
+            "end": 4.5,
+            "levels": {
+              "441": [
+                3998.9,
+                3967.8
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0.0,
+                0.0
+              ],
+              "3528": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "start": 4.55,
+            "end": 7.55,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                979.5,
+                972.1
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "start": 7.6,
+            "end": 11.7,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "882": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "3528": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "checks": [
+          {
+            "Tick": 30,
+            "Segment": 0,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 124,
+            "Segment": 1,
+            "WindowTicks": 6
+          },
+          {
+            "Tick": 145,
+            "Segment": 1,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 173,
+            "Segment": 1,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 210,
+            "Segment": 1,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 240,
+            "Segment": 1,
+            "WindowTicks": 12
+          },
+          {
+            "Tick": 330,
+            "Segment": 2,
+            "WindowTicks": 12
+          }
+        ],
+        "quiet_hud": true,
+        "quiet_fight_sha256": {
+          "data/fight.def": "7f663bc253d0cabac1283dd1c0d56e0310ade608a6767c5717ff2f5eef4db048",
+          "data/mugen1/fight.def": "44d450008fe7f1a9a88e4849dd3aa56c4c7bb5a8954d9528060cc6e394bea63d"
+        },
+        "quiet_hud_bank_sha256": "be7bdf1c91d70abb098a4b416115fcbcefbda09e4372ef0d5d9474bfab96cf17"
+      },
+      "sound_bank_alias": "ko-sound.extra/probe.snd",
+      "extra_sha256": {
+        "probe.snd": "81f366476130ee7ebaa1c262c219226ac7cf1cc00f084e7d8ff373dfa0ec265b"
+      },
+      "native_run": "temp/reference-runs/m4dk-nokovoice-echo-both",
+      "native_audio_run": "temp/audio-runs/m4dk-nokovoice-echo-both",
+      "full_controller_state_trigger_parameter_air_and_sound_alias_intent_verified": true
+    }
+  }
+}

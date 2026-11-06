@@ -22,13 +22,14 @@ import (
 )
 
 type audioReferenceCase struct {
-	CNSHash     string            `json:"cns_sha256"`
-	AIRHash     string            `json:"air_sha256"`
-	CMDHash     string            `json:"cmd_sha256"`
-	Version     string            `json:"mugenversion"`
-	ExtraHashes map[string]string `json:"extra_sha256"`
-	Captures    []struct{ Variables map[string]float64 }
-	Audio       struct {
+	CNSHash        string            `json:"cns_sha256"`
+	AIRHash        string            `json:"air_sha256"`
+	CMDHash        string            `json:"cmd_sha256"`
+	Version        string            `json:"mugenversion"`
+	ExtraHashes    map[string]string `json:"extra_sha256"`
+	SoundBankAlias string            `json:"sound_bank_alias"`
+	Captures       []struct{ Variables map[string]float64 }
+	Audio          struct {
 		Frequencies []float64      `json:"frequencies"`
 		Tolerance   float64        `json:"amplitude_tolerance"`
 		Settings    map[string]int `json:"settings"`
@@ -77,7 +78,9 @@ func audioLevels(data []byte, rate int, frequencies []float64) map[string][2]flo
 func TestNativeSoundControllerPCM(t *testing.T) {
 	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio", "contact-sound", "guard-sound", "override-sound", "contact-sound-close", "contact-sound-common", "contact-sound-default", "guard-sound-default", "contact-sound-common-single", "contact-sound-retained", "ko-sound", "ko-sound-echo", "ko-sound-suppressed", "ko-sound-initial-suppressed",
 		"superpause-sound-own", "superpause-sound-common", "superpause-sound-common-single", "helperaudio-ordinary", "helperaudio-recursive",
-		"guardcue-audio-fatal", "guardcue-audio-hit", "guardcue-audio-safe", "guardcue-audio-protected"} {
+		"guardcue-audio-fatal", "guardcue-audio-hit", "guardcue-audio-safe", "guardcue-audio-protected",
+		"nokovoice-contact-attacker", "nokovoice-contact-baseline", "nokovoice-contact-both", "nokovoice-contact-defender",
+		"nokovoice-direct-baseline", "nokovoice-direct-both", "nokovoice-echo-baseline", "nokovoice-echo-both", "nokovoice-restore-baseline", "nokovoice-restore-both"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")
@@ -95,7 +98,14 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 					if reference.CMDHash != "" {
 						checkedAudioInput(t, stem+".cmd", reference.CMDHash)
 					}
-					bankData := checkedAudioInput(t, stem+".extra/probe.snd", reference.ExtraHashes["probe.snd"])
+					bankPath := stem + ".extra/probe.snd"
+					if reference.SoundBankAlias != "" {
+						if reference.SoundBankAlias != "ko-sound.extra/probe.snd" {
+							t.Fatal("unsupported native sound bank alias", reference.SoundBankAlias)
+						}
+						bankPath = "../tests/testdata/reference/" + reference.SoundBankAlias
+					}
+					bankData := checkedAudioInput(t, bankPath, reference.ExtraHashes["probe.snd"])
 					bank, err := snd.Parse(bytes.NewReader(bankData))
 					if err != nil {
 						t.Fatal(err)
