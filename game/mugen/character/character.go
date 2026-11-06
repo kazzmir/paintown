@@ -885,8 +885,17 @@ func (c *Character) Projectile(params map[string]string) {
 func (c *Character) AssertSpecial(flag string) {
 	flag = strings.ToLower(flag)
 	c.Specials[flag] = true
-	if flag == "globalnoshadow" && c.Timeline != nil {
-		c.Timeline.GlobalNoShadow = true
+	if c.Timeline != nil {
+		switch flag {
+		case "globalnoshadow":
+			c.Timeline.GlobalNoShadow = true
+		case "nobg":
+			c.Timeline.NoBackground = true
+		case "nofg":
+			c.Timeline.NoForeground = true
+		case "nobardisplay":
+			c.Timeline.NoBarDisplay = true
+		}
 	}
 }
 

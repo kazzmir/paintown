@@ -262,7 +262,7 @@ func (h *FightHUD) bar(screen *ebiten.Image, section, prefix string, fraction fl
 	}
 }
 
-func (h *FightHUD) Draw(screen *ebiten.Image) {
+func (h *FightHUD) drawBars(screen *ebiten.Image) {
 	m := h.match
 	for slot, p := range m.Players {
 		prefix := fmt.Sprintf("p%d", slot+1)
@@ -300,7 +300,14 @@ func (h *FightHUD) Draw(screen *ebiten.Image) {
 		timeText = "∞"
 	}
 	h.label(screen, "Time", "counter", timeText, pos[0], pos[1])
-	pos = h.values("Round", "pos", 0, 0)
+}
+
+func (h *FightHUD) Draw(screen *ebiten.Image) {
+	m := h.match
+	if !m.Timeline.NoBarDisplay {
+		h.drawBars(screen)
+	}
+	pos := h.values("Round", "pos", 0, 0)
 	switch m.Phase {
 	case match.RoundCall:
 		h.label(screen, "Round", "round.default", strings.ReplaceAll(h.text("Round", "round.default.text", "Round %i"), "%i", fmt.Sprint(m.Round)), pos[0], pos[1])

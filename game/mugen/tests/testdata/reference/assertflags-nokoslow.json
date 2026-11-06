@@ -1,0 +1,67 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "33fea6d35bb1a313dd02af109ea134ae72859650499d149048c169ae9f139fc9",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "6ccad0fd31caea62f59fec85c4ec558db27ddebe04dae021cce9fb1cda638ca4",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 1,
+        "9": 1,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "7df23e0a125174cba56eaa2c8892420922ad88d0c7846d8f260760babe130686",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "state_language_version": "1.1",
+  "full_cns_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "assert_special_render": {
+    "regions": [
+      [
+        160,
+        140,
+        1120,
+        670
+      ],
+      [
+        330,
+        0,
+        1120,
+        140
+      ]
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256s": [
+      "4e46356a8cc90c062ab1761f1087693d8d2f2104575312a97a45511ff8780e95",
+      "e9ba8c2d73c03c06368b6e47facd2aca08692f02d435d56a6caf44b6aa4cace7"
+    ],
+    "region_reason": "Exact world and HUD consumer regions exclude native diagnostic glyphs. Full original captures retained; no threshold or comparison tolerance."
+  }
+}

@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['engine/assert_special.go', 'engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
@@ -31,7 +31,7 @@ PARTIAL = {
 	'varset': 'native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending',
     'projectile': 'PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; SHADOWS.md adds measured current-only stage shadows, alpha/fade/geometry/flags/layer consumers; wider resource/profile variants and unwaived raster differences remain',
     'explod': 'EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; EXPLOD-CREATION-DRAWING.md adds typed creation angles/trans/alpha and conditional priority evaluation; EXPLOD-CAPACITY-RANDOM.md adds typed ordered random displacements, global root/helper/retired-owner and hitspark admission, zero-range draw phases and config binding; broader variants and strict sampling differences remain',
-    'assertspecial': 'only a subset of literal flags have production consumers; SHADOWS.md adds noshadow, per-game-tick globalnoshadow and invisible shadow suppression',
+    'assertspecial': 'ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; dedicated guard/walk/KO/music/round variants remain; SHADOWS.md adds shared shadow suppression',
     'appendtoclipboard': 'stores raw text; params/formatting absent',
     'displaytoclipboard': 'stores raw text; params/formatting absent',
     'hitadd': 'updates ComboCount; no production reader of that field was found',
@@ -115,8 +115,12 @@ def inventory():
             if not path.name.endswith('_test.go'):
                 flags.update(re.findall(r'Specials\["([^"]+)"\]', path.read_text()))
     # Global flags use a timeline sink rather than a persistent actor-map read.
-    if 'flag == \"globalnoshadow\"' in sources['character/character.go'] and 'm.Timeline.GlobalNoShadow' in sources['system/fight_state.go']:
-        flags.add('globalnoshadow')
+    for flag, field in [('globalnoshadow', 'GlobalNoShadow'), ('nobg', 'NoBackground'),
+                        ('nofg', 'NoForeground'), ('nobardisplay', 'NoBarDisplay')]:
+        issuer = 'case "' + flag + '":' in sources['character/character.go']
+        sink = 'm.Timeline.' + field
+        if issuer and any(sink in sources[path] for path in ['system/fight_state.go', 'system/hud.go']):
+            flags.add(flag)
     counts = {key: sum(row['consumer_status'] == key for row in rows)
               for key in ['stub', 'unconsumed-render-field', 'partial-consumer',
                           'missing-dispatcher', 'bounded-native-consumer', 'route-only']}

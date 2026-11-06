@@ -104,7 +104,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	environment := m.Timeline.EnvironmentColor
 	environmentActive := environment.Time != 0
 	s.stageCanvas.Fill(allPalette.ClearColor(color.Black))
-	if !environmentActive {
+	if !environmentActive && !m.Timeline.NoBackground {
 		if err := m.Stage.DrawWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette); err != nil {
 			s.renderError = err
 			return
@@ -152,9 +152,11 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// Stage foreground still draws for negative durations. A positive front
 	// quad covers it; an under quad leaves it visible above the actors.
 	s.stageCanvas.Clear()
-	if err := m.Stage.DrawForegroundWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette); err != nil {
-		s.renderError = err
-		return
+	if !m.Timeline.NoForeground {
+		if err := m.Stage.DrawForegroundWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette); err != nil {
+			s.renderError = err
+			return
+		}
 	}
 	s.gameCanvas.DrawImage(s.stageCanvas, backgroundOptions)
 	if frontEnvironment {

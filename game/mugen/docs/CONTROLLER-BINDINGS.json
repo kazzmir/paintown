@@ -3,6 +3,7 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
+    "engine/assert_special.go": "f32c4532ceacac8fbe779d0e25c22003baf211ad9a4c744cd10640048ae5e7cc",
     "engine/projectile.go": "e14a2afbcd12e977bdd437582ae2cec6d264a7e352491c5a207a1ced6fa8ab70",
     "character/projectile.go": "bf8a8cf11497e0e4e2a1212ea3e35978dbf34ebc4da5a83d94ab9f6d1b9ceb5e",
     "character/hit_chain.go": "32d3f02bbab9aed408961f0f964b9711b610c97ed19a2c47fd90d8491095fd07",
@@ -12,9 +13,9 @@
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
     "match/match.go": "7c1cb5096a9d9a9d3a46762014597dd8b3844c13dea790405e0b19f8e31633a7",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
-    "engine/statemachine.go": "60d131c59f06c8d2b542ee59be053d3baab41387b36605aa5a64e30f1c995927",
-    "engine/parameters.go": "7f4af0e684ca120ad73f3b6666adb4af0152453aea41706028c674ad5d3fa90e",
-    "character/character.go": "30f06bdd7216242f1e293aa1c0924667222455d966329692283b98e8bb5476e8",
+    "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
+    "engine/parameters.go": "06ed182c5fc75874ea4d2e473e0b971bc9cf7818bd6d266bed76a28bb9d628ff",
+    "character/character.go": "d94fdb902a5f2773523bd9de541f4b37016a13aca61203b4873a77804b3a9e4b",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
     "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
@@ -34,7 +35,7 @@
     "engine/env_color.go": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
     "engine/env_shake.go": "4792c308034f6cbd95c9d40de4c8a4c5f529270ff075a71f0ea2a917afcd3d06",
     "engine/shake.go": "badeca8942018cda36f154190115c52d89bed797adb2adfa848c6a3b9cc8659b",
-    "engine/timeline.go": "4da7451e2f03227fffee97bee2d39860301adf56d9a2b2298bd09f0ed2d913e4",
+    "engine/timeline.go": "afaa5de4a112e837689e948a3f21c4ff411c9b6dda31107920204ff1edd3e5ef",
     "engine/round_clock.go": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
     "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
     "palette/controller_effect.go": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
@@ -45,8 +46,8 @@
     "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
     "stage/stage.go": "f44f4fc4fd38ad75e45d9c887819a00fdffe079b7530838eff3ff317a301e1d7",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "fe2c8898e547aa81645b9b969b48c0d295e7f779c391fa615005437984cbcc24",
-    "system/hud.go": "1ceba3b260f2c3f60c6cc8409332c8f4e09fcc2932795862cbd61752ee44537f",
+    "system/fight_state.go": "c26a8a793731ac95e79fe9ab7561d0542d2b10778974436e7cf38aff9795d6e2",
+    "system/hud.go": "5f94f33cb0f2247e3b5dc8637a041d7c367d255d6d4f151107064ae65b995cdc",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
@@ -56,8 +57,8 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 74,
-    "fallback": 15,
+    "typed": 75,
+    "fallback": 14,
     "missing": [],
     "consumer_status_counts": {
       "stub": 2,
@@ -77,6 +78,9 @@
       "intro",
       "invisible",
       "noautoturn",
+      "nobardisplay",
+      "nobg",
+      "nofg",
       "noguard",
       "nojugglecheck",
       "nokoslow",
@@ -178,11 +182,11 @@
     {
       "name": "assertspecial",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleAssertSpecial",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "only a subset of literal flags have production consumers; SHADOWS.md adds noshadow, per-game-tick globalnoshadow and invisible shadow suppression"
+        "ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; dedicated guard/walk/KO/music/round variants remain; SHADOWS.md adds shared shadow suppression"
       ],
       "variants_complete": false
     },

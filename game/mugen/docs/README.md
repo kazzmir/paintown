@@ -127,3 +127,5 @@ effort stay under `game/mugen/`.
   pool admission, exact RNG phases, reproducible matches and full acceptance.
 
 - [ModifyExplod transparency tokens](MODIFY-EXPLOD-ENUMS.md): native quoted modes, skipped alpha compilation/evaluation and exact application controls.
+
+- [AssertSpecial global visibility](ASSERT-SPECIAL.md): literal schemas, global pause/reset consumers, 40 exact world regions and 35 open strict HUD gates.

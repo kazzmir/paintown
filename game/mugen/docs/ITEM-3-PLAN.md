@@ -256,3 +256,24 @@ renderer failures remain unwaived; no tolerance or original expectation changed.
 See [MODIFY-EXPLOD-ENUMS.md](MODIFY-EXPLOD-ENUMS.md). Item 3 continues with special
 flags, system animations/dust, clipboard, residual schemas and renderer gates.
 Item 4 remains unallocated. Routing counts are not behavioral percentages.
+
+
+## M4dh — AssertSpecial schema and global visibility
+
+Typed literal validation now matches the beta's documented flags, accepted
+undocumented noko, rejection forms and ignored fourth flag. Three global drawing
+flags reach per-game-tick timeline consumers, including reset while owners stop
+under Pause/SuperPause. NoBG preserves foreground and palette/environment passes;
+noFG suppresses foreground; nobardisplay suppresses bars, portraits, names/timer.
+All 48 native programs pass (40 accepted / eight rejections / 480 values).
+All 40 actual-app WORLD crops match exactly /20,352,000 RGB pixels. Only 5/40
+complete world+HUD crops are exact; **35 strict HUD failures remain UNWAIVED**,
+including a failure already present in the no-special-flags baseline. The strict
+matrix/outer driver retain exit one. Focused races pass 869 core /228 selected
+native results. Five older palette/order apps, four masks and visually inspected
+stock rematch/audio pass:82 balanced inputs /1,971,877 PCM frames. Frozen-input,
+resource, artifact and module audits pass. Latest full suite remains M4df4,743/36
+at the preceding source boundary. See [ASSERT-SPECIAL.md](ASSERT-SPECIAL.md).
+Dedicated guard, walk, KO, round/music consumers and HUD/renderer gates remain.
+75/89 typed routes (84.3%) are source routing, not behavioral completion. Item3
+continues autonomously; item4 remains unallocated.

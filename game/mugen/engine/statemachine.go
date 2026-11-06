@@ -734,16 +734,11 @@ func handleProjectile(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleAssertSpecial(ctrl *cns.StateController, env Environment) error {
-	if v, ok := ctrl.Params["flag"]; ok {
-		env.AssertSpecial(v)
+	handler, _, err := compileAssertSpecial(ctrl)
+	if err != nil {
+		return err
 	}
-	if v, ok := ctrl.Params["flag2"]; ok {
-		env.AssertSpecial(v)
-	}
-	if v, ok := ctrl.Params["flag3"]; ok {
-		env.AssertSpecial(v)
-	}
-	return nil
+	return handler(ctrl, env)
 }
 
 func handleExplod(ctrl *cns.StateController, env Environment) error {

@@ -1056,3 +1056,14 @@ crop without tolerance changes. All 19 fresh crops match exactly. The native
 ledger and configuration-finalization records pin original source/probe hashes
 and original/final configs. See ../docs/MODIFY-EXPLOD-ENUMS.md for final gates,
 the unrecoverable outer-session limit, visual review and remaining obligations.
+
+
+## AssertSpecial flags and global consumers — M4dh
+
+`TestNativeAssertSpecialSchemas` and `TestNativeAssertSpecialGlobalFlags` replay
+32 +16 immutable native programs. `assert_special_render_probe.py` compares fixed
+world/HUD regions exactly; it preserves failure for any differing pixel. All
+48 replays and 40 world regions pass; 35 complete comparisons still fail on HUD
+pixels. No golden, region or tolerance changed after promotion. Native ledgers
+and config-finalization records pin originals and native config transitions.
+See ../docs/ASSERT-SPECIAL.md for strict statuses, audits and remaining consumers.

@@ -22,21 +22,23 @@ type pauseClock struct {
 // Timeline is simulation-owned. Requests take effect after the issuing tick;
 // nested entity adapters share its frame instead of advancing GameTime again.
 type Timeline struct {
-	EnvironmentColor              EnvironmentColorParameters
-	AllPalette, BackgroundPalette *palette.State
-	GlobalNoShadow                bool // Reset every game tick, including paused frames.
-	GameTime                      int32
-	TicksPerSecond                int32 // Zero uses the standalone default of 60.
-	pause, super                  pauseClock
-	pending, pendingSuper         *pauseClock
-	depth                         int
-	shake                         ShakeParameters
-	pendingShake                  *ShakeParameters
+	EnvironmentColor                         EnvironmentColorParameters
+	AllPalette, BackgroundPalette            *palette.State
+	GlobalNoShadow                           bool // Reset every game tick, including paused frames.
+	NoBackground, NoForeground, NoBarDisplay bool
+	GameTime                                 int32
+	TicksPerSecond                           int32 // Zero uses the standalone default of 60.
+	pause, super                             pauseClock
+	pending, pendingSuper                    *pauseClock
+	depth                                    int
+	shake                                    ShakeParameters
+	pendingShake                             *ShakeParameters
 }
 
 func (t *Timeline) BeginFrame() {
 	if t.depth == 0 {
 		t.GlobalNoShadow = false
+		t.NoBackground, t.NoForeground, t.NoBarDisplay = false, false, false
 		t.AdvanceGlobalPalette()
 		t.AdvanceEnvironmentColor()
 	}

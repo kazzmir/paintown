@@ -105,7 +105,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4dg validation**.
+Snapshot: **2026-11-06; through M4dh validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -184,6 +184,14 @@ rejection; **19/19 app crops match exactly (100% of this corpus)** across
 **9,667,200 RGB pixels**. Focused races and stock rematch/audio pass.
 [Token evidence and validation limits](docs/MODIFY-EXPLOD-ENUMS.md).
 
+AssertSpecial now has typed native flag validation and global background,
+foreground and bar visibility consumers with measured pause/reset behavior.
+All **48 native programs pass**, including eight expected rejections. All
+**40/40 world crops match exactly (100% of this corpus)** across **20,352,000
+RGB pixels**. **5/40 complete world+HUD crops are exact (12.5%)**; 35 strict HUD
+failures remain open, including the no-flags baseline. Focused races and stock
+rematch/audio pass. [Flag evidence and open HUD gates](docs/ASSERT-SPECIAL.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
@@ -192,6 +200,9 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| AssertSpecial numeric/schema programs in M4dh | 48 / 48 | **100%** | Recorded literal/global-clock corpus, including eight expected rejections; other consumers remain. |
+| AssertSpecial world crops in M4dh | 40 / 40 | **100%** | World pixels only; complete HUD comparisons retain strict failures. |
+| Complete AssertSpecial world+HUD crops in M4dh | 5 / 40 | **12.5%** | 35 strict HUD failures remain; no tolerance or comparison region changed. |
 | ModifyExplod token native programs in M4dg | 20 / 20 | **100%** | Recorded schema/evaluation corpus, including one expected rejection. |
 | ModifyExplod token app crops in M4dg | 19 / 19 | **100%** | Exact pixels in this corpus; older renderer failures remain open. |
 | Explod admission/random native programs in M4df | 53 / 53 | **100%** | Recorded schema/phase/count/RNG corpus, including eight expected rejections. |
@@ -206,7 +217,7 @@ remain item 4. There is no measured whole-engine completion percentage. The
 | Exact shadow image crops in M4da | 35 / 95 | **36.8%** | Strict pixels; 60 one/two-byte fringe/scale failures remain. No tolerance relaxed. |
 | Projectile image programs in the historical M4cz corpus | 152 / 154 | **98.7%** | M4cz result; M4da separately fixes both missing-shadow controls. The whole image corpus was not rerun here. |
 | Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; two stubs and other partial consumers remain. Not full controller compatibility. |
-| Documented controller names with typed compiler routes | 74 / 89 | **83.1%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
+| Documented controller names with typed compiler routes | 75 / 89 | **84.3%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |

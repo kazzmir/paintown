@@ -20,25 +20,25 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dg acceptance complete, commit next
+## Immediate state — M4dh validated; source/text commit next
 
-M4dg corrects quoted ModifyExplod transparency modes; 20 native programs pass
-(19 accepted / one rejection / 228 values), all 19 new app crops exact across
-9,667,200 RGB pixels. Focused races: 869 core / 277 selected native results.
-Five older palette/order apps, four masks and visually reviewed stock/audio
-pass: 82 balanced inputs / 1,972,972 PCM frames. All 24 per-gate exits record zero.
-Outer session 20518 became unrecoverable; do not claim its exit was observed.
-Separate elevated 37,195-hash/client guard and passive audit PASS. All images
-reviewed. See MODIFY-EXPLOD-ENUMS.md and HANDOFF. Commit source/text, then continue.
-Latest full suite: M4df e1c07662bbcd94cba06bfdc7569d62bce8effa66, 4,743 results /
-36 packages at the preceding source boundary. No active runtime. No reapproval.
+M4dg committed5dbfe71129c2948fd310563846b3f249c0c3a835 (117 scoped UTF8 paths).
+M4dh final75098 completed/awaited1 solely strict image matrix:869core/228selected
+native pass;48new native programs pass;40/40world regions exact20,352,000pixels.
+Only5/40entire crops exact;35HUDfailures UNWAIVED, including no-flags baseline.
+Old5palette/order,4masks,stock82inputs/1,971,877PCM pass;ALL40pairs/eight sheets,
+old9images/3stock captures reviewed. Separate18,846+18,843input/client guard PASS;
+audit18,847unique inputs/2,464originals/48configs/41archives/1,968copies/109manifest
+PASS. Read ASSERT-SPECIAL.md/HANDOFF. No active runtime. Commit source/text then
+continue all independent item3. No reapproval. Latest full remains M4df4,743/36
+at its earlier source boundary. No sampler/golden/region/tolerance changes.
 
-Next: 32 unobserved AssertSpecial rev2 drafts, then 16 aged + 20 early system-
-effect drafts, clipboard/debug sink, residual schemas/HitAdd HUD and renderer
-gates. Finish all independent item 3. Item 4 remains unallocated. Keep ten
-reviewed direct-render source sets UNPROMOTED/UNSTAGED. Larger Xvfb:98 metadata
-is temp/m4de-large-display-r2/metadata.json; auth private. Original :97/Pulse
-30218/30219 unchanged. Default sandbox ps hides host clients; use elevated wrapper.
+Next15guard-contact drafts/full-intent helper prepared NOT run/frozen;4walk-input
+and8noko-contact drafts unverified. Then36system-effect drafts, other flag
+consumers, clipboard/debug sink, residual schemas and open HUD/renderer gates.
+Item4 remains unallocated. Ten direct-render source sets stay unpromoted/unstaged.
+LargerXvfb:98metadata temp/m4de-large-display-r2/metadata.json;authprivate.
+Original:97/Pulse30218/30219 unchanged. Host guards use elevatedwrapper.
 
 ## Native and validation workflow
 
