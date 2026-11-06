@@ -1,0 +1,57 @@
+[Statedef 5900]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 0, counter]
+type=VarAdd
+trigger1=1
+v=0
+value=1
+[State 0, one deterministic self KO]
+type=LifeSet
+trigger1=GameTime=400 && TeamSide=2
+value=0
+[Statedef 5030]
+type=L
+movetype=H
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 5030, inert death observer]
+type=Null
+trigger1=0
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 5080, inert death observer]
+type=Null
+trigger1=0
+[Statedef 5150]
+type=L
+movetype=H
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 5150, inert death observer]
+type=Null
+trigger1=0

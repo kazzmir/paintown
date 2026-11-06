@@ -157,3 +157,5 @@ private-snapshot test-selection correction, and remaining system-effect studies.
   distinctions, first-fight X/Y reset, helpers/shadows and closed startup worlds.
 - [HUD lifetime experiments](HUD-LIFETIME-PLAN.md): next independently measured
   timing controls; this plan is not new behavior coverage.
+
+- [Timed HUD native contract](HUD-TIMING.md): M4dq23 accepted source programs,34 native runs,528 reviewed images,6,336 numeric observations; implementation follows.

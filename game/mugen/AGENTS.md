@@ -20,7 +20,34 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dp validated; checkpoint then HUD controls
+## Immediate state — M4dq native HUD contract ready for local checkpoint
+
+M4dp committed43145992f07bc3df19638e598ac21e83512c0208. M4dq has NOproductionGo
+changes:23 stable native recipes/34runs/528images/6336values/5736balancedkeyevents,
+ALL34sheets +numericrowsVIEWED; tests/testdata/reference/hudduration*,hudtail*,
+hudstart*,hudtiming ledgers promotedONCE. tests/hud_frame_reference_probe.py now
+native-used IMMUTABLE. Whole independent intent checks0/separateguards566/596/575.
+Native58545,49723,53115,50616 ENTIREawaited0; separate original/prepared/host guards
+2090/1788/345/466PASS. No runtime active. HUD-TIMING.md documentsrules/corrections.
+
+KOtime0starts411 forover.hittime0/3/10/20:doNOTtieHUDstarttodamagegrace. Sprite/font
+omittedlifetime1,0hidden,positiveexactcount,-1persistent; finiteAIRdefaultfullfirst
+pass4orLoopStart2+3=5;explicit7loops;final-1infinite. KOtime3sprite2visible414/415.
+Pause/Super412freezeCNS412through420 but animation413/414/expiry415 advanceactual.
+Slow60:KOstart444ateleventhpostKO SIMpass,thenanimation444/445first446/447second,
+448expiredEVENonCNSskips. Initialshortwindows/inadequatepausecontext preserved;
+newlongercontrolsfillgaps. No production implementation/Go compatibility claimyet.
+
+After scopedUTF8/nobinary audit/local source-textcheckpoint CONTINUEALLitem3:
+newHUD strictGo baseline beforecode; implementseparatependingSIMstartgate versus
+actual-framevisiblelife/animation,staticbarsseparate. Worldregion160,140,1120,640
+selectednativeonlybeforeGo. Native maps pinintentmapJSON; verifyauthortrackedGo
+againstGit43145992,notlatermutableGo; realnativepathsimmutable. Needownpositive
+Round/Fight/Win delays/overlap beforewholeHUDclaim; retainoldstrict/raster/audio.
+Thenfinitecolour/clipboard/residualschemas/flags. NOapprovalpause,noitem4allocation.
+
+## Previous immediate state — M4dp validated
+
 
 M4dp source/text checkpoint is ready to commit, or already at HEAD. Previouslocal
 checkpoint e8de0b8e415eb7cf8625b41644eae8d589ea7596(M4do). Newproduction ONLY

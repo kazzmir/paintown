@@ -549,3 +549,20 @@ Continue the independently specified HUD start/expiry/animation/slowdown control
 then finite/overlap colors, clipboard/debug display, residual schemas/aliases,
 wider flags and prior strict obligations. Continue autonomously after the local
 checkpoint; no approval pause. Item4 remains unallocated.
+
+
+## M4dq — native timed-HUD contract
+
+23 accepted programs/34 native runs establish528 images/6,336 numeric observations
+and5,736 balanced owned key events. All native-only rows/images are reviewed,
+all execution sessions finish0 and separate frozen-input/host-client guards pass.
+Defaults, explicit expiry, finite/loop/infinite animation, delayed KO start,
+overlapping Pause/SuperPause and KO slowdown are measured before implementation.
+The initial short windows and disproved damage-grace hypothesis remain documented.
+No production Go change or new compatibility percentage is claimed at this point.
+[Native rules, provenance, limits and implementation next](HUD-TIMING.md).
+
+Continue production timing plus strict Go baselines, original held overlays,
+older renderer controls and stock input/private PCM, then the remaining allocated
+item3. Preserve existing strict failures. No checkpoint approval pause; item4
+modes/teams/AI/BGM/assets remains unallocated.

@@ -1,0 +1,345 @@
+{
+  "programs": {
+    "m4dq-hudduration-sprite-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "e45742450cc096934d9527c8756c8adf24db134c64a3409c5ebb3ba1421e2568",
+        "prepared_sha256": "e45742450cc096934d9527c8756c8adf24db134c64a3409c5ebb3ba1421e2568"
+      }
+    },
+    "m4dq-hudduration-sprite-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "1f0eee18025aa90bd9c561e71f201192b60187ebc7a6d3cbd79b50cf5966eb70",
+        "prepared_sha256": "1f0eee18025aa90bd9c561e71f201192b60187ebc7a6d3cbd79b50cf5966eb70"
+      }
+    },
+    "m4dq-hudduration-sprite-three": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9",
+        "prepared_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9"
+      }
+    },
+    "m4dq-hudduration-sprite-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "7ef229b5639c2a4ec2b965a49f6ba49c36df5ea75509ec2e38cf2d6af8a66b12",
+        "prepared_sha256": "7ef229b5639c2a4ec2b965a49f6ba49c36df5ea75509ec2e38cf2d6af8a66b12"
+      }
+    },
+    "m4dq-hudduration-font-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "443bb61acff149ee6560616c0e21fe423511ea3a3ecc44d219ebd38bba055dae",
+        "prepared_sha256": "443bb61acff149ee6560616c0e21fe423511ea3a3ecc44d219ebd38bba055dae"
+      }
+    },
+    "m4dq-hudduration-font-three": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "6658a6c7a79098209b1d6a2abeb5da0f17388eae159deaf83f900e5222adb449",
+        "prepared_sha256": "6658a6c7a79098209b1d6a2abeb5da0f17388eae159deaf83f900e5222adb449"
+      }
+    },
+    "m4dq-hudduration-font-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "dc051b7e9dee83edab038d9a290078cc514fd617c3ccf33fb05b7547e6d655de",
+        "prepared_sha256": "dc051b7e9dee83edab038d9a290078cc514fd617c3ccf33fb05b7547e6d655de"
+      }
+    },
+    "m4dq-hudduration-anim-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e",
+        "prepared_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e"
+      }
+    },
+    "m4dq-hudduration-anim-seven": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "7fae6219209a41eb2066ca6a73290e1591363ba09c552d3df83bb4b39082fe1f",
+        "prepared_sha256": "7fae6219209a41eb2066ca6a73290e1591363ba09c552d3df83bb4b39082fe1f"
+      }
+    },
+    "m4dq-hudduration-anim-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "327716dd13ff0310aa4e62b30f695d687834c4f9c27ddb88c465c3636209e9b2",
+        "prepared_sha256": "327716dd13ff0310aa4e62b30f695d687834c4f9c27ddb88c465c3636209e9b2"
+      }
+    },
+    "m4dq-hudduration-anim-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "d7244b2fa507e08642c8000ee7bf738db0586b03f99adfc91a42942ee106536f",
+        "prepared_sha256": "d7244b2fa507e08642c8000ee7bf738db0586b03f99adfc91a42942ee106536f"
+      }
+    },
+    "m4dq-hudduration-anim-loop-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "9b010465168bdc0d01208d91116fd181998b34450d67fa1d33d78645a269e1c7",
+        "prepared_sha256": "9b010465168bdc0d01208d91116fd181998b34450d67fa1d33d78645a269e1c7"
+      }
+    },
+    "m4dq-hudduration-anim-final-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "69a6aa5dbcfd4b0a1e24061dbabcb6e3fb18fa9d2c8537a31e9b2b5bcc1057fe",
+        "prepared_sha256": "69a6aa5dbcfd4b0a1e24061dbabcb6e3fb18fa9d2c8537a31e9b2b5bcc1057fe"
+      }
+    },
+    "m4dq-hudduration-delay-sprite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "2100255e7e0197d041586e62083c06b61f856f10fe7ab0ee0952cf5354b8a15f",
+        "prepared_sha256": "2100255e7e0197d041586e62083c06b61f856f10fe7ab0ee0952cf5354b8a15f"
+      }
+    },
+    "m4dq-hudduration-pause-anim": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e",
+        "prepared_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e"
+      }
+    },
+    "m4dq-hudduration-super-anim": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e",
+        "prepared_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e"
+      }
+    },
+    "m4dq-hudduration-slow-anim": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "72657dc3fd3019649eee43374ab60de7297ddc5dd51467e6e3f9450bcd350133",
+        "prepared_sha256": "72657dc3fd3019649eee43374ab60de7297ddc5dd51467e6e3f9450bcd350133"
+      }
+    },
+    "m4dq-tail-hudduration-sprite-three": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9",
+        "prepared_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9"
+      }
+    },
+    "m4dq-tail-hudduration-sprite-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "7ef229b5639c2a4ec2b965a49f6ba49c36df5ea75509ec2e38cf2d6af8a66b12",
+        "prepared_sha256": "7ef229b5639c2a4ec2b965a49f6ba49c36df5ea75509ec2e38cf2d6af8a66b12"
+      }
+    },
+    "m4dq-tail-hudduration-font-three": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "6658a6c7a79098209b1d6a2abeb5da0f17388eae159deaf83f900e5222adb449",
+        "prepared_sha256": "6658a6c7a79098209b1d6a2abeb5da0f17388eae159deaf83f900e5222adb449"
+      }
+    },
+    "m4dq-tail-hudduration-anim-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e",
+        "prepared_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e"
+      }
+    },
+    "m4dq-tail-hudduration-anim-seven": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "7fae6219209a41eb2066ca6a73290e1591363ba09c552d3df83bb4b39082fe1f",
+        "prepared_sha256": "7fae6219209a41eb2066ca6a73290e1591363ba09c552d3df83bb4b39082fe1f"
+      }
+    },
+    "m4dq-tail-hudduration-anim-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "d7244b2fa507e08642c8000ee7bf738db0586b03f99adfc91a42942ee106536f",
+        "prepared_sha256": "d7244b2fa507e08642c8000ee7bf738db0586b03f99adfc91a42942ee106536f"
+      }
+    },
+    "m4dq-tail-hudduration-anim-loop-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "9b010465168bdc0d01208d91116fd181998b34450d67fa1d33d78645a269e1c7",
+        "prepared_sha256": "9b010465168bdc0d01208d91116fd181998b34450d67fa1d33d78645a269e1c7"
+      }
+    },
+    "m4dq-tail-hudduration-anim-final-infinite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "69a6aa5dbcfd4b0a1e24061dbabcb6e3fb18fa9d2c8537a31e9b2b5bcc1057fe",
+        "prepared_sha256": "69a6aa5dbcfd4b0a1e24061dbabcb6e3fb18fa9d2c8537a31e9b2b5bcc1057fe"
+      }
+    },
+    "m4dq-tail-hudduration-delay-sprite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "2100255e7e0197d041586e62083c06b61f856f10fe7ab0ee0952cf5354b8a15f",
+        "prepared_sha256": "2100255e7e0197d041586e62083c06b61f856f10fe7ab0ee0952cf5354b8a15f"
+      }
+    },
+    "m4dq-tail-hudtail-pause412": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e",
+        "prepared_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e"
+      }
+    },
+    "m4dq-tail-hudtail-super412": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e",
+        "prepared_sha256": "b55fc2d6cbf1f712309000831f11ee728a3c9e7edcb755bda5ee450084a46e7e"
+      }
+    },
+    "m4dq-tail-hudtail-hit0-anim": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "3fba4a9fff7add5d58f04db70c8bcc5a3d40f6754a7de371c94f85e061154b30",
+        "prepared_sha256": "3fba4a9fff7add5d58f04db70c8bcc5a3d40f6754a7de371c94f85e061154b30"
+      }
+    },
+    "m4dq-tail-hudtail-slow-hit0-anim": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "d17db913b3c30a7c533ddde185ad448c8e2403a05e9354b29aa66833a83780b2",
+        "prepared_sha256": "d17db913b3c30a7c533ddde185ad448c8e2403a05e9354b29aa66833a83780b2"
+      }
+    },
+    "m4dq-tail-hudtail-hit3-sprite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "8ac51ed4ee2431696cd2e44a939d4fb4c9d03c7111c4498edc24b0f118f20822",
+        "prepared_sha256": "8ac51ed4ee2431696cd2e44a939d4fb4c9d03c7111c4498edc24b0f118f20822"
+      }
+    },
+    "m4dq-start-hudstart-hit20-sprite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "389109e49402e9940ec8b98c724a042d4dec55b2f7d0e1d69caf3b9c45ffef2d",
+        "prepared_sha256": "389109e49402e9940ec8b98c724a042d4dec55b2f7d0e1d69caf3b9c45ffef2d"
+      }
+    },
+    "m4dq-start-hudtail-slow-hit0-anim": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "d17db913b3c30a7c533ddde185ad448c8e2403a05e9354b29aa66833a83780b2",
+        "prepared_sha256": "d17db913b3c30a7c533ddde185ad448c8e2403a05e9354b29aa66833a83780b2"
+      }
+    },
+    "m4dq-early-hudtail-hit3-sprite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "8ac51ed4ee2431696cd2e44a939d4fb4c9d03c7111c4498edc24b0f118f20822",
+        "prepared_sha256": "8ac51ed4ee2431696cd2e44a939d4fb4c9d03c7111c4498edc24b0f118f20822"
+      }
+    }
+  },
+  "finalization": "FirstRun1->0, LF->CRLF only. Complete per-case fight.def replacement pinned before native start."
+}

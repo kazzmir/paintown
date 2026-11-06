@@ -107,6 +107,11 @@ describe the isolated virtual display used for automated checks.
 
 Snapshot: **2026-11-06; initial root placement and fight-call reset (M4dp)**.
 
+M4dq adds a reviewed [native timed-HUD contract](docs/HUD-TIMING.md):23 accepted
+programs/34 runs,528 images and6,336 numeric observations. This is reference
+evidence before the timing implementation; production percentages below remain
+at their measured checkpoints.
+
 All **seven original startup scene failures now match exactly**. The engine draws
 roots at their starting X/Y before RoundState2 while preserving scripted positions
 and fresh animation; helpers keep their own positions. It restores actual root
