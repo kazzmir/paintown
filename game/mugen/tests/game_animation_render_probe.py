@@ -30,7 +30,7 @@ def main():
     parser.add_argument('--go-run', required=True)
     parser.add_argument('--name', required=True)
     args = parser.parse_args()
-    if not re.fullmatch('(?:systemanim-game|systemearly-game|systemresource|gameanim|gameoverlap|gamephase)-[a-z0-9-]+', args.fixture):
+    if not re.fullmatch('(?:systemanim-game|systemearly-game|systemresource|gameanim|gameoverlap|gamephase|gamecontext|gameedge|gameorigin|gamevertical)-[a-z0-9-]+', args.fixture):
         parser.error('Use an authored GameMakeAnim observer fixture')
     if any(not re.fullmatch('[a-z0-9_-]+', value) for value in [args.go_run, args.name]):
         parser.error('Use simple lowercase run names')
@@ -53,7 +53,7 @@ def main():
     if digest(native / 'stock/mugen.exe') != expected['engine_sha256']:
         raise RuntimeError('Reference executable changed')
     configurations = {}
-    for ledger in ['gamefirst-native-config-finalization.json','gameresource-native-config-finalization.json','gameschema-native-config-finalization.json','gameoverlap-native-config-finalization.json','gamephase-native-config-finalization.json']:
+    for ledger in ['gamefirst-native-config-finalization.json','gameresource-native-config-finalization.json','gameschema-native-config-finalization.json','gameoverlap-native-config-finalization.json','gamephase-native-config-finalization.json','gamecontext-native-config-finalization.json','gameedge-native-config-finalization.json','gameorigin-native-config-finalization.json','gamevertical-native-config-finalization.json']:
         for name, recipe in json.loads((bank / ledger).read_text())['programs'].items():
             if name in configurations: raise RuntimeError('Duplicate native configuration recipe')
             configurations[name] = recipe
@@ -75,6 +75,15 @@ def main():
             raise RuntimeError('Canonical common AIR changed')
         if digest(native / 'stock/data/fightfx.air') != patch['prepared_sha256']:
             raise RuntimeError('Prepared native common AIR changed')
+    if 'common_air_override' in expected:
+        if 'common_air_patch' in expected:
+            raise RuntimeError('Common AIR cannot be both appended and replaced')
+        patch = expected['common_air_override']
+        if (digest(bank / (args.fixture + '.common.air')) != patch['replacement_sha256']
+                or digest(root / 'temp/mugen-1.1b1/data/fightfx.air') != patch['canonical_sha256']
+                or digest(native / 'stock/data/fightfx.air') != patch['prepared_sha256']
+                or patch['replacement_sha256'] != patch['prepared_sha256']):
+            raise RuntimeError('Exact common AIR replacement recipe changed')
     ni = opened(native, nd['captures'][0], spec['image_size'])
     for capture in nd['captures']:
         image = opened(native, capture, spec['image_size'])

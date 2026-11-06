@@ -487,3 +487,249 @@ rawsets remainUNPROMOTED/UNSTAGED. Clipboard/VarSet/FVaraliases/StateTypeSet/Hit
 and widerflags/nativeconsumer queue appended ITEM-3-PLAN. AllpriorstrictHUD/
 raster/echo/heldKOtextfailures UNWAIVED. Item4 BGM/modes/assets/fonts/platform
 unallocated; finish independentitem3 before concrete dependency question.
+
+## Active M4dm native12154 — CURRENT
+
+M4dl committed1e71278833c19ccee4d070dde416b008399fa31d,521UTF8source/textpaths,
+zero binaries/push; trackedtreeclean and179oldraw pathsretainedunstaged atreceipt.
+DO NOTredo itscompletedvalidation. Current docsAGENTS recordfull5,028proper/36,
+84native/900values,70of72worldexact/2unwaivedRGBfailures,old9/stock3reviewed,
+82keys/1,972,096PCM; allprovenance/source/moduleauditsPASS. Alloldstrictfailuresopen.
+
+NEW38raw gamecontext-* programs/190publictextsidecars +privatedraft authored by
+prepare-m4dm-game-context.py fromimmutable gameanim-random-eight baseline. No
+publicexpectations orbehavior edits. FullcommonAIR REPLACEMENT (notappend):
+canonicalaction0exactoldframe-block replacedwithpersistentcommon120,0; append9996
+samepersistentframe. Entireothercanonicalactions/bytes retained. Canonicalfile
+neverchanged. Nativeobservernewprivate gamecontext-reference-probe.py replaces
+onlydisposable data/fightfx.air, exactfrozenlimits ExplodMax/SysExplodMax/
+AfterImageMax, actualMatchseed/log.ConfigSysExplodMax explicitnewindependentknob;
+manualdefault128minimum8 guidance, butnativecontrols decide. Oldpool-reference
+probe/reference/afterimage recordersunchanged.
+
+38questions: baseline+action−1/−999/0positive; x/y/xy eighth/seven-eighth and
+local640/1280, fractionactoraxes, facing, Random/lateunder;12Game+lateRNGtarget
+atSys−1/0/1/8/16;8Explod+Game,8/16Game+Explod,lowSys+fullNormal; actualcue/shadow
+layer/no-shadow/no-cue controls; visiblepositive localPalFX/AllPalFX/BGPalFX.
+Allnewfootnotes unmeasured, no inferred productionfix. Need inspectpool policy,
+RNGphases,geometry,resource0positive,actualoverlap andcolors before anyclaim.
+
+Intent _tmp/gamecontext-intent/main.go completed/awaited0 onFIRSTtry; full38
+stateheaders/completecontroller kinds/params/triggers/defaults/positions, ownAIR/
+CMD/stage/fullcommon0and9996/unchangedothercommonactions/publicmirrorsPASS.
+SEPARATEELEVATED858authoringhash/clientguardPASS. Outputgamecontext-parsed-intent.
+Mapm4dm-gamecontext-intent-inputs.json is{source_git,files}, sourceGit1e712788.
+Nativeoriginalm4dm-gamecontext-original-inputs.json ALSO{source_git,files}; don't
+incorrectlyreadasflatlegacyhashmap. Native map pinsonlyactualimmutableinputs and
+hashedauthoringmapJSON, avoiding oldM4dkmutableGopinning error.
+
+ACTIVE12154/run-m4dm-gamecontext-native.py,38serialnative7sec,FVarpage0/clipboard
+inCMD/delay0/1.1/fixturestage/localcoord bymeta. Await ENTIRE12154 then SEPARATE
+ELEVATED native-original/client guard BEFORE source/test/probe/fixture edits or
+another runtime. Docs/read-onlyallowed. Then ALL38rows andimages native-only
+review before selectingstableobserver/promotion. Expectednewcommon_air_override
+metadata requires checked fullreplacement support innewreplays/rendererprobes
+AFTERreview, nooldgolden/schema changes. Productionbehaviorstill1e712788.
+
+Next likely independent normal/system pool, negativeaction0 and integerized
+positions corrections need evidence/baseline first. SysExplodMax parsedbutnot
+productionbound;Gamecurrentusesnormalsharedadmission, staticcodehints wrongpool.
+MakeDustlaststub17oldobservedraw thennewtyped/globalspacing/interleavedaxisRNG/
+resource/contexts/layers/pause/capacity studies follow. Clipboard/residualschemas/
+widerflags/strictsharedrender-HUD-audio remaining. ContinueALLitem3withoutapproval.
+No binaries/push/agents/goals/outsidechanges. Oldraw179+new190stayunstaged.
+
+## Active M4dm supplemental native18510 — CURRENT
+
+First38native12154completed/awaited0; separate499-original/clientguardPASS.
+ALL38accepted/456values/7fullscene sheets reviewed. Complete native-only table/
+review m4dm-gamecontext-native-table.json and-native-only-review.json; images0..6.
+Negative−1/−999 worldhash EXACTsameaspersistent0positive/normal9996. 8or16ordinary
+Explods don'tblockcommonGamecue,8or16Game don'tblockrealcountedExplod (NumExplod1).
+ALLSysExplodMax−1/0/1/8/16show12grid+13thtarget, understillRandomdraw4. Native
+Gamepool separate and thisconfig DOESNOTlimitit; don'taddguessedSyslimitconsumer.
+Ordinary8/16Explo fillsconsume16/32draws,lateunder20/36. PalFXvisibleactorpositive
+NOTcue;BGPalFXactualmountainpositiveNOTcue;AllPalFXall. No codefix/promotionyet.
+
+ScopeCORRECTION: originalno-shadow-over/understillSHOWactualshadows; theyassert
+GLOBALnoshadowonceTime8 thenPause, flagresetsthefollowingglobalpass. Fourimages
+(no-shadowandshadowover/under) worldhashidentical. Cuechanges279pixelsagainst
+no-cuebaseline,108onactualshadow; over/underbothaboveit. Originalsources/images/
+metadata retained. Can'tclaimsuccessfulno-shadow controls. Newperentitynoshadow
+controls needed. Geometrypeculiarity: positiveactorfractionworldequalszero but
+negativeYfractionsdiffer; nativefloatintfn0x4dc850usescvttsd2si (trunctozero).
+Thus coordinateoffset/originbeforeintegerization mustbe resolved; don'tguess
+math.Trunc(relativeY) orworldfloor basedonvisiblebbox. Newboundaryintegerrefs
+willdisambiguate. All38captureworldROIcurrentlyanalysisONLY, notpromotedgoldens.
+
+Prepared8NEW gameedge-* intemp/gameedge-draft/public5textsidecars/each. Recipe
+prepare-m4dm-game-edge.py usesimmutable38baseline text withONEdeclaredliteral
+replacement. FullGo _tmp/gameedge-intent/main.go independently modifiesexpected
+parsedcontrollerfield, compares ALLheaders/types/params/triggers/defaults and
+unchangedresources/mirrors. Intentcompleted0, SEPARATE745-input/clientguardPASS.
+Outputgameedge-parsed-intent.json; sourceGit1e712788. Nativeoriginal/intentmaps
+areOBJECT{source_git,files}, sameasfirst38. No flatmapmisreading.
+
+ACTIVE18510 run-m4dm-gameedge-native.py,8serialnative7sec,FVarpage0,CMDdump,1.1,
+fixturestage. Newprivategameedge-reference-probe.py samechecked fullreplacement
+commonAIR andexact3effectlimits, originalrecorders/nativeinputsunchanged. Await
+ENTIRE18510 thenSEPARATEELEVATEDoriginal/clientguard BEFOREsource/test/probe/
+fixtureedit/newruntime. Docs/read-onlyallowed. Newcontrols worldzero−80.125/
+−80.25, xinteger13,yinteger−40.25, leftviewportedge−160.125/−160 andperentity
+noshadowover/under. NeedALL8numeric/RNG/colors/geometry/actualsuppression/scenes
+review BEFOREcombined46promotion/Go baseline/productionfix. All46raw UNPROMOTED.
+
+Futurebaseline support common_air_override (FULLsource,notappend) inchecked
+replay/rendererprobe, withcanonical+replacement/preparedhashprovenance. Original
+84Gamegoldens unchanged;38+8nevereditafterobservation. Productionstill1e712788.
+MakeDust17thenmoreindependentitem3 continueswithoutapproval. Currentdirtydocs+
+new230rawtextfiles, old179alsoheldunpromoted. No binary/push/agents/goals/outside.
+
+## M4dm native dependency review and baseline — current
+
+Native sessions 12154 and 18510 completed with exit 0; separate elevated guards
+verified 499 and 199 frozen native inputs and no clients. All 46 accepted programs,
+552 numeric values and nine full-scene sheets reviewed, then promoted ONCE with
+native/config ledgers. Review receipt: `temp/m4dm-gamecontext-edge-native-review.json`.
+The common AIR sidecar is a checked full replacement, not an appendix. Canonical
+common AIR and all previous programs/captures/goldens remain unchanged.
+
+Correction to the preceding tentative boundary assessment: the two left-edge
+controls have equal coverage/bounds but different RGB. They do not establish exact
+origin/rounding behavior alone. Both strict world expectations are retained. The
+world-zero controls do have identical RGB. Visible controls contain TWO overlapping
+fighters because both use the shared AIR9999; per-entity noshadow removes P1's
+shadow and leaves P2's. The original one-tick globalnoshadow controls did not remove
+the shadows after the global flag reset; retain them with that scope correction.
+
+Game and ordinary Explod admission are independent at measured 8/16 populations;
+SysExplodMax -1/0/1/8/16 permits 13 Game cues. Negative actions normalize to 0.
+Do not add an assumed SysExplodMax consumer. Local/BG/all palette and actual shadow
+layer results are recorded native-only. No production behavior fixes yet.
+
+ACTIVE baseline session 57559: new 46 numeric replays and eight real applications,
+all serial and frozen in `temp/m4dm-baseline1-inputs.json`. Await ENTIRE completion,
+then SEPARATE elevated hash/client guard before source/test/probe/fixture edits or
+new runtime. Review all failure rows and images; implement only supported fixes.
+Continue item 3 autonomously, documenting findings and committing audited source/
+text checkpoints. M4dl 1e712788 stays validated; all prior strict failures open.
+
+## M4dm origin controls — current
+
+Baseline 57559 completed/awaited 1; separate elevated 20,323-input/client guard
+PASS. All eight native/Go scene pairs reviewed. Two individual numeric failures:
+Game-eight/sixteen blocks the following real Explod and skips its two RNG draws.
+Seven/eight strict world images differ; local PalFX positive is exact. Three
+missing-cue/pool failures, three fractional-position failures and 333 max-one RGB
+shadow differences are retained. Do not change samplers or tolerances.
+
+Four new gameorigin controls shift the fixed stage camera +80 to -80 and request
+-80.125/-80/-79.875/-79.75, to distinguish an absolute half-game origin from current
+viewport/camera rounding while the cues stay visible. Complete independent parsed
+intent 26526 passed, separate 401-input/client guard passed. ACTIVE native 55813,
+`temp/run-m4dm-gameorigin-native.py`. Await ENTIRE run and SEPARATE elevated original-
+input/client guard before source/test/probe/fixture changes or another runtime.
+All four are raw/unpromoted. Review every numeric row/full-scene image before any
+coordinate correction. Production still M4dl. Continue pool/negative-action fixes,
+then actual applications and the MakeDust/item-3 queue; no checkpoint pause.
+
+## M4dm vertical origin — current
+
+Gameorigin native55813 completed/awaited 0; separate 159-input/client guard passed.
+All four numeric/RNG/resource/RGB rows and full-scene sheet reviewed. Camera -80,
+posX -80.125/-80/-79.875 produce EXACT equal world RGB; -79.75 shifts by one common
+unit. This supports absolute half-game-width addition before truncation and camera
+subtraction. Previous left-edge same-bbox/different-colors results remain intact.
+
+Four new gamevertical controls shift only camera starty/boundhigh/boundlow to -80
+and posY -160.125/-160/-159.875/-159.75. First authoring attempt asserted before
+writing fixtures because starty matched inside p1starty/p2starty; retained receipt
+m4dm-gamevertical-authoring-attempt1.json. Corrected separate r2 complete-line
+recipe and independent full parsed intent passed 67717; separate 402-input/client
+guard passed. ACTIVE native91360; await ENTIRE run and SEPARATE elevated original-
+input/client guard before source/test/probe/fixture edits or another runtime.
+Then review all rows/images, promote eight controls once, baseline new cases and
+implement measured Game fixes. No production change yet. Continue all item 3.
+
+## M4dm revision — current
+
+Native vertical91360 completed/awaited0, separate159-original/client guardPASS.
+All four rows/RGB/sheet reviewed. CameraY-80 posY -160.125/-160/-159.875 have EXACT
+same world; -159.75 shifts one common unit, establishing absolute-ground origin.
+All54 new cases promoted ONCE:54accepted/648values/11native sheets, four native/
+config ledgers, full checked common-AIR replacement distinct from old append.
+
+Origin baseline63474 completed/awaited0, separate20,375-input guardPASS: eight
+numeric replays and two negative-half actual images pass. Complementary59631
+completed/awaited1, separate20,375-input guardPASS: positive-half X/Y fail69/84pixels.
+ALL four pairs reviewed; all original eight baseline pairs reviewed as well.
+
+Implemented production independent Game admission (queued/active and standalone
+Scene capacity), negative action->0 warning and measured absolute half-game-width/
+ground integerization BEFORE RNG displacement and later camera transform. Native
+SysExplodMax independence preserved. Added two-order/callback-or-standalone scene
+unit regression. ACTIVE revision96964 core races alreadyPASS; now all138Game and
+53oldpool native replays, eight prior failed actualapps. Await ENTIRE96964 then
+SEPARATE elevated m4dm-revision1-inputs/client guard before edits/newruntime.
+Inspect every failure/image pair; full54-world matrix, old9 palette/order/shake,
+stockkeys/PCM, passive provenance/module audits and localtextcommit follow.
+All old strict failures stayUNWAIVED. Then MakeDust and all remaining item3.
+
+## M4dm complete revision and final image integration — current
+
+Revision96964 ENTIREcompleted/awaited0, separate20,375-input/client guardPASS.
+890core results/4packages +205native results (138Game+53olderpool+14parentgroups)
+pass. ALL8revision worldimages EXACT4,070,400RGBpixels; both fullscene sheets
+viewed. No production edits after this run. All54newnative programs/648values
+and11native sheets reviewed/promoted once. Originalbaseline failures preserved.
+
+ACTIVE final37394: all54newworlds +two oldfractionstrictcases;old5palette/order+
+4shake applications;stock82keys/privatePCM;module/inventory. STRICTLY SERIAL.
+Outer m4dm-final1-inputs.json and child m4dm-matrix1-inputs.json are frozen. Await
+ENTIRE37394 thenSEPARATE elevated BOTH-map/client guard before edits/newruntime.
+ViewALL56native/Go pairs, old9 andstock3; inspect every strict failure beforeclaim.
+
+Inventory precheck ONLYdiffers in three changed production source SHAs; summary and
+controller classifications verifiedidentical. Oldfrozen report retained; final
+inventorygate willrealexit1. AFTERguard archiveexactfrozen report withGit1e/version
+map, regenerate --write/check; no validated productionGo/test/probe changes. Fresh
+metadata verification then passiveoriginal/config/resource/capture/seed/binary/
+stockPCM/module auditor, docs/textcommit. Do not repeat full5,028 races merelyfor
+this image batch; allnew/oldpool replays and core passed withsameproduction bytes.
+Continue MakeDust and allremainingitem3 aftercheckpoint; no approval/pause.
+
+## M4dm validated — ready for source/text checkpoint and MakeDust
+
+Final37394 ENTIREcompleted/awaited1; SEPARATE20,378outer/20,375matrix frozen/client
+guardPASS. ALL56native-Go pairs/14matrixsheets,old9pairs/3sheets andstock3screens
+FULLYVIEWED. New39/54worlds exact19,843,200RGBpixels;15max-oneRGB failures remain
+UNWAIVED. Oldfraction/single unchanged41/18max1. Old5palette/order+4shake pass.
+Stock win/rematch/win passes82balancedkeys,1,974,462PCMframes (SHA4311fee96f646b78d6f2d0f2d39d85ca29a714f9996f4d15b87eaba3cbe60de2).
+All66apps samebinary6cd51c6be3b39fd8f33f1cd094042adc908756f73b405402841ae97c9c4e4a2d.
+
+Inventory realexit1 preserved; onlythree production source hashes changed,
+classifications identical. Exactoldreport archived temp/_tmp/m4dm-final-run-source
+and checkedGit1e; m4dm-final-run-source-versions.json maps ONLYthatreport for earlier
+frozenmaps. Regeneratedcurrentinventory and61,128-entry source/client guardPASS.
+NOvalidated Go/test/probe/fixture/module edits afterrevision890core/205nativepass.
+Passiveauditor7609 completed/awaited0:6,096originals,390Git/archiveauthorversions,
+138configs,65AIRappendices/54fullreplacements,5,658nativebinaryresourcecopies/
+109canonicalmanifest, captures/seeds/recomputedRGB/binary/stockPCM/modulesPASS.
+Finalrecords m4dm-final-evidence-audit.json,m4dm-final-visual-review.json andboth
+separateguards. All prior strict renderer/HUD/echo/heldKOtext failures UNWAIVED.
+
+README andcoverage/compat/checkpoint/item3/topic/index/test/sourceinventorydocs
+updated. Need explicit UTF8/noNUL/exactindex/stagedpath audit then LOCALsource/text
+commit (no push/binaries). If already committed don'tredo. Continue MakeDust17
+oldraw plus new independent schema/spacing/axisRNG/resources/clocks/facing/helper/
+pool/palette controls (SYSTEM-EFFECTS.md design), then clipboard/residualschemas/
+flags/strict item3obligations. No checkpoint pause. Old179raw remainunpromoted and
+unstaged. No runtime active; productionstill samevalidatedrevision bytes. Latest
+FULLsuite is historical M4dl5,028/36; don'trepeat withoutnewreason. Item4unallocated.
+
+Current staging audit correction: actual held raw count is227, not the abbreviated
+179 tracked in the preceding notes. The extra48 are older unpromoted Reversal11
+programs (44sidecars) and rejected ExplodBindRuntime1 (four sidecars). All227 are
+excluded from this checkpoint and untouched. Staging67857 validated all351 source/
+text blobs before its held-count assertion failed; corrected manifest and review
+are recorded in m4dm-staging-held-path-correction.json. No production/runtime change.

@@ -1,0 +1,69 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f55a71776d604e7c79d470491cfbf93ab193bd48f8f7c73f6ebd0a0280a3258b",
+  "air_sha256": "46cad6e5621573f2826d3a879218634456092c7a54fe2e2446c1051524d6fc1c",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "eb1de41922782665f5e03b14c00ac5438165d4aa7f1c7ef744f7740ac1787812",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 540,
+        "10": 844,
+        "11": 961
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "9417cea2eaf0db33e63cd3275c4a4c7db983cdd681e2430b45d0e6088a474ee0",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "config_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+  "effect_limits": {
+    "ExplodMax": 16,
+    "SysExplodMax": 16,
+    "AfterImageMax": 16
+  },
+  "common_air_override": {
+    "path": "data/fightfx.air",
+    "canonical_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "replacement_sha256": "ec121a330952ef7c63c23fb81365023a1e6737e7b73d521f1e30587041cb7340",
+    "prepared_sha256": "ec121a330952ef7c63c23fb81365023a1e6737e7b73d521f1e30587041cb7340",
+    "canonical_unchanged": true
+  },
+  "random_seed": 862499970,
+  "seed_log_sha256": "1e68c46fdb192bad92d8cd01f61dd4a1f0f625c7da73e2f7af9491b7a4a6af28",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4dm-gamecontext-shadow-none",
+  "native_scope_notes": "Visible AIR9999 is shared by BOTH fighters. Per-entity noshadow suppresses P1 shadow, while P2 shadow remains. Globalnoshadow once atTime8 resets after owner pauses and does not suppress either shadow.",
+  "game_animation_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "a68a0a0b7b3b86df64a76f57d592483a1ab252c06e6a8dc292814e4aaeac0b15",
+    "scope": "Full world, chosen native-only before Go baseline. Includes real common cues, pool/negative-action/profile/RNG/layer/palette consumers. Exact RGB remains mandatory; no tolerance."
+  }
+}

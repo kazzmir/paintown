@@ -172,3 +172,14 @@ exact, with two strict fractional color failures unwaived. MakeDust remains a
 stub. New admission/negative-action/sub-game-pixel studies and broader contexts
 remain explicit in [SYSTEM-EFFECTS.md](SYSTEM-EFFECTS.md). Parameterless valid
 fallbacks are distinct from unimplemented behavior; aliases need native proof.
+
+
+## M4dm update
+
+GameMakeAnim's bounded consumer now separates ordinary Explod admission, resolves
+negative actions to0 and uses independently observed integer origins. Source
+routing counts remain76typed/13fallback,1stub/9partial/19bounded/60route-only; all
+rows remain variant-incomplete. The JSON's three changed production hashes were
+regenerated after preserving the exact report used by runtime checks; classifications
+are identical.54 new native programs/648values pass;39/54 world crops exact and15
+strict one-level RGB failures remain. See SYSTEM-EFFECTS.md. MakeDust is next.

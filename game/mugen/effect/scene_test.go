@@ -167,3 +167,37 @@ func TestOwnedEffectSharesClockAndRetiresImmediately(t *testing.T) {
 		t.Fatal("scene retirement retained an owned request")
 	}
 }
+
+func TestGameAnimationAdmissionIsIndependentOfExplods(t *testing.T) {
+	for _, shared := range []bool{false, true} {
+		for _, gameFirst := range []bool{false, true} {
+			scene := NewScene(8)
+			if shared {
+				scene.Queue.Admit = func() bool { return scene.UnownedCount() < 8 }
+			}
+			ordinary, game := testRequest(), testRequest()
+			game.GameAnimation = true
+			for _, first := range []bool{gameFirst, !gameFirst} {
+				request, count := ordinary, 8
+				if first {
+					request, count = game, 16
+				}
+				for range count {
+					if err := scene.Queue.Push(request); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if err := scene.Flush(); err != nil {
+					t.Fatal("native independent pools blocked one another", shared, gameFirst, err)
+				}
+			}
+			if len(scene.Active) != 24 || scene.UnownedCount() != 8 {
+				t.Fatal("game cue consumed an ordinary slot", shared, gameFirst, len(scene.Active), scene.UnownedCount())
+			}
+			scene.Clear()
+			if scene.UnownedCount() != 0 {
+				t.Fatal("round retirement retained ordinary slots")
+			}
+		}
+	}
+}

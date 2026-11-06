@@ -105,17 +105,17 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through the bounded M4dl checkpoint**.
+Snapshot: **2026-11-06; through the bounded M4dm checkpoint**.
 
-GameMakeAnim now has typed schemas and a production scene renderer, including
-native RNG phases, common resources, positioning, Pause/SuperPause clocks and
-behind-actor drawing. All **84 native programs pass**, pinning **900 values**;
-**70/72 world crops are exact (97.2% of this corpus)**. Two fractional color
-failures remain open. Full production races pass **5,028 results across36
-packages**; the launcher now excludes private historical snapshots discovered
-by that run. Fresh scope/compilation, older rendering checks and reviewed stock
-rematch/audio pass. MakeDust remains the sole source stub; game-cue admission,
-negative-action and finer coordinate variants are the next system-effect study.
+GameMakeAnim now has typed schemas, production drawing, independent effect
+admission, native negative-action behavior and measured integer coordinate origins.
+All **138 native programs pass**, pinning **1,548 values**. The new dependency
+image corpus is **39/54 exact (72.2%)**;15 maximum-one RGB failures and two older
+fractional color failures remain open. Focused races pass **890 core /205 selected
+native results**, with older rendering controls and stock win/rematch/audio also
+passing. The preceding M4dl full production suite passed **5,028 results /36
+packages**; that full run was not repeated here. MakeDust remains the sole source
+stub and is next, followed by clipboard and residual controller/flag work.
 [Measured results and limits](docs/SYSTEM-EFFECTS.md).
 
 M4dk corrects KO voices and echoes under NoKO while preserving independent
@@ -223,6 +223,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| GameMakeAnim recorded native programs through M4dm | 138 / 138 | **100%** | Numeric/schema corpus including nine rejections; unmeasured variants remain. |
+| New GameMakeAnim dependency world crops in M4dm | 39 / 54 | **72.2%** | 15 maximum-one RGB sampling/shadow failures remain strict; broader evidence, not a regression rate against the old corpus. |
 | GameMakeAnim corpus native programs in M4dl | 84 / 84 | **100%** | Recorded numeric/schema corpus including nine rejections and positive controls; unmeasured variants remain. |
 | GameMakeAnim corpus world crops in M4dl | 70 / 72 | **97.2%** | Two strict fractional color failures remain; three dynamic repeats have no fixed RGB claim. |
 | NoKO voice CPU/native programs in M4dk | 10 / 10 | **100%** | Recorded life/channel/voice/echo corpus; broader contexts remain. |

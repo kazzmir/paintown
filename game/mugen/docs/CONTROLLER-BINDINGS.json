@@ -4,7 +4,7 @@
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/game_animation.go": "a625607cff6b8e45d56564b0e2d8a629c18d3789d068474da2096171d6ba016c",
-    "character/game_animation.go": "6cf4d24182a3ff570b0e17921f281dacb224cdedceb6b57acae5c49f63532b4f",
+    "character/game_animation.go": "dc07d0f822240637310933d49e0b7843f4071e85515a65df326c630166f170e1",
     "character/ko_sound.go": "6e46efe88d2ff2d29a6acf1df471f358b32646bc162e2dd0a6e573e28c715910",
     "character/life.go": "9a033713d5527c6f70b2fc494261a1ea39481905dd3051925ae766b354e0be75",
     "character/power.go": "dd885692cab05d47d254c546943702ec47bc567c7896d4a0943ce6ef9396fcbe",
@@ -29,7 +29,7 @@
     "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
     "engine/modify_explod.go": "b9ecd4380e92c3a33cd41bd3ca9b8ed539e12034f98ce71f1b63f36b0f648fc8",
-    "effect/scene.go": "686e7d436ed1c1dcf3b8a7830866785dd9ec98c17882763a21ce3e614e219735",
+    "effect/scene.go": "90d49440e1e3d1f2e27254aaae4bcccb8878bf211264c42033c9a59417fd874e",
     "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
     "system/effects.go": "bb6cdbf1a97eb72f6ddac6ba25233d9572dcd140790aedadbf45930b44c4f192",
     "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
@@ -61,7 +61,7 @@
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
     "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e",
-    "character/world.go": "1549fa3ba6d09b350db72e31f80bf89ec28b153832531e747f757d95c70061e2"
+    "character/world.go": "21e4873e628e3728504ab5683e4faee59c1ceade7d532161dcf65e3a11e4b548"
   },
   "summary": {
     "manual": 89,

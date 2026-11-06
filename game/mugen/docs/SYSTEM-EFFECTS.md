@@ -265,3 +265,125 @@ to Git. Final records: m4dl-final-evidence-audit.json, m4dl-final-visual-review.
 m4dl-matrix1-results.json, m4dl-archive-failure-final-review.json and both separate
 guards. Unpromoted17Dust,14nokotime,10direct renderer and3invalid walk rawsets
 stay unstaged. Continue the measured system-effect dependencies then all item3.
+
+## M4dm — independent game cues and native integer origins
+
+A further **54 accepted native programs / 648 numeric values** are frozen under
+`gamecontext-*` (38), `gameedge-*` (8), `gameorigin-*` (4) and `gamevertical-*` (4).
+Full parsed state/controller/trigger/parameter/resource intent was checked before
+observation. Native sessions 12154/18510/55813/91360 all completed with exit 0;
+separate elevated client/hash guards passed. All 11 full-scene sheets and every
+numeric/RNG/resource/color/layer row were reviewed before promotion or fixes.
+The new full common-AIR replacement recipes retain canonical/resource/prepared
+hashes; the older append recipes and all original native inputs remain immutable.
+
+Native observations establish the following bounded corrections:
+
+- Actions -1/-999 draw exactly the same persistent common action as action 0 and
+  the ordinary positive 9996 control. The Go producer now warns and selects 0.
+- Eight/sixteen live game animations do not consume ordinary Explod slots, and
+  eight/sixteen ordinary Explods do not block a game animation. Pending and active
+  game cues are excluded from normal admission. Standalone scene capacity and
+  simulation-owned admission use the same distinction. SysExplodMax -1/0/1/8/16
+  all permit 13 game cues; no guessed SysExplodMax limit is added.
+- After caller/state-profile conversion and facing, X is integerized after adding
+  half the absolute game width. Y is integerized after adding the absolute stage
+  ground. Those origins are subtracted again for world storage; camera subtraction
+  happens later in drawing. Random common-unit displacement follows conversion.
+  With a camera shifted to -80, negative-half/zero/positive-half controls have
+  EXACT equal RGB, while a full-unit shift differs on both axes. They distinguish
+  the measured rule from bare-world or camera-relative rounding.
+- Local PalFX changes the issuing fighter but not the common cue. BGPalFX changes
+  the actual background but not the cue; AllPalFX changes both. Under and over cues
+  are both above the measured actual shadow pixels.
+
+Two observation-scope corrections are explicit. Visible AIR9999 is shared by BOTH
+fighters, so these cases contain two overlapping actors and shadows. Per-entity
+noshadow removes P1's shadow while P2's remains. The original globalnoshadow cases
+assert that global flag only at Time 8, then pause; the next global reset leaves
+shadows visible. Their original names/inputs/captures are retained. Likewise,
+left-edge fractional/integer controls share a 171-pixel bbox but DIFFER in RGB;
+that was not proof of equal worlds. The later negative-camera controls resolve
+the origin independently and preserve both strict left-edge expectations.
+
+The original baseline reproduced two numeric pool failures and seven/eight image
+failures (local-palette positive exact). Complementary origin baselines preserve
+both negative-half passes and positive-half failures of 69/84 pixels. All 12 app
+pairs were inspected. Revision session 96964 completed with exit0:890 core and205 selected native results
+pass, including all138 game programs and53 older pool programs. All eight targeted
+application worlds are exact and all pairs reviewed. Final integration37394 also
+completed/awaited, retaining exit1; its separate outer20,378/matrix20,375 frozen-
+input/client guard passes.
+No sampler, region, golden or tolerance changed. Broader pool maxima, arbitrary
+camera/zoom/profile variants, prior strict renderer/HUD/audio failures and the
+remaining item-3 controllers remain open. This corpus is not an engine-completion
+percentage. MakeDust is still the sole source stub.
+
+### MakeDust follow-up design after M4dm (unmeasured)
+
+Additional read-only disassembly separates the producers further. GameMakeAnim
+reads float presentation positions at character offsets 0x1434/0x1438 and adds its
+native game/stage origins before converting to integer. MakeDust's 0x44b4fa/
+0x44b553 paths instead read double positions at offsets 0x1f8/0x200, add each
+converted requested axis and its independent modulo-three jitter, then integerize.
+The first cloud is allocated through the ordinary pool before the second-cloud
+presence/position expressions. No Game position helper should be shared with dust
+merely because both produce common sprites. Field identity and observed geometry
+still require separately frozen native controls; these excerpts are guidance.
+
+The next raw programs should use a separately checked full common-AIR replacement
+of action120 with a persistent, visibly asymmetric stock dust frame. Retain all
+canonical other actions, and use an independent ordinary common Explod/Game cue
+positive for resource, placement and facing comparisons. A second replacement with
+a short first frame and persistent, displaced second frame can establish actual
+Pause/SuperPause clocks; a single persistent frame cannot prove clock behavior.
+Global spacing controls must include state times whose Time%spacing and observed
+GameTime%spacing disagree, with pre-request and axis-interleaved RNG brackets.
+Second-cloud axes must remain evaluated after a first-cloud allocation failure.
+First-position integer versus second-position float schema/units, caller facing,
+negative absolute origins, helper ownership/destruction, pool saturation and actual
+actor/palette consumers remain required. These are planned experiments, not new
+coverage. New preparations must pass complete parsed intent and native-only
+all-row/image review before promotion, baseline or implementation.
+
+
+## M4dm final acceptance and retained strict failures
+
+The complete new corpus has39/54 exact worlds (72.2%,19,843,200 exact RGB pixels).
+All15 other worlds differ by at most one RGB level; their strict exit1 is retained.
+Cue sampling failures: explods-eight-system-one30pixels, explods-sixteen-then-game18,
+local640-x18, palette-background3, random-fraction-phase18, system-eight18,
+system-one21, system-sixteen41. Shared-shadow cases: no-shadow-over/under283each,
+shadow-none304, shadow-over/under283each, entity-noshadow-over/under333each. These
+names have gamecontext-/gameedge- prefixes in the actual fixture bank. No tolerance,
+region, source program, capture, sampler or old golden changed. Older Game position
+fraction/single still fail41/18pixels at maximum one; all earlier obligations stay
+UNWAIVED. Every one of56 native/Go pairs and14 full-scene sheets was reviewed.
+
+All five older palette/order applications and four shake-mask checks pass; their
+three full-scene sheets are reviewed. Stock win/rematch/win screenshots are also
+reviewed:82 balanced owned inputs and1,974,462 PCMframes (stereo44.1kHz), PCM SHA256
+4311fee96f646b78d6f2d0f2d39d85ca29a714f9996f4d15b87eaba3cbe60de2.
+All66 final applications share binary6cd51c6be3b39fd8f33f1cd094042adc908756f73b405402841ae97c9c4e4a2d;
+no executable is added to Git. Prior full-suite5,028/36 evidence remains historical;
+new production changes passed focused890core/205native results and all runtime gates
+other than the explicitly retained strict RGB and metadata exits.
+
+Inventory precheck differed only in three production source hashes (game animation,
+ordinary pool count and scene admission); classifications stayed76typed/13fallback,
+1stub/9partial/19bounded/60route-only. The original final inventory exit1 is retained.
+After the whole-run guard, exact old report bytes were archived under
+`temp/_tmp/m4dm-final-run-source`, verified against Git1e712788, then regenerated.
+Fresh inventory/current-source checks pass61,128 frozen entries, with NO validated
+Go/test/probe/fixture/module edits. All native ledgers pass6,096 original path checks
+including the existing390-version Git/archive provenance exception. The auditor
+reconstructs all138 configurations,65 AIR appendices,54 full replacements, verifies
+5,658 native binary resource copies/109 canonical manifest files, captures, seeds,
+original programs, actual measured RGB differences and stock keys/PCM/modules.
+
+Private final records: `m4dm-final-evidence-audit.json`, `m4dm-final-visual-review.json`,
+`m4dm-final1-separate-guard.json`, `m4dm-current-metadata-separate-guard.json` and
+`m4dm-final-run-source-versions.json`. Passive audit7609 completed/awaited0. All
+baseline failures and scope corrections are preserved. MakeDust17, nokotime14,
+direct renderer10 and invalid walk3 raw programs remain unpromoted/unstaged.
+Continue MakeDust, clipboard, residual schemas/flags and item3 strict obligations.

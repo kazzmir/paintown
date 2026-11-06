@@ -36,13 +36,16 @@ type Request struct {
 	ScreenSpace                   bool
 	OnTop                         bool
 	Under                         bool // Scene-owned system cue behind character sprites.
-	ScaleX, ScaleY                float64
-	HasScale                      bool
-	Angle, XAngle, YAngle         float64
-	Shadow                        bool
-	HasBlend                      bool
-	Blend                         string
-	AlphaSrc, AlphaDst            int
+	// GameAnimation uses the native game-animation pool, independently of the
+	// ordinary Explod pool shared by owned Explods, hit sparks and dust.
+	GameAnimation         bool
+	ScaleX, ScaleY        float64
+	HasScale              bool
+	Angle, XAngle, YAngle float64
+	Shadow                bool
+	HasBlend              bool
+	Blend                 string
+	AlphaSrc, AlphaDst    int
 }
 
 type Instance struct {
@@ -64,7 +67,7 @@ type Queue struct {
 }
 
 func (q *Queue) Push(request Request) error {
-	if q.Admit != nil && !q.Admit() {
+	if !request.GameAnimation && q.Admit != nil && !q.Admit() {
 		return nil
 	}
 	if len(q.requests) >= 16384 {
@@ -158,12 +161,12 @@ type Scene struct {
 func (s *Scene) UnownedCount() int {
 	count := 0
 	for _, instance := range s.Active {
-		if instance.Active && !instance.OwnerDriven {
+		if instance.Active && !instance.OwnerDriven && !instance.GameAnimation {
 			count++
 		}
 	}
 	for _, entry := range s.Queue.requests {
-		if entry.instance == nil || entry.instance.Active && !entry.instance.OwnerDriven {
+		if entry.instance == nil && !entry.request.GameAnimation || entry.instance != nil && entry.instance.Active && !entry.instance.OwnerDriven && !entry.instance.GameAnimation {
 			count++
 		}
 	}
@@ -204,6 +207,12 @@ func (s *Scene) AdvanceWithPause(paused, superPaused bool) error {
 func (s *Scene) Flush() error {
 	entries := s.Queue.requests
 	s.Queue.requests = nil
+	ordinary := 0
+	for _, instance := range s.Active {
+		if !instance.GameAnimation {
+			ordinary++
+		}
+	}
 	for _, entry := range entries {
 		request, instance := entry.request, entry.instance
 		if instance != nil {
@@ -212,7 +221,7 @@ func (s *Scene) Flush() error {
 			}
 			request = instance.Request
 		}
-		if s.Queue.Admit == nil && len(s.Active) >= s.Limit {
+		if !request.GameAnimation && s.Queue.Admit == nil && ordinary >= s.Limit {
 			return fmt.Errorf("fight effect limit %d reached", s.Limit)
 		}
 		if request.Source.Sprites == nil || request.Source.Animations == nil {
@@ -240,6 +249,9 @@ func (s *Scene) Flush() error {
 			return fmt.Errorf("owned effect has no animation clock")
 		}
 		s.Active = append(s.Active, instance)
+		if !request.GameAnimation {
+			ordinary++
+		}
 	}
 	return nil
 }

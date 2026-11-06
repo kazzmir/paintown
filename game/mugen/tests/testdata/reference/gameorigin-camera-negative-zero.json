@@ -1,0 +1,69 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "d8fda5d32947c35c3367ce1a11ac3bc9eff9316ffd04a3aa2c56d892c3a9295b",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "f44d7932129016db90536a37bbbe24b753ca2f728fb54e19360abe86f0397f05",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 354,
+        "10": 953,
+        "11": 549
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "9d52bce4cb809d31071230783c22fb6a3e71fb8bf6348efb83377f9c24c95476",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "config_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+  "effect_limits": {
+    "ExplodMax": 16,
+    "SysExplodMax": 16,
+    "AfterImageMax": 16
+  },
+  "common_air_override": {
+    "path": "data/fightfx.air",
+    "canonical_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "replacement_sha256": "ec121a330952ef7c63c23fb81365023a1e6737e7b73d521f1e30587041cb7340",
+    "prepared_sha256": "ec121a330952ef7c63c23fb81365023a1e6737e7b73d521f1e30587041cb7340",
+    "canonical_unchanged": true
+  },
+  "random_seed": 889811345,
+  "seed_log_sha256": "2ed1a92a5ac23910f4b9eb36ae7549373402417f302e2c5e819668a964057502",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4dm-gameorigin-camera-negative-zero",
+  "native_scope_notes": "These new origin controls have invisible actors and no shadows; prior shadow/palette context corrections remain in the original46 review.",
+  "game_animation_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "1d95dba17d920bd92c37f3b6882b6a588f0bc2967fc790234ee411f4d420e718",
+    "scope": "Full world, chosen native-only before Go baseline. Includes real common cues, pool/negative-action/profile/RNG/layer/palette consumers. Exact RGB remains mandatory; no tolerance."
+  }
+}

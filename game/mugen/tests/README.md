@@ -1144,3 +1144,22 @@ packages. The old full-run script/inventory versions are preserved separately;
 production Go/test source did not change after those5,028 results. All72pairs,
 old9 rendering checks and stock win/rematch/win are reviewed;82 input events and
 1,972,096 private PCM frames pass. See [findings and remaining bounds](../docs/SYSTEM-EFFECTS.md).
+
+
+## GameMakeAnim dependency/origin controls (M4dm)
+
+Four more TestNativeGameAnimation functions replay54 programs/648 values. Combined
+with the old84 this is138 programs/1,548 values, all passing;53 older Explod-pool
+controls also pass. CommonAirOverride checks canonical/replacement/prepared hashes
+before in-memory parsing, independently of CommonAirPatch's append semantics.
+The fixed-world probe accepts gamecontext/gameedge/gameorigin/gamevertical prefixes
+and exact full-resource/configuration/seed/capture provenance.39/54 new worlds are
+exact;15 maximum-one RGB failures and two unchanged older strict failures remain.
+Every new pair, old9 controls and stock3 screenshots was reviewed. Focused races
+pass890core+205selected native results; no full-suite rerun is implied.
+
+All source/fixture inputs were frozen per serial runtime and separately guarded
+before editing. Only inventory source hashes were regenerated after preserving the
+exact frozen report against Git1e712788; Go/test/probe bytes did not change after
+validation. See SYSTEM-EFFECTS.md and the private m4dm final receipts. Do not edit
+old native recorders or replace original captures/goldens to make tests pass.

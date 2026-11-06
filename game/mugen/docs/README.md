@@ -144,3 +144,7 @@ committed-death voice/echo gating and one unwaived production echo comparison.
 [GameMakeAnim and MakeDust](SYSTEM-EFFECTS.md): deprecated common-resource scene
 cues, native schema/RNG/layer/clock evidence,70/72 exact world observers, the
 private-snapshot test-selection correction, and remaining system-effect studies.
+
+- [GameMakeAnim and MakeDust evidence](SYSTEM-EFFECTS.md): M4dm independent pool,
+  negative action0, native integer origins,54 new programs and retained strict
+  RGB failures; MakeDust schema/clock/resource/consumer research queue.

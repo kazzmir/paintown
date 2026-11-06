@@ -424,3 +424,41 @@ remain unwaived. MakeDust remains the sole source stub. Independent game-cue
 admission, negative-action and sub-game-pixel variants plus remaining item3 work
 continue; item4 is unallocated. Routing **76/89 typed (85.4%)** measures source
 routes, not engine completion.
+
+
+## M4dm — independent game-animation admission and integer origins
+
+GameMakeAnim now uses a pool independent of ordinary Explods, resolves negative
+common actions to 0, and integerizes positions with measured absolute game/stage
+origins before RNG displacement and later camera subtraction. SysExplodMax is
+not guessed to constrain this pool. **54 new native programs /648 values** cover
+saturation, negative actions, subpixel/camera boundaries, actual shadows and
+palette consumers. All **138 Game programs pass** (129 accepted /nine expected
+rejections /1,548 values), alongside all53 older Explod-pool programs.
+
+Focused races pass **890 core +205 selected native test results**. All eight
+previously failing targeted application controls are now exact. The complete new
+image matrix is **39/54 exact (72.2% of this corpus),19,843,200 RGB pixels**;15
+strict failures of maximum one RGB level remain UNWAIVED. The two older fractional
+failures are unchanged at41/18 pixels, maximum one. All56 native/Go pairs,14
+matrix sheets,nine older palette/order/shake controls and stock win/rematch/win
+were reviewed. Stock passes82 balanced input events /1,974,462 private PCM frames.
+
+Original inputs,138 exact configurations,65 common-AIR appendices,54 checked full
+replacements,5,658 native resource copies and module checks pass. The original
+integration exit1 preserves the strict failures and stale inventory source hashes;
+exact frozen metadata is archived against Git before regeneration. Fresh inventory
+and source guards pass; validated Go/test/probe bytes are unchanged. Latest full
+suite remains the preceding M4dl5,028/36 run; this checkpoint uses focused checks.
+[Evidence, scope corrections and remaining work](SYSTEM-EFFECTS.md). MakeDust is
+still the sole source stub; clipboard/residual schemas/flags and strict renderer/
+HUD/audio work remain. Routing76/89 (85.4%) is not engine completion. Item3 continues;
+item4 remains unallocated. All changes are source/text under game/mugen/.
+
+Next: MakeDust's17 old native-only raw programs, then independent full-schema,
+global spacing/axis-interleaved RNG, common resource/facing/coordinate/clock,
+helper/palette/pool consumer controls. The detailed design in SYSTEM-EFFECTS.md
+warns against sharing Game's position helper with dust based only on their common
+assets. Then clipboard formatting/display, residual VarSet/aliases/StateTypeSet/
+HitAdd and wider flags. Finish independent item3 before asking about item4 BGM or
+other actual dependencies. No checkpoint pause or renewed permission is needed.

@@ -221,6 +221,11 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					Appendix  string `json:"appendix_sha256"`
 					Prepared  string `json:"prepared_sha256"`
 				} `json:"common_air_patch"`
+				CommonAirOverride *struct {
+					Canonical   string `json:"canonical_sha256"`
+					Replacement string `json:"replacement_sha256"`
+					Prepared    string `json:"prepared_sha256"`
+				} `json:"common_air_override"`
 				Rules              map[string]float64 `json:"rules"`
 				ExtraHashes        map[string]string  `json:"extra_sha256"`
 				ProjectilePosition *struct {
@@ -279,12 +284,23 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					t.Fatal("native common AIR preparation changed", path)
 				}
 			}
+			if replacement := reference.CommonAirOverride; replacement != nil {
+				if reference.CommonAirPatch != nil {
+					t.Fatal("native common AIR cannot have both append and replacement recipes")
+				}
+				checked("../temp/mugen-1.1b1/data/fightfx.air", replacement.Canonical)
+				commonAir = checked(stem+".common.air", replacement.Replacement)
+				hash := sha256.Sum256(commonAir)
+				if hex.EncodeToString(hash[:]) != replacement.Prepared {
+					t.Fatal("native common AIR replacement preparation changed", path)
+				}
+			}
 			file, err := cns.ParseNamed(bytes.NewReader(checked(stem+".cns", reference.CNSHash)), stem+".cns")
 			if err != nil {
 				t.Fatal(err)
 			}
 			language := reference.StateLanguageVersion
-			if language == "" && reference.CommonAirPatch != nil {
+			if language == "" && (reference.CommonAirPatch != nil || reference.CommonAirOverride != nil) {
 				language = reference.MugenVersion
 			}
 			if language == "" {

@@ -19,7 +19,7 @@ type World struct {
 	ProjectileMax      int
 	AfterImageMax      int
 	ExplodMax          int
-	UnownedExplodCount func() int // Live/queued scene cues share the character pool.
+	UnownedExplodCount func() int // Scene Explod cues share this pool; GameMakeAnim does not.
 	afterImageOwners   map[*Character]struct{}
 	// Fixed camera travel limits plus half the viewport, in game units.
 	ProjectileStageBounds      [2]float64
@@ -37,7 +37,7 @@ func NewWorld(helperMax int) *World {
 	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, ProjectileMax: 32, AfterImageMax: 16, ExplodMax: 256, random: engine.NewRandomStream(1)}
 }
 
-// CanCreateExplod includes roots, helpers, retired owners and scene-owned cues.
+// CanCreateExplod includes roots, helpers, retired owners and ordinary scene cues.
 // Removal releases a slot immediately; a fresh zero-lifetime object retains it
 // until its normal simulation pass retires the instance.
 func (w *World) CanCreateExplod() bool {
