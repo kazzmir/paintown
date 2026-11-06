@@ -361,6 +361,12 @@ func (m *Match) Update() error {
 	}
 	m.updateCamera()
 	m.Tick++
+	// A moving owner can self-KO while the other root remains frozen. Native
+	// enters RoundState 3 immediately even though ordinary phase clocks stop.
+	if paused && m.Phase == Active && !m.Timeline.NoKO && m.hasKO() {
+		m.finishRound()
+		return nil
+	}
 	if paused && m.Phase != PreOver && m.Phase != Over {
 		return nil
 	}
@@ -408,7 +414,7 @@ func (m *Match) Update() error {
 				m.TimeLeft--
 			}
 		}
-		if m.Players[0].Character.Life <= 0 || m.Players[1].Character.Life <= 0 || (m.Options.RoundTime >= 0 && m.TimeLeft < 0) {
+		if (!m.Timeline.NoKO && m.hasKO()) || (m.Options.RoundTime >= 0 && m.TimeLeft < 0) {
 			m.finishRound()
 		}
 	case PreOver:
@@ -424,7 +430,7 @@ func (m *Match) Update() error {
 		if !m.winPoseStarted && m.PhaseTime >= m.Setting("Round", "over.wintime", 45) {
 			m.winPoseStarted = true
 			for slot, p := range m.Players {
-				if p.Character.Life <= 0 {
+				if !p.Character.IsAlive() {
 					continue
 				}
 				state := 170
@@ -432,7 +438,7 @@ func (m *Match) Update() error {
 					state = 175
 				} else if slot == m.Winner {
 					state = 180
-				} else if p.Character.Life <= 0 {
+				} else if !p.Character.IsAlive() {
 					continue
 				}
 				p.Character.ChangeState(state, 0, -1)
@@ -473,7 +479,7 @@ func (m *Match) startActive() {
 func (m *Match) roundActorsReady() bool {
 	for _, player := range m.Players {
 		c := player.Character
-		ready := c.Life > 0 && c.Ctrl && c.StateType == "S" && c.MoveType == "I"
+		ready := c.IsAlive() && c.Ctrl && c.StateType == "S" && c.MoveType == "I"
 		ready = ready || (c.StateNo == 5150 && c.Time > 0)
 		if !ready {
 			return false
@@ -482,9 +488,13 @@ func (m *Match) roundActorsReady() bool {
 	return true
 }
 
+func (m *Match) hasKO() bool {
+	return !m.Players[0].Character.IsAlive() || !m.Players[1].Character.IsAlive()
+}
+
 func (m *Match) finishRound() {
 	a, b := m.Players[0].Character, m.Players[1].Character
-	m.TimeOver = a.Life > 0 && b.Life > 0
+	m.TimeOver = a.IsAlive() && b.IsAlive()
 	if m.TimeOver {
 		m.TimeLeft = 0
 	} else if !a.Specials["nokoslow"] && !b.Specials["nokoslow"] {

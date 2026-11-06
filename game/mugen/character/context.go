@@ -80,7 +80,7 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		if c.updateActive {
 			return evaluator.Bool(c.aliveAtTickStart), true
 		}
-		return evaluator.Bool(c.Life > 0), true
+		return evaluator.Bool(c.IsAlive()), true
 	case "win", "winko", "wintime", "winperfect", "lose", "loseko", "losetime", "drawgame":
 		root := c.rootPlayer()
 		var result bool

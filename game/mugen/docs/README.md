@@ -133,3 +133,6 @@ effort stay under `game/mugen/`.
 [Guard, walk and missing-state controls](ASSERT-SPECIAL-CONTROLS.md) records the
 M4di keyboard/contact comparisons, corrected common-file inference and full
 4,870-result integration checkpoint.
+
+[NoKO and retained death state](NO-KO.md): entity-order/global assertions, frozen
+owners, self-KO/corpse contacts and full4,918-result integration acceptance.

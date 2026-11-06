@@ -38,6 +38,8 @@ type Character struct {
 	HitDefActive          bool
 	stateSerial           uint64
 	aliveAtTickStart      bool
+	lifeStateInitialized  bool
+	knockedOut            bool
 	statePassBudget       engine.StatePassBudget
 	hitTargets            map[*Character]hitTarget
 	targetOrder           []*Character
@@ -365,7 +367,8 @@ func (c *Character) Update() {
 }
 
 func (c *Character) startTick() bool {
-	c.aliveAtTickStart = c.Life > 0
+	c.initializeLifeState()
+	c.aliveAtTickStart = c.IsAlive()
 	c.boundThisTick = false
 	c.tickMoveType = c.MoveType
 	if c.Viewport != nil && c.Viewport.Space.Width > 0 {
@@ -475,10 +478,9 @@ func (c *Character) runStateTick() bool {
 		// Alive is latched for the CNS pass. A controller self-KO enters the
 		// native airborne death state after that pass; contact damage already
 		// has its own H-state entry and is applied separately by TickCharacters.
-		if c.Parent == nil && c.aliveAtTickStart && c.Life <= 0 && c.MoveType != "H" {
+		if c.Parent == nil && c.aliveAtTickStart && c.Life <= 0 && !c.noKOThisPass() && c.MoveType != "H" {
 			c.stateOwner = nil
 			c.changeStateWithEntry(5030, engine.EntryOverrides{HasCtrl: true, Ctrl: false}, true)
-			c.SetMoveType("H")
 			c.SetCtrl(false)
 		} else {
 			c.HandleBuiltinTransitions()
@@ -895,6 +897,8 @@ func (c *Character) AssertSpecial(flag string) {
 			c.Timeline.NoForeground = true
 		case "nobardisplay":
 			c.Timeline.NoBarDisplay = true
+		case "noko":
+			c.Timeline.NoKO = true
 		}
 	}
 }
@@ -1686,12 +1690,12 @@ func (c *Character) GetStateFile() *cns.CNS {
 func (c *Character) HandleBuiltinTransitions() {
 	if c.StateNo == 5110 {
 
-		if c.GetLife() <= 0 && c.GetAnimTime() == 0 {
+		if !c.IsAlive() && c.GetAnimTime() == 0 {
 			c.ChangeState(5150, -1, -1)
 			return
 		}
 
-		if c.GetLife() > 0 && c.Time > 0 && c.getLiedownTime() <= 0 {
+		if c.IsAlive() && c.Time > 0 && c.getLiedownTime() <= 0 {
 			c.ChangeState(5120, -1, -1)
 			return
 		}
@@ -2037,7 +2041,7 @@ func (c *Character) ResolveCollisions(others []*Character) {
 	// 1. Check character's own HitBoxes
 	if c.MoveType == "A" {
 		for _, other := range others {
-			if other == c || other.Life <= 0 {
+			if other == c || !other.IsAlive() {
 				continue
 			}
 
@@ -2052,7 +2056,7 @@ func (c *Character) ResolveCollisions(others []*Character) {
 	for _, p := range c.Projectiles {
 		hit := false
 		for _, other := range others {
-			if other == c || other.Life <= 0 {
+			if other == c || !other.IsAlive() {
 				continue
 			}
 			if CheckCollision(p, other) {
@@ -2128,12 +2132,14 @@ func (c *Character) HandleHit(other *Character) {
 }
 
 func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
+	c.initializeLifeState()
 	hit.Attr = attacker.attributesForHit(hit)
 	if c.excludesCustomHit(hit) {
 		return
 	}
 	damage := c.prepareContact(attacker, hit, c.guardsHitFrom(attacker, hit))
 	c.applyHitDamage(damage)
+	c.completeLifeState()
 }
 
 func (c *Character) applyHitDamage(damage int) {

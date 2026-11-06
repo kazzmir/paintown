@@ -304,3 +304,30 @@ unwaived. Noko lifetime, wider flag variants, system animations/dust, clipboard,
 residual schemas and rendering obligations remain item 3 work. Source routing
 remains 75/89 typed (84.3%); this is not behavioral completion. Item 4 remains
 unallocated.
+
+
+## M4dj — NoKO lifetime, death state and paused KO
+
+The beta's accepted undocumented `noko` flag now preserves zero-life actors
+without clamping Life. Death remains latched after the assertion expires;
+restoring positive life or asserting late does not revive a dead actor. Native
+controls establish entity-order/global assertion timing, frozen-owner behavior,
+self-KO state entry and later corpse contacts during damage grace. A moving
+owner can cause KO/RoundState3 during Pause while ordinary clocks stay frozen.
+
+All **44 new native programs pass**, pinning **528 numeric values**. All
+**30 new application world crops match exactly (100% of this bounded corpus)**
+across **15,264,000 RGB pixels**, and all pairs are visually reviewed. Full scoped
+races pass **4,918 results across 36 packages** (25 tested, 11 compiled-only),
+with no individual skips or races. Five older palette/order apps, four shake
+masks and reviewed stock win/rematch/win pass, with **82 balanced inputs /
+1,973,087 private PCM frames**. All **23 integration gates** and the outer driver
+exit zero. Separate frozen-input/client guards and provenance/module audits pass.
+[Evidence, failed baselines and bounds](NO-KO.md).
+
+The 14 original GameTime diagnostics remain unpromoted because some exact-time
+samples were skipped. Their sources and captures are retained. Earlier 35 HUD
+failures and all strict raster failures remain unwaived. NoKO audio, broader
+helper/projectile/round variants, remaining flags, system animations/dust,
+clipboard and residual schemas still need work. Source routing remains 75/89
+typed (84.3%), not behavioral completion. Item 3 continues; item 4 is unallocated.

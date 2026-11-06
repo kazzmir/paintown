@@ -20,34 +20,37 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4di complete; continue item 3
+## Immediate state — M4dj complete; continue item 3
 
-M4di closes measured guard/walk entry, scripted-guard preservation, attacker
-unguardable and Command-call rejection. Actual keyboard controls exposed and
-resolved blank/omitted common-file loading and undefined internal-state entry.
-All 51 native programs pass (50 accepted, one rejection, 600 values). All 16
-new application world crops are exact / 8,140,800 RGB pixels. See
-ASSERT-SPECIAL-CONTROLS.md; original failures and all native evidence immutable.
+M4di committed80e076127e8c33c00358b44dcbe06aeca3621f03 (321scoped UTF8 paths).
+M4dj acceptance complete:44native/528values/44configs,30exact world crops/
+15,264,000RGBpixels,full4,918results/36packages(25tested11compiled-only),
+Match2294.916s. Entire32712 completed/awaited0,all23gates0. Five oldpalette/order
+apps,four masks and stock21win/26FIGHTrematch/45secondwin reviewed;82balancedkeys/
+1,973,087privatePCMframes. ALL30pairs/sixsheets+old9+stock3 reviewed. Separate
+final19445/matrix19442/revision19444/nested19442input/client guardPASS. Auditor
+38573completed0:19,448unique/3,506originals/44configs/41resources/1,804copies/
+109manifest. No live runtime. Records temp/m4dj-final-evidence-audit.json,
+m4dj-final-visual-review.json,m4dj-final1-separate-guard.json. Localcommit record
+will be temp/m4dj-commit-record.json; source/text only,no binary/push.
 
-Full serial34865 completed/awaited0:4,870 race results/36packages (25 tested,
-11 compiled-only); Match2286.677s. All22gates pass, old5palette/order+4masks and
-visually reviewed stock21/26/45win/rematch/win:82keys/1,971,685privatePCMframes.
-Separate final19190/revision19189/nested19187 input/client guardPASS. Audit
-19192unique/3000originals/51configs/41archives/2091resourcecopies/109manifest.
-All16pairs/four sheets+old9+stock3 reviewed. Records m4di-final-evidence-audit.json,
-m4di-final-visual-review.json and m4di-final1-separate-guard.json. No live runtime.
-Binary50bb38a3e2121ba500250289075dc21a65081ae07456fa39ee64d4adaa4fecbd;
-no binary/push. Local source/text commit record:temp/m4di-commit-record.json.
+NO-KO.md records current-pass global NoKO, perentity nonreviving deathlatch,
+Alive latched insideCNS/deathcommit afterownCNS+damage, frozenretention,
+selfKO5030 gating/missing5030 retainedattributes, corpsecontactduringdamagegrace,
+protectedLife0lethalmetadata/no powerfordead, andpausedmovingownerKO. No guessed
+selfKOfall! Native sixentrycontrols prove originalfall1camefromlatercontact.
+KOaudio leftunchanged pending independent nativePCM. All44promoted ONCE; original
+14GameTime diagnostics UNPROMOTED/UNSTAGED, plus10directrenderer/3oldwalkrawsets.
+OriginalinvalidPause60/99999scope explicitlycorrected byseparate60/60controls.
+Allsource/native/recorders/configs/captures/goldensimmutable. Prior35HUD/allstrict
+raster failures UNWAIVED; no tolerances or regions changed. No wholeengine%.
 
-Next: separate native noko lifetime/death/global/frozen-owner controls BEFORE
-implementation. Initial8 native observations are reviewed but UNPROMOTED:life0/
-Alive1 with active attacker/defender/both, expired flags/directzero controls.
-Do not clamp life1 or assume late-enable revival/global reset/death semantics.
-Then finish all remaining AssertSpecial/system effects/clipboard/residual schemas
-and rendering obligations. Existing36system-effect drafts/helpers are prepared,
-not observed/frozen. Ten direct-render rawsets, noko8 and three unpromoted old
-walkrawsets stay UNSTAGED. Old35HUD/allrenderer failures UNWAIVED. Latest full
-suite is now M4di4870/36, at this source boundary. Continue without reapproval.
+Next: independently measure native NoKO KOvoice/channel/echo behavior, then
+remaining AssertSpecial/helper/global/timer/round/music consumers; systemeffects
+GameMakeAnim/MakeDust (36unobserved drafts/helpers), clipboard/debug formatting,
+VarSet/FVaraliases/StateTypeSet/HitAdd schemas/consumers and strict renderer gates.
+See HANDOFF.md for details. Continue until allallocated item3complete or concrete
+userdependency; item4BGM/modes/assets/font/platform remainsunallocated.
 
 ## Native and validation workflow
 

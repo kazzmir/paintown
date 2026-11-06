@@ -1087,3 +1087,17 @@ paths for actual-image comparisons; the Go numeric replays use committed values.
 Full M4di validation passes 4,870 race results / 36 packages, 16 exact new world
 crops / 8,140,800 RGB pixels, older palette/order/mask controls and stock win/
 rematch/private PCM. See [findings and limits](../docs/ASSERT-SPECIAL-CONTROLS.md).
+
+## NoKO lifetime and death-state controls (M4dj)
+
+`TestNativeNoKOContacts`, `TestNativeNoKOLifetime`, `TestNativeNoKOFrozenOwner`
+and `TestNativeSelfKOEntry` replay44 immutable native programs/528 values. Four
+separate native/configuration ledgers pin originals and exact config recipes.
+`noko_render_probe.py` checks30 independently selected fixed world regions with
+strict RGB equality and source/config/resource/capture provenance. Use a new
+run name each time; preserve all original native captures. Original14 GameTime
+programs remain unpromoted diagnostics, not runtime observations for missed slots.
+
+The final full suite passes4,918 results/36 packages; all30 world crops, five old
+palette/order apps, four masks and reviewed stock win/rematch/private PCM pass.
+Read [the measured lifecycle and remaining bounds](../docs/NO-KO.md).

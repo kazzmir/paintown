@@ -128,7 +128,9 @@ func TickCharacters(players []*Character) error {
 				if attacker.worldFrozen && defender.worldFrozen {
 					continue
 				}
-				if defender == attacker || defender.Life <= 0 || attacker.HitGuard[int(defender.EntityID)] {
+				// Roots can still receive reactions during the damage grace
+				// after death. NoKO can also retain a live zero-life receiver.
+				if defender == attacker || (!defender.IsAlive() && (defender.Parent != nil || defender.RoundDamageDisabled)) || attacker.HitGuard[int(defender.EntityID)] {
 					continue
 				}
 				if tickCollision(attacker, defender) {
@@ -254,6 +256,7 @@ func TickCharacters(players []*Character) error {
 			c.applyHitDamage(c.pendingHitDamage)
 			c.pendingHitDamage, c.hasPendingHitDamage = 0, false
 		}
+		c.completeLifeState()
 		c.finishTick()
 		if c.RuntimeError != nil {
 			return c.RuntimeError

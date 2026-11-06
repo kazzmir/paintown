@@ -105,14 +105,15 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4di validation**.
+Snapshot: **2026-11-06; through M4dj validation**.
 
-M4di adds native-backed guard/walk flags and corrects common-file loading and
-undefined-state continuation. All **51 new native programs** pass; **16/16 new
-application world crops are exact (100% of this bounded corpus)**. The fresh
-full race suite passes **4,870 results across 36 packages**. Stock win/rematch/
-win and private audio pass. [Evidence and limits](docs/ASSERT-SPECIAL-CONTROLS.md).
-Earlier HUD and renderer differences remain unwaived.
+M4dj adds native-backed NoKO lifetime, retained death state, self-KO/corpse-contact
+and paused-KO behavior. All **44 new native programs** pass; **30/30 new world
+crops are exact (100% of this bounded corpus)** across **15,264,000 RGB pixels**.
+The fresh full race suite passes **4,918 results across 36 packages**. Stock
+win/rematch/win and private audio pass. [Evidence and limits](docs/NO-KO.md).
+Earlier guard/walk and missing-state corrections remain covered; earlier HUD
+and renderer differences remain unwaived.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -146,7 +147,7 @@ crops match exactly (36.8% of this corpus)**. The other 60 retain strict failure
 59 have maximum RGB error 1; the scaled actor has maximum error 2. Both old
 projectile-shadow controls now match exactly. [Shadow evidence](docs/SHADOWS.md).
 
-M4di's full scoped race run passes **4,870 results across 36 packages**
+M4dj's full scoped race run passes **4,918 results across 36 packages**
 (25 tested, 11 compiled-only). All four old shake masks pass. Stock
 win → rematch → win is visually inspected with 82 balanced input events and
 private audio. Earlier angle/EnvShake/actor 45-degree failures remain unwaived.
@@ -207,6 +208,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| NoKO native lifetime/contact/entry programs in M4dj | 44 / 44 | **100%** | This recorded corpus; audio and wider entity/round variants remain. |
+| NoKO world outcome crops in M4dj | 30 / 30 | **100%** | Exact fixed world observers; earlier HUD/raster obligations stay open. |
 | AssertSpecial numeric/schema programs in M4dh | 48 / 48 | **100%** | Recorded literal/global-clock corpus, including eight expected rejections; other consumers remain. |
 | AssertSpecial world crops in M4dh | 40 / 40 | **100%** | World pixels only; complete HUD comparisons retain strict failures. |
 | Complete AssertSpecial world+HUD crops in M4dh | 5 / 40 | **12.5%** | 35 strict HUD failures remain; no tolerance or comparison region changed. |

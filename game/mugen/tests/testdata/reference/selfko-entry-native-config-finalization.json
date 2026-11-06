@@ -1,0 +1,47 @@
+{
+  "programs": {
+    "selfkoentry-none": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "selfkoentry-p1": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "selfkoentry-p2": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "selfkoentry-both": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "selfkoentry-none-contact": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "selfkoentry-both-contact": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    }
+  },
+  "native_finalization": "Debug1/AfterImageMax16 prepared; FirstRun1->0/LF->CRLF final only"
+}

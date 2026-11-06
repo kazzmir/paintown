@@ -31,7 +31,7 @@ func (c *Character) contactDamage(attacker *Character, hit cns.HitDef, guarded b
 		minimum = 1
 	}
 	damage = min(damage, max(0, life-minimum))
-	return damage, life > 0 && damage >= life
+	return damage, damage >= life && (life > 0 || minimum == 0)
 }
 
 // ApplyHitFallDamage follows beta1's controller, which consumes the stored

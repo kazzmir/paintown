@@ -13,6 +13,9 @@ func (c *Character) GetHitPowerRules() combat.PowerRules {
 }
 
 func (c *Character) creditHitPower(attacker *Character, hit cns.HitDef, guarded bool) {
+	if !c.IsAlive() {
+		return
+	}
 	rules := attacker.GetHitPowerRules()
 	damage := 0
 	if len(hit.Damage) > 0 {
