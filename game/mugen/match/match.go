@@ -300,6 +300,12 @@ func (m *Match) enter(phase Phase) {
 func (m *Match) roundState(value int) {
 	m.Timeline.ResetRoundEffectClock()
 	for _, p := range m.Players {
+		if value == 2 && p.Character.RoundState != 2 {
+			// Native restores root X/Y on the first fight-call transition,
+			// including a moving owner during Pause. Animation and CNS clocks
+			// remain intact; velocity/facing/Z resets are not inferred here.
+			p.Character.X, p.Character.Y = p.Character.StartX, p.Character.StartY
+		}
 		p.Character.RoundState = value
 	}
 }

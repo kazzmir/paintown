@@ -1,0 +1,65 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "captures": [
+    {
+      "label": "held-phase",
+      "path": "held-phase.png",
+      "sha256": "ee6ad077f6d182dc1d619f9d782f970daa24d999151a07107e9af228dc3c6e64",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "world_region": [
+        160,
+        140,
+        1120,
+        640
+      ],
+      "world_rgb_sha256": "e37b725bcd7a5d6fb70a7a7a95b411c896bd7ddb62bafb2a0d6b842f4fd0de5e",
+      "variables": {
+        "0": 1,
+        "1": 1,
+        "2": 0,
+        "3": 9000,
+        "4": 2,
+        "5": 1,
+        "6": 0,
+        "7": 1,
+        "8": 60,
+        "9": 9999,
+        "10": 1,
+        "11": 1
+      },
+      "sequence_index": 1
+    }
+  ],
+  "cns_sha256": "daf80a270535987086acbecff5269f0af89739b696d6d153b3a6d34a4b313fe0",
+  "air_sha256": "25246f67315082730f29e8a6b68acd9ac952e9090c4dca83580c33f0de24c2b2",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "stage_fixture_sha256": "6e95f6a30fb1f0b1d2a6bbef1e3d03f80c05bbb7b6898ea1958a22b02b4c9840",
+  "bank": "fvar",
+  "mugenversion": "1.1",
+  "state_language_version": "1.1",
+  "localcoord": "320,240",
+  "fixture_stage": true,
+  "early_pause_observer": true,
+  "random_seed": 1161278009,
+  "seed_log_sha256": "d4fa6548645be9ba4dededbb24d64bbe9ed4c19a5484f4cbce4b66860bff9bdd",
+  "native_run": "temp/reference-runs/m4dp-posecontext-shadow-1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "pose_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      640
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "e37b725bcd7a5d6fb70a7a7a95b411c896bd7ddb62bafb2a0d6b842f4fd0de5e",
+    "scope": "Original native-only root/helper/positive-shadow world selected before Go baseline; exact RGB, no tolerance"
+  },
+  "native_scope_notes": "Root drawing before RoundState2, first2 X/Y reset, fresh animation and helper displacement; no generic pause cache or velocity/facing/Z reset claim."
+}

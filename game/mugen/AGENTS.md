@@ -20,7 +20,60 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4do camera publication validated; continue controls
+## Immediate state — M4dp validated; checkpoint then HUD controls
+
+M4dp source/text checkpoint is ready to commit, or already at HEAD. Previouslocal
+checkpoint e8de0b8e415eb7cf8625b41644eae8d589ea7596(M4do). Newproduction ONLY
+character/actor_order.go rootdrawStartXY inRoundState0/1(currentanimation),helpers/
+projectilesactual,body+shadow shared; match/match.go firstRoundState2 resetsactual
+BOTHrootX/Y,retainsanimation/time. No genericcache/phasefreeze or inferredVelocity/
+facing/Zreset. INITIAL-PLACEMENT.md hasfullnativeproof, corrections andlimits.
+
+Final16701 ENTIREawaited1; SEPARATE21,476frozen/client guardPASS. ALL40appsrun same
+binary8b7cb6ae1a7032d7f229cfee297ca4419f1c091eacecf3175ac4781eb5647d5b. ALL39pairs/
+13sheets+stock3 VIEWED. All7originalstartupworlds EXACT3,561,600RGBpixels. New16/23
+worlds EXACT7,680,000pixels/69.6%;7strictfailuresUNWAIVED(6HUD incl1mixedshadow,
+1pure464pix/max1shadow). All23newnativeprograms/276valuesPASS. Combinednative
+481/482cases(506pass/2failincloldnegativecamera parent), additional16matchresults
+PASS. Core890PASS atsame185productionGo bytes. Legacy9PASS;stockwin/rematch/win
+82balancedkeys +1,928,719stereo44.1kHzPCMframesSHA9fe4a1286f32abe773db6987a95ea7e83583c2dbf2b809a9f8bba40471129df4.
+82gates73zero/9exit1(native,7newworlds,inventory). Oldexactinventory generator/report
+archivedGit e8 +privatecopies AFTERguard; updateddescriptions/currentcheck0. Source
+routing77/89typed86.5%,12fallback/0stub/9partial/20bounded/60route-only unchanged,
+not overall compatibility. LatestFULLhistoricalM4dl5028/36; no newfullclaim.
+
+Passiveaudit21612 ENTIREawaited0:710nativeoriginalpath/2553preparedpath checks,
+943native/1640Goappbinaryresourcecopies,23exactconfigs,42appcaptures/sharedbinary,
+seeds/recomputedRGB/185productionGo/ownedkeys/PCM/sourceversionsPASS. Native author
+contexts verifyrecordedGit e8 or originalprivateinputpaths, notmutableGo. Final
+m4dp-final-evidence-audit.json,final-visual-review.json,final-metadata.json. No runtime.
+
+ALLnative studies awaited0+SEPARATEguardsPASS andallrows/imagesreviewedbeforecode:
+31687/138(5activecontrols55frames660values),72606/158(10phase),66707/158(10context),
+76586/126(2boundary),15158/122(1Y). 23stableprogramspromotedONCE aspreintropose10,
+posecontext10,poseboundary2,posevertical1;123publicsource/evidencepaths+4native/4config
+ledgers. Fiveactivecontrols remainPRIVATE, disprovegenericPausecache/schedulerfix.
+Native-usednew frame_seek_reference_probe.py IMMUTABLE. Alloldrecorders/inputs/
+resources/configs/caps/goldens unchanged. Firstderivedinitial_placement_render_probe
+failedobsoleteconfigschema; preserveoriginal/excludecommit. Successful separately
+named initial_placement_compare.py reusedbaselinecaptures withstrictprepared/final
+hashes. Baseline98119/guard21475 andpassive27503/guard21508 retained1; all6pairs
+reviewed. Revision83510/guard21476 retained1;all6pairsviewed/core890+new24resultspass.
+No productionedits afterrevision/final. Originalsamplers/regions/tolerances unchanged.
+
+Complete explicitstagedUTF8/noNUL/exact-index/scopeaudit andLOCALsource/textcommit;
+excludeold354raw +failednewderivedcomparator. Neverbinary/temp/outsidepaths orpush.
+Then CONTINUEALLitem3 autonomously, NOapprovalpause: HUD-LIFETIME-PLAN.md specifies
+new nativeKO400/seek399 +fullfight.defsidecars/positiveSprites-fonts/defaults/delays/
+loops/infinite/Pause/SuperPause/KOslow controls BEFOREHUDedits. Nativeprepareconfig
+motif verified data/mugen1/system.def; fightloader in fight/definition.go. Existing
+HUDUpdate clocksduringCNSPause butDrawignoresdisplaytime/startdelays; skipsKOslow
+viaSimulationSkipped. Measurebeforechanging; staticbarTTL andtimedRound separate.
+Nextfinite/overlapcolour,clipboard/debugdisplay,residualschemas/aliases/flags and
+oldstrictobligations. Item4 BGM/modes/assets/fonts unallocated; finishindependent3
+beforeconcretedependencyquestion. Userreclaimed144GiB, no currentdiskblocker.
+
+## M4do camera publication validated
 
 M4do source/text checkpoint is ready to commit, or already committed at HEAD.
 Previous checkpoint a868f654bcf14def5b64e608806e1d14af1df742 is M4dn.

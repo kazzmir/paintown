@@ -188,11 +188,12 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			var reference struct {
-				FixtureConstants bool            `json:"fixture_constants"`
-				RandomSeed       *int64          `json:"random_seed"`
-				DustRender       json.RawMessage `json:"dust_render"`
-				ProjectileMax    *int            `json:"projectile_max"`
-				EffectLimits     struct {
+				FixtureConstants   bool            `json:"fixture_constants"`
+				RandomSeed         *int64          `json:"random_seed"`
+				DustRender         json.RawMessage `json:"dust_render"`
+				EarlyPauseObserver bool            `json:"early_pause_observer"`
+				ProjectileMax      *int            `json:"projectile_max"`
+				EffectLimits       struct {
 					AfterImageMax *int `json:"AfterImageMax"`
 					ExplodMax     *int `json:"ExplodMax"`
 				} `json:"effect_limits"`
@@ -433,7 +434,7 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			if err := m.resetRound(); err != nil {
 				t.Fatal(err)
 			}
-			if reference.DustRender != nil {
+			if reference.DustRender != nil || reference.EarlyPauseObserver {
 				// These native observers deliberately freeze during preintro,
 				// intro or fight-call. Waiting for Active would never finish.
 				for tick := 0; tick < 600 && m.Phase != Active && !m.Timeline.Paused(); tick++ {

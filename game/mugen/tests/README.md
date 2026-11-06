@@ -1176,3 +1176,14 @@ save96 boot/first-pass queries. One negative-start screen-bound case remains a
 strict failure; all24 camera values match. See
 [measured boundaries](../docs/STARTUP-CAMERA.md). Keep all original recorders,
 native inputs, configurations, captures and expectations unchanged.
+
+
+## Initial-placement conformance
+
+`TestNativeInitialRootPlacement` replays23 original beta programs and276 saved
+post-controller values. `initial_placement_compare.py` strictly compares the
+native-selected world region, checking original assets, seeds and exact prepared/
+finalized configurations. The first derived `initial_placement_render_probe.py`
+failed an obsolete metadata schema and remains preserved locally, excluded from
+the checkpoint; use the successful comparator named above. No original capture
+or expectation changed. [Evidence and remaining strict failures](../docs/INITIAL-PLACEMENT.md).

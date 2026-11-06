@@ -1,5 +1,38 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
+## M4dp — starting root drawing and first-fight X/Y reset
+
+The beta draws roots at stage starting X/Y during RoundState0/1 while scripted
+coordinates and current animation remain live. Helpers draw at actual positions.
+The first RoundState2 transition restores both roots' actual X/Y without resetting
+animation or state time. Independent active Pause controls ruled out a generic
+sprite cache or phase-clock correction before implementation.
+
+All **23 new native programs /276 values pass**. New application worlds are
+**16/23 exact (69.6%),7,680,000 RGB pixels**. Seven strict failures remain: six
+held HUD cases (one also has shadow differences), plus a464-pixel/max-one shadow
+case. All **seven original startup world failures now match exactly**, across
+**3,561,600 RGB pixels**, using unchanged original captures and expectations.
+The complete historical144-world dust matrix was not rerun.
+
+Core races pass890 results. The broader native gate passes481/482 programs,
+with the earlier negative-camera constraint case still failing (506pass/twofail
+including its parent). Additional match units pass16 results. All40 applications
+run with one binary; nine older render controls and stock win/rematch/win pass,
+with82 balanced inputs and1,928,719 stereo44.1kHz private PCM frames. All39 pairs,
+13 sheets and stock3 captures are reviewed.
+
+Final16701 completed/awaited exit1; separate21,476-input/client guard passes.
+There are82 real gates:73zero, nine exit1 (native, seven worlds, stale inventory).
+Exact old inventory generator/report bytes were archived against Git before
+regeneration; the current check passes. Provenance/config/resource/RGB/source/
+binary/input/PCM audits pass. Original samplers, regions, tolerances, inputs and
+expectations remain unchanged. Latest full suite remains historical M4dl5,028/36;
+this checkpoint uses focused checks. Source routing remains77/89typed86.5%,zero
+stubs, and is not an overall compatibility percentage.
+[Evidence](INITIAL-PLACEMENT.md), [next HUD controls](HUD-LIFETIME-PLAN.md).
+
+
 ## M4do — cold-start camera queries; presentation remains strict
 
 Four independent camera-only programs pin96 fields across both roots' boot and

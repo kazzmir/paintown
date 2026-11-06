@@ -22,7 +22,7 @@
     "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
     "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
-    "match/match.go": "61403ccec22b139e65b823f6f08ed12097a5d5be9b10d6d2e4e41735bba3f970",
+    "match/match.go": "ddf893c1c3e20745b5b1da3e41628a0ae196b0b51a645951b7365624a8f63132",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
     "engine/parameters.go": "931d0a3473a9f398d44dd121b7883da57e2f886cf9d318ec889cdba42069eb32",
@@ -32,7 +32,7 @@
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
     "engine/modify_explod.go": "b9ecd4380e92c3a33cd41bd3ca9b8ed539e12034f98ce71f1b63f36b0f648fc8",
     "effect/scene.go": "90d49440e1e3d1f2e27254aaae4bcccb8878bf211264c42033c9a59417fd874e",
-    "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
+    "character/actor_order.go": "49ec0333a344d9be424fb4e71cd278be4a3516c55e940745100299fceaa5fbf7",
     "system/effects.go": "bb6cdbf1a97eb72f6ddac6ba25233d9572dcd140790aedadbf45930b44c4f192",
     "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
     "render/shadow.go": "8b3bf8c5b95e0835472bd43a9c3054ce5531c6e61c4ac489ad44ccba540e1285",
@@ -413,7 +413,7 @@
       "handler": "handleGameMakeAnim",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource production cues, caller/parameter profile math, helper/slot2, facing/global-unit random offsets, Pause/SuperPause-independent animation clock and under-actor drawing; 84 native programs/900 values pass,70 of72 strict world observers exact with two fractional color failures unwaived; independent admission, negative action, sub-game-pixel quantization and broader ownership/palette/foreground variants remain"
+        "SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource cues, caller/profile math, helper/slot2, facing/global-unit random offsets, independent Game admission, negative-action normalization and measured integer origins, palette/layer/pause consumers; all138 recorded native programs pass; M4dm dependency worlds39/54 exact with15 max-one RGB failures retained; INITIAL-PLACEMENT.md fixes shared startup drawing; wider variants and strict raster obligations remain"
       ],
       "variants_complete": false
     },
@@ -534,7 +534,7 @@
       "handler": "handleMakeDust",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; early paused-pose world differences remain strict; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain"
+        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; INITIAL-PLACEMENT.md: seven original startup worlds now exact after measured root drawing/first-fight X/Y reset; held HUD, finite-color and shadow differences remain strict; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain"
       ],
       "variants_complete": false
     },

@@ -958,3 +958,215 @@ old354raw paths remain excluded. Audit exact staged UTF8/noNUL bytes and scoped
 paths, commit locally, then CONTINUE independent issue-frame CNS/pose/constraint
 controls and HUD lifetimes. Do not ask for checkpoint approval or pause. Item4
 unallocated. Historical complete144world matrix not rerun; allolderfailures open.
+
+
+## M4dp issuing-frame native controls ACTIVE
+
+M4do committed e8de0b8e415eb7cf8625b41644eae8d589ea7596:40audited source/text paths,
+354held exclusions, no binary/temp/outside paths, no push. Tracked tree clean
+immediately aftercommit. No subsequent productionGo changes.
+
+ACTIVE native31687, run-m4dp-pauseissue-native.py. New frame_seek_reference_probe.py
+extends a separately named original with calibrated numeric GameTime seek: debug
+Pause, capture live clock, exact steps to399 and verify, then nine single-step
+captures400..408. No clipboard injection. Full independently parsed/compiled
+intent390inputs passed observed0, then SEPARATE elevated390/client guardPASS.
+Five authored controls move/change animation atG400, then P1 issues Null orPause/
+SuperPause, followed by a marker; live own/opponent Time/PosX/Anim/counters/markers
+separate CNS execution from visible pose. Positive stock0,0 and200,0verified;
+fixed camera0 removes startup-camera dependency. Movetime4 abovePauseTime3 is a
+bounds control; do not call it full allowance. Add separately named movetime3
+positive after run/guard if needed.
+
+Native originals m4dp-pauseissue-native-inputs.json pin authoring-mapJSON, not live
+Go. Await ENTIRE31687 and SEPARATE elevated originals/client guard before edits
+or another runtime. Then inspect all55nativeframes/numeric/config/seed/owned-key/
+resource rows before promoting or changing scheduler/drawing. Original recorders
+and native evidence remain immutable. New seek recorder is now native-used.
+
+
+## M4dp active controls disprove generic cache; preintro controls ACTIVE
+
+Native31687 ENTIREcompleted/awaited0; separate elevated138-original/client guard
+PASS. All55frames/660numeric observations/5fullscene sheets viewed. Every one of
+45 issue+following world images is EXACTLY equal to the noPause postissue world
+(hash576f1b53da42c982d8605b7d883fae8d6d8102bf9f12dc94852bd9428af78a10);
+preissueworld differs. Bothroots PosSet/ChangeAnim/marker execute atG400, pause
+startsafterissuingtick, three subsequentCNS ticks freeze, movetime1 allowsoneextra
+ownerpass, movetime4>3 warns/acts0. Thus do NOT implement genericpausedrendercache
+or schedulerchange from oldpreintro failures. Newseekrecorder native-used immutable.
+Native-only review seals all results; no promotion or production changes yet.
+
+ACTIVE native72606, run-m4dp-preintropose-native.py.10phase-boundary programs saved
+postmutation FVar snapshots thenholdPause99999 atG1,4,29,30,31,40,100,130(move0),
+plusG1/4move1 to inspect subsequent actualstate. Fixedcamera0 andpositive idle/
+attack sprites isolate preintro from camera. Independent complete parsed/compiled
+410-input intent0, SEPARATE elevated410/client guardPASS. Native maps hash authoring
+JSON ratherthan liveGo. Source frame_sequence_reference_probe.py unchanged.
+
+Await ENTIRE72606 and SEPARATE elevated m4dp-preintropose-native-inputs/client guard
+before edits/newruntime. Inspect ALL10images/120numeric values/resources/config/
+events before promotion/code. Firstdetermine whether preintro resets actualposition/
+animation or cachesdrawing; do not infer either. No newproductionGo since e8de0b8e.
+Currentnewframe_seek_reference_probe.py uncommitted, native-used immutable. Item3
+continues autonomously through measured boundaries/HUD/finitecolour/clipboard/
+residualschemas/flags; item4 unallocated.
+
+
+## M4dp context controls ACTIVE after phase review
+
+72606 ENTIREawaited0, SEPARATE158-original/client guardPASS. ALL10images/120values/
+two sheets viewed and native-only reviewsealed. G1/4/29/30/31/40 retain ROOTstarting
+X/Y while NEWattack sprite200,0draws. G100/130showchangedpositions. G1/4movetime1
+nextG2/5 still reportPosX0/Anim9000, so actualCNSpositions NOTreset and this is NOT
+a fullpose/animationcache. Need intro/helper/shadow/fine-boundary controls before
+implementation. All15native programs sofar privateunpromoted; alloriginals preserved.
+
+ACTIVE native66707, run-m4dp-posecontext-native.py. Ten contexts addexplicitintro
+P1/both31/40,helpers17at1/31(positive200,0x-120),shadowintensity128at1/100,plain99,
+introBoth99. Whole independently parsed/compiled intent410inputs0, thenSEPARATE
+410/client guardPASS. Originalmap m4dp-posecontext-native-inputs hashes authoring
+JSON, notliveGo. Reuses original frame_sequence_reference_probe.py and held-frame
+sequence; do not edit native-used originals.
+
+Await ENTIRE66707 thenSEPARATE elevated original/client guard before edits/newrun.
+Review ALL10images/120values/resources/config/keys before promotion/sharedconsumer.
+No productionGo since e8de0b8e. New seekrecorder remainsuncommittednative-used;
+AGENT/HANDOFF dirtyonly trackedfiles. Continue ALLitem3 autonomously after measured
+rootdrawing fix/testcheckpoint; HUD/finitecolour/clipboard/residualschemas/flags
+follow. Item4unallocated. No genericpausecache; activecontrols disprove it.
+
+
+## M4dp exact XY boundary established; baseline ACTIVE98119
+
+66707 ENTIRE0/separate158-original/client guardPASS; all10images/120values/two
+sheets viewed. IntroflagsP1/both31/40/99 retainrootstartdrawing; helper1/31 actually
+x-120visible; positiveShadow1 startanchor and100actual. 76586 ENTIRE0/separate126
+guardPASS/all2images24valuesreviewed: nextownerpassafterPause29 isG30RoundState1,
+PosX0 unchanged; afterPause99 isG100RoundState2 withBOTHrootX resetstarts(-60,+60),
+animation9000/stateTime/counters/markers retained. 15158 ENTIRE0/separate122guard
+PASS/1image12valuesreviewed: direct BOTHY=0afterprior-20/-10. Thus phaseadvances
+issueframe; actualXYresetatfirst2, before2drawingusesrootstartXY/freshsprite/helper
+actualpositions. NOgenericpausecache, phasefreeze, or actualearlypositionreset.
+Velocity/facing/Z notmeasured; donotinferresets. Allnative-only reviews sealed.
+
+23 accepted stable observers/276values promoted ONCE:preintropose10,posecontext10,
+poseboundary2,posevertical1;123publicsource/expectation/ledger paths. Four native
+ledgers/fourexactconfigfinalizations, complete nativeinput/probe/intent/capture/
+seed/resourceprovenance. Old5active controls55frames/660observations stayprivate,
+notcontrollercoverage. New native-used seekrecorder immutable/uncommitted.
+
+New match/initial_placement_test.go + early_pause_observer generic harnessflag,
+NEW initial_placement_render_probe.py strictRGB withnativeROI160,140,1120,640.
+All oldrecorders/comparators/expectations unchanged. NOproductionGo changes yet.
+ACTIVE98119 run-m4dp-baseline1.py freezes m4dp-baseline1-inputs.json;23native CPU
+replays and6 representative actualapps/worlds serial. AwaitENTIRE98119 thenSEPARATE
+elevated frozen/client guard BEFORE edits/newruntime. ReviewALL6pairs/failure rows.
+Then implement measured shared rootdrawStartXY beforeRoundState2 andactualrootXY
+resetonfirst2 only, preservefreshsprites/helpers/actualCNSqueries. Validate23worlds,
+old6visibleearly+oneinvisiblepreintro, oldnative regressions/core/stock/input/PCM;
+fullrace atmeaningful sharedintegration/finalitem3closure. Documentstrictfailures,
+source-only scopedstageaudit andlocalcommit; CONTINUEallitem3 noapprovalpause.
+Currentcheckpoint e8de0b8e; currentnewwork source/test/probe/docs onlyMUGEN. Item4
+unallocated. All earlier strict raster/HUD/audio/negativecamera constraintgaps open.
+
+
+## M4dp measured consumer revision ACTIVE83510
+
+Allnative original studies complete0 andseparate guardsPASS; finaldirectY15158/
+122originals verifies BOTHactualY0 atfirstRoundState2 afterprior-20/-10writes.
+23stable observers/276values promotedONCE with123publicsource/evidence paths:
+preintropose10,posecontext10,poseboundary2,posevertical1;4native/4exactconfigledgers.
+Fiveactive controls remainprivate. Allnative-only rows/images reviewed beforeGo.
+
+Baseline98119 entire1, separate21,475input/client guardPASS. Newnative23gate21pass/
+3failinclparent (twoXYresetcases). Sixactualapps run. Firstderived comparator
+initial_placement_render_probe.py failed obsoleteeffect-only configschema; original
+unchanged/excludefromcommit. NEW initial_placement_compare.py checks the new
+recorder's exact prepared/config-finalization hashes. Passive27503 entire1,
+SEPARATE21,508checks/client guardPASS, reusedsameappcaptures: strictworld differences
+79755root/intro/helper,110597shadow,36030heldFightHUDpositive,97837boundarypose+HUD.
+All6pairs/twosheets VIEWED. No comparisons/goldens/tolerances relaxed.
+
+Implemented ONLYmeasured sharedpositions: actor_order drawPosition returnsStartXY
+forROOTSRoundState0/1 (freshsprite), helpers/projectilesactual; body+shadowuseit.
+Match.roundState first2 restoresactualrootX/Y only; no animation/time/velocity/
+facing/Zreset inferred. Phaseclock and schedulerunchanged. Source testharnesshas
+newearly_pause_observerflag; initial_placement_test replays23FVarsnapshots.
+
+ACTIVE83510 run-m4dp-revision1.py freezes m4dp-revision1-inputs.json. Core4package
+races,all23nativeprograms,same6actualapps/strictworlds serial. AwaitENTIRE83510,
+thenSEPARATE elevated frozen/client guard before edits/newruntime. ViewALL6pairs,
+inspectallfailure rows. HeldFightHUD remainsknownseparategap. Finalall23worlds/
+old6visible+oneinvisibleearly/oldnative/legacy9/stock/privatePCM andsource-scoped
+checkpointfollow. Continueallitem3 noapprovalpause, HUDlifetimes/finitecolour/
+clipboard/residualschemas/flagsnext. Item4unallocated. No binary/temp/outside stage.
+
+
+## M4dp revision validated; final integration ACTIVE16701
+
+Revision83510 ENTIREawaited1, separate21,476input/client guardPASS. Core890pass,
+all23nativecases pass24results. ALL6pairs/twosheets viewed. Root/explicitIntro/
+helperworlds exact1,440,000pixels. Shadow464pixels/max1 strictfailure; twoFightHUD
+worlds36030pixels retained. No validatedproductionGo changes afterward. Measured
+consumers onlyactualrootXYresetatfirstRoundState2 +rootstartingdrawXYbefore2; fresh
+sprites/helpersactual. No genericcache/phasefreeze/velocity/facing/Zreset guesses.
+INITIAL-PLACEMENT.md documents fullnativeproof, baselineerrorcorrection andbounds.
+
+ACTIVE16701 run-m4dp-final1.py, frozen m4dp-final1-inputs.json. AllMatchnonNative
+units +459old/23newnativecases; all23newworlds,old6visible+oneinvisibleearlyworlds,
+legacy9 andstockwin/rematch/win/privatePCM/modules/inventory STRICTLYSERIAL. Await
+ENTIRE16701 thenSEPARATE elevated originals/client guard beforeedits/newruntime.
+ReviewALL39native/Go pairs +stock3; preserveallactualgateexits/strictfailures. Source
+inventory currentlystale2productionhashes expected: archiveexactGit e8report AFTER
+guard beforewrite/check. Finalprovenance/RGB/resource/binary/input/PCM audits and
+README/coverage/docs/source-only checkpoint follow. Do notrepeatcore/full merely
+forcheckpoint; latestFULLhistoricalM4dl5028/36. Finalitem3/sharedintegration fullrace
+bound50m remainsrequiredwhenappropriate.
+
+StageonlyexplicitMUGENUTF8source/text paths, nevertemp/assets/binaries/outside; no
+push. Old354raw +firstfailedderived initial_placement_render_probe.py unchanged/
+excluded; successful initial_placement_compare.py iscurrentconsumer. Originalnew
+native-usedseekrecorder immutable. ContinueALLitem3 aftercheckpoint NOapprovalpause:
+HUDlifetimeindependentcontrols thenfinitecolour/clipboard/residualschemas/flags/
+oldstrictobligations. Item4unallocated. Userreclaimed144GiB, no diskblocker observed.
+
+
+## M4dp final verified — local source/text checkpoint next
+
+Final16701 ENTIREawaited1, SEPARATE21,476frozen/client guardPASS. All40apps same
+binary8b7cb6ae1a7032d7f229cfee297ca4419f1c091eacecf3175ac4781eb5647d5b. All39pairs/
+13sheets+stock3 VIEWED. Newworlds16/23exact7,680,000pixels;7strictHUD/shadowfailures
+remain. Original7startupworlds ALLexact3,561,600pixels. New23native/276valuesPASS;
+combined481/482nativecases(506pass/2failincloldnegativecamera parent),16matchresults
+PASS. Core890atidentical185productionGo bytes. Legacy9PASS;stock82balancedkeys and
+1,928,719stereo44100PCMframesSHA9fe4a1286f32abe773db6987a95ea7e83583c2dbf2b809a9f8bba40471129df4.
+82gates73zero/nine1(native,sevenworlds,inventory). No actualstatus/golden/tolerance
+changed. Exactinventorygenerator/report archivedagainstGit e8 afterguard; current
+write/check0, routingcountsunchanged. Updatedevidencetextcorrectsalreadycompleted
+Gameadmission/negativeaction/integeroriginfields; metadataonly, notruntimechange.
+
+Passiveaudit21612 ENTIRE0:710original/2553preparedpaths,943native/1640Goappbinary
+resources,23exactconfigs,42appcaps,sharedbinary/seeds/RGB/sourceversions/185Go/
+input/PCM PASS. Private5activecontrols55frames/660values/45counterfactualworlds/
+768balancednativeevents alsoverified; notpublishedcontrollercoverage. See final
+m4dp-final-evidence-audit.json,final-visual-review.json,final-metadata.json. No
+runtime active. Allnativeusedrecorders/resources/sourceinputs immutable.
+
+UpdatedREADME/currentcoverage/compat/checkpoints/item3/index/tests/topic/handoff;
+newINITIAL-PLACEMENT.md +HUD-LIFETIME-PLAN.md. Need explicit143-ish stagedsource-
+textscope/indexUTF8/noNUL audit/localcommit; actualcountcalculate, do notassume.
+Stage123newpublicpose source/evidencepaths, newinitial_placement_test.go,successful
+initial_placement_compare.py,native-usedframe_seek_reference_probe.py,twonewdocs
+andtrackedchanges. Excludeoriginal354raw +firstfailedderived comparatorunchanged.
+No binaries/temp/assets/outside/push. Aftercommit CONTINUEALLitem3 noapprovalpause.
+
+NextHUD-LIFETIME-PLAN.md has actionable primarysource research whilefinalran:
+new separately named seekrecorder with fullfight.defsidecar indata/mugen1/fight.def,
+verifiedcanonicalcfgmotifdata/mugen1/system.def; KOat400 afterseek399 exactdebug
+steps. Positiveexisting200,0 sprite/font; default/zero/positive/negative lifetimes,
+finite/LoopStart/infinite/delay/Pause/SuperPause/KOslow clocks. CurrentHUDalready
+clocksonCNSPause, lacksdrawexpiry/startdelays, skipsKOslowviaSimulationSkipped.
+No HUDsourceedits/probes yet. Allfuturefixture/probeauthoring AFTERcompletedguard
+nowallowed. Furtherfinitecolour/clipboard/residualschemas/flags/oldstrictgaps then
+item4dependencydecision. LatestFULLhistoricalM4dl5028/36; no newfullsuiteclaimed.

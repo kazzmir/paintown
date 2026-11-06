@@ -1,0 +1,65 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "captures": [
+    {
+      "label": "held-phase",
+      "path": "held-phase.png",
+      "sha256": "f286d28738dbb49c5ad1b65172df3ddb811fd976b554a32fa9c06b025bbf3d56",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "world_region": [
+        160,
+        140,
+        1120,
+        640
+      ],
+      "world_rgb_sha256": "5da9920f6a825f7cabaaaaab91d86f014a548902ce4f5b77447ed33a81b58296",
+      "variables": {
+        "0": 130,
+        "1": 130,
+        "2": 0,
+        "3": 9000,
+        "4": 131,
+        "5": 1,
+        "6": 2,
+        "7": 130,
+        "8": 60,
+        "9": 9999,
+        "10": 130,
+        "11": 1
+      },
+      "sequence_index": 1
+    }
+  ],
+  "cns_sha256": "7b35c8dcfe72d708b04654b24a42b0778b13495faaadbd9bf9683094a864e0a2",
+  "air_sha256": "25246f67315082730f29e8a6b68acd9ac952e9090c4dca83580c33f0de24c2b2",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "stage_fixture_sha256": "3f484b43aa0d7a4cd204d0085d333dc5896a02b954c8b0ceaf416112e5550069",
+  "bank": "fvar",
+  "mugenversion": "1.1",
+  "state_language_version": "1.1",
+  "localcoord": "320,240",
+  "fixture_stage": true,
+  "early_pause_observer": true,
+  "random_seed": 1154336718,
+  "seed_log_sha256": "0007b964d27053bcea9e717f74cbe7640bfa2510ed0f8b68e39a1ef82ac7d16b",
+  "native_run": "temp/reference-runs/m4dp-preintropose-g130-move0",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "pose_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      640
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "5da9920f6a825f7cabaaaaab91d86f014a548902ce4f5b77447ed33a81b58296",
+    "scope": "Original native-only root/helper/positive-shadow world selected before Go baseline; exact RGB, no tolerance"
+  },
+  "native_scope_notes": "Root drawing before RoundState2, first2 X/Y reset, fresh animation and helper displacement; no generic pause cache or velocity/facing/Z reset claim."
+}

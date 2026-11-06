@@ -152,3 +152,8 @@ private-snapshot test-selection correction, and remaining system-effect studies.
 - [Initial camera publication and calibrated frame controls](STARTUP-CAMERA.md):
   M4do cold-start queries, retained constraint/paused-world failures and next
   independent HUD controls.
+
+- [Initial root placement](INITIAL-PLACEMENT.md): M4dp native drawing/start-position
+  distinctions, first-fight X/Y reset, helpers/shadows and closed startup worlds.
+- [HUD lifetime experiments](HUD-LIFETIME-PLAN.md): next independently measured
+  timing controls; this plan is not new behavior coverage.

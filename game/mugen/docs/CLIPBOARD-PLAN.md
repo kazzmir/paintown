@@ -80,3 +80,9 @@ In one existing immutable numeric capture, the P0 and P6 prefix glyphs occur at
 (10,706) and (10,712) in a 1280x720 window. Both authored text formats end in a
 newline. That example has no intervening blank glyph row; it does not by itself
 determine Append's behavior for empty buffers or strings without trailing newlines.
+
+M4dp also verifies `frame_seek_reference_probe.py` against authored live GameTime:
+Pause, seek to399 with exact calibrated steps, then capture400 onward. The native
+active Pause/SuperPause controls preserve both roots' issuing-frame writes. The
+recorder is now immutable; use a separately named derivative for future clipboard
+or HUD experiments. This observer evidence does not implement clipboard formatting.

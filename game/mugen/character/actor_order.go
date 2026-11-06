@@ -14,6 +14,16 @@ type Actor struct {
 	Character *Character
 }
 
+// Before the fight call, native roots draw the current sprite at their stage
+// starting position while CNS still observes its actual position. Helpers and
+// projectiles keep their own positions throughout these initial round phases.
+func (c *Character) drawPosition() (float64, float64) {
+	if c.Parent == nil && !c.isProjectile && (c.RoundState == 0 || c.RoundState == 1) {
+		return c.StartX, c.StartY
+	}
+	return c.X, c.Y
+}
+
 // SpriteLayer adds a renderer-owned sprite to the shared actor priority order.
 // Equal-priority sprites are drawn before actors; their supplied order is kept.
 type SpriteLayer struct {
@@ -72,7 +82,8 @@ func DrawPlayersWithSprites(screen *ebiten.Image, players []*Player, space coord
 			next++
 		}
 		scale := float64(space.Width) / float64(c.LocalCoordinateWidth())
-		p.drawEntity(screen, c, float64(space.Width)/2+c.X*scale-cameraX, floorY+c.Y*scale, scale, scale)
+		x, y := c.drawPosition()
+		p.drawEntity(screen, c, float64(space.Width)/2+x*scale-cameraX, floorY+y*scale, scale, scale)
 	}
 	for next < len(sprites) {
 		sprites[next].Draw()
@@ -94,6 +105,7 @@ func DrawPlayerShadows(screen *ebiten.Image, players []*Player, space coord.Spac
 			continue
 		}
 		scale := float64(space.Width) / float64(c.LocalCoordinateWidth())
-		actor.Owner.drawEntityPose(screen, c, float64(space.Width)/2+c.X*scale-cameraX, shadow.FloorY+c.Y*scale, scale, scale, nil, &shadow)
+		x, y := c.drawPosition()
+		actor.Owner.drawEntityPose(screen, c, float64(space.Width)/2+x*scale-cameraX, shadow.FloorY+y*scale, scale, scale, nil, &shadow)
 	}
 }
