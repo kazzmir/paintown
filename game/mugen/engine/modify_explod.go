@@ -40,7 +40,9 @@ func compileModifyExplod(ctrl *cns.StateController) (ControllerFunc, bool, error
 		}
 		args = append(args, argument{argumentSpec{key, key != "angle" && key != "xangle" && key != "yangle", false}, expr})
 	}
-	trans := strings.ToLower(strings.Trim(strings.TrimSpace(ctrl.Params["trans"]), "\""))
+	// Quoted modes are unrecognized in the beta, including the 1.0 profile.
+	// Their alpha expressions are neither compiled nor evaluated.
+	trans := strings.ToLower(strings.TrimSpace(ctrl.Params["trans"]))
 	additive := trans == "add" || trans == "add1" || trans == "addalpha"
 	readsAlpha := additive || trans == "none" || trans == "sub" || trans == "default"
 	for _, key := range []string{"pos", "vel", "accel", "scale", "random", "remappal", "alpha"} {

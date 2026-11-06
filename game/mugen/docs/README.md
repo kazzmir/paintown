@@ -125,3 +125,5 @@ effort stay under `game/mugen/`.
 
 - [Explod capacity and random displacement](EXPLOD-CAPACITY-RANDOM.md): global
   pool admission, exact RNG phases, reproducible matches and full acceptance.
+
+- [ModifyExplod transparency tokens](MODIFY-EXPLOD-ENUMS.md): native quoted modes, skipped alpha compilation/evaluation and exact application controls.

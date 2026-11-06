@@ -1,5 +1,22 @@
 # Implementation checkpoints
 
+## M4dg — ModifyExplod transparency tokens
+
+The beta ignores quoted transparency modes and their alpha expressions, even
+unknown triggers and bare floats. Go now preserves those quotes during token
+normalization. All 20 native programs pass (19 accepted, one expected rejection,
+228 values); all 19 new app crops match exactly across 9,667,200 RGB pixels.
+Focused races pass 869 core and 277 selected native results. Five older palette/
+order apps, four masks, stock win/rematch/win, 82 balanced inputs and 1,972,972
+private PCM frames pass and are visually reviewed. All 24 final per-gate exits
+are zero; the outer session exit was unrecoverable, explicitly recorded rather
+than claimed. Separate frozen-input/client and evidence audits pass. Latest full
+suite remains M4df 4,743/36 at the preceding source boundary. Earlier strict
+renderer failures remain unwaived; no tolerance or original expectation changed.
+See [MODIFY-EXPLOD-ENUMS.md](MODIFY-EXPLOD-ENUMS.md). Item 3 continues with special
+flags, system animations/dust, clipboard, residual schemas and renderer gates.
+Item 4 remains unallocated. Routing counts are not behavioral percentages.
+
 ## M4cx: native AfterImage histories and palette aging
 
 M4cx implements typed AfterImage/AfterImageTime schemas, native evaluation

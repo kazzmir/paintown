@@ -1,88 +1,56 @@
-# Current handoff — M4df admission and random displacement
+# Current handoff — M4dg quoted ModifyExplod modes
 
-Continue ALL allocated item3 with documented local source/text commits. Author
-only game/mugen; no pushes, binaries, subagents or goals. Item4 remains unallocated.
-Read ../AGENTS.md, ITEM-3-PLAN.md and EXPLOD-CAPACITY-RANDOM.md. No checkpoint pause
-or reapproval. No active runtimes; M4df local checkpoint is next.
+Continue ALL allocated item 3 with local source/text commits. Author only
+`game/mugen/`; no pushes, binaries, subagents or goals. No checkpoint pause or
+reapproval. Item 4 remains unallocated. Read ../AGENTS.md and ITEM-3-PLAN.md.
 
-## Completed acceptance
+## Completed checkpoint, local commit next
 
-Focused34141 completed/awaited0:869core results across4packages,236selectednative
-results,12seeded exact app crops. Separate18495-input/clientguardPASS.
-Fullintegration57254 completed/awaited1 solely for the unchanged old45degree
-strict failure. Full scoped races PASS4,743results/36packages (25tested,
-11compiled-only), Match2211.607seconds. ALL45new apps EXACT/22,896,000RGBpixels;
-five older palette/order apps, quarter-turn, four masks and stock/audio PASS.
-Old45 remains534RGB/max148; all prior renderer failures UNWAIVED.
+See MODIFY-EXPLOD-ENUMS.md. All 20 new native programs pass (19 accepted / one
+rejection / 228 values); all 19 app crops exact / 9,667,200 RGB pixels. Focused
+races pass 869 core / 277 native results. Five older palette/order apps, four
+masks and stock/audio pass; all 19 pairs, nine older images and stock 21 win /
+26 FIGHT / 45 second win reviewed. 82 balanced inputs / 1,972,972 PCM frames.
+All 24 per-gate exits record zero. Session 20518 became unrecoverable; its outer
+exit was not observed. Separate elevated main+nested 37,195-hash/client guard
+PASS; passive audit and visual review complete. No active runtime. Records:
+- temp/m4dg-final-evidence-audit.json
+- temp/m4dg-final-visual-review.json
+- temp/m4dg-final1-separate-guard-recovery.json
 
-Separate18496-input/36987hash/clientguardPASS after entire integration. Passive
-audit38432 and reviewgeneration80547 completed/awaited0. Audit18498unique current
-frozen paths/73973hashchecks,2036original inputs including unpromoted direct
-controls,53exactconfigs,41canonicalarchives,2173native resource copies and all109
-manifestfiles PASS. ALL45pairs/nine sheets, nine older app images, two anglepairs
-and stock21win/26FIGHT/45secondwin visually reviewed.82balanced inputs and1,971,594
-private PCMframes. Validated binary SHA256:
-22c20d06d6da49c4779e8d193ee98dfc273f7c7790fa554dae6ebd647cba6577.
-Records temp/m4df-final-evidence-audit.json and m4df-final-visual-review.json.
+Native session 13231 complete/awaited zero; separate 2,120-original/client guard
+PASS. Full intent and ALL native rows/images reviewed before promotion ONCE.
+Baseline 77523 complete/awaited one; separate 18,599-input/client guard PASS.
+Ten individual numeric failures, three 4,284-pixel visual failures and two Go
+load failures preserved, as are every source/recipe/capture/golden/comparator.
+The fix only preserves quotes during ModifyExplod trans normalization.
+Latest full integration remains M4df e1c07662bbcd94cba06bfdc7569d62bce8effa66:
+4,743 results / 36 packages (25 tested / 11 compiled-only), Match 2211.607s,
+45 exact new apps / 22,896,000 RGB pixels. All old renderer failures UNWAIVED.
+No original expectations or tolerances changed. Source counts remain 74 typed /
+15 fallback / two stubs / nine partial / 18 bounded / 60 route-only; no overall %.
 
-## Native observations and implementation
+## Next work
 
-53programs (28+19+3+3),45accepted/eight rejections/540values, promoted ONCE after
-full intent and ALL native numeric/color/geometry/seed/image reviews. Four
-creationpool/creationpoolextra/creationpoolcue/creationpoolcuerng source/config
-ledgers are disjoint. Original maps118+82+18+18paths, with shared paths deduplicated.
-All intent verifiers and separate original guards1875/1955/1971/1987 PASS. Native
-sessions68967/98018/47309/90165 completed/awaited0. Originals/captures/goldens and
-comparison tolerances immutable. Keep rejected/failed diagnostics too.
+1. 32 unobserved AssertSpecial controls in temp/assert-flags-rev2-draft. Rev1 is
+   preserved. Full intent helper temp/_tmp/assert-flags-rev2-intent/main.go is
+   prepared but NOT run/frozen. Verify all headers/kinds/params/Pause replacement
+   and whole stage recipe. Stable fv9=1 at Time9 proves owner continues after
+   Pause8 before interpreting continuously asserted noBG/noFG/nobardisplay images.
+   Other flags need dedicated guard-type/unguardable/nowalk/clock/audio contexts.
+2. 16 aged temp/systemanim-firstlook-draft and 20 early systemanim-early-draft
+   controls are unobserved/unverified. Native compiler kinds 203/215 are real
+   parsers. Study initial/aged drawing, defaults/schema, spacing/RNG, layers,
+   palettes, pool sharing and pause. Do not transfer hitspark RNG semantics.
+3. Clipboard params/formatting and actual debug sink; residual StateTypeSet,
+   VarSet, FVar aliases and HitAdd HUD. Native VarSet literal7.9 rejects: update
+   conflicting unit setup to expression 7.9+0.0, never native goldens. FVar aliases
+   need native acceptance. Finish independent work before a concrete NoMusic/BGM
+   scope question; broad BGM remains unallocated item 4.
+4. Strict shared renderer obligations stay open. Ten direct controls are reviewed
+   but UNPROMOTED/UNSTAGED. No production sampling change from private experiments.
 
-Compiler evaluates pos, each random expression followed immediately by its own
-draw, then velocity/scale/later fields. Zero/default/negative ranges still draw;
-missing action/full pool skips draws. Offsets follow world axes even onTurn.
-Animation/ownpal/remap precede pool/animation gate; saturation skips latefields.
-World counts roots/helpers/retired owners plus live/queued scene cues. Queue
-admission silently drops saturation; owned objects are pre-admitted. Config
-ExplodMax clamps8 and binds this pool; SysExplodMax is not its limit. Hitsparks
-share slots in both directions but draw NO RNG. Separate MoveHit1/MoveGuarded0
-and unique full spark images prove actual HitDef contact. Initial cue controls'
-late NumTarget0/Life1000 from idle customstate are preserved, not standalone proof.
-
-Optional --match-seed reproduces the initial match; later matches advance the
-independent session stream. Normal default unchanged. Actual seed logged and
-strictly verified by app runner/comparator. New known-vector seed test passes.
-Internal pure typed CreateExplod constructs an already evaluated object; actual
-CNS/legacy Environment routes use the evaluated admission path. No sampler edit.
-Source inventory74typed/15fallback/2stubs/9partial/18bounded/60route-only unchanged.
-
-Baselines75828/15049 completed/awaited1; separate18460/18494inputguardsPASS.
-First47:37individual native failures(+2parents), four image failures/one runtime
-failure/one exact app. Cue6:four individual failures(+2parents), two image failures
-4284RGB/max214 each. ALL8baselinepairs/runtime diagnostic reviewed. Earlier runner/
-comparator versions archived before changes. Do not compare historical Go-source
-freezes against a later implementation; all native original maps stay immutable.
-
-## Next checkpoint and remaining allocation
-
-Finish source/text audit and localM4dfcommit; no binary/push. Keep ten unpromoted
-native direct-control four-file sets unstaged. Then continue:
-
-1.20unobserved ModifyExplod enum controls in temp/m4dg-modify-enum-draft. Full
-intent helper temp/_tmp/m4dg-modify-enum-intent prepared, NOT run/frozen. Native
-must independently decide quoted trans/alpha behavior. Do not copy creation rules.
-2.32unobserved AssertSpecial schema/render controls in temp/assert-flags-rev2-draft.
-Rev1 preserved separately. Verify full headers/kinds/params/Pause replacement and
-whole stage recipe. Stable fv9=1 atTime9 proves owner continues afterPause8; only
-then interpret continuously asserted global noBG/noFG/nobardisplay captures.
-Other flag consumers still need dedicated guardtype/unguardable/nowalk/clock/audio
-contexts.19manual flags; sourcecurrently10manual consumers plusunofficialnoguard.
-3.16original aged systemanim-firstlook-draft plus20systemanim-early-draft controls,
-all unobserved/unverified. GameMakeAnim203/MakeDust215 have real native parsers;
-not ForceFeedbackNull. Separate initial/aged poses, spacing, RNG, palettes,
-under/layers, pool sharing and pause contexts before implementation.
-4.Clipboard params/formatting/production debug sink; residual StateTypeSet/VarSet/
-FVar aliases/HitAddHUD. Native VarSet literal7.9reject known; fix conflicting unit
-setup to7.9+0.0expressions without changing native goldens. FVar aliases need
-native version acceptance. NoMusic/BGM scope only after concrete native evidence
-and independent allocated work. Broader modes/AI/assets/fonts/BGM remain item4.
+## Retained renderer/environment diagnostics
 
 Prep notes temp/item3-followup-preparation.md and clearly UNVERIFIED renderer
 hypotheses temp/renderer-followup-hypotheses.md. Native direct640/1280controls10

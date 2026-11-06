@@ -1046,3 +1046,13 @@ All45new app crops match exactly. Full scoped races pass4,743results/36packages.
 The old45degree comparator still fails534pixels/max148; the enclosing acceptance
 driver keeps exit1. No expectation/tolerance was changed. See
 ../docs/EXPLOD-CAPACITY-RANDOM.md for actual draw/admission phases and limits.
+
+
+## ModifyExplod token regressions — M4dg
+
+`TestNativeModifyExplodEnums` replays 20 immutable native programs, including one
+expected rejection. `modify_enum_render_probe.py` compares the complete named
+crop without tolerance changes. All 19 fresh crops match exactly. The native
+ledger and configuration-finalization records pin original source/probe hashes
+and original/final configs. See ../docs/MODIFY-EXPLOD-ENUMS.md for final gates,
+the unrecoverable outer-session limit, visual review and remaining obligations.

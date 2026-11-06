@@ -18,7 +18,7 @@
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
     "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
-    "engine/modify_explod.go": "e8d8f27e7c149bf5f36d34acfdc38542252a4080c5987f85d2b84724533099f4",
+    "engine/modify_explod.go": "b9ecd4380e92c3a33cd41bd3ca9b8ed539e12034f98ce71f1b63f36b0f648fc8",
     "effect/scene.go": "a1e1c82e29fb4634f95bdbef7b6448d05168a5b7ad9a6d029c6b50b8631b6336",
     "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
     "system/effects.go": "db01e749703ea0976669c790e85b36c6018d773e6ac90266efedf6f8844b6e57",
@@ -525,7 +525,7 @@
       "handler": "func",
       "consumer_status": "partial-consumer",
       "evidence": [
-        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; SHADOWS.md adds shared shadow drawing; broader pause/projection variants and unwaived raster gates remain"
+        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; SHADOWS.md adds shared shadow drawing; MODIFY-EXPLOD-ENUMS.md: independently measured quoted modes skip alpha compilation/evaluation and retain drawing; broader pause/projection variants and unwaived raster gates remain"
       ],
       "variants_complete": false
     },

@@ -20,37 +20,25 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4df validated; local checkpoint next
+## Immediate state — M4dg acceptance complete, commit next
 
-No active runtimes. M4de364916511e3e46e36bc650491a95e9b99624cb18 committed255UTF8
-source/text paths. M4df revision1 passes53native programs (45accept8reject540values),
-869core/236selectednative focused races andALL45new apps exact/22,896,000RGBpixels.
-Full scoped races PASS4,743results/36packages (25tested11compiled-only), Match
-2211.607seconds. Five oldpalette/order, quarterturn,fourmasks,stock82inputs/
-1,971,594PCMframes PASS; all images reviewed. Old45 still534RGB/max148 UNWAIVED.
+M4dg corrects quoted ModifyExplod transparency modes; 20 native programs pass
+(19 accepted / one rejection / 228 values), all 19 new app crops exact across
+9,667,200 RGB pixels. Focused races: 869 core / 277 selected native results.
+Five older palette/order apps, four masks and visually reviewed stock/audio
+pass: 82 balanced inputs / 1,972,972 PCM frames. All 24 per-gate exits record zero.
+Outer session 20518 became unrecoverable; do not claim its exit was observed.
+Separate elevated 37,195-hash/client guard and passive audit PASS. All images
+reviewed. See MODIFY-EXPLOD-ENUMS.md and HANDOFF. Commit source/text, then continue.
+Latest full suite: M4df e1c07662bbcd94cba06bfdc7569d62bce8effa66, 4,743 results /
+36 packages at the preceding source boundary. No active runtime. No reapproval.
 
-Focused34141 complete0; final57254 complete1 solelyold45strictcomparison. SEPARATE
-18495focused and18496final input/clientguardsPASS. Audit38432/review80547 complete0;
-18498currentfrozenpaths/73973hashchecks/2036originalinputs/53configs/41archives/
-2173nativecopies/109manifestfilesPASS. Records temp/m4df-final-evidence-audit.json
-andm4df-final-visual-review.json. Read HANDOFF andEXPLOD-CAPACITY-RANDOM.md.
-
-Typed random tuple/ordered component draws, world-axis offsets, globalroot/helper/
-orphan/live+queuedcue admission andcorrectExplodMaxclamp8 binding implemented.
-Hitsparks share slots butdrawNO RNG; Explodsdraw2evenzero. --match-seed supports
-strict reproducibleactualapps. No source changes since passing integration,
-except MD. Local source/text checkpoint next; then continue ALL item3. Keep ten
-unpromoted direct native raw sets unstaged. No automatic pause/reapproval.
-
-Prepared but UNOBSERVED next20ModifyExplodenum,32AssertSpecial(rev2),16aged+20early
-system-effect drafts underignoredtemp; fullintent/native-only review required.
-Remaining clipboard/debugsink andresidualschemas/HitAddHUD continue. Item4unallocated.
-Prior strict renderer failures stayUNWAIVED; no sampler/tolerance changes. Source
-74typed15fallback2stubs9partial18bounded60route-only isnotbehavioralcoverage.
-Task-owned Xvfb98large-displaymetadata temp/m4de-large-display-r2/metadata.json;
-authprivate. Original97/Pulse30218/30219 unchanged. Default sandboxps hideshost
-clients; useelevatedwrapperguards. See HANDOFF for retained failed/lost-session
-records; never claim observed exits that were not actually observed.
+Next: 32 unobserved AssertSpecial rev2 drafts, then 16 aged + 20 early system-
+effect drafts, clipboard/debug sink, residual schemas/HitAdd HUD and renderer
+gates. Finish all independent item 3. Item 4 remains unallocated. Keep ten
+reviewed direct-render source sets UNPROMOTED/UNSTAGED. Larger Xvfb:98 metadata
+is temp/m4de-large-display-r2/metadata.json; auth private. Original :97/Pulse
+30218/30219 unchanged. Default sandbox ps hides host clients; use elevated wrapper.
 
 ## Native and validation workflow
 
@@ -95,17 +83,10 @@ the user reclaimed 144 GiB to allow continuation.
 
 ## Remaining allocation
 
-Finish projectile trails, then shared shadow rendering and remaining Explod
-creation/ownership/remapping/random/angle/trans/shadow/capacity. Continue all
-AssertSpecial consumers, GameMakeAnim/MakeDust, clipboard formatting, haptics and
-actual device/target boundary, residual typed/literal StateTypeSet/VarSet/FVar
-schemas and HitAdd HUD. `-nojoy` alone proves no hardware limitation. Native
-VarSet literal7.9 rejects; later fix conflicting unit inputs to7.9+0.0 expressions
-without changing native goldens. Shared shadows need new fully visible native
-controls; M4cz's two nonzero shadow crops expose only294pixels each.
-
-Prior 12 M4cq, seven M4cv and two M4cy nonquarter-angle failures remain UNWAIVED.
-M4cy's current-only45degree case differs534RGBpixels/17maskXOR; trail case2285/
-65; max148. Actor matrix46/48exact; strict exit1 preserved. M4cy full scoped race
-has4243results/36packages, four masks and stock82events/1,920,802PCM frames pass.
-Historical status: `docs/AGENT-STATE-HISTORY-M4CU.md`; old stop rules superseded.
+Read docs/HANDOFF.md and docs/ITEM-3-PLAN.md. Prior 12 M4cq, seven M4cv, two M4cy,
+60 M4da and six M4de strict renderer failures remain UNWAIVED. Do not change
+samplers or tolerances without independent native evidence and old exact controls.
+The native VarSet literal 7.9 rejects; fix conflicting unit setup with 7.9+0.0
+expressions without changing native goldens. FVar aliases need native acceptance.
+GameMakeAnim and MakeDust remain two stubs. ForceFeedback is native Null-kind,
+not a haptics stub. Broader modes/teams/AI/BGM/assets/triggers remain item 4.

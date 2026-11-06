@@ -105,7 +105,7 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4df validation**.
+Snapshot: **2026-11-06; through M4dg validation**.
 
 The playable one-on-one engine includes compiled state programs and expressions,
 combat and authored recovery, projectiles/reversals, helpers and binding,
@@ -178,6 +178,12 @@ app crops match exactly (100% of this corpus)** across **22,896,000 RGB pixels**
 The full suite and fresh stock rematch/audio checks pass.
 [Admission and random evidence](docs/EXPLOD-CAPACITY-RANDOM.md).
 
+ModifyExplod now retains native quoted transparency tokens and skips their
+unused alpha expressions. All **20 native programs pass**, including one expected
+rejection; **19/19 app crops match exactly (100% of this corpus)** across
+**9,667,200 RGB pixels**. Focused races and stock rematch/audio pass.
+[Token evidence and validation limits](docs/MODIFY-EXPLOD-ENUMS.md).
+
 Item 3 continues with remaining Explod consumers, AssertSpecial,
 system animations/dust, clipboard and residual controller schemas.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
@@ -186,6 +192,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| ModifyExplod token native programs in M4dg | 20 / 20 | **100%** | Recorded schema/evaluation corpus, including one expected rejection. |
+| ModifyExplod token app crops in M4dg | 19 / 19 | **100%** | Exact pixels in this corpus; older renderer failures remain open. |
 | Explod admission/random native programs in M4df | 53 / 53 | **100%** | Recorded schema/phase/count/RNG corpus, including eight expected rejections. |
 | Explod admission/random app crops in M4df | 45 / 45 | **100%** | Exact pixels in this corpus; earlier shared sampling failures remain open. |
 | Explod creation drawing native programs in M4de | 47 / 47 | **100%** | Recorded numeric/schema corpus, including five expected rejections. |
