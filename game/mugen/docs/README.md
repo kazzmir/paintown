@@ -148,3 +148,7 @@ private-snapshot test-selection correction, and remaining system-effect studies.
 - [GameMakeAnim and MakeDust evidence](SYSTEM-EFFECTS.md): M4dm independent pool,
   negative action0, native integer origins,54 new programs and retained strict
   RGB failures; MakeDust schema/clock/resource/consumer research queue.
+
+- [Initial camera publication and calibrated frame controls](STARTUP-CAMERA.md):
+  M4do cold-start queries, retained constraint/paused-world failures and next
+  independent HUD controls.

@@ -22,7 +22,7 @@
     "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
     "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
     "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
-    "match/match.go": "e92ecf2e065a36e1ad3fe6879de76ba556de3be24b2e1ef0c617dbb39aa71968",
+    "match/match.go": "61403ccec22b139e65b823f6f08ed12097a5d5be9b10d6d2e4e41735bba3f970",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
     "engine/parameters.go": "931d0a3473a9f398d44dd121b7883da57e2f886cf9d318ec889cdba42069eb32",
@@ -534,7 +534,7 @@
       "handler": "handleMakeDust",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values observed, three shared early-camera numeric failures and early paused-pose world differences remain strict; broader camera/KO-slowdown/resource/round variants remain"
+        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; early paused-pose world differences remain strict; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain"
       ],
       "variants_complete": false
     },

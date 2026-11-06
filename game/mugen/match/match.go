@@ -222,6 +222,7 @@ func (m *Match) resetRound() error {
 	m.cameraLeft, m.cameraRight = float32(m.CameraX-half), float32(m.CameraX+half)
 	m.Viewport.Zoom = 1
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
+	m.Viewport.CameraX = m.publishedCameraX()
 	for slot, p := range m.Players {
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
@@ -569,5 +570,5 @@ func (m *Match) updateCamera() {
 		y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
 		m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y)) + m.Viewport.CropY
 	}
-	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
+	m.Viewport.CameraX, m.Viewport.CameraY = m.publishedCameraX(), m.CameraY
 }

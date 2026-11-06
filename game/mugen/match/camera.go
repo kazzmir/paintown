@@ -5,6 +5,17 @@ import (
 	"math"
 )
 
+// Native boot controllers for both roots see the raw stage start in game
+// units. It remains published for the first root's next CNS pass, then the
+// ordinary per-entity update publishes the converted camera for the next root.
+// Later-round startup has not been measured by these cold-start controls.
+func (m *Match) publishedCameraX() float64 {
+	if m.Round == 1 && m.Tick == 0 {
+		return m.Stage.Camera.StartX
+	}
+	return m.CameraX
+}
+
 func (m *Match) cameraActors() []*character.Character {
 	actors := make([]*character.Character, 0, len(m.Players)+len(m.World.Helpers))
 	for _, player := range m.Players {
@@ -84,9 +95,9 @@ func (m *Match) updateHorizontalCamera() {
 	}
 	m.CameraX = float64(float32((float64(m.cameraLeft) + float64(m.cameraRight)) / 2))
 	m.Viewport.Zoom = float64(float32(width / (float64(m.cameraRight) - float64(m.cameraLeft))))
-	m.Viewport.CameraX = m.CameraX
+	m.Viewport.CameraX = m.publishedCameraX()
 	for _, player := range m.Players {
 		scale, _ := m.Options.GameSpace.ScaleTo(player.LocalCoord)
-		player.Character.CameraX = m.CameraX * scale
+		player.Character.CameraX = m.Viewport.CameraX * scale
 	}
 }

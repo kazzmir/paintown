@@ -105,21 +105,26 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; bounded MakeDust implementation (M4dn)**.
+Snapshot: **2026-11-06; shared startup camera publication (M4do)**.
 
-MakeDust now has typed expressions, ordered jitter, a real common-resource
-producer and measured round-phase spacing/pause/pool consumers. It replaces the
-last source controller stub. **163/166 native replay cases pass (98.2%)**, with
-three shared early-camera values still failing strictly. All **144 application
-scenes run; 116 match exactly (80.6%)**. The 28 failures cover startup/pause
-presentation, held match overlays and finite/overlapping dust colors. All remain
-open. [Evidence, corrected setups and limits](docs/MAKE-DUST.md).
+The three original dust camera query failures are fixed. All **166 MakeDust
+native replay cases pass (100% of this bounded numeric/schema corpus)**, alongside
+all older GameMakeAnim, pool and camera regressions. Four new camera-only
+programs pin96 observations: all24 camera values and94/96 total fields match.
+One negative-start screen-bound timing case remains strict-failing.
+[Startup evidence and limits](docs/STARTUP-CAMERA.md).
 
-**890 core race results** and all **138 older GameMakeAnim / 53 pool programs**
-pass. Nine older render controls and stock win/rematch/input/private audio pass.
+**890 core race results** pass. Nine older render controls and stock
+win/rematch/input/private audio pass. All six targeted startup application worlds
+still fail strict comparison because paused presentation remains incomplete;
+three tick-one images have larger differences after the query correction. The
+last complete image matrix remains M4dn's historical **116/144 exact (80.6%)**;
+M4do does not claim a new complete matrix result. Earlier HUD/color/audio failures
+remain open. [Dust evidence](docs/MAKE-DUST.md).
+
 The latest full scoped suite remains M4dl's historical **5,028 results /36
-packages**; a new full-suite pass is not claimed. Clipboard, residual schemas,
-flags and strict renderer/HUD/audio obligations remain item 3 work.
+packages**; current verification is focused. Clipboard, residual schemas,
+flags and strict renderer/HUD/audio obligations remain item3 work.
 
 Source routing is **77/89 typed (86.5%)**, with zero source stubs. Routing counts
 and bounded native percentages do not establish overall engine completion.
@@ -229,8 +234,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
-| MakeDust/control native replay cases in M4dn | 163 / 166 | **98.2%** | Includes22 expected rejections; three early-camera cases still fail. |
-| MakeDust/control application world crops in M4dn | 116 / 144 | **80.6%** | All144 run;28 strict presentation/color failures remain open. |
+| MakeDust/control native replay cases through M4do | 166 / 166 | **100%** | Bounded numeric/schema corpus including22 expected rejections; startup camera queries corrected. |
+| Historical MakeDust/control application world crops in M4dn | 116 / 144 | **80.6%** | All144 run;28 strict presentation/color failures remain open. |
 | GameMakeAnim recorded native programs through M4dm | 138 / 138 | **100%** | Numeric/schema corpus including nine rejections; unmeasured variants remain. |
 | New GameMakeAnim dependency world crops in M4dm | 39 / 54 | **72.2%** | 15 maximum-one RGB sampling/shadow failures remain strict; broader evidence, not a regression rate against the old corpus. |
 | GameMakeAnim corpus native programs in M4dl | 84 / 84 | **100%** | Recorded numeric/schema corpus including nine rejections and positive controls; unmeasured variants remain. |

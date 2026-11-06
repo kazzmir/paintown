@@ -20,71 +20,54 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dn source/text commit next; no runtime active
+## Immediate state — M4do camera publication validated; continue controls
 
-Last local commit is977bee612a98d8085328b7ca05f809296146e150 (M4dm).
-M4dn typed MakeDust, ordered actual-position/jitter producer and aggregate round
-spacing clock are implemented. Full details/results/corrections: docs/MAKE-DUST.md
-and latest docs/HANDOFF.md. Continue ALL item3; no checkpoint approval/pause.
+M4do source/text checkpoint is ready to commit, or already committed at HEAD.
+Previous checkpoint a868f654bcf14def5b64e608806e1d14af1df742 is M4dn.
+Do not rerun completed verification merely to make a checkpoint.
 
-166valid native programs144accepted/22rejects/1728values, eight publicledgers and
-configfinalizations. All independent full intents/native runs/separate guards and
-native-only rows/images reviewed. Spacing advances underPause/SuperPause; actual
-animation freezes. Common120 only; ordinary sharedpool/noNumExplod; unflipped
-sprite/facing offsets; helper retirement; measured palette/layer/lifetime bounds.
-ClockGameTime-origin+1 resets onRoundState, NOTRoundCall/startActive.
+Cold-start X publication now matches all24 camera fields in4 independent boot/
+first-two-pass programs.94/96 total fields match; negative80 P2 tick1 screenpos
+360vs305 andPos200vs145 stay strict. No constraint-phase fix inferred. All166 dust,
+138 Game,53pool,98oldercamera/boundary/width cases PASS: combined458/459 cases,
+482pass/2fail test/subtest results (one new case plusparent). Core890PASS.
 
-Final82981 ENTIREcompleted/awaited1; SEPARATE elevated21,503outer/21,500matrix
-frozen/client guardsPASS. All144apps run;116worldexact80.6%/59,020,800RGB pixels,
-28strictfailures UNWAIVED. ALL144pairs/24sheets+threeenlargeddiagnostics VIEWED.
-Core890pass; all185productionGo bytes identical. Native357cases354pass/3initial
-CameraPos80vs20fail;378testresults373pass5failinclparents. Allold138Game+53pool
-PASS. ReplayharnessStageGroundY refreshed/earlyPause respected; no goldenedits.
-Old9render controls andstockwin/rematch/win PASS/VIEWED:82balancedkeys and1,973,590
-privatePCMframes. All23finalgates realstatuses native/matrix1,others21zero,outer1.
-Sourceinventory77typed/12fallback/0stub/9partial/20bounded/60route-only,86.5%routing
-ONLY. LatestFULL historicalM4dl5028/36; no newfullsuite claim. Futuremeaningful
-sharedintegration mayneed50m ratherthan40m (oldMatch2346.7sec+newnativeprograms).
+Final44675 ENTIRE completed/awaited1; SEPARATE21,349 frozen/client guardPASS.
+All16apps run samebinary96a0047f577b9ce874799d94af0770611be7ab2143a1c7e1a8e459623c221702.
+Six targeted startup worlds stillfail UNWAIVED, all15pairs/5sheets+stock3 VIEWED.
+ThreeG1images differ93069/93114/93069 (previous77212/77139/77212); G4same73164.
+Native displays prior actor positions during issuingPause; Go draws currentpose.
+This does NOTprove later roots skipCNS. Need state/counter/own/opponent probes
+before pausedcache/scheduler changes; no specialized cue-screen workaround.
+Old9 rendercontrols PASS; stock win/rematch/winPASS82balancedkeys/1,928,880PCMframes.
+35gates27zero/eight1(native,sixworlds,inventory). Exact pre-regeneration inventory
+script/report archived Git a868 +privatecopies in m4do-camera-final-source-versions;
+current inventorywrite/check0. No validated productionGo changes after final.
+Passiveaudit0:155originals,109canonical,656appbinaryresources,18appcaps,sharedbinary,
+seeds/RGB/185productionGo/input/PCM. m4do-camera-final-evidence-audit.json.
 
-Passive finalaudit-r292515ENTIRE0 verifies3584original paths,166configs,149common
-AIRreplacements,6806nativebinaryresource copies/109canonicalfiles,allseeds/caps/
-recomputedRGB/shared154appbinary/input/PCM/productionbytes. Initialpassiveaudit
-receipt omitted; completeoriginalreport preserved/exitunclaimed, R2observed0.
-CPU source-sprite review12input/clientguardPASS. Rootmodules unchanged. Seeprivate
-m4dn-final-evidence-audit-r2,final-visual-review,final1-separate-guard receipts.
-No runtime active. Do not rerun completed tests merely to make another checkpoint.
+Native Pause/ScrollLock calibrated6277 entire0/separate485 guardPASS/all6frames
+reviewed; exact1/2/3steps. R1/R2 intent failures preserved, omittedLoopStart=-1.
+Resetframe sequence finalized/separate233 guardPASS/all6reviewed; F4 RESUMES pause,
+so NOTexact bootsteps. Outer reset receipt unrecoverable; no exit claimed.
+Both new tests/frame_*reference_probe.py recorders are native-used IMMUTABLE.
+These calibrations are not controller coverage. Bounded authoring archive below.
+Boot native42029 entire0/separate133guardPASS; all96fields/8frames reviewed before
+promotion/Go. Initial baseline hash walk finished after test; diagnostic preserved,
+R2baseline21501 against completefrozenmap1 before implementation. Attempted hash-
+walk cancellation matched itself/exited130; originalwalk96251 finished0 unchanged.
+Revision63528 failed fourboot+threeolddust; revision45115 fixeddust, leavesnewbound.
 
-Ready: explicit stage/audit UTF8/noNUL/exact index bytes; ONLY valid166 corpus+16
-ledgers/sidecars, source/test/probe and docs. No binary/temp/outside/invalidraw.
-Expectedheldraw354=old159+invalid115+camera80; verifyactual. No commit yet.
-Then localcommit and CONTINUE noapprovalpause. Neverpush. Do not edit canonical
-native resources/oldrecorders/inputs/captures/goldens or relaxstrictcomparisons.
-
-Native21empty5000setup and2continuity-7-28/29unreached observers stayunpromoted.
-Promotion abbreviated-exclusion mistake caughtbyfinalcountBEFOREruntime; archived
-two derivedJSON/twoledgers unchanged, r3checkedexisting19exactbytes beforecorrect
-ledgers. Originalsnativeneverchanged. ActualKOwarning5080not5000, ownAIR9100not
-common9996; correction receipts preserve earlierinterpretations. Inert5080Null
-is notdeathpose implementation. Do not count failedsetups/missed observers.
-
-16camera-only Null programs duststartup8/startupunit8 are RAW/UNPROMOTED, notdust
-coverage; allnative/intent/guards/rows/foursheets complete. Initialraw cameraG1:
-stage40->10,-80->-20; local640/1280->40/80 forstage80, thenproperconversionG2.
-Disproves20-step/easing. Issue-framePause retains native prioractorposes/positions.
-Requireboot/multi-entity publication+pausedpose controls beforecamera/cache edits;
-no specializedcue screenmode. Current28worldfailures:7startup/pose,12heldHUD,
-2max1colour,one654pix/max8overlap,6finite360–526pix/max32. Enlargedcolourmasks
-match silhouette, causeunassigned. NativeCueTTL needs independentdefaults/delays/
-loop/infinite/explicit/SuperPause controls. HUDUpdate alreadyclocks duringPause;
-Draw lacksdisplaytime/onepass expiry. NoHUD/camera/samplerproductionedit yet.
-
-Next measured sharedpresentation/HUD/finiteoverlap gaps, thenclipboard andremaining
-item3 schemas/flags/strictobligations. CLIPBOARD-PLAN.md ispreparationonly. Native
-manualPause/ScrollLock framestepping documented, NOTyetexercised; verifyactual
-counters in aNEWrecorder beforeusing it. Originaldebugfont94characters/68masks
-casealiases; fullglyphobserver mustpreserveequivalences/positions, neveroverwrite
-testedclipboard witholdnumeric injector. No clipboardprobes/codeyet. Item4 BGM/
-modes/assets/fonts unallocated; finishindependentitem3 beforedependencyquestion.
+Continue ALL item3: independent screenconstraint and issuing-frame CNS/pose
+controls, measuredHUD displaytime/defaults/delays/loops/Pause/SuperPause, finite/
+overlapcolour isolation, then clipboard/residualschemas/flags/strictobligations.
+STARTUP-CAMERA.md/CLIPBOARD-PLAN.md preserve measured vs proposed scope. No approval
+pause. M4dn full144world matrix116exact is HISTORICAL, not rerun inM4do;28prior
+failures allunwaived. Older max1/max32 colour causes unassigned; no sampler/tolerance
+changes. M4dn invalid21empty5000 +2unreachable observers remain raw, old354paths
+excluded. KOwarning5080not5000; ownAIR9999/9100notcommon9996; corrections retained.
+LatestFULL historicalM4dl5028/36; currentfocused. Routing77/89typed86.5%,zero stubs,
+12fallback/9partial/20bounded/60route-only, not overall compatibility. No runtime.
 
 ## Native source provenance exception
 
@@ -94,6 +77,14 @@ BOTH Git9c35b389 blobs and byte-identical private snapshots. Do not compare thes
 archived versioned hashes against later mutable port source. Native-used
 recorders/programs/resources/configs/captures/PCM remain immutable ORIGINAL paths.
 Later system-effect ledgers hash the authoring map JSON, not live Go paths.
+For m4do-frame-step-control-native-inputs.json ONLY,362 authoring context paths
+are archived by m4do-frame-control-authoring-archive-r2.json:361 tracked Go/module
+files verified against Git a868 and byte-identical snapshots; untracked root
+go.sum verified against upstream-post-merge-module.sha256 and snapshot. Preserve
+this exact bounded exception;123 native-used paths remain ORIGINAL live checks.
+The failed first archive and corrected scope note remain private. New native maps
+hash the authoring-input-map JSON rather than mutable Go authoring context.
+
 
 ## Native and validation workflow
 

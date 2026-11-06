@@ -1163,3 +1163,16 @@ before editing. Only inventory source hashes were regenerated after preserving t
 exact frozen report against Git1e712788; Go/test/probe bytes did not change after
 validation. See SYSTEM-EFFECTS.md and the private m4dm final receipts. Do not edit
 old native recorders or replace original captures/goldens to make tests pass.
+
+
+## Calibrated native frame controls and boot queries
+
+`frame_step_reference_probe.py` and `frame_sequence_reference_probe.py` preserve
+fixture-authored clipboard output and check ownership for each native key. They
+are immutable after their calibration runs. Scroll Lock advances exact frames
+while debug-paused; F4 resumes the native engine. Their calibration is observer
+evidence, not controller coverage. The four `bootcamera-*` fixtures independently
+save96 boot/first-pass queries. One negative-start screen-bound case remains a
+strict failure; all24 camera values match. See
+[measured boundaries](../docs/STARTUP-CAMERA.md). Keep all original recorders,
+native inputs, configurations, captures and expectations unchanged.

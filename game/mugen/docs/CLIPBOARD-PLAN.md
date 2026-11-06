@@ -65,9 +65,13 @@ input/private-audio gates; document bounds and commit source/text only.
 
 The supplied `docs/readme.txt` hotkey table documents Pause and Scroll Lock
 frame stepping; `docs/mconsole.html` also documents `pause` and `framestep`.
-This is native-tool design guidance, not an exercised recorder yet. A separately
-named owned-window recorder should verify those controls against observed game
-counters before using them to inspect exact animation/formatting boundaries.
+M4do independently exercises these controls with the separately named
+`frame_step_reference_probe.py`: counters and world pixels hold while paused,
+then one/two/three Scroll Lock presses advance by exactly those amounts with
+matching animation parity. All six frames and balanced owned events are reviewed.
+`frame_sequence_reference_probe.py` also establishes that F4 resumes debug pause;
+do not use it as an exact paused boot reset. These observer calibrations add no
+controller coverage. See [startup and frame-control evidence](STARTUP-CAMERA.md).
 Keep all existing recorders and expectations unchanged. Engine debug pause is
 distinct from the CNS Pause controller, which intentionally leaves some clocks
 running. This may avoid relying on wall-clock capture timing for future probes.

@@ -1,5 +1,31 @@
 # Current behavior coverage ledger
 
+## M4do — cold-start camera queries; presentation remains strict
+
+Four independent camera-only programs pin96 fields across both roots' boot and
+first two passes. All24 camera queries and94/96 total fields match after correcting
+shared initial X publication. The negative-start P2 screen-bound case retains two
+strict mismatches; no constraint-phase fix is inferred. All166 dust cases nowpass,
+alongside138 Game,53 pool and98 older camera/boundary/width cases. The combined
+459-case gate passes458; the one new case and its parent preserve exit1.
+
+Focused core races pass890 results. All16 actual applications run with the same
+binary. Nine older render controls and stock win/rematch/win pass:82 balanced
+inputs and1,928,880 stereo44.1kHz private PCM frames. All15 pairs/five sheets and
+stock3 captures are reviewed. The six targeted startup worlds still fail strictly;
+three tick-one worlds now differ93,069/93,114/93,069 pixels, versus the prior
+77,212/77,139/77,212. Tick-four worlds remain73,164. Query correctness does not
+close issuing-frame paused presentation. All these failures remain unwaived.
+
+Final35 gates:27pass/eight exit1 (native, six worlds, stale inventory). Original
+inventory source/report are archived against Git before regeneration; the current
+check passes. Separate21,349-input/client guard and provenance/config/resource/
+image/binary/input/PCM audits pass. No original expectations or tolerances changed.
+The latest full suite remains historical M4dl5,028/36; this is focused verification.
+Routing stays77/89typed86.5%,zero stubs; no overall compatibility percentage follows.
+[Evidence, observer calibration and next controls](STARTUP-CAMERA.md).
+
+
 ## M4dn — typed dust, strict presentation gaps retained
 
 MakeDust now has typed int/float tuples, spacing/default/error handling, ordered

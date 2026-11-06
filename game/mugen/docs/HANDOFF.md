@@ -871,3 +871,90 @@ Only166valid corpus cases, their sidecars/16ledgers, actualGo/test/probe changes
 reviewed docs belong in this commit. Exclude alltemp/binary/invalid/unpromotedraw.
 AGENTS.md has the source-only/noagents/nooutside/noapprovalpause constraints.
 Item4modes/BGM/assets/fonts remains unallocated; finishindependentitem3 first.
+
+
+## M4dn local commit complete; M4do observer calibration starts
+
+Committed **a868f654bcf14def5b64e608806e1d14af1df742**:1,016audited UTF8source/
+text paths,354heldraw excluded/unchanged, no binaries/temp/outside/push. Staging
+12848 andcommit9679 both completed/awaited0. Trackedtreeclean aftercommit;
+`temp/m4dn-staged-audit.json` and `m4dn-commit-record.json` retain exact evidence.
+Continue without approval/checkpoint pause.
+
+New pending work: `tests/frame_step_reference_probe.py` independently runs owned
+nativePause/ScrollLock events without injecting clipboard text. Authored private
+frame-step-control-draft has two originalCNSstates5900/0, VarAdd counter, ownCMD
+numeric pages and a1tick invisible/stockKFM frame loop. No production Go changes.
+Need independent complete intent and sourcefreeze, separate guard, nativecontrol
+calibration, then ALLcounter/event/animation/image review and separate guard. This
+is observer calibration only, not new MakeDust/clipboard conformance coverage.
+
+
+## M4do frame controls verified; boot publication next
+
+Native6277 entire awaited0, separate485-original/client guard PASS. Independent
+complete intent R3 passed after preserved R1/R2 omitted-LoopStart mistakes (actual
+sentinel -1). All6 native frames/12 assertion rows/16 balanced keys reviewed:
+GameTime/Time/counter329 held twice; +1->330,+2->332,+3->335, then resumed352.
+Two-frame invisible/visible parity matches. No controller coverage or production
+Go changes. Native-used frame_step_reference_probe.py stays immutable.
+
+New frame_sequence_reference_probe.py reset observation finalized with6 captures
+and14 balanced owned keys. Separate233-input/client guard PASS; all6 reviewed.
+F4 resumes execution:334->372->398->433 despite requested1/1/2 steps. FinalPause
+stops443. StateTime resets while GameTime remains cumulative. These are NOT exact
+boot steps. Outer exec receipt truncated/unrecoverable, no exit claimed; complete
+recorder finalization and evidence are retained. No runtime active.
+
+Calibration map provenance correction: m4do-frame-control-authoring-archive-r2
+seals362 authoring-context paths,361 against Git a868 plus byte-identical private
+snapshots; root go.sum is untracked and instead verified against existing upstream
+postmerge baseline plus snapshot. Scope note corrects the successful script's
+imprecise all-Git wording. Original map and failed first sealer/archive retained.
+Remaining123 native-used/resource/metadata paths stay original live checks. This
+exception applies ONLY to calibration; new native maps pin authoring-map JSON.
+
+Next boot5900 and first/second-pass saved own/opponent camera values, then measured
+shared paused-pose/HUD expiry/finite colour controls. Keep originals unchanged,
+serial runtime/whole-session waits/separate elevated guards. Continue ALL item3
+with source/text checkpoints; item4 unallocated.
+
+
+## M4do — cold-start camera queries; presentation remains strict
+
+Four independent camera-only programs pin96 fields across both roots' boot and
+first two passes. All24 camera queries and94/96 total fields match after correcting
+shared initial X publication. The negative-start P2 screen-bound case retains two
+strict mismatches; no constraint-phase fix is inferred. All166 dust cases nowpass,
+alongside138 Game,53 pool and98 older camera/boundary/width cases. The combined
+459-case gate passes458; the one new case and its parent preserve exit1.
+
+Focused core races pass890 results. All16 actual applications run with the same
+binary. Nine older render controls and stock win/rematch/win pass:82 balanced
+inputs and1,928,880 stereo44.1kHz private PCM frames. All15 pairs/five sheets and
+stock3 captures are reviewed. The six targeted startup worlds still fail strictly;
+three tick-one worlds now differ93,069/93,114/93,069 pixels, versus the prior
+77,212/77,139/77,212. Tick-four worlds remain73,164. Query correctness does not
+close issuing-frame paused presentation. All these failures remain unwaived.
+
+Final35 gates:27pass/eight exit1 (native, six worlds, stale inventory). Original
+inventory source/report are archived against Git before regeneration; the current
+check passes. Separate21,349-input/client guard and provenance/config/resource/
+image/binary/input/PCM audits pass. No original expectations or tolerances changed.
+The latest full suite remains historical M4dl5,028/36; this is focused verification.
+Routing stays77/89typed86.5%,zero stubs; no overall compatibility percentage follows.
+[Evidence, observer calibration and next controls](STARTUP-CAMERA.md).
+
+Current final44675 entire awaited1/separate21,349 frozen/client guardPASS.
+Passive audit observed0: m4do-camera-final-evidence-audit.json. Both production
+changes are match/match.go and match/camera.go;185productionGo bytes unchanged
+through final checks. Inventory generator/report only regenerated after guard;
+exact originals archived against Git a868, receipt m4do-camera-final-source-versions.
+
+New source/text paths: match/bootcamera_test.go, two immutable frame recorders,
+22public bootcamera source/expectation/ledger paths, docs/STARTUP-CAMERA.md plus
+existing docs/inventory updates. Native captures/private tools/assets stay temp;
+old354raw paths remain excluded. Audit exact staged UTF8/noNUL bytes and scoped
+paths, commit locally, then CONTINUE independent issue-frame CNS/pose/constraint
+controls and HUD lifetimes. Do not ask for checkpoint approval or pause. Item4
+unallocated. Historical complete144world matrix not rerun; allolderfailures open.
