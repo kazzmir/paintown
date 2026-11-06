@@ -50,6 +50,11 @@ func (b *Background) DrawLayer(screen *ebiten.Image, layer int, cameraX, cameraY
 }
 
 func (b *Background) DrawLayerWithPalette(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages, transform palette.Transform) error {
+	return b.DrawLayerWithPaletteTint(screen, layer, cameraX, cameraY, zOffset, shared, transform, [3]float32{1, 1, 1})
+}
+
+// Scene tint applies to drawn sprites. The caller's clear color stays separate.
+func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages, transform palette.Transform, tint [3]float32) error {
 	images := shared
 	if b.SpriteData != nil {
 		if b.sprites == nil {
@@ -71,6 +76,12 @@ func (b *Background) DrawLayerWithPalette(screen *ebiten.Image, layer int, camer
 	}
 	for _, element := range b.Elements {
 		if element.GetLayerNo() == layer {
+			tinted, hasTint := element.(interface{ setSceneTint([3]float32) })
+			if hasTint {
+				tinted.setSceneTint(tint)
+			} else if tint != [3]float32{1, 1, 1} {
+				return fmt.Errorf("background %s has no scene tint renderer", element.GetName())
+			}
 			styled, ok := element.(interface {
 				setPalette(palette.Transform)
 				paletteError() error
@@ -81,6 +92,9 @@ func (b *Background) DrawLayerWithPalette(screen *ebiten.Image, layer int, camer
 				return fmt.Errorf("background %s has no palette renderer", element.GetName())
 			}
 			element.Draw(screen, cameraX, cameraY, zOffset, images)
+			if hasTint {
+				tinted.setSceneTint([3]float32{1, 1, 1})
+			}
 			if ok {
 				err := styled.paletteError()
 				styled.setPalette(palette.Transform{})
@@ -133,6 +147,8 @@ type Element interface {
 
 type CommonElement struct {
 	paletteTransform palette.Transform
+	sceneTint        [3]float32
+	sceneTintActive  bool
 	paletteSampler   render.Nearest
 	renderError      error
 	Name             string
@@ -169,7 +185,14 @@ func (e *CommonElement) setPalette(transform palette.Transform) {
 
 func (e *CommonElement) paletteError() error { return e.renderError }
 
+func (e *CommonElement) setSceneTint(tint [3]float32) {
+	e.sceneTint, e.sceneTintActive = tint, tint != [3]float32{1, 1, 1}
+}
+
 func (e *CommonElement) drawPaletteImage(target, source *ebiten.Image, options *ebiten.DrawImageOptions, trans string, alpha [2]int) {
+	if e.sceneTintActive {
+		options.ColorScale.Scale(e.sceneTint[0], e.sceneTint[1], e.sceneTint[2], 1)
+	}
 	if !e.paletteTransform.Enabled {
 		e.applyBlending(options, trans, alpha)
 		target.DrawImage(source, options)

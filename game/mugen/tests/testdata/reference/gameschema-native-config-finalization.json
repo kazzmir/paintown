@@ -1,0 +1,299 @@
+{
+  "programs": {
+    "gameanim-camera-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-defaults": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-facing-left": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-helper": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-ignored-parameter": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-legacy": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-local1280": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-local640": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-local640-position": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-bottom": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-extra": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-fraction": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-left": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-right": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-single": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-position-unknown": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-bottom": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-default": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-eight": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-float-expression": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-float-literal": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-negative": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-one": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-quoted": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-two": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-random-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-slot2": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-super-finite": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-super-static": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-bottom": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-float-expression": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-float-literal": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-negative": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-one": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-two": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-under-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-value-bottom": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-value-float-expression": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-value-float-literal": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-value-missing-action": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-value-only": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gameanim-value-unknown": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    }
+  },
+  "native_finalization": "Exact Debug1/AfterImageMax16 preparation, native FirstRun1->0 plus CRLF; commonAIR appendices independently pinned in original evidence where present."
+}

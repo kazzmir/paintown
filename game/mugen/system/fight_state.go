@@ -103,9 +103,10 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	backgroundPalette := palette.Combine(m.Timeline.BackgroundPalette.Transform(), allPalette)
 	environment := m.Timeline.EnvironmentColor
 	environmentActive := environment.Time != 0
+	tint := m.Timeline.SceneTint()
 	s.stageCanvas.Fill(allPalette.ClearColor(color.Black))
 	if !environmentActive && !m.Timeline.NoBackground {
-		if err := m.Stage.DrawWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette); err != nil {
+		if err := m.Stage.DrawWithPaletteTint(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette, tint); err != nil {
 			s.renderError = err
 			return
 		}
@@ -113,8 +114,6 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	s.gameCanvas.Fill(allPalette.ClearColor(color.Black))
 	// Indexed stage pixels remain plateaus through the viewport fit.
 	backgroundOptions := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
-	tint := m.Timeline.SceneTint()
-	backgroundOptions.ColorScale.Scale(tint[0], tint[1], tint[2], 1)
 	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
 	backgroundOptions.GeoM.Translate(0, -m.Viewport.CropY)
 	if environmentActive {
@@ -144,6 +143,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	}
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
+	s.drawEffects(s.gameCanvas, 0)
 	character.DrawPlayersWithSprites(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
 	frontEnvironment := environment.Time > 0 && !environment.Under
 	if !frontEnvironment {
@@ -153,7 +153,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// quad covers it; an under quad leaves it visible above the actors.
 	s.stageCanvas.Clear()
 	if !m.Timeline.NoForeground {
-		if err := m.Stage.DrawForegroundWithPalette(s.stageCanvas, cameraX, cameraY, backgroundPalette); err != nil {
+		if err := m.Stage.DrawForegroundWithPaletteTint(s.stageCanvas, cameraX, cameraY, backgroundPalette, tint); err != nil {
 			s.renderError = err
 			return
 		}

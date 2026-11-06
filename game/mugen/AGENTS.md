@@ -20,41 +20,63 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
-## Immediate state — M4dk complete; continue item 3
+## Immediate state — M4dl source/text checkpoint
 
-M4dj committed9c35b389 (251 source/text paths):44 native/528values/30exact world
-crops, full4,918 race results/36packages. M4dk adds10 native voice programs/
-120values/36segments. All ten CPU programs pass within889core race results;
-NoKO44+4parents48pass. Final33638 completed/awaited1 solely for strict ordinary
-KOecho audio comparison:9/10 production cases pass,all six NoKO cases pass.
-Other42gates0. Original failure UNWAIVED; no sampler/tolerance/golden changes.
-Five native phase shifts at50/10ms did NOT reproduce it; hypothesis unadopted.
+No active runtime. Read current bottom HANDOFF and SYSTEM-EFFECTS.md. Continue ALL
+remaining item3 autonomously after the source/text commit; no checkpoint pause.
 
-All10pairs/fivesheets+old9+stock3 reviewed; oldpalette/order/masks and stockwin/
-rematch/win82keys/1,972,873PCMpass. Separate19,478 frozen/clientguardPASS.
-Passive auditor57293completed0:3,994original paths,390archive+Git versions,
-10configs,41resources/410copies/109manifest. No live runtime. Currenttopic
-NO-KO-AUDIO.md; records temp/m4dk-final-evidence-audit.json,final-visual-review,
-final1-separate-guard. Localtextcommit record temp/m4dk-commit-record.json.
-Latest full4,918/36 remains M4dj source boundary; M4dk focused checks only.
+GameMakeAnim typed compiler/common cues/Under pass and sprite-only BG/FG scene
+tint are implemented. Original84programs promoted ONCE:75accept9reject900values,
+5native/configledgers; all84pass. All101native research rows/18sheets reviewed
+before implementation. Final72fixedworld observers70exact /35,616,000pixels;
+position-fraction41pixels/max1 and position-single18pixels/max1 UNWAIVED. Three
+finite repeats remain dynamic diagnostics. ALL72pairs/24sheets+old9/stock3 reviewed.
+Dust17 remains UNPROMOTED/UNSTAGED. Source76typed13fallback1stub9partial19bounded60route-only.
 
-IMPORTANT nokovoice ledger authoring Go/parser/unused probe versions are checked
-using nokovoice-authoring-source-archive.json against BOTH original Git9c35b389
-and byte-identical private snapshots. Native-used recorders/programs/resources/
-configs/captures/PCM still immutable ORIGINAL paths. Do not compare archived
-versioned authoring hashes against current port source or change originalledger.
-Future native ledgers should separate immutable native inputs from versioned
-port/parser authoring dependencies; preserve exact versions before later edits.
+Full82340 completed/awaited1; separate20,046/20,043 guardPASS. All5,028 production
+race results pass across36packages (25tested11compiled), Match2346.712s. Original
+recursive command also selected36 historical source-snapshot packages, producing
+520 failures from missing resources/empty fixture sets/propagated parents. Real
+exit1 retained, not called a successful outer run. Other21 gates pass; matrix1
+fails ONLY two strict RGB cases. Stock82keys/1,972,096privatePCM and old5palette/
+order+4masks pass. Auditor71972 completed/awaited0;5,241originals/84configs/
+65commonAIR/41resources/3,444copies/109manifest/source/module guardsPASS.
 
-Next: remaining special flags actual helper/global/timer/round consumers and
-system GameMakeAnim/MakeDust (16aged+20early drafts/helpers prepared NOT observed),
-clipboard/debug formatting, VarSet/FVaraliases/StateTypeSet/HitAdd and shared
-strict renderer/HUD/audio/presentation failures. Item3 continues without approval;
-item4 BGM/modes/assets/fonts/platform remainsunallocated. NoMusic depends on native
-BGM evidence; finish independent item3 before concrete allocation question.
-Original14nokotime diagnostics,10directrenderer and3invalidwalk rawsets stay
-UNPROMOTED/UNSTAGED. All35HUD/priorraster/echo-window/heldKOtext failures UNWAIVED.
-Source75typed14fallback2stubs9partial18bounded60route-only is not enginecoverage%.
+Launcher --check now filters temp package paths using read-only metadata, leaving
+all source snapshots unchanged. Fresh scope80797 completed/awaited0 with exactly
+36production packages; separate20,044current frozen/clientguardPASS. Production
+Go/test hashes are UNCHANGED from full5028 execution. Only launcher package
+selection and inventory annotation/report changed afterward. Exact run-specific
+versions retained in temp/_tmp/m4dl-full-run-source, mapped by
+m4dl-full-run-source-versions.json; original launcher also matches Gitc88d2a77.
+When auditing historical full-run maps, use their recorded versions for these3
+paths, not later mutable launcher/inventory paths. Current scope map checks
+current files. This is separate from native-original hashes, which are unchanged.
+
+Final evidence: m4dl-final-evidence-audit.json, m4dl-final-visual-review.json,
+m4dl-archive-failure-final-review.json and both separate guards. No binary/push/
+agent/goal/outside changes. Explicit UTF8/text staging still required. Include
+only84promotedGame programs,10ledgers, changed source/docs; exclude Dust17,
+old14nokotime/direct10/invalidwalk3 rawsets and all temp assets. The local hash/path audit is recorded in
+temp/m4dl-commit-record.json after committing; do not repeat completed validation.
+
+Next measured system-effects boundary: independent GameMakeAnim pool admission,
+negative-action clamping and sub-game-pixel coordinate quantization; then MakeDust
+schema/global clock/interleaved per-axis RNG/resource/lifetime/layer/ownership/
+capacity. Static supplied-executable guidance is documented, NOT native behavior
+coverage or permission to change old expectations. New complete intent + native
+all-case/image review before promotion/implementation. Existing17Dust originals
+stay intact. Continue clipboard, remaining special flags and residual schemas,
+then allocated strict rendering/HUD/audio obligations. Item4 remains unallocated.
+
+## Native source provenance exception
+
+For nokovoice-native-ledger.json ONLY,390 versioned authoring Go/parser/unused
+probe hashes are verified through nokovoice-authoring-source-archive.json against
+BOTH Git9c35b389 blobs and byte-identical private snapshots. Do not compare these
+archived versioned hashes against later mutable port source. Native-used
+recorders/programs/resources/configs/captures/PCM remain immutable ORIGINAL paths.
+Later system-effect ledgers hash the authoring map JSON, not live Go paths.
 
 ## Native and validation workflow
 
@@ -104,5 +126,5 @@ Read docs/HANDOFF.md and docs/ITEM-3-PLAN.md. Prior 12 M4cq, seven M4cv, two M4c
 samplers or tolerances without independent native evidence and old exact controls.
 The native VarSet literal 7.9 rejects; fix conflicting unit setup with 7.9+0.0
 expressions without changing native goldens. FVar aliases need native acceptance.
-GameMakeAnim and MakeDust remain two stubs. ForceFeedback is native Null-kind,
+GameMakeAnim is under final validation; MakeDust remains the sole stub. ForceFeedback is native Null-kind,
 not a haptics stub. Broader modes/teams/AI/BGM/assets/triggers remain item 4.

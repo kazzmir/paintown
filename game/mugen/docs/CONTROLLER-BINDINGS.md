@@ -160,3 +160,15 @@ Counts remain72typed/17fallback/5stubs/9partial/15bounded/60route-only; no famil
 variant-complete.145native programs/fouractualrenderregressions/stock/privateaudio
 and allprovenanceguards pass. See SHAKE-FREQUENCY.md. LatestfullM4cv4033/36
 precedes this focused parser fix; all old native expectations remain unchanged.
+
+
+## M4dl update
+
+GameMakeAnim now routes through its typed compiler and measured common-resource
+scene consumer. The audit counts89 registered /76typed /13fallback /one stub /
+nine partial /19bounded /60route-only. Typed routing is85.4%, not whole-engine
+behavioral completion. All84 recorded programs pass;70/72 fixed world crops are
+exact, with two strict fractional color failures unwaived. MakeDust remains a
+stub. New admission/negative-action/sub-game-pixel studies and broader contexts
+remain explicit in [SYSTEM-EFFECTS.md](SYSTEM-EFFECTS.md). Parameterless valid
+fallbacks are distinct from unimplemented behavior; aliases need native proof.

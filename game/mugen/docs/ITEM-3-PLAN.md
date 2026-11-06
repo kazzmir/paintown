@@ -355,3 +355,72 @@ module audits pass. Latest full suite remains M4dj's4,918/36 at9c35b389; the
 current one-condition sound change has focused integration evidence. Earlier
 strict HUD/raster failures remain unwaived. [Evidence and bounds](NO-KO-AUDIO.md).
 Item3 continues; route counts75/89 typed(84.3%) are not behavioral completion.
+
+
+## Residual controller verification queue after system effects
+
+This is preparation, not new native coverage. The active M4dl full run freezes
+source/tests/probes; only documentation and read-only analysis occur meanwhile.
+
+Clipboard controllers need a separately named recorder that preserves the tested
+clipboard itself. The existing numeric page injector replaces clipboard output
+and must stay immutable. Native parser guidance at0x4484e9/0x4485f0 lowers
+Display/Append/Clear to0x136/0x137/0x138 and prepares up to six parameter slots;
+text/format/count/error rules still need observed controls. Current Go stores raw
+text, inserts an unconditional newline on append and lacks a production clipboard
+renderer. Measure formatting, escapes, omitted/extra params, ordered side effects,
+bottom, retained versus per-frame contents, append/clear, helper/selected-player
+ownership and a real debug-display consumer. Use the bundled exact glyph masks
+with a new full-ASCII decoder; do not alter the old numeric recorder/decoder.
+
+VarSet/VarAdd/VarRangeSet and parent forms need native literal/runtime integer,
+index/bounds/bottom/order/alias controls. The earlier7.9 literal setup already
+fails native; keep it unchanged and correct the conflicting Go unit setup with
+an expression7.9+0.0 only when implementing the measured schema. The supplied
+executable lacks lowercase FVarSet/FVarAdd/FVarRangeSet name strings, a static
+hint rather than evidence of rejection. Probe their actual acceptance/kinds
+across1.0/1.1 before retaining or rejecting extra Go registrations.
+
+StateTypeSet needs actual native literal/omission/U/quoted/invalid/unused-field
+rules and state/move/physics consumers. Its current literal fallback is not a
+complete validated schema. HitAdd updates ComboCount with no production reader;
+measure native combo/query/reset/contact and actual HUD behavior before choosing
+where to connect that field. Previously measured controller consumers and all
+strict renderer/HUD/audio failures remain allocated. NoMusic's BGM foundation
+and broader modes/assets/fonts remain the explicit item4 dependency boundary;
+finish independent item3 work before presenting a concrete allocation question.
+
+
+## M4dl — GameMakeAnim schemas and scene drawing
+
+GameMakeAnim now compiles measured defaults, numeric errors and ordered side
+effects, including displacement draws before the late under expression. Common
+resource cues use the measured coordinate/facing rules, continue during Pause
+and SuperPause, and draw behind actors for nonzero under. SuperPause tint now
+applies to drawn background sprites while preserving the native debug clear.
+
+All **84 native programs pass** (75 accepted / nine expected rejections / **900
+numeric values**). **70/72 fixed world crops are exact (97.2% of this corpus)**,
+covering **35,616,000 exact RGB pixels**. Two fractional-position crops retain
+**41 and 18 differing pixels, maximum one RGB level**, with their strict failures
+unwaived. All72 pairs/24 sheets are reviewed; three finite-repeat diagnostics
+have numeric coverage without fixed-frame RGB claims. [Evidence and bounds](SYSTEM-EFFECTS.md).
+
+Full production races pass **5,028 results /36 packages** (25 tested,11 compiled
+only), with no production failures or individual skips. The original recursive
+command also selected36 historical source-snapshot packages and failed520 of
+those copied tests because their fixture/resource sets were absent. That real
+exit1 is preserved. The launcher now excludes private temp packages; a fresh
+race-enabled scope/compile check passes exactly36 production packages. Production
+Go/test source is unchanged from the full run. The original outer driver exits1
+for this selection issue and the two strict RGB failures; the other21 gates pass.
+
+Five older palette/order applications, four shake masks and reviewed stock
+win/rematch/win pass: **82 balanced inputs /1,972,096 private PCM frames**.
+Source-version,5,241 original-input,84 configuration,65 common-AIR appendix,
+41 canonical resource/3,444 copy/109 manifest and module audits pass. No original
+expectation, region, sampler or tolerance changed; older HUD/raster/audio failures
+remain unwaived. MakeDust remains the sole source stub. Independent game-cue
+admission, negative-action and sub-game-pixel variants plus remaining item3 work
+continue; item4 is unallocated. Routing **76/89 typed (85.4%)** measures source
+routes, not engine completion.

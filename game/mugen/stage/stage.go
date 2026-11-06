@@ -83,10 +83,14 @@ func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
 }
 
 func (s *Stage) DrawWithPalette(screen *ebiten.Image, cameraX, cameraY float64, background, clear palette.Transform) error {
+	return s.DrawWithPaletteTint(screen, cameraX, cameraY, background, clear, [3]float32{1, 1, 1})
+}
+
+func (s *Stage) DrawWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, background, clear palette.Transform, tint [3]float32) error {
 	if s.DebugBG {
 		screen.Fill(clear.ClearColor(color.RGBA{R: 255, B: 255, A: 255}))
 	}
-	return s.Background.DrawLayerWithPalette(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, background)
+	return s.Background.DrawLayerWithPaletteTint(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, background, tint)
 }
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
@@ -94,7 +98,11 @@ func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
 }
 
 func (s *Stage) DrawForegroundWithPalette(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform) error {
-	return s.Background.DrawLayerWithPalette(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, transform)
+	return s.DrawForegroundWithPaletteTint(screen, cameraX, cameraY, transform, [3]float32{1, 1, 1})
+}
+
+func (s *Stage) DrawForegroundWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform, tint [3]float32) error {
+	return s.Background.DrawLayerWithPaletteTint(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, transform, tint)
 }
 
 // ResetBackground restores authored element/controller clocks between rounds.

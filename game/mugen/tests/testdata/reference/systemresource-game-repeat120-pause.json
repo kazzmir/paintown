@@ -1,0 +1,66 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "576daf968db998ddfc476fc851ccf854d0263b97c7507132cce34440f41d6af6",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "08415df2e781d3a4633c56ca6fa40c33c2091fe0382fe77193afb3b16bc394ea",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "common_air_patch": {
+    "path": "data/fightfx.air",
+    "canonical_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "appendix_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepared_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "canonical_unchanged": true
+  },
+  "random_seed": 701892278,
+  "seed_log_sha256": "7f380a10e338800a992f77220db11995235e77b82611028875d7a5e6f09ecfcb",
+  "native_run": "temp/reference-runs/m4dl-systemresource-game-repeat120-pause",
+  "full_controller_header_parameter_trigger_air_cmd_stage_intent_verified": true,
+  "replay_ticks": 180,
+  "game_animation_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "f17b8f73e90ea279eb628aeb08c43e4f143d61b0e31feb8b0a4cdd825a76a18b",
+    "scope": "Fixed native-only world region chosen/reviewed before Go baseline/implementation; original regions unchanged."
+  }
+}

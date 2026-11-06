@@ -1,0 +1,59 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "c899420649c509a6a4277f57f9aeb1af4c052eb74ff08e25a905c9692997bcc1",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "7c1596ecf28f7dfe0a4fd0a23db0d33940e4e9a559a64d6f1d3f493bd167e509",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 883,
+        "9": 620,
+        "10": 958,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "native_run": "temp/reference-runs/m4dl-systemanim-game-rng-0",
+  "full_controller_header_parameter_trigger_air_cmd_stage_intent_verified": true,
+  "replay_ticks": 180,
+  "random_seed": 687808012,
+  "seed_log_sha256": "3a71e20460ab35c74c43ef24f069f2c125712c644b2fde00415dbf244ea33308",
+  "game_animation_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "f17b8f73e90ea279eb628aeb08c43e4f143d61b0e31feb8b0a4cdd825a76a18b",
+    "scope": "Fixed native-only world region chosen/reviewed before Go baseline/implementation; original regions unchanged."
+  }
+}

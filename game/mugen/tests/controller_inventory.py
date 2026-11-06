@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['character/ko_sound.go', 'character/life.go', 'character/power.go', 'character/hit_damage.go', 'character/reversal.go', 'character/loader.go', 'evaluator/validate.go', 'engine/assert_special.go', 'engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
+SOURCES = ['engine/game_animation.go', 'character/game_animation.go', 'character/ko_sound.go', 'character/life.go', 'character/power.go', 'character/hit_damage.go', 'character/reversal.go', 'character/loader.go', 'evaluator/validate.go', 'engine/assert_special.go', 'engine/projectile.go', 'character/projectile.go', 'character/hit_chain.go', 'engine/after_image.go', 'character/after_image.go', 'character/retire.go', 'config/config.go', 'match/match.go', 'cns/hit_shake.go', 'engine/statemachine.go', 'engine/parameters.go',
            'character/character.go', 'character/player.go',
            'character/explod.go', 'engine/explod.go', 'engine/modify_explod.go',
            'effect/scene.go', 'character/actor_order.go', 'system/effects.go', 'render/perspective.go',
@@ -22,7 +22,6 @@ SOURCES = ['character/ko_sound.go', 'character/life.go', 'character/power.go', '
            'background/background.go', 'stage/stage.go', 'font/font.go', 'system/fight_state.go', 'system/hud.go',
            'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {
-    'gamemakeanim': 'GameMakeAnim',
     'makedust': 'MakeDust',
 }
 RENDER_FIELDS = {}
@@ -38,6 +37,7 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
+    'gamemakeanim': 'SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource production cues, caller/parameter profile math, helper/slot2, facing/global-unit random offsets, Pause/SuperPause-independent animation clock and under-actor drawing; 84 native programs/900 values pass,70 of72 strict world observers exact with two fractional color failures unwaived; independent admission, negative action, sub-game-pixel quantization and broader ownership/palette/foreground variants remain',
     'forcefeedback': 'FORCE-FEEDBACK.md: exact supplied beta compiler lowers this name to Null;18 native programs prove ignored parameters/ordinary triggers across1.0/1.1 profiles; no host/device dispatch',
     'afterimage': 'AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; PROJECTILE-TRAILS.md adds projectile admission/lifetime/palette/phase coverage; broader resource/profile variants open',
     'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open',

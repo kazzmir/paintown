@@ -1,0 +1,53 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "22cbd4ce1728f91e2287dcfc5ed0aa5c5fcdef124d8e4d5a983542db7e11eb45",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "c1fdb69bcf05794f47df54d636c889477ed32a45936dbb3e4b8421bfdb4a197a",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "common_air_patch": {
+    "path": "data/fightfx.air",
+    "canonical_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "appendix_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepared_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "canonical_unchanged": true
+  },
+  "random_seed": 701757822,
+  "seed_log_sha256": "7aa1c915d5a7021038685c290ca712053fd48768d9383aabc0271c67da7dfb6f",
+  "native_run": "temp/reference-runs/m4dl-systemresource-game-repeat0-running",
+  "full_controller_header_parameter_trigger_air_cmd_stage_intent_verified": true,
+  "replay_ticks": 180,
+  "render_scope": "Retained dynamic repeated-output diagnostic; no fixed-frame RGB expectation authored."
+}

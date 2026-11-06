@@ -35,6 +35,7 @@ type Request struct {
 	SpritePriority, VFacing       int
 	ScreenSpace                   bool
 	OnTop                         bool
+	Under                         bool // Scene-owned system cue behind character sprites.
 	ScaleX, ScaleY                float64
 	HasScale                      bool
 	Angle, XAngle, YAngle         float64

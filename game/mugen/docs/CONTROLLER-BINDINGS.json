@@ -3,6 +3,8 @@
   "scope": "source routes and audited gaps; not behavioral coverage",
   "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
+    "engine/game_animation.go": "a625607cff6b8e45d56564b0e2d8a629c18d3789d068474da2096171d6ba016c",
+    "character/game_animation.go": "6cf4d24182a3ff570b0e17921f281dacb224cdedceb6b57acae5c49f63532b4f",
     "character/ko_sound.go": "6e46efe88d2ff2d29a6acf1df471f358b32646bc162e2dd0a6e573e28c715910",
     "character/life.go": "9a033713d5527c6f70b2fc494261a1ea39481905dd3051925ae766b354e0be75",
     "character/power.go": "dd885692cab05d47d254c546943702ec47bc567c7896d4a0943ce6ef9396fcbe",
@@ -21,15 +23,15 @@
     "match/match.go": "5f2a7af8b59522819bfe768ba9656df6997c998837fbe1868b906716080de819",
     "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
     "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
-    "engine/parameters.go": "06ed182c5fc75874ea4d2e473e0b971bc9cf7818bd6d266bed76a28bb9d628ff",
-    "character/character.go": "e1b05263694e0c09cbd42c58111fdecfb944884241728ca0c64154059b31b50f",
+    "engine/parameters.go": "c125729637757737a31ca6d752c59563d7f7bd0d3d1d0d64ee571aa518c92b3a",
+    "character/character.go": "4334b9e94fd6ead8274d04ea909b513aadef76cc96c6a16f7956e1c99170494d",
     "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
     "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
     "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
     "engine/modify_explod.go": "b9ecd4380e92c3a33cd41bd3ca9b8ed539e12034f98ce71f1b63f36b0f648fc8",
-    "effect/scene.go": "a1e1c82e29fb4634f95bdbef7b6448d05168a5b7ad9a6d029c6b50b8631b6336",
+    "effect/scene.go": "686e7d436ed1c1dcf3b8a7830866785dd9ec98c17882763a21ce3e614e219735",
     "character/actor_order.go": "5b3f16ee9f3c7bc3b017fda516dacd1b03caf495b2855eaa0cdaf5453e5fdfde",
-    "system/effects.go": "db01e749703ea0976669c790e85b36c6018d773e6ac90266efedf6f8844b6e57",
+    "system/effects.go": "bb6cdbf1a97eb72f6ddac6ba25233d9572dcd140790aedadbf45930b44c4f192",
     "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
     "render/shadow.go": "8b3bf8c5b95e0835472bd43a9c3054ce5531c6e61c4ac489ad44ccba540e1285",
     "stage/loader.go": "514411a8c51f301fb3f6e4e3aa3a464529d84324c2d79df9a7cc632cc6bc6cc5",
@@ -50,10 +52,10 @@
     "render/palette.go": "1b628fbb7df6b671492bdc501a990036af79f42338de41e058ab4dde04628dd6",
     "character/helper.go": "c1818f63af4509c9401dcaf336e359db82ba1d4193595f5d6a9ca23d8e90998f",
     "character/tick.go": "d6770675c30d22d7d05079ab8c8a2679610eb1eecc8149a0d8ee7a02823c24c1",
-    "background/background.go": "f2e5ede68c9287ef8318b46dc95601b820721628528fce2017f5f0d827ad106f",
-    "stage/stage.go": "f44f4fc4fd38ad75e45d9c887819a00fdffe079b7530838eff3ff317a301e1d7",
+    "background/background.go": "f36563eac6933881a62559a51831f86e03b3b60f4e840644eec4a79ad815b4d3",
+    "stage/stage.go": "1b332abc2baa19dea173ed7c96ea6c1ad5b468c3ea084476e6231765500ce55f",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
-    "system/fight_state.go": "c26a8a793731ac95e79fe9ab7561d0542d2b10778974436e7cf38aff9795d6e2",
+    "system/fight_state.go": "7fb0c79a76b3ad04813f98d09b5012bb6e3da9955123ea415d2ab4e0b1931bbe",
     "system/hud.go": "5f94f33cb0f2247e3b5dc8637a041d7c367d255d6d4f151107064ae65b995cdc",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
@@ -64,15 +66,15 @@
   "summary": {
     "manual": 89,
     "registered": 89,
-    "typed": 75,
-    "fallback": 14,
+    "typed": 76,
+    "fallback": 13,
     "missing": [],
     "consumer_status_counts": {
-      "stub": 2,
+      "stub": 1,
       "unconsumed-render-field": 0,
       "partial-consumer": 9,
       "missing-dispatcher": 0,
-      "bounded-native-consumer": 18,
+      "bounded-native-consumer": 19,
       "route-only": 60
     },
     "extra_registered_aliases": [
@@ -405,11 +407,11 @@
     {
       "name": "gamemakeanim",
       "registered": true,
-      "parameter_route": "fallback",
+      "parameter_route": "typed",
       "handler": "handleGameMakeAnim",
-      "consumer_status": "stub",
+      "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "character/character.go:GameMakeAnim"
+        "SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource production cues, caller/parameter profile math, helper/slot2, facing/global-unit random offsets, Pause/SuperPause-independent animation clock and under-actor drawing; 84 native programs/900 values pass,70 of72 strict world observers exact with two fractional color failures unwaived; independent admission, negative action, sub-game-pixel quantization and broader ownership/palette/foreground variants remain"
       ],
       "variants_complete": false
     },

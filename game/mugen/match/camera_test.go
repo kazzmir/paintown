@@ -212,12 +212,18 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 					X, Y   float64
 					Facing int `json:"facing"`
 				} `json:"explod_positions"`
-				RecipeHash           string             `json:"recipe_sha256"`
-				GameWidth            int                `json:"game_width"`
-				StateLanguageVersion string             `json:"state_language_version"`
-				Rules                map[string]float64 `json:"rules"`
-				ExtraHashes          map[string]string  `json:"extra_sha256"`
-				ProjectilePosition   *struct {
+				RecipeHash           string `json:"recipe_sha256"`
+				GameWidth            int    `json:"game_width"`
+				StateLanguageVersion string `json:"state_language_version"`
+				MugenVersion         string `json:"mugenversion"`
+				CommonAirPatch       *struct {
+					Canonical string `json:"canonical_sha256"`
+					Appendix  string `json:"appendix_sha256"`
+					Prepared  string `json:"prepared_sha256"`
+				} `json:"common_air_patch"`
+				Rules              map[string]float64 `json:"rules"`
+				ExtraHashes        map[string]string  `json:"extra_sha256"`
+				ProjectilePosition *struct {
 					Offset [2]float64 `json:"offset_from_owner"`
 					Facing int        `json:"facing"`
 				} `json:"projectile_position"`
@@ -265,11 +271,22 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 			// Check every authored input, including programs the reference rejects.
 			airBytes := checked(stem+".air", reference.AIRHash)
 			checked(stem+".stage.def", reference.StageHash)
+			var commonAir []byte
+			if patch := reference.CommonAirPatch; patch != nil {
+				commonAir = append(checked("../temp/mugen-1.1b1/data/fightfx.air", patch.Canonical), checked(stem+".common.air", patch.Appendix)...)
+				hash := sha256.Sum256(commonAir)
+				if hex.EncodeToString(hash[:]) != patch.Prepared {
+					t.Fatal("native common AIR preparation changed", path)
+				}
+			}
 			file, err := cns.ParseNamed(bytes.NewReader(checked(stem+".cns", reference.CNSHash)), stem+".cns")
 			if err != nil {
 				t.Fatal(err)
 			}
 			language := reference.StateLanguageVersion
+			if language == "" && reference.CommonAirPatch != nil {
+				language = reference.MugenVersion
+			}
 			if language == "" {
 				language = "1.1"
 			}
@@ -321,6 +338,12 @@ func replayNativeGeometryPrograms(t *testing.T, pattern string, count int) {
 				t.Fatal(err)
 			}
 			m := stockMatch(t, 99)
+			if commonAir != nil {
+				m.commonEffects.Animations, err = air.Parse(bytes.NewReader(commonAir))
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
 			if reference.EffectLimits.ExplodMax != nil {
 				m.Options.ExplodMax = max(8, *reference.EffectLimits.ExplodMax)
 				m.World.ExplodMax = m.Options.ExplodMax

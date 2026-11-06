@@ -86,7 +86,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 ## Tests
 
 ```bash
-# Build/test every MUGEN package against the stock reference corpus.
+# Build/test production MUGEN packages against the stock reference corpus.
 game/mugen/mugen.sh --check -p 1 -timeout=40m
 
 # Full race checks; allow roughly forty minutes for the full native replay corpus.
@@ -105,7 +105,18 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; through M4dk validation**.
+Snapshot: **2026-11-06; through the bounded M4dl checkpoint**.
+
+GameMakeAnim now has typed schemas and a production scene renderer, including
+native RNG phases, common resources, positioning, Pause/SuperPause clocks and
+behind-actor drawing. All **84 native programs pass**, pinning **900 values**;
+**70/72 world crops are exact (97.2% of this corpus)**. Two fractional color
+failures remain open. Full production races pass **5,028 results across36
+packages**; the launcher now excludes private historical snapshots discovered
+by that run. Fresh scope/compilation, older rendering checks and reviewed stock
+rematch/audio pass. MakeDust remains the sole source stub; game-cue admission,
+negative-action and finer coordinate variants are the next system-effect study.
+[Measured results and limits](docs/SYSTEM-EFFECTS.md).
 
 M4dk corrects KO voices and echoes under NoKO while preserving independent
 contact sound interruption. All **10 new CPU/native programs pass**; production
@@ -114,7 +125,7 @@ interval failure remains unwaived; no tolerance or sampling change was adopted.
 Focused races pass **889 core / 48 NoKO results**, and stock win/rematch/audio
 passes. [Evidence and limits](docs/NO-KO-AUDIO.md).
 
-The latest full scoped race suite, at M4dj's preceding source boundary, passes
+The preceding full scoped race suite at M4dj passes
 **4,918 results across 36 packages**. Its **44 new native programs** and **30/30
 world crops** pass across **15,264,000 RGB pixels**. [Lifecycle evidence](docs/NO-KO.md).
 Earlier guard/walk corrections remain covered; HUD and renderer failures remain open.
@@ -212,6 +223,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| GameMakeAnim corpus native programs in M4dl | 84 / 84 | **100%** | Recorded numeric/schema corpus including nine rejections and positive controls; unmeasured variants remain. |
+| GameMakeAnim corpus world crops in M4dl | 70 / 72 | **97.2%** | Two strict fractional color failures remain; three dynamic repeats have no fixed RGB claim. |
 | NoKO voice CPU/native programs in M4dk | 10 / 10 | **100%** | Recorded life/channel/voice/echo corpus; broader contexts remain. |
 | NoKO voice production audio comparisons in M4dk | 9 / 10 | **90%** | One ordinary echo-window failure remains unwaived; original sampler/tolerances retained. |
 | NoKO native lifetime/contact/entry programs in M4dj | 44 / 44 | **100%** | This recorded corpus; audio and wider entity/round variants remain. |
@@ -232,8 +245,8 @@ remain item 4. There is no measured whole-engine completion percentage. The
 | Shadow native numeric/schema programs in M4da | 98 / 98 | **100%** | This recorded corpus only; includes three expected load rejections. |
 | Exact shadow image crops in M4da | 35 / 95 | **36.8%** | Strict pixels; 60 one/two-byte fringe/scale failures remain. No tolerance relaxed. |
 | Projectile image programs in the historical M4cz corpus | 152 / 154 | **98.7%** | M4cz result; M4da separately fixes both missing-shadow controls. The whole image corpus was not rerun here. |
-| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; two stubs and other partial consumers remain. Not full controller compatibility. |
-| Documented controller names with typed compiler routes | 75 / 89 | **84.3%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
+| Documented controller names with dispatcher registrations | 89 / 89 | **100%** | Names only; one stub and other partial consumers remain. Not full controller compatibility. |
+| Documented controller names with typed compiler routes | 76 / 89 | **85.4%** | Parameter routing only; native variants and dependent consumers remain incomplete. [Source audit](docs/CONTROLLER-BINDINGS.md). |
 | Documented trigger names recognized by static validation | 127 / 127 | **100%** | Recognized vocabulary; environment bindings and all variants still need coverage. |
 | Trigger families with candidate runtime routes | 120 / 127 | **94.5%** | Source routing only; seven unbound, variants incomplete. [Audit](docs/TRIGGER-BINDINGS.md). |
 | Documented GetHitVar selector routes | 34 / 36 | **94.4%** | All 34 beta-accepted selectors have routes; two manual-only names reject. [Recovery evidence](docs/LIEDOWN-RECOVERY.md). |

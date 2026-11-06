@@ -1282,7 +1282,13 @@ func (c *Character) FallEnvShake(params map[string]string) {
 }
 
 func (c *Character) GameMakeAnim(params map[string]string) {
-	// Stub: system animations (dust, sparks)
+	version := ""
+	if owner := c.currentStateOwner(); owner.StateFile != nil && owner.StateFile.States[c.StateNo] != nil {
+		version = owner.StateFile.States[c.StateNo].LanguageVersion
+	}
+	if err := engine.ExecuteGameAnimation(params, c.stateEnvironment(), version); err != nil {
+		c.RuntimeError = fmt.Errorf("GameMakeAnim: %w", err)
+	}
 }
 
 func (c *Character) MakeDust(params map[string]string) {

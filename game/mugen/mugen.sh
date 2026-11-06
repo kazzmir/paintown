@@ -72,7 +72,21 @@ elif [[ "$1" == "--test" ]]; then
     shift 2
 elif [[ "$1" == "--check" ]]; then
     shift
-    exec go test ./game/mugen/... "$@"
+    # Private source snapshots and experiments are not engine packages. Keep
+    # their paths intact while excluding them from recursive validation.
+    package_list=$(go list -e -f '{{.ImportPath}}' ./game/mugen/...)
+    packages=()
+    while IFS= read -r package; do
+        case "$package" in
+            */game/mugen/temp|*/game/mugen/temp/*|"") continue ;;
+        esac
+        packages+=("$package")
+    done <<< "$package_list"
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        printf 'Error: no MUGEN packages found.\n' >&2
+        exit 1
+    fi
+    exec go test "${packages[@]}" "$@"
 elif [[ "$1" == "--reference-tools" ]]; then
     mkdir -p "$DIR/temp/reference-tools"
     exec env GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -o "$DIR/temp/reference-tools/wintext.exe" "$DIR/tests/reference_text"

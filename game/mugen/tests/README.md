@@ -1118,3 +1118,29 @@ ledger's390 versioned Go/parser/unused-probe authoring sources are pinned by
 snapshots. Validate these archived versions; native-used recorders, native
 programs/resources/configs/captures/PCM remain immutable at original paths.
 Read [the results and limits](../docs/NO-KO-AUDIO.md) before claiming audio parity.
+
+
+## GameMakeAnim native replay and world rendering (M4dl)
+
+Six TestNativeGameAnimation functions replay84 programs /900 recorded values,
+including nine expected rejections, two real Explod resource positives and a
+no-cue baseline. Five native/configuration ledgers pin originals and the exact
+AfterImageMax16 preparation. CommonAirPatch checks canonical AIR and a text-only
+appendix before parsing their exact combination in memory; canonical files stay
+unchanged. All84 replays pass.
+
+`game_animation_render_probe.py --fixture NAME --go-run RUN --name FRESH_NAME`
+compares72 independently selected fixed world observers using exact native Match
+seeds. It checks source/config/resource/capture/binary/seed provenance; no RGB
+allowance is used.70/72 are exact; the two strict fractional color failures stay
+unwaived. Three unpaused finite-repeat scenes remain dynamic diagnostics without
+fixed RGB expectations. Preserve native captures at their recorded private paths.
+
+Full production races pass5,028 results /36 packages. The original recursive
+command also discovered36 private historical snapshot packages and retained
+exit1 from their absent fixture sets. `mugen.sh --check` now filters temp package
+paths, verified by fresh race-enabled compilation of exactly36 production
+packages. The old full-run script/inventory versions are preserved separately;
+production Go/test source did not change after those5,028 results. All72pairs,
+old9 rendering checks and stock win/rematch/win are reviewed;82 input events and
+1,972,096 private PCM frames pass. See [findings and remaining bounds](../docs/SYSTEM-EFFECTS.md).

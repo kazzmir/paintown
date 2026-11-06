@@ -69,7 +69,9 @@ func (s *FightState) drawEffects(screen *ebiten.Image, layers ...int) {
 			continue
 		}
 		layer := 1
-		if instance.OnTop {
+		if instance.Under {
+			layer = 0
+		} else if instance.OnTop {
 			layer = 2
 		} else if instance.OwnerDriven {
 			continue
