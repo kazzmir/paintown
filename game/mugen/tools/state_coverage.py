@@ -160,8 +160,8 @@ def markdown(value):
              '## Completed scenario coverage', '',
              'Completed segments are excluded from default runs. Only a change to their',
              'covered source, a reported regression, or an explicit rerun reopens them.',
-             'These scenarios passed at M4dr; reorganizing their entry points does not',
-             'require running the historical data again.', '']
+             'Checkmarks record successful runs against the covered source fingerprint;',
+             'source changes reopen only the affected segments.', '']
     for row in value['segments']:
         mark = 'x' if row['complete'] else ' '
         lines.append(f"- [{mark}] **{row['id']}**: {row['contract']}.")
@@ -188,8 +188,7 @@ def markdown(value):
             lines.append(f"| {row['name']} | {row.get('gap') or 'Missing production route.'} |")
     missing = [row['name'] for row in value['triggers'] if row['status'] == 'missing']
     lines.extend(['', 'Missing trigger routes: ' + ', '.join('`' + x + '`' for x in missing) + '.', '',
-                  'Stage/team context belongs with the later modes/assets allocation; edge',
-                  'bindings remain state-machine work.', '',
+                  'Remaining stage/team context belongs with the later modes/assets allocation.', '',
                   '## How progress is updated', '',
                   '1. Pick an unchecked feature and implement a coherent batch.',
                   '2. Update its status in `STATE-MACHINE-FEATURES.json`.',

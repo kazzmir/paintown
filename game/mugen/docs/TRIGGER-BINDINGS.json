@@ -3,15 +3,13 @@
   "kind": "source-routing-inventory",
   "manual_sha256": "9a6636b9e14edc1c91b38de7357aae43049d2a612313d10be55f6e6117ab121c",
   "family_count": 127,
-  "route_present": 120,
+  "route_present": 122,
   "unbound": [
-    "bottomedge",
     "ishometeam",
     "p3name",
     "p4name",
     "stagevar",
-    "teammode",
-    "topedge"
+    "teammode"
   ],
   "triggers": [
     {
@@ -146,8 +144,10 @@
     },
     {
       "name": "bottomedge",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
       "variants_complete": false
     },
     {
@@ -990,8 +990,10 @@
     },
     {
       "name": "topedge",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/context.go:lookupViewport"
+      ],
       "variants_complete": false
     },
     {

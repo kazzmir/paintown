@@ -12,13 +12,11 @@
     }
   },
   "trigger_gap_allocations": {
-    "bottomedge": "item3 edge bindings",
     "ishometeam": "item4 stage/team context",
     "p3name": "item4 stage/team context",
     "p4name": "item4 stage/team context",
     "stagevar": "item4 stage/team context",
-    "teammode": "item4 stage/team context",
-    "topedge": "item3 edge bindings"
+    "teammode": "item4 stage/team context"
   },
   "mechanics": [
     {
@@ -272,11 +270,12 @@
       "id": "start-constraints",
       "name": "Cold-start screen constraint ordering",
       "group": "Characters and combat",
-      "status": "partial",
-      "gap": "Correct the retained negative-camera P2 first-pass constraint discrepancy.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item3",
       "sources": [
-        "match/match.go:Update"
+        "character/character.go:runStateTick",
+        "match/camera.go:updateHorizontalCamera"
       ]
     },
     {
@@ -385,9 +384,10 @@
       "name": "Remaining stage, viewport and team trigger bindings",
       "group": "State machine",
       "status": "partial",
-      "gap": "Bind the seven currently missing trigger families; stage/team context belongs with item4.",
-      "allocation": "item3 edges / item4 context",
+      "gap": "Bind IsHomeTeam, P3Name, P4Name, StageVar and TeamMode with the later modes/team context.",
+      "allocation": "item4 context",
       "sources": [
+        "character/context.go:lookupViewport",
         "evaluator/names.go"
       ]
     },
@@ -473,11 +473,15 @@
         {
           "file": "character/tick_test.go",
           "name": "TestContactContinuationDoesNotRepeatNegativeStatesOrTimeZero"
+        },
+        {
+          "file": "match/bootcamera_test.go",
+          "name": "TestCameraStartupViewportAndResetFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d49036ba35f35cb4d0d56881d8953719b2d6ba58451b5b0ce826ccbd4a366d40"
+      "passed_source": "5e7728eebcab1b27de8a0f8915be02c31ac7be9c5e57d9e554a02c21da38b5dd"
     },
     {
       "id": "entities",
@@ -503,7 +507,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4b450febdc91ea846301498ccf6e1729e9f8d6053d6d5cc5772f8e6f16f7944b"
+      "passed_source": "a4352223c48afe58a05f22a84fb93890f90eaf6186a2cc20034e443bf93e9467"
     },
     {
       "id": "effects-pause",
@@ -535,7 +539,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "bff0e589aebf7f147b5b836870daabba08d2f140128c2c7d19e163fb2cf2c4ad"
+      "passed_source": "0a222a1e4ec548c92c25ad1be8aaeff7b262facb247a89e6f08f51c09421ebfc"
     },
     {
       "id": "match-flow",
@@ -590,7 +594,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8e835fa0ff30eefef1712c14eedbaacb84605af0105e40783e0e90677357db62"
+      "passed_source": "e360b120c8aecc008a54ddef1f64ca86991749504790dbb4d3a2a09ac9799e0b"
     }
   ],
   "presentation_followups": [

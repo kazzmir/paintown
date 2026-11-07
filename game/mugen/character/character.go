@@ -426,6 +426,13 @@ func (c *Character) runStateTick() bool {
 		c.bufferPausedCommands()
 		return true
 	}
+	// An earlier actor can publish a new camera after startTick. Constrain
+	// against that viewport before this actor's CNS observes its position.
+	// The preceding pass's ScreenBound/Width remain effective until CNS
+	// renews them below; frozen and hit-paused poses are left alone.
+	if !c.IsPaused() {
+		c.constrainPosition()
+	}
 	c.prepareBinding()
 	c.pausedThisTick = c.HitPauseTime > 0
 	isPaused := c.IsPaused()

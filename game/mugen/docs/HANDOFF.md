@@ -5,24 +5,23 @@ Use [PROGRESS.md](PROGRESS.md) as the single completion ledger and
 in coherent batches with local source/text commits, no pushes or generated
 fixture banks. Item4 modes/teams/AI/BGM/assets/platforms remains unallocated.
 
-Two implementation batches are now complete: announcement clocks/controller
-schemas (0867ef609), followed by formatted clipboard/debug display and combo
-bookkeeping/HUD. Clipboard compiles documented numeric printf conversions,
-escapes, six ordered expressions and mismatch defaults. Ctrl-D cycles root/helper
-debug selection and off when allowed. Combo contacts, HitAdd and helper/projectile
-ownership feed the root's displayed total; recovery resets bookkeeping while the
-HUD retains its timed result. New rounds clear both buffers and presentation.
+Recent implementation checkpoints cover announcement clocks/controller schemas
+(0867ef609), formatted clipboard/debug display and combo lifecycle/HUD (54eaea2c9),
+then startup constraints and top/bottom edge queries. The latter constrains an
+active actor against the camera published by earlier actors before its CNS pass;
+previous ScreenBound/Width choices remain effective until renewed. Edge queries
+share ScreenPos Y crop/zoom/shake and float32 arithmetic from the beta definitions.
 
-Each batch ran its affected consolidated suites once with -race. The latest
-pass covers19 top-level scenarios in four packages, including connected
-clipboard/contact/helper/debug/pause/recovery/display-expiry flow, announcement/
-controller/KO/round-reset flow and stock input-driven matches/rematches. Shared
-assets were read in place; scratch was automatically removed and no clients
-remain. Do not rerun completed suites without a related change/regression.
+The latest affected segment run passes13 top-level connected scenarios across
+three packages with race detection, including all four retained startup controls,
+mixed-coordinate viewport/pause/reset flow and stock complete matches/rematches.
+State-flow stayed complete and was not rerun. Shared assets were read in place;
+scratch was automatically removed and no clients remain.
 
-Next: fix the retained negative-camera startup constraint and implement top/bottom
-edge queries. Then address the recorded concrete presentation/audio defects and
-run affected end-state acceptance. No new native parameter matrices are needed.
+Next: address recorded concrete presentation/audio defects, then final affected
+end-state acceptance. Do not expand native parameter matrices or claim unresolved
+raster/audio precision complete. The five remaining trigger routes depend on
+stage/team context in item4; NoMusic depends on BGM there.
 
 The supplied distribution is temp/mugen-1.1b1/. Cache, development headers and
 private Xvfb:97/Pulse/Wine tools remain. Old copied run banks/raw captures were

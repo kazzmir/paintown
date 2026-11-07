@@ -162,7 +162,7 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 
 func (c *Character) lookupViewport(name string) (evaluator.Value, bool) {
 	switch name {
-	case "gamewidth", "gameheight", "screenwidth", "screenheight", "screenpos x", "screenpos y", "camerapos x", "camerapos y", "camerazoom":
+	case "gamewidth", "gameheight", "screenwidth", "screenheight", "screenpos x", "screenpos y", "camerapos x", "camerapos y", "camerazoom", "topedge", "bottomedge":
 	default:
 		return evaluator.Value{}, false
 	}
@@ -196,10 +196,19 @@ func (c *Character) lookupViewport(name string) (evaluator.Value, bool) {
 		value = zoom
 	case "screenpos x":
 		value = float32(c.X - float64(cameraX) + float64(width)/float64(zoom)/2)
-	case "screenpos y":
+	case "screenpos y", "topedge", "bottomedge":
 		value = float32(c.Y - float64(cameraY) + v.GroundY*float64(scale)/float64(zoom))
 		if c.Timeline != nil {
 			value += float32(c.Timeline.ShakeOffset()) * float32(c.LocalCoordinateWidth()) / 320
+		}
+		if name != "screenpos y" {
+			// The beta defines TopEdge as Pos Y - ScreenPos Y, and
+			// BottomEdge as that result + GameHeight. Keep the same
+			// float32 operations, crop, zoom and shake as those triggers.
+			value = float32(c.Y) - value
+			if name == "bottomedge" {
+				value += height / zoom
+			}
 		}
 	}
 	return evaluator.Float(value), true

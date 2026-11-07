@@ -6,15 +6,15 @@ items name the remaining work. Counts below are feature/route counts, not
 an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 1 known partial, 0 missing.
-- Triggers: 120/127 runtime routes; 7 missing.
-- Project items: 24 implemented, 7 partial, 2 missing.
+- Triggers: 122/127 runtime routes; 5 missing.
+- Project items: 25 implemented, 6 partial, 2 missing.
 
 ## Completed scenario coverage
 
 Completed segments are excluded from default runs. Only a change to their
 covered source, a reported regression, or an explicit rerun reopens them.
-These scenarios passed at M4dr; reorganizing their entry points does not
-require running the historical data again.
+Checkmarks record successful runs against the covered source fingerprint;
+source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
 - [x] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
@@ -34,7 +34,7 @@ require running the historical data again.
 - [x] Controller persistence and hit-pause eligibility.
 - [x] Borrowed states, animation and SelfState ownership.
 - [x] Remaining variable and StateTypeSet schemas.
-- [ ] Remaining stage, viewport and team trigger bindings. **partial** — Bind the seven currently missing trigger families; stage/team context belongs with item4. (item3 edges / item4 context)
+- [ ] Remaining stage, viewport and team trigger bindings. **partial** — Bind IsHomeTeam, P3Name, P4Name, StageVar and TeamMode with the later modes/team context. (item4 context)
 
 ### Characters and combat
 
@@ -45,7 +45,7 @@ require running the historical data again.
 - [x] Hit, fall, landing and recovery state progression.
 - [x] Death latching, KO and damage grace.
 - [x] Combo count lifecycle and HUD consumer.
-- [ ] Cold-start screen constraint ordering. **partial** — Correct the retained negative-camera P2 first-pass constraint discrepancy.
+- [x] Cold-start screen constraint ordering.
 
 ### Controllers and effects
 
@@ -86,10 +86,9 @@ implementation tasks by themselves.
 | --- | --- |
 | assertspecial | NoMusic has no BGM consumer. |
 
-Missing trigger routes: `bottomedge`, `ishometeam`, `p3name`, `p4name`, `stagevar`, `teammode`, `topedge`.
+Missing trigger routes: `ishometeam`, `p3name`, `p4name`, `stagevar`, `teammode`.
 
-Stage/team context belongs with the later modes/assets allocation; edge
-bindings remain state-machine work.
+Remaining stage/team context belongs with the later modes/assets allocation.
 
 ## How progress is updated
 

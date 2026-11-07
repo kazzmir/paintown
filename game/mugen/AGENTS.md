@@ -59,5 +59,7 @@ Before each local commit audit explicit staged paths and UTF-8/no-NUL text; add 
 temp/testdata/binary or outside-scope files. Avoid force-adding directories. No
 new native data was promoted. Announcement scheduling, residual schemas, clipboard/debug output and combo
 lifecycle/HUD are implemented. Their affected segments passed with race
-detection. Next: startup constraints and top/bottom edge bindings. Read
+detection. Startup constraints and top/bottom edge bindings are also complete; the four
+affected segments pass with race detection. Next: concrete presentation/audio
+follow-ups and playable acceptance. Read
 docs/PROGRESS.md and docs/HANDOFF.md; do not restart historical research matrices.
