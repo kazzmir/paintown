@@ -36,6 +36,23 @@ Launch the title/menu and character/stage selection:
 game/mugen/mugen.sh --game --data-dir game/mugen/temp/mugen-1.1b1
 ```
 
+Stages belong under the selected data root's `stages/` directory, but the menu
+uses a selection list rather than scanning that directory. Add each stage DEF
+under `[ExtraStages]` in the active motif's `select.def`. With the supplied
+`data/mugen1/system.def` motif, that file is `data/select.def`, for example:
+
+```ini
+[ExtraStages]
+stages/venice.def
+stages/deejay.def
+```
+
+Keep each stage's SFF and any music referenced by its DEF at the authored paths.
+Restart the game after editing the list; select a stage after confirming both
+characters. Characters similarly belong under `chars/` and need entries under
+`[Characters]`. A motif can have its own selection file, such as
+`data/kfm/select.def` for the alternate KFM motif.
+
 Start a two-player KFM versus KFM720 match immediately:
 
 ```bash
