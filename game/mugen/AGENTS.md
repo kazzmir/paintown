@@ -75,3 +75,15 @@ alpha/KO echo, recovery amount/rounding and AI policy are deferred precision.
 Licensed Windows fonts are absent; the observable fallback needs a supplied
 font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
+
+
+## Resumed compatibility/color pass
+
+The user resumed work after stage/tracker playtesting. Legacy DEF ACT banks now
+load explicitly with shared/private sprite identity, initial outfit/default HUD
+portrait separation, helper ownership and round reset. One bounded original
+1.1b1 color control confirms the initial body/portrait distinction; all five
+connected segments pass with race detection. Native invalid-content rejection
+is not established (the native control required complete constants/CMD blocks
+and standard SFF1.0.1 metadata). Keep that limitation visible in the ledger.
+Remaining precision is still partial; do not claim full native equivalence.

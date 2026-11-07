@@ -73,6 +73,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 	}
 
 	currentPalette := initialPalette
+	currentShared := initialPalette != nil
 	spriteIndex := make(map[uint16]*Sprite)
 	var currentIndex uint16 = 0
 
@@ -137,9 +138,11 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			// 3. Otherwise, if samePalette is false, extract the PCX palette and update the shared state.
 			var palToUse color.Palette
 			var palToUseOpaque color.Palette
+			shared := currentShared
 
 			if group == 9000 {
 				if !samePalette {
+					shared = false
 					palToUse, _ = ExtractPalette(pcxData, true)
 					palToUseOpaque, _ = ExtractPalette(pcxData, false)
 					// Portraits don't update currentPalette/SharedPalette
@@ -156,10 +159,13 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 						// Case: (0,0) and initialPalette exists -> ignore internal PCX palette
 						if group == 0 && item == 0 && initialPalette != nil {
 							currentPalette = initialPalette
+							currentShared = true
 						} else {
 							currentPalette = palM
+							currentShared = sff.SharedPalette == nil
 						}
 						palToUse = currentPalette
+						shared = currentShared
 						palToUseOpaque = palO
 
 						if sff.SharedPalette == nil {
@@ -180,6 +186,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			}
 
 			if palToUse == nil {
+				shared = true
 				palToUse = sff.SharedPalette
 			}
 			if palToUseOpaque == nil {
@@ -196,14 +203,19 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 				return nil, fmt.Errorf("sprite %d (%d,%d) opaque: %w", i, group, item, err)
 			}
 			if err == nil {
+				paletteIndex := -1
+				if shared {
+					paletteIndex = 0
+				}
 				sff.Sprites = append(sff.Sprites, Sprite{
-					GroupNumber: group,
-					ImageNumber: item,
-					XAxis:       x,
-					YAxis:       y,
-					Linked:      false,
-					Image:       img,
-					ImageOpaque: imgOpaque,
+					PaletteIndex: paletteIndex,
+					GroupNumber:  group,
+					ImageNumber:  item,
+					XAxis:        x,
+					YAxis:        y,
+					Linked:       false,
+					Image:        img,
+					ImageOpaque:  imgOpaque,
 				})
 			}
 			spriteIndex[currentIndex] = &sff.Sprites[len(sff.Sprites)-1]
@@ -219,6 +231,9 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 		}
 	}
 
+	if sff.SharedPalette != nil {
+		sff.Palettes = []Palette{{GroupNumber: 1, ItemNumber: 1, Colors: opaquePalette(sff.SharedPalette)}}
+	}
 	return sff, nil
 }
 

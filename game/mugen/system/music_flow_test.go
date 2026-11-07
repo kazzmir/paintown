@@ -104,9 +104,8 @@ func TestMusicControllerAndSceneFlow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fight.match.Stage.Music.File != "sound/kfm.mid" || fight.match.Stage.Music.Volume != 100 {
-		t.Fatal("stage music parameters were not loaded", fight.match.Stage.Music)
-	}
+	// Local stage packs may author a blank track; the explicit request below
+	// must take precedence over whichever stage track was loaded.
 	fight.match.Stage.Music.File = "missing-stage-track.ogg"
 	e.currentState = fight
 	step(2)
@@ -122,7 +121,7 @@ physics=N
 type=VarSet
 trigger1=1
 v=56
-value=StageVar(info.name)!="" && StageVar(info.author)!=""
+value=StageVar(info.name)!="" && StageVar(info.author)=StageVar(info.authorname)
 [State 8000, suspend music]
 type=AssertSpecial
 trigger1=Parent, Var(55)

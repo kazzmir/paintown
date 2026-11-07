@@ -3,7 +3,6 @@ package character
 import (
 	"bytes"
 	"fmt"
-	"image/color"
 	"os"
 	"path/filepath"
 	"sort"
@@ -13,7 +12,6 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
-	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -189,10 +187,13 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, context("sprite", err)
 	}
-	p.SFF, err = sff.ParseWithPalette(sprites, legacyPalette(baseDir, defFile))
+	p.SFF, err = sff.Parse(sprites)
 	sprites.Close()
 	if err != nil {
 		return nil, context("sprite", fmt.Errorf("%s: %w", spritePath, err))
+	}
+	if err := p.loadLegacyPalettes(); err != nil {
+		return nil, err
 	}
 	animPath, err := resolve("anim")
 	if err != nil {
@@ -226,30 +227,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	p.Character.SM = compiler
 	p.Character.OwnSounds = p.SND
 	p.Character.LocalCoord = local
-	p.Character.Palettes = palette.New(p.SFF)
+	p.BindPalette(p.Character, 1)
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR
 	return p, nil
-}
-
-// Preserve the earlier v1 palette fallback until selected-palette behavior has
-// its own reference fixtures. This is not the final DEF palN implementation.
-func legacyPalette(baseDir, defFile string) color.Palette {
-	name := strings.TrimSuffix(filepath.Base(defFile), filepath.Ext(defFile))
-	path := filepath.Join(baseDir, name+".act")
-	if _, err := os.Stat(path); err != nil {
-		entries, _ := os.ReadDir(baseDir)
-		for _, entry := range entries {
-			if strings.EqualFold(filepath.Ext(entry.Name()), ".act") {
-				path = filepath.Join(baseDir, entry.Name())
-				break
-			}
-		}
-	}
-	file, err := os.Open(path)
-	if err != nil {
-		return nil
-	}
-	defer file.Close()
-	palette, _ := sff.ReadPaletteACT(file, true)
-	return palette
 }

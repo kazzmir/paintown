@@ -65,7 +65,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable on Linux. File music formats, FNT v1/v2/TrueType, storyboard text/sounds/windows, AIR 1.1 interpolation and contextual asset errors are implemented. Missing licensed Windows fonts use an observable fallback; exact raster matching is deferred. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
 - [ ] Deferred native fidelity and recovery calibration. **partial** — Resolve remaining color/shadow/alpha and KO-echo differences, calibrate provisional turns/survival recovery and native AI decision policy; functional consumers exist. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms

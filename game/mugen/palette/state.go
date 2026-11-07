@@ -12,11 +12,12 @@ import (
 type ID [2]int
 
 type State struct {
-	Archive      *sff.SFF
-	Revision     uint64
-	mappings     map[ID]ID
-	hitFX        HitEffect
-	controllerFX Effect
+	Archive       *sff.SFF
+	Revision      uint64
+	mappings      map[ID]ID
+	legacyInitial bool
+	hitFX         HitEffect
+	controllerFX  Effect
 }
 
 func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: map[ID]ID{}} }
@@ -24,6 +25,7 @@ func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: ma
 func (s *State) Clone() *State {
 	copy := New(s.Archive)
 	copy.Revision = s.Revision
+	copy.legacyInitial = s.legacyInitial
 	copy.hitFX = s.hitFX
 	copy.controllerFX = s.controllerFX
 	for source, dest := range s.mappings {
@@ -43,7 +45,25 @@ func (s *State) index(id ID) (int, bool) {
 	return 0, false
 }
 
-func (s *State) Remap(source, dest ID) error {
+// SelectLegacy marks the engine's initial V1 outfit separately from authored
+// RemapPal calls: native V1 HUD portraits retain their default bank at entry.
+func (s *State) SelectLegacy(dest ID) error {
+	if err := s.Remap(ID{1, 1}, dest); err != nil {
+		return err
+	}
+	s.legacyInitial = dest != (ID{1, 1})
+	return nil
+}
+
+func (s *State) Remap(source, dest ID) (result error) {
+	clearInitial := s.legacyInitial && (source == (ID{1, 1}) || source[0] == -1)
+	defer func() {
+		if result == nil && clearInitial {
+			s.legacyInitial = false
+			s.Revision++
+		}
+	}()
+
 	wildcard := ID{-1, 0}
 	if source[0] == -1 {
 		source = wildcard
@@ -135,6 +155,9 @@ func (s *State) MappedImage(index int, masked bool) (image.Image, error) {
 		p := s.Archive.Palettes[sprite.PaletteIndex]
 		source := ID{int(p.GroupNumber), int(p.ItemNumber)}
 		dest := s.Destination(source)
+		if s.legacyInitial && s.Archive.Version[0] == 1 && sprite.GroupNumber == 9000 && source == (ID{1, 1}) {
+			dest = source
+		}
 		if dest != source {
 			paletteIndex, _ = s.index(dest)
 		}

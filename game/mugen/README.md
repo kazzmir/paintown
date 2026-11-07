@@ -147,6 +147,12 @@ and remove scratch automatically. The 2026-11-06 cleanup reclaimed126.58 GiB fro
 old run banks while preserving the reference distribution and working tools.
 See the [short handoff](docs/HANDOFF.md) and [implementation plan](docs/ITEM-3-PLAN.md).
 
+Legacy SFF v1 characters now load the ACT files declared as `pal1`–`pal12` in
+their DEF, preserving private sprite colors. Outfits follow selection and round
+reset; legacy HUD portraits retain their default bank as observed in1.1b1.
+Modern 1.x characters keep their authored `RemapPal` initialization, including
+those that still use SFF v1.
+
 Linux legacy music optionally uses installed `libfluidsynth.so.3` for MIDI and
 `libopenmpt.so.0` for MOD/S3M/XM/IT. MIDI needs a GM SoundFont: set
 `MUGEN_SOUNDFONT=/path/to/font.sf2`, or use an installed TimGM6mb/FluidR3_GM font.

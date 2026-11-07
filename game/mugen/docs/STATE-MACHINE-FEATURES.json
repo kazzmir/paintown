@@ -319,7 +319,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable on Linux. File music formats, FNT v1/v2/TrueType, storyboard text/sounds/windows, AIR 1.1 interpolation and contextual asset errors are implemented. Missing licensed Windows fonts use an observable fallback; exact raster matching is deferred.",
+      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -327,8 +327,12 @@
         "storyboard/loader.go:Load",
         "storyboard/storyboard.go:SoundCommands",
         "air/air.go:Sample",
-        "system/mode_screens.go:victoryQuote"
-      ]
+        "system/mode_screens.go:victoryQuote",
+        "character/palette_load.go:loadLegacyPalettes",
+        "character/palette_load.go:BindPalette",
+        "palette/state.go:SelectLegacy"
+      ],
+      "validation": "Legacy ACT outfit/shared-private sprite/helper/round-reset lifecycle passes; one original 1.1b1 color scenario confirms alternate body/default HUD portrait distinction."
     },
     {
       "id": "raster-audio",
@@ -485,7 +489,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fa87da51c0258d5854c05286d184474c6bacbae8ec939241ce9b24179c1af274"
+      "passed_source": "1e89149c24a2b5ddba90002f50bd18f9989ea05e72dc762039f51d3ebc73342f"
     },
     {
       "id": "entities",
@@ -515,7 +519,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d4f2d55e6e52556666f831f95f11f347764d7dc26444e59c0cd7e95273dc55f1"
+      "passed_source": "09ecd88cf44d8dbe1b7d2a07148696d0fe71842488532f4e135913b13f1c5852"
     },
     {
       "id": "effects-pause",
@@ -547,7 +551,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3e955dc1c5ecf20b3c2f6cfc1cf76cac15bedbfbd39e328c66aa341d30c12bd8"
+      "passed_source": "1f5b8128ba3fc68c526fabafb967dabb5ae69779870000e1ec59bf74f7791b30"
     },
     {
       "id": "match-flow",
@@ -622,7 +626,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "76f7c49d993ae803ba68eb7e720f72c0013037324a8067370fd549b245a2f314"
+      "passed_source": "b2782cffcb183753f33ed5f0fe08d7a0ca83a49abaf61a8a011833d9d0857b4b"
     }
   ],
   "presentation_followups": [

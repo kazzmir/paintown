@@ -15,7 +15,6 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/fight"
-	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sound"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 )
@@ -202,6 +201,7 @@ func New(request Request, options Options) (*Match, error) {
 			if err != nil {
 				return nil, fmt.Errorf("team %d member %d: %w", side+1, index+1, err)
 			}
+			player.BindPalette(player.Character, selected.Palette)
 			team.Members = append(team.Members, player)
 		}
 		m.Players[side] = team.Members[0]
@@ -277,11 +277,12 @@ func (m *Match) resetRound() error {
 		c.BindTimeline(m.Timeline)
 		c.SuperTargetDefenceMul = m.Options.SuperTargetDefenceMul
 		c.PowerRules = m.Options.PowerRules
-		c.Palettes = palette.New(p.SFF)
+
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.InputSlot, p.InputSlot = slot+1, slot+1
 		selected, _ := m.SelectionForPlayer(slot + 1)
-		c.PaletteNo, c.AILevel = selected.Palette, selected.AILevel
+		p.BindPalette(c, selected.Palette)
+		c.AILevel = selected.AILevel
 		c.TeamSide = side + 1
 		c.RoundNo, c.RoundsExisted, c.RoundState = m.Round, 0, 0
 		if m.Round > 1 && m.Teams[side].entered[p] {
