@@ -42,6 +42,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	stage.StageInfo.AutoTurn = true
 	stage.StageInfo.XScale, stage.StageInfo.YScale = 1, 1
 	stage.Camera.StartZoom, stage.Camera.ZoomOut, stage.Camera.ZoomIn = 1, 1, 1
+	stage.Camera.RoundBackground = true
 	stage.Shadow.Intensity, stage.Shadow.YScale = 128, .4
 	stageDir := filepath.Dir(absPath)
 
@@ -61,6 +62,13 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.DisplayName = background.GetString(attr.Value)
 				case "author":
 					stage.Author = background.GetString(attr.Value)
+				case "mugenversion":
+					value := attr.Value
+					if list, ok := value.(*parsers.ValueList); ok && len(list.Values) > 0 {
+						value = list.Values[0]
+					}
+					version := background.GetFloat(value)
+					stage.Camera.RoundBackground = version < 1 || version >= 1000
 				}
 			}
 		case name == "music":
@@ -81,9 +89,9 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
 				case "startx":
-					stage.Camera.StartX = background.GetFloat(attr.Value)
+					stage.Camera.StartX = math.Trunc(background.GetFloat(attr.Value))
 				case "starty":
-					stage.Camera.StartY = background.GetFloat(attr.Value)
+					stage.Camera.StartY = math.Trunc(background.GetFloat(attr.Value))
 				case "startzoom":
 					stage.Camera.StartZoom = background.GetFloat(attr.Value)
 				case "zoomout":

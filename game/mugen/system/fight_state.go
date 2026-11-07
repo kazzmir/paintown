@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/combat"
 	"github.com/kazzmir/paintown/game/mugen/coord"
@@ -111,13 +112,16 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	stageSpace, gameSpace := m.Stage.StageInfo.LocalCoord, m.Options.GameSpace
 	motifSpace := s.engine.motif.Info.LocalCoord
 	if s.stageCanvas == nil {
-		s.stageCanvas = ebiten.NewImage(stageSpace.Width, stageSpace.Height)
+		s.stageCanvas = ebiten.NewImage(gameSpace.Width, gameSpace.Height)
 		s.gameCanvas = ebiten.NewImage(gameSpace.Width, gameSpace.Height)
 		s.hudCanvas = ebiten.NewImage(motifSpace.Width, motifSpace.Height)
 	}
 	toStage, _ := gameSpace.ScaleTo(stageSpace)
 	stageToGame, _ := stageSpace.ScaleTo(gameSpace)
 	cameraX, cameraY := m.CameraX*toStage, (m.CameraY-m.Viewport.CropY)*toStage
+	projection := background.Projection{Space: stageSpace, Transform: coord.Transform{
+		ScaleX: stageToGame, ScaleY: stageToGame, Y: -m.Viewport.CropY,
+	}}
 	m.Stage.Background.CameraZoom = m.Viewport.ZoomScale()
 	allPalette := m.Timeline.AllPalette.Transform()
 	backgroundPalette := palette.Combine(m.Timeline.BackgroundPalette.Transform(), allPalette)
@@ -126,16 +130,15 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	tint := m.Timeline.SceneTint()
 	s.stageCanvas.Fill(allPalette.ClearColor(color.Black))
 	if !environmentActive && !m.Timeline.NoBackground {
-		if err := m.Stage.DrawWithPaletteTint(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette, tint); err != nil {
+		if err := m.Stage.DrawWithPaletteTint(s.stageCanvas, cameraX, cameraY, backgroundPalette, allPalette, tint, projection); err != nil {
 			s.renderError = err
 			return
 		}
 	}
 	s.gameCanvas.Fill(allPalette.ClearColor(color.Black))
-	// Indexed stage pixels remain plateaus through the viewport fit.
+	// Backgrounds rasterize directly at game resolution, retaining fractional
+	// camera projection without an intermediate stage-pixel rounding step.
 	backgroundOptions := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
-	backgroundOptions.GeoM.Scale(stageToGame, stageToGame)
-	backgroundOptions.GeoM.Translate(0, -m.Viewport.CropY)
 	if environmentActive {
 		// Negative durations suppress the stage but draw no color quad.
 		s.gameCanvas.Fill(color.Black)
@@ -178,7 +181,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// quad covers it; an under quad leaves it visible above the actors.
 	s.stageCanvas.Clear()
 	if !m.Timeline.NoForeground {
-		if err := m.Stage.DrawForegroundWithPaletteTint(s.stageCanvas, cameraX, cameraY, backgroundPalette, tint); err != nil {
+		if err := m.Stage.DrawForegroundWithPaletteTint(s.stageCanvas, cameraX, cameraY, backgroundPalette, tint, projection); err != nil {
 			s.renderError = err
 			return
 		}

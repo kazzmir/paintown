@@ -151,7 +151,10 @@ legacy `hires` stage defaults. Stages declaring both `tensionhigh` and
 these parameters override `verticalfollow` and `floortension`. Horizontal zoom
 fits the player span plus both stage-space tension margins. Horizontal camera
 bounds describe the fully zoomed-out view; zooming in permits more camera travel
-within the same stage edges. Tiled backgrounds
+within the same stage edges. Modern stage backgrounds retain fractional camera
+scrolling at the game's resolution. Pre-1.0 stages (including an omitted
+`mugenversion`) round only background scrolling to whole stage units; fighter,
+effect and script coordinates retain their precision. Tiled backgrounds
 follow camera travel; authored
 BG controllers can pause, hide and change their animations. Native rendering
 precision is still tracked in the progress ledger.

@@ -343,7 +343,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Camera easing/crop and legacy whole-stage-unit raster rounding, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; intermediate camera/push ordering and strict asset-rejection edges remain unverified. Horizontal/vertical tension fitting, zoom-dependent horizontal bounds and fractional legacy CNS camera queries match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
+      "gap": "Intermediate camera easing/push ordering and remaining crop/raster edge cases, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Horizontal/vertical tension, zoom-dependent bounds, disabled-camera startup and cropped modern/legacy BG/fighter/effect projection match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -447,9 +447,11 @@
         "background/controllers.go:loadControllers",
         "background/background.go:drawFrame",
         "character/context.go:lookupViewport",
-        "match/camera.go:horizontalStageBounds"
+        "match/camera.go:horizontalStageBounds",
+        "stage/stage.go:backgroundCamera",
+        "background/background.go:drawPaletteImage"
       ],
-      "validation": "Connected stage/camera lifecycle covers startup/crop/shake, linked backgrounds, parallax/tiling/masks, reflections, vertical tension/zoom/post-zoom CameraPosY, mixed local coordinates, participation, Pause and reset. Added horizontal span-plus-margins fitting, tension return, zoom-dependent bounds and shared projectile stage extents. Bounded beta horizontal flow: camera/zoom 0/.761905,70/.761905,20/1,0/.5,560/1,400/.5. Legacy640p-stage flow preserves fractional CNS CameraPosX120.75/-120.75/120.25 and Y-20.75. Changed-source segments pass with race detection; native helpers/captures/overlays removed."
+      "validation": "Connected stage/camera lifecycle covers loading, mixed coordinates, horizontal/vertical tension/zoom, bounds, participation, Pause, linked/parallax backgrounds and reset. Added raw game-unit disabled-camera startup, integer start parsing, direct game-resolution BG/foreground projection, triangle sampling and legacy BG-only stage-unit camera truncation. Bounded beta 1280x720/StageFit0/zoom.75 scene: CameraPos2.5,31.25; ScreenPosY205; modern BG[584,279,680,375], legacy BG[586,279,682,375], identical fighter[464,519,560,615]/effect[764,369,860,465]. Scenario also checks projected masks and KO/round reset. Changed-source segments pass with race detection; native markers/helpers/captures/overlays removed. Linux rebuilt; one stock KFM/KFM720 owned-window capture inspected and removed."
     }
   ],
   "segments": [
@@ -533,7 +535,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "11c5168e12d684374c46b2bbb17f150147237c8834e4a76473f7ba462adc610e"
+      "passed_source": "a665bd7dc58ee4cd849039947176495123c3cc5ba203530299eba92b4aae0905"
     },
     {
       "id": "entities",
@@ -566,7 +568,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ea18b7b6abf1fe32869a0e7d8665b398a7eda8290306d12b7789467f1c6476ce"
+      "passed_source": "b480fb472e7f9ebb2c8149120d27dc2fd02813af61c6247e506c10d526886896"
     },
     {
       "id": "effects-pause",
@@ -601,7 +603,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "106e79e106b7663c351366ea8be5f33ad1d28e7b5c2514a68a81275bfd9bff3e"
+      "passed_source": "76de93b9efae34e3e61f3aefda386057fe4eb8f670fb224ea29c32fc5b6001b9"
     },
     {
       "id": "match-flow",
@@ -680,13 +682,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d0bedf18fc8cf242691f9633dfcf54faf53b87eb87f5b16a860b2b2efe173c54"
+      "passed_source": "58ddd461d34fa83982996cb9c3cc15b53eac5da370fad678a130fc07355a80b4"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Documented backgrounds and horizontal/vertical tension, zoom, bounds and query lifecycle pass connected acceptance against bounded beta observations. Legacy CNS camera queries remain fractional; whole-unit legacy raster rounding, intermediate easing and crop/push/raster matching remain precision work."
+    "Documented backgrounds, horizontal/vertical tension, zoom, bounds, disabled-camera startup and cropped modern/legacy rendering pass connected acceptance against bounded beta observations. Legacy rounding affects BG drawing only; CNS queries, actors and effects retain fractional camera precision. Intermediate easing/push ordering and other crop/raster edge cases remain precision work."
   ]
 }

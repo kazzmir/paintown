@@ -988,4 +988,231 @@ y=0
 	if m.Round != 3 || linked.GroundLevel() != 165 || m.Viewport.GroundY != 165 || newMiddle == middle || newAnimation.GetLink() != newMiddle || newAnimation.Time != 0 || newAnimation.Player.Action.ID != 900 || linked.Background.Controllers[0].Time != 0 {
 		t.Fatal("round reset retained linked/controller/animation state")
 	}
+	cameraProjectionFlow(t, e, root)
+}
+
+// Continue the connected stage scenario at HD game resolution with a cropped,
+// fixed zoom. One beta scene distinguishes legacy BG rounding from fractional
+// actor/effect/query coordinates, then continues through clipping and reset.
+func cameraProjectionFlow(t *testing.T, e *Engine, root string) {
+	t.Helper()
+	e.cfg.Config.GameWidth, e.cfg.Config.GameHeight = 1280, 720
+	e.cfg.Video.StageFit = false
+	colors := []color.NRGBA{{220, 30, 40, 255}, {30, 210, 50, 255}, {40, 60, 230, 255}, {230, 200, 30, 255}}
+	markers := &sff.SFF{Version: [4]byte{2, 1}}
+	animations := &air.Data{Actions: make(map[int]*air.Action)}
+	for index, col := range colors {
+		pixels := image.NewNRGBA(image.Rect(0, 0, 32, 32))
+		for y := 0; y < 32; y++ {
+			for x := 0; x < 32; x++ {
+				pixels.SetNRGBA(x, y, col)
+			}
+		}
+		markers.Sprites = append(markers.Sprites, sff.Sprite{ImageNumber: uint16(index), XAxis: 16, YAxis: 32, Image: pixels, ImageOpaque: pixels})
+		animations.Actions[index] = &air.Action{ID: index, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: index, Time: -1}}}
+	}
+	canvas := ebiten.NewImage(1280, 720)
+	defer canvas.Deallocate()
+	for _, legacy := range []bool{false, true} {
+		version := "mugenversion=1.1\n"
+		if legacy {
+			version = "" // The beta defaults to date-style stage compatibility.
+		}
+		path := filepath.Join(t.TempDir(), "projection.def")
+		source := `[Info]
+name=Connected camera projection
+` + version + `[Camera]
+startx=10.75
+starty=-20.75
+startzoom=.75
+zoomout=.5
+zoomin=1
+boundleft=-400
+boundright=400
+boundhigh=-180
+boundlow=0
+cuthigh=35
+cutlow=25
+[PlayerInfo]
+p1startx=-40
+p1starty=-20
+p2startx=40
+p2starty=-20
+p1facing=1
+p2facing=-1
+leftbound=-1000
+rightbound=1000
+[Bound]
+screenleft=15
+screenright=15
+[StageInfo]
+localcoord=320,240
+zoffset=200
+[Shadow]
+intensity=0
+[BG Marker]
+type=normal
+spriteno=0,1
+start=0,100
+delta=1,1
+maskwindow=-160,0,160,240
+`
+		if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+			t.Fatal(err)
+		}
+		fight, err := NewFightState(e, match.Request{Mode: "Versus Mode", StagePath: path, Players: [2]match.Selection{
+			{DefPath: filepath.Join(root, "chars/kfm/kfm.def"), Palette: 1},
+			{DefPath: filepath.Join(root, "chars/kfm720/kfm720.def"), Palette: 1},
+		}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		m := fight.match
+		m.Stage.SpriteData, m.Stage.Background.SpriteData = markers, markers
+		m.Stage.ResetBackground()
+		program := `[Statedef 5900]
+type=S
+physics=N
+[State 5900, fixed]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=0,0
+[State 5900, enter]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=0
+ctrl=0
+velset=0,0
+[State 0, fixed]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=0,0
+[State 0, second marker]
+type=ChangeAnim
+trigger1=TeamSide=2
+value=2
+[Statedef 180]
+type=S
+physics=N
+anim=0
+[State 180, idle]
+type=Null
+trigger1=1
+[Statedef 5150]
+type=L
+movetype=H
+physics=N
+anim=0
+[State 5150, idle]
+type=Null
+trigger1=1
+`
+		for _, p := range m.Players {
+			file, err := cns.ParseNamed(strings.NewReader(program), "connected-projection.cns")
+			if err != nil {
+				t.Fatal(err)
+			}
+			file.SetLanguageVersion("1.1")
+			old := p.Character.StateFile
+			file.Data, file.Size, file.Movement = old.Data, old.Size, old.Movement
+			p.SFF, p.AIR, p.CMD = markers, animations, nil
+			p.Character.StateFile, p.Character.AirFile = file, animations
+			p.Character.Palettes = palette.New(markers)
+			p.Character.ChangeState(5900, -1, -1)
+			if err := p.Character.ChangeAnimation(0, 1); err != nil {
+				t.Fatal(err)
+			}
+			// These programs replace already-booted stock characters. Install
+			// both roots' camera choice before the first per-entity update.
+			if err := p.Character.SetScreenBound(engine.ScreenBoundParameters{}); err != nil {
+				t.Fatal(err)
+			}
+		}
+		step := func() {
+			t.Helper()
+			if err := m.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for tick := 0; tick < 650 && m.Phase != match.Active; tick++ {
+			step()
+		}
+		if m.Phase != match.Active || m.CameraX != 10 || m.CameraY != 120 || m.Viewport.CropY != 140 || m.Viewport.Zoom != .75 || m.Stage.Camera.RoundBackground != legacy {
+			t.Fatal("native fixed-camera startup/crop/version", legacy, m.Phase, m.CameraX, m.CameraY, m.Viewport)
+		}
+		for _, p := range m.Players {
+			factor := 320 / float64(p.Character.LocalCoordinateWidth())
+			for name, want := range map[string]float64{"camerapos x": 2.5, "camerapos y": 31.25, "screenpos y": 205, "topedge": -225, "bottomedge": 15, "gameheight": 240, "screenheight": 180} {
+				value, _ := p.Character.LookupIdentifier(name)
+				if math.Abs(value.Number()*factor-want) > .001 {
+					t.Fatal("native cropped/zoomed camera query", legacy, name, value, want)
+				}
+			}
+		}
+		lifetime := -1
+		if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: markers, Animations: animations, Scale: 4}, Action: 3, Facing: 1, X: 240, Y: -280, OnTop: true, RemoveTime: &lifetime}); err != nil {
+			t.Fatal(err)
+		}
+		if err := m.Effects.Flush(); err != nil {
+			t.Fatal(err)
+		}
+		draw := func() {
+			t.Helper()
+			fight.Draw(canvas)
+			if fight.renderError != nil {
+				t.Fatal(fight.renderError)
+			}
+		}
+		bounds := func(col color.NRGBA) image.Rectangle {
+			t.Helper()
+			pixels := make([]byte, 1280*720*4)
+			fight.gameCanvas.ReadPixels(pixels)
+			rect := image.Rectangle{}
+			for offset := 0; offset < len(pixels); offset += 4 {
+				if pixels[offset] == col.R && pixels[offset+1] == col.G && pixels[offset+2] == col.B && pixels[offset+3] == 255 {
+					x, y := offset/4%1280, offset/4/1280
+					rect = rect.Union(image.Rect(x, y, x+1, y+1))
+				}
+			}
+			return rect
+		}
+		wantBG := image.Rect(584, 279, 680, 375)
+		if legacy {
+			wantBG = image.Rect(586, 279, 682, 375)
+		}
+		draw()
+		if bounds(colors[1]) != wantBG || bounds(colors[0]) != image.Rect(464, 519, 560, 615) || bounds(colors[3]) != image.Rect(764, 369, 860, 465) {
+			t.Fatal("native BG/fighter/effect projection", legacy, bounds(colors[1]), bounds(colors[0]), bounds(colors[3]))
+		}
+		bg := m.Stage.Background.Elements[0].(*background.NormalElement)
+		bg.LayerNo = 1
+		draw()
+		if bounds(colors[1]) != wantBG {
+			t.Fatal("foreground lost stage projection", legacy, bounds(colors[1]))
+		}
+		bg.Window = [4]int{144, 75, 159, 90}
+		draw()
+		if bounds(colors[1]) != image.Rect(592, 285, 640, 333) {
+			t.Fatal("maskwindow lost game projection/crop", legacy, bounds(colors[1]))
+		}
+		m.Players[1].Character.SetLife(0)
+		m.Players[1].Character.ChangeState(5150, 0, -1)
+		for tick := 0; tick < 1000 && m.Round == 1; tick++ {
+			step()
+		}
+		if m.Round != 2 || m.CameraX != 10 || m.CameraY != 120 || m.Viewport.Zoom != .75 || len(m.Effects.Active) != 0 {
+			t.Fatal("round reset retained projection/effects/camera state", legacy, m.Round, m.CameraX, m.CameraY)
+		}
+		draw()
+		if bounds(colors[1]) != wantBG {
+			t.Fatal("round reset lost BG compatibility/projection", legacy, bounds(colors[1]))
+		}
+	}
 }

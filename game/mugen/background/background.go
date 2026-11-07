@@ -24,6 +24,13 @@ type SpriteImages struct {
 	Opaque *ebiten.Image
 }
 
+// Projection maps logical background coordinates directly to the destination
+// raster, preserving fractional camera movement at the game's resolution.
+type Projection struct {
+	Space     coord.Space
+	Transform coord.Transform
+}
+
 type ElementType int
 
 const (
@@ -55,7 +62,11 @@ func (b *Background) DrawLayerWithPalette(screen *ebiten.Image, layer int, camer
 }
 
 // Scene tint applies to drawn sprites. The caller's clear color stays separate.
-func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages, transform palette.Transform, tint [3]float32) error {
+func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages, transform palette.Transform, tint [3]float32, projections ...Projection) error {
+	var projection Projection
+	if len(projections) > 0 {
+		projection = projections[0]
+	}
 	images := shared
 	if b.SpriteData != nil {
 		if b.sprites == nil {
@@ -77,6 +88,9 @@ func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, c
 	}
 	for _, element := range b.Elements {
 		if element.GetLayerNo() == layer {
+			if projected, ok := element.(interface{ setProjection(Projection) }); ok {
+				projected.setProjection(projection)
+			}
 			if scaled, ok := element.(interface{ setStageScale([2]float64) }); ok {
 				scaled.setStageScale(b.StageScale)
 			}
@@ -167,6 +181,7 @@ type CommonElement struct {
 	ZoomDelta        float64
 	cameraZoom       float64
 	stageScale       [2]float64
+	projection       Projection
 	Mask             bool
 	Tile             [2]int
 	Spacing          [2]int
@@ -201,6 +216,23 @@ func (e *CommonElement) setPalette(transform palette.Transform) {
 }
 
 func (e *CommonElement) setCameraZoom(zoom float64) { e.cameraZoom = zoom }
+
+func (e *CommonElement) setProjection(projection Projection) { e.projection = projection }
+
+func (e *CommonElement) center(screen *ebiten.Image) float64 {
+	if e.projection.Space.Width > 0 {
+		return float64(e.projection.Space.Width) / 2
+	}
+	return float64(screen.Bounds().Dx()) / 2
+}
+
+func (e *CommonElement) projectGeometry(geometry *ebiten.GeoM) {
+	if e.projection.Space.Width > 0 {
+		t := e.projection.Transform
+		geometry.Scale(t.ScaleX, t.ScaleY)
+		geometry.Translate(t.X, t.Y)
+	}
+}
 
 func (e *CommonElement) setStageScale(scale [2]float64) {
 	for axis := range scale {
@@ -249,7 +281,9 @@ func (e *CommonElement) drawPaletteImage(target, source *ebiten.Image, options *
 	case "sub":
 		destination = render.ApplyBlend(options, "sub", 256, 256)
 	}
-	if !e.paletteTransform.Enabled && destination < 0 {
+	// Projected stage layers need the triangle sampler even without PalFX:
+	// rectangle draws quantize fractional vertices before the viewport fit.
+	if !e.paletteTransform.Enabled && destination < 0 && e.projection.Space.Width <= 0 {
 		target.DrawImage(source, options)
 		return
 	}

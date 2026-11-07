@@ -269,14 +269,16 @@ func (m *Match) resetRound() error {
 	}
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	m.Viewport.GroundY = s.GroundLevel() * stageScale
-	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
-	m.cameraGoalX = m.CameraX
+	// The beta initializes the visible camera in raw game units. Disabled
+	// participants retain it; enabling follow publishes the stage-scaled edges.
+	m.CameraX, m.CameraY = s.Camera.StartX, s.Camera.StartY+m.Viewport.CropY
+	m.cameraGoalX = s.Camera.StartX * stageScale
 	half := float64(m.Options.GameSpace.Width) / 2
 	stageLeft, stageRight := m.horizontalStageBounds()
 	m.World.ProjectileStageBounds = [2]float64{stageLeft, stageRight}
 	m.World.ProjectileStageBoundsKnown = true
 	m.Viewport.Zoom = s.Camera.StartZoom
-	m.cameraLeft, m.cameraRight = float32(m.CameraX-half/m.Viewport.Zoom), float32(m.CameraX+half/m.Viewport.Zoom)
+	m.cameraLeft, m.cameraRight = float32(m.cameraGoalX-half/m.Viewport.Zoom), float32(m.cameraGoalX+half/m.Viewport.Zoom)
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	m.Viewport.CameraX = m.publishedCameraX()
 	for slot, p := range m.ActivePlayers() {

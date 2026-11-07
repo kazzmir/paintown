@@ -88,16 +88,17 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 ## Latest camera checkpoint
 
-Horizontal and vertical zoom fit actor spans PLUS unzoomed stage tension
-margins. Horizontal camera bounds describe the fully zoomed-out view; fixed
-outer edges also feed projectile stage retirement. Bounded original-beta flows
-establish fitting, return and zoom-dependent limits. Legacy stages still publish
-fractional CNS CameraPos X/Y: do not round these queries based on the documented
-whole-unit rendering rule. The connected scenario covers real loading, mixed
-coordinates, participation, pause and reset. Changed-source segments pass with
-race detection; native scratch was removed. Legacy raster rounding, intermediate
-easing and crop remain open. Local mugen.yaml is ignored/untracked by checkpoint
-8eda46f84; preserve its contents.
+Stage backgrounds/foregrounds now project directly to the game raster, using
+triangle sampling to preserve fractional vertices. Pre-1.0/date/omitted stage
+versions truncate only BG camera values in stage units; actors, effects and CNS
+queries stay fractional. Integer startx/starty initialize the visible camera in
+raw game units while the follow endpoints remain stage-scaled. Disabled camera
+participants retain that startup view. One cropped/zoomed HD beta scene matches
+BG/fighter/effect bounds and CNS queries for modern/legacy declarations. The
+connected scenario also covers foregrounds, masks and KO/round reset; four
+changed-source segments pass with race detection. Native scratch was removed.
+Prior tension/zoom/bounds and cold-start observations remain covered. Intermediate
+easing/push and other crop/raster edges remain open. Preserve local ignored YAML.
 
 ## Keyboard checkpoint
 

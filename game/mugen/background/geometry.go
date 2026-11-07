@@ -42,12 +42,13 @@ func (e *CommonElement) clipTarget(screen *ebiten.Image, cameraX, cameraY, floor
 	left, top, right, bottom := float64(e.Window[0]), float64(e.Window[1]), float64(e.Window[2]+1), float64(e.Window[3]+1)
 	var g ebiten.GeoM
 	if e.maskWindow {
-		e.stageGeometry(&g, float64(screen.Bounds().Dx())/2)
+		e.stageGeometry(&g, e.center(screen))
 	}
 	g.Translate(-cameraX*e.WindowDelta[0], -cameraY*e.WindowDelta[1])
 	if e.maskWindow {
-		e.zoomGeometry(&g, float64(screen.Bounds().Dx())/2, floor)
+		e.zoomGeometry(&g, e.center(screen), floor)
 	}
+	e.projectGeometry(&g)
 	left, top = g.Apply(left, top)
 	right, bottom = g.Apply(right, bottom)
 	rect := image.Rect(int(min(left, right)), int(min(top, bottom)), int(max(left, right)), int(max(top, bottom))).Intersect(screen.Bounds())
@@ -65,10 +66,11 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 	if target == nil {
 		return
 	}
-	center := float64(screen.Bounds().Dx()) / 2
+	center := e.center(screen)
 	var view ebiten.GeoM
 	e.stageGeometry(&view, center)
 	e.zoomGeometry(&view, center, floor)
+	e.projectGeometry(&view)
 	if !view.IsInvertible() {
 		return
 	}

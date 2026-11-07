@@ -67,7 +67,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
-- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Camera easing/crop and legacy whole-stage-unit raster rounding, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; intermediate camera/push ordering and strict asset-rejection edges remain unverified. Horizontal/vertical tension fitting, zoom-dependent horizontal bounds and fractional legacy CNS camera queries match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered. (deferred precision (user 2026-11-07))
+- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Intermediate camera easing/push ordering and remaining crop/raster edge cases, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Horizontal/vertical tension, zoom-dependent bounds, disabled-camera startup and cropped modern/legacy BG/fighter/effect projection match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
 

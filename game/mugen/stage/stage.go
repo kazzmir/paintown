@@ -2,6 +2,7 @@ package stage
 
 import (
 	"image/color"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/background"
@@ -19,6 +20,7 @@ type Stage struct {
 	Music               sound.MusicSpec
 
 	Camera struct {
+		RoundBackground            bool // pre-1.0 stage-unit rounding affects only backgrounds
 		StartX                     float64
 		StartY                     float64
 		StartZoom, ZoomOut, ZoomIn float64
@@ -111,26 +113,34 @@ func (s *Stage) DrawWithPalette(screen *ebiten.Image, cameraX, cameraY float64, 
 	return s.DrawWithPaletteTint(screen, cameraX, cameraY, background, clear, [3]float32{1, 1, 1})
 }
 
-func (s *Stage) DrawWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, background, clear palette.Transform, tint [3]float32) error {
+func (s *Stage) DrawWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, transform, clear palette.Transform, tint [3]float32, projections ...background.Projection) error {
 	s.Background.StageScale = [2]float64{s.StageInfo.XScale, s.StageInfo.YScale}
+	cameraX, cameraY = s.backgroundCamera(cameraX, cameraY)
 	if s.DebugBG {
 		screen.Fill(clear.ClearColor(color.RGBA{R: 255, B: 255, A: 255}))
 	}
-	return s.Background.DrawLayerWithPaletteTint(screen, 0, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, background, tint)
+	return s.Background.DrawLayerWithPaletteTint(screen, 0, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, transform, tint, projections...)
 }
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
-	s.Background.StageScale = [2]float64{s.StageInfo.XScale, s.StageInfo.YScale}
-	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages)
+	_ = s.DrawForegroundWithPalette(screen, cameraX, cameraY, palette.Transform{})
 }
 
 func (s *Stage) DrawForegroundWithPalette(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform) error {
 	return s.DrawForegroundWithPaletteTint(screen, cameraX, cameraY, transform, [3]float32{1, 1, 1})
 }
 
-func (s *Stage) DrawForegroundWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform, tint [3]float32) error {
+func (s *Stage) DrawForegroundWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform, tint [3]float32, projections ...background.Projection) error {
 	s.Background.StageScale = [2]float64{s.StageInfo.XScale, s.StageInfo.YScale}
-	return s.Background.DrawLayerWithPaletteTint(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, transform, tint)
+	cameraX, cameraY = s.backgroundCamera(cameraX, cameraY)
+	return s.Background.DrawLayerWithPaletteTint(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, transform, tint, projections...)
+}
+
+func (s *Stage) backgroundCamera(x, y float64) (float64, float64) {
+	if s.Camera.RoundBackground {
+		return math.Trunc(x), math.Trunc(y)
+	}
+	return x, y
 }
 
 // ResetBackground restores authored element/controller clocks between rounds.
