@@ -99,7 +99,7 @@
         "character/character.go:ResolvePushCollision",
         "character/coordinates.go:pushBoxesOverlapY"
       ],
-      "validation": "Connected jump/landing scenario continues through a bounded beta body-push flow with mixed 320p/1280p profiles: interior(-6,26), wall(121.5,145), vertically separated(0,20), Width(-16,36), air/ground(-4,24), air/air(-2,22). Hurtboxes gate vertical overlap; CNS ground/air widths govern horizontal separation. Shared pre-CNS boundary clipping preserves the measured late-body-push wall order. Scenario also checks Pause and round reset. Four changed-source segments pass with race detection."
+      "validation": "Connected jump/body-push lifecycle retains beta interior, wall, vertical, Width and air contact observations. Added PosFreeze on either root, then both, with mixed 320p/1280p coordinates. At stored VelX 2, beta positions are no-freeze(-6,26), first frozen(-7,25), second frozen(-5,27), both frozen(-6,26); velocities 2/2 and CNS times 350/350 continue. PosFreeze suppresses ordinary velocity movement, not late body separation. Scenario also checks release, real Pause and round reset clearing velocity/freeze state. Four changed-source segments pass with race detection; native scratch removed."
     },
     {
       "id": "helper-lifecycle",
@@ -348,7 +348,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Remaining camera easing, push/freeze/binding combinations and crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Connected body-push vertical/air/Width/wall phases and prior tension/zoom/bounds, offscreen fitting, startup and cropped modern/legacy rendering match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
+      "gap": "Remaining camera easing, asymmetric pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Body-push vertical/air/Width/wall/PosFreeze phases and prior tension/zoom/bounds, offscreen fitting, startup and cropped modern/legacy rendering match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -541,7 +541,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "cc128a03f89f4e27ea056cb213cb09adba4cd50fd549a5a34b8a7599409b9eac"
+      "passed_source": "588e66db3a91cf80a0ae1f8a59a26a2e6cbaf5c23ffd92817d4c73e5f1aa3dfe"
     },
     {
       "id": "entities",
@@ -574,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6721b6918127c2b4f5aeeaababc6bba2a225a9980ecbfefbea037b0089109786"
+      "passed_source": "360459274032678d271fa3cfc45aaa15c8caaa539e12d8dda6d0a832b7b44cc2"
     },
     {
       "id": "effects-pause",
@@ -609,7 +609,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b0e97cfb8bedbc814146a472ba773e444003e2952f343e3244ef4e732e3c04e7"
+      "passed_source": "dcc1d8054b96ebf8cba7502f71d9ac364a6fa82a5de194ed45ffd639865f670e"
     },
     {
       "id": "match-flow",
@@ -688,13 +688,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3120a00c82fba39ce266344ec538ec94a4639a38b29e5608618fcd1f1b30c0f7"
+      "passed_source": "6680001d960972ada371ed8e0ddd6e1a432f4a5f0c9261d6bd0bace3d8539380"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Camera tension/zoom/bounds/offscreen/startup/crop and the connected body-push vertical/air/Width/wall lifecycle match bounded beta observations. Projectile contacts intentionally leave owner corner push unchanged. Remaining camera easing, push/freeze/binding combinations and crop/raster edges remain precision work."
+    "Camera tension/zoom/bounds/offscreen/startup/crop and body-push vertical/air/Width/wall/PosFreeze lifecycles match bounded beta observations. PosFreeze preserves body separation and CNS time; projectile contacts intentionally do not recoil the owner. Asymmetric pause/hitpause, binding and other crop/raster combinations remain precision work."
   ]
 }

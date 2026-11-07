@@ -295,8 +295,9 @@ func TickCharacters(players []*Character) error {
 	}
 	// Body push waits until every root has run CNS/movement. A later root can
 	// observe authored PosSet and completed physics before this body correction.
+	// PosFreeze suppresses velocity movement, not this shared displacement.
 	for _, c := range players {
-		if !c.destroyed && !c.worldFrozen && !c.pausedThisTick && !c.PosFrozen {
+		if !c.destroyed && !c.worldFrozen && !c.pausedThisTick {
 			c.ResolvePushCollision()
 		}
 		var children []*Character

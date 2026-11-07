@@ -1863,7 +1863,7 @@ func (c *Character) ResolvePushCollision() {
 			continue
 		}
 		othSt := strings.ToUpper(other.StateType)
-		if (othSt == "S" || othSt == "C" || othSt == "A") && !other.PosFrozen {
+		if othSt == "S" || othSt == "C" || othSt == "A" {
 			otherX, _ := c.PositionOf(other)
 			dist := otherX - c.X
 			front, back := c.pushWidths()

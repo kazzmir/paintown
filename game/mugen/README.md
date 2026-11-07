@@ -104,6 +104,8 @@ Body collisions use CNS ground/air widths and temporary `Width` values when
 the fighters' hurtboxes overlap vertically, including air/ground and air/air
 contact. Fighters separated vertically can pass each other. Projectile hits
 do not push their owner backward at the corner; direct and helper attacks can.
+`PosFreeze` stops velocity-driven movement while body push and CNS time continue.
+Pause/SuperPause use their separate actor clocks and movement allowances.
 
 ### Keyboard overrides in mugen.yaml
 

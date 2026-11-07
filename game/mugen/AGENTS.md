@@ -88,19 +88,16 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 ## Latest collision checkpoint
 
-Body push requires vertical Clsn2 overlap and supports S/C/A actors, using CNS
-ground/air widths plus temporary Width player offsets. Keep the late body-push
-phase; clip all active actors against the shared starting viewport before CNS,
-then retain per-entity clipping for cameras changed by earlier actors. A bounded
-beta flow pins interior/wall/vertical/Width/air-ground/air-air results; the mixed
-coordinate jump scenario continues through those phases, Pause and round reset.
-Four changed-source segments pass with race detection. Native scratch removed.
-A separate beta contact flow confirms projectiles do not recoil their owner,
-even with explicit cornerpush values; direct/helper attackers receive their own
-impulse. The old missing-owner-path note is superseded; preserve the exclusion.
-Prior camera/zoom/rendering observations remain covered. Remaining push/freeze/
-binding and rendering combinations stay open. Local YAML stays ignored; the
-standalone music-file CLI is deferred by user request.
+PosFreeze blocks ordinary velocity movement, not shared body push. Keep frozen
+actors eligible on both sides of the late body-push pass. A bounded beta flow
+with stored velocity 2 toggles freeze on either actor and both; body separation
+and CNS clocks continue. The existing mixed-coordinate body scenario retains
+prior interior/wall/vertical/Width/air phases, then covers PosFreeze, release,
+real Pause and round reset. Four changed-source segments pass with race detection;
+native scratch removed. Shared pre-CNS clipping and vertical Clsn2 gating remain
+covered. Projectile-owner corner push remains intentionally excluded. Asymmetric
+pause/hitpause and binding combinations stay open. Local YAML stays ignored;
+standalone music-file playback CLI remains deferred by user request.
 
 ## Keyboard checkpoint
 

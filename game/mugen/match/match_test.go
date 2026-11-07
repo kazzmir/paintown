@@ -226,7 +226,8 @@ func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
 }
 
 // Continue the jump/landing scenario through one beta body-push lifecycle:
-// interior, wall, vertical separation, Width, air/ground, air/air and reset.
+// interior, wall, vertical separation, Width, air/ground, air/air, PosFreeze,
+// release, Pause and reset.
 func bodyPushFlow(t *testing.T, m *Match) {
 	t.Helper()
 	program := `[Statedef 5900]
@@ -242,7 +243,7 @@ anim=9990
 ctrl=0
 velset=0,0
 `
-	for phase, tick := range []int{80, 170, 260, 350, 440, 530} {
+	for phase, tick := range []int{80, 170, 260, 350, 440, 530, 620, 710, 800, 890} {
 		for side, expression := range []string{"Pos X", "EnemyNear, Pos X"} {
 			program += fmt.Sprintf("[State 0, before movement %d]\ntype=VarSet\ntriggerall=TeamSide=1\ntrigger1=Time=%d\nfv=%d\nvalue=%s\n", phase*2+side, tick, phase*2+side, expression)
 		}
@@ -262,14 +263,30 @@ trigger1=Time>=270 && Time<360
 player=Const240p(10),Const240p(20)
 [State 0, airborne overlap]
 type=StateTypeSet
-trigger1=Time>=360 && (TeamSide=1 || Time>=450)
+trigger1=Time>=360 && Time<540 && (TeamSide=1 || Time>=450)
 statetype=A
 physics=N
+[State 0, grounded freeze sequence]
+type=StateTypeSet
+trigger1=Time>=540
+statetype=S
+physics=N
+[State 0, stored velocity]
+type=VelSet
+trigger1=Time>=540
+x=Const240p(2)
+y=0
+[State 0, position freeze]
+type=PosFreeze
+trigger1=Time>=630 && Time<720 && TeamSide=1
+trigger2=Time>=720 && Time<810 && TeamSide=2
+trigger3=Time>=810 && Time<900
+value=1
 [State 0, placement]
 type=PosSet
 trigger1=1
 x=Const240p(ifelse(Time>=90 && Time<180,ifelse(TeamSide=1,130,145),ifelse(TeamSide=1,0,20)))
-y=Const240p(ifelse(Time>=180 && Time<270 && TeamSide=1,-100,ifelse(Time>=360 && (TeamSide=1 || Time>=450),-10,0)))
+y=Const240p(ifelse(Time>=180 && Time<270 && TeamSide=1,-100,ifelse(Time>=360 && Time<540 && (TeamSide=1 || Time>=450),-10,0)))
 `
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-body-push.cns")
@@ -304,15 +321,22 @@ y=Const240p(ifelse(Time>=180 && Time<270 && TeamSide=1,-100,ifelse(Time>=360 && 
 			}
 		}
 	}
-	step(550)
+	step(910)
 	// Native wall observations retain the existing late-push/next-pass clamp:
 	// do not redistribute the corner's half-step to change this measured order.
-	want := []float64{-6, 26, 121.5, 145, 0, 20, -16, 36, -4, 24, -2, 22}
+	want := []float64{-6, 26, 121.5, 145, 0, 20, -16, 36, -4, 24, -2, 22,
+		-6, 26, -7, 25, -5, 27, -6, 26}
 	// Redirected Pos X is converted into the observing root's coordinates.
 	factor := 320 / float64(m.Players[0].Character.LocalCoordinateWidth())
 	for index, expected := range want {
 		if value := m.Players[0].Character.FloatVars[index] * factor; value != expected {
 			t.Fatalf("native mixed-coordinate body push phase %d side %d: got %v want %v", index/2, index%2, value, expected)
+		}
+	}
+	for side, p := range m.Players {
+		c := p.Character
+		if c.Time != 910 || c.VelX*320/float64(c.LocalCoordinateWidth()) != 2 || c.PosFrozen {
+			t.Fatal("PosFreeze stopped CNS time, consumed velocity or failed to release", side, c.Time, c.VelX, c.PosFrozen)
 		}
 	}
 	if err := m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 2}); err != nil {
@@ -324,7 +348,7 @@ y=Const240p(ifelse(Time>=180 && Time<270 && TeamSide=1,-100,ifelse(Time>=360 && 
 	step(2)
 	for side, p := range m.Players {
 		if p.Character.X != positions[side] || p.Character.Time != times[side] {
-			t.Fatal("paused body push advanced an airborne actor", side)
+			t.Fatal("paused body push advanced an actor", side)
 		}
 	}
 	m.Round++
@@ -337,8 +361,8 @@ y=Const240p(ifelse(Time>=180 && Time<270 && TeamSide=1,-100,ifelse(Time>=360 && 
 	}
 	step(85)
 	for side, p := range m.Players {
-		if p.Character.StateType != "S" || p.Character.Y != 0 || p.Character.X*320/float64(p.Character.LocalCoordinateWidth()) != want[side] {
-			t.Fatal("round reset retained air/Width body-push state", side, p.Character.StateType, p.Character.X, p.Character.Y)
+		if p.Character.StateType != "S" || p.Character.Y != 0 || p.Character.VelX != 0 || p.Character.PosFrozen || p.Character.X*320/float64(p.Character.LocalCoordinateWidth()) != want[side] {
+			t.Fatal("round reset retained air/Width/PosFreeze body-push state", side, p.Character.StateType, p.Character.X, p.Character.Y)
 		}
 	}
 }
