@@ -159,3 +159,6 @@ private-snapshot test-selection correction, and remaining system-effect studies.
   timing controls; this plan is not new behavior coverage.
 
 - [Timed HUD native contract](HUD-TIMING.md): M4dq23 accepted source programs,34 native runs,528 reviewed images,6,336 numeric observations; implementation follows.
+
+- [Timed HUD implementation](HUD-TIMING.md): M4dr split clocks, strict frame/geometry results, closed held overlays and fresh full-suite boundary.
+- [Next HUD phase controls](HUD-PHASE-PLAN.md): independently measure Round/Fight/Win delays, control boundaries and overlap before further phase changes.

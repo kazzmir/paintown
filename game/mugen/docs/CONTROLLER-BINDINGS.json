@@ -58,7 +58,8 @@
     "stage/stage.go": "1b332abc2baa19dea173ed7c96ea6c1ad5b468c3ea084476e6231765500ce55f",
     "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
     "system/fight_state.go": "7fb0c79a76b3ad04813f98d09b5012bb6e3da9955123ea415d2ab4e0b1931bbe",
-    "system/hud.go": "5f94f33cb0f2247e3b5dc8637a041d7c367d255d6d4f151107064ae65b995cdc",
+    "system/hud.go": "ae4528bf2c55089a6979e2f9263cbc763f29bcd9ac1056b0cb34a203224bacd7",
+    "system/hud_message.go": "ca131f1ba01d7b4752073697ea67548e92ffcdf8f3c1da296a5b2a067042945f",
     "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
     "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
     "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
@@ -413,7 +414,7 @@
       "handler": "handleGameMakeAnim",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource cues, caller/profile math, helper/slot2, facing/global-unit random offsets, independent Game admission, negative-action normalization and measured integer origins, palette/layer/pause consumers; all138 recorded native programs pass; M4dm dependency worlds39/54 exact with15 max-one RGB failures retained; INITIAL-PLACEMENT.md fixes shared startup drawing; wider variants and strict raster obligations remain"
+        "SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource cues, caller/profile math, helper/slot2, facing/global-unit random offsets, independent Game admission, negative-action normalization and measured integer origins, palette/layer/pause consumers; all138 recorded native programs pass; M4dm dependency worlds39/54 exact with15 max-one RGB failures retained; INITIAL-PLACEMENT.md fixes shared startup drawing; HUD-TIMING.md adds bounded message lifetime consumers and closes five held overlays; wider phase, font and strict raster obligations remain"
       ],
       "variants_complete": false
     },
@@ -534,7 +535,7 @@
       "handler": "handleMakeDust",
       "consumer_status": "bounded-native-consumer",
       "evidence": [
-        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; INITIAL-PLACEMENT.md: seven original startup worlds now exact after measured root drawing/first-fight X/Y reset; held HUD, finite-color and shadow differences remain strict; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain"
+        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; INITIAL-PLACEMENT.md: seven original startup worlds now exact after measured root drawing/first-fight X/Y reset; HUD-TIMING.md records bounded KO start/real-frame lifetime consumers and closes five held startup overlays; visible HUD RGB/font, finite-color and shadow differences remain strict; wider Round/Fight/Win timing remains open; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain"
       ],
       "variants_complete": false
     },

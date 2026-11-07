@@ -21,6 +21,7 @@ type FightHUD struct {
 	engine        *Engine
 	images        map[*sff.Sprite]*ebiten.Image
 	clocks        map[string]*air.Player
+	messages      map[string]*hudMessage
 	audioOwner    uint64
 	played        map[string]bool
 	levels        [2]int
@@ -71,17 +72,13 @@ func (h *FightHUD) Update(previous match.Phase, round int) error {
 	if h.renderError != nil {
 		return h.renderError
 	}
+	h.updateMessages(previous, round)
 	if h.match.SimulationSkipped {
 		return nil
 	}
-	for _, clock := range h.clocks {
-		clock.Update()
-	}
-	if previous != h.match.Phase || round != h.match.Round {
-		for key, clock := range h.clocks {
-			if strings.HasPrefix(key, "Round/") {
-				clock.Reset(1)
-			}
+	for key, clock := range h.clocks {
+		if !strings.HasPrefix(key, "Round/") {
+			clock.Update()
 		}
 	}
 	if round != h.match.Round {
@@ -310,19 +307,15 @@ func (h *FightHUD) Draw(screen *ebiten.Image) {
 	pos := h.values("Round", "pos", 0, 0)
 	switch m.Phase {
 	case match.RoundCall:
-		h.label(screen, "Round", "round.default", strings.ReplaceAll(h.text("Round", "round.default.text", "Round %i"), "%i", fmt.Sprint(m.Round)), pos[0], pos[1])
-		h.component(screen, "Round", "round.default", pos[0], pos[1])
-	case match.FightCall:
-		h.component(screen, "Round", "fight", pos[0], pos[1])
-	case match.PreOver:
-		key := "KO"
-		if m.TimeOver {
-			key = "TO"
-		} else if m.Winner < 0 {
-			key = "DKO"
+		if message := h.messages["round"]; message != nil {
+			h.drawMessage(screen, message, strings.ReplaceAll(h.text("Round", message.key+".text", "Round %i"), "%i", fmt.Sprint(m.Round)), pos[0], pos[1])
 		}
-		h.component(screen, "Round", key, pos[0], pos[1])
-		h.label(screen, "Round", key, h.text("Round", key+".text", ""), pos[0], pos[1])
+	case match.FightCall, match.Active:
+		h.drawMessage(screen, h.messages["fight"], h.text("Round", "fight.text", ""), pos[0], pos[1])
+	case match.PreOver:
+		if message := h.messages["finish"]; message != nil {
+			h.drawMessage(screen, message, h.text("Round", message.key+".text", ""), pos[0], pos[1])
+		}
 	case match.Over, match.Finished:
 		key, text := "draw", h.text("Round", "draw.text", "Draw Game")
 		if m.Winner >= 0 {

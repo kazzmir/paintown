@@ -19,7 +19,7 @@ SOURCES = ['engine/dust.go', 'character/dust.go', 'engine/game_animation.go', 'c
            'engine/drawing.go', 'engine/trans.go', 'engine/palette_fx.go', 'engine/env_color.go', 'engine/env_shake.go', 'engine/shake.go', 'engine/timeline.go', 'engine/round_clock.go',
            'palette/state.go', 'palette/controller_effect.go', 'palette/hit_effect.go',
            'render/palette.go', 'character/helper.go', 'character/tick.go',
-           'background/background.go', 'stage/stage.go', 'font/font.go', 'system/fight_state.go', 'system/hud.go',
+           'background/background.go', 'stage/stage.go', 'font/font.go', 'system/fight_state.go', 'system/hud.go', 'system/hud_message.go',
            'engine/self_binding.go', 'engine/target_self_binding.go', 'character/binding.go', 'character/targets.go', 'character/world.go']
 STUBS = {}
 RENDER_FIELDS = {}
@@ -35,8 +35,8 @@ PARTIAL = {
     'statetypeset': 'fallback literal handling; full schema/version/error matrix open',
 }
 BOUNDED = {
-    'makedust': 'SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; INITIAL-PLACEMENT.md: seven original startup worlds now exact after measured root drawing/first-fight X/Y reset; held HUD, finite-color and shadow differences remain strict; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain',
-    'gamemakeanim': 'SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource cues, caller/profile math, helper/slot2, facing/global-unit random offsets, independent Game admission, negative-action normalization and measured integer origins, palette/layer/pause consumers; all138 recorded native programs pass; M4dm dependency worlds39/54 exact with15 max-one RGB failures retained; INITIAL-PLACEMENT.md fixes shared startup drawing; wider variants and strict raster obligations remain',
+    'makedust': 'SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; INITIAL-PLACEMENT.md: seven original startup worlds now exact after measured root drawing/first-fight X/Y reset; HUD-TIMING.md records bounded KO start/real-frame lifetime consumers and closes five held startup overlays; visible HUD RGB/font, finite-color and shadow differences remain strict; wider Round/Fight/Win timing remains open; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain',
+    'gamemakeanim': 'SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource cues, caller/profile math, helper/slot2, facing/global-unit random offsets, independent Game admission, negative-action normalization and measured integer origins, palette/layer/pause consumers; all138 recorded native programs pass; M4dm dependency worlds39/54 exact with15 max-one RGB failures retained; INITIAL-PLACEMENT.md fixes shared startup drawing; HUD-TIMING.md adds bounded message lifetime consumers and closes five held overlays; wider phase, font and strict raster obligations remain',
     'forcefeedback': 'FORCE-FEEDBACK.md: exact supplied beta compiler lowers this name to Null;18 native programs prove ignored parameters/ordinary triggers across1.0/1.1 profiles; no host/device dispatch',
     'afterimage': 'AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; PROJECTILE-TRAILS.md adds projectile admission/lifetime/palette/phase coverage; broader resource/profile variants open',
     'afterimagetime': 'AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open',
@@ -118,7 +118,7 @@ def inventory():
                         ('nofg', 'NoForeground'), ('nobardisplay', 'NoBarDisplay'), ('noko', 'NoKO')]:
         issuer = 'case "' + flag + '":' in sources['character/character.go']
         sink = 'm.Timeline.' + field
-        if issuer and any(sink in sources[path] for path in ['system/fight_state.go', 'system/hud.go', 'match/match.go']):
+        if issuer and any(sink in sources[path] for path in ['system/fight_state.go', 'system/hud.go', 'system/hud_message.go', 'match/match.go']):
             flags.add(flag)
     counts = {key: sum(row['consumer_status'] == key for row in rows)
               for key in ['stub', 'unconsumed-render-field', 'partial-consumer',

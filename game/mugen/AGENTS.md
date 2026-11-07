@@ -20,6 +20,62 @@ Use the scoped readonly mugen.mod/mugen.sum overlay; verify
 Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
 `temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
 
+## Immediate state — M4dr validated; local checkpoint then phase controls
+
+M4dq native evidence committedbefd77438208ee9d8dcc094b9c134752ed2355f8. M4dr
+ready for source/text commit. Production ONLY system/hud.go and newhud_message.go:
+separate pending simulation start from real-frame visible animation/expiry;
+static clocks separate. New system/testmain_test.go publicGPUloop and
+hud_timing_test.go production Engine/FightState/viewport replay. All23native
+programs/34runs original sources and HUDrecorder remain IMMUTABLE.
+
+Final68376 ENTIREawaited1; SEPARATE26345frozen/host-client guardPASS. FULLscoped
+--check -json -race -p1 -count1 -timeout50m records5292PASS/32FAIL test/subtest
+results,36packages(23pass/2fail/11no-tests). Only oldnegativecamera+parent2 and
+29new strictHUD runs+parent30 fail. NOT all-green. Nootherstate/race/flow failures.
+All34HUD replays/460frames:357blank prestart/expired/disabled EXACT(77.6% bounded),
+95visible sprite max1RGB failures,8textplacement failures(1689pix/max236).
+ALL460presence andALL95spritebounds match; textboundsnative601,198,680,226 vs
+Go600,197,679,225. Causesunassigned. All103visibleframes staystrictnon-exact.
+
+All23actualapps SAMEbinaryf591b1d37debb2d8ef727fffbc24e8de6894c84210fb320dfe7042e1174162e2.
+FiveheldHUDworlds nowEXACT; mixedshadow100now468pix/max1; all7originalstartupworlds
+stillEXACT:12/13targetedworlds. NineolderboundedrendercontrolsPASS. Stockwin/rematch/
+win82balancedkeys,1970452stereo44.1kHzPCMframes SHA52e42ae1e6057bfdd905e8d06e1243018701fc23828454757a062bd3f00084ec.
+ALL460pairs represented12VIEWED thumbnailsheets +4VIEWED byte-identical worldpair
+classes; ALL22actualpairs8sheets+stock3VIEWED. AllRGB/geometryrecomputed.
+
+48realgates45zero/3exit1(full,shadow,staleinventory). Exactoldinventory generator/
+report archivedGitbefd+private snapshots AFTERguard. Addedhud_message source and
+boundeddescriptions; currentwrite/check0, classifications77/89typed86.5%,12fallback,
+0stub/9partial/20bounded/60route-only unchanged. Nooverallcompatpercentage.
+Passiveaudit14150 ENTIREawaited0:26345frozenpaths/4728nativepaths/34exactconfigs/
+528nativecaps/460GoHUDpairs/943appcanonicalassets/1118seededresourcecopies/25appcaps/
+input/PCM/sourcechecksPASS. All178runtime/internal non-testGo and186scopednon-testGo
+(includes8tools) unchanged sincefinal. Firstauditorscopeassert186infiltered178map
+failed; originalretained,r2verifiesbothsets. m4dr-final-evidence-audit.json,
+final-visual-review.json,final-metadata.json. No runtimeactive.
+
+Baseline13648setup1:absolutecharacterDEFneeded, oldtestsource archived; separate
+26343guardPASS. Corrected19257baseline1+separate26343guard,ALL42pairs3sheetsVIEWED,
+0/42exact. Revision7534entire1+separate26344guard,ALL68pairs5sheetsVIEWED48exact,
+19max1/1font. No production editsbetweenrevision/final. No sampler/region/golden/
+tolerancechanges; all priorraster/audio/constraintobligationsunwaived. LatestFULL
+is nowM4dr5292pass/32fail/36pkg, not historicalM4dl. DoNOTrepeatfulljustforcommit.
+
+CompleteexactscopedUTF8/noNUL/nobinary/indexauditandlocalcheckpoint, exclude355
+oldraw/failedcomparator paths BYoriginal m4dp-staged-inputs.held_unpromoted hashes
+(307visible+48ignored). Nativefightdefs retaincanonicalwhitespace; don'tedit.
+Then CONTINUEALLitem3 autonomously NOapprovalpause: HUD-PHASE-PLAN.md specifies
+Introholdthrough399/release400 +seek399 positiveRound/Fighttime/ctrl0, first2
+statepass, Winreadiness/phase4/time/life/KOoverlap andannouncementaudio. Current
+RoundCallphaseignoresround.time; ctrl0bypassesFightCall/message registration; KO
+DrawPreOver-only/legacyWintext notclosed. Theseareunmeasuredgaps: nativeBEFOREcode.
+Thenfinite/overlapcolour,clipboard/residualschemas/aliases/flags/oldstrictissues.
+Item4fonts/BGM/modes/assetsunallocated; finishindependent3beforeconcreteallocation.
+
+## Previous immediate state — M4dq native HUD contract
+
 ## Immediate state — M4dq native HUD contract ready for local checkpoint
 
 M4dp committed43145992f07bc3df19638e598ac21e83512c0208. M4dq has NOproductionGo

@@ -105,34 +105,35 @@ describe the isolated virtual display used for automated checks.
 
 ## Implementation progress and measured coverage
 
-Snapshot: **2026-11-06; initial root placement and fight-call reset (M4dp)**.
+Snapshot: **2026-11-06; timed HUD messages (M4dr)**.
 
-M4dq adds a reviewed [native timed-HUD contract](docs/HUD-TIMING.md):23 accepted
-programs/34 runs,528 images and6,336 numeric observations. This is reference
-evidence before the timing implementation; production percentages below remain
-at their measured checkpoints.
+Five held Round/Fight overlays now expire correctly and match their original
+native world crops. All seven original startup worlds still match. The mixed
+shadow scene retains468 pixels/max-one difference. [HUD timing and limits](docs/HUD-TIMING.md).
 
-All **seven original startup scene failures now match exactly**. The engine draws
-roots at their starting X/Y before RoundState2 while preserving scripted positions
-and fresh animation; helpers keep their own positions. It restores actual root
-X/Y on the first fight-call transition. **23 new native programs /276 values pass
-(100% of this bounded numeric corpus)**. New application worlds are **16/23 exact
-(69.6%)**; seven strict HUD/shadow differences remain open.
-[Evidence and limits](docs/INITIAL-PLACEMENT.md).
+The new34 production replays compare460 frames: **357/460 exact(77.6%)**,
+95 visible sprite frames with max-one RGB differences and8 text frames with a
+one-pixel placement difference. All460 presence observations and all95 visible
+sprite bounds match. The exact frames are blank pre-start/expired/disabled
+worlds; all103 visible-message frames remain strict failures. These numbers do
+not imply whole renderer/font or engine compatibility.
 
-**890 core race results**, all **166 dust /138 Game /53 pool** programs and the
-older camera regressions pass. The combined native gate is **481/482 cases**;
-one earlier negative-camera constraint case remains strict-failing. All16
-additional match results, nine older render controls and stock win/rematch/input/
-private audio pass. The three earlier dust camera query failures were corrected
-in M4do. [Startup camera evidence](docs/STARTUP-CAMERA.md).
+The fresh full scoped race suite records **5,292 passing test/subtest results,
+32 failures across36 packages**(23pass,2fail,11no-tests). Failures are the existing
+negative-camera case/parent and29 strict HUD runs/parent. All23 applications use
+one binary; nine older bounded renderer controls and stock win/rematch/win pass,
+including82 balanced keys and1,970,452 stereo44.1kHz private PCM frames. Original
+expectations, regions and tolerances are unchanged.
 
-The latest complete144-world dust matrix remains M4dn's historical **116/144 exact
-(80.6%)**; seven of those failures were separately rechecked and closed in M4dp.
-A new full144-world matrix is not claimed. The latest full scoped suite remains
-M4dl's historical **5,028 results /36packages**; current verification is focused.
-Held HUD expiry, finite/overlap color, clipboard, residual schemas/flags and older
-strict renderer/audio obligations remain item3 work.
+M4dp's23 native placement programs/276 values and the166 dust/138 Game/53pool
+programs remain covered by the full run. The earlier481/482 combined native
+case result retains the negative-camera constraint failure. The complete144-world
+dust matrix remains M4dn's historical116/144exact(80.6%); targeted startup/HUD
+rechecks close selected failures without claiming a new full144-world matrix.
+
+Remaining item3 includes measured Round/Fight/Win phase and cue timing, finite/
+overlap colors, clipboard/debug display, residual schemas/flags and prior strict
+renderer/audio obligations. [Next HUD controls](docs/HUD-PHASE-PLAN.md).
 
 Source routing is **77/89 typed (86.5%)**, with zero source stubs. Routing counts
 and bounded native percentages do not establish overall engine completion.
@@ -234,19 +235,22 @@ RGB pixels**. **5/40 complete world+HUD crops are exact (12.5%)**; 35 strict HUD
 failures remain open, including the no-flags baseline. Focused races and stock
 rematch/audio pass. [Flag evidence and open HUD gates](docs/ASSERT-SPECIAL.md).
 
-Item 3 continues with remaining Explod consumers, AssertSpecial,
-system animations/dust, clipboard and residual controller schemas.
+Item 3 continues with HUD phase/cue timing, finite/overlap colors, clipboard/
+debug display and residual controller schemas/flags.
 Broader modes/AI/progression, assets, fonts and final renderer/platform conformance
 remain item 4. There is no measured whole-engine completion percentage. The
 [previous progress narrative](docs/PROGRESS-HISTORY-M4CW.md) preserves earlier details.
 
 | Measured scope | Covered / total | Percentage | Meaning |
 | --- | ---: | ---: | --- |
+| M4dr timed-HUD production world frames | 357 / 460 | **77.6%** | Exact blank pre-start/expired/disabled frames;95 visible sprite max-one and8 text-placement failures stay strict. |
+| M4dr timed-HUD presence observations | 460 / 460 | **100%** | Presence only; all103 visible frames remain non-exact RGB. |
+| M4dr visible timed-HUD sprite bounds | 95 / 95 | **100%** | Geometry only; max-one RGB failures remain. |
 | MakeDust/control native replay cases through M4do | 166 / 166 | **100%** | Bounded numeric/schema corpus including22 expected rejections; startup camera queries corrected. |
 | Initial-placement native programs in M4dp | 23 / 23 | **100%** | Bounded numeric corpus;276 saved observations. |
-| New initial-placement world crops in M4dp | 16 / 23 | **69.6%** | Seven strict HUD/shadow differences remain unwaived. |
+| Historical initial-placement world crops in M4dp | 16 / 23 | **69.6%** | Five held-HUD failures later closed in M4dr; complete23-world matrix not rerun. |
 | Rechecked original startup world failures in M4dp | 7 / 7 | **100%** | Original captures/expectations unchanged; the complete144-world corpus was not rerun. |
-| Historical MakeDust/control application world crops in M4dn | 116 / 144 | **80.6%** | All144 run;28 strict presentation/color failures remain open. |
+| Historical MakeDust/control application world crops in M4dn | 116 / 144 | **80.6%** | Historical full matrix; later targeted startup/HUD rechecks do not establish a new full-matrix count. |
 | GameMakeAnim recorded native programs through M4dm | 138 / 138 | **100%** | Numeric/schema corpus including nine rejections; unmeasured variants remain. |
 | New GameMakeAnim dependency world crops in M4dm | 39 / 54 | **72.2%** | 15 maximum-one RGB sampling/shadow failures remain strict; broader evidence, not a regression rate against the old corpus. |
 | GameMakeAnim corpus native programs in M4dl | 84 / 84 | **100%** | Recorded numeric/schema corpus including nine rejections and positive controls; unmeasured variants remain. |

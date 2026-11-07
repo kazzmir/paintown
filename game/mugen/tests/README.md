@@ -1187,3 +1187,22 @@ finalized configurations. The first derived `initial_placement_render_probe.py`
 failed an obsolete metadata schema and remains preserved locally, excluded from
 the checkpoint; use the successful comparator named above. No original capture
 or expectation changed. [Evidence and remaining strict failures](../docs/INITIAL-PLACEMENT.md).
+
+
+### Timed HUD production comparisons (M4dr)
+
+`TestNativeTimedHUDFrames` in the system package runs34 native-derived production
+replays inside the public Ebitengine GPU loop. It compares460 exact world crops
+from23 authored programs. It requires the original native prepared/capture runs
+under temp/reference-runs plus the supplied distribution; these private binary
+assets and PNGs are intentionally absent from Git. Source recipes, hashes and
+native observations are in tests/testdata/reference/hudduration-*,hudtail-* and
+hudstart-*, with the hudtiming ledgers. Merely extracting the distribution after
+cloning does not reconstruct that preserved capture workspace.
+
+The full scoped race run currently has5292pass/32fail across36 packages. The
+strict failures are the earlier negative-camera case/parent and29 HUD image
+runs/parent. The image corpus has357 blank frames exact,95 visible sprite frames
+with max-one RGB differences and8 text-placement failures. Do not relax them.
+See ../docs/HUD-TIMING.md and ../docs/HUD-PHASE-PLAN.md for measured scope,
+independent timing rules, retained diagnostics and remaining studies.

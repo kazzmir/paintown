@@ -3283,3 +3283,44 @@ Continue production timing plus strict Go baselines, original held overlays,
 older renderer controls and stock input/private PCM, then the remaining allocated
 item3. Preserve existing strict failures. No checkpoint approval pause; item4
 modes/teams/AI/BGM/assets remains unallocated.
+
+
+## M4dr — timed messages and strict presentation follow-ups
+
+Timed Round/Fight/KO messages now have separate start, animation and expiry
+clocks; static bars retain their own clocks. The measured KO gate follows
+simulation passes, while visible animation/lifetime advances on real frames,
+including Pause, SuperPause and skipped KO frames. Five previously held overlays
+now match their original native world crops exactly. All seven original startup
+worlds still match. The mixed shadow case remains468 pixels/max-one strict.
+
+The34 native-derived production replays compare460 world frames:357 exact
+(**77.6% of this bounded image corpus**),95 visible sprite frames with max-one
+RGB differences, and8 text frames with a one-pixel placement difference. All460
+visibility observations and all95 visible sprite bounds match. The exact frames
+are pre-start, expired or disabled blank worlds; all103 visible-message frames
+remain strict failures. This is timing evidence, not complete renderer/font or
+whole-engine compatibility. [Evidence and limits](HUD-TIMING.md).
+
+The full scoped race suite was run at this shared integration boundary:
+**5,292 passing test/subtest results,32 failures across36 scoped packages**.
+There are23 passing packages,2 failing packages and11 with no tests. Failures are
+only the existing negative-camera case/parent and29 new strict HUD runs/parent.
+No new state-machine, flow, race or resource failure was observed. All23 actual
+applications used the same binary. Nine older bounded renderer controls and
+stock win/rematch/win pass, with82 balanced inputs and1,970,452 stereo44.1kHz
+private PCM frames. This supersedes the historical M4dl full-suite boundary.
+
+Final68376 was awaited completely with exit1; the separate26,345-input/host-client
+guard passes.48 real gates:45zero,3exit1(full suite, mixed shadow, stale inventory).
+The exact old inventory generator/report were archived against Git before their
+metadata refresh; current write/check passes. Passive provenance/config/resource/
+RGB/geometry/source/input/PCM audit passes. All178 runtime/internal non-test Go
+files and all186 scoped non-test Go files including8 tools remain byte-identical
+to the validated run. No original samplers, regions, expectations or tolerances
+changed. Routing stays77/89typed86.5%,zero stubs; no overall completion percentage.
+
+Continue [native Round/Fight/Win phase studies](HUD-PHASE-PLAN.md), then finite/
+overlap colors, clipboard/debug display, residual schemas/aliases/flags and prior
+strict obligations. Item3 continues autonomously after the local source/text
+checkpoint; item4 remains unallocated. No approval pause.
