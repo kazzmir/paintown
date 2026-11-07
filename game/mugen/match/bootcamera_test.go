@@ -48,6 +48,10 @@ type=ScreenBound
 trigger1=1
 value=0
 movecamera=var(50),var(51)
+[State 0, temporary camera width]
+type=Width
+trigger1=var(49)
+edge=20,30
 `
 	for index, expression := range []string{"TopEdge", "BottomEdge", "ScreenPos Y", "Pos Y", "GameHeight", "EnemyNear, TopEdge", "EnemyNear, BottomEdge", "CameraPos Y", "CameraPos X", "CameraZoom", "ScreenPos X", "Pos X", "GameWidth"} {
 		program += fmt.Sprintf("[State 0, viewport %d]\ntype=VarSet\ntrigger1=1\nfv=%d\nvalue=%s\n", index, index, expression)
@@ -314,6 +318,61 @@ type=dummy
 	}
 	if m.World.ProjectileStageBounds != [2]float64{-720, 720} || m.Viewport.Zoom != 1 {
 		t.Fatal("zoomed stage extents or startup zoom lost on reset", m.World.ProjectileStageBounds, m.Viewport.Zoom)
+	}
+
+	// Offscreen movement and camera fitting have separate bounds. One beta
+	// flow leaves the actual roots outside the stage while limiting the view
+	// and incorporating temporary Width edge bars, not containment margins.
+	loaded.Camera.BoundLeft, loaded.Camera.BoundRight = -100, 100
+	loaded.Camera.StartZoom = .5
+	m.Round++
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range m.Players {
+		if err := p.Character.SetScreenBound(engine.ScreenBoundParameters{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	advanceUntil(t, m, Active, 650)
+	for phase, pose := range [][4]float64{{-1000, 1000, 0, .5}, {700, 1300, 260, 1}, {0, 1300, 165, 32.0 / 51}} {
+		for side, p := range m.Players {
+			c := p.Character
+			factor := float64(c.LocalCoordinateWidth()) / 320
+			c.X, c.Y, c.VelX, c.VelY = pose[side]*factor, 0, 0, 0
+			c.IntVars[49], c.IntVars[50], c.IntVars[51] = 0, 0, 0
+			if phase > 0 {
+				c.IntVars[50], c.IntVars[51] = 1, 1
+			}
+			if phase == 2 {
+				c.IntVars[49] = 1
+			}
+		}
+		for tick := 0; tick < 80; tick++ {
+			step()
+		}
+		if math.Abs(m.CameraX-pose[2]) > .02 || math.Abs(m.Viewport.Zoom-pose[3]) > .001 {
+			t.Fatal("native offscreen/Width camera fitting", phase, m.CameraX, m.Viewport.Zoom)
+		}
+		for side, p := range m.Players {
+			factor := 320 / float64(p.Character.LocalCoordinateWidth())
+			if p.Character.X*factor != pose[side] || math.Abs(p.Character.FloatVars[8]*factor-pose[2]) > .02 {
+				t.Fatal("camera fitting constrained an offscreen root or lost its coordinate space", phase, side, p.Character.X, p.Character.FloatVars[8])
+			}
+		}
+	}
+	if err := m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 2}); err != nil {
+		t.Fatal(err)
+	}
+	step()
+	pausedX, pausedZoom := m.CameraX, m.Viewport.Zoom
+	for tick := 0; tick < 2; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		if m.CameraX != pausedX || m.Viewport.Zoom != pausedZoom {
+			t.Fatal("paused offscreen camera drifted")
+		}
 	}
 
 	// The beta's omitted-version legacy stage still publishes fractional X/Y

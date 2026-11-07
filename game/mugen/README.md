@@ -159,6 +159,10 @@ follow camera travel; authored
 BG controllers can pause, hide and change their animations. Native rendering
 precision is still tracked in the progress ledger.
 
+Camera fitting includes temporary `Width` edge bars and clips its fitting region
+to the stage edges. `ScreenBound = 0` still permits offscreen fighter movement;
+the camera's limits do not clamp those fighter positions.
+
 ## Build a standalone executable
 
 ```bash

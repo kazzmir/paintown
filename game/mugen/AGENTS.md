@@ -88,17 +88,17 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 ## Latest camera checkpoint
 
-Stage backgrounds/foregrounds now project directly to the game raster, using
-triangle sampling to preserve fractional vertices. Pre-1.0/date/omitted stage
-versions truncate only BG camera values in stage units; actors, effects and CNS
-queries stay fractional. Integer startx/starty initialize the visible camera in
-raw game units while the follow endpoints remain stage-scaled. Disabled camera
-participants retain that startup view. One cropped/zoomed HD beta scene matches
-BG/fighter/effect bounds and CNS queries for modern/legacy declarations. The
-connected scenario also covers foregrounds, masks and KO/round reset; four
-changed-source segments pass with race detection. Native scratch was removed.
-Prior tension/zoom/bounds and cold-start observations remain covered. Intermediate
-easing/push and other crop/raster edges remain open. Preserve local ignored YAML.
+Camera fitting includes temporary Width edge bars, excluding permanent screen
+containment margins. Clip the tension/Width fitting region to the fixed stage
+edges before choosing zoom and center; keep a clipped edge anchored when the
+zoomout limit cannot fit that region. This does NOT constrain actual actors:
+ScreenBound=0 intentionally permits offstage roots/helpers. A bounded beta flow
+establishes disabled tracking, offstage tracking and Width-driven fit. The
+existing mixed-coordinate camera scenario covers those poses, Pause and reset;
+four changed-source segments pass with race detection. Native scratch removed.
+Prior startup, cropped modern/legacy drawing and tension/zoom observations remain
+covered. Intermediate easing/push and other raster edges remain open. Preserve
+local ignored YAML; the standalone music-file CLI is deferred by user request.
 
 ## Keyboard checkpoint
 

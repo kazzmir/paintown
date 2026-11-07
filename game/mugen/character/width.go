@@ -23,6 +23,16 @@ func (c *Character) pushWidths() (front, back float64) {
 	return front + c.frameWidths.Player[0], back + c.frameWidths.Player[1]
 }
 
+// HorizontalCameraBounds includes temporary Width edge bars in world-oriented
+// local units. Permanent screen-containment margins do not affect camera fit.
+func (c *Character) HorizontalCameraBounds() (left, right float64) {
+	front, back := c.frameWidths.Edge[0], c.frameWidths.Edge[1]
+	if c.Facing < 0 {
+		front, back = back, front
+	}
+	return c.X - back, c.X + front
+}
+
 func (c *Character) lookupEdges(name string) (evaluator.Value, bool) {
 	switch name {
 	case "leftedge", "rightedge", "frontedge", "backedge", "frontedgedist", "backedgedist", "frontedgebodydist", "backedgebodydist":

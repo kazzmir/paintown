@@ -53,13 +53,14 @@ func (m *Match) updateHorizontalCamera() {
 		}
 		participants = true
 		scale := float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
-		x := actor.X * scale
+		actorLeft, actorRight := actor.HorizontalCameraBounds()
+		actorLeft, actorRight = actorLeft*scale, actorRight*scale
 		velocity := actor.VelX * float64(actor.Facing) * scale
-		if x < left {
-			left, leftVelocity = x, velocity
+		if actorLeft < left {
+			left, leftVelocity = actorLeft, velocity
 		}
-		if x > right {
-			right, rightVelocity = x, velocity
+		if actorRight > right {
+			right, rightVelocity = actorRight, velocity
 		}
 	}
 	// The beta freezes camera updates if either axis has no participants,
@@ -67,6 +68,14 @@ func (m *Match) updateHorizontalCamera() {
 	if !participants || !verticalParticipants {
 		return
 	}
+	// ScreenBound=0 can place actors beyond the stage. Limit only their
+	// camera fitting region; their actual positions remain unrestricted.
+	stageLeft, stageRight := m.horizontalStageBounds()
+	margin := m.Stage.Camera.Tension * stageScale
+	leftEdge, rightEdge := left-margin, right+margin
+	clippedLeft, clippedRight := leftEdge < stageLeft, rightEdge > stageRight
+	leftEdge = max(stageLeft, min(stageRight, leftEdge))
+	rightEdge = max(stageLeft, min(stageRight, rightEdge))
 	half := float64(m.Options.GameSpace.Width) / 2
 	zoom := 1.0
 	zoomEnabled := m.Stage.Camera.StartZoom != 1 || m.Stage.Camera.ZoomOut != 1 || m.Stage.Camera.ZoomIn != 1
@@ -74,7 +83,7 @@ func (m *Match) updateHorizontalCamera() {
 		zoom = m.Stage.Camera.ZoomIn
 		// Tension margins, like the vertical margins below, occupy unzoomed
 		// stage units. Fit the actor span plus both margins into the view.
-		span := right - left + 2*m.Stage.Camera.Tension*stageScale
+		span := rightEdge - leftEdge
 		if span > 0 {
 			zoom = max(m.Stage.Camera.ZoomOut, min(zoom, 2*half/span))
 		}
@@ -88,15 +97,21 @@ func (m *Match) updateHorizontalCamera() {
 		}
 		half /= zoom
 	}
-	threshold := half - m.Stage.Camera.Tension*stageScale
-	low, high := right-threshold, left+threshold
+	threshold := half - margin
+	low, high := rightEdge-half, leftEdge+half
 	wanted := m.cameraGoalX
 	if low > high {
-		wanted = (left + right) / 2
+		wanted = (leftEdge + rightEdge) / 2
+		// When zoomout cannot fit the whole region, preserve the stage edge
+		// that clipped it. An unclipped or two-sided region stays centered.
+		if clippedRight && !clippedLeft {
+			wanted = stageRight - half
+		} else if clippedLeft && !clippedRight {
+			wanted = stageLeft + half
+		}
 	} else {
 		wanted = math.Max(low, math.Min(high, wanted))
 	}
-	stageLeft, stageRight := m.horizontalStageBounds()
 	wanted = math.Max(stageLeft+half, math.Min(stageRight-half, wanted))
 	m.cameraGoalX = wanted
 	wantedLeft, wantedRight := float32(wanted-half), float32(wanted+half)
