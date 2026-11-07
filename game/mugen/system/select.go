@@ -18,18 +18,23 @@ type SelectState struct {
 	chars  []*CharacterPortrait
 	showP2 bool // whether P2 cursor is active (VS/Team VS/Co-op only)
 
-	p1CursorX     int
-	p1CursorY     int
-	p2CursorX     int
-	p2CursorY     int
-	p1Done        bool
-	p2Done        bool
-	ticks         int
-	stages        []string
-	stageIndex    int
-	choosingStage bool
-	loadError     error
-	palettes      [2]int
+	p1CursorX              int
+	p1CursorY              int
+	p2CursorX              int
+	p2CursorY              int
+	p1Done                 bool
+	p2Done                 bool
+	ticks                  int
+	stages                 []string
+	stageIndex             int
+	choosingStage          bool
+	loadError              error
+	palettes               [2]int
+	teamMenu               bool
+	teamModes              [2]match.TeamMode
+	teamCounts, teamCursor [2]int
+	teamReady              [2]bool
+	rosters                [2][]match.Selection
 }
 
 func NewSelectState(engine *Engine, title string) *SelectState {
@@ -50,9 +55,10 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	// Determine if P2 cursor should be shown
 	// Only in modes that involve a second human player
 	p2Modes := map[string]bool{
-		"Versus Mode": true,
-		"Team Versus": true,
-		"Team Co-op":  true,
+		"Versus Mode":    true,
+		"Team Versus":    true,
+		"Team Co-op":     true,
+		"Survival Co-op": true,
 	}
 
 	s := &SelectState{
@@ -69,6 +75,7 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 		p2CursorY: si.P2StartCell[1],
 	}
 
+	s.initTeams()
 	return s
 }
 
@@ -145,9 +152,14 @@ func (s *SelectState) Update() (State, error) {
 			s.choosingStage = false
 			s.p1Done = false
 			s.p2Done = false
+			s.rosters = [2][]match.Selection{}
 			return s, nil
 		}
 		return NewTitleState(s.engine), nil
+	}
+	if s.teamMenu {
+		s.updateTeamMenu()
+		return s, nil
 	}
 	if s.choosingStage {
 		if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
@@ -181,7 +193,7 @@ func (s *SelectState) Update() (State, error) {
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if palette, ok := s.confirm(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
-			s.p1Done = true
+			s.p1Done = s.pickMember(0, s.chosen(s.p1CursorX, s.p1CursorY), palette)
 			s.palettes[0] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
@@ -206,7 +218,7 @@ func (s *SelectState) Update() (State, error) {
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if palette, ok := s.confirm(2); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
-			s.p2Done = true
+			s.p2Done = s.pickMember(1, s.chosen(s.p2CursorX, s.p2CursorY), palette)
 			s.palettes[1] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
@@ -266,7 +278,7 @@ func (s *SelectState) startMatch() (State, error) {
 	if p1 == nil || p2 == nil {
 		return s, fmt.Errorf("selection has no playable characters")
 	}
-	request := match.Request{Mode: s.title, StagePath: s.stages[s.stageIndex], Music: p2.Entry.Music,
+	request := match.Request{Teams: s.selectedTeams(p1, p2), Mode: s.title, StagePath: s.stages[s.stageIndex], Music: p2.Entry.Music,
 		Players: [2]match.Selection{{DefPath: p1.DefPath, Name: p1.Name, Palette: s.palettes[0]}, {DefPath: p2.DefPath, Name: p2.Name, Palette: s.palettes[1]}}}
 	if !s.showP2 && s.title != "Training" {
 		request.Players[1].AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))
@@ -279,6 +291,7 @@ func (s *SelectState) startMatch() (State, error) {
 }
 
 func (s *SelectState) Draw(screen *ebiten.Image) {
+	defer s.drawTeamSelection(screen)
 	// Clear
 	if s.engine.motif.SelectBG != nil && s.engine.motif.SelectBG.BGClearColor != nil {
 		screen.Fill(s.engine.motif.SelectBG.BGClearColor)
@@ -286,6 +299,9 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 		screen.Fill(color.Black)
 	}
 
+	if s.teamMenu {
+		return
+	}
 	// Layer 0 BG
 	if s.engine.motif.SelectBG != nil {
 		s.engine.motif.SelectBG.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)

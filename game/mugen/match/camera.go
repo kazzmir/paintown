@@ -18,7 +18,7 @@ func (m *Match) publishedCameraX() float64 {
 
 func (m *Match) cameraActors() []*character.Character {
 	actors := make([]*character.Character, 0, len(m.Players)+len(m.World.Helpers))
-	for _, player := range m.Players {
+	for _, player := range m.Actors() {
 		actors = append(actors, player.Character)
 	}
 	return append(actors, m.World.Helpers...)
@@ -96,7 +96,7 @@ func (m *Match) updateHorizontalCamera() {
 	m.CameraX = float64(float32((float64(m.cameraLeft) + float64(m.cameraRight)) / 2))
 	m.Viewport.Zoom = float64(float32(width / (float64(m.cameraRight) - float64(m.cameraLeft))))
 	m.Viewport.CameraX = m.publishedCameraX()
-	for _, player := range m.Players {
+	for _, player := range m.Actors() {
 		scale, _ := m.Options.GameSpace.ScaleTo(player.LocalCoord)
 		player.Character.CameraX = m.Viewport.CameraX * scale
 	}

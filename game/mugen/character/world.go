@@ -15,6 +15,8 @@ type World struct {
 	Registry           *engine.Registry[*Character]
 	Roots              []*Character
 	StageInfo          map[string]string
+	TeamModes          [2]string
+	HomeTeam           int
 	Helpers            []*Character
 	HelperMax          int
 	ProjectileMax      int
@@ -35,7 +37,7 @@ type World struct {
 
 func NewWorld(helperMax int) *World {
 	helperMax = max(4, min(56, helperMax))
-	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, ProjectileMax: 32, AfterImageMax: 16, ExplodMax: 256, random: engine.NewRandomStream(1)}
+	return &World{Registry: engine.NewRegistry[*Character](int32(helperMax)), HelperMax: helperMax, ProjectileMax: 32, AfterImageMax: 16, ExplodMax: 256, random: engine.NewRandomStream(1), TeamModes: [2]string{"single", "single"}, HomeTeam: 1}
 }
 
 // CanCreateExplod includes roots, helpers, retired owners and ordinary scene cues.
@@ -192,6 +194,9 @@ func (w *World) enemies(c *Character, nearest bool) []*Character {
 	}
 	if nearest {
 		sort.SliceStable(result, func(i, j int) bool {
+			if result[i].IsAlive() != result[j].IsAlive() {
+				return result[i].IsAlive()
+			}
 			x, _ := c.PositionOf(result[i])
 			y, _ := c.PositionOf(result[j])
 			return math.Abs(x-c.X) < math.Abs(y-c.X)
@@ -257,7 +262,7 @@ func (c *Character) helperFamily(id int, filter bool) []*Character {
 
 func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 	switch name {
-	case "id", "teamside", "ishelper", "numhelper", "numtarget", "numexplod", "numenemy", "numpartner", "parentdist x", "parentdist y", "rootdist x", "rootdist y":
+	case "id", "teamside", "teammode", "ishometeam", "p3name", "p4name", "ishelper", "numhelper", "numtarget", "numexplod", "numenemy", "numpartner", "parentdist x", "parentdist y", "rootdist x", "rootdist y":
 	default:
 		return evaluator.Value{}, false
 	}
@@ -273,6 +278,25 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 		return evaluator.Int(c.EntityID), true
 	case "teamside":
 		return evaluator.Int(int32(c.TeamSide)), true
+	case "teammode":
+		if c.TeamSide < 1 || c.TeamSide > 2 {
+			return evaluator.Value{}, true
+		}
+		return evaluator.Text(c.World.TeamModes[c.TeamSide-1]), true
+	case "ishometeam":
+		return evaluator.Bool(c.TeamSide == c.World.HomeTeam), true
+	case "p3name":
+		for _, root := range c.World.Roots {
+			if root != c.rootPlayer() && root.TeamSide == c.TeamSide {
+				return evaluator.Text(root.Name), true
+			}
+		}
+		return evaluator.Value{}, true
+	case "p4name":
+		if enemies := c.World.enemies(c, false); len(enemies) > 1 {
+			return evaluator.Text(enemies[1].Name), true
+		}
+		return evaluator.Value{}, true
 	case "ishelper", "numhelper", "numtarget", "numexplod":
 		return c.LookupFunction(name, nil)
 	case "numenemy":

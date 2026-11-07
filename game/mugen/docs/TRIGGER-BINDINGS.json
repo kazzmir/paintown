@@ -3,13 +3,8 @@
   "kind": "source-routing-inventory",
   "manual_sha256": "9a6636b9e14edc1c91b38de7357aae43049d2a612313d10be55f6e6117ab121c",
   "family_count": 127,
-  "route_present": 123,
-  "unbound": [
-    "ishometeam",
-    "p3name",
-    "p4name",
-    "teammode"
-  ],
+  "route_present": 127,
+  "unbound": [],
   "triggers": [
     {
       "name": "abs",
@@ -441,8 +436,10 @@
     },
     {
       "name": "ishometeam",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
       "variants_complete": false
     },
     {
@@ -684,14 +681,18 @@
     },
     {
       "name": "p3name",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
       "variants_complete": false
     },
     {
       "name": "p4name",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
       "variants_complete": false
     },
     {
@@ -953,8 +954,10 @@
     },
     {
       "name": "teammode",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/world.go:lookupEntity"
+      ],
       "variants_complete": false
     },
     {

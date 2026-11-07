@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/render"
@@ -27,6 +28,7 @@ type FightHUD struct {
 	levels        [2]int
 	pendingSounds map[string]hudSound
 	combos        [2]hudCombo
+	comboSources  map[*character.Character]uint64
 	linearSampler render.Linear
 	indexSampler  render.Nearest
 	renderError   error
@@ -76,6 +78,7 @@ func (h *FightHUD) Update(_ match.Phase, round int) error {
 		clear(h.played)
 		clear(h.pendingSounds)
 		h.combos = [2]hudCombo{}
+		h.comboSources = nil
 		for slot, p := range h.match.Players {
 			h.levels[slot] = p.Character.Power / 1000
 		}
@@ -239,35 +242,91 @@ func (h *FightHUD) bar(screen *ebiten.Image, section, prefix string, fraction fl
 	}
 }
 
+func (h *FightHUD) teamSection(side int, base string) string {
+	mode := h.match.Teams[side].Mode
+	if mode == match.Simul {
+		return "Simul " + base
+	}
+	if mode == match.Turns {
+		return "Turns " + base
+	}
+	return base
+}
+
+func (h *FightHUD) portrait(screen *ebiten.Image, player *character.Player, section, key string, x, y float64) {
+	ids := h.values(section, key+".spr", 9000, 0)
+	offset := h.values(section, key+".offset", 0, 0)
+	scale := h.values(section, key+".scale", 1, 1)
+	facing := h.values(section, key+".facing", 1)[0]
+	ratio := float64(screen.Bounds().Dx()) / float64(player.LocalCoord.Width)
+	player.DrawSprite(screen, player.Character, int(ids[0]), int(ids[1]), x+offset[0], y+offset[1], scale[0]*facing*ratio, scale[1]*ratio)
+}
+
 func (h *FightHUD) drawBars(screen *ebiten.Image) {
 	m := h.match
-	for slot, p := range m.Players {
+	for slot, p := range m.ActivePlayers() {
+		if p == nil {
+			continue
+		}
+		side := slot % 2
 		prefix := fmt.Sprintf("p%d", slot+1)
-		c := p.Character
-		h.bar(screen, "Lifebar", prefix, float64(c.Life)/float64(max(1, c.MaxLife)))
-		h.bar(screen, "Powerbar", prefix, float64(c.Power)/float64(max(1, c.MaxPower)))
-		pos := h.values("Powerbar", prefix+".pos", 0, 0)
-		h.label(screen, "Powerbar", prefix+".counter", fmt.Sprint(c.Power/1000), pos[0], pos[1])
-		pos = h.values("Face", prefix+".pos", 0, 0)
-		h.component(screen, "Face", prefix+".bg", pos[0], pos[1])
-		h.component(screen, "Face", prefix+".bg0", pos[0], pos[1])
-		h.component(screen, "Face", prefix+".bg1", pos[0], pos[1])
-		ids := h.values("Face", prefix+".face.spr", 9000, 0)
-		offset := h.values("Face", prefix+".face.offset", 0, 0)
-		scale := h.values("Face", prefix+".face.scale", 1, 1)
-		facing := h.values("Face", prefix+".face.facing", 1)[0]
-		portraitScale := float64(screen.Bounds().Dx()) / float64(p.LocalCoord.Width)
-		p.DrawSprite(screen, c, int(ids[0]), int(ids[1]), pos[0]+offset[0], pos[1]+offset[1], scale[0]*facing*portraitScale, scale[1]*portraitScale)
-		pos = h.values("Name", prefix+".pos", 0, 0)
+		section := h.teamSection(side, "Lifebar")
+		if m.Fight.Attribute(section, prefix+".pos") == nil {
+			section = "Lifebar"
+		}
+		h.bar(screen, section, prefix, float64(p.Character.Life)/float64(max(1, p.Character.MaxLife)))
+		if slot < 2 {
+			h.bar(screen, "Powerbar", prefix, float64(p.Character.GetPower())/float64(max(1, p.Character.MaxPower)))
+			pos := h.values("Powerbar", prefix+".pos", 0, 0)
+			h.label(screen, "Powerbar", prefix+".counter", fmt.Sprint(p.Character.GetPower()/1000), pos[0], pos[1])
+		}
+		section = h.teamSection(side, "Face")
+		if m.Fight.Attribute(section, prefix+".pos") == nil {
+			section = "Face"
+		}
+		pos := h.values(section, prefix+".pos", 0, 0)
+		h.component(screen, section, prefix+".bg", pos[0], pos[1])
+		h.component(screen, section, prefix+".bg0", pos[0], pos[1])
+		h.component(screen, section, prefix+".bg1", pos[0], pos[1])
+		h.portrait(screen, p, section, prefix+".face", pos[0], pos[1])
+		section = h.teamSection(side, "Name")
+		if m.Fight.Attribute(section, prefix+".pos") == nil {
+			section = "Name"
+		}
+		pos = h.values(section, prefix+".pos", 0, 0)
 		name := p.Definition.Info["displayname"]
 		if name == "" {
-			name = p.Definition.Info["name"]
+			name = p.Character.Name
 		}
-		h.label(screen, "Name", prefix+".name", name, pos[0], pos[1])
-		pos = h.values("WinIcon", prefix+".pos", 0, 0)
-		spacing := h.values("WinIcon", prefix+".iconoffset", 0, 0)
-		for index := 0; index < m.Wins[slot]; index++ {
-			h.component(screen, "WinIcon", prefix+".n", pos[0]+float64(index)*spacing[0], pos[1]+float64(index)*spacing[1])
+		h.label(screen, section, prefix+".name", name, pos[0], pos[1])
+		if slot < 2 {
+			pos = h.values("WinIcon", prefix+".pos", 0, 0)
+			spacing := h.values("WinIcon", prefix+".iconoffset", 0, 0)
+			for index := 0; index < m.Wins[side]; index++ {
+				h.component(screen, "WinIcon", prefix+".n", pos[0]+float64(index)*spacing[0], pos[1]+float64(index)*spacing[1])
+			}
+		}
+	}
+	for side, team := range m.Teams {
+		if team.Mode != match.Turns {
+			continue
+		}
+		prefix := fmt.Sprintf("p%d.teammate", side+1)
+		pos := h.values("Turns Face", prefix+".pos", 0, 0)
+		spacing := h.values("Turns Face", prefix+".spacing", 0, 0)
+		display := 0
+		for index, player := range team.Members {
+			if index == team.Active {
+				continue
+			}
+			x, y := pos[0]+float64(display)*spacing[0], pos[1]+float64(display)*spacing[1]
+			h.component(screen, "Turns Face", prefix+".bg0", x, y)
+			h.component(screen, "Turns Face", prefix+".bg1", x, y)
+			h.portrait(screen, player, "Turns Face", prefix+".face", x, y)
+			if index < team.Active {
+				h.component(screen, "Turns Face", prefix+".ko", x, y)
+			}
+			display++
 		}
 	}
 	pos := h.values("Time", "pos", 0, 0)

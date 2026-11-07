@@ -49,9 +49,12 @@ The game logs the actual seed. Omit the option for normal clock-based startup;
 later matches advance the independent session sequence.
 
 The launcher compiles/runs the Go application and keeps build caches under
-`game/mugen/temp/`. Quick match uses two human-controlled players. Single-player
-menu selection has a basic opponent policy; full arcade progression and AI
-compatibility remain unfinished. Menu mode names do not imply complete mode
+`game/mugen/temp/`. Quick match uses two human-controlled players. Team VS/Team Arcade menus offer
+Single, Simul (two active members) and Turns (two to four members); choose mode
+with Up/Down, turns count with Left/Right, then confirm each roster member.
+Simul partners use AI; co-op routes the second human to P3. Team outcomes, stock
+team HUD and turns handoff work. Full progression, recovery and AI compatibility
+remain unfinished. Menu mode names do not imply complete mode
 rules. See [match notes](docs/MATCH.md) for details.
 
 | Action | Player 1 | Player 2 |

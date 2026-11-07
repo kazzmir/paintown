@@ -62,6 +62,8 @@ new native data was promoted. State/controller closure, startup constraints,
 vertical edges and stock bitmap placement are complete at abf8a2d4a. The first
 functional item4 batch implements WAV/MP3/Ogg BGM, NoMusic, scene transitions
 and StageVar; all five affected connected segments pass with race detection.
-Continue team rosters/simul/turns/context, then modes/AI and broader assets/media/
+Simul/turns rosters, all team trigger bindings, partner combat/power and team
+selection/HUD now pass four affected connected segments with race detection.
+Continue mode progression/AI and recovery policies, then broader assets/media/
 platforms. Legacy MIDI/tracker/CD backends are still unimplemented. Precision
 remains partial and deferred. Read docs/PROGRESS.md and docs/HANDOFF.md.

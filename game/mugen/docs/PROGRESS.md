@@ -6,8 +6,8 @@ items name the remaining work. Counts below are feature/route counts, not
 an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
-- Triggers: 123/127 runtime routes; 4 missing.
-- Project items: 26 implemented, 6 partial, 1 missing.
+- Triggers: 127/127 runtime routes; 0 missing.
+- Project items: 27 implemented, 6 partial, 0 missing.
 
 ## Completed scenario coverage
 
@@ -34,7 +34,7 @@ source changes reopen only the affected segments.
 - [x] Controller persistence and hit-pause eligibility.
 - [x] Borrowed states, animation and SelfState ownership.
 - [x] Remaining variable and StateTypeSet schemas.
-- [ ] Remaining stage, viewport and team trigger bindings. **partial** — Bind IsHomeTeam, P3Name, P4Name and TeamMode with team/mode lifecycle. (item4 context)
+- [x] Remaining stage, viewport and team trigger bindings. (item4 context)
 
 ### Characters and combat
 
@@ -72,7 +72,7 @@ source changes reopen only the affected segments.
 
 - [ ] Full opponent AI compatibility. **partial** — Expand the basic opponent policy to the required AI behavior. (item4)
 - [ ] Arcade progression and complete mode rules. **partial** — Implement complete progression and rules beyond the playable one-on-one flow. (item4)
-- [ ] Team/simul/turns lifecycle and partner context. **missing** — Implement team roster, partner lifecycle, team modes and associated triggers. (item4)
+- [ ] Team/simul/turns lifecycle and partner context. **partial** — Simul/turns selection, rosters, partner context, power/HUD and results are implemented; finish co-op/progression rules and native turns life-recovery policy. (item4)
 - [ ] Additional platform builds and final playable acceptance. **partial** — Linux is exercised; validate the other supported platforms and final game flow. (item4)
 
 ## Controllers and trigger gaps
@@ -85,7 +85,7 @@ implementation tasks by themselves.
 | Controller | Remaining implementation |
 | --- | --- |
 
-Missing trigger routes: `ishometeam`, `p3name`, `p4name`, `teammode`.
+Missing trigger routes: .
 
 Remaining stage/team context belongs with the later modes/assets allocation.
 

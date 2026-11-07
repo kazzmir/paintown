@@ -32,12 +32,15 @@ type Request struct {
 	StagePath string
 	Mode      string
 	Music     string
+	Teams     [2]TeamSelection
 }
 
 type Options struct {
 	RootDir, MotifDir, FightPath string
 	GameSpace                    coord.Space
 	RoundTime, LifePercent       int
+	TeamLoseOnKO                 bool
+	Team1Vs2Life                 int
 	Input                        func(playerID, facing int) []string
 	SoundQueue                   *sound.Queue
 	MotifSpace                   coord.Space
@@ -69,6 +72,7 @@ type Match struct {
 	Request                 Request
 	Options                 Options
 	Players                 [2]*character.Player
+	Teams                   [2]Team
 	Stage                   *stage.Stage
 	Fight                   *fight.Definition
 	Phase                   Phase
@@ -101,6 +105,12 @@ type Match struct {
 }
 
 func New(request Request, options Options) (*Match, error) {
+	var err error
+	request, err = normalizeTeams(request)
+	if err != nil {
+		return nil, err
+	}
+
 	if _, err := options.GameSpace.ScaleTo(options.GameSpace); err != nil {
 		return nil, err
 	}
@@ -142,7 +152,6 @@ func New(request Request, options Options) (*Match, error) {
 	if m.SoundQueue == nil {
 		m.SoundQueue = &sound.Queue{}
 	}
-	var err error
 	m.Stage, err = stage.LoadStage(request.StagePath, options.RootDir)
 	if err != nil {
 		return nil, fmt.Errorf("match stage: %w", err)
@@ -171,15 +180,24 @@ func New(request Request, options Options) (*Match, error) {
 		fxScale = background.GetFloat(attribute.Value)
 	}
 	m.commonEffects = effect.Source{Sprites: m.Fight.EffectSprites, Animations: m.Fight.EffectAnimations, Scale: fxScale * float64(options.GameSpace.Width) / float64(motifWidth)}
-	for slot, selected := range request.Players {
-		if selected.Palette < 1 || selected.Palette > 12 || selected.AILevel < 0 || selected.AILevel > 8 {
-			return nil, fmt.Errorf("match player %d: invalid palette/AI level", slot+1)
+	m.World.HomeTeam = homeTeam(request.Mode)
+	for side, selection := range request.Teams {
+		team := &m.Teams[side]
+		team.Mode, team.entered = selection.Mode, make(map[*character.Player]bool)
+		m.World.TeamModes[side] = string(selection.Mode)
+		for index, selected := range selection.Members {
+			if selected.Palette < 1 || selected.Palette > 12 || selected.AILevel < 0 || selected.AILevel > 8 {
+				return nil, fmt.Errorf("team %d member %d: invalid palette/AI level", side+1, index+1)
+			}
+			player, err := character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir})
+			if err != nil {
+				return nil, fmt.Errorf("team %d member %d: %w", side+1, index+1, err)
+			}
+			team.Members = append(team.Members, player)
 		}
-		m.Players[slot], err = character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir})
-		if err != nil {
-			return nil, fmt.Errorf("match player %d: %w", slot+1, err)
-		}
+		m.Players[side] = team.Members[0]
 	}
+
 	if err := m.resetRound(); err != nil {
 		return nil, err
 	}
@@ -194,6 +212,11 @@ func (m *Match) Setting(section, key string, fallback int) int {
 }
 
 func (m *Match) resetRound() error {
+	for side := range m.Teams {
+		team := &m.Teams[side]
+		team.Active = team.next
+		m.Players[side] = team.Members[team.Active]
+	}
 	m.World.StageInfo = map[string]string{"info.name": m.Stage.Name, "info.displayname": m.Stage.DisplayName, "info.author": m.Stage.Author, "info.authorname": m.Stage.Author}
 	m.Timeline.ClearPauses()
 	m.Timeline.ResetRoundEffectClock()
@@ -226,7 +249,11 @@ func (m *Match) resetRound() error {
 	m.Viewport.Zoom = 1
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	m.Viewport.CameraX = m.publishedCameraX()
-	for slot, p := range m.Players {
+	for slot, p := range m.ActivePlayers() {
+		if p == nil {
+			continue
+		}
+		side := slot % 2
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
 		c.Name, c.AuthorName = previous.Name, previous.AuthorName
@@ -243,11 +270,23 @@ func (m *Match) resetRound() error {
 		c.Palettes = palette.New(p.SFF)
 		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.InputSlot, p.InputSlot = slot+1, slot+1
-		c.PaletteNo, c.AILevel = m.Request.Players[slot].Palette, m.Request.Players[slot].AILevel
-		c.RoundNo, c.RoundsExisted, c.RoundState = m.Round, m.Round-1, 0
+		selected, _ := m.SelectionForPlayer(slot + 1)
+		c.PaletteNo, c.AILevel = selected.Palette, selected.AILevel
+		c.TeamSide = side + 1
+		c.RoundNo, c.RoundsExisted, c.RoundState = m.Round, 0, 0
+		if m.Round > 1 && m.Teams[side].entered[p] {
+			c.RoundsExisted = previous.RoundsExisted + 1
+		}
 		c.Ctrl = false
 		c.MaxLife = c.MaxLife * m.Options.LifePercent / 100
+		if m.Teams[side].Mode == Single && m.Teams[1-side].Mode == Simul && m.Options.Team1Vs2Life > 0 {
+			c.MaxLife = c.MaxLife * m.Options.Team1Vs2Life / 100
+		}
 		c.Life = c.MaxLife
+		if m.Round > 1 && m.hasTurns() && m.Teams[side].entered[p] && previous.IsAlive() {
+			c.Life = min(c.MaxLife, previous.Life)
+		}
+		m.Teams[side].entered[p] = true
 		c.Commands = character.NewCommandBuffer(120)
 		p.Commands = c.Commands
 		c.InputSource = m.Options.Input
@@ -261,16 +300,19 @@ func (m *Match) resetRound() error {
 			}
 		}
 		x, y, z, facing := s.PlayerInfo.P1StartX, s.PlayerInfo.P1StartY, s.PlayerInfo.P1StartZ, s.PlayerInfo.P1Facing
-		if slot == 1 {
+		if side == 1 {
 			x, y, z, facing = s.PlayerInfo.P2StartX, s.PlayerInfo.P2StartY, s.PlayerInfo.P2StartZ, s.PlayerInfo.P2Facing
 		}
 		if facing == 0 {
 			facing = 1
-			if slot == 1 {
+			if side == 1 {
 				facing = -1
 			}
 		}
 		scale, _ := s.StageInfo.LocalCoord.ScaleTo(p.LocalCoord)
+		if slot > 1 {
+			x -= 25 * float64(facing)
+		}
 		c.X, c.Y, c.Z, c.Facing = x*scale, y*scale, z*scale, facing
 		c.StartX, c.StartY, c.StartZ, c.StartFacing = c.X, c.Y, c.Z, c.Facing
 		c.LeftBound, c.RightBound = s.PlayerInfo.LeftBound*scale, s.PlayerInfo.RightBound*scale
@@ -278,10 +320,10 @@ func (m *Match) resetRound() error {
 		c.TopBound, c.BotBound = s.PlayerInfo.TopBound*scale, s.PlayerInfo.BotBound*scale
 		p.Character = c
 	}
-	if err := m.World.ResetRoots(m.Players[0].Character, m.Players[1].Character); err != nil {
+	if err := m.World.ResetRoots(m.activeRoots()...); err != nil {
 		return err
 	}
-	for _, p := range m.Players {
+	for _, p := range m.Actors() {
 		p.Character.ChangeState(5900, -1, -1)
 		if p.Character.RuntimeError != nil {
 			return p.Character.RuntimeError
@@ -302,7 +344,7 @@ func (m *Match) enter(phase Phase) {
 }
 func (m *Match) roundState(value int) {
 	m.Timeline.ResetRoundEffectClock()
-	for _, p := range m.Players {
+	for _, p := range m.Actors() {
 		if value == 2 && p.Character.RoundState != 2 {
 			// Native restores root X/Y on the first fight-call transition,
 			// including a moving owner during Pause. Animation and CNS clocks
@@ -342,7 +384,7 @@ func (m *Match) Update() error {
 		m.Announcements.Win = 0
 		m.roundEndDeadline = m.Setting("Round", "over.time", 210)
 		m.slowdown.Clear()
-		for _, player := range m.Players {
+		for _, player := range m.Actors() {
 			player.Character.HitDefActive = false
 		}
 	}
@@ -360,7 +402,7 @@ func (m *Match) Update() error {
 	}
 	// The initial KO pass counts toward the native damage grace.
 	damageDisabled := m.Phase == Over || (m.Phase == PreOver && m.PhaseTime+1 >= m.Setting("Round", "over.hittime", 10))
-	for _, p := range m.Players {
+	for _, p := range m.Actors() {
 		c := p.Character
 		c.RoundDamageDisabled = damageDisabled
 		scale, _ := m.Options.GameSpace.ScaleTo(p.LocalCoord)
@@ -370,7 +412,7 @@ func (m *Match) Update() error {
 			c.Ctrl = false
 		}
 	}
-	if err := character.TickCharacters([]*character.Character{m.Players[0].Character, m.Players[1].Character}); err != nil {
+	if err := character.TickCharacters(m.activeRoots()); err != nil {
 		return fmt.Errorf("match tick %d: %w", m.Tick, err)
 	}
 	if err := m.Effects.Flush(); err != nil {
@@ -396,7 +438,7 @@ func (m *Match) Update() error {
 		}
 	case Intro:
 		intro := false
-		for _, p := range m.Players {
+		for _, p := range m.Actors() {
 			intro = intro || p.Character.Specials["intro"]
 		}
 		if intro {
@@ -429,7 +471,7 @@ func (m *Match) Update() error {
 		}
 	case Active:
 		frozen := false
-		for _, p := range m.Players {
+		for _, p := range m.Actors() {
 			frozen = frozen || p.Character.Specials["timerfreeze"]
 		}
 		if m.TimeLeft >= 0 && !frozen {
@@ -453,7 +495,7 @@ func (m *Match) Update() error {
 		}
 	case Over:
 		held := false
-		for _, p := range m.Players {
+		for _, p := range m.Actors() {
 			held = held || p.Character.Specials["roundnotover"]
 		}
 		// The beta keeps a rolling 19-pass deadline while a win pose is
@@ -476,13 +518,13 @@ func (m *Match) Update() error {
 func (m *Match) startActive() {
 	m.enter(Active)
 	m.timeTicks = 2
-	for _, player := range m.Players {
+	for _, player := range m.Actors() {
 		player.Character.Ctrl = true
 	}
 }
 
 func (m *Match) roundActorsReady() bool {
-	for _, player := range m.Players {
+	for _, player := range m.Actors() {
 		c := player.Character
 		ready := c.IsAlive() && c.Ctrl && c.StateType == "S" && c.MoveType == "I"
 		ready = ready || (c.StateNo == 5150 && c.Time > 0)
@@ -494,16 +536,19 @@ func (m *Match) roundActorsReady() bool {
 }
 
 func (m *Match) hasKO() bool {
-	return !m.Players[0].Character.IsAlive() || !m.Players[1].Character.IsAlive()
+	return m.teamKO(0) || m.teamKO(1)
 }
 
 func (m *Match) finishRound() {
 	m.Announcements.Finish = 0
-	a, b := m.Players[0].Character, m.Players[1].Character
-	m.TimeOver = a.IsAlive() && b.IsAlive()
+	slow := true
+	for _, p := range m.Actors() {
+		slow = slow && !p.Character.Specials["nokoslow"]
+	}
+	m.TimeOver = !m.hasKO()
 	if m.TimeOver {
 		m.TimeLeft = 0
-	} else if !a.Specials["nokoslow"] && !b.Specials["nokoslow"] {
+	} else if slow {
 		m.slowdown.Start(m.Setting("Round", "slow.time", 60))
 	}
 	if !m.TimeOver {
@@ -514,17 +559,28 @@ func (m *Match) finishRound() {
 }
 
 func (m *Match) publishRoundResult() {
-	a, b := m.Players[0].Character, m.Players[1].Character
-	left, right := int64(a.Life)*int64(b.MaxLife), int64(b.Life)*int64(a.MaxLife)
+	a, am := m.teamLife(0)
+	b, bm := m.teamLife(1)
+	left, right := a*bm, b*am
+	if m.teamKO(0) && m.teamKO(1) {
+		left, right = 0, 0
+	} else if m.teamKO(0) != m.teamKO(1) {
+		if m.teamKO(0) {
+			left, right = 0, 1
+		} else {
+			left, right = 1, 0
+		}
+	}
 	m.Winner = -1
 	if left > right {
 		m.Winner = 0
 	} else if right > left {
 		m.Winner = 1
 	}
-	for slot, p := range m.Players {
-		p.Character.RoundWon = m.Winner == slot
-		p.Character.RoundLost = m.Winner >= 0 && m.Winner != slot
+	for _, p := range m.Actors() {
+		side := p.Character.TeamSide - 1
+		p.Character.RoundWon = m.Winner == side
+		p.Character.RoundLost = m.Winner >= 0 && m.Winner != side
 		p.Character.RoundDraw = m.Winner < 0
 		p.Character.RoundTimeOver = m.TimeOver
 	}
@@ -549,7 +605,8 @@ func (m *Match) commitRoundResult() {
 	}
 	target := max(1, m.Setting("Round", "match.wins", 2))
 	m.matchDone = m.Wins[0] >= target || m.Wins[1] >= target
-	for _, p := range m.Players {
+	m.commitTeamResult()
+	for _, p := range m.Actors() {
 		p.Character.IsMatchOver = m.matchDone
 	}
 }

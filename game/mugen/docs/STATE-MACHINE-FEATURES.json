@@ -6,12 +6,7 @@
     "fvarset"
   ],
   "controller_gaps": {},
-  "trigger_gap_allocations": {
-    "ishometeam": "item4 stage/team context",
-    "p3name": "item4 stage/team context",
-    "p4name": "item4 stage/team context",
-    "teammode": "item4 stage/team context"
-  },
+  "trigger_gap_allocations": {},
   "mechanics": [
     {
       "id": "state-compilation",
@@ -369,23 +364,25 @@
       "id": "teams",
       "name": "Team/simul/turns lifecycle and partner context",
       "group": "Modes and platforms",
-      "status": "missing",
-      "gap": "Implement team roster, partner lifecycle, team modes and associated triggers.",
+      "status": "partial",
+      "gap": "Simul/turns selection, rosters, partner context, power/HUD and results are implemented; finish co-op/progression rules and native turns life-recovery policy.",
       "allocation": "item4",
       "sources": [
-        "character/world.go"
+        "match/teams.go:commitTeamResult",
+        "system/team_select.go:selectedTeams",
+        "character/world.go:lookupEntity"
       ]
     },
     {
       "id": "stage-triggers",
       "name": "Remaining stage, viewport and team trigger bindings",
       "group": "State machine",
-      "status": "partial",
-      "gap": "Bind IsHomeTeam, P3Name, P4Name and TeamMode with team/mode lifecycle.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item4 context",
       "sources": [
         "character/world.go:LookupFunction",
-        "evaluator/names.go"
+        "character/world.go:lookupEntity"
       ]
     },
     {
@@ -478,7 +475,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "50306c3bdff562d0201833b5d6c550c78c8cbae113a711ee2b5e5b9bbbd99fdc"
+      "passed_source": "0db82bea7ad34778f4d915e7caf0bf6ba433c7aa5f1954502e0af2991c8a2b81"
     },
     {
       "id": "entities",
@@ -500,11 +497,15 @@
         {
           "file": "match/world_test.go",
           "name": "TestRoundResetRebindsRootsAndRetiresHelperIDs"
+        },
+        {
+          "file": "match/team_flow_test.go",
+          "name": "TestTeamRosterCombatAndResetFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e2e055282a1d12c01f3fbdf26ea5f75fd04e44d23365e977abfe342b0a9f8c96"
+      "passed_source": "8ee57360100a2aa041ded352628899b653a1a595ff1061d281ef9b6f8f89af96"
     },
     {
       "id": "effects-pause",
@@ -536,7 +537,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1bb8e72ebe2f97903cf28dd07ab104658cda81d742b65898236bbaf42835ce4b"
+      "passed_source": "ca1dd536a7dc640c833402369e75ff94d7f9f15f8c7d317bb905c2b0f2b4b702"
     },
     {
       "id": "match-flow",
@@ -591,11 +592,15 @@
         {
           "file": "system/music_flow_test.go",
           "name": "TestMusicControllerAndSceneFlow"
+        },
+        {
+          "file": "system/team_flow_test.go",
+          "name": "TestTeamSelectionFightHUDAndExitFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5512209bc0a18d992fc37864740e914e75d0c29b1c18b964c2cbad57e8d77180"
+      "passed_source": "939ab53299357d1f8ae16f666778a88c0e4d9bac2518c4503990fca9b507b8aa"
     }
   ],
   "presentation_followups": [

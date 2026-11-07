@@ -31,14 +31,14 @@ func (m *Match) startWinPose() error {
 		return nil
 	}
 	m.winPoseStarted = true
-	for slot, p := range m.Players {
+	for _, p := range m.Actors() {
 		if !p.Character.IsAlive() {
 			continue
 		}
 		state := 170
 		if m.Winner < 0 {
 			state = 175
-		} else if slot == m.Winner {
+		} else if p.Character.TeamSide-1 == m.Winner {
 			state = 180
 		}
 		p.Character.ChangeState(state, 0, -1)

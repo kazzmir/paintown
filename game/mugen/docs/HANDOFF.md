@@ -2,28 +2,31 @@
 
 Use [PROGRESS.md](PROGRESS.md) as the single completion ledger and
 [WORKFLOW.md](WORKFLOW.md) as the implementation/test policy. The user authorized
-all remaining functional work on 2026-11-07, deferring pixel/color/shadow/alpha
-and KO-echo precision until afterward. Continue autonomously with local
-source/text checkpoints; no pushes, committed binaries or generated banks.
+remaining functional work on 2026-11-07, deferring pixel/color/shadow/alpha and
+KO-echo precision. Continue autonomously with local source/text commits; no pushes,
+committed binaries, generated banks or historical native matrices.
 
-The latest batch connects streaming WAV/MP3/Ogg BGM to the shared production
-mixer. Menu continuity, sample loop points, independent master/BGM/track volume,
-selection overrides, stage metadata, storyboard inheritance/explicit stop,
-round/scene clearing, match restart and helper-issued NoMusic are integrated.
-StageVar now reads loaded name/displayname/author metadata through the World.
-Legacy MIDI/tracker/CD audio backends remain explicit media/asset work; the
-supplied stage references sound/kfm.mid, but that file is absent locally.
+BGM/NoMusic and StageVar are committed at c3422f586. WAV/MP3/Ogg stream through the
+shared mixer with independent music volume, loops, menu/stage/storyboard ownership
+and exact NoMusic cursor pause/resume. Legacy MIDI/tracker/CD backends remain.
+The stock stage's referenced sound/kfm.mid is absent from the supplied local data.
 
-All five affected segments pass with race detection:21 top-level connected
-scenarios across four packages. The new media scenario generates only a small
-scratch WAV, removed automatically; existing assets/cache are reused. No clients
-or segment scratch remain. Root modules are unchanged; three already-cached
-Ebitengine decoder dependencies were added only to the scoped module overlay.
+The next batch adds Single/Simul/Turns request rosters, native P1/P2/P3/P4 slots,
+active-root collision/camera/drawing, partner/name/home-team/mode queries, shared
+simul power, team KO/result rules and delayed turns replacement. Benches do not
+simulate. Winning turns actors retain life/power; native healing policy remains
+open. Team menus collect rosters; stock simul/turns HUD sections and bench portraits
+are consumed. Co-op input routing exists; full mode/progression rules follow.
+All89 controller families and127 trigger families now have runtime routes;
+this does not claim every variant or whole-engine conformance.
 
-Next: team roster and simul/turns lifecycle with the four remaining trigger
-bindings, then mode progression/AI, remaining media/assets/fonts and platforms.
-Use substantial batches and one affected end-state check. Precision remains
-partial/deferred; do not restart historical native matrices.
+Four affected connected segments pass with race detection:16 top-level scenarios
+across three packages, including actual partner combat, KO rules, reset/helper
+retirement, turns exhaustion and menu→team fight→HUD→exit. State-flow stayed
+complete and was not rerun. No clients or segment scratch remain.
 
+Next: arcade/survival/co-op progression, continue/ending screens, richer authored
+AI command flow and turns/survival recovery; then remaining media/assets/fonts and
+platform builds. Keep teams partial until its remaining mode/recovery rules land.
 The supplied distribution is temp/mugen-1.1b1/. Use the isolated wrapper from
 AGENTS.md for host-dependent runs, keeping them serial and cleaning scratch.

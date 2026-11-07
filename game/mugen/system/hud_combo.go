@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/character"
 )
 
 type hudCombo struct {
@@ -24,14 +25,26 @@ func (h *FightHUD) comboUnit() float64 {
 }
 
 func (h *FightHUD) updateCombos() {
-	for slot, player := range h.match.Players {
+	if h.comboSources == nil {
+		h.comboSources = make(map[*character.Character]uint64)
+	}
+	for slot := range h.combos {
+		changed, count := false, 0
+		for _, player := range h.match.SidePlayers(slot) {
+			c := player.Character
+			count += c.ComboCount
+			if c.ComboRevision != h.comboSources[c] {
+				changed = true
+				h.comboSources[c] = c.ComboRevision
+			}
+		}
 		view := &h.combos[slot]
 		prefix := fmt.Sprintf("team%d", slot+1)
 		position := h.values("Combo", prefix+".pos", 0, 0)
 		start := h.values("Combo", prefix+".start.x", position[0])[0]
-		if player.Character.ComboRevision != view.revision {
-			view.revision = player.Character.ComboRevision
-			view.count = player.Character.ComboCount
+		if changed {
+			view.revision++
+			view.count = count
 			view.age, view.hold, view.exiting = 0, 0, false
 			if !view.active {
 				view.x = start

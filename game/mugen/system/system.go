@@ -105,6 +105,12 @@ func (s *TitleState) Update() (State, error) {
 			return NewSelectState(s.engine, "Team Arcade"), nil
 		case "teamversus":
 			return NewSelectState(s.engine, "Team Versus"), nil
+		case "teamcoop":
+			return NewSelectState(s.engine, "Team Co-op"), nil
+		case "survivalcoop":
+			return NewSelectState(s.engine, "Survival Co-op"), nil
+		case "watch":
+			return NewSelectState(s.engine, "Watch Mode"), nil
 		case "survival":
 			return NewSelectState(s.engine, "Survival"), nil
 		case "training":

@@ -426,6 +426,9 @@ func (c *Character) runStateTick() bool {
 		c.bufferPausedCommands()
 		return true
 	}
+	if c.World != nil {
+		c.Opponents = c.World.enemies(c, true)
+	}
 	// An earlier actor can publish a new camera after startTick. Constrain
 	// against that viewport before this actor's CNS observes its position.
 	// The preceding pass's ScreenBound/Width remain effective until CNS
@@ -785,6 +788,13 @@ func (c *Character) SetPower(power int) {
 	}
 	if c.Power < 0 {
 		c.Power = 0
+	}
+	if c.World != nil && c.TeamSide >= 1 && c.TeamSide <= 2 && c.World.TeamModes[c.TeamSide-1] == "simul" {
+		for _, root := range c.World.Roots {
+			if root.TeamSide == c.TeamSide {
+				root.Power = min(root.MaxPower, c.Power)
+			}
+		}
 	}
 }
 

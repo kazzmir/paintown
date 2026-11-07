@@ -36,3 +36,8 @@ they are not maintained as a second live project tracker.
 M4dx connects streaming BGM/NoMusic and stage metadata through the production
 scene/mixer path. All five affected segments pass with race detection. The user
 allocated remaining functional work and deferred precision on 2026-11-07.
+
+M4dy adds simul/turns rosters, all team trigger bindings, partner combat/power,
+team outcomes/turns handoff and selection/HUD consumers. Four affected segments
+pass with race detection; no generated fixtures. Native recovery policy and
+broader mode progression remain partial.

@@ -13,7 +13,7 @@ import (
 
 func (s *FightState) debugActors() []*character.Character {
 	actors := make([]*character.Character, 0, 2+len(s.match.World.Helpers))
-	for _, player := range s.match.Players {
+	for _, player := range s.match.Actors() {
 		actors = append(actors, player.Character)
 	}
 	return append(actors, s.match.World.Helpers...)

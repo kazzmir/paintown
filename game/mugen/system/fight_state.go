@@ -38,6 +38,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 		return nil, err
 	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
+		TeamLoseOnKO: engine.cfg.Options.TeamLoseOnKO, Team1Vs2Life: engine.cfg.Options.Team1Vs2Life,
 		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, ExplodMax: max(8, engine.cfg.Config.ExplodMax), SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul, StageCrop: !engine.cfg.Video.StageFit, HelperMax: max(4, min(56, engine.cfg.Config.HelperMax)),
 		PlayerProjectileMax: max(5, engine.cfg.Config.PlayerProjectileMax), AfterImageMax: max(1, engine.cfg.Config.AfterImageMax), RandomSeed: engine.nextMatchSeed(), PowerRules: &combat.PowerRules{Attack: engine.cfg.Rules.DefaultAttackLifeToPowerMul, GetHit: engine.cfg.Rules.DefaultGetHitLifeToPowerMul}})
 	if err != nil {
@@ -50,10 +51,14 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	if engine.cfg.Debug.Debug {
 		s.debugSelection = 0
 	}
-	for slot, p := range game.Players {
+	for slot, p := range game.Actors() {
 		p.Character.InputSource = func(playerID, facing int) []string {
-			if game.Request.Players[playerID-1].AILevel > 0 {
+			selected, _ := game.SelectionForPlayer(playerID)
+			if selected.AILevel > 0 {
 				return game.BasicAIInput(playerID)
+			}
+			if playerID == 3 && (game.Request.Mode == "Team Co-op" || game.Request.Mode == "Survival Co-op") {
+				playerID = 2
 			}
 			return character.GetRawInputs(playerID, facing)
 		}
@@ -142,7 +147,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	}
 	if !m.Timeline.GlobalNoShadow {
 		shadow := render.Shadow{Intensity: m.Stage.Shadow.Intensity, YScale: m.Stage.Shadow.YScale, XShear: m.Stage.Shadow.XShear, FadeRange: m.Stage.Shadow.FadeRange, FloorY: m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY}
-		character.DrawPlayerShadows(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, shadow)
+		character.DrawPlayerShadows(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, shadow)
 		s.drawEffectShadows(s.gameCanvas, shadow)
 	}
 	if environment.Time > 0 && environment.Under {
@@ -151,7 +156,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
 	s.drawEffects(s.gameCanvas, 0)
-	character.DrawPlayersWithSprites(s.gameCanvas, m.Players[:], gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
+	character.DrawPlayersWithSprites(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
 	frontEnvironment := environment.Time > 0 && !environment.Under
 	if !frontEnvironment {
 		s.drawEffects(s.gameCanvas, 1)
