@@ -183,7 +183,7 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 	}
 	if !instance.ScreenSpace {
 		x += float64(m.Options.GameSpace.Width)/2 - m.CameraX
-		y += m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY
+		y += m.Stage.GroundLevel()*stageToGame - m.CameraY
 	}
 	projected := instance.XAngle != 0 || instance.YAngle != 0
 	if !projected {

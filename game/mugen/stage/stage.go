@@ -54,10 +54,11 @@ type Stage struct {
 	}
 
 	StageInfo struct {
-		LocalCoord coord.Space
-		ZOffset    float64
-		AutoTurn   bool
-		ResetBG    bool
+		LocalCoord  coord.Space
+		ZOffset     float64
+		ZOffsetLink *int
+		AutoTurn    bool
+		ResetBG     bool
 	}
 
 	Shadow struct {
@@ -82,6 +83,23 @@ func (s *Stage) Update() {
 	s.Background.Update()
 }
 
+// GroundLevel follows the first matching BG, including dummy/position-linked
+// elements, animation motion and sinusoidal offsets. Without a match the
+// authored floor remains the fallback.
+func (s *Stage) GroundLevel() float64 {
+	if s.StageInfo.ZOffsetLink != nil {
+		for _, element := range s.Background.Elements {
+			if element.GetID() == *s.StageInfo.ZOffsetLink {
+				_, start := element.GetStart()
+				_, position := element.GetPosition()
+				_, offset := element.GetOffset()
+				return start + position + offset
+			}
+		}
+	}
+	return s.StageInfo.ZOffset
+}
+
 func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
 	_ = s.DrawWithPalette(screen, cameraX, cameraY, palette.Transform{}, palette.Transform{})
 }
@@ -94,11 +112,11 @@ func (s *Stage) DrawWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float
 	if s.DebugBG {
 		screen.Fill(clear.ClearColor(color.RGBA{R: 255, B: 255, A: 255}))
 	}
-	return s.Background.DrawLayerWithPaletteTint(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, background, tint)
+	return s.Background.DrawLayerWithPaletteTint(screen, 0, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, background, tint)
 }
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
-	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
+	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages)
 }
 
 func (s *Stage) DrawForegroundWithPalette(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform) error {
@@ -106,7 +124,7 @@ func (s *Stage) DrawForegroundWithPalette(screen *ebiten.Image, cameraX, cameraY
 }
 
 func (s *Stage) DrawForegroundWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform, tint [3]float32) error {
-	return s.Background.DrawLayerWithPaletteTint(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages, transform, tint)
+	return s.Background.DrawLayerWithPaletteTint(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, transform, tint)
 }
 
 // ResetBackground restores authored element/controller clocks between rounds.

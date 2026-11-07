@@ -1,34 +1,35 @@
 # Current handoff
 
-Use PROGRESS.md as the single ledger; follow AGENTS.md. Author only game/mugen/;
-local source/text commits, no pushes/binaries/assets/generated banks. Runtime
-runs stay serial through the private host wrapper; await exit then guard before
-editing. Reuse canonical assets/shared cache and delete run scratch on all exits.
+Use PROGRESS.md as the single ledger and AGENTS.md for execution/scope. Author
+only game/mugen/; local source/text commits, no pushes/binaries/assets/generated
+banks. Runtime runs are serial through the private host wrapper. Await exit,
+guard clients, then edit or start the next run. Reuse canonical assets/cache;
+remove per-run scratch after inspection on success/failure.
 
-Current batch adds documented1.1 startzoom/zoomout/zoomin, camera widening and
-return, BG zoomdelta, world sprite/helper/projectile/trail/shadow and effect
-projection, screen-bound/helper/Explod/projectile edges, mixed-coordinate queries,
-and crop-aware floor anchoring. HUD and explicit screen-space effects stay fixed.
-Unchanged zoom-one camera behavior retains the previous native control path.
-Stage reflection intensity now draws colored floor reflections with actor palette,
-visibility/shadow suppression, and zoom. Both intensity and documented reflect
-flag are parsed. Native zoom easing and reflection blend precision are unverified.
+Latest stage batch connects dummy BGs and zoffsetlink through position-linked
+velocity/sinusoidal motion to fighter/effect/shadow/reflection floors and CNS
+viewport queries. Stage autoturn now controls automatic facing (default1).
+Normal/animated BGs consume scalestart/scaledelta; windowdelta moves their clip
+without moving the sprite, and1.1 maskwindow uses the stage-centered origin and
+exclusive bottom/right edges. Tiny/zero-coordinate clips stay meaningful.
 
-One connected stage scenario spans participation/startzoom, separation/return,
-CNS queries, constraints, BG/world/screen effects/HUD pixels, colored reflections/
-suppression and actual KO→reset. Its initial arrangement was corrected to spread
-fighters after fight-entry position reset and check opposite screen boundaries
-without body-push overlap. All changed-source segments pass with race detection;
-Linux binary rebuilt. No native captures or generated asset bank is retained.
+The existing connected stage scenario now covers those consumers alongside
+startzoom/separation/return, mixed-coordinate constraints, world/BG/screen-effect/
+HUD projection, reflections/suppression and actual KO→floor/zoom/effect reset.
+All changed-source segments pass with race detection; completed state-flow stays
+checked without rerun. Linux standalone rebuilt and Cargo/KFM/KFM720 owned-window
+run inspected at4/8s: visible fighters, intact HUD and moving floor. Both PNGs,
+config overlay and logs removed; private client guard passed. Root modules intact.
 
-Earlier local checkpoints calibrate Turns2-vs-4 and single-player Survival
-recovery (400→798, timed400→744, weighted100/500→275, cap), and fix Survival's
-single-opponent bout plus human Turns reserve position/life/power across bouts.
+Earlier local batches calibrate Turns2-vs-4 and single-player Survival recovery,
+fix one-opponent Survival bouts and retain the human Turns reserve's original
+roster position/life/power across opponents. Zoom and stage reflection consumers
+are implemented; native easing/blend/raster precision remains unverified.
 
-Next functional stage gaps: zoffsetlink moving floor (the user's cargo.def uses
-it), stage autoturn, BG normal/animation scalestart/scaledelta and windowdelta.
-Stage xscale/yscale are also unconsumed. Keep these visible in the asset partial.
-Other remaining work: native color/shadow/alpha/KO-echo/AI policy precision,
-mixed-mode life balance, Survival team recovery/dead Simul partner carry, strict
-invalid-asset rejection. Physical CD/absent licensed fonts remain limitations.
-The palette/legacy ACT and user's stage/tracker-music work remain intact.
+Remaining asset consumer gap: StageInfo xscale/yscale. Native parsing was located
+read-only at42338d..4233a5 (stage fields368/36c); rendering semantics are not yet
+established. Keep it explicit in the asset partial. Further precision remains:
+color/shadow/alpha, KO-echo playback, AI policy, mixed-team life/recovery, Survival
+dead Simul partner carry, position-link chains and coupled camera/push ordering.
+Strict invalid-asset rejection is unproven. Physical CD and absent licensed fonts
+remain limitations. All local stage/tracker assets stay ignored and untouched.

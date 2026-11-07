@@ -99,5 +99,8 @@ is retained. Survival bout/roster persistence is now covered too: single-opponen
 human reserve ownership and original Turns roster position across handoff.
 Documented1.1 stage/BG zoom and floor reflection consumers are implemented.
 One connected stage/render/constraint/KO-reset scenario passes with race detection.
-Native zoom easing/reflection precision remains unverified. Next: moving floors,
-stage auto-turn and BG scaling/window movement; see docs/HANDOFF.md.
+Native zoom easing/reflection precision remains unverified. Moving floors/dummy links,
+stage auto-turn, BG scaling/windowdelta and1.1 maskwindow now have consumers.
+The connected stage scenario and a standalone Cargo run pass; captures/overlays
+were inspected and removed. StageInfo xscale/yscale remain the asset consumer gap;
+see docs/HANDOFF.md.

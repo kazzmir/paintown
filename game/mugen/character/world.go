@@ -19,6 +19,7 @@ type World struct {
 	HomeTeam           int
 	MatchNo            int
 	Training           bool
+	StageNoAutoTurn    bool
 	Helpers            []*Character
 	HelperMax          int
 	ProjectileMax      int

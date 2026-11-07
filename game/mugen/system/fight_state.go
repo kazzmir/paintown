@@ -154,11 +154,11 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	}
 	if !m.Timeline.GlobalNoShadow {
 		if m.Stage.Reflection.Intensity > 0 {
-			reflection := render.Shadow{Reflection: true, Intensity: m.Stage.Reflection.Intensity, YScale: 1, FloorY: m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY}
+			reflection := render.Shadow{Reflection: true, Intensity: m.Stage.Reflection.Intensity, YScale: 1, FloorY: m.Stage.GroundLevel()*stageToGame - m.CameraY}
 			character.DrawPlayerShadows(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, reflection)
 			s.drawEffectShadows(s.gameCanvas, reflection)
 		}
-		shadow := render.Shadow{Intensity: m.Stage.Shadow.Intensity, YScale: m.Stage.Shadow.YScale, XShear: m.Stage.Shadow.XShear, FadeRange: m.Stage.Shadow.FadeRange, FloorY: m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY}
+		shadow := render.Shadow{Intensity: m.Stage.Shadow.Intensity, YScale: m.Stage.Shadow.YScale, XShear: m.Stage.Shadow.XShear, FadeRange: m.Stage.Shadow.FadeRange, FloorY: m.Stage.GroundLevel()*stageToGame - m.CameraY}
 		character.DrawPlayerShadows(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, shadow)
 		s.drawEffectShadows(s.gameCanvas, shadow)
 	}
@@ -168,7 +168,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// Render actors/effects in the common game surface so HD sprites are not
 	// reduced to a low-resolution stage raster before the final viewport fit.
 	s.drawEffects(s.gameCanvas, 0)
-	character.DrawPlayersWithSprites(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, m.Stage.StageInfo.ZOffset*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
+	character.DrawPlayersWithSprites(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, m.Stage.GroundLevel()*stageToGame-m.CameraY, s.ownedEffectLayers(s.gameCanvas))
 	frontEnvironment := environment.Time > 0 && !environment.Under
 	if !frontEnvironment {
 		s.drawEffects(s.gameCanvas, 1)

@@ -422,18 +422,33 @@ screenright=15
 [StageInfo]
 localcoord=320,240
 zoffset=200
+zoffsetlink=90
+autoturn=0
 [BG Follow]
 type=normal
 spriteno=0,0
 start=-128,20
 delta=0,0
 zoomdelta=1
+scalestart=1,1
+scaledelta=.125,0
+windowdelta=1,0
 [BG Fixed]
 type=normal
 spriteno=0,1
 start=112,50
 delta=0,0
 zoomdelta=0
+maskwindow=112,50,120,58
+[BG Floor Anchor]
+type=dummy
+id=91
+start=0,180
+[BG Moving Floor]
+type=dummy
+id=90
+start=0,20
+positionlink=1
 `), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -588,7 +603,9 @@ trigger1=1
 	}
 	m.Stage.Background.SpriteData = archive
 	for i, element := range m.Stage.Background.Elements {
-		element.(*background.NormalElement).Sprite = &archive.Sprites[i]
+		if normal, ok := element.(*background.NormalElement); ok {
+			normal.Sprite = &archive.Sprites[i]
+		}
 	}
 	animations := &air.Data{Actions: map[int]*air.Action{0: {ID: 0, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 2, Time: -1}}}}}
 	lifetime := -1
@@ -633,7 +650,7 @@ trigger1=1
 	if f.renderError != nil {
 		t.Fatal(f.renderError)
 	}
-	if full != [3]int{256, 256, 512} || half != [3]int{64, 256, 320} || !bytes.Equal(hud, read(f.hudCanvas)) {
+	if full != [3]int{256, 64, 512} || half != [3]int{64, 64, 320} || !bytes.Equal(hud, read(f.hudCanvas)) {
 		t.Fatal("world/BG zoomdelta/screen-effect/HUD projection", full, half)
 	}
 	// Existing mixed-resolution fighter images also shrink before clipping.
@@ -674,15 +691,49 @@ trigger1=1
 		t.Fatal("global shadow suppression retained stage reflections")
 	}
 	m.Timeline.GlobalNoShadow = false
+	// Camera-driven background scaling and a moving clip window consume the
+	// same stage element, independently of its zero movement delta.
+	m.CameraX = 8
+	f.Draw(canvas)
+	if got := counts(read(f.gameCanvas))[0]; got != 512 {
+		t.Fatal("normal BG camera scaling did not reach drawing", got)
+	}
+	bg := m.Stage.Background.Elements[0].(*background.NormalElement)
+	bg.Window = [4]int{32, 20, 47, 35}
+	m.CameraX = 0
+	f.Draw(canvas)
+	stationary := counts(read(f.gameCanvas))[0]
+	m.CameraX = 8
+	f.Draw(canvas)
+	if got := counts(read(f.gameCanvas))[0]; stationary != 256 || got != 128 {
+		t.Fatal("moving BG window displaced the sprite instead of clipping it", stationary, got)
+	}
+	m.CameraX, m.Viewport.CameraX = 0, 0
 	for _, p := range m.Players {
 		p.Character.IntVars[50], p.Character.IntVars[51] = 0, 0
+	}
+	floor := m.Stage.Background.Elements[2]
+	floor.SetVelocityY(2)
+	floor.SetSinY([3]float64{4, 16, 0})
+	floor.(*background.CommonElement).Time = 0
+	m.Players[0].Character.X, m.Players[0].Character.Facing = -40, -1
+	m.Players[1].Character.X, m.Players[1].Character.Facing = 40*4, 1
+	step(4)
+	if m.Stage.GroundLevel() != 212 || m.Viewport.GroundY != 212 || m.Players[0].Character.Y != 0 || m.Players[0].Character.Facing != -1 || m.Players[1].Character.Facing != 1 {
+		t.Fatal("linked dummy floor or stage autoturn did not reach characters", m.Stage.GroundLevel(), m.Players[0].Character.Facing)
+	}
+	for _, p := range m.Players {
+		position, _ := p.Character.LookupIdentifier("screenpos y")
+		if math.Abs(position.Number()-212*float64(p.Character.LocalCoordinateWidth())/320) > .01 {
+			t.Fatal("moving floor was absent from viewport query", position)
+		}
 	}
 	m.Players[1].Character.SetLife(0)
 	m.Players[1].Character.ChangeState(5150, 0, -1)
 	for n := 0; n < 900 && m.Round == 1; n++ {
 		step(1)
 	}
-	if m.Round != 2 || m.Viewport.Zoom != .75 || len(m.Effects.Active) != 0 {
+	if m.Round != 2 || m.Viewport.Zoom != .75 || len(m.Effects.Active) != 0 || m.Stage.GroundLevel() != 200 || m.Viewport.GroundY != 200 {
 		t.Fatal("round reset lost startzoom or retained effects", m.Round, m.Viewport.Zoom)
 	}
 }

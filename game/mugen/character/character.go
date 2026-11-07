@@ -548,7 +548,7 @@ func (c *Character) finishTick() {
 
 				// Engine turning belongs to the common idle/crouch/walk states;
 				// custom states retain their facing. Preserve world momentum on flip.
-				if c.Time > 0 && (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Opponents) > 0 {
+				if c.Time > 0 && (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && (c.World == nil || !c.World.StageNoAutoTurn) && len(c.Opponents) > 0 {
 					opponent := c.Opponents[0]
 					newFacing := c.Facing
 					opponentX, _ := c.PositionOf(opponent)

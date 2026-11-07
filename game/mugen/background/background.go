@@ -167,6 +167,11 @@ type CommonElement struct {
 	Tile             [2]int
 	Spacing          [2]int
 	Window           [4]int // x1, y1, x2, y2
+	windowSet        bool
+	WindowDelta      [2]float64
+	ScaleStart       [2]float64
+	ScaleDelta       [2]float64
+	scaleSet         bool
 	Velocity         [2]float64
 	Trans            string // "none", "add", "add1", "sub", "addalpha"
 	Alpha            [2]int // s, d
@@ -348,6 +353,10 @@ func (e *CommonElement) SetSinY(v [3]float64) {
 
 func (e *CommonElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages) {
 	// Base common element does nothing by itself
+}
+
+func (e *CommonElement) DrawReflection(_ *ebiten.Image, _, _, _ float64, _ map[string]*SpriteImages, _ int) {
+	// Dummy elements move/control linked objects without drawing a surface.
 }
 
 func (e *CommonElement) applyBlending(op *ebiten.DrawImageOptions, trans string, alpha [2]int) {
@@ -552,13 +561,11 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 	tileWidth := float64(w) + float64(e.Spacing[0])
 	tileHeight := float64(h) + float64(e.Spacing[1])
 
-	winX, winY := 0.0, 0.0
 	target := screen
-	if e.Window[0] != 0 || e.Window[1] != 0 || e.Window[2] != 0 || e.Window[3] != 0 {
-		rect := image.Rect(e.Window[0], e.Window[1], e.Window[2]+1, e.Window[3]+1)
+	if e.windowSet || e.Window != [4]int{} {
+		dx, dy := int(-cameraX*e.WindowDelta[0]), int(-cameraY*e.WindowDelta[1])
+		rect := image.Rect(e.Window[0]+dx, e.Window[1]+dy, e.Window[2]+1+dx, e.Window[3]+1+dy)
 		target = screen.SubImage(rect).(*ebiten.Image)
-		winX = float64(e.Window[0])
-		winY = float64(e.Window[1])
 	}
 
 	minTX, maxTX := 0, 0
@@ -581,6 +588,14 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 			tilePosY := float64(ty) * tileHeight
 
 			sX, sY := 1.0, 1.0
+			if parallax == nil {
+				sX, sY = e.ScaleStart[0]+e.ScaleDelta[0]*cameraX, e.ScaleStart[1]+e.ScaleDelta[1]*cameraY
+				// Literal elements created by older adapters omit the defaults.
+				if !e.scaleSet && e.ScaleStart == [2]float64{} && e.ScaleDelta == [2]float64{} {
+					sX, sY = 1, 1
+				}
+				tilePosX, tilePosY = tilePosX*sX, tilePosY*sY
+			}
 			if parallax != nil {
 				if parallax.ScaleStart[1] != 0 {
 					sY = parallax.ScaleStart[1] + parallax.ScaleDelta[1]*cameraY
@@ -628,7 +643,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 					}
 					op.GeoM.Scale(sX_line*flipX, sY*flipY)
 					op.GeoM.Translate(tilePosX, tilePosY)
-					op.GeoM.Translate(lineDrawX-winX, lineDrawY-winY)
+					op.GeoM.Translate(lineDrawX, lineDrawY)
 					e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
 
 					line := img.SubImage(image.Rect(0, y, w, y+1)).(*ebiten.Image)
@@ -647,7 +662,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 				}
 				op.GeoM.Scale(sX*flipX, sY*flipY)
 				op.GeoM.Translate(tilePosX, tilePosY)
-				op.GeoM.Translate(baseDrawX-winX, baseDrawY-winY)
+				op.GeoM.Translate(baseDrawX, baseDrawY)
 				e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
 
 				e.drawPaletteImage(target, img, &op, trans, alpha)
@@ -710,15 +725,18 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		}
 
 		common := CommonElement{
-			Name:      sec.Name,
-			Mask:      false,
-			Delta:     [2]float64{1, 1},
-			ZoomDelta: 1,
-			Spacing:   [2]int{0, 0},
-			Trans:     "none",
-			Window:    [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
-			Visible:   true,
-			Enabled:   true,
+			Name:       sec.Name,
+			Mask:       false,
+			Delta:      [2]float64{1, 1},
+			ZoomDelta:  1,
+			ScaleStart: [2]float64{1, 1},
+			scaleSet:   true,
+			Spacing:    [2]int{0, 0},
+			Trans:      "none",
+			Window:     [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
+			windowSet:  true,
+			Visible:    true,
+			Enabled:    true,
 		}
 		maskSet := false
 		var elemType string
@@ -787,6 +805,17 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			case "window":
 				common.Window = GetVector4(attr.Value)
 				consumed[attr] = true
+			case "maskwindow":
+				common.Window = GetVector4(attr.Value)
+				// 1.1 uses a top-middle origin and exclusive bottom/right;
+				// the shared internal rectangle uses inclusive endpoints.
+				common.Window[0] += viewport.Width / 2
+				common.Window[2] += viewport.Width/2 - 1
+				common.Window[3]--
+				consumed[attr] = true
+			case "windowdelta":
+				common.WindowDelta = GetVector2(attr.Value)
+				consumed[attr] = true
 			case "layerno":
 				common.LayerNo = int(GetFloat(attr.Value))
 				consumed[attr] = true
@@ -844,9 +873,11 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				consumed[attr] = true
 			case "scalestart":
 				scalestart = GetVector2(attr.Value)
+				common.ScaleStart = scalestart
 				consumed[attr] = true
 			case "scaledelta":
 				scaledelta = GetVector2(attr.Value)
+				common.ScaleDelta = scaledelta
 				consumed[attr] = true
 			case "yscalestart":
 				yscalestart = GetFloat(attr.Value)
@@ -864,6 +895,8 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		}
 
 		switch elemType {
+		case "dummy":
+			b.Elements = append(b.Elements, &common)
 		case "normal", "":
 			common.Type = Normal
 			ne := &NormalElement{CommonElement: common}

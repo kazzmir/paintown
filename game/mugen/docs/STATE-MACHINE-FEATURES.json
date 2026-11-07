@@ -319,7 +319,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. Stage moving-floor/autoturn, normal/animated BG camera scaling/windowdelta, and stage xscale/yscale still lack complete consumers.",
+      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. StageInfo xscale/yscale still lack consumers.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -416,7 +416,7 @@
     },
     {
       "id": "stage-zoom",
-      "name": "Stage camera zoom, background zoomdelta and floor reflections",
+      "name": "Stage cameras, moving floors, background transforms and reflections",
       "group": "Match and presentation",
       "status": "implemented",
       "gap": "",
@@ -428,9 +428,12 @@
         "background/background.go:zoomGeometry",
         "system/effects.go:drawEffectPose",
         "render/shadow.go:Opacity",
-        "system/fight_state.go:Draw"
+        "system/fight_state.go:Draw",
+        "stage/stage.go:GroundLevel",
+        "background/background.go:LoadFromAST",
+        "character/character.go"
       ],
-      "validation": "Connected authored stage \u2192 camera participation/separation/return \u2192 mixed-coordinate queries/constraints \u2192 BG/world/screen effects/HUD \u2192 colored floor reflection/suppression \u2192 KO/reset. Native easing/blend/raster precision remains unverified."
+      "validation": "Connected stage lifecycle also spans maskwindow/windowdelta, normal BG scaling, dummy position-linked sinusoidal floor, stage autoturn and floor reset; native easing/blend/raster precision remains unverified. Affected race segments and standalone Cargo/KFM/KFM720 owned-window acceptance pass; captures/overlay removed."
     }
   ],
   "segments": [
@@ -511,7 +514,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "316b5cd3c98e0fa25cafbd4b61b172a3fcf35ca6bf225a22f6799976e5f864f0"
+      "passed_source": "ee5b04af1fb363362d424df94fbf8f1428fb69218e065eac32f9b1f1cd9d8c26"
     },
     {
       "id": "entities",
@@ -541,7 +544,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e84cb43f54d92cc84da51819e39c3f3dc49ac515ce2b636de6b0216ba5e5934c"
+      "passed_source": "6ea6c3a8c04c2a141198f2c11569c07d89ad370d5684775407ab5ada7b27ba7c"
     },
     {
       "id": "effects-pause",
@@ -573,7 +576,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d5cd59af4bb8f0f060f64576f36e8b486f644f5994102968081bf6010588ffb6"
+      "passed_source": "104adb1dc619d655834efe32a6ec4ffdc710a6a21b39c55d5803e8982c1b046f"
     },
     {
       "id": "match-flow",
@@ -652,7 +655,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3e81ede2eeae4867c3deba89a36c84ba66bdd20aaf1f13cfcd98d97af43e97ba"
+      "passed_source": "d9260bc72fa8d275a3e4c26e0d353d1f1c4acf7bea855c56bf605a529d8def30"
     }
   ],
   "presentation_followups": [

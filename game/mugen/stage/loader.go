@@ -39,6 +39,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	}
 	stage.StageInfo.LocalCoord = coord.Default()
 	stage.StageInfo.ResetBG = true
+	stage.StageInfo.AutoTurn = true
 	stage.Camera.StartZoom, stage.Camera.ZoomOut, stage.Camera.ZoomIn = 1, 1, 1
 	stage.Shadow.Intensity, stage.Shadow.YScale = 128, .4
 	stageDir := filepath.Dir(absPath)
@@ -158,6 +159,9 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.StageInfo.LocalCoord = local
 				case "zoffset":
 					stage.StageInfo.ZOffset = background.GetFloat(attr.Value)
+				case "zoffsetlink":
+					id := int(background.GetFloat(attr.Value))
+					stage.StageInfo.ZOffsetLink = &id
 				case "autoturn":
 					stage.StageInfo.AutoTurn = background.GetBool(attr.Value)
 				case "resetbg":

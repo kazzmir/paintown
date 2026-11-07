@@ -170,7 +170,7 @@ func New(request Request, options Options) (*Match, error) {
 	options.GameSpace = m.Viewport.Space
 	m.Options = options
 	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(options.GameSpace)
-	m.Viewport.GroundY = m.Stage.StageInfo.ZOffset * stageToGame
+	m.Viewport.GroundY = m.Stage.GroundLevel() * stageToGame
 	m.Fight, err = fight.Load(options.FightPath, options.RootDir)
 	if err != nil {
 		return nil, fmt.Errorf("match fight screen: %w", err)
@@ -230,6 +230,7 @@ func (m *Match) resetRound() error {
 		m.Players[side] = team.Members[team.Active]
 	}
 	m.World.StageInfo = map[string]string{"info.name": m.Stage.Name, "info.displayname": m.Stage.DisplayName, "info.author": m.Stage.Author, "info.authorname": m.Stage.Author}
+	m.World.StageNoAutoTurn = !m.Stage.StageInfo.AutoTurn
 	m.Timeline.ClearPauses()
 	m.Timeline.ResetRoundEffectClock()
 	m.Timeline.ClearShake()
@@ -253,6 +254,7 @@ func (m *Match) resetRound() error {
 		s.ResetBackground()
 	}
 	stageScale, _ := s.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+	m.Viewport.GroundY = s.GroundLevel() * stageScale
 	m.CameraX, m.CameraY = s.Camera.StartX*stageScale, s.Camera.StartY*stageScale+m.Viewport.CropY
 	m.cameraGoalX = m.CameraX
 	half := float64(m.Options.GameSpace.Width) / 2
@@ -438,6 +440,8 @@ func (m *Match) Update() error {
 	if !m.Timeline.BackgroundFrozen() {
 		m.Stage.Update()
 	}
+	stageScale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+	m.Viewport.GroundY = m.Stage.GroundLevel() * stageScale
 	// The initial KO pass counts toward the native damage grace.
 	damageDisabled := m.Phase == Over || (m.Phase == PreOver && m.PhaseTime+1 >= m.Setting("Round", "over.hittime", 10))
 	for _, p := range m.Actors() {
