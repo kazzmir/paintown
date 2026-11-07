@@ -324,6 +324,13 @@ func (f *Font) DrawWithPalette(screen *ebiten.Image, text string, x, y int, bank
 	// MUGEN treats Y as the baseline (bottom of the font cell), so we subtract
 	// the font height to get the top-left origin for glyph rendering.
 	startY := y + f.OffsetY - f.Height
+	if f.fontV2 && f.ttf == nil {
+		// FNT v2 bitmap cells start one font pixel past the integer anchor.
+		// Apply this before viewport fitting, so the correction scales with
+		// the motif rather than shifting the final window by a fixed pixel.
+		startX++
+		startY++
+	}
 
 	switch align {
 	case AlignCenter:

@@ -25,6 +25,10 @@ segments pass with race detection, using shared assets and automatic cleanup.
 M4dv corrects per-actor startup constraints and binds top/bottom edges; the four
 affected segments pass with race detection. State-flow was not rerun.
 
+M4dw corrects the stock FNT v2 bitmap label origin before viewport fitting;
+match-flow passes with race detection and a standalone build succeeds. Other
+completed segments were not rerun. Color/audio precision remains open.
+
 M4ds added no new engine compatibility claim or generated fixture bank. Production
 Go advanced in M4dt. Former per-run transcripts are in this file's Git history;
 they are not maintained as a second live project tracker.

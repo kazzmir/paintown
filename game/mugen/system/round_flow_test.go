@@ -1,12 +1,14 @@
 package main
 
 import (
+	"image"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
@@ -52,6 +54,7 @@ fight.sndtime = 6
 ctrl.time = 0
 KO.spr = 200,0
 KO.offset = 640,300
+KO.font = 1,0,0
 KO.displaytime = -1
 KO.time = 0
 KO.snd = 2,0
@@ -228,6 +231,40 @@ value=5150
 		}
 		if frame >= 511 && frame <= 530 && !messageVisible("finish") {
 			t.Fatal("persistent KO component lost across Win transition", frame)
+		}
+		if frame == 511 {
+			// The retained HUD observation placed this stock bitmap label at
+			// [601,198..680,226), with an exclusive upper corner. Exercise
+			// the same motif and fitted viewport
+			// in this round flow, without restoring the old capture bank.
+			label := ebiten.NewImage(1280, 720)
+			f.hud.label(label, "Round", "KO", "HUD", 0, 0)
+			canvas.Clear()
+			fit, err := coord.HUDProject(f.match.Options.GameSpace, e.motif.Info.LocalCoord, coord.Space{Width: 1280, Height: 720}, e.cfg.Video.KeepAspect)
+			if err != nil {
+				t.Fatal(err)
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(fit.ScaleX, fit.ScaleY)
+			op.GeoM.Translate(fit.X, fit.Y)
+			if err := f.linearSampler.DrawImage(canvas, label, op); err != nil {
+				t.Fatal(err)
+			}
+			pixels := make([]byte, 1280*720*4)
+			canvas.ReadPixels(pixels)
+			label.Deallocate()
+			bounds := image.Rectangle{}
+			for y := 0; y < 720; y++ {
+				for x := 0; x < 1280; x++ {
+					i := (y*1280 + x) * 4
+					if pixels[i] != 0 || pixels[i+1] != 0 || pixels[i+2] != 0 {
+						bounds = bounds.Union(image.Rect(x, y, x+1, y+1))
+					}
+				}
+			}
+			if bounds != image.Rect(601, 198, 680, 226) {
+				t.Fatal("stock bitmap label placement", bounds)
+			}
 		}
 		if frame == 521 && (root.IntVars[5] != 180 || root.IntVars[6] != 0 || root.IntVars[0] != 521) {
 			t.Fatal("first Win pass state/control/counter", root.IntVars)

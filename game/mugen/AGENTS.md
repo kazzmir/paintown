@@ -61,5 +61,7 @@ new native data was promoted. Announcement scheduling, residual schemas, clipboa
 lifecycle/HUD are implemented. Their affected segments passed with race
 detection. Startup constraints and top/bottom edge bindings are also complete; the four
 affected segments pass with race detection. Next: concrete presentation/audio
-follow-ups and playable acceptance. Read
+follow-ups. Stock bitmap label placement is now corrected; match-flow passes
+with race detection and a standalone build succeeds. Other color/audio precision
+issues remain open; keep their status partial. Read
 docs/PROGRESS.md and docs/HANDOFF.md; do not restart historical research matrices.

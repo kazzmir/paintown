@@ -66,7 +66,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [ ] Background music and NoMusic integration. **missing** — Implement BGM playback and the NoMusic consumer. (item4 dependency)
 - [ ] Complete font/asset compatibility and loading errors. **partial** — Finish broader font/asset formats and errors; stock resource support exists. (item4)
-- [ ] Remaining renderer and audio fidelity issues. **partial** — Resolve known color/shadow/text placement and KO echo differences without broad new matrices. (item3 presentation / item4 final conformance)
+- [ ] Remaining renderer and audio fidelity issues. **partial** — Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected. (item3 presentation / item4 final conformance)
 
 ### Modes and platforms
 

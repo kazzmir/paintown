@@ -339,11 +339,12 @@
       "name": "Remaining renderer and audio fidelity issues",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Resolve known color/shadow/text placement and KO echo differences without broad new matrices.",
+      "gap": "Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected.",
       "allocation": "item3 presentation / item4 final conformance",
       "sources": [
         "render/linear.go",
-        "character/ko_sound.go"
+        "character/ko_sound.go",
+        "font/font.go:DrawWithPalette"
       ]
     },
     {
@@ -594,11 +595,11 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e360b120c8aecc008a54ddef1f64ca86991749504790dbb4d3a2a09ac9799e0b"
+      "passed_source": "3cb6207a48aa8328434328b867afd157982887a1d10e445676b3fde93a2683e0"
     }
   ],
   "presentation_followups": [
-    "Known sprite/shadow max-one RGB differences and text placement.",
-    "Finite/overlap color and ordinary KO echo discrepancies."
+    "Known sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
+    "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause."
   ]
 }
