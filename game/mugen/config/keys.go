@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"math/bits"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -43,11 +44,36 @@ func (k *Keys) keyField(name string) (*ebiten.Key, uint16) {
 
 // SetBinding retains explicit KeyA and disabled bindings across value copies.
 func (k *Keys) SetBinding(action string, key ebiten.Key) bool {
+	return k.SetBindings(action, key)
+}
+
+// SetBindings replaces the action, deduplicating alternatives and preserving
+// value-copy isolation. An empty list or only NoKey explicitly disables it.
+func (k *Keys) SetBindings(action string, keys ...ebiten.Key) bool {
 	field, bit := k.keyField(action)
 	if field == nil {
 		return false
 	}
-	*field, k.configured = key, k.configured|bit
+	unique := make([]ebiten.Key, 0, len(keys))
+	for _, key := range keys {
+		if key == NoKey {
+			continue
+		}
+		duplicate := false
+		for _, previous := range unique {
+			duplicate = duplicate || previous == key
+		}
+		if !duplicate {
+			unique = append(unique, key)
+		}
+	}
+	*field = NoKey
+	k.alternates[bits.TrailingZeros16(bit)] = nil
+	if len(unique) > 0 {
+		*field = unique[0]
+		k.alternates[bits.TrailingZeros16(bit)] = unique[1:]
+	}
+	k.configured |= bit
 	return true
 }
 
@@ -58,6 +84,34 @@ func (k Keys) Binding(action string) (ebiten.Key, bool) {
 	}
 	// Retain compatibility with older callers constructing nonzero fields.
 	return *field, k.configured&bit != 0 || *field != 0
+}
+
+// Bindings returns an independent snapshot. Binding retains the original
+// primary-key API; runtime matching below avoids allocating these snapshots.
+func (k Keys) Bindings(action string) ([]ebiten.Key, bool) {
+	key, present := k.Binding(action)
+	if !present || key == NoKey {
+		return nil, present
+	}
+	_, bit := k.keyField(action)
+	return append([]ebiten.Key{key}, k.alternates[bits.TrailingZeros16(bit)]...), true
+}
+
+func (k *Keys) MatchBinding(action string, match func(ebiten.Key) bool) (bool, bool) {
+	field, bit := k.keyField(action)
+	if field == nil || (k.configured&bit == 0 && *field == 0) {
+		return false, false
+	}
+	key := *field
+	if key != NoKey && match(key) {
+		return true, true
+	}
+	for _, key := range k.alternates[bits.TrailingZeros16(bit)] {
+		if match(key) {
+			return true, true
+		}
+	}
+	return false, true
 }
 
 // SDL 1.2 symbols used by the supplied 1.1 beta configuration. Reference:

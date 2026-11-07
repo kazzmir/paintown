@@ -83,7 +83,18 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest background checkpoint
+## Latest keyboard checkpoint
+
+YAML keyboard actions accept scalar names or lists of alternatives for either
+player. Lists replace one binding; omitted actions inherit; none/disabled/[]
+disable. Input handles alternatives in menus and gameplay, preserving KeyA(0),
+disabled mappings and value-copy isolation. The connected menu-to-fight scenario
+now loads a small override and exercises alternatives through two rounds,
+rematch/exit, plus ownership/release and malformed binding behavior. Affected
+segments and existing config/input regressions pass with race detection.
+See README and mugen.yaml comments for the user-facing contract.
+
+## Background checkpoint
 
 Linked backgrounds now compose immediate-parent start/motion/delta without
 double-counting velocity. Animated parallax, width vs legacy xscale geometry,

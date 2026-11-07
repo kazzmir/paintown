@@ -1,5 +1,9 @@
 # Extended Configuration for MUGEN Go Engine
 # This file overrides legacy settings in mugen.cfg
+# Keyboard actions accept a single name or a list of alternative keys (OR).
+# Example: a: [KeyA, KeyNumpad1] or start: [KeyEnter, KeyNumpadEnter]
+# Lists replace that action's binding; omitted actions inherit mugen.cfg.
+# Use none, disabled, or [] to disable an action. Restart after editing.
 
 input:
   p1:

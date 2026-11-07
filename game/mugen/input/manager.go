@@ -136,13 +136,7 @@ func (im *InputManager) Update() {
 }
 
 func (im *InputManager) IsPressed(player int, action Action) bool {
-	keys := im.P1Keyboard
-	if player == 2 {
-		keys = im.P2Keyboard
-	}
-
-	key := im.getActionKey(keys, action)
-	if key >= 0 && key <= ebiten.KeyMax && im.keyboard().IsPressed(key) {
+	if im.matchAction(player, action, im.keyboard().IsPressed) {
 		sep := ""
 		if im.LastActionEvent != "" {
 			sep = ", "
@@ -156,20 +150,25 @@ func (im *InputManager) IsPressed(player int, action Action) bool {
 }
 
 func (im *InputManager) IsJustPressed(player int, action Action) bool {
-	keys := im.P1Keyboard
-	if player == 2 {
-		keys = im.P2Keyboard
-	}
-
-	key := im.getActionKey(keys, action)
-	if key >= 0 && key <= ebiten.KeyMax && im.keyboard().IsJustPressed(key) {
-		return true
-	}
-
-	return false
+	return im.matchAction(player, action, im.keyboard().IsJustPressed)
 }
 
-func (im *InputManager) getActionKey(keys config.Keys, action Action) ebiten.Key {
+func (im *InputManager) matchAction(player int, action Action, query func(ebiten.Key) bool) bool {
+	keys := &im.P1Keyboard
+	if player == 2 {
+		keys = &im.P2Keyboard
+	}
+	name, fallback := actionBinding(action)
+	validKey := func(key ebiten.Key) bool {
+		return key >= 0 && key <= ebiten.KeyMax && query(key)
+	}
+	if pressed, configured := keys.MatchBinding(name, validKey); configured {
+		return pressed
+	}
+	return validKey(fallback)
+}
+
+func actionBinding(action Action) (string, ebiten.Key) {
 	var name string
 	var fallback ebiten.Key
 	switch action {
@@ -198,14 +197,11 @@ func (im *InputManager) getActionKey(keys config.Keys, action Action) ebiten.Key
 	case ActionEscape:
 		name, fallback = "escape", ebiten.KeyEscape
 	case ActionSpace:
-		return ebiten.KeySpace
+		return "", ebiten.KeySpace
 	default:
-		return config.NoKey
+		return "", config.NoKey
 	}
-	if key, configured := keys.Binding(name); configured {
-		return key
-	}
-	return fallback
+	return name, fallback
 }
 
 // Global instance for convenience

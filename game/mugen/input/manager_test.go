@@ -30,7 +30,9 @@ func TestInjectedKeyboardZeroKeyAndPlayerConfirm(t *testing.T) {
 	if manager.IsPressed(1, ActionB) || manager.IsJustPressed(1, Action(999)) || source.queries != before {
 		t.Fatal("unbound/invalid action polled the device")
 	}
-	if manager.getActionKey(config.Keys{}, ActionX) != ebiten.KeyA || manager.getActionKey(config.Keys{}, ActionA) != ebiten.KeyZ {
+	_, defaultX := actionBinding(ActionX)
+	_, defaultA := actionBinding(ActionA)
+	if defaultX != ebiten.KeyA || defaultA != ebiten.KeyZ {
 		t.Fatal("legacy defaults for absent bindings changed")
 	}
 }

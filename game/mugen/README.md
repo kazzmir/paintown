@@ -100,6 +100,42 @@ configuration overrides can change them. Ctrl-D cycles debug output through
 players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 
+### Keyboard overrides in mugen.yaml
+
+Place `mugen.yaml` in your selected `--data-dir`, alongside `data/`, `chars/` and
+`stages/`. A binding can be one key or a list of alternatives:
+
+```yaml
+input:
+  p1:
+    keyboard:
+      a: [KeyA, KeyNumpad1]
+      x: KeyZ
+      start: [KeyEnter, KeyNumpadEnter]
+      z: []
+  p2:
+    keyboard:
+      a: [KeyU, KeyNumpad7]
+```
+
+Either listed key activates the action in menus and gameplay. These are
+alternatives, not chords or macros. Each list replaces that action's previous
+binding; omitted actions retain `mugen.cfg` settings or their built-in defaults.
+`none`, `disabled` and `[]` disable an action. Duplicate keys are ignored; an
+unknown key name reports a warning and leaves the entire binding unchanged.
+Restart the game after editing. Startup output lists the active keys.
+
+Supported actions are `jump` (`up`), `crouch` (`down`), `left`, `right`, `a`, `b`,
+`c`, `x`, `y`, `z`, `start` and `escape`. Direction bindings also move menu cursors;
+`start` also confirms selections. Names are case insensitive, and the `Key`
+prefix is optional. Both players can have their own lists; assigning the same
+physical key to both players activates both mappings.
+
+The first valid override file wins. Search order is the data root's `mugen.yaml`,
+its `data/mugen.yaml`, `~/.paintown/mugen.yaml`, the working directory's
+`mugen.yaml`, `game/mugen/mugen.yaml`, then `mugen.yaml` beside the executable.
+Only that file is overlaid on `mugen.cfg`; YAML files are not combined.
+
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic
 pauses/resumes the playback cursor while sound effects continue. Linux MIDI and tracker support uses optional system libraries described below.

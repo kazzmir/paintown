@@ -203,8 +203,12 @@
       "allocation": "item3",
       "sources": [
         "system/flow_test.go:TestTitleSelectionVersusFightResultRematchAndExit",
-        "system/fight_state.go:NewFightState"
-      ]
+        "system/fight_state.go:NewFightState",
+        "config/extended.go:UnmarshalYAML",
+        "config/keys.go:SetBindings",
+        "input/manager.go:matchAction"
+      ],
+      "validation": "Connected YAML-to-input-to-match flow accepts scalar and alternative-key lists; covers deduplication, independent value copies, disabled/invalid overrides, player ownership and partial release, menu selection, stock CNS wins using alternative then primary keys, round reset, rematch and exit. Affected segments and existing configuration/input regressions pass with race detection."
     },
     {
       "id": "announcements",
@@ -527,7 +531,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "0c6ea1f5ef056e591f3cb665713c93583d5c3e41e9465ec494109f872268e40d"
+      "passed_source": "8f7e742da5d1078fc05691297f94f6646b147a77df4c37e4bfa0ae9a42fb6686"
     },
     {
       "id": "entities",
@@ -674,7 +678,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "dbbb4f1f51e3948ecfa4070d849511baea7c9973fe0626992bbd1352eaac1d5b"
+      "passed_source": "d2324b2374fec3663cac843160de65747c5035f1d19b0505dec6185e5aab05ce"
     }
   ],
   "presentation_followups": [

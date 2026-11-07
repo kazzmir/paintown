@@ -61,7 +61,7 @@ func TestYAMLKeyAOverridesAndDisabledBinding(t *testing.T) {
 	cfg.Input.Player1Keyboard.SetBinding("a", ebiten.KeyComma)
 	cfg.Input.Player1Keyboard.SetBinding("jump", ebiten.KeyArrowUp)
 	ext := &ExtendedConfig{}
-	ext.Input.P1.Keyboard = map[string]string{"a": "KeyA", "jump": "none", "start": "KeyF24"}
+	ext.Input.P1.Keyboard = map[string]KeyBinding{"a": {"KeyA"}, "jump": {"none"}, "start": {"KeyF24"}}
 	mergeExtendedConfig(cfg, ext)
 	keys := cfg.Input.Player1Keyboard
 	if key, present := keys.Binding("a"); !present || key != ebiten.KeyA {

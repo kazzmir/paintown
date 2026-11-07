@@ -12,6 +12,7 @@ import (
 
 type Keys struct {
 	configured uint16
+	alternates [12][]ebiten.Key // immutable slices; setters replace rather than mutate
 	Jump       ebiten.Key
 	Crouch     ebiten.Key
 	Left       ebiten.Key
@@ -350,6 +351,8 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 			mergeExtendedConfig(cfg, ext)
 			loaded = true
 			break
+		} else if !os.IsNotExist(err) {
+			fmt.Printf("Cannot load extended config %s: %v\n", path, err)
 		}
 	}
 
@@ -360,18 +363,15 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 		return nil, fmt.Errorf("%s [Sound]: %w", cfgPath, err)
 	}
 
-	fmt.Printf("P1 Keyboard: Jump=%v Crouch=%v Left=%v Right=%v A=%v B=%v C=%v X=%v Y=%v Z=%v Start=%v\n",
-		cfg.Input.Player1Keyboard.Jump, cfg.Input.Player1Keyboard.Crouch,
-		cfg.Input.Player1Keyboard.Left, cfg.Input.Player1Keyboard.Right,
-		cfg.Input.Player1Keyboard.A, cfg.Input.Player1Keyboard.B, cfg.Input.Player1Keyboard.C,
-		cfg.Input.Player1Keyboard.X, cfg.Input.Player1Keyboard.Y, cfg.Input.Player1Keyboard.Z,
-		cfg.Input.Player1Keyboard.Start)
-	fmt.Printf("P2 Keyboard: Jump=%v Crouch=%v Left=%v Right=%v A=%v B=%v C=%v X=%v Y=%v Z=%v Start=%v\n",
-		cfg.Input.Player2Keyboard.Jump, cfg.Input.Player2Keyboard.Crouch,
-		cfg.Input.Player2Keyboard.Left, cfg.Input.Player2Keyboard.Right,
-		cfg.Input.Player2Keyboard.A, cfg.Input.Player2Keyboard.B, cfg.Input.Player2Keyboard.C,
-		cfg.Input.Player2Keyboard.X, cfg.Input.Player2Keyboard.Y, cfg.Input.Player2Keyboard.Z,
-		cfg.Input.Player2Keyboard.Start)
+	for player, keys := range []Keys{cfg.Input.Player1Keyboard, cfg.Input.Player2Keyboard} {
+		var bindings []string
+		for _, action := range []string{"jump", "crouch", "left", "right", "a", "b", "c", "x", "y", "z", "start", "escape"} {
+			if names, present := keys.Bindings(action); present {
+				bindings = append(bindings, fmt.Sprintf("%s=%v", action, names))
+			}
+		}
+		fmt.Printf("P%d Keyboard: %s\n", player+1, strings.Join(bindings, " "))
+	}
 
 	return cfg, nil
 }
@@ -452,14 +452,19 @@ func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
 	}
 
 	// Merge Keys
-	applyKeys := func(target *Keys, source map[string]string) {
-		for action, name := range source {
-			key, valid := stringToKey(name)
-			if !valid {
-				fmt.Printf("YAML keyboard %s: unknown key name %q\n", action, name)
-				continue
+	applyKeys := func(target *Keys, source map[string]KeyBinding) {
+		for action, names := range source {
+			keys, valid := make([]ebiten.Key, 0, len(names)), true
+			for _, name := range names {
+				key, recognized := stringToKey(name)
+				if !recognized {
+					fmt.Printf("YAML keyboard %s: unknown key name %q; keeping existing binding\n", action, name)
+					valid = false
+					break
+				}
+				keys = append(keys, key)
 			}
-			if !target.SetBinding(action, key) {
+			if valid && !target.SetBindings(action, keys...) {
 				fmt.Printf("YAML keyboard: unknown action %q\n", action)
 			}
 		}

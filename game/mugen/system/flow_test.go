@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -25,9 +27,43 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cfg, err := config.LoadConfigWithOverrides(root)
+	override := filepath.Join(t.TempDir(), "mugen.yaml")
+	if err := os.WriteFile(override, []byte(`input:
+  p1:
+    keyboard:
+      right: [KeyArrowRight, KeyNumpad6]
+      left: [KeyArrowLeft, KeyNumpad4]
+      a: [KeyComma, KeyF6]
+      x: [KeyL, KeyF7, L]
+      start: [KeyEnter, KeyNumpadEnter]
+      escape: [KeyEscape, KeyF8]
+      y: [KeyF9, not-a-key]
+      z: none
+  p2:
+    keyboard:
+      a: [KeyF, KeyNumpad1]
+      b: KeyG
+      z: []
+`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := config.LoadConfigWithOverrides(root, override)
 	if err != nil {
 		t.Fatal(err)
+	}
+	bindings, _ := cfg.Input.Player1Keyboard.Bindings("x")
+	if !slices.Equal(bindings, []ebiten.Key{ebiten.KeyL, ebiten.KeyF7}) || cfg.Input.Player1Keyboard.Y != ebiten.KeySemicolon {
+		t.Fatal("YAML alternatives did not deduplicate or reject a malformed override atomically")
+	}
+	// Snapshot/setter isolation matters because managers and round adapters copy
+	// Keys by value. Changing a copy must not rewrite another user's aliases.
+	bindings[1] = ebiten.KeyF9
+	copied := cfg.Input.Player1Keyboard
+	copied.SetBinding("x", ebiten.KeyF10)
+	original, _ := cfg.Input.Player1Keyboard.Bindings("x")
+	replaced, _ := copied.Bindings("x")
+	if !slices.Equal(original, []ebiten.Key{ebiten.KeyL, ebiten.KeyF7}) || !slices.Equal(replaced, []ebiten.Key{ebiten.KeyF10}) {
+		t.Fatal("keyboard binding snapshots/setters shared mutable aliases")
 	}
 	m, err := motif.LoadMotif("data/mugen1/system.def", root)
 	if err != nil {
@@ -38,6 +74,22 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	input.GlobalManager = input.NewInputManager(cfg)
 	keyboard := &flowKeyboard{}
 	input.GlobalManager.Keyboard = keyboard
+	keyboard.keys = map[ebiten.Key]bool{ebiten.KeyQuote: true, ebiten.KeyY: true}
+	if input.GlobalManager.IsPressed(1, input.ActionZ) || input.GlobalManager.IsJustPressed(2, input.ActionZ) {
+		t.Fatal("disabled scalar/list bindings fell back to legacy controls")
+	}
+	keyboard.keys = map[ebiten.Key]bool{ebiten.KeyF: true, ebiten.KeyNumpad1: true}
+	if !input.GlobalManager.IsPressed(2, input.ActionA) {
+		t.Fatal("both alternatives did not activate the same logical action")
+	}
+	delete(keyboard.keys, ebiten.KeyF)
+	if !input.GlobalManager.IsPressed(2, input.ActionA) || !input.GlobalManager.IsJustPressed(2, input.ActionA) || input.GlobalManager.IsPressed(1, input.ActionA) {
+		t.Fatal("releasing an alternative released the action or crossed player ownership")
+	}
+	delete(keyboard.keys, ebiten.KeyNumpad1)
+	if input.GlobalManager.IsPressed(2, input.ActionA) {
+		t.Fatal("logical action remained held after both alternatives released")
+	}
 	e := &Engine{dataDir: root, cfg: cfg, motif: m, logicalWidth: m.Info.LocalCoord.Width, logicalHeight: m.Info.LocalCoord.Height}
 	e.random = engine.NewRandomStream(1)
 	t.Cleanup(func() {
@@ -94,7 +146,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		step()
 	}
 	step(ebiten.KeyArrowDown)
-	step(ebiten.KeyEnter)
+	step(ebiten.KeyNumpadEnter)
 	s, ok := e.currentState.(*SelectState)
 	if !ok {
 		t.Fatalf("title did not open selection: %T", e.currentState)
@@ -102,7 +154,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	// Start both on the first stock cell, then move P2 with the stock D key.
 	s.p1CursorX, s.p1CursorY, s.p2CursorX, s.p2CursorY = 0, 0, 0, 0
 	step(ebiten.KeyD)
-	step(ebiten.KeyComma)
+	step(ebiten.KeyF6)
 	if s.p2Done {
 		t.Fatal("P1 confirmation also confirmed P2")
 	}
@@ -110,8 +162,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !s.choosingStage {
 		t.Fatal("confirmed players did not reach stage selection")
 	}
-	step(ebiten.KeyArrowRight)
-	step(ebiten.KeyEnter)
+	step(ebiten.KeyNumpad6)
+	step(ebiten.KeyNumpadEnter)
 	v, ok := e.currentState.(*VersusState)
 	if !ok {
 		t.Fatalf("stage selection did not open versus: %T", e.currentState)
@@ -119,7 +171,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !strings.HasSuffix(v.request.Players[0].DefPath, "kfm/kfm.def") || !strings.HasSuffix(v.request.Players[1].DefPath, "kfm720/kfm720.def") || v.request.Players[1].Palette != 2 || v.request.StagePath != "stages/stage0-720.def" {
 		t.Fatal("selection handoff lost metadata", v.request)
 	}
-	step(ebiten.KeyEnter)
+	step(ebiten.KeyNumpadEnter)
 	f, ok := e.currentState.(*FightState)
 	if !ok {
 		t.Fatalf("versus did not enter fight: %T", e.currentState)
@@ -154,12 +206,16 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		distance, _ := c.GetOpponentBodyDistance()
 		if distance > 16*float64(c.LocalCoordinateWidth())/320 {
 			if c.Facing == 1 {
-				step(ebiten.KeyArrowRight)
+				step(ebiten.KeyNumpad6)
 			} else {
-				step(ebiten.KeyArrowLeft)
+				step(ebiten.KeyNumpad4)
 			}
 		} else if f.match.Tick%40 < 2 {
-			step(ebiten.KeyL) // P1 X in the bundled keyboard configuration
+			if f.match.Round == 1 {
+				step(ebiten.KeyF7) // Alternative P1 X through stock CNS.
+			} else {
+				step(ebiten.KeyL) // Existing single-key path remains usable.
+			}
 		} else {
 			step()
 		}
@@ -198,7 +254,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	for i := 0; i < 150; i++ {
 		step()
 	}
-	step(ebiten.KeyEscape)
+	step(ebiten.KeyF8)
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatalf("escape did not return to title: %T", e.currentState)
 	}

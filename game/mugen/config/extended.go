@@ -1,15 +1,40 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
+// KeyBinding accepts either the original single-key scalar or alternative keys.
+type KeyBinding []string
+
+func (binding *KeyBinding) UnmarshalYAML(node *yaml.Node) error {
+	switch node.Kind {
+	case yaml.ScalarNode:
+		var name string
+		if err := node.Decode(&name); err != nil {
+			return err
+		}
+		*binding = KeyBinding{name}
+		return nil
+	case yaml.SequenceNode:
+		var names []string
+		if err := node.Decode(&names); err != nil {
+			return err
+		}
+		*binding = names
+		return nil
+	default:
+		return fmt.Errorf("line %d: keyboard binding must be a key name or a list of key names", node.Line)
+	}
+}
+
 // PlayerConfig holds both keyboard and joystick settings for a player.
 type PlayerConfig struct {
-	Keyboard map[string]string `yaml:"keyboard"`
-	Joy      map[string]string `yaml:"joy"`
+	Keyboard map[string]KeyBinding `yaml:"keyboard"`
+	Joy      map[string]string     `yaml:"joy"`
 }
 
 // ExtendedConfig provides modern overrides for MUGEN settings.
