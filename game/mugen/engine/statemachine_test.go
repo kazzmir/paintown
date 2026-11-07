@@ -178,11 +178,16 @@ func TestCompilationFailsBeforeSideEffects(t *testing.T) {
 		"type=UnknownController\ntrigger1=1", "type=LifeAdd\ntriggerall=1", "type=LifeAdd\ntrigger1=1\ntrigger1=time @ 1",
 		"type=LifeAdd\ntrigger0=1", "type=LifeAdd\ntriggerwhat=1", "type=LifeAdd\ntrigger1=1\npersistent=time+1",
 		"type=LifeAdd\ntrigger1=1\nignorehitpause=var(0)",
+		"type=VarSet\ntrigger1=1\nv=0\nvalue=7.9",
+		"type=StateTypeSet\ntrigger1=1\nstatetype=Z",
 	} {
 		t.Run(bad, func(t *testing.T) {
 			h := newHost()
 			sm := NewStateMachine()
-			state := stateSource(t, lifeController("trigger1=1")+"[State 7, bad]\n"+bad+"\nvalue=1\n")
+			if !strings.Contains(bad, "\nvalue=") {
+				bad += "\nvalue=1"
+			}
+			state := stateSource(t, lifeController("trigger1=1")+"[State 7, bad]\n"+bad+"\n")
 			for i := 0; i < 2; i++ {
 				_, err := sm.ExecuteState(state, h)
 				if err == nil || !strings.Contains(err.Error(), "state 7 controller 1") || !strings.Contains(err.Error(), "line ") {

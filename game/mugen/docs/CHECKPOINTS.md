@@ -16,6 +16,9 @@ Recent boundaries:
 - M4ds: implementation-led workflow, consolidated scenario entry points, one
   project progress ledger, concise docs and user-authorized temp cleanup.
 
-M4ds adds no new engine compatibility claim or generated fixture bank. Production
-Go remains at M4dr. Former per-run transcripts are in this file's Git history;
+M4dt completes announcement scheduling and residual schemas; all five affected
+segments pass with race detection. No generated fixture bank was added.
+
+M4ds added no new engine compatibility claim or generated fixture bank. Production
+Go advanced in M4dt. Former per-run transcripts are in this file's Git history;
 they are not maintained as a second live project tracker.

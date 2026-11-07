@@ -111,7 +111,7 @@ func runController(t *testing.T, h *parameterHost, name, params string) {
 
 func TestVariableExpressions(t *testing.T) {
 	h := newParameterHost()
-	runController(t, h, "VarSet", "v=1+1\nvalue=7.9")
+	runController(t, h, "VarSet", "v=1+1\nvalue=7.9+0.0")
 	if h.vars[2] != 7 || len(h.warnings) != 1 {
 		t.Fatalf("vars/warnings = %v/%v", h.vars, h.warnings)
 	}

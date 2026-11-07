@@ -5,9 +5,9 @@ Checked items have a working implementation for the stated scope. Partial
 items name the remaining work. Counts below are feature/route counts, not
 an estimate of total effort or complete native compatibility.
 
-- Controllers: 89/89 routes; 6 known partial, 0 missing.
+- Controllers: 89/89 routes; 4 known partial, 0 missing.
 - Triggers: 120/127 runtime routes; 7 missing.
-- Project items: 20 implemented, 11 partial, 2 missing.
+- Project items: 22 implemented, 9 partial, 2 missing.
 
 ## Completed scenario coverage
 
@@ -33,7 +33,7 @@ require running the historical data again.
 - [x] Negative states and same-tick state continuation.
 - [x] Controller persistence and hit-pause eligibility.
 - [x] Borrowed states, animation and SelfState ownership.
-- [ ] Remaining variable and StateTypeSet schemas. **partial** — Finish integer literal validation and StateTypeSet schema/diagnostics; resolve legacy FVar aliases.
+- [x] Remaining variable and StateTypeSet schemas.
 - [ ] Remaining stage, viewport and team trigger bindings. **partial** — Bind the seven currently missing trigger families; stage/team context belongs with item4. (item3 edges / item4 context)
 
 ### Characters and combat
@@ -57,7 +57,7 @@ require running the historical data again.
 
 - [x] One-on-one rounds, results, reset and rematch.
 - [x] Title, player/stage selection, versus and fight handoff.
-- [ ] Round/Fight/Win presentation scheduling. **partial** — Finish independent Round/Fight/Win delays, overlap, control-zero and win presentation using existing evidence.
+- [x] One-on-one Round/Fight/Win presentation scheduling.
 - [x] Storyboard loading, playback and canvas scaling.
 
 ### Assets and sound
@@ -88,8 +88,6 @@ implementation tasks by themselves.
 | assertspecial | NoMusic has no BGM consumer. |
 | displaytoclipboard | Raw text only; numeric formatting and production debug display remain. |
 | hitadd | ComboCount has no production HUD/reset consumer. |
-| statetypeset | Literal fallback lacks full parameter validation/diagnostics. |
-| varset | Integer variable literal-float rejection differs from beta. |
 
 Missing trigger routes: `bottomedge`, `ishometeam`, `p3name`, `p4name`, `stagevar`, `teammode`, `topedge`.
 

@@ -21,14 +21,6 @@
     "hitadd": {
       "gap": "ComboCount has no production HUD/reset consumer.",
       "allocation": "item3"
-    },
-    "statetypeset": {
-      "gap": "Literal fallback lacks full parameter validation/diagnostics.",
-      "allocation": "item3"
-    },
-    "varset": {
-      "gap": "Integer variable literal-float rejection differs from beta.",
-      "allocation": "item3"
     }
   },
   "trigger_gap_allocations": {
@@ -241,10 +233,10 @@
     },
     {
       "id": "announcements",
-      "name": "Round/Fight/Win presentation scheduling",
+      "name": "One-on-one Round/Fight/Win presentation scheduling",
       "group": "Match and presentation",
-      "status": "partial",
-      "gap": "Finish independent Round/Fight/Win delays, overlap, control-zero and win presentation using existing evidence.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item3",
       "sources": [
         "system/hud_message.go:updateMessages",
@@ -277,12 +269,13 @@
       "id": "residual-schema",
       "name": "Remaining variable and StateTypeSet schemas",
       "group": "State machine",
-      "status": "partial",
-      "gap": "Finish integer literal validation and StateTypeSet schema/diagnostics; resolve legacy FVar aliases.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item3",
       "sources": [
         "engine/parameters.go:compileVariable",
-        "engine/statemachine.go:handleStateTypeSet"
+        "engine/state_type.go:compileStateTypeSet",
+        "engine/variable_alias.go:compileFloatVariableAlias"
       ]
     },
     {
@@ -449,11 +442,19 @@
         {
           "file": "engine/pass_test.go",
           "name": "TestStatePassRunawayAndMissingState"
+        },
+        {
+          "file": "engine/statemachine_test.go",
+          "name": "TestCompilationFailsBeforeSideEffects"
+        },
+        {
+          "file": "engine/parameters_test.go",
+          "name": "TestVariableExpressions"
         }
       ],
       "completed": true,
-      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
-      "passed_source": "2c520a8cbb610528596f105ffa6e8feacbd95da677ac74c8d50a1d3154c55f9a"
+      "validation": "consolidated segment run",
+      "passed_source": "5db3ca13b2b17d52f97ad7f21fdc786527ba6f4c90aeb3c321c7c4aa6db10d5c"
     },
     {
       "id": "combat",
@@ -485,8 +486,8 @@
         }
       ],
       "completed": true,
-      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
-      "passed_source": "bceef72e6162f7498c92b4bb874f28f866659ed95d2e830ab57c59b3a3e35391"
+      "validation": "consolidated segment run",
+      "passed_source": "642c1e71d43eeaa4d28eb41f95a311953e7ea72a2fefec02d230fec5e1fc1e69"
     },
     {
       "id": "entities",
@@ -511,8 +512,8 @@
         }
       ],
       "completed": true,
-      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
-      "passed_source": "b00f7490aafae97c557de8fde12b329bf442fac4d7d81b318f366859be205d5e"
+      "validation": "consolidated segment run",
+      "passed_source": "ab4d377417c002fc732a7c5f90b4a41641ee445636da446d703e523dc6561c9f"
     },
     {
       "id": "effects-pause",
@@ -543,8 +544,8 @@
         }
       ],
       "completed": true,
-      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
-      "passed_source": "997f4c2be4bbdd4e7de534587d68477ffa939fb0927f63d0c074d8419dad6213"
+      "validation": "consolidated segment run",
+      "passed_source": "7156194edff7d902b7c8e663ec18e6a87bd690f223ec1df9d5df18aafb1e8862"
     },
     {
       "id": "match-flow",
@@ -587,11 +588,15 @@
         {
           "file": "match/complete_match_test.go",
           "name": "TestStockInputDrivenCompleteMatches"
+        },
+        {
+          "file": "system/round_flow_test.go",
+          "name": "TestAnnouncementsAndControllerRoundFlow"
         }
       ],
       "completed": true,
-      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
-      "passed_source": "7bfa7098de662fb86318f67c5e05004c23dbbf79b6ab182de79ec288071a2bf4"
+      "validation": "consolidated segment run",
+      "passed_source": "ecffe9a9d429dbd2dae0e769f7fc4db9bf6feffe3eb9e1c766fa686299c85838"
     }
   ],
   "presentation_followups": [

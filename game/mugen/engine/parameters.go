@@ -179,10 +179,16 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileRemapPal(ctrl)
 	case "varset", "varadd":
 		return compileVariable(ctrl, name == "varadd", false)
+	case "fvarset", "fvaradd":
+		return compileFloatVariableAlias(ctrl, name == "fvaradd")
 	case "parentvarset", "parentvaradd":
 		return compileVariable(ctrl, name == "parentvaradd", true)
 	case "varrangeset":
 		return compileVariableRange(ctrl)
+	case "fvarrangeset":
+		return compileFloatRangeAlias(ctrl)
+	case "statetypeset":
+		return compileStateTypeSet(ctrl)
 	case "varrandom":
 		return compileVarRandom(ctrl)
 	case "changeanim", "changeanim2":
@@ -389,6 +395,9 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 		return nil, true, fmt.Errorf("variable value %s: %w", valueText, err)
 	}
 	args := []argument{{argumentSpec{"index", true, true}, index}, {argumentSpec{"value", !strings.Contains(kind, "fvar"), true}, value}}
+	if err := validateVariableLiterals(args); err != nil {
+		return nil, true, err
+	}
 	return func(_ *cns.StateController, env Environment) error {
 		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
@@ -456,7 +465,18 @@ func compileVariableRange(ctrl *cns.StateController) (ControllerFunc, bool, erro
 		key = "fvalue"
 		last = 39
 	}
-	return typedHandler(ctrl, []argumentSpec{{"first", true, false}, {"last", true, false}, {key, !floats, true}}, func(env Environment, v map[string]evaluator.Value) error {
+	args, err := compileArguments(ctrl, []argumentSpec{{"first", true, false}, {"last", true, false}, {key, !floats, true}})
+	if err != nil {
+		return nil, true, err
+	}
+	if err := validateVariableLiterals(args); err != nil {
+		return nil, true, err
+	}
+	return func(_ *cns.StateController, env Environment) error {
+		v, err := evaluateArguments(args, env)
+		if err != nil {
+			return err
+		}
 		first, end := 0, last
 		if value, ok := v["first"]; ok {
 			first = int(value.Number())
@@ -476,5 +496,5 @@ func compileVariableRange(ctrl *cns.StateController) (ControllerFunc, bool, erro
 			}
 		}
 		return nil
-	})
+	}, true, nil
 }

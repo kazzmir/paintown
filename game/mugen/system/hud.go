@@ -25,8 +25,7 @@ type FightHUD struct {
 	audioOwner    uint64
 	played        map[string]bool
 	levels        [2]int
-	cue           string
-	cueTime       int
+	pendingSounds map[string]hudSound
 	linearSampler render.Linear
 	indexSampler  render.Nearest
 	renderError   error
@@ -68,11 +67,18 @@ func (h *FightHUD) text(section, key, fallback string) string {
 	return fallback
 }
 
-func (h *FightHUD) Update(previous match.Phase, round int) error {
+func (h *FightHUD) Update(_ match.Phase, round int) error {
 	if h.renderError != nil {
 		return h.renderError
 	}
-	h.updateMessages(previous, round)
+	if round != h.match.Round {
+		clear(h.played)
+		clear(h.pendingSounds)
+		for slot, p := range h.match.Players {
+			h.levels[slot] = p.Character.Power / 1000
+		}
+	}
+	h.updateMessages(round)
 	if h.match.SimulationSkipped {
 		return nil
 	}
@@ -81,37 +87,8 @@ func (h *FightHUD) Update(previous match.Phase, round int) error {
 			clock.Update()
 		}
 	}
-	if round != h.match.Round {
-		clear(h.played)
-		h.cue = ""
-		for slot, p := range h.match.Players {
-			h.levels[slot] = p.Character.Power / 1000
-		}
-	}
-	var key, timeKey string
-	switch h.match.Phase {
-	case match.RoundCall:
-		key, timeKey = fmt.Sprintf("round%d", h.match.Round), "round.sndtime"
-	case match.FightCall:
-		key, timeKey = "fight", "fight.sndtime"
-	case match.PreOver, match.Over, match.Finished:
-		key, timeKey = "KO", "KO.sndtime"
-		if h.match.TimeOver {
-			key = "TO"
-		} else if h.match.Players[0].Character.Life <= 0 && h.match.Players[1].Character.Life <= 0 {
-			key = "DKO"
-		}
-	}
-	if key != h.cue {
-		h.cue, h.cueTime = key, 0
-	} else {
-		h.cueTime++
-	}
-	if key != "" && !h.played[key] && h.cueTime >= h.match.Setting("Round", timeKey, 0) {
-		h.played[key] = true
-		if err := h.playSound("Round", key+".snd"); err != nil {
-			return err
-		}
+	if err := h.updateAnnouncementSounds(); err != nil {
+		return err
 	}
 	for slot, p := range h.match.Players {
 		level := p.Character.Power / 1000
@@ -305,30 +282,33 @@ func (h *FightHUD) Draw(screen *ebiten.Image) {
 		h.drawBars(screen)
 	}
 	pos := h.values("Round", "pos", 0, 0)
-	switch m.Phase {
-	case match.RoundCall:
-		if message := h.messages["round"]; message != nil {
-			h.drawMessage(screen, message, strings.ReplaceAll(h.text("Round", message.key+".text", "Round %i"), "%i", fmt.Sprint(m.Round)), pos[0], pos[1])
+	for _, group := range []string{"round", "round.default", "fight", "finish", "result"} {
+		message := h.messages[group]
+		if message == nil {
+			continue
 		}
-	case match.FightCall, match.Active:
-		h.drawMessage(screen, h.messages["fight"], h.text("Round", "fight.text", ""), pos[0], pos[1])
-	case match.PreOver:
-		if message := h.messages["finish"]; message != nil {
-			h.drawMessage(screen, message, h.text("Round", message.key+".text", ""), pos[0], pos[1])
+		fallback := ""
+		if message.key == "round.default" {
+			fallback = "Round %i"
+		} else if message.key == "win" {
+			fallback = "%s Wins"
+		} else if message.key == "draw" {
+			fallback = "Draw Game"
 		}
-	case match.Over, match.Finished:
-		key, text := "draw", h.text("Round", "draw.text", "Draw Game")
-		if m.Winner >= 0 {
-			key = "win"
-			name := m.Players[m.Winner].Definition.Info["displayname"]
-			text = strings.ReplaceAll(h.text("Round", "win.text", "%s Wins"), "%s", name)
-		}
-		h.label(screen, "Round", key, text, pos[0], pos[1])
-		if m.Phase == match.Finished {
-			info := h.engine.motif.SelectInfo.TitleFont
-			if info[0] > 0 && info[0] < len(h.engine.motif.Fonts) && h.engine.motif.Fonts[info[0]] != nil {
-				h.engine.motif.Fonts[info[0]].Draw(screen, "Start: rematch   Esc: menu", screen.Bounds().Dx()/2, screen.Bounds().Dy()-12, info[1], font.AlignCenter)
+		text := strings.ReplaceAll(h.text("Round", message.key+".text", fallback), "%i", fmt.Sprint(m.Round))
+		if message.key == "win" && m.Winner >= 0 {
+			name := m.Players[m.Winner].Character.Name
+			if definition := m.Players[m.Winner].Definition; definition != nil && definition.Info["displayname"] != "" {
+				name = definition.Info["displayname"]
 			}
+			text = strings.ReplaceAll(text, "%s", name)
+		}
+		h.drawMessage(screen, message, text, pos[0], pos[1])
+	}
+	if m.Phase == match.Finished && h.engine != nil {
+		info := h.engine.motif.SelectInfo.TitleFont
+		if info[0] > 0 && info[0] < len(h.engine.motif.Fonts) && h.engine.motif.Fonts[info[0]] != nil {
+			h.engine.motif.Fonts[info[0]].Draw(screen, "Start: rematch   Esc: menu", screen.Bounds().Dx()/2, screen.Bounds().Dy()-12, info[1], font.AlignCenter)
 		}
 	}
 }

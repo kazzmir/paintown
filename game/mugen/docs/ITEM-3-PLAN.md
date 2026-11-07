@@ -6,7 +6,7 @@ native research workflow on 2026-11-06. Earlier plans are retained in Git histor
 
 | Batch | Deliverable | End-state scenario |
 | --- | --- | --- |
-| State/controller closure | Finish Round/Fight/Win scheduling, variable and StateTypeSet schemas, clipboard formatting/debug output and combo lifecycle/HUD. | State-flow plus affected combat/match scenario. |
+| State/controller closure | Finish clipboard formatting/debug output and combo lifecycle/HUD. Announcement scheduling and residual schemas are completed in the project ledger. | State-flow plus affected combat/match scenario. |
 | Concrete mechanics defects | Correct retained cold-start constraints and other reproducible state defects. | The connected scenario containing the defect. |
 | Presentation follow-ups | Address known color/shadow/text and KO echo defects without expanding content matrices. | Affected effects/match scenario. |
 | Playable acceptance | Build once; selection → input-driven combat/recovery → KO/time-over → results → rematch. | Match-flow. |

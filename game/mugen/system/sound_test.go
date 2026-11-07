@@ -57,6 +57,7 @@ func TestProductionHUDCuesDelayOnceAndUseFightBank(t *testing.T) {
 	f.match.Fight.Attribute("Round", "round.sndtime").Value = parsers.NumberValue{Val: 2}
 	f.match.Phase = match.RoundCall
 	for tick := 0; tick < 5; tick++ {
+		f.match.Announcements.Round = tick
 		if err := f.hud.Update(match.RoundCall, 1); err != nil {
 			t.Fatal(err)
 		}

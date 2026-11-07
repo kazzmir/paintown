@@ -57,6 +57,7 @@ artifact-dependent tests now require unavailable captures.
 
 Before each local commit audit explicit staged paths and UTF-8/no-NUL text; add no
 temp/testdata/binary or outside-scope files. Avoid force-adding directories. No
-new native data was promoted from the interrupted M4ds study. The last production
-Go checkpoint remains3aad3498a (M4dr); this checkpoint changes workflow/reporting.
-Read docs/HANDOFF.md for the next implementation batch.
+new native data was promoted. Announcement scheduling and residual variable/
+StateTypeSet schemas are implemented and their affected segments passed with
+race detection. Next: clipboard/debug output and combo lifecycle/HUD. Read
+docs/PROGRESS.md and docs/HANDOFF.md; do not restart historical research matrices.

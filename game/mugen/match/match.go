@@ -72,6 +72,7 @@ type Match struct {
 	Stage                   *stage.Stage
 	Fight                   *fight.Definition
 	Phase                   Phase
+	Announcements           AnnouncementTimes
 	SimulationSkipped       bool // KO skips and the reset initialization tick
 	PhaseTime, Tick, Round  int
 	Wins                    [2]int
@@ -207,6 +208,7 @@ func (m *Match) resetRound() error {
 	m.resultCommitted = false
 	m.initializingRound = m.Round > 1
 	m.pendingRoundOver = false
+	m.resetAnnouncements()
 	m.slowdown.Clear()
 	m.TimeLeft = m.Options.RoundTime
 	s := m.Stage
@@ -330,16 +332,21 @@ func (m *Match) Update() error {
 		return nil
 	}
 	paused := m.Timeline.Paused()
+	m.advanceAnnouncements(paused)
 	if m.pendingRoundOver {
 		m.pendingRoundOver = false
 		m.commitRoundResult()
 		m.roundState(4)
 		m.enter(Over)
+		m.Announcements.Win = 0
 		m.roundEndDeadline = m.Setting("Round", "over.time", 210)
 		m.slowdown.Clear()
 		for _, player := range m.Players {
 			player.Character.HitDefActive = false
 		}
+	}
+	if err := m.startWinPose(); err != nil {
+		return err
 	}
 	if !paused || m.Phase == PreOver {
 		m.slowdown.Advance()
@@ -395,14 +402,22 @@ func (m *Match) Update() error {
 			m.introClearTicks = 0
 		} else {
 			m.introClearTicks++
+			if m.Announcements.Round == announcementInactive {
+				// Native presents Round on the next pass after intro release,
+				// before the remaining intro/control countdown has completed.
+				m.Announcements.Round = -1
+			}
 		}
 		if m.introClearTicks >= 10 {
 			m.enter(RoundCall)
 		}
 	case RoundCall:
-		if m.PhaseTime >= m.Setting("Round", "round.default.displaytime", 60) {
+		// Display durations and round.time affect presentation only. The beta
+		// retains this countdown even with a one-frame or 80-frame component.
+		if m.PhaseTime >= 60 {
 			m.roundState(2)
 			m.enter(FightCall)
+			m.Announcements.Fight = -1
 			if m.Setting("Round", "ctrl.time", 30) <= 0 {
 				m.startActive()
 			}
@@ -436,26 +451,6 @@ func (m *Match) Update() error {
 			m.pendingRoundOver = true
 		}
 	case Over:
-		if !m.winPoseStarted && m.PhaseTime >= m.Setting("Round", "over.wintime", 45) {
-			m.winPoseStarted = true
-			for slot, p := range m.Players {
-				if !p.Character.IsAlive() {
-					continue
-				}
-				state := 170
-				if m.Winner < 0 {
-					state = 175
-				} else if slot == m.Winner {
-					state = 180
-				} else if !p.Character.IsAlive() {
-					continue
-				}
-				p.Character.ChangeState(state, 0, -1)
-				if p.Character.RuntimeError != nil {
-					return p.Character.RuntimeError
-				}
-			}
-		}
 		held := false
 		for _, p := range m.Players {
 			held = held || p.Character.Specials["roundnotover"]
@@ -502,6 +497,7 @@ func (m *Match) hasKO() bool {
 }
 
 func (m *Match) finishRound() {
+	m.Announcements.Finish = 0
 	a, b := m.Players[0].Character, m.Players[1].Character
 	m.TimeOver = a.IsAlive() && b.IsAlive()
 	if m.TimeOver {
