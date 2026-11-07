@@ -41,3 +41,8 @@ M4dy adds simul/turns rosters, all team trigger bindings, partner combat/power,
 team outcomes/turns handoff and selection/HUD consumers. Four affected segments
 pass with race detection; no generated fixtures. Native recovery policy and
 broader mode progression remain partial.
+
+M4dz completes authored command/AI flow: chords, charge/release, strict ordering
+and physical direction transitions reach CNS; AI executes authored stock specials
+and contacts. Four affected segments pass with race detection. Linux-only final
+validation is the user's current platform scope.

@@ -340,13 +340,15 @@
     },
     {
       "id": "ai",
-      "name": "Full opponent AI compatibility",
+      "name": "Opponent AI and authored CMD command flow",
       "group": "Modes and platforms",
-      "status": "partial",
-      "gap": "Expand the basic opponent policy to the required AI behavior.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item4",
       "sources": [
-        "system/fight_state.go"
+        "match/ai.go:BasicAIInput",
+        "character/commands.go:Match",
+        "character/command_inputs.go:CommandInputs"
       ]
     },
     {
@@ -387,11 +389,11 @@
     },
     {
       "id": "platforms",
-      "name": "Additional platform builds and final playable acceptance",
+      "name": "Linux build and final playable acceptance",
       "group": "Modes and platforms",
       "status": "partial",
-      "gap": "Linux is exercised; validate the other supported platforms and final game flow.",
-      "allocation": "item4",
+      "gap": "Complete final Linux build/playable acceptance after functional work; other targets are deferred by the user.",
+      "allocation": "Linux now; other targets deferred (user 2026-11-07)",
       "sources": [
         "mugen.sh"
       ]
@@ -475,7 +477,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "0db82bea7ad34778f4d915e7caf0bf6ba433c7aa5f1954502e0af2991c8a2b81"
+      "passed_source": "84d10262b748596f789d7017baf3f1b90c3a1e0393fbf318c9d2a109e7c16a36"
     },
     {
       "id": "entities",
@@ -505,7 +507,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8ee57360100a2aa041ded352628899b653a1a595ff1061d281ef9b6f8f89af96"
+      "passed_source": "7ced0da17af46299bfdfbfc4b6a6bdb97fcf2728861fd9d0aae15251e677e1d5"
     },
     {
       "id": "effects-pause",
@@ -537,7 +539,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ca1dd536a7dc640c833402369e75ff94d7f9f15f8c7d317bb905c2b0f2b4b702"
+      "passed_source": "43bcb013a5433a8e27994a57b28856cbff54bdc522586d76fb30b6e40b8f4db1"
     },
     {
       "id": "match-flow",
@@ -596,11 +598,15 @@
         {
           "file": "system/team_flow_test.go",
           "name": "TestTeamSelectionFightHUDAndExitFlow"
+        },
+        {
+          "file": "system/command_flow_test.go",
+          "name": "TestAuthoredCommandsAndAICombatFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "939ab53299357d1f8ae16f666778a88c0e4d9bac2518c4503990fca9b507b8aa"
+      "passed_source": "eb87b88104aace50dd0bf4c69fe95f5f2e8701b20aa757e189d76d60bbd8703b"
     }
   ],
   "presentation_followups": [

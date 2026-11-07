@@ -64,6 +64,8 @@ functional item4 batch implements WAV/MP3/Ogg BGM, NoMusic, scene transitions
 and StageVar; all five affected connected segments pass with race detection.
 Simul/turns rosters, all team trigger bindings, partner combat/power and team
 selection/HUD now pass four affected connected segments with race detection.
-Continue mode progression/AI and recovery policies, then broader assets/media/
-platforms. Legacy MIDI/tracker/CD backends are still unimplemented. Precision
+Authored CMD/AI flow now passes four affected connected segments, including
+human charge/chord/quarter-circle/strict-dash entry and actual stock AI specials.
+Continue mode progression and recovery, then broader assets/media and final Linux
+validation. The user deferred other platform builds on 2026-11-07. Legacy MIDI/tracker/CD backends are still unimplemented. Precision
 remains partial and deferred. Read docs/PROGRESS.md and docs/HANDOFF.md.

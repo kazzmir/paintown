@@ -102,6 +102,7 @@ type Match struct {
 	initializingRound       bool
 	pendingRoundOver        bool
 	slowdown                engine.RoundSlowdown
+	aiBrains                map[int32]*aiBrain
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -212,6 +213,7 @@ func (m *Match) Setting(section, key string, fallback int) int {
 }
 
 func (m *Match) resetRound() error {
+	m.aiBrains = nil
 	for side := range m.Teams {
 		team := &m.Teams[side]
 		team.Active = team.next

@@ -7,7 +7,7 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 27 implemented, 6 partial, 0 missing.
+- Project items: 28 implemented, 5 partial, 0 missing.
 
 ## Completed scenario coverage
 
@@ -70,10 +70,10 @@ source changes reopen only the affected segments.
 
 ### Modes and platforms
 
-- [ ] Full opponent AI compatibility. **partial** — Expand the basic opponent policy to the required AI behavior. (item4)
+- [x] Opponent AI and authored CMD command flow. (item4)
 - [ ] Arcade progression and complete mode rules. **partial** — Implement complete progression and rules beyond the playable one-on-one flow. (item4)
 - [ ] Team/simul/turns lifecycle and partner context. **partial** — Simul/turns selection, rosters, partner context, power/HUD and results are implemented; finish co-op/progression rules and native turns life-recovery policy. (item4)
-- [ ] Additional platform builds and final playable acceptance. **partial** — Linux is exercised; validate the other supported platforms and final game flow. (item4)
+- [ ] Linux build and final playable acceptance. **partial** — Complete final Linux build/playable acceptance after functional work; other targets are deferred by the user. (Linux now; other targets deferred (user 2026-11-07))
 
 ## Controllers and trigger gaps
 

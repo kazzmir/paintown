@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Consolidated scenario suites. Completed suites stay out of default runs."""
 import argparse
+from collections import deque
 import hashlib
 import json
 import os
@@ -98,6 +99,7 @@ def main():
         env['GOTMPDIR'] = scratch
         env['TMPDIR'] = scratch
         passed = set()
+        tails = {}
         process = subprocess.Popen(command, cwd=REPO, env=env, stdout=subprocess.PIPE, text=True)
         for line in process.stdout:
             try:
@@ -112,8 +114,19 @@ def main():
                 print(event.get('Package', '') + ': ' + event['Action'], flush=True)
             elif event.get('Action') == 'output':
                 output = event.get('Output', '')
-                if not output.startswith(('=== RUN', '=== PAUSE', '=== CONT', '--- PASS', 'PASS', 'ok\t')):
+                key = (event.get('Package', ''), event.get('Test', ''))
+                if event.get('Test'):
+                    tails.setdefault(key, deque(maxlen=16)).append(output)
+                elif not output.startswith(('PASS', 'FAIL', 'ok\t')):
                     print(output, end='', flush=True)
+            elif event.get('Action') == 'fail' and event.get('Test'):
+                key = (event.get('Package', ''), event['Test'])
+                print('Failed scenario: ' + event['Test'], flush=True)
+                for output in tails.get(key, []):
+                    if not output.startswith(('=== RUN', '=== PAUSE', '=== CONT')):
+                        print(output, end='', flush=True)
+            elif event.get('Action') == 'build-output':
+                print(event.get('Output', ''), end='', flush=True)
         code = process.wait()
     selected_ids = {entry['id'] for entry in selected}
     for entry in catalog['segments']:

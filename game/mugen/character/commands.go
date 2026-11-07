@@ -2,6 +2,7 @@ package character
 
 import (
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/input"
@@ -40,82 +41,132 @@ func (cb *CommandBuffer) Add(inputs []string) {
 // maxTime: the total ticks allowed for the sequence
 // bufferTime: the number of ticks from the end of history to find the LAST part of the sequence
 func (cb *CommandBuffer) Match(cmdStr string, maxTime, bufferTime int) bool {
-	if cmdStr == "" || len(cb.History) == 0 {
+	if strings.TrimSpace(cmdStr) == "" || len(cb.History) == 0 {
 		return false
 	}
-
 	parts := strings.Split(cmdStr, ",")
 	for i := range parts {
 		parts[i] = strings.TrimSpace(parts[i])
-	}
-
-	// 1. Find the LAST element of the sequence in the bufferTime window
-	// If bufferTime is 1, it must be the current tick.
-	// If bufferTime is > 1, it can be any of the last N ticks.
-	historyIdx := -1
-	for i := len(cb.History) - 1; i >= 0 && i >= len(cb.History)-bufferTime; i-- {
-		if cb.tickMatches(i, parts[len(parts)-1]) {
-			historyIdx = i
-			break
-		}
-	}
-
-	if historyIdx == -1 {
-		return false
-	}
-
-	// Special case: single button/direction
-	if len(parts) == 1 {
-		return true
-	}
-
-	// 2. Match the rest of the sequence backwards (within maxTime)
-	partIdx := len(parts) - 2
-	lastMatchTick := historyIdx
-
-	// The total time limit starts from the tick we matched the last part.
-	limit := historyIdx - maxTime
-	if limit < 0 {
-		limit = 0
-	}
-
-	for partIdx >= 0 {
-		found := false
-		// Search backwards from lastMatchTick
-		for i := lastMatchTick - 1; i >= limit; i-- {
-			if cb.tickMatches(i, parts[partIdx]) {
-				// MUGEN Accuracy:
-				// For same-direction components (e.g. F, F), there must be a gap.
-				// This is only required for "tap" motions.
-				if partIdx < len(parts)-1 {
-					cleanCurr := strings.TrimPrefix(strings.TrimPrefix(parts[partIdx], "/"), "~")
-					cleanPrev := strings.TrimPrefix(strings.TrimPrefix(parts[partIdx+1], "/"), "~")
-					if cleanCurr == cleanPrev && !IsButton(cleanCurr) {
-						hasGap := false
-						for j := i + 1; j < lastMatchTick; j++ {
-							if !cb.tickMatches(j, cleanCurr) {
-								hasGap = true
-								break
-							}
-						}
-						if !hasGap {
-							continue
-						}
-					}
-				}
-
-				lastMatchTick = i
-				partIdx--
-				found = true
-				break
-			}
-		}
-		if !found {
+		if parts[i] == "" {
 			return false
 		}
 	}
+	// Repeated directions require an uninterrupted release/press pair.
+	var expanded []string
+	for _, part := range parts {
+		if len(expanded) > 0 {
+			previous := strings.TrimLeft(expanded[len(expanded)-1], "/>$")
+			current := strings.TrimLeft(part, "/>$")
+			if previous == current && !IsButton(current) && !strings.HasPrefix(part, "~") {
+				expanded = append(expanded, ">~"+current)
+				part = ">" + part
+			}
+		}
+		expanded = append(expanded, part)
+	}
+	parts = expanded
+	for end := len(cb.History) - 1; end >= 0 && end >= len(cb.History)-max(1, bufferTime); end-- {
+		if !cb.tickMatches(end, parts[len(parts)-1]) {
+			continue
+		}
+		held := true
+		for _, part := range parts {
+			if strings.HasPrefix(strings.TrimPrefix(part, ">"), "/") && !cb.tickMatches(end, part) {
+				held = false
+				break
+			}
+		}
+		if !held {
+			continue
+		}
+		last := end
+		limit := max(0, end-max(0, maxTime))
+		matched := true
+		for part := len(parts) - 2; part >= 0; part-- {
+			found := false
+			first := last - 1
+			// A release can coincide with the next direction; /held
+			// symbols can coincide with the button that completes a chord.
+			if strings.ContainsAny(parts[part], "~/") {
+				first = last
+			}
+			for tick := first; tick >= limit; tick-- {
+				if !cb.tickMatches(tick, parts[part]) {
+					continue
+				}
+				if strings.HasPrefix(parts[part+1], ">") && !cb.uninterrupted(tick, last, parts[part+1]) {
+					continue
+				}
+				last, found = tick, true
+				break
+			}
+			if !found {
+				matched = false
+				break
+			}
+		}
+		if matched {
+			return true
+		}
+	}
+	return false
+}
 
+func (cb *CommandBuffer) uninterrupted(first, last int, target string) bool {
+	allowed := map[string]bool{}
+	for _, key := range commandKeys(target) {
+		allowed[key] = true
+	}
+	for tick := first + 1; tick <= last; tick++ {
+		previous, current := map[string]bool{}, map[string]bool{}
+		for _, key := range cb.History[tick-1] {
+			previous[key] = true
+		}
+		for _, key := range cb.History[tick] {
+			current[key] = true
+		}
+		for key := range previous {
+			if previous[key] != current[key] && !allowed[key] {
+				return false
+			}
+		}
+		for key := range current {
+			if previous[key] != current[key] && !allowed[key] {
+				return false
+			}
+		}
+	}
 	return true
+}
+
+func commandKeys(symbol string) []string {
+	symbol = strings.TrimLeft(symbol, ">/~$0123456789")
+	var keys []string
+	for _, part := range strings.Split(symbol, "+") {
+		switch part {
+		case "F":
+			keys = append(keys, "DirForward")
+		case "B":
+			keys = append(keys, "DirBack")
+		case "U":
+			keys = append(keys, "DirUp")
+		case "D":
+			keys = append(keys, "DirDown")
+		case "DF":
+			keys = append(keys, "DirDown", "DirForward")
+		case "DB":
+			keys = append(keys, "DirDown", "DirBack")
+		case "UF":
+			keys = append(keys, "DirUp", "DirForward")
+		case "UB":
+			keys = append(keys, "DirUp", "DirBack")
+		case "a", "b", "c", "x", "y", "z":
+			keys = append(keys, "Button"+strings.ToUpper(part))
+		case "s":
+			keys = append(keys, "ButtonStart")
+		}
+	}
+	return keys
 }
 
 func (cb *CommandBuffer) tickMatches(tickIdx int, target string) bool {
@@ -123,6 +174,15 @@ func (cb *CommandBuffer) tickMatches(tickIdx int, target string) bool {
 		return false
 	}
 
+	target = strings.TrimPrefix(strings.TrimSpace(target), ">")
+	if strings.Contains(target, "+") {
+		for _, part := range strings.Split(target, "+") {
+			if !cb.tickMatches(tickIdx, part) {
+				return false
+			}
+		}
+		return true
+	}
 	hold := strings.HasPrefix(target, "/")
 	release := strings.HasPrefix(target, "~")
 	directionOnly := strings.HasPrefix(target, "$") || strings.Contains(target, "$")
@@ -131,6 +191,21 @@ func (cb *CommandBuffer) tickMatches(tickIdx int, target string) bool {
 	base := target
 	base = strings.TrimPrefix(base, "/")
 	base = strings.TrimPrefix(base, "~")
+	charge := 1
+	if release {
+		digits := 0
+		for digits < len(base) && base[digits] >= '0' && base[digits] <= '9' {
+			digits++
+		}
+		if digits > 0 {
+			n, err := strconv.Atoi(base[:digits])
+			if err != nil || n > len(cb.History) {
+				return false
+			}
+			charge = max(1, n)
+			base = base[digits:]
+		}
+	}
 	base = strings.ReplaceAll(base, "$", "")
 
 	has := func(idx int, s string) bool {
@@ -163,13 +238,13 @@ func (cb *CommandBuffer) tickMatches(tickIdx int, target string) bool {
 		// Exact match against spelled-out internal names
 		switch b {
 		case "F":
-			return has(idx, "DirForward")
+			return has(idx, "DirForward") && !has(idx, "DirUp") && !has(idx, "DirDown")
 		case "B":
-			return has(idx, "DirBack")
+			return has(idx, "DirBack") && !has(idx, "DirUp") && !has(idx, "DirDown")
 		case "U":
-			return has(idx, "DirUp")
+			return has(idx, "DirUp") && !has(idx, "DirForward") && !has(idx, "DirBack")
 		case "D":
-			return has(idx, "DirDown")
+			return has(idx, "DirDown") && !has(idx, "DirForward") && !has(idx, "DirBack")
 		case "DF":
 			return has(idx, "DirDown") && has(idx, "DirForward")
 		case "DB":
@@ -199,7 +274,15 @@ func (cb *CommandBuffer) tickMatches(tickIdx int, target string) bool {
 
 	if release {
 		// Key was pressed at T-1 and is NOT pressed at T
-		return matchBase(tickIdx-1, base) && !matchBase(tickIdx, base)
+		if matchBase(tickIdx, base) {
+			return false
+		}
+		for tick := tickIdx - 1; tick >= tickIdx-charge; tick-- {
+			if !matchBase(tick, base) {
+				return false
+			}
+		}
+		return true
 	}
 
 	if hold {
@@ -314,35 +397,10 @@ func (c *Character) updateCommands(isPaused bool) {
 		raw := make([]string, len(physicalRaw))
 		copy(raw, physicalRaw)
 
-		// Input Latching (Phase 8): stabilize directional inputs against jitter/alternation
-		if !isPaused {
-			// 1. Apply existing latches for inputs that just dropped
-			for in, ticks := range c.InputLatch {
-				if ticks > 0 {
-					found := false
-					for _, r := range physicalRaw {
-						if r == in {
-							found = true
-							break
-						}
-					}
-					if !found {
-						// Only add if not physically present this tick
-						raw = append(raw, in)
-						c.InputLatch[in] = ticks - 1
-					}
-				} else {
-					delete(c.InputLatch, in)
-				}
-			}
-
-			// 2. Refresh/Set latch ONLY for current PHYSICAL inputs
-			for _, in := range physicalRaw {
-				if strings.HasPrefix(in, "Dir") {
-					c.InputLatch[in] = 1 // 1 tick buffer is safer than 2
-				}
-			}
-		}
+		// Preserve actual press/release transitions. An unconditional direction
+		// latch changes D -> DF -> F into extra held diagonals and breaks
+		// rolling motions, charged releases and strict double taps. Authored
+		// time/buffer/hold modifiers provide command leniency instead.
 
 		sort.Strings(raw)
 		c.Commands.Add(raw)
