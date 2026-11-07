@@ -2,7 +2,6 @@ package background
 
 import (
 	"fmt"
-	"image"
 	"image/color"
 	"math"
 	"path/filepath"
@@ -181,6 +180,7 @@ type CommonElement struct {
 	Velocity         [2]float64
 	Trans            string // "none", "add", "add1", "sub", "addalpha"
 	Alpha            [2]int // s, d
+	legacyTrans      bool   // pre-1.0 anim trans=none uses the AIR blend
 	Visible          bool
 	Enabled          bool
 	Flip             string // "H", "V", "VH"
@@ -240,21 +240,18 @@ func (e *CommonElement) drawPaletteImage(target, source *ebiten.Image, options *
 	if e.sceneTintActive {
 		options.ColorScale.Scale(e.sceneTint[0], e.sceneTint[1], e.sceneTint[2], 1)
 	}
-	if !e.paletteTransform.Enabled {
-		e.applyBlending(options, trans, alpha)
-		target.DrawImage(source, options)
-		return
-	}
 	destination := float32(-1)
 	switch strings.ToLower(trans) {
-	case "add":
-		destination = render.ApplyAlpha(options, 256, 256)
+	case "add", "addalpha":
+		destination = render.ApplyAlpha(options, alpha[0], alpha[1])
 	case "add1":
 		destination = render.ApplyAlpha(options, 256, 128)
-	case "addalpha":
-		destination = render.ApplyAlpha(options, alpha[0], alpha[1])
 	case "sub":
 		destination = render.ApplyBlend(options, "sub", 256, 256)
+	}
+	if !e.paletteTransform.Enabled && destination < 0 {
+		target.DrawImage(source, options)
+		return
 	}
 	if err := e.paletteSampler.DrawStyledImage(target, source, options, render.DrawStyle{DestinationFactor: destination, Palette: e.paletteTransform}); err != nil {
 		e.renderError = err
@@ -296,7 +293,12 @@ func (e *CommonElement) GetPosition() (float64, float64) {
 }
 
 func (e *CommonElement) GetStart() (float64, float64) {
-	return e.Start[0], e.Start[1]
+	x, y := e.Start[0], e.Start[1]
+	if e.PositionLink && e.Link != nil {
+		px, py := e.Link.GetStart()
+		x, y = x+px, y+py
+	}
+	return x, y
 }
 
 func (e *CommonElement) GetLayerNo() int {
@@ -312,6 +314,9 @@ func (e *CommonElement) GetName() string {
 }
 
 func (e *CommonElement) GetDelta() (float64, float64) {
+	if e.PositionLink && e.Link != nil {
+		return e.Link.GetDelta()
+	}
 	return e.Delta[0], e.Delta[1]
 }
 
@@ -383,46 +388,6 @@ func (e *CommonElement) DrawReflection(_ *ebiten.Image, _, _, _ float64, _ map[s
 	// Dummy elements move/control linked objects without drawing a surface.
 }
 
-func (e *CommonElement) applyBlending(op *ebiten.DrawImageOptions, trans string, alpha [2]int) {
-	t := strings.ToLower(trans)
-	if t == "default" {
-		if e.Type == Animation {
-			// For animation, 'default' means use AIR settings.
-			t = "none"
-		} else {
-			t = "none"
-		}
-	}
-
-	switch t {
-	case "add":
-		op.Blend = ebiten.BlendLighter
-	case "add1":
-		op.ColorScale.Scale(0.5, 0.5, 0.5, 1.0)
-		op.Blend = ebiten.BlendLighter
-	case "sub":
-		op.Blend = ebiten.Blend{
-			BlendOperationRGB:           ebiten.BlendOperationReverseSubtract,
-			BlendOperationAlpha:         ebiten.BlendOperationAdd,
-			BlendFactorSourceRGB:        ebiten.BlendFactorOne,
-			BlendFactorDestinationRGB:   ebiten.BlendFactorOne,
-			BlendFactorSourceAlpha:      ebiten.BlendFactorZero,
-			BlendFactorDestinationAlpha: ebiten.BlendFactorOne,
-		}
-	case "addalpha":
-		if alpha[0] > 0 || alpha[1] > 0 {
-			s := float32(alpha[0]) / 256.0
-			op.ColorScale.Scale(s, s, s, s)
-			d := float32(alpha[1]) / 256.0
-			if d == 1.0 {
-				op.Blend = ebiten.BlendLighter
-			} else {
-				op.Blend = ebiten.BlendSourceOver
-			}
-		}
-	}
-}
-
 type NormalElement struct {
 	CommonElement
 	Sprite *sff.Sprite
@@ -464,6 +429,9 @@ type AnimationElement struct {
 }
 
 func (e *AnimationElement) Update() {
+	if !e.Enabled {
+		return
+	}
 	e.CommonElement.Update()
 	if e.Player != nil {
 		e.Player.Update()
@@ -498,6 +466,10 @@ func (e *AnimationElement) DrawReflection(screen *ebiten.Image, cameraX, cameraY
 }
 
 func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages) {
+	e.drawFrame(screen, cameraX, cameraY, zOffset, sprites, nil)
+}
+
+func (e *AnimationElement) drawFrame(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages, parallax *ParallaxElement) {
 	if e.Player == nil {
 		return
 	}
@@ -523,18 +495,17 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset 
 	}
 
 	trans, alpha := e.Trans, e.Alpha
-	switch el.Blend {
-	case "alpha":
-		trans = "addalpha"
-		alpha = [2]int{visual.AlphaSrc, visual.AlphaDst}
-	case "sub":
-		trans = "sub"
+	if trans == "default" || (trans == "none" && e.legacyTrans) {
+		switch el.Blend {
+		case "alpha":
+			trans = "addalpha"
+			alpha = [2]int{visual.AlphaSrc, visual.AlphaDst}
+		case "sub":
+			trans = "sub"
+		}
 	}
 
-	img := si.Masked
-	if !e.Mask {
-		img = si.Opaque
-	}
+	img := si.Masked // Anim and animated parallax are always masked.
 
 	// Combine flips
 	oldFlip := e.Flip
@@ -553,158 +524,8 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset 
 		}
 	}
 
-	e.drawWithBlending(screen, img, pivotX, pivotY, cameraX, cameraY, zOffset, trans, alpha, nil, visual)
+	e.drawWithBlending(screen, img, pivotX, pivotY, cameraX, cameraY, zOffset, trans, alpha, parallax, visual)
 	e.Flip = oldFlip
-}
-
-func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image, xAxis int, yAxis int, cameraX, cameraY, zOffset float64, trans string, alpha [2]int, parallax *ParallaxElement, visual ...air.Visual) {
-	if img == nil || !e.Visible {
-		return
-	}
-
-	w, h := img.Size()
-	offX, offY := e.GetOffset()
-	worldCameraX, worldCameraY := cameraX, cameraY
-	if e.stageScale != [2]float64{} {
-		cameraX, cameraY = cameraX/e.stageScale[0], cameraY/e.stageScale[1]
-	}
-
-	// Coordinate alignment
-	baseDrawX := float64(screen.Bounds().Dx())/2 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*e.Delta[0]
-	baseDrawY := e.Start[1] + e.CurrentPos[1] + offY - cameraY*e.Delta[1]
-
-	flipX, flipY := 1.0, 1.0
-	if strings.Contains(e.Flip, "H") {
-		flipX = -1.0
-	}
-	if strings.Contains(e.Flip, "V") {
-		flipY = -1.0
-	}
-
-	tileX, tileY := e.Tile[0], e.Tile[1]
-	if parallax != nil {
-		tileY = 0
-	}
-
-	tileWidth := float64(w) + float64(e.Spacing[0])
-	tileHeight := float64(h) + float64(e.Spacing[1])
-
-	target := screen
-	if e.windowSet || e.Window != [4]int{} {
-		dx, dy := -worldCameraX*e.WindowDelta[0], -worldCameraY*e.WindowDelta[1]
-		left, top, right, bottom := float64(e.Window[0]), float64(e.Window[1]), float64(e.Window[2]+1), float64(e.Window[3]+1)
-		if e.maskWindow && e.stageScale != [2]float64{} {
-			center := float64(screen.Bounds().Dx()) / 2
-			left, right = center+(left-center)*e.stageScale[0], center+(right-center)*e.stageScale[0]
-			top, bottom = top*e.stageScale[1], bottom*e.stageScale[1]
-		}
-		rect := image.Rect(int(left+dx), int(top+dy), int(right+dx), int(bottom+dy))
-		target = screen.SubImage(rect).(*ebiten.Image)
-	}
-
-	minTX, maxTX := 0, 0
-	if tileX == 1 {
-		minTX, maxTX = -20, 20
-	} else if tileX > 1 {
-		maxTX = int(tileX) - 1
-	}
-
-	minTY, maxTY := 0, 0
-	if tileY == 1 {
-		minTY, maxTY = -10, 10
-	} else if tileY > 1 {
-		maxTY = int(tileY) - 1
-	}
-
-	for tx := minTX; tx <= maxTX; tx++ {
-		for ty := minTY; ty <= maxTY; ty++ {
-			tilePosX := float64(tx) * tileWidth
-			tilePosY := float64(ty) * tileHeight
-
-			sX, sY := 1.0, 1.0
-			if parallax == nil {
-				sX, sY = e.ScaleStart[0]+e.ScaleDelta[0]*cameraX, e.ScaleStart[1]+e.ScaleDelta[1]*cameraY
-				// Literal elements created by older adapters omit the defaults.
-				if !e.scaleSet && e.ScaleStart == [2]float64{} && e.ScaleDelta == [2]float64{} {
-					sX, sY = 1, 1
-				}
-				tilePosX, tilePosY = tilePosX*sX, tilePosY*sY
-			}
-			if parallax != nil {
-				if parallax.ScaleStart[1] != 0 {
-					sY = parallax.ScaleStart[1] + parallax.ScaleDelta[1]*cameraY
-				} else if parallax.YScaleStart != 0 {
-					sY = 1.0 / (parallax.YScaleStart/100.0 + parallax.YScaleDelta/100.0*cameraY)
-				}
-				if parallax.Width[0] != 0 && w > 0 {
-					sX = parallax.Width[0] / float64(w)
-				} else if parallax.XScale[0] != 0 {
-					sX = parallax.XScale[0]
-				}
-			}
-
-			// Determine if we need scanline parallax
-			isScanlineParallax := false
-			topScale := sX
-			bottomScale := sX
-			if parallax != nil {
-				if parallax.XScale[0] != 0 && parallax.XScale[1] != 0 && parallax.XScale[0] != parallax.XScale[1] {
-					isScanlineParallax = true
-					topScale = parallax.XScale[0]
-					bottomScale = parallax.XScale[1]
-				} else if parallax.Width[0] != 0 && parallax.Width[1] != 0 && w > 0 && parallax.Width[0] != parallax.Width[1] {
-					isScanlineParallax = true
-					topScale = parallax.Width[0] / float64(w)
-					bottomScale = parallax.Width[1] / float64(w)
-				}
-			}
-
-			if isScanlineParallax {
-				for y := 0; y < h; y++ {
-					var op ebiten.DrawImageOptions
-					op.Filter = ebiten.FilterNearest
-
-					sX_line := topScale + (bottomScale-topScale)*(float64(y)/float64(h-1))
-					lineDrawX := float64(screen.Bounds().Dx())/2 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*(e.Delta[0]*sX_line)
-					lineDrawY := e.Start[1] + e.CurrentPos[1] + offY - cameraY*e.Delta[1]
-
-					op.GeoM.Translate(-float64(xAxis), -float64(yAxis)+float64(y))
-					if len(visual) > 0 {
-						v := visual[0]
-						op.GeoM.Scale(v.ScaleX, v.ScaleY)
-						op.GeoM.Rotate(-v.Angle * math.Pi / 180)
-						op.GeoM.Translate(v.X, v.Y)
-					}
-					op.GeoM.Scale(sX_line*flipX, sY*flipY)
-					op.GeoM.Translate(tilePosX, tilePosY)
-					op.GeoM.Translate(lineDrawX, lineDrawY)
-					e.stageGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2)
-					e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
-
-					line := img.SubImage(image.Rect(0, y, w, y+1)).(*ebiten.Image)
-					e.drawPaletteImage(target, line, &op, trans, alpha)
-				}
-			} else {
-				var op ebiten.DrawImageOptions
-				op.Filter = ebiten.FilterNearest
-
-				op.GeoM.Translate(-float64(xAxis), -float64(yAxis))
-				if len(visual) > 0 {
-					v := visual[0]
-					op.GeoM.Scale(v.ScaleX, v.ScaleY)
-					op.GeoM.Rotate(-v.Angle * math.Pi / 180)
-					op.GeoM.Translate(v.X, v.Y)
-				}
-				op.GeoM.Scale(sX*flipX, sY*flipY)
-				op.GeoM.Translate(tilePosX, tilePosY)
-				op.GeoM.Translate(baseDrawX, baseDrawY)
-				e.stageGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2)
-				e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
-
-				e.drawPaletteImage(target, img, &op, trans, alpha)
-			}
-		}
-	}
 }
 
 func (e *CommonElement) draw(screen *ebiten.Image, img *ebiten.Image, xAxis int, yAxis int, cameraX, cameraY, zOffset float64) {
@@ -712,18 +533,27 @@ func (e *CommonElement) draw(screen *ebiten.Image, img *ebiten.Image, xAxis int,
 }
 
 type ParallaxElement struct {
-	CommonElement
-	Sprite      *sff.Sprite
-	XScale      [2]float64
-	Width       [2]float64
-	ScaleStart  [2]float64
-	ScaleDelta  [2]float64
-	YScaleStart float64
-	YScaleDelta float64
+	AnimationElement
+	Sprite       *sff.Sprite
+	XScale       [2]float64
+	Width        [2]float64
+	YScaleStart  float64
+	YScaleDelta  float64
+	legacyYScale bool
 }
 
 func (e *ParallaxElement) Update() {
-	e.CommonElement.Update()
+	e.AnimationElement.Update()
+}
+
+func (e *ParallaxElement) SetAction(action int) {
+	if e.XScale != [2]float64{} {
+		return // The beta supports animated parallax only with width.
+	}
+	e.AnimationElement.SetAction(action)
+	if e.Player != nil {
+		e.Mask = true
+	}
 }
 
 func (e *ParallaxElement) DrawReflection(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages, intensity int) {
@@ -731,6 +561,10 @@ func (e *ParallaxElement) DrawReflection(screen *ebiten.Image, cameraX, cameraY,
 }
 
 func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages) {
+	if e.Player != nil {
+		e.drawFrame(screen, cameraX, cameraY, zOffset, sprites, e)
+		return
+	}
 	if e.Sprite != nil {
 		si, ok := sprites[fmt.Sprintf("%d-%d", e.Sprite.GroupNumber, e.Sprite.ImageNumber)]
 		if ok {
@@ -749,9 +583,24 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 	if viewport.Width == 0 && viewport.Height == 0 {
 		viewport = coord.Default()
 	}
+	legacyTrans := true
+	for _, sec := range ast.Sections {
+		if strings.EqualFold(sec.Name, "Info") {
+			for _, attr := range sec.Attributes {
+				if strings.EqualFold(attr.ID.String(), "mugenversion") {
+					value := attr.Value
+					if list, ok := value.(*parsers.ValueList); ok && len(list.Values) > 0 {
+						value = list.Values[0]
+					}
+					version := GetFloat(value)
+					legacyTrans = version < 1 || version >= 1000 // date-form WinMUGEN versions
+				}
+			}
+		}
+	}
 	for _, sec := range ast.Sections {
 		lowerName := strings.ToLower(sec.Name)
-		if !strings.HasPrefix(lowerName, prefix) || strings.HasSuffix(lowerName, "def") {
+		if !strings.HasPrefix(lowerName, prefix) || strings.HasSuffix(lowerName, "def") || strings.HasPrefix(lowerName, prefix+"ctrl") {
 			continue
 		}
 
@@ -761,18 +610,20 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		}
 
 		common := CommonElement{
-			Name:       sec.Name,
-			Mask:       false,
-			Delta:      [2]float64{1, 1},
-			ZoomDelta:  1,
-			ScaleStart: [2]float64{1, 1},
-			scaleSet:   true,
-			Spacing:    [2]int{0, 0},
-			Trans:      "none",
-			Window:     [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
-			windowSet:  true,
-			Visible:    true,
-			Enabled:    true,
+			Name:        sec.Name,
+			Mask:        false,
+			Delta:       [2]float64{1, 1},
+			ZoomDelta:   1,
+			ScaleStart:  [2]float64{1, 1},
+			scaleSet:    true,
+			Spacing:     [2]int{0, 0},
+			Trans:       "default",
+			Alpha:       [2]int{256, 256},
+			legacyTrans: legacyTrans,
+			Window:      [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
+			windowSet:   true,
+			Visible:     true,
+			Enabled:     true,
 		}
 		maskSet := false
 		var elemType string
@@ -870,22 +721,8 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			}
 		}
 
-		var rootElement Element
-		for i := len(b.Elements) - 1; i >= 0; i-- {
-			if b.Elements[i].GetLink() == nil {
-				rootElement = b.Elements[i]
-				break
-			}
-		}
-
-		if common.PositionLink && rootElement != nil {
-			rsx, rsy := rootElement.GetStart()
-			common.Link = rootElement
-			common.Start[0] += rsx
-			common.Start[1] += rsy
-			rvx, rvy := rootElement.GetVelocity()
-			common.Velocity[0] += rvx
-			common.Velocity[1] += rvy
+		if common.PositionLink && len(b.Elements) > 0 {
+			common.Link = b.Elements[len(b.Elements)-1]
 		}
 
 		if !hasSprite && !hasAction && elemType != "dummy" {
@@ -895,6 +732,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		var xscale [2]float64
 		var yscale, yscalestart, yscaledelta float64
 		var width, scalestart, scaledelta [2]float64
+		modernScale, legacyScale := false, false
 
 		for _, attr := range sec.Attributes {
 			id := strings.ToLower(attr.ID.String())
@@ -904,25 +742,33 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				consumed[attr] = true
 			case "yscale":
 				yscale = GetFloat(attr.Value)
+				legacyScale = true
 				consumed[attr] = true
 			case "width":
 				width = GetVector2(attr.Value)
 				consumed[attr] = true
 			case "scalestart":
+				modernScale = true
 				scalestart = GetVector2(attr.Value)
 				common.ScaleStart = scalestart
 				consumed[attr] = true
 			case "scaledelta":
+				modernScale = true
 				scaledelta = GetVector2(attr.Value)
 				common.ScaleDelta = scaledelta
 				consumed[attr] = true
 			case "yscalestart":
 				yscalestart = GetFloat(attr.Value)
+				legacyScale = true
 				consumed[attr] = true
 			case "yscaledelta":
 				yscaledelta = GetFloat(attr.Value)
+				legacyScale = true
 				consumed[attr] = true
 			}
+		}
+		if !maskSet && (common.Trans == "add" || common.Trans == "sub") {
+			common.Mask = true
 		}
 
 		for _, attr := range sec.Attributes {
@@ -949,9 +795,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			b.Elements = append(b.Elements, ne)
 		case "anim", "animation":
 			common.Type = Animation
-			if !maskSet {
-				common.Mask = true
-			}
+			common.Mask = true
 			ae := &AnimationElement{CommonElement: common, Sprites: make(map[string]*sff.Sprite), AirData: airData, SffData: sffData}
 			if airData != nil {
 				if action, ok := airData.Actions[actionNo]; ok {
@@ -973,11 +817,18 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			b.Elements = append(b.Elements, ae)
 		case "parallax":
 			common.Type = Parallax
-			pe := &ParallaxElement{CommonElement: common, XScale: xscale, Width: width, ScaleStart: scalestart, ScaleDelta: scaledelta, YScaleStart: yscale, YScaleDelta: yscaledelta}
+			pe := &ParallaxElement{AnimationElement: AnimationElement{CommonElement: common, Sprites: make(map[string]*sff.Sprite), AirData: airData, SffData: sffData}, XScale: xscale, Width: width, YScaleStart: 100, YScaleDelta: yscaledelta, legacyYScale: legacyScale && !modernScale}
+			if yscale != 0 {
+				pe.YScaleStart = yscale
+			}
 			if yscalestart != 0 {
 				pe.YScaleStart = yscalestart
 			}
-			if sffData != nil {
+			if hasAction && xscale == [2]float64{} {
+				pe.Mask = true
+				pe.SetAction(actionNo)
+			}
+			if !hasAction && sffData != nil {
 				for i := range sffData.Sprites {
 					spr := &sffData.Sprites[i]
 					if int(spr.GroupNumber) == spriteNo[0] && int(spr.ImageNumber) == spriteNo[1] {
@@ -990,76 +841,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		}
 	}
 
-	ctrlDefs := make(map[string]*BGCtrlDef)
-	for _, sec := range ast.Sections {
-		name := strings.ToLower(sec.Name)
-		if strings.HasPrefix(name, "bgctrldef") {
-			parts := strings.Fields(name)
-			if len(parts) > 1 {
-				defName := parts[1]
-				def := &BGCtrlDef{}
-				for _, attr := range sec.Attributes {
-					id := strings.ToLower(attr.ID.String())
-					switch id {
-					case "looptime":
-						def.Looptime = int(GetFloat(attr.Value))
-					case "ctrlid", "eventid":
-						if list, ok := attr.Value.(*parsers.ValueList); ok {
-							for _, v := range list.Values {
-								def.CtrlIDs = append(def.CtrlIDs, int(GetFloat(v)))
-							}
-						} else {
-							def.CtrlIDs = append(def.CtrlIDs, int(GetFloat(attr.Value)))
-						}
-					}
-				}
-				ctrlDefs[defName] = def
-				b.Controllers = append(b.Controllers, def)
-			}
-		} else if strings.HasPrefix(name, "bgctrl") {
-			parts := strings.Fields(name)
-			if len(parts) > 1 {
-				defName := parts[1]
-				if def, ok := ctrlDefs[defName]; ok {
-					ctrl := &BGCtrl{Params: make(map[string]parsers.Value)}
-					for _, attr := range sec.Attributes {
-						id := strings.ToLower(attr.ID.String())
-						switch id {
-						case "type":
-							ctrl.Type = GetString(attr.Value)
-						case "time":
-							if list, ok := attr.Value.(*parsers.ValueList); ok {
-								if len(list.Values) >= 1 {
-									ctrl.Time[0] = int(GetFloat(list.Values[0]))
-									ctrl.Time[1] = ctrl.Time[0]
-								}
-								if len(list.Values) >= 2 {
-									ctrl.Time[1] = int(GetFloat(list.Values[1]))
-								}
-								if len(list.Values) >= 3 {
-									ctrl.Looptime = int(GetFloat(list.Values[2]))
-								}
-							} else {
-								ctrl.Time[0] = int(GetFloat(attr.Value))
-								ctrl.Time[1] = ctrl.Time[0]
-							}
-						case "ctrlid":
-							if list, ok := attr.Value.(*parsers.ValueList); ok {
-								for _, v := range list.Values {
-									ctrl.CtrlIDs = append(ctrl.CtrlIDs, int(GetFloat(v)))
-								}
-							} else {
-								ctrl.CtrlIDs = append(ctrl.CtrlIDs, int(GetFloat(attr.Value)))
-							}
-						default:
-							ctrl.Params[id] = attr.Value
-						}
-					}
-					def.Ctrls = append(def.Ctrls, ctrl)
-				}
-			}
-		}
-	}
+	b.loadControllers(ast, prefix)
 }
 
 func ResolvePath(path string, motifDir string, dataDir string) string {
@@ -1181,9 +963,7 @@ type BGCtrlDef struct {
 }
 
 func (d *BGCtrlDef) Update(elements []Element) {
-	// MUGEN: looptime = 1 is often used to mean no loop or it's a legacy quirk.
-	// We only loop if looptime > 1.
-	if d.Looptime > 1 && d.Time >= d.Looptime {
+	if d.Looptime > 0 && d.Time >= d.Looptime {
 		d.Time = 0
 	}
 	for _, ctrl := range d.Ctrls {

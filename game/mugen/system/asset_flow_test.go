@@ -21,7 +21,9 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sff"
+	"github.com/kazzmir/paintown/game/mugen/stage"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
 )
 
@@ -766,5 +768,224 @@ trigger1=1
 	}
 	if m.Round != 2 || m.Viewport.Zoom != .75 || len(m.Effects.Active) != 0 || m.Stage.GroundLevel() != 200 || m.Viewport.GroundY != 200 {
 		t.Fatal("round reset lost startzoom or retained effects", m.Round, m.Viewport.Zoom)
+	}
+	step(1) // Consume the next round's initialization frame before the new scene.
+	// Continue through a three-element moving-floor chain, animated parallax,
+	// controller disable/hide/action changes, camera travel and round reset.
+	path = filepath.Join(t.TempDir(), "linked-parallax.def")
+	if err := os.WriteFile(path, []byte(`[Info]
+name=Connected linked parallax
+mugenversion=1.1
+[Bound]
+screenleft=15
+screenright=15
+[StageInfo]
+localcoord=320,240
+zoffsetlink=502
+[BG Root]
+type=dummy
+id=501
+start=-80,160
+delta=.5,.25
+velocity=2,1
+[BG Middle]
+type=dummy
+id=502
+positionlink=1
+start=10,5
+delta=9,9
+velocity=1,0
+[BG Animated Floor]
+type=parallax
+id=503
+positionlink=1
+start=6,15
+delta=9,9
+actionno=900
+width=16,32
+tile=1,1
+tilespacing=1000,1000
+maskwindow=-40,0,40,240
+trans=none
+mask=0
+[BG Legacy Floor]
+type=parallax
+spriteno=0,1
+start=-20,30
+delta=1,0
+xscale=1,2
+[BG Tiled Animation]
+type=anim
+actionno=901
+start=-160,80
+delta=0,0
+tile=1,0
+tilespacing=16,0
+trans=none
+mask=0
+[BGCtrlDef Scene clocks]
+[BGCtrl Accelerate root]
+type=PosAdd
+ctrlid=501
+time=2
+x=4
+[BGCtrl Disable floor]
+type=Enabled
+ctrlid=503
+time=1
+value=0
+[BGCtrl Enable floor]
+type=Enabled
+ctrlid=503
+time=3
+value=1
+[BGCtrl Change floor action]
+type=Anim
+ctrlid=503
+time=4
+value=902
+[BGCtrl Hide floor]
+type=Visible
+ctrlid=503
+time=5
+value=0
+[BGCtrl Show floor]
+type=Visible
+ctrlid=503
+time=6
+value=1
+[BGCtrl Settle floor]
+type=VelSet
+ctrlid=501
+time=7
+x=0
+y=0
+[Begin Action 900]
+0,0,0,0,2
+0,1,0,0,2
+[Begin Action 901]
+0,2,0,0,-1,,AS128D0
+[Begin Action 902]
+0,0,0,0,-1,,AS128D0
+`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	linked, err := stage.LoadStage(path, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Change only in-memory markers: a noncentral SFF axis and a masked tile
+	// column distinguish width anchoring/masking from a solid opaque rectangle.
+	archive.Sprites[0].XAxis = 7
+	masked := image.NewNRGBA(image.Rect(0, 0, 16, 16))
+	for y := 0; y < 16; y++ {
+		for x := 1; x < 16; x++ {
+			masked.SetNRGBA(x, y, colors[2])
+		}
+	}
+	archive.Sprites[2].Image = masked
+	linked.SpriteData, linked.Background.SpriteData = archive, archive
+	linked.ResetBackground() // Rebind the loaded definitions to shared markers.
+	m.Stage, m.CameraX, m.CameraY, m.Viewport.Zoom = linked, 0, 0, 1
+	rootBG := linked.Background.Elements[0]
+	middle := linked.Background.Elements[1]
+	animated := linked.Background.Elements[2].(*background.ParallaxElement)
+	tiled := linked.Background.Elements[4].(*background.AnimationElement)
+	sx, sy := animated.GetStart()
+	dx, dy := animated.GetDelta()
+	if len(linked.Background.Controllers) != 1 || animated.Player == nil || !animated.Mask || !tiled.Mask || animated.GetLink() != middle || middle.GetLink() != rootBG || sx != -64 || sy != 180 || dx != .5 || dy != .25 {
+		t.Fatal("linked animated parallax/controller loading", sx, sy, dx, dy)
+	}
+	drawBG := func(camera, zoom float64) []byte {
+		t.Helper()
+		canvas.Clear()
+		linked.Background.CameraZoom = zoom
+		if err := linked.DrawWithPalette(canvas, camera, 0, palette.Transform{}, palette.Transform{}); err != nil {
+			t.Fatal(err)
+		}
+		return read(canvas)
+	}
+	rowCount := func(pixels []byte, y, index int) int {
+		count := 0
+		for x := 0; x < 320; x++ {
+			offset, col := (y*320+x)*4, colors[index]
+			if pixels[offset] == col.R && pixels[offset+1] == col.G && pixels[offset+2] == col.B && pixels[offset+3] == 255 {
+				count++
+			}
+		}
+		return count
+	}
+	pixels = drawBG(0, 1)
+	if rowCount(pixels, 188, 0) != 80 || rowCount(pixels, 214, 0) != 0 || rowCount(pixels, 35, 1) != 16 || rowCount(pixels, 88, 2) != 300 {
+		t.Fatal("width/legacy xscale, parallax tiling or masked animated spacing")
+	}
+	if rowCount(drawBG(10000, 1), 188, 0) != 80 {
+		t.Fatal("infinite parallax tiles stopped following the visible camera")
+	}
+	pixels = drawBG(0, .5)
+	red := 0
+	for offset := 0; offset < len(pixels); offset += 4 {
+		if pixels[offset] == colors[0].R && pixels[offset+1] == colors[0].G && pixels[offset+2] == colors[0].B {
+			red++
+			x := offset / 4 % 320
+			if x < 140 || x >= 180 {
+				t.Fatal("maskwindow did not follow its zoomed stage geometry", x)
+			}
+		}
+	}
+	if red == 0 {
+		t.Fatal("zoomed parallax disappeared")
+	}
+	step(1)
+	if linked.GroundLevel() != 166 || m.Viewport.GroundY != 166 || animated.Time != 1 {
+		t.Fatal("parent motion was duplicated in the linked floor")
+	}
+	step(1)
+	if animated.Enabled || animated.Time != 1 || counts(drawBG(0, 1))[0] != 0 {
+		t.Fatal("disabled parallax advanced or remained visible")
+	}
+	step(1)
+	x, y := rootBG.GetPosition()
+	if x != 10 || y != 3 || linked.GroundLevel() != 168 || animated.Time != 1 {
+		t.Fatal("named BG controller group applied twice or linked motion diverged", x, y, linked.GroundLevel())
+	}
+	step(1)
+	if !animated.Enabled || animated.Time != 2 || animated.Player.CurrentElement().Image != 1 {
+		t.Fatal("enabled parallax did not resume its AIR clock")
+	}
+	step(1)
+	if animated.Player.Action.ID != 902 || counts(drawBG(0, 1))[0] == 0 {
+		t.Fatal("BG Anim override did not reach animated parallax drawing")
+	}
+	step(1)
+	if animated.Visible || animated.Time != 4 || counts(drawBG(0, 1))[0] != 0 {
+		t.Fatal("invisible parallax failed to hide or keep its clock running")
+	}
+	step(1)
+	if !animated.Visible || animated.Time != 5 || counts(drawBG(0, 1))[0] == 0 {
+		t.Fatal("visible parallax did not resume drawing its current action")
+	}
+	// Return to the AIR blend after the explicit modern trans=none override.
+	tiled.Trans = "default"
+	pixels = drawBG(0, 1)
+	offset := (88*320 + 1) * 4
+	if pixels[offset] < 47 || pixels[offset] > 49 || pixels[offset+1] < 55 || pixels[offset+1] > 57 || pixels[offset+2] < 64 || pixels[offset+2] > 66 {
+		t.Fatal("default animated blend ignored the AIR independent-alpha pair", pixels[offset:offset+4])
+	}
+	for n := 0; n < 650 && m.Phase != match.Active; n++ {
+		step(1)
+	}
+	if m.Phase != match.Active {
+		t.Fatal("linked stage did not reach the next fight")
+	}
+	m.Players[0].Character.SetLife(0)
+	m.Players[0].Character.ChangeState(5150, 0, -1)
+	for n := 0; n < 900 && m.Round == 2; n++ {
+		step(1)
+	}
+	newMiddle := linked.Background.Elements[1]
+	newAnimation := linked.Background.Elements[2].(*background.ParallaxElement)
+	if m.Round != 3 || linked.GroundLevel() != 165 || m.Viewport.GroundY != 165 || newMiddle == middle || newAnimation.GetLink() != newMiddle || newAnimation.Time != 0 || newAnimation.Player.Action.ID != 900 || linked.Background.Controllers[0].Time != 0 {
+		t.Fatal("round reset retained linked/controller/animation state")
 	}
 }

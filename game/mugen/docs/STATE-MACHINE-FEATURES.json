@@ -336,10 +336,10 @@
     },
     {
       "id": "raster-audio",
-      "name": "Deferred native fidelity and recovery calibration",
+      "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; scaled stage/link/window interactions and strict compatibility edges remain unverified. Mixed-team health/round budgets and Survival team recovery now follow the supplied beta.",
+      "gap": "Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; camera/push ordering and strict compatibility edges remain unverified. Documented linked/parallax backgrounds, tiling, masks and BG clocks now have connected coverage. Mixed-team health/round budgets and Survival recovery are calibrated.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -422,7 +422,7 @@
     },
     {
       "id": "stage-zoom",
-      "name": "Stage cameras, moving floors, background transforms and reflections",
+      "name": "Stage cameras, moving floors, linked/animated parallax and reflections",
       "group": "Match and presentation",
       "status": "implemented",
       "gap": "",
@@ -438,9 +438,12 @@
         "stage/stage.go:GroundLevel",
         "background/background.go:LoadFromAST",
         "character/character.go",
-        "background/background.go:stageGeometry"
+        "background/background.go:stageGeometry",
+        "background/geometry.go:drawWithBlending",
+        "background/controllers.go:loadControllers",
+        "background/background.go:drawFrame"
       ],
-      "validation": "Connected stage lifecycle also spans maskwindow/windowdelta, normal BG scaling, dummy position-linked sinusoidal floor, stage autoturn and floor reset; native easing/blend/raster precision remains unverified. Affected race segments and standalone Cargo/KFM/KFM720 owned-window acceptance pass; captures/overlay removed. One original1.1b1 xscale2/yscale.5 control gives BG rectangle[220,60,252,68] with fighter ScreenPosY200/GameWidth320 unchanged; Go connected scene agrees. Hires defaults.5 precede explicit overrides, as in native423361..4233a5."
+      "validation": "Connected stage flow spans camera/zoom, global/hires scaling, reflections, three-element position links and moving floor publication, animated parallax with width, legacy xscale shear, masked animation spacing, camera-following infinite tiles, zoomed maskwindow, modern AIR blend override, named BG groups, disable/hide/action/resume and round reset. Affected segments pass with race detection; standalone Linux stock KFM/KFM720 stage capture inspected and removed. Geometry follows supplied bgs.html; arbitrary native raster/easing equivalence remains unproven."
     }
   ],
   "segments": [
@@ -524,7 +527,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8fa1d45ea85048040bfb825e31150c112422d3bcef0fbbba57cf3588cb974f97"
+      "passed_source": "7b83bcf29e104b2d35303478ff523a1ed65aeab6af6dc29b0fef022c63c9e89f"
     },
     {
       "id": "entities",
@@ -557,7 +560,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e82698256460f9a21fd538e620aa3239c20e7dc7b7686bcaeab9759d56acf59b"
+      "passed_source": "c9e6342ddc6c727593d3356efa41963d2585507dc24623975c6cd38911bfd290"
     },
     {
       "id": "effects-pause",
@@ -592,7 +595,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f25bc976ac2f89cf18e691191bd7874d5c6384896cca03f601779684f31340ad"
+      "passed_source": "1bce0c2f775ca0b9f11f34294ebfcad0f72af7732fb75ae029736bf3a5a61b76"
     },
     {
       "id": "match-flow",
@@ -671,12 +674,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3fe1cdfd9064bb3fbc9189caf03524af1dd95e7cbac5129bddf148ebfacbae79"
+      "passed_source": "3d0306e33b8c7a2f4b2f43745f70165bbcb26e9062cebf7b3848ba18768937f4"
     }
   ],
   "presentation_followups": [
-    "Known sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
+    "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
-    "Turns/survival recovery currently uses a provisional 27.5%-of-max time-scaled baseline; calibrate exact beta amounts/rounding. AI command selection is functional, not claimed to reproduce native decision probabilities."
+    "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
+    "Documented background link/parallax/tiling/mask/controller lifecycle passes connected acceptance; native pixel-exact shearing, camera easing and crop/push interactions remain precision work."
   ]
 }

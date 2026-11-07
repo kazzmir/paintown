@@ -45,8 +45,6 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	stage.Shadow.Intensity, stage.Shadow.YScale = 128, .4
 	stageDir := filepath.Dir(absPath)
 
-	var currentDef *background.BGCtrlDef
-
 	consumed := make(map[string]bool)
 	screenLeftPresent, screenRightPresent := false, false
 
@@ -204,10 +202,8 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 				case "intensity":
 					stage.Shadow.Intensity = int(background.GetFloat(attr.Value))
 				case "color":
-					v := getIntList(attr.Value)
-					if len(v) >= 3 {
-						stage.Shadow.Color = [3]int{v[0], v[1], v[2]}
-					}
+					v := background.GetVector3(attr.Value)
+					stage.Shadow.Color = [3]int{int(v[0]), int(v[1]), int(v[2])}
 				case "xshear":
 					stage.Shadow.XShear = background.GetFloat(attr.Value)
 				case "yscale":
@@ -261,52 +257,6 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					return nil, assetError(fmt.Errorf("%s: %w", fullSprPath, err))
 				}
 			}
-		case strings.HasPrefix(name, "bgctrldef"):
-			currentDef = &background.BGCtrlDef{}
-			stage.Background.Controllers = append(stage.Background.Controllers, currentDef)
-			for _, attr := range sec.Attributes {
-				id := strings.ToLower(attr.ID.String())
-				switch id {
-				case "looptime":
-					currentDef.Looptime = int(background.GetFloat(attr.Value))
-				case "ctrlid":
-					currentDef.CtrlIDs = getIntList(attr.Value)
-				}
-			}
-		case strings.HasPrefix(name, "bgctrl"):
-			if currentDef == nil {
-				// MUGEN allows BGCtrl without preceding BGCtrlDef sometimes (implicitly group all)
-				currentDef = &background.BGCtrlDef{}
-				stage.Background.Controllers = append(stage.Background.Controllers, currentDef)
-			}
-			ctrl := &background.BGCtrl{
-				Params: make(map[string]parsers.Value),
-			}
-			currentDef.Ctrls = append(currentDef.Ctrls, ctrl)
-			for _, attr := range sec.Attributes {
-				id := strings.ToLower(attr.ID.String())
-				switch id {
-				case "type":
-					ctrl.Type = background.GetString(attr.Value)
-				case "time":
-					t := getIntList(attr.Value)
-					if len(t) >= 1 {
-						ctrl.Time[0] = t[0]
-						if len(t) >= 2 {
-							ctrl.Time[1] = t[1]
-						} else {
-							ctrl.Time[1] = t[0]
-						}
-						if len(t) >= 3 {
-							ctrl.Looptime = t[2]
-						}
-					}
-				case "ctrlid":
-					ctrl.CtrlIDs = getIntList(attr.Value)
-				default:
-					ctrl.Params[id] = attr.Value
-				}
-			}
 		}
 	}
 
@@ -336,34 +286,12 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	// Load background elements
 	stage.Background.LocalCoord = stage.StageInfo.LocalCoord
 	stage.Background.SpriteData = stage.SpriteData
-	definitions := append([]*background.BGCtrlDef(nil), stage.Background.Controllers...)
 	stage.resetBackground = func() {
 		stage.Background.Elements = nil
 		stage.Background.Controllers = nil
-		for _, definition := range definitions {
-			copy := *definition
-			copy.Time = 0
-			stage.Background.Controllers = append(stage.Background.Controllers, &copy)
-		}
 		stage.Background.LoadFromAST(ast, "bg", stage.SpriteData, airData)
 	}
 	stage.resetBackground()
 
 	return stage, nil
 }
-
-func getIntList(v parsers.Value) []int {
-	if list, ok := v.(*parsers.ValueList); ok {
-		res := make([]int, 0, len(list.Values))
-		for _, val := range list.Values {
-			res = append(res, int(background.GetFloat(val)))
-		}
-		return res
-	}
-	if v != nil {
-		return []int{int(background.GetFloat(v))}
-	}
-	return nil
-}
-
-// Helpers are now used from background package

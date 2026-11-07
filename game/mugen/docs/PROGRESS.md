@@ -59,7 +59,7 @@ source changes reopen only the affected segments.
 - [x] Title, player/stage selection, versus and fight handoff.
 - [x] One-on-one Round/Fight/Win presentation scheduling.
 - [x] Storyboard loading, playback and canvas scaling.
-- [x] Stage cameras, moving floors, background transforms and reflections. (1.1 functional gap (resumed audit))
+- [x] Stage cameras, moving floors, linked/animated parallax and reflections. (1.1 functional gap (resumed audit))
 
 ### Assets and sound
 
@@ -67,7 +67,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
-- [ ] Deferred native fidelity and recovery calibration. **partial** — Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; scaled stage/link/window interactions and strict compatibility edges remain unverified. Mixed-team health/round budgets and Survival team recovery now follow the supplied beta. (deferred precision (user 2026-11-07))
+- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; camera/push ordering and strict compatibility edges remain unverified. Documented linked/parallax backgrounds, tiling, masks and BG clocks now have connected coverage. Mixed-team health/round budgets and Survival recovery are calibrated. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
 

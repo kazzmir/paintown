@@ -78,17 +78,20 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest team checkpoint
+## Latest background checkpoint
 
-Mixed-team health/round budgets and Survival Simul partner recovery/carry now
-match bounded original1.1b1 flows. Survival retains round/actor counters,
-declared persistent variables and CNS RNG before5900 entry. Turns supports
-held-direction roster ordering without recycling KO members or replacing a
-continuing Survival winner. Team Co-op and Team Arcade defer the opponent menu
-until human selection; Watch lets P1 select both modes/rosters. Connected
-scenarios cover those flows and co-op input ownership with race detection.
+Linked backgrounds now compose immediate-parent start/motion/delta without
+double-counting velocity. Animated parallax, width vs legacy xscale geometry,
+camera-following tiling, zoomed masks, AIR blends and BG disable/hide/action
+clocks have real consumers. The shared controller loader groups by preceding
+definition and no longer duplicates named stage groups. One connected stage
+scenario spans this lifecycle and round reset; affected segments pass with race
+detection. Linux rebuilt and a stock owned-window stage capture inspected;
+all current run scratch/captures/overlays removed.
 
 The ledger has32/34 implemented rows; only assets and precision remain partial.
-Stage/global/hires scaling, moving floors, reflections, legacy outfits and file
-music have functional consumers; exact raster and compatibility edges remain
-unverified. See docs/HANDOFF.md and preserve the cleanup workflow above.
+Team/mode/Survival checkpoints were tested/pushed by the user. Stage/global/hires
+scaling, moving floors, linked/animated backgrounds, reflections, legacy outfits
+and file music have functional consumers. Exact raster/camera/push and asset
+compatibility edges remain unverified; do not regenerate historical matrices.
+See docs/HANDOFF.md and preserve the cleanup workflow above.
