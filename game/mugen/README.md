@@ -99,6 +99,10 @@ pauses/resumes the playback cursor while sound effects continue. Linux MIDI and 
 Physical CD playback remains unavailable. The stock stage references
 sound/kfm.mid, which is absent from the supplied local distribution.
 
+Stage presentation includes camera zoom, moving floors (`zoffsetlink`), background
+scale/clip controls, reflections, and legacy `hires` stage defaults. Native
+rendering precision is still tracked in the progress ledger.
+
 ## Build a standalone executable
 
 ```bash

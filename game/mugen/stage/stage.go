@@ -54,11 +54,13 @@ type Stage struct {
 	}
 
 	StageInfo struct {
-		LocalCoord  coord.Space
-		ZOffset     float64
-		ZOffsetLink *int
-		AutoTurn    bool
-		ResetBG     bool
+		LocalCoord     coord.Space
+		ZOffset        float64
+		ZOffsetLink    *int
+		XScale, YScale float64
+		HiRes          bool
+		AutoTurn       bool
+		ResetBG        bool
 	}
 
 	Shadow struct {
@@ -93,7 +95,7 @@ func (s *Stage) GroundLevel() float64 {
 				_, start := element.GetStart()
 				_, position := element.GetPosition()
 				_, offset := element.GetOffset()
-				return start + position + offset
+				return (start + position + offset) * s.StageInfo.YScale
 			}
 		}
 	}
@@ -109,6 +111,7 @@ func (s *Stage) DrawWithPalette(screen *ebiten.Image, cameraX, cameraY float64, 
 }
 
 func (s *Stage) DrawWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, background, clear palette.Transform, tint [3]float32) error {
+	s.Background.StageScale = [2]float64{s.StageInfo.XScale, s.StageInfo.YScale}
 	if s.DebugBG {
 		screen.Fill(clear.ClearColor(color.RGBA{R: 255, B: 255, A: 255}))
 	}
@@ -116,6 +119,7 @@ func (s *Stage) DrawWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float
 }
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
+	s.Background.StageScale = [2]float64{s.StageInfo.XScale, s.StageInfo.YScale}
 	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages)
 }
 
@@ -124,6 +128,7 @@ func (s *Stage) DrawForegroundWithPalette(screen *ebiten.Image, cameraX, cameraY
 }
 
 func (s *Stage) DrawForegroundWithPaletteTint(screen *ebiten.Image, cameraX, cameraY float64, transform palette.Transform, tint [3]float32) error {
+	s.Background.StageScale = [2]float64{s.StageInfo.XScale, s.StageInfo.YScale}
 	return s.Background.DrawLayerWithPaletteTint(screen, 1, cameraX, cameraY, s.GroundLevel(), s.SpriteImages, transform, tint)
 }
 

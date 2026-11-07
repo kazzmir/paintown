@@ -424,6 +424,9 @@ localcoord=320,240
 zoffset=200
 zoffsetlink=90
 autoturn=0
+xscale=1
+yscale=1
+hires=1
 [BG Follow]
 type=normal
 spriteno=0,0
@@ -461,6 +464,9 @@ positionlink=1
 		t.Fatal(err)
 	}
 	m := f.match
+	if !m.Stage.StageInfo.HiRes || m.Stage.StageInfo.XScale != 1 || m.Stage.StageInfo.YScale != 1 {
+		t.Fatal("explicit stage scales did not override hires defaults")
+	}
 	program := `[Statedef 5900]
 type=S
 [State 5900, enter]
@@ -691,6 +697,32 @@ trigger1=1
 		t.Fatal("global shadow suppression retained stage reflections")
 	}
 	m.Timeline.GlobalNoShadow = false
+	// One original-beta scene establishes global BG scaling while retaining
+	// the fighter's floor: xscale2/yscale.5 draws this16px sprite at
+	// [220,60,252,68], with ScreenPosY200 and GameWidth320.
+	bg := m.Stage.Background.Elements[0].(*background.NormalElement)
+	savedStart, savedDelta, savedWindowDelta := bg.Start, bg.ScaleDelta, bg.WindowDelta
+	savedLink := m.Stage.StageInfo.ZOffsetLink
+	m.Stage.StageInfo.ZOffsetLink = nil
+	m.Stage.StageInfo.XScale, m.Stage.StageInfo.YScale = 2, .5
+	bg.Start, bg.ScaleDelta, bg.WindowDelta = [2]float64{30, 120}, [2]float64{}, [2]float64{}
+	f.Draw(canvas)
+	pixels := read(f.gameCanvas)
+	bound := image.Rectangle{}
+	for offset := 0; offset < len(pixels); offset += 4 {
+		col := colors[0]
+		if pixels[offset] == col.R && pixels[offset+1] == col.G && pixels[offset+2] == col.B && pixels[offset+3] == 255 {
+			x, y := (offset/4)%320, (offset/4)/320
+			bound = bound.Union(image.Rect(x, y, x+1, y+1))
+		}
+	}
+	position, _ := m.Players[0].Character.LookupIdentifier("screenpos y")
+	if bound != image.Rect(220, 60, 252, 68) || position.Number() != 200 || m.Stage.GroundLevel() != 200 {
+		t.Fatal("native global-stage-scale scene", bound, position)
+	}
+	m.Stage.StageInfo.XScale, m.Stage.StageInfo.YScale = 1, 1
+	m.Stage.StageInfo.ZOffsetLink = savedLink
+	bg.Start, bg.ScaleDelta, bg.WindowDelta = savedStart, savedDelta, savedWindowDelta
 	// Camera-driven background scaling and a moving clip window consume the
 	// same stage element, independently of its zero movement delta.
 	m.CameraX = 8
@@ -698,7 +730,6 @@ trigger1=1
 	if got := counts(read(f.gameCanvas))[0]; got != 512 {
 		t.Fatal("normal BG camera scaling did not reach drawing", got)
 	}
-	bg := m.Stage.Background.Elements[0].(*background.NormalElement)
 	bg.Window = [4]int{32, 20, 47, 35}
 	m.CameraX = 0
 	f.Draw(canvas)

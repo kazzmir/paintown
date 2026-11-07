@@ -40,6 +40,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	stage.StageInfo.LocalCoord = coord.Default()
 	stage.StageInfo.ResetBG = true
 	stage.StageInfo.AutoTurn = true
+	stage.StageInfo.XScale, stage.StageInfo.YScale = 1, 1
 	stage.Camera.StartZoom, stage.Camera.ZoomOut, stage.Camera.ZoomIn = 1, 1, 1
 	stage.Shadow.Intensity, stage.Shadow.YScale = 128, .4
 	stageDir := filepath.Dir(absPath)
@@ -148,6 +149,16 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 			}
 		case name == "stageinfo":
 			consumed[name] = true
+			// The beta initializes hires defaults before reading explicit scale
+			// overrides, independent of their order in the DEF (native423361).
+			for _, attr := range sec.Attributes {
+				if strings.EqualFold(attr.ID.String(), "hires") {
+					stage.StageInfo.HiRes = background.GetBool(attr.Value)
+					if stage.StageInfo.HiRes {
+						stage.StageInfo.XScale, stage.StageInfo.YScale = .5, .5
+					}
+				}
+			}
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
@@ -164,6 +175,10 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.StageInfo.ZOffsetLink = &id
 				case "autoturn":
 					stage.StageInfo.AutoTurn = background.GetBool(attr.Value)
+				case "xscale":
+					stage.StageInfo.XScale = background.GetFloat(attr.Value)
+				case "yscale":
+					stage.StageInfo.YScale = background.GetFloat(attr.Value)
 				case "resetbg":
 					stage.StageInfo.ResetBG = background.GetBool(attr.Value)
 				}
@@ -301,6 +316,11 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	for _, zoom := range []float64{stage.Camera.StartZoom, stage.Camera.ZoomOut, stage.Camera.ZoomIn} {
 		if zoom <= 0 || math.IsNaN(zoom) || math.IsInf(zoom, 0) {
 			return nil, fmt.Errorf("%s [Camera]: zoom scales must be positive and finite", absPath)
+		}
+	}
+	for _, scale := range []float64{stage.StageInfo.XScale, stage.StageInfo.YScale} {
+		if scale == 0 || math.IsNaN(scale) || math.IsInf(scale, 0) {
+			return nil, fmt.Errorf("%s [StageInfo]: scales must be nonzero and finite", absPath)
 		}
 	}
 	if stage.Camera.ZoomOut > stage.Camera.ZoomIn {

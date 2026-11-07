@@ -102,5 +102,7 @@ One connected stage/render/constraint/KO-reset scenario passes with race detecti
 Native zoom easing/reflection precision remains unverified. Moving floors/dummy links,
 stage auto-turn, BG scaling/windowdelta and1.1 maskwindow now have consumers.
 The connected stage scenario and a standalone Cargo run pass; captures/overlays
-were inspected and removed. StageInfo xscale/yscale remain the asset consumer gap;
-see docs/HANDOFF.md.
+were inspected and removed. StageInfo xscale/yscale and legacy hires now have consumers too. One bounded
+original1.1b1 stage scene confirms BG scaling while fighter floor/viewport stay
+unchanged; the connected scenario agrees. Native easing/blend/scaled interaction
+precision remains partial. See docs/HANDOFF.md.

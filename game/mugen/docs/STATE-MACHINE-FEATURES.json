@@ -319,7 +319,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. StageInfo xscale/yscale still lack consumers.",
+      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -431,9 +431,10 @@
         "system/fight_state.go:Draw",
         "stage/stage.go:GroundLevel",
         "background/background.go:LoadFromAST",
-        "character/character.go"
+        "character/character.go",
+        "background/background.go:stageGeometry"
       ],
-      "validation": "Connected stage lifecycle also spans maskwindow/windowdelta, normal BG scaling, dummy position-linked sinusoidal floor, stage autoturn and floor reset; native easing/blend/raster precision remains unverified. Affected race segments and standalone Cargo/KFM/KFM720 owned-window acceptance pass; captures/overlay removed."
+      "validation": "Connected stage lifecycle also spans maskwindow/windowdelta, normal BG scaling, dummy position-linked sinusoidal floor, stage autoturn and floor reset; native easing/blend/raster precision remains unverified. Affected race segments and standalone Cargo/KFM/KFM720 owned-window acceptance pass; captures/overlay removed. One original1.1b1 xscale2/yscale.5 control gives BG rectangle[220,60,252,68] with fighter ScreenPosY200/GameWidth320 unchanged; Go connected scene agrees. Hires defaults.5 precede explicit overrides, as in native423361..4233a5."
     }
   ],
   "segments": [
@@ -484,15 +485,18 @@
       "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation; jump \u2192 CNS landing recovery",
       "source_dirs": [
         "air",
+        "background",
         "character",
         "cmd",
         "cns",
         "combat",
+        "coord",
         "effect",
         "engine",
         "evaluator",
         "input",
-        "match"
+        "match",
+        "stage"
       ],
       "tests": [
         {
@@ -514,19 +518,22 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ee5b04af1fb363362d424df94fbf8f1428fb69218e065eac32f9b1f1cd9d8c26"
+      "passed_source": "642bafbaa68759ab060177c90046a60a87892b150c397ce51214fc19c09d1712"
     },
     {
       "id": "entities",
       "contract": "helper creation \u2192 binding/retirement \u2192 orphan effect expiry \u2192 round identity reset",
       "source_dirs": [
         "air",
+        "background",
         "character",
         "cns",
+        "coord",
         "effect",
         "engine",
         "evaluator",
-        "match"
+        "match",
+        "stage"
       ],
       "tests": [
         {
@@ -544,21 +551,24 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6ea6c3a8c04c2a141198f2c11569c07d89ad370d5684775407ab5ada7b27ba7c"
+      "passed_source": "e8a0cd7386c663d20f81005e0e4d52b5771bc6338d889463cf7bfa21e0f880e7"
     },
     {
       "id": "effects-pause",
       "contract": "Pause/SuperPause \u2192 actor/background/effect clocks \u2192 resources/power \u2192 reset",
       "source_dirs": [
         "air",
+        "background",
         "character",
         "cns",
+        "coord",
         "effect",
         "engine",
         "evaluator",
         "match",
         "palette",
-        "sound"
+        "sound",
+        "stage"
       ],
       "tests": [
         {
@@ -576,7 +586,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "104adb1dc619d655834efe32a6ec4ffdc710a6a21b39c55d5803e8982c1b046f"
+      "passed_source": "4db46e92babbfe8675e3c429313e70a577994352b736bb758d3b644859f49e27"
     },
     {
       "id": "match-flow",
@@ -655,7 +665,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d9260bc72fa8d275a3e4c26e0d353d1f1c4acf7bea855c56bf605a529d8def30"
+      "passed_source": "38242ff85dfea34032187756d2747bb2e89d71309195ef499ca5571dd042cfc6"
     }
   ],
   "presentation_followups": [

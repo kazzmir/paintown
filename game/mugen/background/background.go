@@ -40,7 +40,8 @@ type Background struct {
 	// SpriteData overrides the caller's shared archive for this background.
 	SpriteData *sff.SFF
 	LocalCoord coord.Space
-	CameraZoom float64 // zero retains the unzoomed motif/storyboard default
+	CameraZoom float64    // zero retains the unzoomed motif/storyboard default
+	StageScale [2]float64 // zero retains unit scale outside stage rendering
 	sprites    map[string]*SpriteImages
 }
 
@@ -77,6 +78,9 @@ func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, c
 	}
 	for _, element := range b.Elements {
 		if element.GetLayerNo() == layer {
+			if scaled, ok := element.(interface{ setStageScale([2]float64) }); ok {
+				scaled.setStageScale(b.StageScale)
+			}
 			if zoomed, ok := element.(interface{ setCameraZoom(float64) }); ok {
 				zoomed.setCameraZoom(b.CameraZoom)
 			}
@@ -163,11 +167,13 @@ type CommonElement struct {
 	Delta            [2]float64
 	ZoomDelta        float64
 	cameraZoom       float64
+	stageScale       [2]float64
 	Mask             bool
 	Tile             [2]int
 	Spacing          [2]int
 	Window           [4]int // x1, y1, x2, y2
 	windowSet        bool
+	maskWindow       bool
 	WindowDelta      [2]float64
 	ScaleStart       [2]float64
 	ScaleDelta       [2]float64
@@ -195,6 +201,24 @@ func (e *CommonElement) setPalette(transform palette.Transform) {
 }
 
 func (e *CommonElement) setCameraZoom(zoom float64) { e.cameraZoom = zoom }
+
+func (e *CommonElement) setStageScale(scale [2]float64) {
+	for axis := range scale {
+		if scale[axis] == 0 {
+			scale[axis] = 1
+		}
+	}
+	e.stageScale = scale
+}
+
+func (e *CommonElement) stageGeometry(geometry *ebiten.GeoM, center float64) {
+	if e.stageScale == [2]float64{} || e.stageScale == [2]float64{1, 1} {
+		return
+	}
+	geometry.Translate(-center, 0)
+	geometry.Scale(e.stageScale[0], e.stageScale[1])
+	geometry.Translate(center, 0)
+}
 
 func (e *CommonElement) zoomGeometry(geometry *ebiten.GeoM, center, floor float64) {
 	if e.cameraZoom <= 0 || e.cameraZoom == 1 {
@@ -540,6 +564,10 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 
 	w, h := img.Size()
 	offX, offY := e.GetOffset()
+	worldCameraX, worldCameraY := cameraX, cameraY
+	if e.stageScale != [2]float64{} {
+		cameraX, cameraY = cameraX/e.stageScale[0], cameraY/e.stageScale[1]
+	}
 
 	// Coordinate alignment
 	baseDrawX := float64(screen.Bounds().Dx())/2 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*e.Delta[0]
@@ -563,8 +591,14 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 
 	target := screen
 	if e.windowSet || e.Window != [4]int{} {
-		dx, dy := int(-cameraX*e.WindowDelta[0]), int(-cameraY*e.WindowDelta[1])
-		rect := image.Rect(e.Window[0]+dx, e.Window[1]+dy, e.Window[2]+1+dx, e.Window[3]+1+dy)
+		dx, dy := -worldCameraX*e.WindowDelta[0], -worldCameraY*e.WindowDelta[1]
+		left, top, right, bottom := float64(e.Window[0]), float64(e.Window[1]), float64(e.Window[2]+1), float64(e.Window[3]+1)
+		if e.maskWindow && e.stageScale != [2]float64{} {
+			center := float64(screen.Bounds().Dx()) / 2
+			left, right = center+(left-center)*e.stageScale[0], center+(right-center)*e.stageScale[0]
+			top, bottom = top*e.stageScale[1], bottom*e.stageScale[1]
+		}
+		rect := image.Rect(int(left+dx), int(top+dy), int(right+dx), int(bottom+dy))
 		target = screen.SubImage(rect).(*ebiten.Image)
 	}
 
@@ -644,6 +678,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 					op.GeoM.Scale(sX_line*flipX, sY*flipY)
 					op.GeoM.Translate(tilePosX, tilePosY)
 					op.GeoM.Translate(lineDrawX, lineDrawY)
+					e.stageGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2)
 					e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
 
 					line := img.SubImage(image.Rect(0, y, w, y+1)).(*ebiten.Image)
@@ -663,6 +698,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 				op.GeoM.Scale(sX*flipX, sY*flipY)
 				op.GeoM.Translate(tilePosX, tilePosY)
 				op.GeoM.Translate(baseDrawX, baseDrawY)
+				e.stageGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2)
 				e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
 
 				e.drawPaletteImage(target, img, &op, trans, alpha)
@@ -807,6 +843,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				consumed[attr] = true
 			case "maskwindow":
 				common.Window = GetVector4(attr.Value)
+				common.maskWindow = true
 				// 1.1 uses a top-middle origin and exclusive bottom/right;
 				// the shared internal rectangle uses inclusive endpoints.
 				common.Window[0] += viewport.Width / 2
