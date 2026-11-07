@@ -173,7 +173,17 @@ func tokenize(reader io.Reader) []string {
                 tokens = append(tokens, "(")
             case char == ')':
                 tokens = append(tokens, ")")
-            case char == ';':
+            case char == ';' || char == '#':
+                char, err = byteReader.ReadByte()
+                if err != nil {
+                    break
+                }
+                if char == '@' {
+                    // Paintown's expression comment: discard the next complete
+                    // expression, rather than just the remainder of this line.
+                    tokens = append(tokens, "\x00skip")
+                    continue
+                }
                 for char != '\n' {
                     char, err = byteReader.ReadByte()
                     if err != nil {
@@ -228,7 +238,28 @@ func parseSExpr(reader io.Reader) (*SExpr, error) {
 
     parents = append(parents, nil)
 
+    skipNext := false
+    skipDepth := 0
     for _, token := range tokens {
+        if skipDepth > 0 {
+            if token == "(" {
+                skipDepth++
+            } else if token == ")" {
+                skipDepth--
+            }
+            continue
+        }
+        if token == "\x00skip" {
+            skipNext = true
+            continue
+        }
+        if skipNext {
+            skipNext = false
+            if token == "(" {
+                skipDepth = 1
+            }
+            continue
+        }
         // log.Printf("Token: %v. Parents=%v", token, parents)
         if token == "(" {
             if current != nil {
@@ -259,6 +290,9 @@ func parseSExpr(reader io.Reader) (*SExpr, error) {
         }
     }
 
+    if skipDepth != 0 {
+        return nil, fmt.Errorf("Unbalanced expression comment")
+    }
     if len(parents) != 0 {
         return nil, fmt.Errorf("Unbalanced open parentheses: %v", len(parents))
     }

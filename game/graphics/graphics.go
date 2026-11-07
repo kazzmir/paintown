@@ -3,7 +3,16 @@ package graphics
 import (
     "image"
     "image/color"
+
+    "github.com/hajimehoshi/ebiten/v2"
 )
+
+var source *ebiten.Image
+
+func init() {
+    source = ebiten.NewImage(1, 1)
+    source.Fill(color.NRGBA{R: 255, G: 255, B: 255, A: 255})
+}
 
 // images use 255,0,255 as the transparent color
 func ConvertTransparency(img image.Image) image.Image {
@@ -39,3 +48,66 @@ func InterpolateColors(start, end color.RGBA, steps int) []color.RGBA {
     return colors
 }
 
+// returns alpha pre-multiplied float32 values in the range 0-1
+func frgba(col color.Color) (float32, float32, float32, float32) {
+    r, g, b, a := col.RGBA()
+    rf := float32(r) / 0xffff
+    gf := float32(g) / 0xffff
+    bf := float32(b) / 0xffff
+    af := float32(a) / 0xffff
+
+    return rf, gf, bf, af
+}
+
+func DrawHorizontalGradient(buffer *ebiten.Image, x float32, y float32, width float32, height float32, leftColor color.Color, rightColor color.Color) {
+    leftR, leftG, leftB, leftA := frgba(leftColor)
+    rightR, rightG, rightB, rightA := frgba(rightColor)
+
+    vertices := [4]ebiten.Vertex{
+        ebiten.Vertex{
+            DstX: x,
+            DstY: y,
+            SrcX: 0,
+            SrcY: 0,
+            ColorR: leftR,
+            ColorG: leftG,
+            ColorB: leftB,
+            ColorA: leftA,
+
+        },
+        ebiten.Vertex{
+            DstX: x,
+            DstY: y + height,
+            SrcX: 0,
+            SrcY: 1,
+            ColorR: leftR,
+            ColorG: leftG,
+            ColorB: leftB,
+            ColorA: leftA,
+        },
+        ebiten.Vertex{
+            DstX: x + width,
+            DstY: y,
+            SrcX: 1,
+            SrcY: 0,
+            ColorR: rightR,
+            ColorG: rightG,
+            ColorB: rightB,
+            ColorA: rightA,
+        },
+        ebiten.Vertex{
+            DstX: x + width,
+            DstY: y + height,
+            SrcX: 1,
+            SrcY: 1,
+            ColorR: rightR,
+            ColorG: rightG,
+            ColorB: rightB,
+            ColorA: rightA,
+        },
+    }
+
+    buffer.DrawTriangles(vertices[:], []uint16{0, 1, 2, 2, 3, 1}, source, &ebiten.DrawTrianglesOptions{
+        ColorScaleMode: ebiten.ColorScaleModePremultipliedAlpha,
+    })
+}

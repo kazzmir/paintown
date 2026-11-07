@@ -88,6 +88,26 @@ world)`))
     }
 }
 
+func TestSExprExpressionComment(test *testing.T) {
+    for _, input := range []string{
+        "(menu ;@\n(option (test nested)) (name main))",
+        "(menu ;@ (option (test nested)) (name main))",
+        "(menu #@ (option (test nested)) (name main))",
+        "(menu ;@\n; ordinary comment\n(option (test nested)) (name main))",
+    } {
+        root, err := parseSExpr(strings.NewReader(input))
+        if err != nil {
+            test.Fatal(err)
+        }
+        if len(root.Children) != 1 || root.Children[0].Name != "name" {
+            test.Fatalf("expression comment was not discarded: %s", input)
+        }
+    }
+    if _, err := parseSExpr(strings.NewReader("(menu ;@ (unclosed")); err == nil {
+        test.Fatal("expected an error for an unclosed commented expression")
+    }
+}
+
 func TestSExprErrors(test *testing.T) {
     // unclosed paren
     _, err := parseSExpr(strings.NewReader("(hello world"))

@@ -7,14 +7,18 @@ approved project boundary; the launcher keeps root module metadata read-only. Th
 a separate nested module. When running Go directly from the repository root,
 include `-modfile=game/mugen/mugen.mod -mod=readonly`.
 
-The overlay preserves the existing dependency versions and adds x/image v0.31.0
-for TrueType/OpenType/TTC parsing and CPU rasterization, with x/text v0.29.0 for
-its character maps. These versions were already cached/transitive dependencies
-of Ebitengine. No dependency download or root module change was required.
-Future repository dependency updates must be reconciled into this scoped overlay.
-The user-requested upstream merge of bac65e96 also declares the same x/image
-and x/text versions in root go.mod. That incoming update is preserved; the
-scoped overlay remains compatible and runtime/build commands still use it.
+The user-requested merge of `origin/go-rewrite` at `172d3fb02` raises the minimum
+to Go1.26 and reconciles both module graphs to Ebitengine2.10.5, purego0.11.2,
+x/image0.47.0 and x/text0.43.0. MUGEN's YAML, MP3 and Vorbis dependencies are
+retained in the merged root metadata and scoped overlay. Root metadata is
+read-only during normal builds; requested upstream merges can update it.
+Future repository dependency updates must also be reconciled into the overlay.
+
+On this verification host Go1.26.9 is already cached. Prefix the private wrapper's
+command with `env GOTOOLCHAIN=go1.26.9` to select it without downloading Go1.26.0.
+Normal installations can use any Go1.26-or-newer toolchain. All five connected
+segments, incoming Paintown/parser/simulator tests, both Linux builds and a
+stock MUGEN owned-window startup passed on the reconciled graph.
 
 The launcher keeps build caches and disposable files under `temp/`. Font and
 Character packages still import Ebitengine and need DISPLAY even for CPU tests;

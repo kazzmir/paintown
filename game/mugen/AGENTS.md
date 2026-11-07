@@ -38,6 +38,10 @@ Continue autonomously with local source/text checkpoints. Author only game/mugen
 No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
 
 Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
+The requested origin/go-rewrite merge at172d3fb02 intentionally updates root
+metadata and reconciles the overlay: Go1.26, Ebitengine2.10.5, purego0.11.2.
+For this host prefix private-wrapper commands with env GOTOOLCHAIN=go1.26.9;
+that toolchain is cached. Both graphs retain MUGEN's audio/YAML dependencies.
 Prefer rg/rg --files --no-ignore; historical ignores hide source. Do not recurse
 into temp for source discovery. Temporary Go helpers belong under temp/_tmp/.
 

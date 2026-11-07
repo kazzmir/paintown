@@ -6,6 +6,7 @@ import (
     "log"
     "os"
     "math"
+    "math/rand/v2"
     "image/color"
     "slices"
     "cmp"
@@ -15,40 +16,482 @@ import (
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
+    audiolib "github.com/hajimehoshi/ebiten/v2/audio"
+    "github.com/hajimehoshi/ebiten/v2/colorm"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
     "github.com/hajimehoshi/ebiten/v2/vector"
-    "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string) error {
+const Z_DISTANCE = 6
+
+// The C++ player uses a wider lane tolerance for grabs than for attacks.
+const grabZDistance = 10
+
+func loadArrowImage() (*ebiten.Image, error) {
+    path := "sprites/arrow.png"
+    img, err := data.LoadPng(path)
+    if err != nil {
+        return nil, err
+    }
+
+    return ebiten.NewImageFromImage(graphics.ConvertTransparency(img)), nil
+}
+
+func loadFont() (*text.GoTextFace, error) {
+    file, err := data.LoadFile("fonts/arial.ttf")
+    if err != nil {
+        return nil, err
+    }
+
+    source, err := text.NewGoTextFaceSource(file)
+    if err != nil {
+        return nil, err
+    }
+
+    return &text.GoTextFace{
+        Source: source,
+        Size:   15,
+    }, nil
+}
+
+func healthBarLabel(health interface{ GetName() string }) string {
+    if player, ok := health.(interface{ GetLives() int }); ok {
+        return fmt.Sprintf("x %d  %s", player.GetLives(), health.GetName())
+    }
+    return health.GetName()
+}
+
+func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
+    if playerState.Exploded {
+        return
+    }
+    var options ebiten.DrawImageOptions
+
+    for _, trail := range playerState.Trails {
+        bounds := trail.Image.Bounds()
+
+        // FIXME: take offset x/y into account
+        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+
+        if trail.Facing == FacingLeft {
+            options.GeoM.Scale(-1, 1)
+        }
+
+        if playerState.TrailLength > 0 {
+            options.ColorScale.ScaleAlpha(0.7 * float32(trail.Time) / float32(playerState.TrailLength))
+        }
+
+        options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
+        options.GeoM.Concat(screenShake)
+        screen.DrawImage(trail.Image, &options)
+
+        options.ColorScale.Reset()
+        options.GeoM.Reset()
+    }
+
+    animation := playerState.CurrentAnimation()
+
+    if animation != nil && animation.CurrentFrame() != nil {
+
+        bounds := animation.CurrentFrame().Bounds()
+        options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+
+        if playerState.Facing == FacingLeft {
+            options.GeoM.Scale(-1, 1)
+        }
+
+        options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
+        options.GeoM.Concat(screenShake)
+
+        if playerState.VisualEffect.Time > 0 {
+            switch playerState.VisualEffect.Effect {
+                case VisualEffectGlow:
+                    r, g, b, a := playerState.VisualEffect.Color.RGBA()
+                    fr := float32(r) / float32(65535)
+                    fg := float32(g) / float32(65535)
+                    fb := float32(b) / float32(65535)
+                    fa := float32(a) / float32(65535)
+
+                    angle := float64(playerState.VisualEffect.Time * 6) * math.Pi / 180
+                    sin := float32((math.Sin(angle) + 1) / 2)
+
+                    options.ColorScale.Scale(1 + fr * sin, 1 + fg * sin, 1 + fb * sin, 1 + fa * sin)
+            }
+        }
+
+        screen.DrawImage(animation.CurrentFrame(), &options)
+    }
+
+    attack := playerState.CurrentAnimation().Attack
+    if !attack.IsEmpty() {
+        x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
+        x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
+
+        x1, x2 = min(x1, x2), max(x1, x2)
+        y1, y2 = min(y1, y2), max(y1, y2)
+
+        // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
+
+        vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{R:255, A:255}, false)
+    }
+}
+
+func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
+    if enemy.IsDead() {
+        return
+    }
+    var options ebiten.DrawImageOptions
+
+    // for _, enemy := range enemies {
+    animation := enemy.CurrentAnimation()
+
+    if animation != nil && animation.CurrentFrame() != nil {
+        if enemy.Facing == FacingLeft {
+            options.GeoM.Scale(-1, 1)
+        }
+
+        options.GeoM.Translate(enemy.X - cameraX, enemy.Z - enemy.Y)
+        options.GeoM.Concat(screenShake)
+        bounds := animation.CurrentFrame().Bounds()
+        if enemy.Facing == FacingLeft {
+            options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+        } else {
+            options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+        }
+        screen.DrawImage(animation.CurrentFrame(), &options)
+
+        // FIXME: ugly to pull this attack out
+        attack := enemy.CurrentAnimationValue.Attack
+        if !attack.IsEmpty() {
+            x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
+            x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
+
+            x1, x2 = min(x1, x2), max(x1, x2)
+            y1, y2 = min(y1, y2), max(y1, y2)
+
+            // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
+
+            vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{B:255, A:255}, false)
+        }
+
+    }
+    // }
+}
+
+type GameModel struct {
+    Enemies []*Enemy
+    Buddies []*Buddy
+    Arcade bool
+    GameOver bool
+    awaitingRespawn bool
+    playerRespawnTicks int
+    Projectiles []*Projectile
+    Gore []*GoreParticle
+    GoreFactory GoreFactory
+    goreBursts []goreBurst
+    goreLoadErrorLogged bool
+    Cats []*Cat
+    CatFactory CatFactory
+    Item []*Item
+    Shake int
+    ShowHealthMap map[*Enemy]uint64
+    Counter uint64
+    Flashes []*Flash
+    LevelLimit float64
+
+    ItemFactory ItemFactory
+    Items []*Item
+}
+
+func (model *GameModel) UpdateHealthMap(enemy *Enemy, counter uint64) {
+    if model.ShowHealthMap == nil {
+        model.ShowHealthMap = make(map[*Enemy]uint64)
+    }
+    model.ShowHealthMap[enemy] = counter
+}
+
+func (model *GameModel) ResetHealthMap() {
+    model.ShowHealthMap = make(map[*Enemy]uint64)
+}
+
+func (model *GameModel) CreateItems(objects []BlockObject, level *Level) []*Item {
+    var out []*Item
+    for _, object := range objects {
+        if object.Type == "item" {
+            item, err := MakeItem(object, &model.ItemFactory)
+            if err != nil {
+                log.Printf("Error creating item from object '%v': %v", object.Name, err)
+            } else {
+                item.Z += level.ZMinimum
+                out = append(out, item)
+            }
+        }
+    }
+
+    return out
+}
+
+func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputState, level *Level, system System, flashFactory *FlashFactory) {
+    if playerState.Status == PlayerIdle && inputState.Attack1 {
+        var gotItems []*Item
+        for _, item := range model.Items {
+            diff := abs(float64(item.Z) - playerState.Z)
+            if diff < Z_DISTANCE && abs(float64(item.X) - playerState.X) < 30 {
+                playerState.Pickup(item)
+                system.PlaySound(item.Sound)
+                gotItems = append(gotItems, item)
+            }
+        }
+
+        if len(gotItems) > 0 {
+            var itemsOut []*Item
+            for _, item := range model.Items {
+                if !slices.Contains(gotItems, item) {
+                    itemsOut = append(itemsOut, item)
+                }
+            }
+            model.Items = itemsOut
+        }
+    }
+
+    wasDropping := playerState.Status == PlayerStateDropping
+    playerState.Update(inputState, level, system, model.Counter)
+    if wasDropping && playerState.Status == PlayerIdle {
+        model.Shake = max(model.Shake, 24)
+        system.PlaySound(playerState.FallSound)
+    }
+    if playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping {
+        return
+    }
+
+    if playerState.X > model.LevelLimit {
+        playerState.X = model.LevelLimit
+    }
+
+    if !playerState.CurrentAnimation().Attack.IsEmpty() {
+        attack := playerState.CurrentAnimation().Attack
+        attackBox := playerState.GetAttackBox()
+        for _, enemy := range model.Enemies {
+            if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHitFrom(playerState) {
+                if enemy.HitBy(attackBox) {
+                    force := float64(attack.Force)
+                    if playerState.Facing == FacingLeft {
+                        force = -force
+                    }
+                    enemy.HurtFrom(playerState, attack.Damage, force)
+                    playerState.IgnoreHit(enemy)
+
+                    // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
+                    // create hit projectile, flash
+
+                    if !enemy.Exploded && flashFactory != nil {
+                        model.Flashes = append(model.Flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
+                    }
+
+                    model.UpdateHealthMap(enemy, model.Counter)
+
+                    err := system.PlaySound(playerState.HitSound)
+                    if err != nil {
+                        log.Printf("Error playing hit sound: %v", err)
+                    }
+
+                    if enemy.Health <= 0 {
+                        err := system.PlaySound(enemy.DieSound)
+                        if err != nil {
+                            log.Printf("Error playing enemy die sound: %v", err)
+                        }
+                    }
+                }
+            }
+        }
+    } else if playerState.Status == PlayerMove && playerState.Animations["grab"] != nil &&
+        ((playerState.Facing == FacingRight && inputState.HeldRight) || (playerState.Facing == FacingLeft && inputState.HeldLeft)) {
+        for _, enemy := range model.Enemies {
+            if abs(enemy.Z - playerState.Z) < grabZDistance && enemy.IsGrabbable() {
+                grabbed := false
+
+                if playerState.Facing == FacingRight && enemy.X > playerState.X && enemy.X - playerState.X < 50 {
+                    grabbed = true
+                }
+
+                if playerState.Facing == FacingLeft && enemy.X < playerState.X && playerState.X - enemy.X < 50 {
+                    grabbed = true
+                }
+
+                if grabbed {
+                    model.UpdateHealthMap(enemy, model.Counter)
+                    playerState.DoGrab(enemy)
+                    enemy.WasGrabbed(playerState)
+                    enemy.Z = playerState.Z + 0.1
+                    enemy.Y = 0
+                    enemy.X = playerState.X + 36
+                    enemy.Facing = FacingLeft
+                    if playerState.Facing == FacingLeft {
+                        enemy.X = playerState.X - 36
+                        enemy.Facing = FacingRight
+                    }
+                    break
+                }
+            }
+        }
+    }
+}
+
+func (model *GameModel) UpdateFlashes(system System) {
+    if len(model.Flashes) > 0 {
+        flashesOut := make([]*Flash, 0, len(model.Flashes))
+        for _, flash := range model.Flashes {
+            if !flash.Animation.Update(false, system) {
+                flashesOut = append(flashesOut, flash)
+            }
+        }
+        model.Flashes = flashesOut
+    }
+}
+
+// Each thrown body hits a target at most once. Ordinary knockdowns never
+// become projectiles, even when caused by another thrown body.
+func (model *GameModel) UpdateThrownEnemies() {
+    for _, enemy := range model.Enemies {
+        if !enemy.Thrown || enemy.State != EnemyStateFalling {
+            continue
+        }
+        if enemy.ThrowHits == nil {
+            enemy.ThrowHits = make(map[*Enemy]bool)
+        }
+        box := enemy.ThrownBodyBox()
+        for _, other := range model.Enemies {
+            if other == enemy || enemy.ThrowHits[other] || abs(other.Z - enemy.Z) >= Z_DISTANCE ||
+                other.State == EnemyStateFalling || other.State == EnemyStateFallen || other.IsDead() {
+                continue
+            }
+            if other.HitBy(box) {
+                enemy.ThrowHits[other] = true
+                other.Hurt(other.LastAttacked, 5, enemy.Vx)
+                model.UpdateHealthMap(other, model.Counter)
+            }
+        }
+    }
+}
+
+func (model *GameModel) UpdateEnemies(level *Level, playerState *PlayerState, system System, flashFactory *FlashFactory) {
+    model.UpdateBuddies(playerState, level, system, flashFactory)
+    model.UpdateThrownEnemies()
+    party := model.party(playerState)
+
+    outEnemies := make([]*Enemy, 0, len(model.Enemies))
+    for _, enemy := range model.Enemies {
+        healthBefore := enemy.Health
+        enemy.Update(level, nearestPartyMember(enemy, playerState, party), func(state EnemyState){
+            switch state {
+            case EnemyStateFallen:
+                model.Shake = 30
+                system.PlaySound(enemy.FallSound)
+                if enemy.Health != healthBefore {
+                    model.UpdateHealthMap(enemy, model.Counter)
+                    if healthBefore > 0 && enemy.Health <= 0 {
+                        system.PlaySound(enemy.DieSound)
+                    }
+                }
+            }
+        }, system)
+        model.collectEnemyGore(enemy)
+        model.Projectiles = append(model.Projectiles, enemy.pendingProjectiles...)
+        enemy.pendingProjectiles = nil
+        if !enemy.IsDead() {
+
+            attack := enemy.CurrentAnimationValue.Attack
+            for _, target := range party {
+                if enemy.State != EnemyStateAttacking || attack.IsEmpty() || abs(enemy.Z - target.Z) >= Z_DISTANCE ||
+                    !target.CanBeHit(enemy, enemy.AttackId) || !target.HitBy(enemy.GetAttackBox()) {
+                    continue
+                }
+                force := attack.Force
+                if enemy.GetFacing() == FacingLeft { force = -force }
+                target.Hurt(enemy, attack.Damage, force)
+                model.UpdateHealthMap(enemy, model.Counter)
+                if !target.Exploded && flashFactory != nil {
+                    model.Flashes = append(model.Flashes, flashFactory.MakeFlash(target.X, target.Y + 50, target.Z + 0.1))
+                }
+                if err := system.PlaySound(enemy.HitSound); err != nil {
+                    log.Printf("Error playing hit sound: %v", err)
+                }
+            }
+            outEnemies = append(outEnemies, enemy)
+        }
+    }
+
+    model.Enemies = outEnemies
+    model.UpdateProjectiles(playerState, system, flashFactory)
+    model.UpdateGore(playerState)
+    // Persist deaths caused by this tick's enemy attacks and projectiles before
+    // the next loop can advance to another level.
+    for _, buddy := range model.Buddies { buddy.recordDeath() }
+    model.updateArcadeRespawn(playerState)
+}
+
+func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
+    return RunLevelWithCache(player, yield, setDraw, levelPath, audioContext, MakeObjectFactory())
+}
+
+// RunLevelWithCache keeps enemy sprite/collision resources warm across an
+// adventure. Playback and per-enemy state are still newly allocated per spawn.
+func RunLevelWithCache(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context, factory *ObjectFactory) error {
+    return runLevelWithSession(player, yield, setDraw, levelPath, audioContext, factory, nil)
+}
+
+func runLevelWithSession(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context, factory *ObjectFactory, session *ArcadeSession) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
     }
 
+    font, err := loadFont()
+	if err != nil {
+		return err
+	}
+
+    fontWidth, fontHeight := text.Measure("A", font, 1)
+    _ = fontWidth
+
     cameraX := float64(0)
 
-    animations, err := player.LoadAnimations()
+    playerState, err := MakePlayerState(player, level)
     if err != nil {
         return err
     }
 
-    playerState := PlayerState{
-        X: 60,
-        Y: 0,
-        Z: float64(level.ZMinimum + level.ZMaximum) / 2,
-        Status: PlayerIdle,
-        Animations: animations,
+    if session != nil {
+        playerState.Lives = session.Lives
+        defer func(){ session.Lives = playerState.Lives }()
     }
 
-    for _, animation := range playerState.Animations {
-        animation.Owner = &playerState
+    audio := MakeAudioManager(audioContext)
+    var pause *PauseMenu
+    gameYield := yield
+    yield = func() error {
+        if err := gameYield(); err != nil {
+            return err
+        }
+        if PauseRequested() {
+            if pause == nil {
+                var err error
+                pause, err = NewPauseMenu(playerState)
+                if err != nil {
+                    return err
+                }
+            }
+            return RunPauseMenu(pause, gameYield, setDraw, audio)
+        }
+        return nil
     }
 
-    var enemies []*Enemy
+    var screenShake ebiten.GeoM
 
     drawBackground := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
         options.GeoM.Translate(-cameraX * 1/float64(level.BackgroundParallax), 0)
+        options.GeoM.Concat(screenShake)
         if level.BackgroundImage != nil {
             for {
                 x, _ := options.GeoM.Apply(0, 0)
@@ -64,6 +507,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     drawBackPanels := func(screen *ebiten.Image) {
         var orderOptions ebiten.DrawImageOptions
         orderOptions.GeoM.Translate(-cameraX, 0)
+        orderOptions.GeoM.Concat(screenShake)
         for _, index := range level.PanelOrder {
             x, _ := orderOptions.GeoM.Apply(0, 0)
             if int(x) > screen.Bounds().Dx() {
@@ -82,6 +526,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         if len(level.FrontPanels) > 0 {
             var panelOptions ebiten.DrawImageOptions
             panelOptions.GeoM.Translate(-cameraX * float64(level.ForegroundParallax), float64(screen.Bounds().Dy()))
+            panelOptions.GeoM.Concat(screenShake)
             panelI := 0
             for {
                 x, _ := panelOptions.GeoM.Apply(0, 0)
@@ -98,76 +543,116 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
     }
 
-    drawEnemy := func(enemy *Enemy, screen *ebiten.Image) {
-        var options ebiten.DrawImageOptions
-
-        // for _, enemy := range enemies {
-            animation := enemy.CurrentAnimation
-
-            if animation != nil && animation.CurrentFrame() != nil {
-                if enemy.Facing == FacingLeft {
-                    options.GeoM.Scale(-1, 1)
-                }
-
-                options.GeoM.Translate(enemy.X - cameraX, enemy.Z - enemy.Y)
-                bounds := animation.CurrentFrame().Bounds()
-                if enemy.Facing == FacingLeft {
-                    options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-                } else {
-                    options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-                }
-                screen.DrawImage(animation.CurrentFrame(), &options)
-            }
-        // }
+    type ShadowObject interface {
+        CurrentAnimation() *Animation
+        GetX() float64
+        GetY() float64
+        GetZ() float64
+        GetFacing() Facing
     }
 
-    drawPlayer := func(screen *ebiten.Image) {
-        var options ebiten.DrawImageOptions
+    drawShadow := func(screen *ebiten.Image, object ShadowObject) {
+        var options colorm.DrawImageOptions
 
-        for _, trail := range playerState.Trails {
-            if trail.Facing == FacingLeft {
-                options.GeoM.Scale(-1, 1)
-            }
-
-            if playerState.TrailLength > 0 {
-                options.ColorScale.ScaleAlpha(0.7 * float32(trail.Time) / float32(playerState.TrailLength))
-            }
-
-            options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
-            bounds := trail.Image.Bounds()
-            if playerState.Facing == FacingLeft {
-                options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
-            } else {
-                options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
-            }
-            screen.DrawImage(trail.Image, &options)
-
-            options.ColorScale.Reset()
-            options.GeoM.Reset()
-        }
-
-        animation := playerState.CurrentAnimation()
+        animation := object.CurrentAnimation()
 
         if animation != nil && animation.CurrentFrame() != nil {
-            if playerState.Facing == FacingLeft {
+            // options.GeoM.Skew(0.5, 0)
+
+            bounds := animation.CurrentFrame().Bounds()
+            options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+
+            if object.GetFacing() == FacingLeft {
                 options.GeoM.Scale(-1, 1)
             }
 
-            options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
-            bounds := animation.CurrentFrame().Bounds()
-            if playerState.Facing == FacingLeft {
-                options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-            } else {
-                options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-            }
-            screen.DrawImage(animation.CurrentFrame(), &options)
+            options.GeoM.Scale(0.9, 0.7)
+            options.GeoM.Skew(0.6, 0)
+
+            options.GeoM.Translate(object.GetX() - cameraX - object.GetY() / 4, object.GetZ())
+            options.GeoM.Concat(screenShake)
+
+            options.GeoM.Translate(0, 0)
+            var m colorm.ColorM
+
+            m.ChangeHSV(0, 1, 0)
+
+            alpha := min(0.4, object.GetY() / 300)
+
+            m.Scale(1, 1, 1, 0.4 - alpha)
+            colorm.DrawImage(screen, animation.CurrentFrame(), m, &options)
         }
+    }
+
+    type HealthObject interface {
+        GetIcon() *ebiten.Image
+        GetHealthPercent() float64
+        GetName() string
+    }
+
+    drawHealthBar := func(screen *ebiten.Image, health HealthObject, slot int) {
+        icon := health.GetIcon()
+
+        maxHealthBars := 5
+
+        totalWidth := 100
+        gap := 5
+
+        x := 5.0 + (slot % maxHealthBars) * (totalWidth + gap)
+        y := float64(2.0 + (slot / maxHealthBars) * 30)
+        iconWidth := 0
+        if icon != nil {
+            var options ebiten.DrawImageOptions
+            options.GeoM.Translate(float64(x), y)
+            screen.DrawImage(icon, &options)
+            iconWidth = icon.Bounds().Dx()
+        }
+
+        label := healthBarLabel(health)
+        labelWidth, _ := text.Measure(label, font, 0)
+        availableWidth := float64(max(1, totalWidth - iconWidth - 2))
+        var textOptions text.DrawOptions
+        if labelWidth > availableWidth {
+            textOptions.GeoM.Scale(availableWidth / labelWidth, 1)
+        }
+        textOptions.GeoM.Translate(float64(x+iconWidth+2), float64(y))
+        text.Draw(screen, label, font, &textOptions)
+
+        y += fontHeight + 1
+
+        x1 := x + iconWidth + 2
+        length := max(1, totalWidth - iconWidth - 2)
+        vector.FillRect(screen, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 32, G: 32, B: 32, A: 200}, false)
+        healthLength := float64(length) * max(0, min(1, health.GetHealthPercent()))
+
+		sub := screen.SubImage(image.Rect(x1, int(y), x1 + int(healthLength), int(y) + 10)).(*ebiten.Image)
+		graphics.DrawHorizontalGradient(sub, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, color.NRGBA{R: 0, G: 200, B: 0, A: 255})
+        // vector.FillRect(screen, float32(x1), float32(y), float32(healthLength), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, false)
     }
 
     type Drawable struct {
         Z float64
         Draw func()
+        DrawFirst func()
     }
+
+    showForwardArrow := false
+    // var flashes []*Flash
+
+    arrowImage, err := loadArrowImage()
+    if err != nil {
+        arrowImage = ebiten.NewImage(1, 1)
+    }
+
+    model := GameModel{Arcade:true}
+
+    // avoid triggering moves immediately
+    model.Counter = 1000
+
+    // tracks whether to show the health for an enemy. the value is the last logical time
+    // that the enemy did something worth displaying the health bar for.
+    // if the value is less than X, then display the health bar
+    // showHealthMap := make(map[*Enemy]uint64)
 
     var objects []Drawable
     buffer := ebiten.NewImage(data.ScreenWidth / 2, data.ScreenHeight / 2)
@@ -175,19 +660,112 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         drawBackground(buffer)
         drawBackPanels(buffer)
 
+        healthObjects := []HealthObject{
+            playerState,
+        }
+        for _, buddy := range model.Buddies { healthObjects = append(healthObjects, buddy) }
+
         objects = objects[:0]
-        for _, enemy := range enemies {
+
+        for _, item := range model.Items {
             objects = append(objects, Drawable{
                 Draw: func() {
-                    drawEnemy(enemy, buffer)
+                    var options ebiten.DrawImageOptions
+                    options.GeoM.Translate(float64(item.X) - cameraX, float64(item.Z))
+                    options.GeoM.Concat(screenShake)
+                    if item.Frame != nil {
+                        bounds := item.Frame.Bounds()
+                        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                        buffer.DrawImage(item.Frame, &options)
+                    }
                 },
-                Z: enemy.Z,
+                Z: float64(item.Z),
+            })
+        }
+
+        for _, cat := range model.Cats {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    cat.Draw(buffer, cameraX, screenShake)
+                },
+                Z: cat.Z,
+            })
+        }
+
+        for _, enemy := range model.Enemies {
+            if enemy.IsDead() {
+                continue
+            }
+            if !enemy.Blinking() {
+                objects = append(objects, Drawable{
+                    DrawFirst: func() {
+                        drawShadow(buffer, enemy)
+                    },
+                    Draw: func() {
+                        DrawEnemy(enemy, cameraX, screenShake, buffer)
+                    },
+                    Z: enemy.Z,
+                })
+            }
+
+            if model.ShowHealthMap != nil {
+                when, ok := model.ShowHealthMap[enemy]
+                if enemy.Health > 0 && ok && model.Counter - when < 600 {
+                    healthObjects = append(healthObjects, enemy)
+                }
+            }
+        }
+
+        for _, buddy := range model.Buddies {
+            objects = append(objects, Drawable{
+                DrawFirst: func() { if !buddy.Player.Exploded { drawShadow(buffer, buddy.Player) } },
+                Draw: func() { DrawPlayer(buddy.Player, cameraX, screenShake, buffer) },
+                Z: buddy.Player.Z,
+            })
+        }
+
+        for _, particle := range model.Gore {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    particle.Draw(buffer, cameraX, screenShake)
+                },
+                Z: particle.Z,
+            })
+        }
+
+        for _, projectile := range model.Projectiles {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    projectile.Draw(buffer, cameraX, screenShake)
+                },
+                Z: projectile.Z,
+            })
+        }
+
+        for _, flash := range model.Flashes {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    frame := flash.Animation.CurrentFrame()
+                    if frame != nil {
+                        var options ebiten.DrawImageOptions
+                        options.GeoM.Translate(float64(flash.X) - cameraX, float64(flash.Z) - float64(flash.Y))
+                        bounds := frame.Bounds()
+                        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                        buffer.DrawImage(frame, &options)
+                    }
+                },
+                Z: float64(flash.Z),
             })
         }
 
         objects = append(objects, Drawable{
+            DrawFirst: func() {
+                if !playerState.Exploded {
+                    drawShadow(buffer, playerState)
+                }
+            },
             Draw: func(){
-                drawPlayer(buffer)
+                DrawPlayer(playerState, cameraX, screenShake, buffer)
             },
             Z: playerState.Z,
         })
@@ -197,68 +775,41 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         })
 
         for _, object := range objects {
+            if object.DrawFirst != nil {
+                object.DrawFirst()
+            }
+        }
+
+        for _, object := range objects {
             object.Draw()
         }
 
         drawFrontPanels(buffer)
+
+        if showForwardArrow && (model.Counter / 20) % 2 == 0 {
+            var arrowOptions ebiten.DrawImageOptions
+            arrowOptions.GeoM.Translate(float64(buffer.Bounds().Dx() - arrowImage.Bounds().Dx() - 10), float64(buffer.Bounds().Dy() / 2 - arrowImage.Bounds().Dy() / 2))
+            buffer.DrawImage(arrowImage, &arrowOptions)
+        }
+
         var options ebiten.DrawImageOptions
         options.GeoM.Scale(2, 2)
         screen.DrawImage(buffer, &options)
+
+        for i, health := range healthObjects {
+            drawHealthBar(screen, health, i)
+        }
     }
 
-    var keys []ebiten.Key
-    readInputState := func() InputState {
-        keys = inpututil.AppendPressedKeys(keys[:0])
-        var inputState InputState
-        for _, key := range keys {
-            switch key {
-                case ebiten.KeyArrowRight:
-                    inputState.HeldRight = true
-                case ebiten.KeyArrowLeft:
-                    inputState.HeldLeft = true
-                case ebiten.KeyArrowDown:
-                    inputState.HeldDown = true
-                case ebiten.KeyArrowUp:
-                    inputState.HeldUp = true
-                case ebiten.KeySpace:
-                    inputState.HeldJump = true
-                case ebiten.KeyA:
-                    inputState.HeldAttack1 = true
-                case ebiten.KeyS:
-                    inputState.HeldAttack2 = true
-            }
-        }
-
-        keys = inpututil.AppendJustPressedKeys(keys[:0])
-        for _, key := range keys {
-            switch key {
-                case ebiten.KeyArrowRight:
-                    inputState.Right = true
-                case ebiten.KeyArrowLeft:
-                    inputState.Left = true
-                case ebiten.KeyArrowDown:
-                    inputState.Down = true
-                case ebiten.KeyArrowUp:
-                    inputState.Up = true
-                case ebiten.KeySpace:
-                    inputState.Jump = true
-                case ebiten.KeyA:
-                    inputState.Attack1 = true
-                case ebiten.KeyS:
-                    inputState.Attack2 = true
-            }
-        }
-
-        return inputState
+    if factory == nil {
+        factory = MakeObjectFactory()
     }
-
-    factory := MakeObjectFactory()
 
     createEnemies := func(objects []BlockObject) []*Enemy {
         var out []*Enemy
         for _, object := range objects {
             if object.Type == "enemy" {
-                enemy, err := MakeEnemy(object, factory)
+                enemy, err := MakeEnemy(object, factory, &BehaviorNormal{})
                 if err != nil {
                     log.Printf("Error creating enemy from object '%v': %v", object.Name, err)
                 } else {
@@ -270,8 +821,81 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         return out
     }
 
-    oldDrawer := setDraw(drawer)
+    loadingTicks := 0
+    loadingFont := *font
+    loadingFont.Size = 24
+    oldDrawer := setDraw(func(screen *ebiten.Image) {
+        buffer.Clear()
+        drawBackground(buffer)
+        drawBackPanels(buffer)
+        var backgroundOptions ebiten.DrawImageOptions
+        backgroundOptions.GeoM.Scale(2, 2)
+        screen.DrawImage(buffer, &backgroundOptions)
+        // Keep the level visible behind a readable loading overlay.
+        vector.FillRect(screen, 0, 0, float32(data.ScreenWidth), float32(data.ScreenHeight), color.RGBA{A: 100}, false)
+
+        centerX := float64(data.ScreenWidth) / 2
+        centerY := float64(data.ScreenHeight) / 2
+        for dot := range 8 {
+            angle := float64(dot) * math.Pi / 4
+            phase := (dot - (loadingTicks / 6) % 8 + 8) % 8
+            brightness := uint8(55 + 200 * phase / 7)
+            vector.FillCircle(screen, float32(centerX + math.Cos(angle) * 20), float32(centerY - 30 + math.Sin(angle) * 20), 3,
+                color.RGBA{R: brightness, G: brightness, B: brightness, A: 255}, true)
+        }
+
+        var options text.DrawOptions
+        options.GeoM.Translate(centerX, centerY + 20)
+        options.PrimaryAlign = text.AlignCenter
+        options.SecondaryAlign = text.AlignCenter
+        text.Draw(screen, "Loading level", &loadingFont, &options)
+    })
     defer setDraw(oldDrawer)
+
+    preload := make(chan struct{}, 1)
+    go func(){
+        // preload all enemies
+        log.Printf("Preloading enemies...")
+        model.GoreFactory.frames = factory.frames
+        if err := model.GoreFactory.Load(); err != nil {
+            log.Printf("Preloading body parts: %v", err)
+            model.goreLoadErrorLogged = true
+        }
+        seen := make(map[string]bool)
+        for _, block := range level.Blocks {
+            for _, object := range block.Objects {
+                if object.Type != "enemy" || seen[object.Path] {
+                    continue
+                }
+                seen[object.Path] = true
+                if err := factory.PrecacheEnemy(object); err != nil {
+                    log.Printf("Error precaching enemy '%s': %v", object.Name, err)
+                }
+            }
+        }
+        model.createBuddies(session, playerState, level)
+        log.Printf("Done preloading enemies")
+
+        preload <- struct{}{}
+    }()
+
+    preloaded := false
+    for !preloaded {
+        select {
+            case <-preload:
+                // preload is done, we can start the game
+                preloaded = true
+            default:
+        }
+
+        loadingTicks += 1
+        err := yield()
+        if err != nil {
+            return err
+        }
+    }
+
+    setDraw(drawer)
 
     blocks := level.Blocks
     if len(blocks) == 0 {
@@ -279,38 +903,68 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     }
 
     currentBlock := -1
-    levelLimit := float64(0)
 
     cameraSpeed := float64(1)
 
-    // enemies = append(enemies, &Enemy{})
+    flashFactory, err := MakeFlashFactory()
+    if err != nil {
+        return fmt.Errorf("Error creating flash factory: %v", err)
+    }
 
-    // avoid triggering moves immediately
-    counter := uint64(1000)
+    playerState.DropIn()
+
     for currentBlock < len(blocks) {
-        counter += 1
+        model.Counter += 1
 
-        if playerState.X > float64(levelLimit) - 50 && len(enemies) == 0 {
+        if model.Shake > 0 {
+            dx := (rand.Float64() - 0.5) * float64(model.Shake) / 3
+            dy := (rand.Float64() - 0.5) * float64(model.Shake) / 3
+
+            screenShake.Reset()
+            screenShake.Translate(dx, dy)
+
+            model.Shake -= 1
+        } else {
+            screenShake.Reset()
+        }
+
+        // Let the final death effect finish before replacing the level.
+        effectsFinished := currentBlock < len(blocks) - 1 || len(model.Gore) == 0
+        canAdvance := currentBlock < 0 || (playerState.Status != PlayerStateDead && playerState.Status != PlayerStateDropping)
+        if playerState.X > model.LevelLimit - 100 && len(model.Enemies) == 0 && effectsFinished && canAdvance {
             currentBlock += 1
             if currentBlock < len(blocks) {
-                levelLimit += float64(blocks[currentBlock].Length)
-                log.Printf("Entering block %v, limit %v", currentBlock, levelLimit)
+                model.LevelLimit += float64(blocks[currentBlock].Length)
+                log.Printf("Entering block %v, limit %v", currentBlock, model.LevelLimit)
 
-                enemies = createEnemies(blocks[currentBlock].Objects)
-                for _, enemy := range enemies {
-                    enemy.X += levelLimit - float64(blocks[currentBlock].Length)
+                model.ResetHealthMap()
+
+                playerState.ResetAttackers()
+
+                model.CreateCats(blocks[currentBlock].Objects, level, model.LevelLimit - float64(blocks[currentBlock].Length))
+                model.Items = model.CreateItems(blocks[currentBlock].Objects, level)
+                model.Enemies = createEnemies(blocks[currentBlock].Objects)
+                for _, enemy := range model.Enemies {
+                    enemy.X += model.LevelLimit - float64(blocks[currentBlock].Length)
                     enemy.Z += float64(level.ZMinimum)
                 }
             }
+        } else if len(model.Enemies) == 0 {
+            // no enemies left in the current block, so show the arrow indicating the way forward
+            showForwardArrow = true
         }
 
-        inputState := readInputState()
-
-        playerState.Update(inputState, level, counter)
-
-        if playerState.X > levelLimit {
-            playerState.X = levelLimit
+        if len(model.Enemies) > 0 {
+            showForwardArrow = false
         }
+
+        inputState := ReadGameInput()
+
+        model.UpdatePlayer(playerState, inputState, level, audio, flashFactory)
+
+
+        model.UpdateFlashes(audio)
+        model.UpdateCats(level, audio)
 
         if playerState.X - cameraX < (data.ScreenWidth/2) / 4 {
             cameraX = max(0, cameraX - cameraSpeed)
@@ -321,13 +975,12 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             // int(playerState.X) - data.ScreenWidth / 2 * 3 / 4
         }
 
-        if data.ScreenWidth / 2 + cameraX > levelLimit {
-            cameraX = max(0, levelLimit - data.ScreenWidth / 2)
+        if data.ScreenWidth / 2 + cameraX > model.LevelLimit {
+            cameraX = max(0, model.LevelLimit - data.ScreenWidth / 2)
         }
 
-        for _, enemy := range enemies {
-            enemy.Update(level, &playerState)
-        }
+        model.UpdateEnemies(level, playerState, audio, flashFactory)
+        if model.GameOver { return ErrReturnToMainMenu }
 
         err := yield()
         if err != nil {
@@ -339,7 +992,20 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     return nil
 }
 
+type DummySystem struct {}
+func (dummy *DummySystem) PlaySound(path string) error {
+    return nil
+}
+
 func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer data.DrawFunc) data.DrawFunc) (*PaintownCharacter, error) {
+    return ChooseCharacterFor(yield, background, setDraw, "Choose Your Character")
+}
+
+func ChooseCharacterFor(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer data.DrawFunc) data.DrawFunc, title string) (*PaintownCharacter, error) {
+    font, err := loadFont()
+    if err != nil { return nil, err }
+    font.Size = 24
+    if config := currentMenuFontConfig(); config.source != nil { font.Source = config.source }
 
     animations := make(map[string]*Animation)
     var allPlayers []*PaintownCharacter
@@ -359,7 +1025,7 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
                         log.Printf("Error loading idle animation for player '%v': %v", choice.Name(), err)
                     } else {
                         animations[player.Definition.Name] = idle
-                        idle.Update()
+                        idle.Update(true, &DummySystem{})
                     }
                 }
             }
@@ -375,13 +1041,68 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
 
     selectedColors := append(graphics.InterpolateColors(color.RGBA{R:255, A:255}, color.RGBA{A: 255}, 20), graphics.InterpolateColors(color.RGBA{A:255}, color.RGBA{R:255, A:255}, 20)...)
 
+    bigStart := float32(-500)
+    bigX := bigStart
+
     drawer := func (screen *ebiten.Image) {
         animation := animations[allPlayers[currentChoice].Definition.Name]
         var options ebiten.DrawImageOptions
         screen.DrawImage(background, &options)
 
         x := 60.0
-        y := 130.0
+        y := 150.0
+
+        frame := animation.FirstFrame()
+        frame = frame.SubImage(image.Rect(0, 0, frame.Bounds().Dx(), frame.Bounds().Dy() / 2)).(*ebiten.Image)
+
+        bigY := float32(0.0)
+        bigWidth := float32(frame.Bounds().Dx() * 4)
+        bigHeight := float32(frame.Bounds().Dy() * 4)
+
+        vertices := []ebiten.Vertex{
+            ebiten.Vertex{
+                DstX: bigX,
+                DstY: bigY,
+                SrcX: 0,
+                SrcY: 0,
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0.8,
+            },
+            ebiten.Vertex{
+                DstX: bigX + bigWidth,
+                DstY: bigY,
+                SrcX: float32(frame.Bounds().Dx()),
+                SrcY: 0,
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0.8,
+            },
+            ebiten.Vertex{
+                DstX: bigX,
+                DstY: bigY + bigHeight,
+                SrcX: 0,
+                SrcY: float32(frame.Bounds().Dy()),
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0,
+            },
+            ebiten.Vertex{
+                DstX: bigX + bigWidth,
+                DstY: bigY + bigHeight,
+                SrcX: float32(frame.Bounds().Dx()),
+                SrcY: float32(frame.Bounds().Dy()),
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0,
+            },
+        }
+
+        screen.DrawTriangles(vertices, []uint16{0, 1, 2, 1, 2, 3}, frame, nil)
 
         currentBounds := animation.CurrentFrame().Bounds()
 
@@ -445,35 +1166,48 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
             }
         }
 
+        var textOptions text.DrawOptions
+        textOptions.GeoM.Translate(20, 10)
+        text.Draw(screen, title, font, &textOptions)
+        textOptions.GeoM.Reset()
+        textOptions.GeoM.Translate(30, 340)
+        text.Draw(screen, allPlayers[currentChoice].Definition.Name, font, &textOptions)
     }
 
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
+    // Present the new slot before accepting input, consuming the confirmation
+    // used by the previous screen (including a held controller button).
+    if err := yield(); err != nil { return nil, err }
+
     perRow := 4
 
-    var keys []ebiten.Key
     for {
         counter += 1
-        keys = inpututil.AppendJustPressedKeys(keys[:0])
-        for _, key := range keys {
-            switch key {
-                case ebiten.KeyEnter:
-                    return allPlayers[currentChoice], nil
-                case ebiten.KeyArrowRight:
-                    currentChoice = (currentChoice + 1) % len(allPlayers)
-                case ebiten.KeyArrowLeft:
-                    currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers)
-                case ebiten.KeyArrowDown:
-                    currentChoice = (currentChoice + perRow) % len(allPlayers)
-                case ebiten.KeyArrowUp:
-                    currentChoice = (currentChoice - perRow + len(allPlayers)) % len(allPlayers)
-            }
+        input := ReadMenuInput()
+        if input.Confirm {
+            return allPlayers[currentChoice], nil
+        }
+        change := input.Right || input.Left || input.Down || input.Up
+        if input.Right { currentChoice = (currentChoice + 1) % len(allPlayers) }
+        if input.Left { currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers) }
+        if input.Down { currentChoice = (currentChoice + perRow) % len(allPlayers) }
+        if input.Up { currentChoice = (currentChoice - perRow + len(allPlayers)) % len(allPlayers) }
+
+        if change {
+            bigX = bigStart
+        }
+
+        bigPos := float32(-60)
+        if bigX < bigPos {
+            speed := math.Sqrt(float64(bigPos - bigX))
+            bigX += max(float32(speed), 1)
         }
 
         animation := animations[allPlayers[currentChoice].Definition.Name]
 
-        animation.Update()
+        animation.Update(true, &DummySystem{})
 
         err := yield()
         if err != nil {

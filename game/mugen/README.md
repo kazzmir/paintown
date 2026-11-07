@@ -9,7 +9,7 @@ own canvas and scale correctly into the game/window; see
 
 ## Requirements and data
 
-- Go **1.24 or newer** and Bash for the [mugen.sh launcher](mugen.sh). Dependencies are pinned in
+- Go **1.26 or newer** and Bash for the [mugen.sh launcher](mugen.sh). Dependencies are pinned in
   [mugen.mod](mugen.mod) and [mugen.sum](mugen.sum).
 - A graphical desktop with working OpenGL and audio. Linux builds require a C
   toolchain, `pkg-config`, ALSA development files and X11 development libraries

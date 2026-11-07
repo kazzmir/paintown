@@ -3,14 +3,14 @@ package paintown
 import (
     "log"
     "strings"
-    "strconv"
+    "image"
     "path/filepath"
     "fmt"
     "cmp"
     "slices"
+    "image/color"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
-    "github.com/kazzmir/paintown/game/graphics"
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
@@ -21,7 +21,30 @@ const (
     PlayerIdle PlayerStatus = iota
     PlayerMove
     PlayerJump
+    PlayerGet
+    PlayerStateFallen
+    PlayerStateFalling
+    PlayerStatePain
+    PlayerStateGrab
+    PlayerStateDead
+    PlayerStateDropping
 )
+
+func (status PlayerStatus) String() string {
+    switch status {
+        case PlayerIdle: return "Idle"
+        case PlayerMove: return "Move"
+        case PlayerJump: return "Jump"
+        case PlayerStateFallen: return "Fallen"
+        case PlayerStateFalling: return "Falling"
+        case PlayerStatePain: return "Pain"
+        case PlayerStateGrab: return "Grab"
+        case PlayerStateDead: return "Dead"
+        case PlayerStateDropping: return "Dropping"
+    }
+
+    return "Unknown"
+}
 
 type Facing int
 const (
@@ -55,371 +78,27 @@ type InputState struct {
     Attack2 bool
 }
 
-type AnimationOwner interface {
-    Move(x int, y int, z int)
-    GetFacing() Facing
-    SetFacing(facing Facing)
-    SetTrail(generate int, length int)
-}
-
-type AnimationAttack struct {
-    X1 int
-    Y1 int
-    X2 int
-    Y2 int
-    Force float64
-    Damage float64
-}
-
-type Animation struct {
-    Name string
-    Frame *ebiten.Image
-    Events []AnimationEvent
-    CurrentEvent int
-    Keys []InputKey
-    // times when the keys were pressed
-    KeyPresses []uint64
-
-    Range int
-
-    Sequence string
-    Status string
-
-    OffsetX int
-    OffsetY int
-
-    Delay int
-    CurrentDelay int
-
-    Owner AnimationOwner
-    Attacks []AnimationAttack
-}
-
-func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequence string, status string, attacks []AnimationAttack) *Animation {
-    return &Animation{
-        Name: name,
-        Keys: keys,
-        KeyPresses: make([]uint64, len(keys)),
-        Events: events,
-        Sequence: sequence,
-        Status: status,
-        Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
-        Attacks: attacks,
-    }
-}
-
-// return a duplicate animation but without an owner
-// the caller should invoke Reset() on the returned animation to reset the event state
-func (animation *Animation) Clone() *Animation {
-    out := *animation
-    out.Owner = nil
-    out.KeyPresses = make([]uint64, len(animation.Keys))
-    out.CurrentEvent = 0
-    return &out
-}
-
-func (animation *Animation) HasAttack() bool {
-    return len(animation.Attacks) > 0
-}
-
-func (animation *Animation) GetRange() int {
-    return animation.Range
-}
-
-func (animation *Animation) CurrentFrame() *ebiten.Image {
-    return animation.Frame
-}
-
-func (animation *Animation) GetOffsetX() int {
-    return animation.OffsetX
-}
-
-func (animation *Animation) GetOffsetY() int {
-    return animation.OffsetY
-}
-
-func (animation *Animation) Reset() {
-    animation.CurrentEvent = 0
-    animation.CurrentDelay = 0
-}
-
-// returns true if the animation reaches the end of its events and loops back to the beginning
-func (animation *Animation) Update() bool {
-    if animation.CurrentDelay > 0 {
-        animation.CurrentDelay -= 1
-        return false
-    } else {
-        if len(animation.Events) == 0 {
-            return true
-        }
-        now := animation.CurrentEvent
-        finished := false
-        for animation.CurrentDelay == 0 {
-            animation.Events[animation.CurrentEvent].Update(animation)
-            animation.CurrentEvent += 1
-            if animation.CurrentEvent >= len(animation.Events) {
-                animation.CurrentEvent = 0
-                finished = true
-            }
-
-            // looped without setting delay, this would have been an infinite loop
-            if animation.CurrentEvent == now {
-                log.Printf("Warning: animation looped without setting delay (probably missing a frame)")
-                break
-            }
-        }
-
-        return finished
-    }
-}
-
-type AnimationEvent interface {
-    Update(*Animation)
-}
-
-type AnimationEventFrame struct {
-    Image *ebiten.Image
-}
-
-func (frameEvent *AnimationEventFrame) Update(animation *Animation) {
-    animation.Frame = frameEvent.Image
-    animation.CurrentDelay = animation.Delay
-}
-
-type AnimationEventDelay struct {
-    Delay float32
-}
-
-func (delayEvent *AnimationEventDelay) Update(animation *Animation) {
-    animation.Delay = int(delayEvent.Delay)
-}
-
-type AnimationEventOffset struct {
-    X int
-    Y int
-}
-
-func (offsetEvent *AnimationEventOffset) Update(animation *Animation) {
-    animation.OffsetX = offsetEvent.X
-    animation.OffsetY = offsetEvent.Y
-}
-
-type AnimationEventType struct {
-    Type string
-}
-
-func (typeEvent *AnimationEventType) Update(animation *Animation) {
-    // TODO
-}
-
-type AnimationMoveEvent struct {
-    X int
-    Y int
-    Z int
-}
-
-func (moveEvent *AnimationMoveEvent) Update(animation *Animation) {
-    x := moveEvent.X
-
-    if animation.Owner.GetFacing() == FacingLeft {
-        x = -x
-    }
-
-    animation.Owner.Move(x, moveEvent.Y, moveEvent.Z)
-}
-
-type AnimationFaceEvent struct {
-    Facing string
-}
-
-func (faceEvent *AnimationFaceEvent) Update(animation *Animation) {
-    switch faceEvent.Facing {
-        case "reverse": animation.Owner.SetFacing(animation.Owner.GetFacing().Reverse())
-        case "left": animation.Owner.SetFacing(FacingLeft)
-        case "right": animation.Owner.SetFacing(FacingRight)
-    }
-}
-
-type AnimationEventRelativeOffset struct {
-    X int
-    Y int
-}
-
-func (relativeOffsetEvent *AnimationEventRelativeOffset) Update(animation *Animation) {
-    animation.OffsetX += relativeOffsetEvent.X
-    animation.OffsetY += relativeOffsetEvent.Y
-}
-
-type AnimationTrailEvent struct {
-    Generate int
-    Length int
-}
-
-func (trailEvent *AnimationTrailEvent) Update(animation *Animation) {
-    animation.Owner.SetTrail(trailEvent.Generate, trailEvent.Length)
-}
-
-type InputKey int
-const (
-    InputKeyNone InputKey = iota
-    InputKeyJump
-    InputKeyAttack1
-    InputKeyAttack2
-    InputKeyForward
-    InputKeyDown
-    InputKeyBack
-)
-
-func keyFromString(key string) InputKey {
-    switch strings.ToLower(key) {
-        case "key_attack1": return InputKeyAttack1
-        case "key_attack2": return InputKeyAttack2
-        case "key_jump": return InputKeyJump
-        case "key_forward": return InputKeyForward
-        case "key_down": return InputKeyDown
-        case "key_back": return InputKeyBack
-    }
-
-    return InputKeyNone
-}
-
-func parseAttack(definition *sexp.SExpr) AnimationAttack {
-    var x1, y1, x2, y2 int
-    var force, damage float64
-
-    x1, _ = sexp.ReadValue[int](definition, "x1", 0)
-    y1, _ = sexp.ReadValue[int](definition, "y1", 0)
-    x2, _ = sexp.ReadValue[int](definition, "x2", 0)
-    y2, _ = sexp.ReadValue[int](definition, "y2", 0)
-    force, _ = sexp.ReadValue[float64](definition, "force", 0)
-    damage, _ = sexp.ReadValue[float64](definition, "damage", 0)
-
-    return AnimationAttack{
-        X1: x1,
-        Y1: y1,
-        X2: x2,
-        Y2: y2,
-        Force: force,
-        Damage: damage,
-    }
-}
-
-func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
-    var events []AnimationEvent
-    var name string
-    var sequence string
-    var status string
-    var rangeValue int = 0
-    var keys []InputKey
-    var attacks []AnimationAttack
-    for _, child := range definition.Children {
-        switch strings.ToLower(child.Name) {
-            case "name":
-                name = strings.ToLower(child.GetValue(0))
-            case "basedir":
-                if len(child.Children) > 0 {
-                    baseDirectory = child.GetValue(0)
-                }
-            case "delay":
-                if len(child.Children) > 0 {
-                    value := child.GetValue(0)
-                    delay, err := strconv.ParseFloat(value, 32)
-                    if err != nil {
-                        log.Printf("Error parsing delay value '%v': %v", value, err)
-                    } else {
-                        events = append(events, &AnimationEventDelay{Delay: float32(delay)})
-                    }
-                }
-            case "offset":
-                if len(child.Children) >= 2 {
-                    xValue := child.GetValue(0)
-                    yValue := child.GetValue(1)
-                    x, errX := strconv.Atoi(xValue)
-                    y, errY := strconv.Atoi(yValue)
-                    if errX != nil || errY != nil {
-                        log.Printf("Error parsing offset values '%v', '%v': %v, %v", xValue, yValue, errX, errY)
-                    } else {
-                        events = append(events, &AnimationEventOffset{X: x, Y: y})
-                    }
-                }
-            case "attack":
-                attacks = append(attacks, parseAttack(child))
-            case "range":
-                v, ok := child.GetInt(0)
-                if ok {
-                    rangeValue = v
-                }
-            case "status":
-                status = child.GetValue(0)
-            case "sequence":
-                sequence = child.GetValue(0)
-            case "type":
-                // log.Printf("Handle 'type'")
-                // attacks will have an (attack) event, so we can just ignore the type for now
-            case "keys":
-                for _, key := range child.Children {
-                    input := keyFromString(key.Name)
-                    if input != InputKeyNone {
-                        keys = append(keys, input)
-                    } else {
-                        log.Printf("Unknown input key '%v'", key.Name)
-                    }
-                }
-            case "relative-offset":
-                if len(child.Children) >= 2 {
-                    xValue := child.GetValue(0)
-                    yValue := child.GetValue(1)
-                    x, errX := strconv.Atoi(xValue)
-                    y, errY := strconv.Atoi(yValue)
-                    if errX != nil || errY != nil {
-                        log.Printf("Error parsing relative offset values '%v', '%v': %v, %v", xValue, yValue, errX, errY)
-                    } else {
-                        events = append(events, &AnimationEventRelativeOffset{X: x, Y: y})
-                    }
-                }
-            case "frame":
-                frame := child.GetValue(0)
-                img, err := data.LoadPng(filepath.Join(baseDirectory, frame))
-                if err != nil {
-                    return nil, err
-                }
-                events = append(events, &AnimationEventFrame{
-                    Image: ebiten.NewImageFromImage(graphics.ConvertTransparency(img)),
-                })
-            case "move":
-                x := 0
-                y := 0
-                z := 0
-                for i := range len(child.Children) {
-                    value, _ := child.GetInt(i)
-                    switch i {
-                        case 0: x = value
-                        case 1: y = value
-                        case 2: z = value
-                    }
-                }
-                events = append(events, &AnimationMoveEvent{X: x, Y: y, Z: z})
-            case "face":
-                value := child.GetValue(0)
-                events = append(events, &AnimationFaceEvent{Facing: value})
-            case "trail":
-                generate, _ := sexp.ReadValue[int](child, "generate", 0)
-                length, _ := sexp.ReadValue[int](child, "length", 0)
-                // log.Printf("Trail generate=%v length=%v", generate, length)
-                events = append(events, &AnimationTrailEvent{Generate: generate, Length: length})
-            default:
-                log.Printf("Unknown animation event type '%v'", child.Name)
-        }
-    }
-
-    out := MakeAnimation(name, events, keys, sequence, status, attacks)
-    out.Range = rangeValue
-
-    return out, nil
-}
-
 type PaintownCharacter struct {
     Definition CharacterDefinition
+    animations map[string]*Animation
+    frames animationFrames
+}
+
+func (character *PaintownCharacter) animationTemplate(name string, raw *sexp.SExpr) (*Animation, error) {
+    if template := character.animations[name]; template != nil {
+        return template, nil
+    }
+    if character.animations == nil {
+        character.animations = make(map[string]*Animation)
+        character.frames = make(animationFrames)
+    }
+    base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
+    template, err := makeAnimationFromDefinition(base, raw, character.frames)
+    if err != nil {
+        return nil, err
+    }
+    character.animations[name] = template
+    return template, nil
 }
 
 func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, error) {
@@ -431,10 +110,13 @@ func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, err
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         name := animationName.GetValue(0)
-        base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
-        animation, err := MakeAnimationFromDefinition(base, animation)
+        animation, err := character.animationTemplate(name, animation)
         if err == nil {
-            out[name] = animation
+            if len(animation.Collision) == 0 {
+                animation.InitializeCollision()
+            }
+            out[name] = animation.Clone()
+            out[name].Reset()
         } else {
             log.Printf("Error loading animation '%v' for character '%v': %v", name, character.Definition.Name, err)
         }
@@ -451,8 +133,13 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         if animationName != nil && animationName.GetValue(0) == name {
-            base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
-            return MakeAnimationFromDefinition(base, animation)
+            template, err := character.animationTemplate(name, animation)
+            if err != nil {
+                return nil, err
+            }
+            out := template.Clone()
+            out.Reset()
+            return out, nil
         }
     }
 
@@ -460,16 +147,67 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
 }
 
 type CharacterDefinition struct {
+    Path string
     Name string
     SExpr *sexp.SExpr
+}
+
+func (definition *CharacterDefinition) GetHealth() float64 {
+    v, _ := sexp.ReadValue[float64](definition.SExpr, "health", 0)
+    return v
 }
 
 func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
     return definition.SExpr.FindAll(names...)
 }
 
+func (definition *CharacterDefinition) GetIcon() string {
+    icon := definition.SExpr.GetChild("icon")
+    if icon != nil {
+        return icon.GetValue(0)
+    }
+
+    return ""
+}
+
+func (definition *CharacterDefinition) GetHitSound() string {
+    hit := definition.SExpr.GetChild("hit-sound")
+    if hit != nil {
+        return hit.GetValue(0)
+    }
+
+    return ""
+}
+
+func (definition *CharacterDefinition) GetDieSound() string {
+    die := definition.SExpr.GetChild("die-sound")
+    if die != nil {
+        return die.GetValue(0)
+    }
+
+    return ""
+}
+
+func (definition *CharacterDefinition) GetName() string {
+    name := definition.SExpr.GetChild("name")
+    if name != nil {
+        return name.GetValue(0)
+    }
+
+    return ""
+}
+
+func (definition *CharacterDefinition) GetFallSound() string {
+    die := definition.SExpr.GetChild("landed")
+    if die != nil {
+        return die.GetValue(0)
+    }
+
+    return ""
+}
+
 // a definition file is a parentheses delimited set of values
-func loadDefinition(path string) (CharacterDefinition, error) {
+func LoadDefinition(path string) (CharacterDefinition, error) {
     raw, err := sexp.ReadSExpression(path)
     if err != nil {
         return CharacterDefinition{}, err
@@ -477,6 +215,7 @@ func loadDefinition(path string) (CharacterDefinition, error) {
 
     value := raw.GetChild("name")
     return CharacterDefinition{
+        Path: filepath.Clean(path),
         Name: value.GetValue(0),
         SExpr: raw,
     }, nil
@@ -486,7 +225,7 @@ func MakePaintownPlayer(name string) (*PaintownCharacter, error) {
     path := data.DataPath("players/" + name)
 
     definitionPath := filepath.Join(path, name + ".txt")
-    definition, err := loadDefinition(definitionPath)
+    definition, err := LoadDefinition(definitionPath)
     if err != nil {
         return nil, err
     }
@@ -508,26 +247,170 @@ type Trail struct {
     Time int
 }
 
+type Attacker interface {
+    GetAttackId() uint64
+}
+
+type Grabbed interface {
+    Throw(xforce float64, yforce float64)
+    Ungrab()
+    Attacker
+}
+
+type VisualEffectType int
+const (
+    VisualEffectNone VisualEffectType = iota
+    VisualEffectGlow
+    VisualEffectSuperGlow
+)
+
+type VisualEffect struct {
+    Effect VisualEffectType
+    Color color.RGBA
+    Time uint64
+}
+
 type PlayerState struct {
     X float64
     Y float64
     Z float64
     Dy float64
     Dx float64
+    Thrown bool
+    Exploded bool
+    explosion *goreBurst
     Animations map[string]*Animation
     // if doing some kind of move
     ShowAnimation *Animation
     Status PlayerStatus
     Facing Facing
 
-    NextAnimation *Animation
-    NextAnimationTime uint64
+    Icon *ebiten.Image
+
+    Grabbed Grabbed
+    pendingProjectiles []*Projectile
+
+    // map of active animations to the time they were activated, used to determine if an attack should be invoked
+    // at the end of the current animation
+    ActivatedAnimations map[*Animation]uint64
+
+    AttackId uint64
+
+    HitSound string
+    FallSound string
+
+    VisualEffect VisualEffect
+
+    Health float64
+    MaxHealth float64
+    Lives int
+    spawnProtection int
+    Pain float64
+    PainThreshold float64
+
+    Attackers map[Attacker]uint64
+
+    Name string
 
     TrailActive bool
     TrailGenerate int
     TrailLength int
 
     Trails []*Trail
+}
+
+func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, error) {
+    animations, err := player.LoadAnimations()
+    if err != nil {
+        return nil, err
+    }
+
+    icon := player.Definition.GetIcon()
+
+    var iconImage *ebiten.Image
+    if icon != "" {
+        if player.frames == nil {
+            player.frames = make(animationFrames)
+        }
+        frame, err := player.frames.load(icon)
+        if err == nil {
+            iconImage = frame.Image
+        } else {
+            log.Printf("Unable to load icon %v: %v", icon, err)
+        }
+    }
+
+    name := player.Definition.GetName()
+
+    playerState := PlayerState{
+        X: 60,
+        Y: 0,
+        Z: float64(level.ZMinimum + level.ZMaximum) / 2,
+        Status: PlayerIdle,
+        Animations: animations,
+        HitSound: player.Definition.GetHitSound(),
+        FallSound: player.Definition.GetFallSound(),
+        // TODO: make configurable in the definition file
+        PainThreshold: 4,
+        Icon: iconImage,
+        Health: max(1, player.Definition.GetHealth()),
+        MaxHealth: max(1, player.Definition.GetHealth()),
+        Lives: StartingLives(),
+        Attackers: make(map[Attacker]uint64),
+        Name: name,
+        ActivatedAnimations: make(map[*Animation]uint64),
+    }
+
+    for _, animation := range playerState.Animations {
+        animation.Owner = &playerState
+    }
+
+    return &playerState, nil
+}
+
+// return a rectangle representing the attack hitbox in world coordinates, taking into account the player's position, facing direction, and current animation frame
+func (playerState *PlayerState) GetAttackBox() image.Rectangle {
+    var geom ebiten.GeoM
+
+    if playerState.Facing == FacingLeft {
+        geom.Scale(-1, 1)
+    }
+
+    geom.Translate(playerState.X, playerState.Z - playerState.Y)
+
+    animation := playerState.CurrentAnimation()
+
+    if animation == nil || animation.CurrentFrame() == nil {
+        return image.Rectangle{}
+    }
+
+    bounds := animation.CurrentFrame().Bounds()
+    if playerState.Facing == FacingLeft {
+        geom.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+    } else {
+        geom.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+    }
+
+    x1, y1 := geom.Apply(float64(animation.Attack.X1), float64(animation.Attack.Y1))
+    x2, y2 := geom.Apply(float64(animation.Attack.X2), float64(animation.Attack.Y2))
+
+    return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
+}
+
+func (playerState *PlayerState) ResetAttackers() {
+    playerState.Attackers = make(map[Attacker]uint64)
+}
+
+func (playerState *PlayerState) GetLives() int {
+    return max(0, playerState.Lives)
+}
+
+func (playerState *PlayerState) GetIcon() *ebiten.Image {
+    return playerState.Icon
+}
+
+func (playerState *PlayerState) GetHealthPercent() float64 {
+    return playerState.Health / playerState.MaxHealth
 }
 
 func (playerState *PlayerState) GetX() float64 {
@@ -562,6 +445,44 @@ func (playerState *PlayerState) SetTrail(generate int, length int) {
     playerState.TrailLength = length
 }
 
+func (playerState *PlayerState) AddHealth(health float64) {
+    if health < 0 && Invincible() { return }
+    playerState.Health = min(playerState.MaxHealth, playerState.Health + health)
+    playerState.SetGlowEffect(color.RGBA{R: 255, G: 255, A: 255}, 150)
+}
+
+func (playerState *PlayerState) AddPower(power float64, length int) {
+    // TODO: add power modifier
+}
+
+func (playerState *PlayerState) SetGlowEffect(color color.RGBA, time uint64) {
+    playerState.VisualEffect = VisualEffect{
+        Effect: VisualEffectGlow,
+        Color: color,
+        Time: time,
+    }
+}
+
+func (playerState *PlayerState) ReleaseGrab() {
+    if playerState.Status == PlayerStateGrab {
+        playerState.Status = PlayerIdle
+        playerState.ShowAnimation = nil
+    }
+    playerState.Grabbed = nil
+}
+
+func (playerState *PlayerState) DoGrab(grabbed Grabbed) {
+    grab, ok := playerState.Animations["grab"]
+    if ok {
+        playerState.Status = PlayerStateGrab
+        playerState.ShowAnimation = grab
+        grab.Reset()
+        grab.Update(false, &dummySystem{})
+        playerState.Grabbed = grabbed
+        playerState.ActivatedAnimations = make(map[*Animation]uint64)
+    }
+}
+
 func (playerState *PlayerState) GetAnimation(name string) *Animation {
     animation, ok := playerState.Animations[name]
     if ok {
@@ -594,6 +515,110 @@ func (playerState *PlayerState) UpdateTrails(counter uint64) {
     playerState.Trails = trails
 }
 
+func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
+    if Invincible() { return false }
+    lastAttack, has := playerState.Attackers[hitter]
+
+    if has && attack <= lastAttack {
+        return false
+    }
+
+    return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling && playerState.Status != PlayerStateDead && playerState.Status != PlayerStateDropping && playerState.spawnProtection == 0
+}
+
+func (playerState *PlayerState) GetAttackId() uint64 { return playerState.AttackId }
+
+func (playerState *PlayerState) NextAttackId() {
+    playerState.AttackId += 1
+}
+
+func (playerState *PlayerState) IgnoreHit(hitter Attacker) {
+    playerState.Attackers[hitter] = hitter.GetAttackId()
+}
+
+func (playerState *PlayerState) Pickup(item *Item) {
+    playerState.Status = PlayerGet
+    get, ok := playerState.Animations["get"]
+    if ok {
+        playerState.ShowAnimation = get
+        get.Reset()
+    }
+
+    item.ApplyStimulation(playerState)
+}
+
+func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
+    if Invincible() || playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping || playerState.spawnProtection > 0 {
+        return
+    }
+    if playerState.Grabbed != nil {
+        playerState.Grabbed.Ungrab()
+    }
+
+    playerState.Grabbed = nil
+
+    playerState.Attackers[hitter] = hitter.GetAttackId()
+    playerState.Health -= damage
+    playerState.Pain += damage
+    if explosiveDamage(playerState.Health, playerState.Pain, playerState.PainThreshold) {
+        playerState.explode(force)
+        return
+    }
+
+    playerState.Status = PlayerStatePain
+    painAnimation, ok := playerState.Animations["pain"]
+    if ok {
+        playerState.ShowAnimation = painAnimation
+        playerState.ShowAnimation.Reset()
+    }
+
+    playerState.ActivatedAnimations = make(map[*Animation]uint64)
+    if playerState.Pain >= playerState.PainThreshold || playerState.Health <= 0 {
+        playerState.DoFall(force, 5)
+    }
+}
+
+func (playerState *PlayerState) DoFall(xforce float64, yforce float64) {
+    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping {
+        return
+    }
+    if playerState.Grabbed != nil {
+        playerState.Grabbed.Ungrab()
+        playerState.Grabbed = nil
+    }
+    playerState.Status = PlayerStateFalling
+    playerState.Thrown = false
+    playerState.Pain = 0
+    playerState.Dx = xforce
+    playerState.Dy = yforce
+    playerState.Y = max(playerState.Y, 0.5)
+    playerState.ActivatedAnimations = make(map[*Animation]uint64)
+    if fall := playerState.Animations["fall"]; fall != nil {
+        playerState.ShowAnimation = fall
+        fall.Reset()
+    }
+}
+
+func (playerState *PlayerState) Throw(xforce float64, yforce float64) {
+    if playerState.Status == PlayerStateFalling || playerState.Status == PlayerStateFallen || playerState.Status == PlayerStateDead || playerState.Status == PlayerStateDropping {
+        return
+    }
+    playerState.DoFall(xforce, yforce)
+    playerState.Thrown = true
+}
+
+func (playerState *PlayerState) HitBy(attackBox image.Rectangle) bool {
+    collision := playerState.CurrentAnimation().CurrentCollision()
+    if collision == nil {
+        return false
+    }
+
+    x := playerState.X + float64(playerState.CurrentAnimation().OffsetX)
+    y := playerState.Z - playerState.Y + float64(playerState.CurrentAnimation().OffsetY)
+
+    return collision.Intersect(x, y, attackBox, playerState.Facing == FacingLeft)
+}
+
 func (playerState *PlayerState) CurrentAnimation() *Animation {
     if playerState.ShowAnimation != nil {
         return playerState.ShowAnimation
@@ -620,22 +645,90 @@ func (playerState *PlayerState) CurrentAnimation() *Animation {
     return nil
 }
 
+func (playerState *PlayerState) GetName() string {
+    return playerState.Name
+}
+
 // FIXME: replace string with an enum
 func (playerState *PlayerState) GetStatus() string {
     switch playerState.Status {
         case PlayerIdle: return "ground"
         case PlayerMove: return "ground"
         case PlayerJump: return "jump"
+        case PlayerStateGrab: return "grab"
     }
 
     return "ground"
 }
 
-func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
+func (playerState *PlayerState) Update(input InputState, level *Level, system System, counter uint64) {
     doJump := false
     move := false
 
-    var nextAnimation *Animation
+    if playerState.spawnProtection > 0 {
+        playerState.spawnProtection--
+    }
+    if playerState.Status == PlayerStateDropping {
+        playerState.Dy -= 0.2
+        playerState.Y += playerState.Dy
+        if playerState.Y <= 0 {
+            playerState.Y, playerState.Dx, playerState.Dy = 0, 0, 0
+            playerState.Status = PlayerIdle
+            playerState.ShowAnimation = nil
+            playerState.spawnProtection = max(1, arcadeRespawnDelay()/2)
+            if idle := playerState.Animations["idle"]; idle != nil {
+                idle.Frame = idle.FirstFrame()
+            }
+        }
+        return
+    }
+
+    // Hurt and knockdown animations cannot be interrupted by buffered moves.
+    if playerState.Status == PlayerStateDead {
+        return
+    }
+    if playerState.Status == PlayerStateFalling {
+        playerState.X += playerState.Dx
+        playerState.Y += playerState.Dy
+        playerState.Dy -= 0.2
+        if playerState.Y <= 0 {
+            playerState.Y = 0
+            if playerState.Thrown {
+                if !Invincible() { playerState.Health = max(0, playerState.Health - thrownLandingDamage) }
+                playerState.Thrown = false
+            }
+            if playerState.Health <= 0 {
+                playerState.Status = PlayerStateDead
+                playerState.Dx, playerState.Dy = 0, 0
+                return
+            }
+            playerState.Status = PlayerStateFallen
+            if rise := playerState.Animations["rise"]; rise != nil {
+                playerState.ShowAnimation = rise
+                rise.Reset()
+            }
+        }
+        if playerState.ShowAnimation != nil {
+            playerState.ShowAnimation.Update(false, system)
+        }
+        return
+    }
+    if playerState.Status == PlayerStatePain || playerState.Status == PlayerStateFallen {
+        if playerState.ShowAnimation == nil || playerState.ShowAnimation.Update(false, system) {
+            playerState.Status = PlayerIdle
+            playerState.ShowAnimation = nil
+        }
+        return
+    }
+
+    if playerState.VisualEffect.Time > 0 {
+        playerState.VisualEffect.Time -= 1
+        if playerState.VisualEffect.Time == 0 {
+            playerState.VisualEffect.Effect = VisualEffectNone
+        }
+    }
+
+    playerState.Pain = max(0, playerState.Pain - 0.1)
 
     playerState.UpdateTrails(counter)
 
@@ -646,33 +739,9 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
         }
         */
 
-        var possibleNextAnimations []*Animation
-
         for _, animation := range playerState.Animations {
             if animation.Name == "idle" || animation.Name == "walk" || animation.Name == "grab" || animation.Name == "get" || animation.Name == "jump" {
                 continue
-            }
-
-            inSequence := false
-
-            if animation.Sequence != "" {
-                ok := true
-
-                /*
-                if playerState.ShowAnimation != nil {
-                    log.Printf("Check animation %v with sequence %v against %v", animation.Name, animation.Sequence, playerState.ShowAnimation.Name)
-                }
-                */
-
-                if playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name {
-                    // log.Printf("Animation %v is ok", animation.Name)
-                    inSequence = true
-                } else {
-                    ok = false
-                }
-                if !ok {
-                    continue
-                }
             }
 
             requiredStatus := "ground"
@@ -699,7 +768,8 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             pressedAll := len(animation.Keys) > 0
             for i, key := range animation.Keys {
 
-                if counter - animation.KeyPresses[i] < uint64(len(animation.Keys) - i) * 20 {
+                if counter - animation.KeyPresses[i] < uint64(len(animation.Keys) - 1 - i) * 20 {
+                    // log.Printf("Key %v for animation %v was recently pressed at %v, counter: %v", key, animation.Name, animation.KeyPresses[i], counter)
                 } else {
                     switch key {
                         case InputKeyJump:
@@ -728,61 +798,122 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                             }
                     }
 
-                    pressedAll = false
-                    break
+                    // if this is the last key in the sequence then consider it the sequence as activated
+                    if i == len(animation.Keys) - 1 && animation.KeyPresses[i] == counter {
+                    } else {
+                        pressedAll = false
+                        break
+                    }
                 }
             }
 
             if pressedAll {
-                // prefer animation with a sequence
-                if nextAnimation == nil || inSequence {
-                    // log.Printf("Possible next animation: '%v' presses: %v", animation.Name, animation.KeyPresses)
-                    possibleNextAnimations = append(possibleNextAnimations, animation)
-                    // log.Printf("Set next animation to '%v' at %v", animation.Name, counter)
-                    // nextAnimation = animation
-                    // playerState.NextAnimationTime = counter
-                }
-                // break
+                playerState.ActivatedAnimations[animation] = counter
             }
         }
+
+
+
+        /*
+        for animation, activationTime := range playerState.ActivatedAnimations {
+            log.Printf("Activated animation '%v' at %v, time since activation: %v", animation.Name, activationTime, counter - activationTime)
+        }
+        */
 
         // prioritize moves that are in sequence with the current animation, and
         // have the longest set of keys to activate them
-        if len(possibleNextAnimations) > 0 {
-            isInSequence := func(animation *Animation) bool {
-                return playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name
+        chooseNextAnimation := func() *Animation {
+            possibleNextAnimations := make([]*Animation, 0, len(playerState.ActivatedAnimations))
+            for animation, activationTime := range playerState.ActivatedAnimations {
+                requiredStatus := animation.Status
+                if requiredStatus == "" {
+                    requiredStatus = "ground"
+                }
+                if counter - activationTime < 40 && requiredStatus == playerState.GetStatus() {
+                    possibleNextAnimations = append(possibleNextAnimations, animation)
+                }
             }
 
-            slices.SortFunc(possibleNextAnimations, func(a, b *Animation) int {
-                scoreA := 0
-                scoreB := 0
-
-                if isInSequence(a) {
-                    scoreA += 1000
+            if len(possibleNextAnimations) > 0 {
+                isInSequence := func(animation *Animation) bool {
+                    return playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name
                 }
 
-                if isInSequence(b) {
-                    scoreB += 1000
+                slices.SortFunc(possibleNextAnimations, func(a, b *Animation) int {
+                    scoreA := 0
+                    scoreB := 0
+
+                    if a.Sequence != "" {
+                        if isInSequence(a) {
+                            scoreA += 1000
+                        } else {
+                            scoreA -= 1000
+                        }
+                    }
+
+                    if b.Sequence != "" {
+                        if isInSequence(b) {
+                            scoreB += 1000
+                        } else {
+                            scoreB -= 1000
+                        }
+                    }
+
+                    scoreA += len(a.Keys)
+                    scoreB += len(b.Keys)
+
+                    return cmp.Compare(scoreA, scoreB)
+                })
+
+                /*
+                for _, animation := range possibleNextAnimations {
+                    log.Printf("Possible next animation: %v", animation.Name)
                 }
+                */
 
-                scoreA += len(a.Keys)
-                scoreB += len(b.Keys)
-
-                return cmp.Compare(scoreA, scoreB)
-            })
-
-            /*
-            for _, animation := range possibleNextAnimations {
-                log.Printf("Possible next animation: %v", animation.Name)
+                // last element should be the one with the highest score
+                return possibleNextAnimations[len(possibleNextAnimations) - 1]
             }
-            */
 
-            // last element should be the one with the highest score
-            nextAnimation = possibleNextAnimations[len(possibleNextAnimations) - 1]
-            playerState.NextAnimationTime = counter
-
-            // log.Printf("Choose next animation: %v", nextAnimation.Name)
+            return nil
         }
+
+    if playerState.Status == PlayerStateGrab {
+        grab := playerState.Animations["grab"]
+        // Hold the initial grab pose. Only grab attacks advance; when they
+        // finish, return to the static pose instead of looping the grab.
+        if playerState.ShowAnimation != grab && playerState.ShowAnimation.Update(false, system) {
+            if grab != nil {
+                playerState.ShowAnimation = grab
+                grab.Reset()
+                grab.Update(false, system)
+            }
+        }
+
+        nextAnimation := chooseNextAnimation()
+
+        if nextAnimation != nil && playerState.ShowAnimation == playerState.Animations["grab"] {
+            playerState.AttackId += 1
+            playerState.ShowAnimation = nextAnimation
+            nextAnimation.Reset()
+            playerState.TrailActive = false
+            playerState.ActivatedAnimations = make(map[*Animation]uint64)
+
+            if nextAnimation.Name == "throw" && playerState.Grabbed != nil {
+                playerState.Status = PlayerIdle
+                force := -3.5
+                if playerState.Facing == FacingLeft {
+                    force = -force
+                }
+                grabbed := playerState.Grabbed
+                grabbed.Throw(force, 5)
+                playerState.IgnoreHit(grabbed)
+                playerState.Grabbed = nil
+            }
+        }
+
+        return
+    }
 
         if playerState.Status != PlayerJump && playerState.ShowAnimation == nil {
             if input.HeldRight {
@@ -829,16 +960,19 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     } else if playerState.Status != PlayerJump {
         if move {
             playerState.Status = PlayerMove
-        } else {
+        } else if playerState.Status != PlayerStateGrab {
             playerState.Status = PlayerIdle
         }
     }
 
     if playerState.Status == PlayerMove || playerState.Status == PlayerIdle || playerState.Status == PlayerJump {
+        nextAnimation := chooseNextAnimation()
         if nextAnimation != nil && playerState.ShowAnimation == nil {
+            playerState.AttackId += 1
             playerState.ShowAnimation = nextAnimation
             nextAnimation.Reset()
             playerState.TrailActive = false
+            playerState.ActivatedAnimations = make(map[*Animation]uint64)
         }
     }
 
@@ -858,21 +992,26 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     animation := playerState.CurrentAnimation()
 
     if animation != nil {
-        if animation.Update() {
+        if animation.Update(true, system) {
+            // if we get here then the current animation has completed
+
             if playerState.Status == PlayerJump {
                 playerState.ShowAnimation = nil
             } else if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
                 playerState.Status = PlayerIdle
                 if playerState.ShowAnimation != nil {
+                    nextAnimation := chooseNextAnimation()
+
                     playerState.ShowAnimation = nil
 
-                    if counter - playerState.NextAnimationTime < 180 {
+                    if nextAnimation != nil {
+                        playerState.ActivatedAnimations = make(map[*Animation]uint64)
+                        playerState.AttackId += 1
                         playerState.ShowAnimation = nextAnimation
-                        playerState.TrailActive = true
-                        playerState.NextAnimation = nil
+                        playerState.TrailActive = false
                         if playerState.ShowAnimation != nil {
                             playerState.ShowAnimation.Reset()
-                            playerState.ShowAnimation.Update()
+                            playerState.ShowAnimation.Update(true, system)
                         }
                     }
                 }

@@ -17,6 +17,10 @@ func DataPath(path string) string {
     return "paintown-data/" + path
 }
 
+func LoadFile(path string) (*os.File, error) {
+    return os.Open(DataPath(path))
+}
+
 func LoadPng(path string) (image.Image, error) {
     file, err := os.Open(DataPath(path))
     if err != nil {
