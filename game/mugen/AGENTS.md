@@ -1,276 +1,62 @@
-# MUGEN Go port — active instructions
+# MUGEN implementation instructions
 
-## Authorization and scope
+## User-directed workflow — 2026-11-06
 
-The user selected **complete remaining effects/controllers (item 3)** on
-2026-11-04 and repeatedly authorized continuation. Continue autonomously through
-`docs/ITEM-3-PLAN.md` with documented local checkpoints and commits. Do not stop
-at a checkpoint. Stop after item 3 or a concrete issue needing user input. Item 4
-(modes, teams, AI, BGM, assets, remaining triggers and final renderer/font/platform
-conformance) remains unallocated.
+The user replaced exhaustive native matrices and repeated small-test batteries
+with implementation-led progress and connected state-machine scenarios. These
+instructions supersede old research plans and checkpoint test requirements.
 
-Author changes only under `game/mugen/`. No pushes, binaries, subagents or goals.
-Preserve unrelated root work and incoming upstream font/module changes. Audit
-staged paths and UTF-8/no-NUL content before every source/text-only commit. New
-files may need explicit `git add -f` because of a historical ignore rule; never
-force-add a directory or temp assets. `mugen.sh` is a tracked Bash launcher.
-Use the scoped readonly mugen.mod/mugen.sum overlay; verify
-`sha256sum -c game/mugen/temp/upstream-post-merge-module.sha256`.
+- Use docs/PROGRESS.md as the SINGLE project completion ledger: the full project
+  breakdown, checkmarks, partial/missing features and completed scenario coverage.
+- Implement substantial, coherent mechanics batches from unchecked items. Use
+  existing code, evidence and the supplied beta documentation. Do not create
+  native parameter matrices, new per-piece documents or asset-copy experiments.
+- Tests cover segments spanning entry/order/transitions, combat/recovery,
+  helper/binding/retirement, effects/pause, or complete match flow. Consolidate
+  existing scenarios through tests/segments.py. Do not add a test per parameter.
+- Completed segments stay checked and out of default runs. Reopen only when
+  their covered production source changes, a regression identifies that segment,
+  or the user explicitly requests it. Run affected segments/end-state acceptance
+  after a coherent batch, never broad suites after every edit.
+- Update the small feature catalog after implementing its actual consumer and
+  refresh the single progress page with mugen.sh --coverage --write. Routes alone
+  do not establish complete semantics. Mark the stated scenario complete after
+  it passes; do not call known partial features complete.
+- Keep handoffs and plans short. Historical detailed research is optional
+  background and Git history, not a queue of mandatory experiments.
+- Do not add generated testing data, captures, PCM, copied assets, binaries or
+  new fixture matrices to Git. Reuse the supplied assets and shared build cache.
+  Segment scratch output is automatically deleted on success AND failure; keep
+  only a concise failure explanation or explicit user-requested artifact.
 
-Target the supplied Elecbyte **M.U.G.E.N 1.1 beta1** distribution and its docs in
-`temp/mugen-1.1b1/`. The incomplete C++ `src/mugen/` is prior art, not authority.
+## Scope and execution
 
-## Immediate state — M4dr validated; local checkpoint then phase controls
+Continue authorized remaining effects/controllers (item3) autonomously with local
+source/text checkpoints. Author only game/mugen/. No pushes, binaries, subagents
+or goals. Preserve unrelated upstream/root work. Broader modes/teams/AI/BGM/assets
+and final platform coverage remain item4; see the project ledger for allocation.
 
-M4dq native evidence committedbefd77438208ee9d8dcc094b9c134752ed2355f8. M4dr
-ready for source/text commit. Production ONLY system/hud.go and newhud_message.go:
-separate pending simulation start from real-frame visible animation/expiry;
-static clocks separate. New system/testmain_test.go publicGPUloop and
-hud_timing_test.go production Engine/FightState/viewport replay. All23native
-programs/34runs original sources and HUDrecorder remain IMMUTABLE.
+Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
+Prefer rg/rg --files --no-ignore; historical ignores hide source. Do not recurse
+into temp for source discovery. Temporary Go helpers belong under temp/_tmp/.
 
-Final68376 ENTIREawaited1; SEPARATE26345frozen/host-client guardPASS. FULLscoped
---check -json -race -p1 -count1 -timeout50m records5292PASS/32FAIL test/subtest
-results,36packages(23pass/2fail/11no-tests). Only oldnegativecamera+parent2 and
-29new strictHUD runs+parent30 fail. NOT all-green. Nootherstate/race/flow failures.
-All34HUD replays/460frames:357blank prestart/expired/disabled EXACT(77.6% bounded),
-95visible sprite max1RGB failures,8textplacement failures(1689pix/max236).
-ALL460presence andALL95spritebounds match; textboundsnative601,198,680,226 vs
-Go600,197,679,225. Causesunassigned. All103visibleframes staystrictnon-exact.
+For this host use python3 game/mugen/temp/round-task-env.py with its authorized
+elevated prefix for Xvfb:97/Pulse/Go. Native/app/display-dependent runs stay serial;
+await the entire process and confirm owned clients exited before edits/new runs.
+Never expose cookies or unrelated process arguments or reset shared servers.
 
-All23actualapps SAMEbinaryf591b1d37debb2d8ef727fffbc24e8de6894c84210fb320dfe7042e1174162e2.
-FiveheldHUDworlds nowEXACT; mixedshadow100now468pix/max1; all7originalstartupworlds
-stillEXACT:12/13targetedworlds. NineolderboundedrendercontrolsPASS. Stockwin/rematch/
-win82balancedkeys,1970452stereo44.1kHzPCMframes SHA52e42ae1e6057bfdd905e8d06e1243018701fc23828454757a062bd3f00084ec.
-ALL460pairs represented12VIEWED thumbnailsheets +4VIEWED byte-identical worldpair
-classes; ALL22actualpairs8sheets+stock3VIEWED. AllRGB/geometryrecomputed.
+The user authorized temp cleanup. Nine generated run directories were removed,
+recovering126.58 GiB; native originals/captures/prepared copies in those directories
+are intentionally no longer retained. This supersedes earlier raw-evidence
+retention instructions. Canonical temp/mugen-1.1b1, build tools/cache and old
+tracked fixtures remain. Never regenerate removed matrices just to pass legacy
+pixel diagnostics. --check-all is explicit historical diagnostics only and some
+artifact-dependent tests now require unavailable captures.
 
-48realgates45zero/3exit1(full,shadow,staleinventory). Exactoldinventory generator/
-report archivedGitbefd+private snapshots AFTERguard. Addedhud_message source and
-boundeddescriptions; currentwrite/check0, classifications77/89typed86.5%,12fallback,
-0stub/9partial/20bounded/60route-only unchanged. Nooverallcompatpercentage.
-Passiveaudit14150 ENTIREawaited0:26345frozenpaths/4728nativepaths/34exactconfigs/
-528nativecaps/460GoHUDpairs/943appcanonicalassets/1118seededresourcecopies/25appcaps/
-input/PCM/sourcechecksPASS. All178runtime/internal non-testGo and186scopednon-testGo
-(includes8tools) unchanged sincefinal. Firstauditorscopeassert186infiltered178map
-failed; originalretained,r2verifiesbothsets. m4dr-final-evidence-audit.json,
-final-visual-review.json,final-metadata.json. No runtimeactive.
+## Checkpoints
 
-Baseline13648setup1:absolutecharacterDEFneeded, oldtestsource archived; separate
-26343guardPASS. Corrected19257baseline1+separate26343guard,ALL42pairs3sheetsVIEWED,
-0/42exact. Revision7534entire1+separate26344guard,ALL68pairs5sheetsVIEWED48exact,
-19max1/1font. No production editsbetweenrevision/final. No sampler/region/golden/
-tolerancechanges; all priorraster/audio/constraintobligationsunwaived. LatestFULL
-is nowM4dr5292pass/32fail/36pkg, not historicalM4dl. DoNOTrepeatfulljustforcommit.
-
-CompleteexactscopedUTF8/noNUL/nobinary/indexauditandlocalcheckpoint, exclude355
-oldraw/failedcomparator paths BYoriginal m4dp-staged-inputs.held_unpromoted hashes
-(307visible+48ignored). Nativefightdefs retaincanonicalwhitespace; don'tedit.
-Then CONTINUEALLitem3 autonomously NOapprovalpause: HUD-PHASE-PLAN.md specifies
-Introholdthrough399/release400 +seek399 positiveRound/Fighttime/ctrl0, first2
-statepass, Winreadiness/phase4/time/life/KOoverlap andannouncementaudio. Current
-RoundCallphaseignoresround.time; ctrl0bypassesFightCall/message registration; KO
-DrawPreOver-only/legacyWintext notclosed. Theseareunmeasuredgaps: nativeBEFOREcode.
-Thenfinite/overlapcolour,clipboard/residualschemas/aliases/flags/oldstrictissues.
-Item4fonts/BGM/modes/assetsunallocated; finishindependent3beforeconcreteallocation.
-
-## Previous immediate state — M4dq native HUD contract
-
-## Immediate state — M4dq native HUD contract ready for local checkpoint
-
-M4dp committed43145992f07bc3df19638e598ac21e83512c0208. M4dq has NOproductionGo
-changes:23 stable native recipes/34runs/528images/6336values/5736balancedkeyevents,
-ALL34sheets +numericrowsVIEWED; tests/testdata/reference/hudduration*,hudtail*,
-hudstart*,hudtiming ledgers promotedONCE. tests/hud_frame_reference_probe.py now
-native-used IMMUTABLE. Whole independent intent checks0/separateguards566/596/575.
-Native58545,49723,53115,50616 ENTIREawaited0; separate original/prepared/host guards
-2090/1788/345/466PASS. No runtime active. HUD-TIMING.md documentsrules/corrections.
-
-KOtime0starts411 forover.hittime0/3/10/20:doNOTtieHUDstarttodamagegrace. Sprite/font
-omittedlifetime1,0hidden,positiveexactcount,-1persistent; finiteAIRdefaultfullfirst
-pass4orLoopStart2+3=5;explicit7loops;final-1infinite. KOtime3sprite2visible414/415.
-Pause/Super412freezeCNS412through420 but animation413/414/expiry415 advanceactual.
-Slow60:KOstart444ateleventhpostKO SIMpass,thenanimation444/445first446/447second,
-448expiredEVENonCNSskips. Initialshortwindows/inadequatepausecontext preserved;
-newlongercontrolsfillgaps. No production implementation/Go compatibility claimyet.
-
-After scopedUTF8/nobinary audit/local source-textcheckpoint CONTINUEALLitem3:
-newHUD strictGo baseline beforecode; implementseparatependingSIMstartgate versus
-actual-framevisiblelife/animation,staticbarsseparate. Worldregion160,140,1120,640
-selectednativeonlybeforeGo. Native maps pinintentmapJSON; verifyauthortrackedGo
-againstGit43145992,notlatermutableGo; realnativepathsimmutable. Needownpositive
-Round/Fight/Win delays/overlap beforewholeHUDclaim; retainoldstrict/raster/audio.
-Thenfinitecolour/clipboard/residualschemas/flags. NOapprovalpause,noitem4allocation.
-
-## Previous immediate state — M4dp validated
-
-
-M4dp source/text checkpoint is ready to commit, or already at HEAD. Previouslocal
-checkpoint e8de0b8e415eb7cf8625b41644eae8d589ea7596(M4do). Newproduction ONLY
-character/actor_order.go rootdrawStartXY inRoundState0/1(currentanimation),helpers/
-projectilesactual,body+shadow shared; match/match.go firstRoundState2 resetsactual
-BOTHrootX/Y,retainsanimation/time. No genericcache/phasefreeze or inferredVelocity/
-facing/Zreset. INITIAL-PLACEMENT.md hasfullnativeproof, corrections andlimits.
-
-Final16701 ENTIREawaited1; SEPARATE21,476frozen/client guardPASS. ALL40appsrun same
-binary8b7cb6ae1a7032d7f229cfee297ca4419f1c091eacecf3175ac4781eb5647d5b. ALL39pairs/
-13sheets+stock3 VIEWED. All7originalstartupworlds EXACT3,561,600RGBpixels. New16/23
-worlds EXACT7,680,000pixels/69.6%;7strictfailuresUNWAIVED(6HUD incl1mixedshadow,
-1pure464pix/max1shadow). All23newnativeprograms/276valuesPASS. Combinednative
-481/482cases(506pass/2failincloldnegativecamera parent), additional16matchresults
-PASS. Core890PASS atsame185productionGo bytes. Legacy9PASS;stockwin/rematch/win
-82balancedkeys +1,928,719stereo44.1kHzPCMframesSHA9fe4a1286f32abe773db6987a95ea7e83583c2dbf2b809a9f8bba40471129df4.
-82gates73zero/9exit1(native,7newworlds,inventory). Oldexactinventory generator/report
-archivedGit e8 +privatecopies AFTERguard; updateddescriptions/currentcheck0. Source
-routing77/89typed86.5%,12fallback/0stub/9partial/20bounded/60route-only unchanged,
-not overall compatibility. LatestFULLhistoricalM4dl5028/36; no newfullclaim.
-
-Passiveaudit21612 ENTIREawaited0:710nativeoriginalpath/2553preparedpath checks,
-943native/1640Goappbinaryresourcecopies,23exactconfigs,42appcaptures/sharedbinary,
-seeds/recomputedRGB/185productionGo/ownedkeys/PCM/sourceversionsPASS. Native author
-contexts verifyrecordedGit e8 or originalprivateinputpaths, notmutableGo. Final
-m4dp-final-evidence-audit.json,final-visual-review.json,final-metadata.json. No runtime.
-
-ALLnative studies awaited0+SEPARATEguardsPASS andallrows/imagesreviewedbeforecode:
-31687/138(5activecontrols55frames660values),72606/158(10phase),66707/158(10context),
-76586/126(2boundary),15158/122(1Y). 23stableprogramspromotedONCE aspreintropose10,
-posecontext10,poseboundary2,posevertical1;123publicsource/evidencepaths+4native/4config
-ledgers. Fiveactivecontrols remainPRIVATE, disprovegenericPausecache/schedulerfix.
-Native-usednew frame_seek_reference_probe.py IMMUTABLE. Alloldrecorders/inputs/
-resources/configs/caps/goldens unchanged. Firstderivedinitial_placement_render_probe
-failedobsoleteconfigschema; preserveoriginal/excludecommit. Successful separately
-named initial_placement_compare.py reusedbaselinecaptures withstrictprepared/final
-hashes. Baseline98119/guard21475 andpassive27503/guard21508 retained1; all6pairs
-reviewed. Revision83510/guard21476 retained1;all6pairsviewed/core890+new24resultspass.
-No productionedits afterrevision/final. Originalsamplers/regions/tolerances unchanged.
-
-Complete explicitstagedUTF8/noNUL/exact-index/scopeaudit andLOCALsource/textcommit;
-excludeold354raw +failednewderivedcomparator. Neverbinary/temp/outsidepaths orpush.
-Then CONTINUEALLitem3 autonomously, NOapprovalpause: HUD-LIFETIME-PLAN.md specifies
-new nativeKO400/seek399 +fullfight.defsidecars/positiveSprites-fonts/defaults/delays/
-loops/infinite/Pause/SuperPause/KOslow controls BEFOREHUDedits. Nativeprepareconfig
-motif verified data/mugen1/system.def; fightloader in fight/definition.go. Existing
-HUDUpdate clocksduringCNSPause butDrawignoresdisplaytime/startdelays; skipsKOslow
-viaSimulationSkipped. Measurebeforechanging; staticbarTTL andtimedRound separate.
-Nextfinite/overlapcolour,clipboard/debugdisplay,residualschemas/aliases/flags and
-oldstrictobligations. Item4 BGM/modes/assets/fonts unallocated; finishindependent3
-beforeconcretedependencyquestion. Userreclaimed144GiB, no currentdiskblocker.
-
-## M4do camera publication validated
-
-M4do source/text checkpoint is ready to commit, or already committed at HEAD.
-Previous checkpoint a868f654bcf14def5b64e608806e1d14af1df742 is M4dn.
-Do not rerun completed verification merely to make a checkpoint.
-
-Cold-start X publication now matches all24 camera fields in4 independent boot/
-first-two-pass programs.94/96 total fields match; negative80 P2 tick1 screenpos
-360vs305 andPos200vs145 stay strict. No constraint-phase fix inferred. All166 dust,
-138 Game,53pool,98oldercamera/boundary/width cases PASS: combined458/459 cases,
-482pass/2fail test/subtest results (one new case plusparent). Core890PASS.
-
-Final44675 ENTIRE completed/awaited1; SEPARATE21,349 frozen/client guardPASS.
-All16apps run samebinary96a0047f577b9ce874799d94af0770611be7ab2143a1c7e1a8e459623c221702.
-Six targeted startup worlds stillfail UNWAIVED, all15pairs/5sheets+stock3 VIEWED.
-ThreeG1images differ93069/93114/93069 (previous77212/77139/77212); G4same73164.
-Native displays prior actor positions during issuingPause; Go draws currentpose.
-This does NOTprove later roots skipCNS. Need state/counter/own/opponent probes
-before pausedcache/scheduler changes; no specialized cue-screen workaround.
-Old9 rendercontrols PASS; stock win/rematch/winPASS82balancedkeys/1,928,880PCMframes.
-35gates27zero/eight1(native,sixworlds,inventory). Exact pre-regeneration inventory
-script/report archived Git a868 +privatecopies in m4do-camera-final-source-versions;
-current inventorywrite/check0. No validated productionGo changes after final.
-Passiveaudit0:155originals,109canonical,656appbinaryresources,18appcaps,sharedbinary,
-seeds/RGB/185productionGo/input/PCM. m4do-camera-final-evidence-audit.json.
-
-Native Pause/ScrollLock calibrated6277 entire0/separate485 guardPASS/all6frames
-reviewed; exact1/2/3steps. R1/R2 intent failures preserved, omittedLoopStart=-1.
-Resetframe sequence finalized/separate233 guardPASS/all6reviewed; F4 RESUMES pause,
-so NOTexact bootsteps. Outer reset receipt unrecoverable; no exit claimed.
-Both new tests/frame_*reference_probe.py recorders are native-used IMMUTABLE.
-These calibrations are not controller coverage. Bounded authoring archive below.
-Boot native42029 entire0/separate133guardPASS; all96fields/8frames reviewed before
-promotion/Go. Initial baseline hash walk finished after test; diagnostic preserved,
-R2baseline21501 against completefrozenmap1 before implementation. Attempted hash-
-walk cancellation matched itself/exited130; originalwalk96251 finished0 unchanged.
-Revision63528 failed fourboot+threeolddust; revision45115 fixeddust, leavesnewbound.
-
-Continue ALL item3: independent screenconstraint and issuing-frame CNS/pose
-controls, measuredHUD displaytime/defaults/delays/loops/Pause/SuperPause, finite/
-overlapcolour isolation, then clipboard/residualschemas/flags/strictobligations.
-STARTUP-CAMERA.md/CLIPBOARD-PLAN.md preserve measured vs proposed scope. No approval
-pause. M4dn full144world matrix116exact is HISTORICAL, not rerun inM4do;28prior
-failures allunwaived. Older max1/max32 colour causes unassigned; no sampler/tolerance
-changes. M4dn invalid21empty5000 +2unreachable observers remain raw, old354paths
-excluded. KOwarning5080not5000; ownAIR9999/9100notcommon9996; corrections retained.
-LatestFULL historicalM4dl5028/36; currentfocused. Routing77/89typed86.5%,zero stubs,
-12fallback/9partial/20bounded/60route-only, not overall compatibility. No runtime.
-
-## Native source provenance exception
-
-For nokovoice-native-ledger.json ONLY,390 versioned authoring Go/parser/unused
-probe hashes are verified through nokovoice-authoring-source-archive.json against
-BOTH Git9c35b389 blobs and byte-identical private snapshots. Do not compare these
-archived versioned hashes against later mutable port source. Native-used
-recorders/programs/resources/configs/captures/PCM remain immutable ORIGINAL paths.
-Later system-effect ledgers hash the authoring map JSON, not live Go paths.
-For m4do-frame-step-control-native-inputs.json ONLY,362 authoring context paths
-are archived by m4do-frame-control-authoring-archive-r2.json:361 tracked Go/module
-files verified against Git a868 and byte-identical snapshots; untracked root
-go.sum verified against upstream-post-merge-module.sha256 and snapshot. Preserve
-this exact bounded exception;123 native-used paths remain ORIGINAL live checks.
-The failed first archive and corrected scope note remain private. New native maps
-hash the authoring-input-map JSON rather than mutable Go authoring context.
-
-
-## Native and validation workflow
-
-1. Freeze separately named source/recipes before native observation. Never edit,
-   delete, move or replace original inputs, captures or goldens. Never relax
-   comparisons or tolerances. Preserve failed diagnostics too.
-2. Verify actual controller kinds and full parameter/state intent, then inspect
-   ALL native-only consumer/color/geometry/layer rows and review images BEFORE
-   implementation. Manuals guide authoring; native quirks decide behavior.
-3. Implement typed schemas, defaults, errors, ordered evaluation and production
-   consumers. Unknown controllers/triggers must not silently succeed. Preserve
-   source file/state/controller/expression context in diagnostics.
-4. Test counterexamples and dependencies first. Keep each strict comparator's
-   real exit status and collect all failures. Do not call a partial matrix exact.
-5. Focused races/apps during revisions; full scoped races at meaningful shared
-   integration boundaries and final item-3 closure. Full races use
-   `--check -race -p 1 -count=1 -timeout=50m`. Required stock selection/fight/
-   results/rematch and task-owned private PCM checks remain acceptance gates.
-6. Native, actual-app and display-dependent Go runs are STRICTLY SERIAL. Await
-   every exec session and run a SEPARATE client/frozen-input guard before edits
-   or another runtime. Freeze source/test/probe/fixture/module inputs per run.
-7. Document findings, failures, limits, tests and remaining work at each local
-   commit. Update README, COMPATIBILITY, COVERAGE and HANDOFF as relevant. Source
-   routing and behavioral evidence are separate counts; no overall completion
-   percentage is justified by routing counts alone.
-
-## Tools and private environment
-
-Use `rg` / `rg --files --no-ignore`; root ignores hide engine source. Disposable
-Go experiments belong ONLY under `temp/_tmp/` so recursive discovery skips them.
-
-From repository root use `python3 game/mugen/temp/round-task-env.py ...` with the
-already authorized elevated wrapper prefix. It checks live clients and supplies
-task-owned Xvfb:97/Pulse, Wine32, local Go cache/modules and development headers.
-Private server metadata: `temp/item3-private-servers.json`. Do not print cookies,
-restart unrelated services or infer server death from truncated process output.
-
-Byte-identical completed private GO app binaries and stock SFF/SND/font copies
-may share storage with paths, bytes, hashes and permissions preserved. Native
-resources, screenshots and expectations are never candidates. Retain evidence;
-the user reclaimed 144 GiB to allow continuation.
-
-## Remaining allocation
-
-Read docs/HANDOFF.md and docs/ITEM-3-PLAN.md. Prior 12 M4cq, seven M4cv, two M4cy,
-60 M4da and six M4de strict renderer failures remain UNWAIVED. Do not change
-samplers or tolerances without independent native evidence and old exact controls.
-The native VarSet literal 7.9 rejects; fix conflicting unit setup with 7.9+0.0
-expressions without changing native goldens. FVar aliases need native acceptance.
-GameMakeAnim and MakeDust have bounded native implementations with retained strict gaps.
-ForceFeedback is native Null-kind, not a haptics stub. Broader modes/teams/AI/BGM/assets/triggers remain item 4.
-
-
+Before each local commit audit explicit staged paths and UTF-8/no-NUL text; add no
+temp/testdata/binary or outside-scope files. Avoid force-adding directories. No
+new native data was promoted from the interrupted M4ds study. The last production
+Go checkpoint remains3aad3498a (M4dr); this checkpoint changes workflow/reporting.
+Read docs/HANDOFF.md for the next implementation batch.

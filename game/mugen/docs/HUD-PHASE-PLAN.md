@@ -1,5 +1,8 @@
 # Next timed-HUD phase controls
 
+> Historical research plan. Follow [WORKFLOW.md](WORKFLOW.md) and the single
+> [project checklist](PROGRESS.md); do not restart the matrices described below.
+
 M4dr implements the independently measured KO start gate and visible-message
 clock. It closes five held Round/Fight overlays through component expiry. The
 KO corpus deliberately holds PreOver for1,000 simulation passes; it does not

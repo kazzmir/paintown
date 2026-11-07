@@ -1,0 +1,601 @@
+{
+  "schema": 1,
+  "controller_extensions": [
+    "fvaradd",
+    "fvarrangeset",
+    "fvarset"
+  ],
+  "controller_gaps": {
+    "appendtoclipboard": {
+      "gap": "Raw text only; numeric formatting and production debug display remain.",
+      "allocation": "item3"
+    },
+    "displaytoclipboard": {
+      "gap": "Raw text only; numeric formatting and production debug display remain.",
+      "allocation": "item3"
+    },
+    "assertspecial": {
+      "gap": "NoMusic has no BGM consumer.",
+      "allocation": "item4 dependency"
+    },
+    "hitadd": {
+      "gap": "ComboCount has no production HUD/reset consumer.",
+      "allocation": "item3"
+    },
+    "statetypeset": {
+      "gap": "Literal fallback lacks full parameter validation/diagnostics.",
+      "allocation": "item3"
+    },
+    "varset": {
+      "gap": "Integer variable literal-float rejection differs from beta.",
+      "allocation": "item3"
+    }
+  },
+  "trigger_gap_allocations": {
+    "bottomedge": "item3 edge bindings",
+    "ishometeam": "item4 stage/team context",
+    "p3name": "item4 stage/team context",
+    "p4name": "item4 stage/team context",
+    "stagevar": "item4 stage/team context",
+    "teammode": "item4 stage/team context",
+    "topedge": "item3 edge bindings"
+  },
+  "mechanics": [
+    {
+      "id": "state-compilation",
+      "name": "State loading, compilation and source diagnostics",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/compile.go:compileState"
+      ]
+    },
+    {
+      "id": "expressions",
+      "name": "Typed expressions, variables and ordered evaluation",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "evaluator/runtime.go:EvaluateValue",
+        "evaluator/value.go:CoerceInt"
+      ]
+    },
+    {
+      "id": "triggers",
+      "name": "Trigger groups and short circuit evaluation",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/compile.go:compileTriggers"
+      ]
+    },
+    {
+      "id": "state-entry",
+      "name": "State entry attributes, time and control",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/entry.go:EnterState"
+      ]
+    },
+    {
+      "id": "negative-states",
+      "name": "Negative states and same-tick state continuation",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/pass.go:RunStatePassWithBudget",
+        "engine/pass.go:RunPositivePassWithBudget"
+      ]
+    },
+    {
+      "id": "controller-scheduling",
+      "name": "Controller persistence and hit-pause eligibility",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/statemachine.go:ExecuteState"
+      ]
+    },
+    {
+      "id": "custom-states",
+      "name": "Borrowed states, animation and SelfState ownership",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/ownership.go:ResolveState"
+      ]
+    },
+    {
+      "id": "world-ticks",
+      "name": "Root/helper update, collision, physics and clocks",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/tick.go:TickCharacters"
+      ]
+    },
+    {
+      "id": "helper-lifecycle",
+      "name": "Helper creation, identity, retirement and round cleanup",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/helper.go:CreateHelper",
+        "character/retire.go:DestroyHelper"
+      ]
+    },
+    {
+      "id": "bindings",
+      "name": "Targets and parent/root/target binding",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/binding.go:BindSelf",
+        "character/binding.go:BindCallerToTarget"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Hit/guard contacts, damage and reaction state transitions",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/tick.go:TickCharacters",
+        "character/hit_damage.go:contactDamage"
+      ]
+    },
+    {
+      "id": "recovery",
+      "name": "Hit, fall, landing and recovery state progression",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/character.go:HandleBuiltinTransitions",
+        "character/liedown.go:advanceLiedownTime"
+      ]
+    },
+    {
+      "id": "death",
+      "name": "Death latching, KO and damage grace",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/life.go:completeLifeState",
+        "match/match.go:finishRound"
+      ]
+    },
+    {
+      "id": "pause",
+      "name": "Pause/SuperPause, movement allowances and clock ownership",
+      "group": "Controllers and effects",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/timeline.go:BeginFrame",
+        "engine/timeline.go:RequestSuperPause"
+      ]
+    },
+    {
+      "id": "effects",
+      "name": "Projectiles, Explods, trails, palettes and transforms",
+      "group": "Controllers and effects",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/parameters.go:compileCoreController",
+        "effect/scene.go:AdvanceWithPause"
+      ]
+    },
+    {
+      "id": "rounds",
+      "name": "One-on-one rounds, results, reset and rematch",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "match/match.go:Update",
+        "match/match.go:resetRound"
+      ]
+    },
+    {
+      "id": "selection",
+      "name": "Title, player/stage selection, versus and fight handoff",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/flow_test.go:TestTitleSelectionVersusFightResultRematchAndExit",
+        "system/fight_state.go:NewFightState"
+      ]
+    },
+    {
+      "id": "announcements",
+      "name": "Round/Fight/Win presentation scheduling",
+      "group": "Match and presentation",
+      "status": "partial",
+      "gap": "Finish independent Round/Fight/Win delays, overlap, control-zero and win presentation using existing evidence.",
+      "allocation": "item3",
+      "sources": [
+        "system/hud_message.go:updateMessages",
+        "system/hud.go:Draw"
+      ]
+    },
+    {
+      "id": "clipboard",
+      "name": "Formatted clipboard and production debug display",
+      "group": "Controllers and effects",
+      "status": "partial",
+      "gap": "Compile params/formatting and connect the debug display.",
+      "allocation": "item3",
+      "sources": [
+        "character/character.go:DisplayToClipboard"
+      ]
+    },
+    {
+      "id": "combo",
+      "name": "Combo count lifecycle and HUD consumer",
+      "group": "Characters and combat",
+      "status": "partial",
+      "gap": "Connect HitAdd to contact/reset bookkeeping and displayed combo count.",
+      "allocation": "item3",
+      "sources": [
+        "character/character.go:HitAdd"
+      ]
+    },
+    {
+      "id": "residual-schema",
+      "name": "Remaining variable and StateTypeSet schemas",
+      "group": "State machine",
+      "status": "partial",
+      "gap": "Finish integer literal validation and StateTypeSet schema/diagnostics; resolve legacy FVar aliases.",
+      "allocation": "item3",
+      "sources": [
+        "engine/parameters.go:compileVariable",
+        "engine/statemachine.go:handleStateTypeSet"
+      ]
+    },
+    {
+      "id": "start-constraints",
+      "name": "Cold-start screen constraint ordering",
+      "group": "Characters and combat",
+      "status": "partial",
+      "gap": "Correct the retained negative-camera P2 first-pass constraint discrepancy.",
+      "allocation": "item3",
+      "sources": [
+        "match/match.go:Update"
+      ]
+    },
+    {
+      "id": "stock-assets",
+      "name": "Stock character/stage, SFF/AIR/CNS/CMD loading",
+      "group": "Assets and sound",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/loader.go:LoadPlayerWithOptions",
+        "stage/loader.go:LoadStage"
+      ]
+    },
+    {
+      "id": "sound-effects",
+      "name": "Sound effects, channels and production mixing",
+      "group": "Assets and sound",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/sound.go"
+      ]
+    },
+    {
+      "id": "storyboards",
+      "name": "Storyboard loading, playback and canvas scaling",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/storyboard_state.go"
+      ]
+    },
+    {
+      "id": "bgm",
+      "name": "Background music and NoMusic integration",
+      "group": "Assets and sound",
+      "status": "missing",
+      "gap": "Implement BGM playback and the NoMusic consumer.",
+      "allocation": "item4 dependency",
+      "sources": [
+        "engine/assert_special.go:compileAssertSpecial"
+      ]
+    },
+    {
+      "id": "fonts",
+      "name": "Complete font/asset compatibility and loading errors",
+      "group": "Assets and sound",
+      "status": "partial",
+      "gap": "Finish broader font/asset formats and errors; stock resource support exists.",
+      "allocation": "item4",
+      "sources": [
+        "font/font.go"
+      ]
+    },
+    {
+      "id": "raster-audio",
+      "name": "Remaining renderer and audio fidelity issues",
+      "group": "Assets and sound",
+      "status": "partial",
+      "gap": "Resolve known color/shadow/text placement and KO echo differences without broad new matrices.",
+      "allocation": "item3 presentation / item4 final conformance",
+      "sources": [
+        "render/linear.go",
+        "character/ko_sound.go"
+      ]
+    },
+    {
+      "id": "ai",
+      "name": "Full opponent AI compatibility",
+      "group": "Modes and platforms",
+      "status": "partial",
+      "gap": "Expand the basic opponent policy to the required AI behavior.",
+      "allocation": "item4",
+      "sources": [
+        "system/fight_state.go"
+      ]
+    },
+    {
+      "id": "modes",
+      "name": "Arcade progression and complete mode rules",
+      "group": "Modes and platforms",
+      "status": "partial",
+      "gap": "Implement complete progression and rules beyond the playable one-on-one flow.",
+      "allocation": "item4",
+      "sources": [
+        "system/select.go"
+      ]
+    },
+    {
+      "id": "teams",
+      "name": "Team/simul/turns lifecycle and partner context",
+      "group": "Modes and platforms",
+      "status": "missing",
+      "gap": "Implement team roster, partner lifecycle, team modes and associated triggers.",
+      "allocation": "item4",
+      "sources": [
+        "character/world.go"
+      ]
+    },
+    {
+      "id": "stage-triggers",
+      "name": "Remaining stage, viewport and team trigger bindings",
+      "group": "State machine",
+      "status": "partial",
+      "gap": "Bind the seven currently missing trigger families; stage/team context belongs with item4.",
+      "allocation": "item3 edges / item4 context",
+      "sources": [
+        "evaluator/names.go"
+      ]
+    },
+    {
+      "id": "platforms",
+      "name": "Additional platform builds and final playable acceptance",
+      "group": "Modes and platforms",
+      "status": "partial",
+      "gap": "Linux is exercised; validate the other supported platforms and final game flow.",
+      "allocation": "item4",
+      "sources": [
+        "mugen.sh"
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "id": "state-flow",
+      "contract": "entry \u2192 negative states \u2192 chained transitions \u2192 persistence/loop diagnostics",
+      "source_dirs": [
+        "cns",
+        "engine",
+        "evaluator"
+      ],
+      "tests": [
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestStatePassReferenceOrder"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestPersistenceReferenceTrace"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestEntryParametersReferenceTrace"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestStateBindingReferenceTrace"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestStatePassRunawayAndMissingState"
+        }
+      ],
+      "completed": true,
+      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
+      "passed_source": "2c520a8cbb610528596f105ffa6e8feacbd95da677ac74c8d50a1d3154c55f9a"
+    },
+    {
+      "id": "combat",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation; jump \u2192 CNS landing recovery",
+      "source_dirs": [
+        "air",
+        "character",
+        "cmd",
+        "cns",
+        "combat",
+        "effect",
+        "engine",
+        "evaluator",
+        "input",
+        "match"
+      ],
+      "tests": [
+        {
+          "file": "match/match_test.go",
+          "name": "TestStockMatchBasicAttackFromLogicalInput"
+        },
+        {
+          "file": "match/match_test.go",
+          "name": "TestStockMixedMatchJumpAndCNSLandingRecovery"
+        },
+        {
+          "file": "character/tick_test.go",
+          "name": "TestContactContinuationDoesNotRepeatNegativeStatesOrTimeZero"
+        }
+      ],
+      "completed": true,
+      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
+      "passed_source": "bceef72e6162f7498c92b4bb874f28f866659ed95d2e830ab57c59b3a3e35391"
+    },
+    {
+      "id": "entities",
+      "contract": "helper creation \u2192 binding/retirement \u2192 orphan effect expiry \u2192 round identity reset",
+      "source_dirs": [
+        "air",
+        "character",
+        "cns",
+        "effect",
+        "engine",
+        "evaluator",
+        "match"
+      ],
+      "tests": [
+        {
+          "file": "character/retire_test.go",
+          "name": "TestOrphanExplodClockExpiryBindingAndRoundReset"
+        },
+        {
+          "file": "match/world_test.go",
+          "name": "TestRoundResetRebindsRootsAndRetiresHelperIDs"
+        }
+      ],
+      "completed": true,
+      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
+      "passed_source": "b00f7490aafae97c557de8fde12b329bf442fac4d7d81b318f366859be205d5e"
+    },
+    {
+      "id": "effects-pause",
+      "contract": "Pause/SuperPause \u2192 actor/background/effect clocks \u2192 resources/power \u2192 reset",
+      "source_dirs": [
+        "air",
+        "character",
+        "cns",
+        "effect",
+        "engine",
+        "evaluator",
+        "match",
+        "palette",
+        "sound"
+      ],
+      "tests": [
+        {
+          "file": "match/match_test.go",
+          "name": "TestPauseMatchClockBackgroundEffectsAndRoundReset"
+        },
+        {
+          "file": "match/match_test.go",
+          "name": "TestStockSuperPauseConsumesPowerAndUsesCommonResources"
+        },
+        {
+          "file": "character/after_image_test.go",
+          "name": "TestAfterImageRecordingExpiresAndResumesWithoutClearingHistory"
+        }
+      ],
+      "completed": true,
+      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
+      "passed_source": "997f4c2be4bbdd4e7de534587d68477ffa939fb0927f63d0c074d8419dad6213"
+    },
+    {
+      "id": "match-flow",
+      "contract": "title/selection \u2192 stock input-driven fight \u2192 KO/time-over \u2192 results \u2192 rematch/exit",
+      "source_dirs": [
+        "air",
+        "background",
+        "character",
+        "cmd",
+        "cns",
+        "combat",
+        "config",
+        "coord",
+        "effect",
+        "engine",
+        "evaluator",
+        "fight",
+        "font",
+        "input",
+        "internal",
+        "logger",
+        "match",
+        "motif",
+        "palette",
+        "parsers",
+        "render",
+        "resource",
+        "sff",
+        "snd",
+        "sound",
+        "stage",
+        "storyboard",
+        "system"
+      ],
+      "tests": [
+        {
+          "file": "system/flow_test.go",
+          "name": "TestTitleSelectionVersusFightResultRematchAndExit"
+        },
+        {
+          "file": "match/complete_match_test.go",
+          "name": "TestStockInputDrivenCompleteMatches"
+        }
+      ],
+      "completed": true,
+      "validation": "Existing scenarios passed in M4dr at 3aad3498a; production Go source unchanged.",
+      "passed_source": "7bfa7098de662fb86318f67c5e05004c23dbbf79b6ab182de79ec288071a2bf4"
+    }
+  ],
+  "presentation_followups": [
+    "Known sprite/shadow max-one RGB differences and text placement.",
+    "Finite/overlap color and ordinary KO echo discrepancies."
+  ]
+}

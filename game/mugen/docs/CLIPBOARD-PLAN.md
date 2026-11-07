@@ -1,5 +1,8 @@
 # Clipboard controller closure plan
 
+> Historical research plan. Follow [WORKFLOW.md](WORKFLOW.md) and the single
+> [project checklist](PROGRESS.md); do not restart the matrices described below.
+
 This is preparation for item 3, not additional native coverage. Finish the active
 MakeDust integration and its separate frozen-input/client guards before authoring
 or running the new probes.

@@ -7,6 +7,12 @@ set -euo pipefail
 # Get the directory where this script is located
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+# Coverage is a source/metadata report; it needs no Go build or game assets.
+if [[ "${1:-}" == "--coverage" ]]; then
+    shift
+    exec python3 "$DIR/tools/state_coverage.py" "$@"
+fi
+
 # Keep the root module read-only and all disposable build/test files in scope.
 mkdir -p "$DIR/temp/go-build" "$DIR/temp/_tmp"
 export GOCACHE="$DIR/temp/go-build"
@@ -21,7 +27,10 @@ show_help() {
     echo "Modes:"
     echo "  --game          Run the main game (default if no mode specified)"
     echo "  --test <name>   Run a specific test suite or unit test"
-    echo "  --check         Build and test every MUGEN package"
+    echo "  --coverage      Show project coverage and unfinished features"
+    echo "  --check         Run pending/reopened scenario segments only"
+    echo "  --acceptance    Explicitly run the playable match-flow segment"
+    echo "  --check-all     Opt in to every legacy MUGEN test"
     echo "  --reference-tools Build the isolated Windows diagnostic helper"
     echo "  --help          Show this help message"
     echo ""
@@ -71,6 +80,12 @@ elif [[ "$1" == "--test" ]]; then
     fi
     shift 2
 elif [[ "$1" == "--check" ]]; then
+    shift
+    exec python3 "$DIR/tests/segments.py" "$@"
+elif [[ "$1" == "--acceptance" ]]; then
+    shift
+    exec python3 "$DIR/tests/segments.py" --segment match-flow "$@"
+elif [[ "$1" == "--check-all" ]]; then
     shift
     # Private source snapshots and experiments are not engine packages. Keep
     # their paths intact while excluding them from recursive validation.

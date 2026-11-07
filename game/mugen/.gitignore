@@ -1,3 +1,4 @@
+temp
 /temp/
 /unresolved.log
 mugen
@@ -6,6 +7,10 @@ mugen
 /mugen-go
 *.exe
 *.test
+__pycache__/
+
+# Historical tracked fixtures stay available; new generated matrices stay local.
+/tests/testdata/reference/
 
 # Immutable rejected native drafts, retained in place; corrected controls use -valid.
 /tests/testdata/reference/reversal-movereversed-clear.*

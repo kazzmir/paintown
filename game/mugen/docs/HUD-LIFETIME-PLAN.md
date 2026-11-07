@@ -1,4 +1,7 @@
 M4dq/M4dr now record the bounded KO controls and implementation in
+
+> Historical research plan. Follow [WORKFLOW.md](WORKFLOW.md) and the single
+> [project checklist](PROGRESS.md); do not restart the matrices described below.
 [HUD-TIMING.md](HUD-TIMING.md). Continue [phase-specific studies](HUD-PHASE-PLAN.md).
 The original authoring plan below remains for provenance, not additional coverage.
 
