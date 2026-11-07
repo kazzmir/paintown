@@ -10,7 +10,7 @@ or duplicating their test bodies and data.
 | combat | Logical input, attacks, contact/damage continuation, jump and authored landing recovery. |
 | entities | Helper creation, binding/retirement, orphan-effect expiry and round identity cleanup. |
 | effects-pause | Pause/SuperPause across actor/background/effect clocks, power/resources and reset. |
-| match-flow | Title/selection, stock input-driven fights, KO/time-over, results, rematch and exit. |
+| match-flow | Title/selection, stock input-driven fights, KO/time-over, rematch/exit, teams, modes, authored CMD/AI and storyboard/music asset lifecycles. |
 
 [PROGRESS.md](../docs/PROGRESS.md) is the only completion ledger. Completed suites
 stay checked and are omitted from normal runs. The runner compares a compact

@@ -20,10 +20,16 @@ The launcher keeps build caches and disposable files under `temp/`. Font and
 Character packages still import Ebitengine and need DISPLAY even for CPU tests;
 the engine/evaluator/SFF/parser core is display independent.
 
-The growing native fixture corpus takes about nine minutes for a full Match
-race run. Use `game/mugen/mugen.sh --check -race -timeout=30m` for full race
-validation so Go's default ten-minute package deadline does not become a false
-failure as coverage grows.
+Normal validation is `mugen.sh --check`: only reopened connected segments run.
+Completed segments are not repeated. Use `--acceptance` for an explicitly
+requested match-flow rerun. Old native matrices and artifact-dependent pixel
+diagnostics are optional historical tools, not completion gates.
+
+Linux legacy MIDI/tracker playback dynamically loads optional system
+`libfluidsynth.so.3` / `libopenmpt.so.0`; no development headers or copied
+libraries are needed. MIDI also needs a GM SoundFont, optionally selected by
+`MUGEN_SOUNDFONT`. WAV/MP3/Ogg use existing Go decoders. Physical CD playback is
+unavailable, and other platform validation is deferred by the user.
 
 ## Font lookup and fallback
 
@@ -95,4 +101,14 @@ Wine's existing 32-bit pulse driver; all runtime/cookie/state files stay in temp
 Private validation uses `temp/_tmp` for GOTMPDIR. Go ignores underscore-prefixed
 directories during recursive package discovery, so interrupted CGO build files
 cannot become extra packages. Disposable source snapshots should still use a
-non-Go suffix. The final integration preflight requires36 intended packages.
+non-Go suffix. The connected runner selects the affected packages explicitly.
+
+## Standalone Linux acceptance
+
+Build once using the README command, then pass
+`--binary game/mugen/temp/bin/mugen-go` to `tests/app_smoke.py`. The smoke tool
+creates a symlink overlay over the supplied resources and copies only its edited
+configuration text. It deletes scratch at exit on success/failure by default;
+`--keep-artifacts` is an explicit short-lived inspection override. Inspect and
+remove that directory before finishing a checkpoint. One executable in
+`temp/bin/` is reused; per-run asset/binary copies are no longer created.

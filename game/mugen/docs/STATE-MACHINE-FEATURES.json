@@ -398,12 +398,13 @@
       "id": "platforms",
       "name": "Linux build and final playable acceptance",
       "group": "Modes and platforms",
-      "status": "partial",
-      "gap": "Complete final Linux build/playable acceptance after functional work; other targets are deferred by the user.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "Linux now; other targets deferred (user 2026-11-07)",
       "sources": [
         "mugen.sh"
-      ]
+      ],
+      "validation": "Standalone Linux amd64 build; normal logo/intro window startup; stock KFM/KFM720 input-driven KO/result and private audio output. Connected segments pass. Other targets deferred by user."
     }
   ],
   "segments": [

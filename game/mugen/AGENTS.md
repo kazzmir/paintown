@@ -54,21 +54,24 @@ tracked fixtures remain. Never regenerate removed matrices just to pass legacy
 pixel diagnostics. --check-all is explicit historical diagnostics only and some
 artifact-dependent tests now require unavailable captures.
 
-## Checkpoints
+## Current checkpoint
 
-Before each local commit audit explicit staged paths and UTF-8/no-NUL text; add no
-temp/testdata/binary or outside-scope files. Avoid force-adding directories. No
-new native data was promoted. State/controller closure, startup constraints,
-vertical edges and stock bitmap placement are complete at abf8a2d4a. The first
-functional item4 batch implements WAV/MP3/Ogg BGM, NoMusic, scene transitions
-and StageVar; all five affected connected segments pass with race detection.
-Simul/turns rosters, all team trigger bindings, partner combat/power and team
-selection/HUD now pass four affected connected segments with race detection.
-Authored CMD/AI flow now passes four affected connected segments, including
-human charge/chord/quarter-circle/strict-dash entry and actual stock AI specials.
-Mode progression/screens, survival carry/results, training/watch and baseline
-recovery now pass four affected connected segments. Exact recovery calibration
-is deferred alongside native AI/raster/audio precision. AIR1.1 interpolation and storyboard text/sound/window now have consumers, as do
-authored/localized victory quotes. All five connected segments pass. Continue
-final Linux build/playable acceptance. The user deferred other platform builds on 2026-11-07. Linux MIDI/tracker now use optional system codecs and passed the connected media flow. Physical CD playback remains unavailable. Precision
-remains partial and deferred. Read docs/PROGRESS.md and docs/HANDOFF.md.
+All89 documented controller and127 trigger families have runtime routes. The
+functional batches connect BGM/NoMusic/stage context, simul/turns and team queries,
+authored CMD/AI, campaign/continue/ending/survival/training/watch, and asset
+consumers (AIR1.1 interpolation, storyboard text/sounds/windows, victory quotes).
+All five connected segments pass with race detection. Read docs/PROGRESS.md
+for the current checkmarks; routes do not prove arbitrary native semantics.
+
+Linux is the user-selected target. The standalone amd64 build and normal startup
+passed, as did an owned-window KFM/KFM720 keyboard-driven KO/result run with
+private audio output. app_smoke.py now shares canonical assets using symlinks,
+copies only tiny writable config text, and deletes scratch by default. All
+checkpoint captures/PCM/logs/overlays were inspected and removed. Keep the one
+ignored temp/bin/mugen-go executable and shared build cache for reuse.
+
+Remaining: physical CD (.da) audio is unsupported. Exact native color/shadow/
+alpha/KO echo, recovery amount/rounding and AI policy are deferred precision.
+Licensed Windows fonts are absent; the observable fallback needs a supplied
+font for full CJK glyph coverage. Other platform builds are deferred. No pushes
+or committed binaries/generated fixtures. See docs/HANDOFF.md.

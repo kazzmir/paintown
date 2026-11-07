@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build/run the Go application in a disposable data copy; capture its own window.
+"""Build/run the Go application with a small config overlay; capture its own window.
 
 Requires Go, DISPLAY, xdotool, ImageMagick import and Pillow. Default captures
 send no input. Optional stock input targets only the spawned window, without
 pointer/focus changes. Captures are inspection artifacts, not parity tests.
 """
 import argparse
+import atexit
 import array
 import hashlib
 import json
@@ -24,10 +25,31 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def asset_overlay(reference, destination, writable):
+    """Link canonical resources; copy only the explicitly edited text files."""
+    reference = reference.resolve()
+    writable = {Path(path) for path in writable}
+    def populate(source, target, relative):
+        target.mkdir()
+        for child in source.iterdir():
+            path = relative / child.name
+            output = target / child.name
+            if path in writable:
+                if child.is_file():
+                    shutil.copyfile(child, output)
+            elif any(path in edit.parents for edit in writable):
+                populate(child, output, path)
+            else:
+                output.symlink_to(child, target_is_directory=child.is_dir())
+    populate(reference, destination, Path())
+
+
 def main():
     project = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--name', required=True, help='Fresh run directory name')
+    parser.add_argument('--name', required=True, help='Fresh scratch directory name')
+    parser.add_argument('--binary', type=Path, help='Use an existing executable instead of building')
+    parser.add_argument('--keep-artifacts', action='store_true', help='Explicitly retain scratch for visual inspection; otherwise delete on success/failure')
     parser.add_argument('--reference', type=Path, default=project / 'temp/mugen-1.1b1')
     parser.add_argument('--motif', default='data/kfm/system.def')
     parser.add_argument('--seconds', type=int, nargs='+', default=[2, 6, 16])
@@ -88,8 +110,13 @@ def main():
             parser.error('Match paths must be relative paths within the disposable distribution')
     work = project / 'temp/app-runs' / args.name
     work.mkdir(parents=True, exist_ok=False)
+    if not args.keep_artifacts:
+        atexit.register(shutil.rmtree, work, ignore_errors=True)
     stock = work / 'stock'
-    shutil.copytree(args.reference, stock)
+    writable = ['data/mugen.cfg', 'mugen.yaml']
+    if args.stock_input:
+        writable += ['data/fight.def', 'data/mugen1/fight.def']
+    asset_overlay(args.reference, stock, writable)
     if not (stock / args.motif).is_file():
         parser.error('Requested motif is absent from the supplied distribution')
     config = stock / 'data/mugen.cfg'
@@ -114,8 +141,13 @@ def main():
         env[key] = str(path)
     env['GOFLAGS'] = '-modfile=' + str(project / 'mugen.mod') + ' -mod=readonly'
     env['GOPROXY'] = 'off'
-    binary = work / 'mugen-go'
-    subprocess.run(['go', 'build', '-o', str(binary), './game/mugen/system'], cwd=project.parents[1], env=env, check=True)
+    binary = args.binary.resolve() if args.binary else project / 'temp/bin/mugen-go'
+    if args.binary:
+        if not binary.is_file():
+            parser.error('Requested executable is absent')
+    else:
+        binary.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['go', 'build', '-o', str(binary), './game/mugen/system'], cwd=project.parents[1], env=env, check=True)
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=project, text=True).strip()
     dirty = bool(subprocess.check_output(['git', 'status', '--porcelain', '--', 'game/mugen'], cwd=project.parents[1], text=True).strip())
     metadata = {'commit': commit, 'dirty': dirty, 'binary_sha256': digest(binary), 'config_sha256': digest(config),
@@ -184,6 +216,10 @@ def main():
                 print('Captured', output, flush=True)
         except Exception as error:
             metadata['error'] = str(error)
+            log.flush()
+            print('Application failure:', str(error), flush=True)
+            for line in (work / 'run.log').read_text(errors='replace').splitlines()[-8:]:
+                print(line, flush=True)
             raise
         finally:
             if held and input_window is not None and process.poll() is None:
@@ -210,6 +246,9 @@ def main():
                                      'rms': round(math.sqrt(sum(value*value for value in pcm)/max(1,len(pcm))), 2)}
                 if metadata['audio']['peak'] == 0:
                     metadata['error'] = 'No device PCM captured from the private sink'
+            print('Application smoke:', len(metadata['captures']), 'owned-window captures;',
+                  'audio peak=' + str(metadata.get('audio', {}).get('peak', 'not requested')),
+                  'canonical assets shared; scratch ' + ('retained explicitly' if args.keep_artifacts else 'removed at exit'), flush=True)
             (work / 'evidence.json').write_text(json.dumps(metadata, indent=2) + '\n')
             if recording is not None and metadata['audio']['peak'] == 0:
                 raise RuntimeError(metadata['error'])

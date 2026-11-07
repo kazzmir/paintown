@@ -23,7 +23,10 @@ project task. Controller routing and exact image comparisons are useful facts,
 but they are not a measure of project completion.
 
 Use stock assets in place, one shared build cache, and temporary per-run scratch
-that is removed on success and failure. No generated test data or binaries go in
+that is removed on success and failure. The application smoke uses a symlink
+overlay plus tiny writable config files and reuses temp/bin/mugen-go. Captures
+are removed by default; an explicit inspection override must be cleaned before
+the checkpoint ends. No generated test data or binaries go in
 Git. Keep a short failure note instead of complete copied distributions and logs.
 The 2026-11-06 cleanup removed nine generated run banks and recovered126.58 GiB;
 canonical assets and working tools remain. Removed raw comparisons are historical

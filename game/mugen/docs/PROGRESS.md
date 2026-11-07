@@ -7,7 +7,7 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 30 implemented, 3 partial, 0 missing.
+- Project items: 31 implemented, 2 partial, 0 missing.
 
 ## Completed scenario coverage
 
@@ -73,7 +73,7 @@ source changes reopen only the affected segments.
 - [x] Opponent AI and authored CMD command flow. (item4)
 - [x] Arcade/survival progression, continue/ending and training/watch rules. (item4)
 - [x] Team/simul/turns lifecycle, partner context and recovery. (item4)
-- [ ] Linux build and final playable acceptance. **partial** — Complete final Linux build/playable acceptance after functional work; other targets are deferred by the user. (Linux now; other targets deferred (user 2026-11-07))
+- [x] Linux build and final playable acceptance. (Linux now; other targets deferred (user 2026-11-07))
 
 ## Controllers and trigger gaps
 
@@ -85,9 +85,9 @@ implementation tasks by themselves.
 | Controller | Remaining implementation |
 | --- | --- |
 
-Missing trigger routes: .
+Missing trigger routes: none.
 
-Remaining stage/team context belongs with the later modes/assets allocation.
+Stage, viewport and team runtime context are implemented; remaining work is listed above.
 
 ## How progress is updated
 

@@ -187,8 +187,8 @@ def markdown(value):
         if row['status'] != 'present':
             lines.append(f"| {row['name']} | {row.get('gap') or 'Missing production route.'} |")
     missing = [row['name'] for row in value['triggers'] if row['status'] == 'missing']
-    lines.extend(['', 'Missing trigger routes: ' + ', '.join('`' + x + '`' for x in missing) + '.', '',
-                  'Remaining stage/team context belongs with the later modes/assets allocation.', '',
+    lines.extend(['', 'Missing trigger routes: ' + (', '.join('`' + x + '`' for x in missing) if missing else 'none') + '.', '',
+                  'Stage, viewport and team runtime context are implemented; remaining work is listed above.', '',
                   '## How progress is updated', '',
                   '1. Pick an unchecked feature and implement a coherent batch.',
                   '2. Update its status in `STATE-MACHINE-FEATURES.json`.',

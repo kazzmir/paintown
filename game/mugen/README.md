@@ -23,7 +23,8 @@ own canvas and scale correctly into the game/window; see
 The reference distribution and build outputs are ignored by Git; supply the
 data separately after cloning. The Go game runs directly on the host. Wine is
 only needed for optional comparisons against the original Windows executable.
-Linux is the currently exercised development platform.
+Linux amd64 standalone build, normal startup, connected gameplay segments and
+windowed keyboard combat with audio have passed. Other platforms are deferred.
 
 **Run every command below from the repository root.**
 
@@ -104,7 +105,9 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The checklist replaces test counts and typed-routing percentages as the progress
-view. The current Linux implementation supports one-on-one, simul/turns, arcade and
+view. The current checklist has31/33 implemented items (94% of checklist items, not
+native conformance or remaining effort); see the two explicit partial rows.
+The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains
 in progress: precision calibration and physical CD audio are still open.
