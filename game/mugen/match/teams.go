@@ -16,8 +16,9 @@ const (
 )
 
 type TeamSelection struct {
-	Mode    TeamMode
-	Members []Selection
+	Mode        TeamMode
+	Members     []Selection
+	StartMember int // Survival resumes the original Turns roster without reviving losses.
 }
 
 type Team struct {
@@ -45,8 +46,11 @@ func normalizeTeams(request Request) (Request, error) {
 		if team.Mode != Single && team.Mode != Simul && team.Mode != Turns {
 			return request, fmt.Errorf("team %d: unknown team mode %q", side+1, team.Mode)
 		}
+		if team.StartMember < 0 || team.StartMember >= count || (team.Mode != Turns && team.StartMember != 0) {
+			return request, fmt.Errorf("team %d: invalid starting member %d for %s roster", side+1, team.StartMember, team.Mode)
+		}
 		team.Members = append([]Selection(nil), team.Members...)
-		request.Players[side] = team.Members[0]
+		request.Players[side] = team.Members[team.StartMember]
 	}
 	return request, nil
 }
@@ -161,11 +165,15 @@ func homeTeam(mode string) int {
 	return 1
 }
 
+func (m *Match) isSurvival() bool {
+	return strings.Contains(strings.ToLower(m.Request.Mode), "survival")
+}
+
 // The supplied 1.1b1's recovery routine (419350, caller 415262) first
 // truncates a per-thousand bonus, then multiplies by maximum life. Its time
 // window is always 100 counts, independent of the configured round limit.
 func (m *Match) recoverWinner() {
-	survival := strings.Contains(strings.ToLower(m.Request.Mode), "survival") && m.Winner == 0
+	survival := m.isSurvival() && m.Winner == 0
 	if m.Winner < 0 || (!m.hasTurns() && !survival) || (m.matchDone && !survival) {
 		return
 	}

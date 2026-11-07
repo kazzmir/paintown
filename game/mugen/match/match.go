@@ -193,6 +193,7 @@ func New(request Request, options Options) (*Match, error) {
 	for side, selection := range request.Teams {
 		team := &m.Teams[side]
 		team.Mode, team.entered = selection.Mode, make(map[*character.Player]bool)
+		team.next = selection.StartMember
 		m.World.TeamModes[side] = string(selection.Mode)
 		for index, selected := range selection.Members {
 			if selected.Palette < 1 || selected.Palette > 12 || selected.AILevel < 0 || selected.AILevel > 8 {
@@ -205,7 +206,7 @@ func New(request Request, options Options) (*Match, error) {
 			player.BindPalette(player.Character, selected.Palette)
 			team.Members = append(team.Members, player)
 		}
-		m.Players[side] = team.Members[0]
+		m.Players[side] = team.Members[team.next]
 	}
 
 	if err := m.resetRound(); err != nil {
@@ -654,6 +655,11 @@ func (m *Match) commitRoundResult() {
 		}
 	}
 	target := max(1, m.Setting("Round", "match.wins", 2))
+	if m.isSurvival() {
+		// Each defeated opponent advances the streak. Ordinary match.wins
+		// must not grant a fresh full-health round against that opponent.
+		target = 1
+	}
 	m.matchDone = m.Wins[0] >= target || m.Wins[1] >= target
 	m.commitTeamResult()
 	for _, p := range m.Actors() {

@@ -58,6 +58,10 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 			}
 			for _, a := range section.Attributes {
 				if a.ID.String() == "match.wins" {
+					found = true
+					if f.match.Request.Mode == "Survival" {
+						continue // Exercise the real default, which is two for ordinary matches.
+					}
 					a.Value = parsers.NumberValue{Val: 1}
 					a.RawValue = "1"
 					found = true
@@ -138,6 +142,9 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	f.match.Players[0].Character.SetLife(400)
 	f.match.Players[0].Character.SetPower(500)
 	complete(f, 0)
+	if f.match.Round != 1 || f.match.Wins[0] != 1 {
+		t.Fatal("Survival repeated an opponent using the ordinary match win target")
+	}
 	f = enterFight()
 	if f.match.Request.MatchNo != 2 || f.match.Players[0].Character.Life != 798 || f.match.Players[0].Character.GetPower() != 500 {
 		t.Fatal("survival did not carry/recover life and power", f.match.Players[0].Character.Life, f.match.Players[0].Character.GetPower())
@@ -148,6 +155,63 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		t.Fatalf("survival loss did not show the actual streak: %T", e.currentState)
 	}
 	e.Draw(canvas)
+	step(ebiten.KeyEnter)
+	step()
+	// The same campaign path now carries a Turns reserve's original roster
+	// position. Losing the first fighter must not respawn him next opponent.
+	selectTurns := NewSelectState(e, "Survival")
+	e.currentState = selectTurns
+	if !selectTurns.teamMenu || !selectTurns.teamReady[1] {
+		t.Fatal("Survival omitted its player team menu")
+	}
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyArrowRight)
+	step(ebiten.KeyEnter)
+	f = enterFight()
+	if f.match.Teams[0].Mode != match.Turns || len(f.match.Teams[0].Members) != 2 {
+		t.Fatal("Survival Turns selection did not reach match")
+	}
+	for _, selected := range f.match.Request.Teams[0].Members {
+		if selected.AILevel != 0 {
+			t.Fatal("a human Turns reserve was assigned AI")
+		}
+	}
+	f.match.Options.Input = func(int, int) []string { return nil }
+	for _, p := range f.match.Actors() {
+		p.Character.InputSource = f.match.Options.Input
+		p.Character.AILevel = 0
+	}
+	for n := 0; n < 700 && f.match.Phase != match.Active; n++ {
+		step()
+	}
+	f.match.Players[0].Character.SetLife(0)
+	f.match.Players[0].Character.ChangeState(5150, 0, -1)
+	for n := 0; n < 800 && f.match.Round == 1 && e.currentState == f; n++ {
+		step()
+	}
+	if e.currentState != f || f.match.Round != 2 || f.match.Teams[0].Active != 1 {
+		t.Fatal("Survival did not consume the defeated Turns member")
+	}
+	reserve := f.match.Request.Teams[0].Members[1]
+	f.match.Players[0].Character.SetLife(400)
+	f.match.Players[0].Character.SetPower(700)
+	complete(f, 0)
+	carried := e.modeRun.carryLife[1]
+	if carried <= 400 || e.modeRun.template.Teams[0].StartMember != 1 {
+		t.Fatal("Survival omitted reserve recovery/roster carry", carried)
+	}
+	f = enterFight()
+	if f.match.Request.MatchNo != 2 || f.match.Teams[0].Active != 1 || len(f.match.Teams[0].Members) != 2 || f.match.Request.Players[0] != reserve || f.match.Players[0].Character.Life != carried || f.match.Players[0].Character.GetPower() != 700 || f.match.Players[0].Character.AILevel != 0 {
+		t.Fatal("next Survival opponent revived/replaced the reserve or lost its carried state")
+	}
+	e.Draw(canvas)
+	complete(f, 1)
+	if result, ok := e.currentState.(*GameOverScreenState); !ok || !result.survival || result.score != 1 {
+		t.Fatalf("exhausted Survival roster did not end its streak: %T", e.currentState)
+	}
 	step(ebiten.KeyEnter)
 	step()
 	f = selectMode("Training")

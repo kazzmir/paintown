@@ -22,7 +22,7 @@ type modeRun struct {
 	survival              bool
 	ending                string
 	lastFight             *FightState
-	carryLife, carryPower [2]int
+	carryLife, carryPower [4]int
 }
 
 func (s *SelectState) prepareMode(request match.Request) (match.Request, error) {
@@ -138,7 +138,7 @@ func (r *modeRun) request() match.Request {
 		}
 		request.Teams[1].Members[index] = match.Selection{DefPath: ch.DefPath, Name: ch.Name, Palette: palette, AILevel: level}
 	}
-	request.Players[0], request.Players[1] = request.Teams[0].Members[0], request.Teams[1].Members[0]
+	request.Players[0], request.Players[1] = request.Teams[0].Members[request.Teams[0].StartMember], request.Teams[1].Members[0]
 	return request
 }
 
@@ -147,6 +147,9 @@ func (r *modeRun) restore(f *FightState) {
 		return
 	}
 	for member, p := range f.match.SidePlayers(0) {
+		if f.match.Teams[0].Mode == match.Turns {
+			member += f.match.Teams[0].Active
+		}
 		if member >= len(r.carryLife) {
 			break
 		}
@@ -172,7 +175,13 @@ func (r *modeRun) result(f *FightState) (State, error) {
 		return &ContinueScreenState{engine: r.engine, retry: f.match.Request}, nil
 	}
 	if r.survival {
+		if f.match.Teams[0].Mode == match.Turns {
+			r.template.Teams[0].StartMember = f.match.Teams[0].Active
+		}
 		for index, p := range f.match.SidePlayers(0) {
+			if f.match.Teams[0].Mode == match.Turns {
+				index += f.match.Teams[0].Active
+			}
 			if index < len(r.carryLife) {
 				r.carryLife[index], r.carryPower[index] = p.Character.Life, p.Character.GetPower()
 			}

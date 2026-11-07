@@ -95,4 +95,6 @@ Native1.1b1 Turns2-vs-4 and single-player Survival controls establish elapsed-ti
 recovery, initial-opponent-health weighting, integer ordering and win-pose timing.
 The existing team/mode scenarios cover those values, reset carry and final roster
 exhaustion; affected segments pass with race detection. No generated control bank
-is retained. See docs/HANDOFF.md for the next Survival bout/roster persistence issue.
+is retained. Survival bout/roster persistence is now covered too: single-opponent completion,
+human reserve ownership and original Turns roster position across handoff.
+Next functional gap is documented1.1 stage/BG zoom; see docs/HANDOFF.md.

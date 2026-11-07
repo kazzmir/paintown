@@ -21,11 +21,18 @@ coverage report initially caught a stale RecoveryLife symbol; catalog now names
 the replacement consumer. No game-test rerun was required for that metadata fix.
 Native overlays/captures/logs and segment scratch were deleted after each run.
 
-Continue with Survival bout/roster persistence: the existing mode scenario forces
-match.wins=1 and may hide Survival's ordinary two-round default; carry currently
-stores only active members. Mixed Single/Simul/Turns life balancing and Survival
-team recovery still need native confirmation. Remaining renderer/KO-echo/AI
-precision and licensed-font/CD limitations remain partial, not certified parity.
-The earlier ACT outfit/private-portrait and stage/tracker-music work is retained.
-Canonical local assets remain under temp/mugen-1.1b1; music links to the user's
-existing data-new/mugen/music. No originals outside scope were changed.
+Survival follow-up now advances one opponent per bout using the real default
+match.wins setting; the scenario no longer forces it to1. Survival exposes a
+P1 team menu. Turns reserves remain human-controlled. Campaign handoff retains
+the original roster and selected reserve index, carries its recovered health/
+power, and never re-enters eliminated members. The existing connected mode
+scenario spans those transitions and final roster exhaustion. Affected segments
+pass with race detection; Linux binary rebuilt. No generated assets are retained.
+
+Next: implement documented1.1 stage startzoom/zoomout/zoomin and BG zoomdelta.
+They are presently absent from stage parsing and rendering (Viewport.Zoom only
+serves coordinate/boundary queries). This is a functional gap discovered during
+this audit, beyond the remaining native color/shadow/alpha/KO-echo/AI precision.
+Mixed-mode life balance, Survival team recovery and dead Simul partner carry
+still need native confirmation. Physical CD and absent licensed fonts remain
+limitations. Canonical local assets/music stay ignored and unchanged.

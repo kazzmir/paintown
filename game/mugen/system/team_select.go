@@ -13,7 +13,12 @@ import (
 func (s *SelectState) initTeams() {
 	s.teamCounts = [2]int{1, 1}
 	s.teamModes = [2]match.TeamMode{match.Single, match.Single}
-	s.teamMenu = strings.Contains(strings.ToLower(s.title), "team")
+	s.teamMenu = strings.Contains(strings.ToLower(s.title), "team") || s.title == "Survival"
+	if s.title == "Survival" {
+		// Survival lets P1 choose Single, Simul or Turns; the schedule owns
+		// the opposing side rather than presenting a second team menu.
+		s.teamReady[1] = true
+	}
 	if s.title == "Team Co-op" || s.title == "Survival Co-op" {
 		// Each human chooses one member of the same simul team.
 		s.teamMenu = false
@@ -73,7 +78,7 @@ func (s *SelectState) pickMember(side int, ch *CharacterPortrait, palette int) b
 		return false
 	}
 	selected := match.Selection{DefPath: ch.DefPath, Name: ch.Name, Palette: palette}
-	if len(s.rosters[side]) > 0 {
+	if len(s.rosters[side]) > 0 && s.teamModes[side] == match.Simul {
 		selected.AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))
 	}
 	s.rosters[side] = append(s.rosters[side], selected)
