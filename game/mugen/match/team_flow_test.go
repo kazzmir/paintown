@@ -318,4 +318,72 @@ flag=timerfreeze
 		t.Fatal("Single did not retain two rounds against Turns")
 	}
 
+	// The loading-time controls rotate only the remaining Turns roster. Follow
+	// one team from its initial half swap through each reserve's elimination.
+	request.Teams[0] = TeamSelection{Mode: Turns}
+	for palette := 1; palette <= 4; palette++ {
+		selected := request.Players[0]
+		selected.Palette = palette
+		request.Teams[0].Members = append(request.Teams[0].Members, selected)
+	}
+	held := "DirUp"
+	options.RosterInput = func(playerID, facing int) []string {
+		if playerID == 1 {
+			return []string{held}
+		}
+		return nil
+	}
+	ordered, err := New(request, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkOrder := func(want [4]int, active int) {
+		t.Helper()
+		for index, selected := range ordered.Request.Teams[0].Members {
+			if selected.Palette != want[index] {
+				t.Fatal("Turns loading order", ordered.Round, index, selected.Palette, want)
+			}
+		}
+		if ordered.Teams[0].Active != active || ordered.Request.Players[0].Palette != want[active] || ordered.Players[0].Character.RoundsExisted != 0 {
+			t.Fatal("Turns entrant/selection not aligned", ordered.Teams[0].Active, ordered.Request.Players[0])
+		}
+	}
+	checkOrder([4]int{3, 4, 1, 2}, 0)
+	for index, selected := range request.Teams[0].Members {
+		if selected.Palette != index+1 {
+			t.Fatal("rotation mutated caller roster")
+		}
+	}
+	orderedID := ordered.Players[0].Character.EntityID
+	for loss, order := range [][4]int{{3, 1, 2, 4}, {3, 1, 4, 2}, {3, 1, 4, 2}} {
+		held = []string{"DirForward", "DirBack", "DirUp"}[loss]
+		advanceUntil(t, ordered, Active, 650)
+		ordered.Players[0].Character.SetLife(0)
+		ordered.Players[0].Character.ChangeState(5150, 0, -1)
+		advanceUntil(t, ordered, PreIntro, 650)
+		checkOrder(order, loss+1)
+		if ordered.Players[0].Character.EntityID != orderedID || ordered.Teams[1].Active != 0 {
+			t.Fatal("rotation changed root slot or opposing winner")
+		}
+	}
+	advanceUntil(t, ordered, Active, 650)
+	ordered.Players[0].Character.SetLife(0)
+	ordered.Players[0].Character.ChangeState(5150, 0, -1)
+	advanceUntil(t, ordered, Finished, 650)
+	if ordered.Round != 4 || !ordered.Teams[0].exhausted {
+		t.Fatal("rotation recycled a defeated member")
+	}
+
+	// Loading a new Survival opponent resumes the existing winner, even when
+	// a direction remains held and there are still four available members.
+	request.Mode, request.RoundStart = "Survival", 2
+	request.Carry[0] = []*RoundCarry{{Life: 500, RoundsExisted: 0}, nil, nil, nil}
+	held = "DirUp"
+	resumed, err := New(request, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resumed.Request.Players[0].Palette != 1 || resumed.Players[0].Character.Life != 500 || resumed.Players[0].Character.RoundsExisted != 1 {
+		t.Fatal("continuing Survival winner was rotated away")
+	}
 }

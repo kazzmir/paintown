@@ -1,6 +1,7 @@
 package main
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -69,4 +70,137 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatalf("team fight did not return to title: %T", e.currentState)
 	}
+
+	// Both co-op humans choose first; P1 then chooses the CPU roster type.
+	s = NewSelectState(e, "Team Co-op")
+	e.currentState = s
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyD)
+	step(ebiten.KeyU)
+	if !s.teamMenu || !s.p1Done || !s.p2Done || !s.teamReady[0] {
+		t.Fatal("co-op did not offer the opponent menu after human selections")
+	}
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyArrowRight)
+	step(ebiten.KeyEnter)
+	if s.teamMenu || !s.opponentTeamChosen || s.teamModes[1] != match.Turns || s.teamCounts[1] != 3 {
+		t.Fatal("P1 did not configure the co-op opposing roster")
+	}
+	enterFight := func() *FightState {
+		t.Helper()
+		for attempt := 0; attempt < 8; attempt++ {
+			if f, ok := e.currentState.(*FightState); ok {
+				return f
+			}
+			step(ebiten.KeyEnter)
+		}
+		t.Fatalf("co-op did not reach fight: %T", e.currentState)
+		return nil
+	}
+	f = enterFight()
+	if f.match.Teams[0].Mode != match.Simul || f.match.Teams[1].Mode != match.Turns || len(f.match.Teams[1].Members) != 3 || len(f.match.World.Roots) != 3 {
+		t.Fatal("co-op selected mode/count did not reach match")
+	}
+	for index, p := range f.match.SidePlayers(0) {
+		if p.Character.AILevel != 0 || f.match.Request.Teams[0].Members[index].DefPath != s.rosters[index][0].DefPath {
+			t.Fatal("co-op human choice/control ownership was replaced")
+		}
+	}
+	if f.match.Players[1].Character.AILevel < 1 {
+		t.Fatal("co-op opposing roster lacks CPU ownership")
+	}
+	checkCoopInput := func() {
+		t.Helper()
+		step(ebiten.KeyD)
+		read := f.match.Options.Input
+		if !slices.Contains(read(3, 1), "DirForward") || slices.Contains(read(1, 1), "DirForward") {
+			t.Fatal("second human input did not reach only the co-op partner slot")
+		}
+	}
+	checkCoopInput()
+	e.Draw(canvas)
+	if f.renderError != nil || f.hud.renderError != nil {
+		t.Fatal("co-op team HUD/actor drawing", f.renderError, f.hud.renderError)
+	}
+	step(ebiten.KeyEscape)
+
+	// Survival co-op uses the same two human slots but always a Single CPU.
+	s = NewSelectState(e, "Survival Co-op")
+	e.currentState = s
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyU)
+	if s.teamMenu || !s.choosingStage {
+		t.Fatal("Survival co-op unexpectedly asks for an opponent type")
+	}
+	f = enterFight()
+	if f.match.Teams[0].Mode != match.Simul || f.match.Teams[1].Mode != match.Single || len(f.match.World.Roots) != 3 {
+		t.Fatal("Survival co-op roster")
+	}
+	for _, p := range f.match.SidePlayers(0) {
+		if p.Character.AILevel != 0 || p.Character.MaxLife != 667 {
+			t.Fatal("Survival co-op human control/life", p.Character.AILevel, p.Character.MaxLife)
+		}
+	}
+	if f.match.Players[1].Character.MaxLife != 1000 || f.match.Players[1].Character.AILevel < 1 {
+		t.Fatal("Survival co-op Single CPU")
+	}
+	checkCoopInput()
+	step(ebiten.KeyEscape)
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatalf("co-op fight did not return to title: %T", e.currentState)
+	}
+
+	// Watch lets P1 choose each team's mode and roster in sequence. Both
+	// sides then use CPU controls, including the selected Simul partner.
+	s = NewSelectState(e, "Watch Mode")
+	e.currentState = s
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyEnter) // Own Turns team of two.
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyArrowRight)
+	step(ebiten.KeyEnter)
+	if !s.teamMenu || !s.p1Done || s.p2Done {
+		t.Fatal("Watch did not defer the opposing menu until after the first roster")
+	}
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyEnter) // Opposing Simul team.
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyArrowRight)
+	step(ebiten.KeyEnter)
+	if len(s.rosters[0]) != 2 || len(s.rosters[1]) != 2 || !s.choosingStage {
+		t.Fatal("P1 could not select both Watch rosters")
+	}
+	f = enterFight()
+	if f.match.Teams[0].Mode != match.Turns || f.match.Teams[1].Mode != match.Simul || len(f.match.World.Roots) != 3 {
+		t.Fatal("Watch selected team modes did not reach match")
+	}
+	for _, team := range f.match.Request.Teams {
+		for _, selected := range team.Members {
+			if selected.AILevel < 1 {
+				t.Fatal("Watch left a selected member human-controlled")
+			}
+		}
+	}
+	step(ebiten.KeyEscape)
+
+	// Team Arcade uses the same deferred enemy menu but schedules its roster.
+	s = NewSelectState(e, "Team Arcade")
+	e.currentState = s
+	step(ebiten.KeyEnter) // Own Single team.
+	if s.teamMenu {
+		t.Fatal("Team Arcade requested the enemy mode before choosing its own roster")
+	}
+	step(ebiten.KeyEnter)
+	if !s.teamMenu || !s.p1Done || s.teamReady[1] {
+		t.Fatal("Team Arcade omitted its deferred enemy menu")
+	}
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyEnter) // CPU Simul team.
+	f = enterFight()
+	if f.match.Teams[0].Mode != match.Single || f.match.Teams[1].Mode != match.Simul || len(f.match.World.Roots) != 3 || f.match.Request.Campaign == 0 {
+		t.Fatal("Team Arcade lost its selected CPU roster/schedule")
+	}
+	step(ebiten.KeyEscape)
 }

@@ -71,8 +71,8 @@ checkpoint captures/PCM/logs/overlays were inspected and removed. Keep the one
 ignored temp/bin/mugen-go executable and shared build cache for reuse.
 
 Remaining: physical CD (.da) audio is unsupported. Exact native color/shadow/
-alpha/KO echo and AI policy remain precision work. Turns and single-player
-Survival recovery are now calibrated; mixed-team health/recovery remain partial.
+alpha/KO echo and AI policy remain precision work. Turns, mixed-team health/round
+budgets and Survival team recovery are calibrated against supplied beta flows.
 Licensed Windows fonts are absent; the observable fallback needs a supplied
 font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
@@ -81,11 +81,14 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 ## Latest team checkpoint
 
 Mixed-team health/round budgets and Survival Simul partner recovery/carry now
-match bounded original1.1b1 flows. Changed-source segments pass with race
-detection; Linux rebuilt. Native/scratch output was removed. The ledger reopens
-teams for concrete remaining gaps: held-direction Turns ordering and Team
-Co-op opponent selection. Survival now retains continuous round/actor counters,
-declared variables and CNS RNG before5900 entry; the connected mode scenario
-checks those values at entry and passes with race detection. Continue there before optional pixel/audio precision. Palette, stage,
-tracker, zoom/moving-floor/reflection and global/hires scaling work remains.
-See docs/HANDOFF.md. Preserve the connected-scenario/cleanup workflow above.
+match bounded original1.1b1 flows. Survival retains round/actor counters,
+declared persistent variables and CNS RNG before5900 entry. Turns supports
+held-direction roster ordering without recycling KO members or replacing a
+continuing Survival winner. Team Co-op and Team Arcade defer the opponent menu
+until human selection; Watch lets P1 select both modes/rosters. Connected
+scenarios cover those flows and co-op input ownership with race detection.
+
+The ledger has32/34 implemented rows; only assets and precision remain partial.
+Stage/global/hires scaling, moving floors, reflections, legacy outfits and file
+music have functional consumers; exact raster and compatibility edges remain
+unverified. See docs/HANDOFF.md and preserve the cleanup workflow above.

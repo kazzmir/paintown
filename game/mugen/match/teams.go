@@ -53,6 +53,7 @@ func normalizeTeams(request Request) (Request, error) {
 			return request, fmt.Errorf("team %d: round carry exceeds roster size", side+1)
 		}
 		team.Members = append([]Selection(nil), team.Members...)
+		request.Carry[side] = append([]*RoundCarry(nil), request.Carry[side]...)
 		request.Players[side] = team.Members[team.StartMember]
 	}
 	return request, nil
@@ -119,6 +120,78 @@ func (m *Match) SidePlayers(side int) []*character.Player {
 }
 
 func (m *Match) hasTurns() bool { return m.Teams[0].Mode == Turns || m.Teams[1].Mode == Turns }
+
+func rotateTail[T any](values []T, start, offset int) {
+	count := len(values) - start
+	if count < 2 {
+		return
+	}
+	offset = (offset%count + count) % count
+	tail := append([]T(nil), values[start:]...)
+	copy(values[start:], tail[offset:])
+	copy(values[start+count-offset:], tail[:offset])
+}
+
+// The beta readme defines this loading-time control. Eliminated members stay
+// before next; a continuing Survival winner never receives another rotation.
+func (m *Match) rotateNextMembers(initial bool) {
+	read := m.Options.RosterInput
+	if read == nil {
+		read = m.Options.Input
+	}
+	if read == nil {
+		return
+	}
+	for side := range m.Teams {
+		team := &m.Teams[side]
+		start, count := team.next, len(team.Members)-team.next
+		if team.Mode != Turns || count < 2 || (!initial && start == team.Active) {
+			continue
+		}
+		if initial && start < len(m.Request.Carry[side]) && m.Request.Carry[side][start] != nil {
+			continue
+		}
+		if m.Request.Teams[side].Members[start].AILevel > 0 {
+			continue
+		}
+		facing := m.Stage.PlayerInfo.P1Facing
+		if side == 1 {
+			facing = m.Stage.PlayerInfo.P2Facing
+		}
+		if facing == 0 {
+			facing = 1 - side*2
+		}
+		forward, back, up := false, false, false
+		for _, key := range read(side+1, facing) {
+			switch key {
+			case "DirForward":
+				forward = true
+			case "DirBack":
+				back = true
+			case "DirUp":
+				up = true
+			}
+		}
+		offset := 0
+		if up && count == 4 {
+			offset = 2
+		} else if forward != back {
+			if forward {
+				offset = 1
+			} else {
+				offset = count - 1
+			}
+		}
+		if offset == 0 {
+			continue
+		}
+		rotateTail(team.Members, start, offset)
+		rotateTail(m.Request.Teams[side].Members, start, offset)
+		if len(m.Request.Carry[side]) == len(team.Members) {
+			rotateTail(m.Request.Carry[side], start, offset)
+		}
+	}
+}
 
 func (m *Match) teamKO(side int) bool {
 	allDead := true

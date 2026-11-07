@@ -47,6 +47,7 @@ type Options struct {
 	TeamLoseOnKO                 bool
 	Team1Vs2Life                 int
 	Input                        func(playerID, facing int) []string
+	RosterInput                  func(playerID, facing int) []string // held directions sampled only before loading
 	SoundQueue                   *sound.Queue
 	MotifSpace                   coord.Space
 	MaxEffects                   int
@@ -220,6 +221,7 @@ func New(request Request, options Options) (*Match, error) {
 		m.Players[side] = team.Members[team.next]
 	}
 
+	m.rotateNextMembers(true)
 	if err := m.resetRound(); err != nil {
 		return nil, err
 	}
@@ -239,6 +241,7 @@ func (m *Match) resetRound() error {
 		team := &m.Teams[side]
 		team.Active = team.next
 		m.Players[side] = team.Members[team.Active]
+		m.Request.Players[side] = m.Request.Teams[side].Members[team.Active]
 	}
 	m.World.StageInfo = map[string]string{"info.name": m.Stage.Name, "info.displayname": m.Stage.DisplayName, "info.author": m.Stage.Author, "info.authorname": m.Stage.Author}
 	m.World.StageNoAutoTurn = !m.Stage.StageInfo.AutoTurn
@@ -574,6 +577,7 @@ func (m *Match) Update() error {
 			if m.matchDone {
 				m.enter(Finished)
 			} else {
+				m.rotateNextMembers(false)
 				m.Round++
 				return m.resetRound()
 			}

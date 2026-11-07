@@ -71,12 +71,19 @@ The launcher compiles/runs the Go application and keeps build caches under
 Single, Simul (two active members) and Turns (two to four members); choose mode
 with Up/Down, turns count with Left/Right, then confirm each roster member.
 Simul partners use AI; co-op routes the second human to P3. Team outcomes, stock
-team HUD and turns handoff work. AI executes authored CMD motions/chords through the same state controllers as
+team HUD and turns handoff work. Hold forward/back immediately before a Turns
+match or reserve loads to rotate the remaining roster; Up swaps halves when
+four members remain. Defeated members stay out. Team Arcade and Team Co-op ask
+P1 for the opponent's team type after the human selections. In Watch, P1 selects
+each team's mode and roster in sequence, then both sides use AI.
+
+AI executes authored CMD motions/chords through the same state controllers as
 human input, with difficulty-dependent reaction and defence. Arcade/team-arcade/co-op progress through ordered opponents, victory, continue
 and ending screens. Survival carries/replenishes life and shows its streak;
 training provides unlimited time, KO protection and refills; watch uses AI on both
-sides. Recovery calibration and exact native AI decisions remain deferred with
-precision. Remaining media/asset compatibility is still in progress. Menu mode names do not imply complete mode
+sides. Mixed-team health/round budgets and Survival recovery now follow the
+supplied beta; exact native AI decisions remain precision work. Remaining
+media/asset compatibility is still in progress. Menu mode names do not imply complete mode
 rules. See [match notes](docs/MATCH.md) for details.
 
 | Action | Player 1 | Player 2 |
@@ -126,7 +133,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The checklist replaces test counts and typed-routing percentages as the progress
-view. The current checklist has31/34 implemented items (91% of checklist items, not
+view. The current checklist has32/34 implemented items (94% of checklist items, not
 native conformance or remaining effort); see the explicit partial rows.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard

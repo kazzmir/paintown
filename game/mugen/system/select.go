@@ -16,7 +16,7 @@ type SelectState struct {
 	engine *Engine
 	title  string
 	chars  []*CharacterPortrait
-	showP2 bool // whether P2 cursor is active (VS/Team VS/Co-op only)
+	showP2 bool // whether both rosters are selected (Watch uses P1 for both)
 
 	p1CursorX              int
 	p1CursorY              int
@@ -36,6 +36,7 @@ type SelectState struct {
 	teamCounts, teamCursor [2]int
 	teamReady              [2]bool
 	rosters                [2][]match.Selection
+	opponentTeamChosen     bool
 }
 
 func NewSelectState(engine *Engine, title string) *SelectState {
@@ -53,13 +54,13 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 
 	chars, stages, loadError := loadCharacters(selectDefPath, charsDir)
 
-	// Determine if P2 cursor should be shown
-	// Only in modes that involve a second human player
+	// Watch selects both rosters with P1; versus/co-op use two humans.
 	p2Modes := map[string]bool{
 		"Versus Mode":    true,
 		"Team Versus":    true,
 		"Team Co-op":     true,
 		"Survival Co-op": true,
+		"Watch Mode":     true,
 	}
 
 	s := &SelectState{
@@ -155,6 +156,9 @@ func (s *SelectState) Update() (State, error) {
 			s.p1Done = false
 			s.p2Done = false
 			s.rosters = [2][]match.Selection{}
+			if s.title == "Team Co-op" || s.title == "Survival Co-op" || s.title == "Team Arcade" || s.title == "Watch Mode" {
+				s.initTeams()
+			}
 			return s, nil
 		}
 		return NewTitleState(s.engine), nil
@@ -201,25 +205,30 @@ func (s *SelectState) Update() (State, error) {
 		}
 	}
 
-	// P2 cursor (only in two-player modes)
-	if s.showP2 && !s.p2Done {
-		if input.GlobalManager.IsJustPressed(2, input.ActionLeftUI) {
+	// Watch reuses P1 controls after choosing the opposing team's mode.
+	coop := s.title == "Team Co-op" || s.title == "Survival Co-op"
+	if s.showP2 && !s.p2Done && (!coop || s.p1Done) && (s.title != "Watch Mode" || s.opponentTeamChosen) {
+		inputSlot := 2
+		if s.title == "Watch Mode" {
+			inputSlot = 1
+		}
+		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionLeftUI) {
 			s.p2CursorX = s.wrap(s.p2CursorX-1, s.cols())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if input.GlobalManager.IsJustPressed(2, input.ActionRightUI) {
+		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionRightUI) {
 			s.p2CursorX = s.wrap(s.p2CursorX+1, s.cols())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if input.GlobalManager.IsJustPressed(2, input.ActionUp) {
+		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionUp) {
 			s.p2CursorY = s.wrap(s.p2CursorY-1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if input.GlobalManager.IsJustPressed(2, input.ActionDown) {
+		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionDown) {
 			s.p2CursorY = s.wrap(s.p2CursorY+1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if palette, ok := s.confirm(2); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
+		if palette, ok := s.confirm(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
 			s.p2Done = s.pickMember(1, s.chosen(s.p2CursorX, s.p2CursorY), palette)
 			s.palettes[1] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
@@ -231,7 +240,12 @@ func (s *SelectState) Update() (State, error) {
 		return NewTitleState(s.engine), nil
 	}
 
-	// Transition to VS when player(s) are done
+	if s.p1Done && !s.opponentTeamChosen && (s.title == "Team Arcade" || s.title == "Watch Mode" || (s.title == "Team Co-op" && s.p2Done)) {
+		s.teamMenu = true
+		s.teamReady = [2]bool{true, false}
+		return s, nil
+	}
+	// Transition to stage selection when all manually selected rosters are done.
 	if s.p1Done && (!s.showP2 || s.p2Done) {
 		if len(s.stages) == 0 {
 			return s, fmt.Errorf("selection contains no available stages")

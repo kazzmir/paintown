@@ -166,6 +166,7 @@ func (r *modeRun) result(f *FightState) (State, error) {
 	if r.survival {
 		if f.match.Teams[0].Mode == match.Turns {
 			r.template.Teams[0].StartMember = f.match.Teams[0].Active
+			r.template.Teams[0].Members = append([]match.Selection(nil), f.match.Request.Teams[0].Members...)
 		}
 		for index, p := range f.match.SidePlayers(0) {
 			if f.match.Teams[0].Mode == match.Turns {

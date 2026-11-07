@@ -11,17 +11,20 @@ import (
 )
 
 func (s *SelectState) initTeams() {
+	s.teamReady, s.teamCursor = [2]bool{}, [2]int{}
+	s.opponentTeamChosen = false
 	s.teamCounts = [2]int{1, 1}
 	s.teamModes = [2]match.TeamMode{match.Single, match.Single}
-	s.teamMenu = strings.Contains(strings.ToLower(s.title), "team") || s.title == "Survival"
-	if s.title == "Survival" {
-		// Survival lets P1 choose Single, Simul or Turns; the schedule owns
-		// the opposing side rather than presenting a second team menu.
+	s.teamMenu = strings.Contains(strings.ToLower(s.title), "team") || s.title == "Survival" || s.title == "Watch Mode"
+	if s.title == "Survival" || s.title == "Team Arcade" || s.title == "Watch Mode" {
+		// Survival has a scheduled opponent. Arcade/Watch ask for the
+		// opposing mode after the first roster has been selected.
 		s.teamReady[1] = true
 	}
 	if s.title == "Team Co-op" || s.title == "Survival Co-op" {
 		// Each human chooses one member of the same simul team.
 		s.teamMenu = false
+		s.teamModes[0], s.teamCursor[0] = match.Simul, 1
 	}
 }
 
@@ -35,7 +38,7 @@ func (s *SelectState) updateTeamMenu() {
 			continue
 		}
 		inputSlot := side + 1
-		if !s.showP2 {
+		if !s.showP2 || s.title == "Team Co-op" || s.title == "Watch Mode" {
 			inputSlot = 1
 		}
 		index := s.teamCursor[side]
@@ -70,6 +73,9 @@ func (s *SelectState) updateTeamMenu() {
 	}
 	if s.teamReady[0] && s.teamReady[1] {
 		s.teamMenu = false
+		if s.p1Done {
+			s.opponentTeamChosen = true
+		}
 	}
 }
 
@@ -102,7 +108,7 @@ func (s *SelectState) selectedTeams(p1, p2 *CharacterPortrait) [2]match.TeamSele
 		for i := range teams[0].Members {
 			teams[0].Members[i].AILevel = 0
 		}
-		mode, count := match.Simul, 2
+		mode, count := s.teamModes[1], s.teamCounts[1]
 		if s.title == "Survival Co-op" {
 			mode, count = match.Single, 1
 		}
@@ -129,7 +135,7 @@ func (s *SelectState) drawTeamSelection(screen *ebiten.Image) {
 		x := w * (side*2 + 1) / 4
 		if s.teamMenu {
 			title := fmt.Sprintf("P%d TEAM", side+1)
-			if side == 1 && !s.showP2 {
+			if side == 1 && (!s.showP2 || s.title == "Team Co-op") {
 				title = "OPPONENT TEAM"
 			}
 			f.Draw(screen, title, x, h/3, info[1], font.AlignCenter)

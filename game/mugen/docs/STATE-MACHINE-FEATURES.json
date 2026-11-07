@@ -384,15 +384,17 @@
       "id": "teams",
       "name": "Team/simul/turns lifecycle, partner context and recovery",
       "group": "Modes and platforms",
-      "status": "partial",
-      "gap": "Turns roster-order switching and the Team Co-op opponent-mode menu still need implementation.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item4",
       "sources": [
         "match/teams.go:commitTeamResult",
         "match/teams.go:recoverWinner",
-        "system/team_select.go:selectedTeams"
+        "match/teams.go:rotateNextMembers",
+        "system/team_select.go:selectedTeams",
+        "system/team_select.go:updateTeamMenu"
       ],
-      "validation": "Original1.1b1 Simul-vs-four-Turns flow:1000/750 maximum life,797 recovery carry, second Simul defeat ends round4. Connected mixed/Single/Turns lifecycle passes with race detection."
+      "validation": "Original1.1b1 mixed-team life/round budgets and Survival recovery are calibrated. Connected roster flow covers initial Up swap, forward/back reserve rotations, eliminated-prefix/selection/root identity and exhaustion, plus continuing Survival winner protection. Menu-to-fight flow covers Team Co-op opponent choice, both human input slots, Survival Co-op Single CPU, P1 selection of both Watch rosters and Team Arcade's deferred opponent menu. Changed-source segments pass with race detection."
     },
     {
       "id": "stage-triggers",
@@ -522,7 +524,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d66ce8d9d83cf1d41d69be045279148749e556666c928c9cf1b86c5c3143fc20"
+      "passed_source": "8fa1d45ea85048040bfb825e31150c112422d3bcef0fbbba57cf3588cb974f97"
     },
     {
       "id": "entities",
@@ -555,7 +557,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7506c3f5d9fe798bac5a0a07f547c9a4a4c9a680d637b70c52f4a3b94304a197"
+      "passed_source": "e82698256460f9a21fd538e620aa3239c20e7dc7b7686bcaeab9759d56acf59b"
     },
     {
       "id": "effects-pause",
@@ -590,7 +592,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f3039c7d67498dc80b0ca5a4561fd4afbc938ec8c5af70d35cf2abd5c62899a5"
+      "passed_source": "f25bc976ac2f89cf18e691191bd7874d5c6384896cca03f601779684f31340ad"
     },
     {
       "id": "match-flow",
@@ -669,7 +671,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "85ebd0616662b42e9f2de2a6ff32bd6911cc90df3533da79015d307198d8ad65"
+      "passed_source": "3fe1cdfd9064bb3fbc9189caf03524af1dd95e7cbac5129bddf148ebfacbae79"
     }
   ],
   "presentation_followups": [
