@@ -135,11 +135,11 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	}
 	step() // Releases the completed campaign.
 	f = selectMode("Survival")
-	f.match.Players[0].Character.SetLife(600)
+	f.match.Players[0].Character.SetLife(400)
 	f.match.Players[0].Character.SetPower(500)
 	complete(f, 0)
 	f = enterFight()
-	if f.match.Request.MatchNo != 2 || f.match.Players[0].Character.Life <= 600 || f.match.Players[0].Character.Life > f.match.Players[0].Character.MaxLife || f.match.Players[0].Character.GetPower() != 500 {
+	if f.match.Request.MatchNo != 2 || f.match.Players[0].Character.Life != 798 || f.match.Players[0].Character.GetPower() != 500 {
 		t.Fatal("survival did not carry/recover life and power", f.match.Players[0].Character.Life, f.match.Players[0].Character.GetPower())
 	}
 	complete(f, 1)

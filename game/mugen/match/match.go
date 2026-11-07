@@ -104,7 +104,8 @@ type Match struct {
 	pendingRoundOver        bool
 	slowdown                engine.RoundSlowdown
 	aiBrains                map[int32]*aiBrain
-	recoveryTimeLeft        int
+	elapsedFightTicks       int
+	startingLife            [2]float32 // mean fraction before this round's CNS
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -245,6 +246,7 @@ func (m *Match) resetRound() error {
 	m.resetAnnouncements()
 	m.slowdown.Clear()
 	m.TimeLeft = m.Options.RoundTime
+	m.elapsedFightTicks = 0
 	s := m.Stage
 	if m.Round > 1 {
 		s.ResetBackground()
@@ -290,12 +292,13 @@ func (m *Match) resetRound() error {
 		}
 		c.Ctrl = false
 		c.MaxLife = c.MaxLife * m.Options.LifePercent / 100
+		c.MaxLife = m.rosterLife(side, c.MaxLife)
 		if m.Teams[side].Mode == Single && m.Teams[1-side].Mode == Simul && m.Options.Team1Vs2Life > 0 {
 			c.MaxLife = c.MaxLife * m.Options.Team1Vs2Life / 100
 		}
 		c.Life = c.MaxLife
 		if m.Round > 1 && m.hasTurns() && m.Teams[side].entered[p] && previous.IsAlive() {
-			c.Life = RecoveryLife(previous.Life, c.MaxLife, m.recoveryTimeLeft, m.Options.RoundTime)
+			c.Life = min(c.MaxLife, previous.Life)
 		}
 		m.Teams[side].entered[p] = true
 		c.Commands = character.NewCommandBuffer(120)
@@ -353,6 +356,15 @@ func (m *Match) resetRound() error {
 		if p.Character.RuntimeError != nil {
 			return p.Character.RuntimeError
 		}
+	}
+	for side := range m.Teams {
+		m.startingLife[side] = 0
+		players := m.SidePlayers(side)
+		for _, p := range players {
+			c := p.Character
+			m.startingLife[side] = float32(float64(m.startingLife[side]) + float64(c.Life)/float64(max(1, c.MaxLife)))
+		}
+		m.startingLife[side] /= float32(len(players))
 	}
 	return nil
 }
@@ -463,6 +475,11 @@ func (m *Match) Update() error {
 		return nil
 	}
 	m.PhaseTime++
+	if m.Phase == FightCall || m.Phase == Active {
+		// Recovery uses elapsed fight passes even under TimerFreeze or an
+		// unlimited timer. Pause and skipped simulation passes do not count.
+		m.elapsedFightTicks++
+	}
 	switch m.Phase {
 	case PreIntro:
 		if m.PhaseTime >= m.Setting("Round", "start.waittime", 30) {
@@ -573,7 +590,6 @@ func (m *Match) hasKO() bool {
 }
 
 func (m *Match) finishRound() {
-	m.recoveryTimeLeft = m.TimeLeft
 	m.Announcements.Finish = 0
 	slow := true
 	for _, p := range m.Actors() {

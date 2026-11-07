@@ -133,16 +133,36 @@ value=Partner, TeamSide
 	for side := range request.Teams {
 		request.Teams[side].Mode = Turns
 	}
+	request.Teams[1].Members = append(request.Teams[1].Members, request.Teams[1].Members...)
+	options.RoundTime = 40
 	turns, err := New(request, options)
 	if err != nil {
 		t.Fatal(err)
+	}
+	freeze, err := cns.ParseNamed(strings.NewReader(`[Statedef -2]
+[State -2, freeze display clock]
+type=AssertSpecial
+trigger1=RoundNo!=2
+flag=timerfreeze
+`), "connected-turns.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, team := range turns.Teams {
+		for _, p := range team.Members {
+			p.Character.StateFile.States[-2] = freeze.States[-2]
+		}
 	}
 	advanceUntil(t, turns, Active, 650)
 	if len(turns.World.Roots) != 2 || turns.World.HomeTeam != 2 {
 		t.Fatal("turns benched member entered world or wrong home side")
 	}
 	first, loser := turns.Players[0].Character, turns.Players[1].Character
-	first.SetLife(700)
+	if first.MaxLife != 1000 || loser.MaxLife != 500 || loser.Life != 500 {
+		t.Fatal("unequal Turns roster health", first.MaxLife, loser.MaxLife, loser.Life)
+	}
+
+	first.SetLife(400)
 	first.SetPower(900)
 	rootIDs := [2]int32{first.EntityID, loser.EntityID}
 	bench := turns.Teams[0].Members[1].Character
@@ -152,11 +172,19 @@ value=Partner, TeamSide
 	if turns.Players[1].Character != loser || turns.Teams[1].Active != 0 {
 		t.Fatal("turns replaced outgoing member during result presentation")
 	}
+	for !turns.winPoseStarted {
+		if err := turns.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if first.Life != 798 || turns.TimeLeft != 40 {
+		t.Fatal("native Turns recovery must precede win-pose CNS", first.Life, turns.TimeLeft)
+	}
 	advanceUntil(t, turns, PreIntro, 400)
 	if turns.Teams[1].Active != 1 || turns.Teams[0].Active != 0 || turns.Players[1].Character == loser || bench.Time != 0 {
 		t.Fatal("turns roster did not advance only the loser")
 	}
-	if turns.Players[0].Character.Life <= 700 || turns.Players[0].Character.Life > turns.Players[0].Character.MaxLife || turns.Players[0].Character.GetPower() != 900 || turns.Players[0].Character.RoundsExisted != 1 || turns.Players[1].Character.RoundsExisted != 0 {
+	if turns.Players[0].Character.Life != 798 || turns.Players[0].Character.GetPower() != 900 || turns.Players[0].Character.RoundsExisted != 1 || turns.Players[1].Character.RoundsExisted != 0 {
 		t.Fatal("turns winner or new entrant retained wrong state")
 	}
 	for side, p := range turns.Players {
@@ -164,11 +192,44 @@ value=Partner, TeamSide
 			t.Fatal("turns changed persistent player slot identity")
 		}
 	}
-	advanceUntil(t, turns, Active, 650)
-	turns.Players[1].Character.SetLife(0)
-	turns.Players[1].Character.ChangeState(5150, 0, -1)
-	advanceUntil(t, turns, Finished, 650)
-	if turns.Winner != 0 || turns.Round != 2 || !turns.Teams[1].exhausted || turns.Teams[0].Active != 0 {
+	// Continue the same roster through a shorter-time win, then reverse the
+	// winner against an already damaged entrant. These original-beta values
+	// span time, starting opponent health, max-life scaling and carry/reset.
+	win := func(side, life, elapsed, want int, next Phase) {
+		t.Helper()
+		advanceUntil(t, turns, Active, 650)
+		for turns.elapsedFightTicks < elapsed {
+			if err := turns.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		winner, victim := turns.Players[side].Character, turns.Players[1-side].Character
+		winner.SetLife(life)
+		victim.SetLife(0)
+		victim.ChangeState(5150, 0, -1)
+		advanceUntil(t, turns, Over, 400)
+		for !turns.winPoseStarted {
+			if err := turns.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if winner.Life != want {
+			t.Fatal("native Turns win-pose recovery", turns.Round, winner.Life, want)
+		}
+		advanceUntil(t, turns, next, 400)
+	}
+	win(0, 400, 1200, 744, PreIntro)
+	if turns.Players[1].Character.MaxLife != 500 || turns.Players[1].Character.Life != 500 {
+		t.Fatal("incoming health changed with remaining roster")
+	}
+	win(1, 100, 180, 275, PreIntro)
+	if turns.Teams[0].Active != 1 || turns.Players[1].Character.Life != 275 {
+		t.Fatal("reversed winner did not carry recovered health")
+	}
+	win(0, 900, 180, 1000, PreIntro)
+	// A completed roster has no next round and grants no recovery.
+	win(0, 400, 30, 400, Finished)
+	if turns.Winner != 0 || turns.Round != 5 || !turns.Teams[1].exhausted || turns.Teams[0].Active != 1 {
 		t.Fatal("turns failed to terminate on roster exhaustion")
 	}
 }

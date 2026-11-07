@@ -339,13 +339,16 @@
       "name": "Deferred native fidelity and recovery calibration",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Resolve remaining color/shadow/alpha and KO-echo differences, calibrate provisional turns/survival recovery and native AI decision policy; functional consumers exist.",
+      "gap": "Remaining color/shadow/alpha, KO-echo playback and native AI policy precision; mixed-mode team health and Survival team recovery still need native confirmation. Turns and single-player Survival recovery now follow the supplied beta formula.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
         "character/ko_sound.go",
-        "font/font.go:DrawWithPalette"
-      ]
+        "font/font.go:DrawWithPalette",
+        "match/teams.go:recoverWinner",
+        "match/teams.go:rosterLife"
+      ],
+      "validation": "Original 1.1b1 connected flow: Turns 2-vs-4 life 1000/500, recovery 400\u2192798, 400\u2192744 at 20 elapsed counts, 100/500\u2192275 against a previously damaged winner, cap 900\u21921000; single-player Survival 400\u2192798. Affected connected scenarios pass with race detection."
     },
     {
       "id": "ai",
@@ -382,7 +385,7 @@
       "allocation": "item4",
       "sources": [
         "match/teams.go:commitTeamResult",
-        "match/teams.go:RecoveryLife",
+        "match/teams.go:recoverWinner",
         "system/team_select.go:selectedTeams"
       ]
     },
@@ -489,7 +492,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1e89149c24a2b5ddba90002f50bd18f9989ea05e72dc762039f51d3ebc73342f"
+      "passed_source": "1521cd2d7c4cd71629d8f52752a4d10276a4531899b6c844dc9880949cf355a0"
     },
     {
       "id": "entities",
@@ -519,7 +522,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "09ecd88cf44d8dbe1b7d2a07148696d0fe71842488532f4e135913b13f1c5852"
+      "passed_source": "e0f6b92efe7d8fb4a3663ca2ef74ec24ad7c832e0cad7db88fb170a125447db0"
     },
     {
       "id": "effects-pause",
@@ -551,7 +554,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1f5b8128ba3fc68c526fabafb967dabb5ae69779870000e1ec59bf74f7791b30"
+      "passed_source": "fa5b09242d5ebbd91739e388e9c3ce959286a7d0215606d027dfa59243bb013b"
     },
     {
       "id": "match-flow",
@@ -626,7 +629,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b2782cffcb183753f33ed5f0fe08d7a0ca83a49abaf61a8a011833d9d0857b4b"
+      "passed_source": "e3e295ea16c3bba3e1cbaf645d67ac3f21287f5512fb4347d1b7cd0f540693be"
     }
   ],
   "presentation_followups": [

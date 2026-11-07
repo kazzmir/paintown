@@ -46,5 +46,6 @@ func (m *Match) startWinPose() error {
 			return p.Character.RuntimeError
 		}
 	}
+	m.recoverWinner()
 	return nil
 }

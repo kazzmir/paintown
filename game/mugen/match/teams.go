@@ -161,16 +161,49 @@ func homeTeam(mode string) int {
 	return 1
 }
 
-// RecoveryLife supplies functional time-scaled recovery between turns and
-// survival bouts. The 27.5% compatibility baseline is not a measured beta
-// formula; exact amount/rounding is retained in the deferred precision ledger.
-func RecoveryLife(life, maximum, remaining, limit int) int {
-	if maximum <= 0 {
-		return life
+// The supplied 1.1b1's recovery routine (419350, caller 415262) first
+// truncates a per-thousand bonus, then multiplies by maximum life. Its time
+// window is always 100 counts, independent of the configured round limit.
+func (m *Match) recoverWinner() {
+	survival := strings.Contains(strings.ToLower(m.Request.Mode), "survival") && m.Winner == 0
+	if m.Winner < 0 || (!m.hasTurns() && !survival) || (m.matchDone && !survival) {
+		return
 	}
-	if limit <= 0 || remaining <= 0 {
-		return max(0, min(maximum, life))
+	base, bonus := 125, float32(275)
+	if survival {
+		// Survival spreads the base across partners/reserves and reduces
+		// the time bonus for the team's first member (native 4246a0).
+		count := len(m.Teams[m.Winner].Members)
+		if count > 1 {
+			base /= count
+			bonus = float32(float64(bonus) * (float64(count) - .5) / float64(count))
+		}
 	}
-	fraction := float64(min(remaining, limit)) / float64(limit)
-	return min(maximum, life+int(float64(maximum)*0.275*fraction))
+	remaining := float32(max(0, (100-float64(m.elapsedFightTicks)/float64(max(1, m.Setting("Time", "framespercount", 60))))/100))
+	// Preserve the beta's float32 intermediate and its initial opponent
+	// health adjustment; current/KO life would erase that distinction.
+	timed := float32(bonus * remaining)
+	factor := 1 + float64(float32(.6))*(float64(m.startingLife[1-m.Winner])-1)
+	permille := int(float64(base) + float64(timed)*factor)
+	for _, p := range m.SidePlayers(m.Winner) {
+		c := p.Character
+		if c.IsAlive() {
+			c.SetLife(min(c.MaxLife, c.Life+c.MaxLife*permille/1000))
+		}
+	}
+}
+
+// The beta balances the total reserve health of unequal Turns rosters: a
+// four-member team facing two members gets half life per entrant. The original
+// configured roster sizes remain in force after members are eliminated.
+func (m *Match) rosterLife(side, life int) int {
+	team := m.Teams[side]
+	if team.Mode != Turns || m.Teams[1-side].Mode != Turns || len(team.Members) == 0 {
+		return max(1, life)
+	}
+	own, other := len(team.Members), len(m.Teams[1-side].Members)
+	if other > 0 && other < own {
+		life = life * other / own
+	}
+	return max(1, life)
 }

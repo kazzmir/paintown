@@ -71,7 +71,8 @@ checkpoint captures/PCM/logs/overlays were inspected and removed. Keep the one
 ignored temp/bin/mugen-go executable and shared build cache for reuse.
 
 Remaining: physical CD (.da) audio is unsupported. Exact native color/shadow/
-alpha/KO echo, recovery amount/rounding and AI policy are deferred precision.
+alpha/KO echo and AI policy remain precision work. Turns and single-player
+Survival recovery are now calibrated; mixed-team health/recovery remain partial.
 Licensed Windows fonts are absent; the observable fallback needs a supplied
 font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
@@ -87,3 +88,11 @@ connected segments pass with race detection. Native invalid-content rejection
 is not established (the native control required complete constants/CMD blocks
 and standard SFF1.0.1 metadata). Keep that limitation visible in the ledger.
 Remaining precision is still partial; do not claim full native equivalence.
+
+## Recovery checkpoint
+
+Native1.1b1 Turns2-vs-4 and single-player Survival controls establish elapsed-time
+recovery, initial-opponent-health weighting, integer ordering and win-pose timing.
+The existing team/mode scenarios cover those values, reset carry and final roster
+exhaustion; affected segments pass with race detection. No generated control bank
+is retained. See docs/HANDOFF.md for the next Survival bout/roster persistence issue.

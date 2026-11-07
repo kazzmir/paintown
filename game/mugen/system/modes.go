@@ -174,7 +174,7 @@ func (r *modeRun) result(f *FightState) (State, error) {
 	if r.survival {
 		for index, p := range f.match.SidePlayers(0) {
 			if index < len(r.carryLife) {
-				r.carryLife[index], r.carryPower[index] = match.RecoveryLife(p.Character.Life, p.Character.MaxLife, f.match.TimeLeft, f.match.Options.RoundTime), p.Character.GetPower()
+				r.carryLife[index], r.carryPower[index] = p.Character.Life, p.Character.GetPower()
 			}
 		}
 		r.index++

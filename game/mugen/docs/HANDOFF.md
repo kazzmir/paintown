@@ -1,44 +1,31 @@
 # Current handoff
 
-Use [PROGRESS.md](PROGRESS.md) as the single completion ledger and
-[WORKFLOW.md](WORKFLOW.md) as the implementation/test policy. User resumed work
-after successful stage and tracker-music playtesting. Linux remains the current
-target. Local source/text commits only; no pushes, binaries or generated banks.
-All work stays inside game/mugen/. Completed segments stay out of normal runs.
+Use [PROGRESS.md](PROGRESS.md) as the single ledger. Work only in game/mugen/;
+local source/text commits, no pushes/binaries/assets/capture banks. Follow
+AGENTS.md's serial private-host wrapper and connected-scenario workflow.
 
-Latest compatibility/color batch closes legacy ACT loading: honor DEF pal1..pal12
-with Windows/case-aware resolution and contextual errors, retain private PCX
-colors and shared/linked sprite identity, select an outfit before first CNS and
-restore it on round reset/turns entry. Benched members receive their outfit too.
-Modern1.x characters, including V1 sprite users, retain authored
-state5900/RemapPal per the beta upgrading guide. Missing V1 outfits use pal.defaults then
-an available bank; unrelated directory ACTs are no longer guessed.
+Latest batch replaces provisional recovery with the supplied beta's calculation:
+125-per-thousand base plus275-per-thousand time bonus over100 elapsed counts,
+adjusted by the opponent's initial health (60% weight), truncated to a per-thousand
+integer before scaling by maximum life. TimerFreeze and an unlimited displayed
+timer do not stop elapsed recovery time. Healing precedes win-pose CNS, occurs
+once, and survives round reset. Completed ordinary Turns rosters do not heal.
+Single-player Survival carries the already recovered result without healing twice.
 
-One original1.1b1 control rendered two declared outfits. It established default
-V1 HUD portraits versus selected body colors: top crop1152 default/0 alternate
-pixels; body576 default/576 alternate. The implementation distinguishes initial
-legacy selection from explicit RemapPal and preserves that state in helper
-clones. Control preparation needed valid native CNS constants/CMD state blocks
-and SFF1.0.1 metadata; Go's exact invalid-content rejection parity is unproven.
-No native PNG/PCM/overlay or authored fixture bank is retained.
+Original1.1b1 connected controls: Turns2-vs-4 has1000/500 maximum life;400→798 at
+full displayed40,400→744 after20 elapsed counts,100/500→275 against the previously
+damaged entrant, and900→1000 cap. Single-player Survival also gives400→798.
+The corresponding connected team/mode scenarios pass with race detection; all
+changed-source segments pass and the Linux executable is rebuilt. The final
+coverage report initially caught a stale RecoveryLife symbol; catalog now names
+the replacement consumer. No game-test rerun was required for that metadata fix.
+Native overlays/captures/logs and segment scratch were deleted after each run.
 
-All five connected segments pass with race detection; the Linux standalone
-executable was rebuilt after final review. The existing asset flow
-now spans V1 outfit/portrait masking, shared/own helper palettes, explicit remap
-and actual KO→round reset. The music scenario now accepts the user's blank track
-and optional stage author metadata; those content differences were not runtime
-regressions. State-flow stayed checked. Only one shared cache/ignored Linux
-executable is retained; scratch/client cleanup passed.
-
-Local content: active data/select.def lists ten stages. Its music/ symlink points
-to existing data-new/mugen/music; deejay.def uses music/tr3deejay.it. User confirms
-tracker playback. Those local assets/configs stay ignored; originals elsewhere
-were not changed. Several other stage MP3 names remain absent.
-
-Next: turns/survival recovery amount/rounding and remaining native rendering/
-audio calibration. Healing still uses the explicitly provisional time-scaled
-27.5%-of-max baseline. Native AI decision policy, broader legacy palette/control
-combinations and strict invalid-asset rejection are not certified. Physical CD
-playback and other platform validation remain open/deferred; licensed Windows
-font payloads are absent. Reuse supplied assets in place and the isolated serial
-host wrapper from AGENTS.md. Never regenerate the removed precision matrices.
+Continue with Survival bout/roster persistence: the existing mode scenario forces
+match.wins=1 and may hide Survival's ordinary two-round default; carry currently
+stores only active members. Mixed Single/Simul/Turns life balancing and Survival
+team recovery still need native confirmation. Remaining renderer/KO-echo/AI
+precision and licensed-font/CD limitations remain partial, not certified parity.
+The earlier ACT outfit/private-portrait and stage/tracker-music work is retained.
+Canonical local assets remain under temp/mugen-1.1b1; music links to the user's
+existing data-new/mugen/music. No originals outside scope were changed.
