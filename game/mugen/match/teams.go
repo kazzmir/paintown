@@ -155,8 +155,22 @@ func (m *Match) commitTeamResult() {
 
 func homeTeam(mode string) int {
 	mode = strings.ToLower(mode)
-	if strings.Contains(mode, "arcade") || strings.Contains(mode, "survival") {
+	if strings.Contains(mode, "arcade") || strings.Contains(mode, "survival") || strings.Contains(mode, "co-op") {
 		return 2
 	}
 	return 1
+}
+
+// RecoveryLife supplies functional time-scaled recovery between turns and
+// survival bouts. The 27.5% compatibility baseline is not a measured beta
+// formula; exact amount/rounding is retained in the deferred precision ledger.
+func RecoveryLife(life, maximum, remaining, limit int) int {
+	if maximum <= 0 {
+		return life
+	}
+	if limit <= 0 || remaining <= 0 {
+		return max(0, min(maximum, life))
+	}
+	fraction := float64(min(remaining, limit)) / float64(limit)
+	return min(maximum, life+int(float64(maximum)*0.275*fraction))
 }

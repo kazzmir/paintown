@@ -1,0 +1,234 @@
+package main
+
+import (
+	"fmt"
+	"image/color"
+	"path/filepath"
+	"strings"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/input"
+	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
+)
+
+func (e *Engine) themeAttribute(section, key string) *parsers.Attribute {
+	if e.motif == nil || e.motif.AST == nil {
+		return nil
+	}
+	for _, s := range e.motif.AST.Sections {
+		if !strings.EqualFold(s.Name, section) {
+			continue
+		}
+		for _, a := range s.Attributes {
+			if strings.EqualFold(a.ID.String(), key) {
+				return a
+			}
+		}
+	}
+	return nil
+}
+
+func (e *Engine) themeNumber(section, key string, fallback int) int {
+	if a := e.themeAttribute(section, key); a != nil && strings.TrimSpace(a.RawValue) != "" {
+		return int(background.GetFloat(a.Value))
+	}
+	return fallback
+}
+
+func (e *Engine) themeText(section, key, fallback string) string {
+	if a := e.themeAttribute(section, key); a != nil {
+		return background.GetString(a.Value)
+	}
+	return fallback
+}
+
+func (e *Engine) themeValues(section, key string, fallback ...float64) []float64 {
+	values := append([]float64(nil), fallback...)
+	if a := e.themeAttribute(section, key); a != nil {
+		for i, part := range strings.Split(a.RawValue, ",") {
+			if i >= len(values) {
+				break
+			}
+			var n float64
+			if _, err := fmt.Sscanf(strings.TrimSpace(part), "%f", &n); err == nil {
+				values[i] = n
+			}
+		}
+	}
+	return values
+}
+
+func (e *Engine) modeLabel(screen *ebiten.Image, section, key, text string, x, y int, fonts []*font.Font) {
+	info := e.themeValues(section, key+".font", 1, 0, 0)
+	index := int(info[0])
+	if index < 1 || index >= len(fonts) || fonts[index] == nil {
+		return
+	}
+	offset := e.themeValues(section, key+".offset", 0, 0)
+	align := font.AlignCenter
+	if info[2] > 0 {
+		align = font.AlignLeft
+	} else if info[2] < 0 {
+		align = font.AlignRight
+	}
+	fonts[index].Draw(screen, text, x+int(offset[0]), y+int(offset[1]), int(info[1]), align)
+}
+
+type WinScreenState struct {
+	engine *Engine
+	winner *character.Player
+	ticks  int
+	next   func() (State, error)
+}
+
+func NewWinScreenState(e *Engine) *WinScreenState { return &WinScreenState{engine: e} }
+func (s *WinScreenState) Update() (State, error) {
+	s.ticks++
+	if s.engine.motif.VictoryBG != nil {
+		s.engine.motif.VictoryBG.Update()
+	}
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || s.ticks >= s.engine.themeNumber("Victory Screen", "time", 300) {
+		if s.next != nil {
+			return s.next()
+		}
+		return NewTitleState(s.engine), nil
+	}
+	return s, nil
+}
+func (s *WinScreenState) Draw(screen *ebiten.Image) {
+	screen.Fill(color.Black)
+	if bg := s.engine.motif.VictoryBG; bg != nil {
+		bg.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)
+	}
+	name := "Winner"
+	if p := s.winner; p != nil {
+		name = p.Character.Name
+		pos := s.engine.themeValues("Victory Screen", "p1.offset", 400, -40)
+		ids := s.engine.themeValues("Victory Screen", "p1.spr", 9000, 2)
+		scale := s.engine.themeValues("Victory Screen", "p1.scale", 1, 1)
+		if findSprite(p.SFF, int(ids[0]), int(ids[1])) == nil {
+			ids = []float64{9000, 1}
+		}
+		ratio := float64(screen.Bounds().Dx()) / float64(p.LocalCoord.Width)
+		p.DrawSprite(screen, p.Character, int(ids[0]), int(ids[1]), pos[0], pos[1], scale[0]*ratio*s.engine.themeValues("Victory Screen", "p1.facing", 1)[0], scale[1]*ratio)
+	}
+	s.engine.modeLabel(screen, "Victory Screen", "p1.name", name, 0, 0, s.engine.motif.Fonts)
+	s.engine.modeLabel(screen, "Victory Screen", "winquote", s.engine.themeText("Victory Screen", "winquote.text", "Winner!"), 0, 0, s.engine.motif.Fonts)
+	if bg := s.engine.motif.VictoryBG; bg != nil {
+		bg.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
+	}
+}
+
+type ContinueScreenState struct {
+	engine *Engine
+	retry  match.Request
+	ticks  int
+	no     bool
+}
+
+func NewContinueScreenState(e *Engine) *ContinueScreenState { return &ContinueScreenState{engine: e} }
+func (s *ContinueScreenState) Update() (State, error) {
+	s.ticks++
+	if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) || input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
+		s.no = !s.no
+	}
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) || s.ticks >= s.engine.themeNumber("Continue Screen", "time", 600) {
+		return NewGameOverScreenState(s.engine), nil
+	}
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
+		if s.no || s.retry.Campaign == 0 {
+			return NewGameOverScreenState(s.engine), nil
+		}
+		return NewVersusState(s.engine, s.retry), nil
+	}
+	return s, nil
+}
+func (s *ContinueScreenState) Draw(screen *ebiten.Image) {
+	screen.Fill(color.Black)
+	pos := s.engine.themeValues("Continue Screen", "pos", float64(screen.Bounds().Dx()/2), float64(screen.Bounds().Dy()/3))
+	fonts := s.engine.motif.Fonts
+	// The beta's supplied motif explicitly uses fight fonts here.
+	if s.engine.modeRun != nil && s.engine.modeRun.lastFight != nil {
+		fonts = s.engine.modeRun.lastFight.match.Fight.Fonts[:]
+	}
+	s.engine.modeLabel(screen, "Continue Screen", "continue", s.engine.themeText("Continue Screen", "continue.text", "CONTINUE?"), int(pos[0]), int(pos[1]), fonts)
+	yes, no := "yes", "no"
+	if s.no {
+		no = "no.active"
+	} else {
+		yes = "yes.active"
+	}
+	s.engine.modeLabel(screen, "Continue Screen", yes, "YES", int(pos[0]), int(pos[1]), fonts)
+	s.engine.modeLabel(screen, "Continue Screen", no, "NO", int(pos[0]), int(pos[1]), fonts)
+}
+
+type GameOverScreenState struct {
+	engine       *Engine
+	ticks, score int
+	survival     bool
+}
+
+func NewGameOverScreenState(e *Engine) *GameOverScreenState { return &GameOverScreenState{engine: e} }
+func (s *GameOverScreenState) Update() (State, error) {
+	s.ticks++
+	if !s.survival && s.engine.themeNumber("Game Over Screen", "enabled", 0) == 0 {
+		return NewTitleState(s.engine), nil
+	}
+	if !s.survival && s.ticks == 1 && s.engine.themeText("Game Over Screen", "storyboard", "") != "" {
+		return s.engine.configuredStory("Game Over Screen", NewTitleState(s.engine))
+	}
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape) || s.ticks >= s.engine.themeNumber("Survival Results Screen", "show.time", 300) {
+		return NewTitleState(s.engine), nil
+	}
+	return s, nil
+}
+func (s *GameOverScreenState) Draw(screen *ebiten.Image) {
+	screen.Fill(color.Black)
+	text := "Game Over"
+	if s.survival {
+		text = strings.ReplaceAll(s.engine.themeText("Survival Results Screen", "winstext.text", "Rounds survived: %i"), "%i", fmt.Sprint(s.score))
+		s.engine.modeLabel(screen, "Survival Results Screen", "winstext", text, 0, 0, s.engine.motif.Fonts)
+		return
+	}
+	s.engine.modeLabel(screen, "Continue Screen", "continue", text, screen.Bounds().Dx()/2, screen.Bounds().Dy()/2, s.engine.motif.Fonts)
+}
+
+func (e *Engine) configuredStory(section string, next State) (State, error) {
+	name := e.themeText(section, "storyboard", "")
+	if e.themeNumber(section, "enabled", 0) == 0 || name == "" {
+		return next, nil
+	}
+	path, err := resource.Resolve(name, filepath.Dir(e.motif.Source), e.dataDir, filepath.Join(e.dataDir, "data"))
+	if err != nil {
+		return nil, err
+	}
+	return &StoryboardState{engine: e, storyboard: path, nextState: func() State { return next }}, nil
+}
+
+type completionScreen struct {
+	engine *Engine
+	fight  *FightState
+	ticks  int
+	next   State
+}
+
+func (s *completionScreen) Update() (State, error) {
+	s.ticks++
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape) || s.ticks >= s.engine.themeNumber("Win Screen", "pose.time", 300) {
+		return s.next, nil
+	}
+	return s, nil
+}
+func (s *completionScreen) Draw(screen *ebiten.Image) {
+	if s.fight != nil {
+		s.fight.Draw(screen)
+	} else {
+		screen.Fill(color.Black)
+	}
+	s.engine.modeLabel(screen, "Win Screen", "wintext", s.engine.themeText("Win Screen", "wintext.text", "Congratulations!"), 0, 0, s.engine.motif.Fonts)
+}

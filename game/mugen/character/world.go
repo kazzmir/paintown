@@ -17,6 +17,8 @@ type World struct {
 	StageInfo          map[string]string
 	TeamModes          [2]string
 	HomeTeam           int
+	MatchNo            int
+	Training           bool
 	Helpers            []*Character
 	HelperMax          int
 	ProjectileMax      int

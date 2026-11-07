@@ -33,6 +33,8 @@ type Engine struct {
 	sound            *engineSound
 	random           *engine.RandomStream
 	pendingMatchSeed int64
+	modeRun          *modeRun
+	nextCampaign     uint64
 }
 
 func (e *Engine) nextMatchSeed() int64 {
@@ -60,6 +62,9 @@ func (e *Engine) ticksPerSecond() int {
 }
 
 func (e *Engine) Update() error {
+	if _, title := e.currentState.(*TitleState); title {
+		e.modeRun = nil
+	}
 	if fight, ok := e.currentState.(*FightState); ok && fight.match != nil {
 		fight.match.Timeline.GameTime = e.gameTime
 	}

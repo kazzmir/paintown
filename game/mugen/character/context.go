@@ -128,8 +128,9 @@ func (c *Character) LookupIdentifier(name string) (evaluator.Value, bool) {
 		}
 		return evaluator.Int(60), true
 	case "matchno":
-		// The current production lifecycle is one-on-one Versus. Arcade
-		// progression and its increment/continue rules remain a mode gate.
+		if c.World != nil && c.World.MatchNo > 0 {
+			return evaluator.Int(int32(c.World.MatchNo)), true
+		}
 		return evaluator.Int(1), true
 	case "p2life", "p2stateno", "p2statetype", "p2movetype":
 		if len(c.Opponents) == 0 {

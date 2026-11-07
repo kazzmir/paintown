@@ -19,8 +19,8 @@ type SelectDef struct {
 	Characters  []*CharacterEntry
 	ExtraStages []string
 	// Options
-	ArcadeMaxMatches [10]int
-	TeamMaxMatches   [10]int
+	ArcadeMaxMatches [30]int
+	TeamMaxMatches   [30]int
 }
 
 // ParseSelectDef parses a MUGEN select.def file.
@@ -148,14 +148,14 @@ func parseCharValues(v Value, entry *CharacterEntry) {
 }
 
 // parseMaxMatches parses "6,1,1,0,0,0,0,0,0,0" into an array.
-func parseMaxMatches(v Value, out *[10]int) {
+func parseMaxMatches(v Value, out *[30]int) {
 	var values []Value
 	if list, ok := v.(*ValueList); ok {
 		values = list.Values
 	} else if v != nil {
 		values = []Value{v}
 	}
-	for i := 0; i < 10 && i < len(values); i++ {
+	for i := 0; i < len(out) && i < len(values); i++ {
 		out[i] = int(getFloat(values[i]))
 	}
 }

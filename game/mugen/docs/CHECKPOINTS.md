@@ -46,3 +46,7 @@ M4dz completes authored command/AI flow: chords, charge/release, strict ordering
 and physical direction transitions reach CNS; AI executes authored stock specials
 and contacts. Four affected segments pass with race detection. Linux-only final
 validation is the user's current platform scope.
+
+M4ea connects arcade ordering/ramping/MatchNo, continue/victory/ending, survival
+carry/results and training/watch rules. Recovery is functional with explicit
+provisional calibration. Four affected segments pass with race detection.

@@ -30,6 +30,7 @@ type SelectState struct {
 	choosingStage          bool
 	loadError              error
 	palettes               [2]int
+	selectDefPath          string
 	teamMenu               bool
 	teamModes              [2]match.TeamMode
 	teamCounts, teamCursor [2]int
@@ -62,17 +63,18 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	}
 
 	s := &SelectState{
-		engine:    engine,
-		title:     title,
-		chars:     chars,
-		stages:    stages,
-		loadError: loadError,
-		palettes:  [2]int{1, 2},
-		showP2:    p2Modes[title],
-		p1CursorX: si.P1StartCell[0],
-		p1CursorY: si.P1StartCell[1],
-		p2CursorX: si.P2StartCell[0],
-		p2CursorY: si.P2StartCell[1],
+		engine:        engine,
+		selectDefPath: selectDefPath,
+		title:         title,
+		chars:         chars,
+		stages:        stages,
+		loadError:     loadError,
+		palettes:      [2]int{1, 2},
+		showP2:        p2Modes[title],
+		p1CursorX:     si.P1StartCell[0],
+		p1CursorY:     si.P1StartCell[1],
+		p2CursorX:     si.P2StartCell[0],
+		p2CursorY:     si.P2StartCell[1],
 	}
 
 	s.initTeams()
@@ -282,6 +284,10 @@ func (s *SelectState) startMatch() (State, error) {
 		Players: [2]match.Selection{{DefPath: p1.DefPath, Name: p1.Name, Palette: s.palettes[0]}, {DefPath: p2.DefPath, Name: p2.Name, Palette: s.palettes[1]}}}
 	if !s.showP2 && s.title != "Training" {
 		request.Players[1].AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))
+	}
+	request, err := s.prepareMode(request)
+	if err != nil {
+		return s, err
 	}
 	versus := NewVersusState(s.engine, request)
 	if s.title == "Arcade Mode" && p1.IntroStoryboard != "" {

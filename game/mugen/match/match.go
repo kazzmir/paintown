@@ -33,6 +33,8 @@ type Request struct {
 	Mode      string
 	Music     string
 	Teams     [2]TeamSelection
+	MatchNo   int
+	Campaign  uint64
 }
 
 type Options struct {
@@ -103,6 +105,7 @@ type Match struct {
 	pendingRoundOver        bool
 	slowdown                engine.RoundSlowdown
 	aiBrains                map[int32]*aiBrain
+	recoveryTimeLeft        int
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -110,6 +113,9 @@ func New(request Request, options Options) (*Match, error) {
 	request, err = normalizeTeams(request)
 	if err != nil {
 		return nil, err
+	}
+	if request.Mode == "Training" {
+		options.RoundTime = -1
 	}
 
 	if _, err := options.GameSpace.ScaleTo(options.GameSpace); err != nil {
@@ -182,6 +188,8 @@ func New(request Request, options Options) (*Match, error) {
 	}
 	m.commonEffects = effect.Source{Sprites: m.Fight.EffectSprites, Animations: m.Fight.EffectAnimations, Scale: fxScale * float64(options.GameSpace.Width) / float64(motifWidth)}
 	m.World.HomeTeam = homeTeam(request.Mode)
+	m.World.MatchNo = max(1, request.MatchNo)
+	m.World.Training = request.Mode == "Training"
 	for side, selection := range request.Teams {
 		team := &m.Teams[side]
 		team.Mode, team.entered = selection.Mode, make(map[*character.Player]bool)
@@ -286,7 +294,7 @@ func (m *Match) resetRound() error {
 		}
 		c.Life = c.MaxLife
 		if m.Round > 1 && m.hasTurns() && m.Teams[side].entered[p] && previous.IsAlive() {
-			c.Life = min(c.MaxLife, previous.Life)
+			c.Life = RecoveryLife(previous.Life, c.MaxLife, m.recoveryTimeLeft, m.Options.RoundTime)
 		}
 		m.Teams[side].entered[p] = true
 		c.Commands = character.NewCommandBuffer(120)
@@ -321,6 +329,20 @@ func (m *Match) resetRound() error {
 		c.ScreenLeftMargin, c.ScreenRightMargin = s.Bound.ScreenLeft*scale, s.Bound.ScreenRight*scale
 		c.TopBound, c.BotBound = s.PlayerInfo.TopBound*scale, s.PlayerInfo.BotBound*scale
 		p.Character = c
+	}
+	for side, team := range m.Teams {
+		if team.Mode != Simul {
+			continue
+		}
+		maximum, power := 0, 0
+		for _, p := range m.SidePlayers(side) {
+			maximum = max(maximum, p.Character.MaxPower)
+			power = max(power, p.Character.Power)
+		}
+		for _, p := range m.SidePlayers(side) {
+			p.Character.MaxPower = maximum
+			p.Character.Power = min(maximum, power)
+		}
 	}
 	if err := m.World.ResetRoots(m.activeRoots()...); err != nil {
 		return err
@@ -421,6 +443,14 @@ func (m *Match) Update() error {
 		return fmt.Errorf("fight effects: %w", err)
 	}
 	m.updateCamera()
+	if m.World.Training {
+		for _, p := range m.Actors() {
+			p.Character.SetPower(p.Character.MaxPower)
+			if p.Character.MoveType != "H" {
+				p.Character.SetLife(p.Character.MaxLife)
+			}
+		}
+	}
 	m.Tick++
 	// A moving owner can self-KO while the other root remains frozen. Native
 	// enters RoundState 3 immediately even though ordinary phase clocks stop.
@@ -542,6 +572,7 @@ func (m *Match) hasKO() bool {
 }
 
 func (m *Match) finishRound() {
+	m.recoveryTimeLeft = m.TimeLeft
 	m.Announcements.Finish = 0
 	slow := true
 	for _, p := range m.Actors() {

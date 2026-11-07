@@ -7,7 +7,7 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 28 implemented, 5 partial, 0 missing.
+- Project items: 30 implemented, 3 partial, 0 missing.
 
 ## Completed scenario coverage
 
@@ -66,13 +66,13 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Finish broader font/asset formats and errors, including legacy MIDI/tracker/CD music backends; WAV/MP3/Ogg BGM and stock fonts/assets are supported. (item4)
-- [ ] Remaining renderer and audio fidelity issues. **partial** — Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected. (deferred precision (user 2026-11-07))
+- [ ] Deferred native fidelity and recovery calibration. **partial** — Resolve remaining color/shadow/alpha and KO-echo differences, calibrate provisional turns/survival recovery and native AI decision policy; functional consumers exist. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
 
 - [x] Opponent AI and authored CMD command flow. (item4)
-- [ ] Arcade progression and complete mode rules. **partial** — Implement complete progression and rules beyond the playable one-on-one flow. (item4)
-- [ ] Team/simul/turns lifecycle and partner context. **partial** — Simul/turns selection, rosters, partner context, power/HUD and results are implemented; finish co-op/progression rules and native turns life-recovery policy. (item4)
+- [x] Arcade/survival progression, continue/ending and training/watch rules. (item4)
+- [x] Team/simul/turns lifecycle, partner context and recovery. (item4)
 - [ ] Linux build and final playable acceptance. **partial** — Complete final Linux build/playable acceptance after functional work; other targets are deferred by the user. (Linux now; other targets deferred (user 2026-11-07))
 
 ## Controllers and trigger gaps

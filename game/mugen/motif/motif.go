@@ -22,6 +22,7 @@ import (
 
 type Motif struct {
 	Source string
+	AST    *parsers.File
 	Info   struct {
 		Name       string
 		Author     string
@@ -115,10 +116,11 @@ type Motif struct {
 	Fonts      []*font.Font
 	SystemAIR  *air.Data
 
-	TitleBG  *background.Background
-	SelectBG *background.Background
-	VsBG     *background.Background
-	OptionBG *background.Background
+	TitleBG   *background.Background
+	SelectBG  *background.Background
+	VsBG      *background.Background
+	OptionBG  *background.Background
+	VictoryBG *background.Background
 }
 
 func LoadMotif(path string, dataDir string) (*Motif, error) {
@@ -146,7 +148,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		return nil, fmt.Errorf("%s [Info] localcoord (line %d): %w", absPath, defData.InfoLines["localcoord"], err)
 	}
 
-	motif := &Motif{Source: absPath, Music: map[string]sound.MusicSpec{"title": sound.DefaultMusic(true), "select": sound.DefaultMusic(true), "vs": sound.DefaultMusic(false), "victory": sound.DefaultMusic(false)}}
+	motif := &Motif{Source: absPath, AST: ast, Music: map[string]sound.MusicSpec{"title": sound.DefaultMusic(true), "select": sound.DefaultMusic(true), "vs": sound.DefaultMusic(false), "victory": sound.DefaultMusic(false)}}
 	motif.Info.LocalCoord = local
 	motif.Files.FontFiles = make([]string, 11) // 1-10
 	motif.Fonts = make([]*font.Font, 11)
@@ -516,6 +518,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 	}{
 		{"titlebg", &motif.TitleBG}, {"selectbg", &motif.SelectBG},
 		{"versusbg", &motif.VsBG}, {"optionbg", &motif.OptionBG},
+		{"victorybg", &motif.VictoryBG},
 	} {
 		if *spec.target == nil {
 			*spec.target = &background.Background{}

@@ -156,7 +156,7 @@ value=Partner, TeamSide
 	if turns.Teams[1].Active != 1 || turns.Teams[0].Active != 0 || turns.Players[1].Character == loser || bench.Time != 0 {
 		t.Fatal("turns roster did not advance only the loser")
 	}
-	if turns.Players[0].Character.Life != 700 || turns.Players[0].Character.GetPower() != 900 || turns.Players[0].Character.RoundsExisted != 1 || turns.Players[1].Character.RoundsExisted != 0 {
+	if turns.Players[0].Character.Life <= 700 || turns.Players[0].Character.Life > turns.Players[0].Character.MaxLife || turns.Players[0].Character.GetPower() != 900 || turns.Players[0].Character.RoundsExisted != 1 || turns.Players[1].Character.RoundsExisted != 0 {
 		t.Fatal("turns winner or new entrant retained wrong state")
 	}
 	for side, p := range turns.Players {

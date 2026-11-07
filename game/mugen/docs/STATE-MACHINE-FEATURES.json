@@ -327,10 +327,10 @@
     },
     {
       "id": "raster-audio",
-      "name": "Remaining renderer and audio fidelity issues",
+      "name": "Deferred native fidelity and recovery calibration",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected.",
+      "gap": "Resolve remaining color/shadow/alpha and KO-echo differences, calibrate provisional turns/survival recovery and native AI decision policy; functional consumers exist.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -353,26 +353,28 @@
     },
     {
       "id": "modes",
-      "name": "Arcade progression and complete mode rules",
+      "name": "Arcade/survival progression, continue/ending and training/watch rules",
       "group": "Modes and platforms",
-      "status": "partial",
-      "gap": "Implement complete progression and rules beyond the playable one-on-one flow.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item4",
       "sources": [
-        "system/select.go"
+        "system/modes.go:prepareMode",
+        "system/modes.go:result",
+        "system/mode_screens.go"
       ]
     },
     {
       "id": "teams",
-      "name": "Team/simul/turns lifecycle and partner context",
+      "name": "Team/simul/turns lifecycle, partner context and recovery",
       "group": "Modes and platforms",
-      "status": "partial",
-      "gap": "Simul/turns selection, rosters, partner context, power/HUD and results are implemented; finish co-op/progression rules and native turns life-recovery policy.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item4",
       "sources": [
         "match/teams.go:commitTeamResult",
-        "system/team_select.go:selectedTeams",
-        "character/world.go:lookupEntity"
+        "match/teams.go:RecoveryLife",
+        "system/team_select.go:selectedTeams"
       ]
     },
     {
@@ -477,7 +479,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "84d10262b748596f789d7017baf3f1b90c3a1e0393fbf318c9d2a109e7c16a36"
+      "passed_source": "46d476098c2e0ae3ed93d8bf9b48de9b31a3500a13777c836b11b32df02ee790"
     },
     {
       "id": "entities",
@@ -507,7 +509,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7ced0da17af46299bfdfbfc4b6a6bdb97fcf2728861fd9d0aae15251e677e1d5"
+      "passed_source": "6139b43e8bafdcf7ee0c49a203468c88fbdb707109fc85dc96ae5d8ead923ca9"
     },
     {
       "id": "effects-pause",
@@ -539,7 +541,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "43bcb013a5433a8e27994a57b28856cbff54bdc522586d76fb30b6e40b8f4db1"
+      "passed_source": "7f57efb800318c3530191e7bc7b9cdfa8ab23f6e9038381c1a23212d151b225b"
     },
     {
       "id": "match-flow",
@@ -602,15 +604,20 @@
         {
           "file": "system/command_flow_test.go",
           "name": "TestAuthoredCommandsAndAICombatFlow"
+        },
+        {
+          "file": "system/mode_flow_test.go",
+          "name": "TestModeProgressionContinueSurvivalAndTrainingFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "eb87b88104aace50dd0bf4c69fe95f5f2e8701b20aa757e189d76d60bbd8703b"
+      "passed_source": "04566b1811a9f1b93e5a612413ae25d59eb4cb27d534e5ef1a4718a8a014a578"
     }
   ],
   "presentation_followups": [
     "Known sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
-    "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause."
+    "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
+    "Turns/survival recovery currently uses a provisional 27.5%-of-max time-scaled baseline; calibrate exact beta amounts/rounding. AI command selection is functional, not claimed to reproduce native decision probabilities."
   ]
 }

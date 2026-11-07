@@ -14,9 +14,9 @@ import (
 )
 
 type CharacterPortrait struct {
-	Name, DefPath, IntroStoryboard string
-	Entry                          parsers.CharacterEntry
-	SmallPortrait, BigPortrait     *ebiten.Image
+	Name, DefPath, IntroStoryboard, EndingStoryboard string
+	Entry                                            parsers.CharacterEntry
+	SmallPortrait, BigPortrait                       *ebiten.Image
 }
 
 func loadCharacters(selectDefPath, charsDir string) ([]*CharacterPortrait, []string, error) {
@@ -77,6 +77,12 @@ func loadCharacters(selectDefPath, charsDir string) ([]*CharacterPortrait, []str
 		for _, section := range ast.Sections {
 			if strings.EqualFold(section.Name, "arcade") {
 				for _, a := range section.Attributes {
+					if strings.EqualFold(a.ID.String(), "ending.storyboard") && background.GetString(a.Value) != "" {
+						cp.EndingStoryboard, err = resource.Resolve(background.GetString(a.Value), dir)
+						if err != nil {
+							return nil, nil, fmt.Errorf("%s [Arcade] ending.storyboard: %w", cp.DefPath, err)
+						}
+					}
 					if strings.EqualFold(a.ID.String(), "intro.storyboard") && background.GetString(a.Value) != "" {
 						cp.IntroStoryboard, err = resource.Resolve(background.GetString(a.Value), dir)
 						if err != nil {

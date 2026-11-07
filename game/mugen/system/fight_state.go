@@ -67,6 +67,9 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 			game.Options.Input = p.Character.InputSource
 		}
 	}
+	if engine.modeRun != nil {
+		engine.modeRun.restore(s)
+	}
 	s.hud = NewFightHUD(game, engine)
 	return s, nil
 }
@@ -82,6 +85,9 @@ func (s *FightState) Update() (State, error) {
 		}
 		s.match.Effects.Clear()
 		return NewTitleState(s.engine), nil
+	}
+	if s.match.Phase == match.Finished && s.engine.modeRun != nil && s.match.Request.Campaign == s.engine.modeRun.id {
+		return s.engine.modeRun.result(s)
 	}
 	if s.match.Phase == match.Finished && input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		return NewFightState(s.engine, s.match.Request)

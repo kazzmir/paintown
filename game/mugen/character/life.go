@@ -18,6 +18,9 @@ func (c *Character) initializeLifeState() {
 }
 
 func (c *Character) noKOThisPass() bool {
+	if c.Parent == nil && c.World != nil && c.World.Training {
+		return true
+	}
 	if c.Timeline != nil {
 		return c.Timeline.NoKO
 	}
