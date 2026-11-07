@@ -35,6 +35,29 @@ func (c *Character) hasPushBox() bool {
 	return element != nil && len(element.Clsn2) > 0
 }
 
+// CNS widths determine horizontal body separation. Hurtboxes determine
+// whether the actors overlap vertically, in a shared coordinate space.
+func (c *Character) pushBoxesOverlapY(other *Character) bool {
+	first, second := c.CurrentElement(), other.CurrentElement()
+	if first == nil || second == nil {
+		return false
+	}
+	_, ownScale := c.spriteScale()
+	_, otherScale := other.spriteScale()
+	otherScale *= c.ScaleFrom(other)
+	_, otherY := c.PositionOf(other)
+	for _, own := range first.Clsn2 {
+		a, b := c.Y+float64(own.Y1)*ownScale, c.Y+float64(own.Y2)*ownScale
+		for _, box := range second.Clsn2 {
+			x, y := otherY+float64(box.Y1)*otherScale, otherY+float64(box.Y2)*otherScale
+			if min(a, b) < max(x, y) && min(x, y) < max(a, b) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (c *Character) bodyWidths() (front, back float64) {
 	if c.StateFile == nil {
 		return 0, 0

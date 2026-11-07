@@ -238,6 +238,14 @@ func TickCharacters(players []*Character) error {
 	// Each root completes CNS, pending damage, physics and clocks before the
 	// next root's CNS. Native trade snapshots can see the first root's reduced
 	// life, just as redirected Pos/Time see its completed movement and clock.
+	// Late body push can leave an actor beyond the screen. Resolve that prior
+	// displacement for every active actor before any CNS redirects into it.
+	// The per-entity clamp still handles cameras changed by an earlier actor.
+	for _, c := range players {
+		if !c.worldFrozen && !c.IsPaused() {
+			c.constrainPosition()
+		}
+	}
 	ordered := append([]*Character(nil), players...)
 	for _, c := range ordered {
 		c.tickMoveType = c.MoveType

@@ -2,11 +2,14 @@ package match
 
 import (
 	"bytes"
+	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
@@ -217,6 +220,125 @@ func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
 		c := p.Character
 		if !airborne[slot] || !landing[slot] || c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelY != 0 {
 			t.Fatalf("player %d jump/landing incomplete: airborne=%v landing=%v state=%d ctrl=%v y=%v vy=%v", slot+1, airborne[slot], landing[slot], c.StateNo, c.Ctrl, c.Y, c.VelY)
+		}
+	}
+	bodyPushFlow(t, m)
+}
+
+// Continue the jump/landing scenario through one beta body-push lifecycle:
+// interior, wall, vertical separation, Width, air/ground, air/air and reset.
+func bodyPushFlow(t *testing.T, m *Match) {
+	t.Helper()
+	program := `[Statedef 5900]
+[State 5900, enter]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+`
+	for phase, tick := range []int{80, 170, 260, 350, 440, 530} {
+		for side, expression := range []string{"Pos X", "EnemyNear, Pos X"} {
+			program += fmt.Sprintf("[State 0, before movement %d]\ntype=VarSet\ntriggerall=TeamSide=1\ntrigger1=Time=%d\nfv=%d\nvalue=%s\n", phase*2+side, tick, phase*2+side, expression)
+		}
+	}
+	program += `[State 0, push]
+type=PlayerPush
+trigger1=1
+value=1
+[State 0, fixed camera]
+type=ScreenBound
+trigger1=1
+value=1
+movecamera=0,0
+[State 0, temporary widths]
+type=Width
+trigger1=Time>=270 && Time<360
+player=Const240p(10),Const240p(20)
+[State 0, airborne overlap]
+type=StateTypeSet
+trigger1=Time>=360 && (TeamSide=1 || Time>=450)
+statetype=A
+physics=N
+[State 0, placement]
+type=PosSet
+trigger1=1
+x=Const240p(ifelse(Time>=90 && Time<180,ifelse(TeamSide=1,130,145),ifelse(TeamSide=1,0,20)))
+y=Const240p(ifelse(Time>=180 && Time<270 && TeamSide=1,-100,ifelse(Time>=360 && (TeamSide=1 || Time>=450),-10,0)))
+`
+	for _, p := range m.Players {
+		file, err := cns.ParseNamed(strings.NewReader(program), "connected-body-push.cns")
+		if err != nil {
+			t.Fatal(err)
+		}
+		file.SetLanguageVersion("1.1")
+		old := p.Character.StateFile
+		file.Data, file.Size, file.Movement, file.Velocity, file.ConstantFields = old.Data, old.Size, old.Movement, old.Velocity, old.ConstantFields
+		units := float64(p.LocalCoord.Width) / 320
+		box := air.Box{X1: int(-10 * units), Y1: int(-60 * units), X2: int(10 * units)}
+		p.AIR = &air.Data{Actions: map[int]*air.Action{9990: {ID: 9990, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn2: []air.Box{box}}}}}}
+		p.Character.StateFile, p.CMD = file, nil
+	}
+	m.Stage.Camera.StartX, m.Stage.Camera.StartY = 0, 0
+	m.Stage.Camera.BoundLeft, m.Stage.Camera.BoundRight, m.Stage.Camera.BoundHigh, m.Stage.Camera.BoundLow = 0, 0, 0, 0
+	m.Stage.Camera.VerticalFollow = 0
+	m.Stage.StageInfo.AutoTurn = false
+	m.Round++
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	advanceUntil(t, m, Active, 650)
+	for _, p := range m.Players {
+		p.Character.ChangeState(0, 0, -1) // Start the authored poses after fight placement.
+	}
+	step := func(ticks int) {
+		t.Helper()
+		for tick := 0; tick < ticks; tick++ {
+			if err := m.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	step(550)
+	// Native wall observations retain the existing late-push/next-pass clamp:
+	// do not redistribute the corner's half-step to change this measured order.
+	want := []float64{-6, 26, 121.5, 145, 0, 20, -16, 36, -4, 24, -2, 22}
+	// Redirected Pos X is converted into the observing root's coordinates.
+	factor := 320 / float64(m.Players[0].Character.LocalCoordinateWidth())
+	for index, expected := range want {
+		if value := m.Players[0].Character.FloatVars[index] * factor; value != expected {
+			t.Fatalf("native mixed-coordinate body push phase %d side %d: got %v want %v", index/2, index%2, value, expected)
+		}
+	}
+	if err := m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 2}); err != nil {
+		t.Fatal(err)
+	}
+	step(1)
+	positions := [2]float64{m.Players[0].Character.X, m.Players[1].Character.X}
+	times := [2]int{m.Players[0].Character.Time, m.Players[1].Character.Time}
+	step(2)
+	for side, p := range m.Players {
+		if p.Character.X != positions[side] || p.Character.Time != times[side] {
+			t.Fatal("paused body push advanced an airborne actor", side)
+		}
+	}
+	m.Round++
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	advanceUntil(t, m, Active, 650)
+	for _, p := range m.Players {
+		p.Character.ChangeState(0, 0, -1)
+	}
+	step(85)
+	for side, p := range m.Players {
+		if p.Character.StateType != "S" || p.Character.Y != 0 || p.Character.X*320/float64(p.Character.LocalCoordinateWidth()) != want[side] {
+			t.Fatal("round reset retained air/Width body-push state", side, p.Character.StateType, p.Character.X, p.Character.Y)
 		}
 	}
 }

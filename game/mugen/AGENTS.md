@@ -86,19 +86,21 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest camera checkpoint
+## Latest collision checkpoint
 
-Camera fitting includes temporary Width edge bars, excluding permanent screen
-containment margins. Clip the tension/Width fitting region to the fixed stage
-edges before choosing zoom and center; keep a clipped edge anchored when the
-zoomout limit cannot fit that region. This does NOT constrain actual actors:
-ScreenBound=0 intentionally permits offstage roots/helpers. A bounded beta flow
-establishes disabled tracking, offstage tracking and Width-driven fit. The
-existing mixed-coordinate camera scenario covers those poses, Pause and reset;
-four changed-source segments pass with race detection. Native scratch removed.
-Prior startup, cropped modern/legacy drawing and tension/zoom observations remain
-covered. Intermediate easing/push and other raster edges remain open. Preserve
-local ignored YAML; the standalone music-file CLI is deferred by user request.
+Body push requires vertical Clsn2 overlap and supports S/C/A actors, using CNS
+ground/air widths plus temporary Width player offsets. Keep the late body-push
+phase; clip all active actors against the shared starting viewport before CNS,
+then retain per-entity clipping for cameras changed by earlier actors. A bounded
+beta flow pins interior/wall/vertical/Width/air-ground/air-air results; the mixed
+coordinate jump scenario continues through those phases, Pause and round reset.
+Four changed-source segments pass with race detection. Native scratch removed.
+A separate beta contact flow confirms projectiles do not recoil their owner,
+even with explicit cornerpush values; direct/helper attackers receive their own
+impulse. The old missing-owner-path note is superseded; preserve the exclusion.
+Prior camera/zoom/rendering observations remain covered. Remaining push/freeze/
+binding and rendering combinations stay open. Local YAML stays ignored; the
+standalone music-file CLI is deferred by user request.
 
 ## Keyboard checkpoint
 

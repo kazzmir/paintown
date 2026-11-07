@@ -100,6 +100,11 @@ configuration overrides can change them. Ctrl-D cycles debug output through
 players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 
+Body collisions use CNS ground/air widths and temporary `Width` values when
+the fighters' hurtboxes overlap vertically, including air/ground and air/air
+contact. Fighters separated vertically can pass each other. Projectile hits
+do not push their owner backward at the corner; direct and helper attacks can.
+
 ### Keyboard overrides in mugen.yaml
 
 Place `mugen.yaml` in your selected `--data-dir`, alongside `data/`, `chars/` and

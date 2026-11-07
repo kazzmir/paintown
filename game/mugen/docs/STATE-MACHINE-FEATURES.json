@@ -95,8 +95,11 @@
       "gap": "",
       "allocation": "item3",
       "sources": [
-        "character/tick.go:TickCharacters"
-      ]
+        "character/tick.go:TickCharacters",
+        "character/character.go:ResolvePushCollision",
+        "character/coordinates.go:pushBoxesOverlapY"
+      ],
+      "validation": "Connected jump/landing scenario continues through a bounded beta body-push flow with mixed 320p/1280p profiles: interior(-6,26), wall(121.5,145), vertically separated(0,20), Width(-16,36), air/ground(-4,24), air/air(-2,22). Hurtboxes gate vertical overlap; CNS ground/air widths govern horizontal separation. Shared pre-CNS boundary clipping preserves the measured late-body-push wall order. Scenario also checks Pause and round reset. Four changed-source segments pass with race detection."
     },
     {
       "id": "helper-lifecycle",
@@ -131,8 +134,10 @@
       "allocation": "item3",
       "sources": [
         "character/tick.go:TickCharacters",
-        "character/hit_damage.go:contactDamage"
-      ]
+        "character/hit_damage.go:contactDamage",
+        "character/corner_push.go:recordCornerPush"
+      ],
+      "validation": "Stock input/contact/recovery and complete match flows pass. A bounded original-beta projectile/direct/helper corner-contact flow confirms the existing projectile exclusion: explicit -12 leaves the owner at 0; direct/helper attackers move 130 to approximately 93.294, with receiver life990/980/970. Corrected the old missing-owner-path note; no owner-recoil behavior was added."
     },
     {
       "id": "recovery",
@@ -343,7 +348,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Intermediate camera easing/push ordering and remaining crop/raster edge cases, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Tension/zoom/bounds, offscreen fitting with temporary Width edges, disabled-camera startup and cropped modern/legacy BG/fighter/effect projection match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
+      "gap": "Remaining camera easing, push/freeze/binding combinations and crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Connected body-push vertical/air/Width/wall phases and prior tension/zoom/bounds, offscreen fitting, startup and cropped modern/legacy rendering match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -536,7 +541,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "14f0b433fbd01968fc62d1cffc1a368ea32a69404356bc68a2f2193cdaefa0fe"
+      "passed_source": "cc128a03f89f4e27ea056cb213cb09adba4cd50fd549a5a34b8a7599409b9eac"
     },
     {
       "id": "entities",
@@ -569,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "0e243d50fc8dfbccd4e7f8e515e918793cca85caaa19e4b4416a71164fe9f9cc"
+      "passed_source": "6721b6918127c2b4f5aeeaababc6bba2a225a9980ecbfefbea037b0089109786"
     },
     {
       "id": "effects-pause",
@@ -604,7 +609,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3604d90dc8801e409ce04f0f9cdecc1824a463063aad47d462e099aa6ddfa442"
+      "passed_source": "b0e97cfb8bedbc814146a472ba773e444003e2952f343e3244ef4e732e3c04e7"
     },
     {
       "id": "match-flow",
@@ -683,13 +688,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7b1e304b0f9bfe871b523bdea0df9d3d87ceb676150d24fd8e6ab8232e8b1faf"
+      "passed_source": "3120a00c82fba39ce266344ec538ec94a4639a38b29e5608618fcd1f1b30c0f7"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Tension/zoom/bounds, offscreen fitting with temporary Width bars, disabled-camera startup and cropped modern/legacy rendering pass connected acceptance against bounded beta observations. ScreenBound=0 permits movement beyond stage edges; only the camera fitting region is clipped. Intermediate easing/push ordering and other crop/raster edges remain precision work."
+    "Camera tension/zoom/bounds/offscreen/startup/crop and the connected body-push vertical/air/Width/wall lifecycle match bounded beta observations. Projectile contacts intentionally leave owner corner push unchanged. Remaining camera easing, push/freeze/binding combinations and crop/raster edges remain precision work."
   ]
 }

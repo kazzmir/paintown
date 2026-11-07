@@ -15,7 +15,8 @@ func (c *Character) cornerScale() float64 {
 }
 
 func (c *Character) recordCornerPush(attacker *Character, hit cns.HitDef) {
-	// The legacy projectile adapter still needs owner-directed corner push.
+	// Beta projectiles do not impart corner push to their owner, even with
+	// explicit veloff values. Direct root/helper attacks push that attacker.
 	if attacker.isProjectile || c.screenBoundsDisabled {
 		return
 	}

@@ -1854,16 +1854,16 @@ func (c *Character) ResolvePushCollision() {
 	// Native body push needs hurtboxes on both actors, including hit states;
 	// its horizontal extents still come from CNS size rather than Clsn2 width.
 	st := strings.ToUpper(c.StateType)
-	if st != "S" && st != "C" {
+	if st != "S" && st != "C" && st != "A" {
 		return
 	}
 
 	for _, other := range c.Opponents {
-		if other.PushDisabled || !other.hasPushBox() {
+		if other.PushDisabled || !other.hasPushBox() || !c.pushBoxesOverlapY(other) {
 			continue
 		}
 		othSt := strings.ToUpper(other.StateType)
-		if (othSt == "S" || othSt == "C") && !other.PosFrozen {
+		if (othSt == "S" || othSt == "C" || othSt == "A") && !other.PosFrozen {
 			otherX, _ := c.PositionOf(other)
 			dist := otherX - c.X
 			front, back := c.pushWidths()

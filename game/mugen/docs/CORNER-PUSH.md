@@ -60,9 +60,13 @@ and clears their impulses. No target-ledger or state-entry reset is added.
 Character owns the common-space impulse; contact selects it before incoming
 state entry. The normal tick applies it once after CNS and before ordinary
 movement, alongside the separately consumed down-hit offset. Screen-bound math
-is shared with the existing confinement operation. Projectile-owner corner push
-remains a separate missing path in the legacy projectile adapter; it is not
-implemented by pushing the projectile itself.
+is shared with the existing confinement operation. A later connected beta flow
+confirms that projectile contacts ignore explicit corner-push offsets: the owner
+stays at 0 after a -12 control, while direct/helper attackers move 130 to about
+93.294 and receiver life records all three contacts. The adapter's projectile
+exclusion is intentional. Current coverage and remaining work are tracked in
+[PROGRESS.md](PROGRESS.md); the earlier missing-owner-path interpretation is
+superseded.
 
 ## Evidence and remaining work
 
@@ -103,7 +107,7 @@ SHA-256 d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e:
 Disassembly/section tables stay disposable under temp. No executable is patched
 or committed, and executable observations remain the regression expectations.
 
-Full projectile ownership, helper/mixed-opponent/foreign/binding/multiple-hit/
+Other projectile interactions, helper/mixed-opponent/foreign/binding/multiple-hit/
 incoming-interruption combinations, moving-camera/zoom and all width/stage
 combinations remain open. Full HitDef, juggle/recovery/power/KO, assets, renderer
 and game modes are still tracked in the compatibility inventory. Reversal:
