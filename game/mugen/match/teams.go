@@ -49,6 +49,9 @@ func normalizeTeams(request Request) (Request, error) {
 		if team.StartMember < 0 || team.StartMember >= count || (team.Mode != Turns && team.StartMember != 0) {
 			return request, fmt.Errorf("team %d: invalid starting member %d for %s roster", side+1, team.StartMember, team.Mode)
 		}
+		if len(request.Carry[side]) > count {
+			return request, fmt.Errorf("team %d: round carry exceeds roster size", side+1)
+		}
 		team.Members = append([]Selection(nil), team.Members...)
 		request.Players[side] = team.Members[team.StartMember]
 	}

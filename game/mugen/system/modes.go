@@ -12,17 +12,19 @@ import (
 )
 
 type modeRun struct {
-	engine                *Engine
-	id                    uint64
-	template              match.Request
-	opponents             []*CharacterPortrait
-	stages                []string
-	random                *engine.RandomStream
-	index                 int
-	survival              bool
-	ending                string
-	lastFight             *FightState
-	carryLife, carryPower [4]int
+	engine     *Engine
+	id         uint64
+	template   match.Request
+	opponents  []*CharacterPortrait
+	stages     []string
+	random     *engine.RandomStream
+	index      int
+	survival   bool
+	ending     string
+	lastFight  *FightState
+	carry      [4]*match.RoundCarry
+	nextRound  int
+	nextRandom *engine.RandomStream
 }
 
 func (s *SelectState) prepareMode(request match.Request) (match.Request, error) {
@@ -113,6 +115,11 @@ func rampDifficulty(base, won int, ramp config.AIRamp) int {
 func (r *modeRun) request() match.Request {
 	request := r.template
 	request.Campaign, request.MatchNo = r.id, r.index+1
+	if r.survival {
+		request.RoundStart = r.nextRound
+		request.MatchNo, request.RandomState = 1, r.nextRandom
+		request.Carry[0] = append([]*match.RoundCarry(nil), r.carry[:len(request.Teams[0].Members)]...)
+	}
 	leader := r.opponents[r.index%len(r.opponents)]
 	stage := leader.Entry.Stage
 	if stage == "" || strings.EqualFold(stage, "random") {
@@ -142,22 +149,6 @@ func (r *modeRun) request() match.Request {
 	return request
 }
 
-func (r *modeRun) restore(f *FightState) {
-	if !r.survival || r.index == 0 || f.match.Request.Campaign != r.id {
-		return
-	}
-	for member, p := range f.match.SidePlayers(0) {
-		if f.match.Teams[0].Mode == match.Turns {
-			member += f.match.Teams[0].Active
-		}
-		if member >= len(r.carryLife) {
-			break
-		}
-		p.Character.SetLife(min(p.Character.MaxLife, r.carryLife[member]))
-		p.Character.SetPower(r.carryPower[member])
-	}
-}
-
 func (r *modeRun) result(f *FightState) (State, error) {
 	r.lastFight = f
 	if err := f.match.ClearSounds(); err != nil {
@@ -180,10 +171,13 @@ func (r *modeRun) result(f *FightState) (State, error) {
 			if f.match.Teams[0].Mode == match.Turns {
 				index += f.match.Teams[0].Active
 			}
-			if index < len(r.carryLife) {
-				r.carryLife[index], r.carryPower[index] = p.Character.Life, p.Character.GetPower()
+			if index < len(r.carry) {
+				r.carry[index] = match.SnapshotRound(p.Character)
 			}
 		}
+		r.nextRound = f.match.Round + 1
+		random := f.match.World.RandomState()
+		r.nextRandom = &random
 		r.index++
 		return NewVersusState(r.engine, r.request()), nil
 	}

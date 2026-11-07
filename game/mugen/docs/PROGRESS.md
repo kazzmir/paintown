@@ -7,7 +7,7 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 30 implemented, 4 partial, 0 missing.
+- Project items: 31 implemented, 3 partial, 0 missing.
 
 ## Completed scenario coverage
 
@@ -72,7 +72,7 @@ source changes reopen only the affected segments.
 ### Modes and platforms
 
 - [x] Opponent AI and authored CMD command flow. (item4)
-- [ ] Arcade/survival progression, continue/ending and training/watch rules. **partial** — Survival must retain continuous RoundNo/RoundsExisted and declared persistent CNS variables across scheduled opponents. (item4)
+- [x] Arcade/survival progression, continue/ending and training/watch rules. (item4)
 - [ ] Team/simul/turns lifecycle, partner context and recovery. **partial** — Turns roster-order switching and the Team Co-op opponent-mode menu still need implementation. (item4)
 - [x] Linux build and final playable acceptance. (Linux now; other targets deferred (user 2026-11-07))
 

@@ -68,6 +68,10 @@ func (w *World) SeedRandom(seed int64) { w.random.Seed(seed) }
 
 func (w *World) RandomSeed() int64 { return w.random.InitialSeed() }
 
+// Copies keep a continuing Survival match independent of its retired world.
+func (w *World) RandomState() engine.RandomStream        { return *w.random }
+func (w *World) RestoreRandom(state engine.RandomStream) { w.random = &state }
+
 func (w *World) ResetRoots(players ...*Character) error {
 	clear(w.afterImageOwners)
 	for _, owner := range w.orphanEffectOwners {

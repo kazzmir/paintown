@@ -83,8 +83,9 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 Mixed-team health/round budgets and Survival Simul partner recovery/carry now
 match bounded original1.1b1 flows. Changed-source segments pass with race
 detection; Linux rebuilt. Native/scratch output was removed. The ledger reopens
-modes/teams for concrete remaining gaps: continuous Survival round/variable
-state before5900 entry, held-direction Turns ordering, and Team Co-op opponent
-selection. Continue there before optional pixel/audio precision. Palette, stage,
+teams for concrete remaining gaps: held-direction Turns ordering and Team
+Co-op opponent selection. Survival now retains continuous round/actor counters,
+declared variables and CNS RNG before5900 entry; the connected mode scenario
+checks those values at entry and passes with race detection. Continue there before optional pixel/audio precision. Palette, stage,
 tracker, zoom/moving-floor/reflection and global/hires scaling work remains.
 See docs/HANDOFF.md. Preserve the connected-scenario/cleanup workflow above.

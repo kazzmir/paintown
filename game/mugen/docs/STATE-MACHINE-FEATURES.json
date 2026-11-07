@@ -367,15 +367,18 @@
       "id": "modes",
       "name": "Arcade/survival progression, continue/ending and training/watch rules",
       "group": "Modes and platforms",
-      "status": "partial",
-      "gap": "Survival must retain continuous RoundNo/RoundsExisted and declared persistent CNS variables across scheduled opponents.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item4",
       "sources": [
         "system/modes.go:prepareMode",
         "system/modes.go:result",
-        "system/mode_screens.go"
+        "system/mode_screens.go",
+        "match/round_carry.go:SnapshotRound",
+        "match/round_carry.go:initialCarry",
+        "character/world.go:RestoreRandom"
       ],
-      "validation": "Native Survival Simul:667 max;400\u2192664 and dead partner0\u2192264 retaining Alive0 at result, Alive1 next bout; second recovery caps leader667 and partner528. Connected progression/carry scenario passes with race detection."
+      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered."
     },
     {
       "id": "teams",
@@ -519,7 +522,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c15f0786ee7c85ee36ed2361dcedac724804eebb57de4b494092d50ffe3beafc"
+      "passed_source": "d66ce8d9d83cf1d41d69be045279148749e556666c928c9cf1b86c5c3143fc20"
     },
     {
       "id": "entities",
@@ -552,7 +555,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "87e62b27c7d4996b880fb4b1a30af7cad2d4d3b08a1097800912c2eca20020ae"
+      "passed_source": "7506c3f5d9fe798bac5a0a07f547c9a4a4c9a680d637b70c52f4a3b94304a197"
     },
     {
       "id": "effects-pause",
@@ -587,7 +590,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "de68e39bde0a90b3ec1360d442bdc7b6fbab0af779389b4d3ad7e525097f61c3"
+      "passed_source": "f3039c7d67498dc80b0ca5a4561fd4afbc938ec8c5af70d35cf2abd5c62899a5"
     },
     {
       "id": "match-flow",
@@ -666,7 +669,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8060da6aebf79e136a3d722cb3bfdcb77b1197d397cccfd9bb2733ffd980bec6"
+      "passed_source": "85ebd0616662b42e9f2de2a6ff32bd6911cc90df3533da79015d307198d8ad65"
     }
   ],
   "presentation_followups": [

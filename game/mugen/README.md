@@ -126,8 +126,8 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The checklist replaces test counts and typed-routing percentages as the progress
-view. The current checklist has30/34 implemented items (88% of checklist items, not
-native conformance or remaining effort); see the two explicit partial rows.
+view. The current checklist has31/34 implemented items (91% of checklist items, not
+native conformance or remaining effort); see the explicit partial rows.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains

@@ -27,19 +27,23 @@ type Selection struct {
 }
 
 type Request struct {
-	Players   [2]Selection
-	StagePath string
-	Mode      string
-	Music     string
-	Teams     [2]TeamSelection
-	MatchNo   int
-	Campaign  uint64
+	Players     [2]Selection
+	StagePath   string
+	Mode        string
+	Music       string
+	Teams       [2]TeamSelection
+	MatchNo     int
+	Campaign    uint64
+	RoundStart  int              // zero starts at round1; Survival continues across opponent loads
+	Carry       [2][]*RoundCarry // indexed by the original team roster
+	RandomState *engine.RandomStream
 }
 
 type Options struct {
 	RootDir, MotifDir, FightPath string
 	GameSpace                    coord.Space
 	RoundTime, LifePercent       int
+	GameTime, TicksPerSecond     int32 // context available during state5900 entry
 	TeamLoseOnKO                 bool
 	Team1Vs2Life                 int
 	Input                        func(playerID, facing int) []string
@@ -127,7 +131,7 @@ func New(request Request, options Options) (*Match, error) {
 	if options.Team1Vs2Life <= 0 {
 		options.Team1Vs2Life = 150
 	}
-	m := &Match{Request: request, Options: options, Round: 1, Winner: -1, Timeline: &engine.Timeline{}}
+	m := &Match{Request: request, Options: options, Round: max(1, request.RoundStart), Winner: -1, Timeline: &engine.Timeline{GameTime: options.GameTime, TicksPerSecond: options.TicksPerSecond}}
 	helperMax := options.HelperMax
 	if helperMax == 0 {
 		helperMax = 56
@@ -148,11 +152,15 @@ func New(request Request, options Options) (*Match, error) {
 	if options.PlayerProjectileMax != 0 {
 		m.World.ProjectileMax = max(5, options.PlayerProjectileMax)
 	}
-	seed := options.RandomSeed
-	if seed == 0 {
-		seed = engine.NewRandomStream(time.Now().Unix()).Next()
+	if request.RandomState != nil {
+		m.World.RestoreRandom(*request.RandomState)
+	} else {
+		seed := options.RandomSeed
+		if seed == 0 {
+			seed = engine.NewRandomStream(time.Now().Unix()).Next()
+		}
+		m.World.SeedRandom(seed)
 	}
-	m.World.SeedRandom(seed)
 	m.World.AfterEntityUpdate = m.updateHorizontalCamera
 	if options.SuperTargetDefenceMul <= 0 {
 		options.SuperTargetDefenceMul = 1.5
@@ -308,12 +316,13 @@ func (m *Match) resetRound() error {
 		c.InputSource = m.Options.Input
 		if m.Round > 1 {
 			c.Power = previous.Power
-			for index := c.StateFile.Data.IntPersistIndex; index >= 0 && index < len(c.IntVars); index++ {
-				c.IntVars[index] = previous.IntVars[index]
-			}
-			for index := c.StateFile.Data.FloatPersistIndex; index >= 0 && index < len(c.FloatVars); index++ {
-				c.FloatVars[index] = previous.FloatVars[index]
-			}
+			copyPersistentVariables(c, previous.IntVars, previous.FloatVars)
+		}
+		if carry := m.initialCarry(slot); carry != nil {
+			c.SetLife(carry.Life)
+			c.SetPower(carry.Power)
+			c.RoundsExisted = carry.RoundsExisted + 1
+			copyPersistentVariables(c, carry.IntVars, carry.FloatVars)
 		}
 		x, y, z, facing := s.PlayerInfo.P1StartX, s.PlayerInfo.P1StartY, s.PlayerInfo.P1StartZ, s.PlayerInfo.P1Facing
 		if side == 1 {
@@ -354,7 +363,11 @@ func (m *Match) resetRound() error {
 		return err
 	}
 	for _, p := range m.Actors() {
-		p.Character.ChangeState(5900, -1, -1)
+		state := 5900
+		if !p.Character.IsAlive() {
+			state = 5150
+		}
+		p.Character.ChangeState(state, -1, -1)
 		if p.Character.RuntimeError != nil {
 			return p.Character.RuntimeError
 		}
@@ -662,8 +675,14 @@ func (m *Match) commitRoundResult() {
 	}
 	m.matchDone = m.Wins[0] >= m.teamRoundLimit(1) || m.Wins[1] >= m.teamRoundLimit(0)
 	m.commitTeamResult()
+	publicMatchOver := m.matchDone
+	if m.isSurvival() && m.Winner == 0 {
+		// A scheduled opponent has ended; the continuing Survival match has
+		// not. CNS MatchOver becomes true only when the home team is beaten.
+		publicMatchOver = false
+	}
 	for _, p := range m.Actors() {
-		p.Character.IsMatchOver = m.matchDone
+		p.Character.IsMatchOver = publicMatchOver
 	}
 }
 
