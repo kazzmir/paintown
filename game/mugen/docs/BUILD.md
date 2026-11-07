@@ -7,8 +7,9 @@ approved project boundary; the launcher keeps root module metadata read-only. Th
 a separate nested module. When running Go directly from the repository root,
 include `-modfile=game/mugen/mugen.mod -mod=readonly`.
 
-The user-requested merge of `origin/go-rewrite` at `172d3fb02` raises the minimum
-to Go1.26 and reconciles both module graphs to Ebitengine2.10.5, purego0.11.2,
+The user-requested integration of `origin/go-rewrite` at `172d3fb02` and the
+previously pushed dependency commit `dc3423cf1` raises the minimum
+to Go1.26 and reconciles both module graphs to Ebitengine2.10.6, purego0.11.3,
 x/image0.47.0 and x/text0.43.0. MUGEN's YAML, MP3 and Vorbis dependencies are
 retained in the merged root metadata and scoped overlay. Root metadata is
 read-only during normal builds; requested upstream merges can update it.

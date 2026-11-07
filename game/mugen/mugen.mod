@@ -3,8 +3,8 @@ module github.com/kazzmir/paintown
 go 1.26.0
 
 require (
-	github.com/ebitengine/purego v0.11.2
-	github.com/hajimehoshi/ebiten/v2 v2.10.5
+	github.com/ebitengine/purego v0.11.3
+	github.com/hajimehoshi/ebiten/v2 v2.10.6
 	github.com/hajimehoshi/go-mp3 v0.3.4
 	github.com/jfreymuth/oggvorbis v1.0.5
 	github.com/jfreymuth/vorbis v1.0.2

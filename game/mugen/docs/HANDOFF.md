@@ -6,9 +6,10 @@ no pushes/binaries/assets/generated banks. Runtime runs stay serial through the
 private wrapper; await exit, guard, then edit/run. Reuse assets/cache and remove
 disposable output after inspection.
 
-Current integration merges origin/go-rewrite at172d3fb02 into go-rewrite-mugen.
-Only go.mod conflicted: keep upstream Go1.26/Ebitengine2.10.5/purego0.11.2 and
-retain MUGEN's YAML/MP3/Vorbis dependencies. Root and scoped module graphs and
+Current integration includes origin/go-rewrite at172d3fb02 and the previously
+pushed go-rewrite-mugen dependency update dc3423cf1. Both histories are retained.
+Module conflicts are resolved with Go1.26/Ebitengine2.10.6/purego0.11.3 and
+MUGEN's YAML/MP3/Vorbis dependencies retained. Root and scoped module graphs and
 checksums are synchronized. Normal builds keep root metadata read-only; the
 ignored post-merge SHA256 baseline records the intentional incoming update.
 For private-wrapper commands use env GOTOOLCHAIN=go1.26.9 (already cached here).
@@ -20,9 +21,9 @@ was inspected and removed along with its overlay/log. No asset banks copied.
 
 The original untracked root go.sum is preserved byte-for-byte at
 `temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked`.
-Other pre-existing untracked work remains untouched. A separate pushed commit,
-origin/go-rewrite-mugen dc3423cf1 (update deps), remains outside this merge; it
-uses Ebitengine2.10.6/purego0.11.3 and needs reconciliation before a normal push.
+Other pre-existing untracked work remains untouched. The earlier pushed
+dependency update is now reconciled; the combined graph retains its newer
+Ebitengine2.10.6/purego0.11.3 versions plus upstream Paintown and MUGEN needs.
 
 Latest implementation checkpoint3a45b0577 fixes immediate-parent background
 links, animated parallax, width vs legacy xscale, infinite tiling, masks/blends,
