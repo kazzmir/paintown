@@ -1,6 +1,7 @@
 temp
 /temp/
 /unresolved.log
+/mugen.yaml
 mugen
 
 # Compiled game and test outputs belong under temp/.

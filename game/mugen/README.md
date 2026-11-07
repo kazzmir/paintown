@@ -103,7 +103,9 @@ at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 ### Keyboard overrides in mugen.yaml
 
 Place `mugen.yaml` in your selected `--data-dir`, alongside `data/`, `chars/` and
-`stages/`. A binding can be one key or a list of alternatives:
+`stages/`. This is a local configuration file; `game/mugen/mugen.yaml` is ignored
+by Git. Create your file using the example below. A binding can be one key or a
+list of alternatives:
 
 ```yaml
 input:

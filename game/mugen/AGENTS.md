@@ -36,6 +36,9 @@ teams/modes/AI, remaining stage/team context, assets and platform support. Defer
 color/shadow/alpha and KO-echo precision until functional coverage is finished.
 Continue autonomously with local source/text checkpoints. Author only game/mugen/.
 No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
+Before every local commit, present the complete change list and wait for the
+user's approval. This supersedes earlier authorization to commit automatically.
+Keep mugen.yaml local and ignored; document configuration examples in README.md.
 
 Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
 The requested origin/go-rewrite merge at172d3fb02 and reconciliation of the
@@ -104,7 +107,7 @@ disabled mappings and value-copy isolation. The connected menu-to-fight scenario
 now loads a small override and exercises alternatives through two rounds,
 rematch/exit, plus ownership/release and malformed binding behavior. Affected
 segments and existing config/input regressions pass with race detection.
-See README and mugen.yaml comments for the user-facing contract.
+See README for the user-facing contract.
 
 ## Background checkpoint
 
