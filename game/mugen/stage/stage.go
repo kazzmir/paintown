@@ -8,12 +8,15 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sff"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 type Stage struct {
-	Name    string
-	Source  string
-	DebugBG bool
+	Name                string
+	Source              string
+	DebugBG             bool
+	DisplayName, Author string
+	Music               sound.MusicSpec
 
 	Camera struct {
 		StartX                    float64

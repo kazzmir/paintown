@@ -27,6 +27,7 @@ type Timeline struct {
 	GlobalNoShadow                           bool // Reset every game tick, including paused frames.
 	NoBackground, NoForeground, NoBarDisplay bool
 	NoKO                                     bool
+	NoMusic                                  bool
 	GameTime                                 int32
 	roundEffectOrigin                        int32
 	TicksPerSecond                           int32 // Zero uses the standalone default of 60.
@@ -48,6 +49,7 @@ func (t *Timeline) BeginFrame() {
 		t.GlobalNoShadow = false
 		t.NoBackground, t.NoForeground, t.NoBarDisplay = false, false, false
 		t.NoKO = false
+		t.NoMusic = false
 		t.AdvanceGlobalPalette()
 		t.AdvanceEnvironmentColor()
 	}

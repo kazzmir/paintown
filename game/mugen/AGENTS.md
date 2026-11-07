@@ -31,10 +31,11 @@ instructions supersede old research plans and checkpoint test requirements.
 
 ## Scope and execution
 
-Continue authorized remaining effects/controllers (item3) autonomously with local
-source/text checkpoints. Author only game/mugen/. No pushes, binaries, subagents
-or goals. Preserve unrelated upstream/root work. Broader modes/teams/AI/BGM/assets
-and final platform coverage remain item4; see the project ledger for allocation.
+The user authorized the remaining functional work on 2026-11-07: BGM/NoMusic,
+teams/modes/AI, remaining stage/team context, assets and platform support. Defer
+color/shadow/alpha and KO-echo precision until functional coverage is finished.
+Continue autonomously with local source/text checkpoints. Author only game/mugen/.
+No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
 
 Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
 Prefer rg/rg --files --no-ignore; historical ignores hide source. Do not recurse
@@ -57,11 +58,10 @@ artifact-dependent tests now require unavailable captures.
 
 Before each local commit audit explicit staged paths and UTF-8/no-NUL text; add no
 temp/testdata/binary or outside-scope files. Avoid force-adding directories. No
-new native data was promoted. Announcement scheduling, residual schemas, clipboard/debug output and combo
-lifecycle/HUD are implemented. Their affected segments passed with race
-detection. Startup constraints and top/bottom edge bindings are also complete; the four
-affected segments pass with race detection. Next: concrete presentation/audio
-follow-ups. Stock bitmap label placement is now corrected; match-flow passes
-with race detection and a standalone build succeeds. Other color/audio precision
-issues remain open; keep their status partial. Read
-docs/PROGRESS.md and docs/HANDOFF.md; do not restart historical research matrices.
+new native data was promoted. State/controller closure, startup constraints,
+vertical edges and stock bitmap placement are complete at abf8a2d4a. The first
+functional item4 batch implements WAV/MP3/Ogg BGM, NoMusic, scene transitions
+and StageVar; all five affected connected segments pass with race detection.
+Continue team rosters/simul/turns/context, then modes/AI and broader assets/media/
+platforms. Legacy MIDI/tracker/CD backends are still unimplemented. Precision
+remains partial and deferred. Read docs/PROGRESS.md and docs/HANDOFF.md.

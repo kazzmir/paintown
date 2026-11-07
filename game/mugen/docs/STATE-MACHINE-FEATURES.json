@@ -5,17 +5,11 @@
     "fvarrangeset",
     "fvarset"
   ],
-  "controller_gaps": {
-    "assertspecial": {
-      "gap": "NoMusic has no BGM consumer.",
-      "allocation": "item4 dependency"
-    }
-  },
+  "controller_gaps": {},
   "trigger_gap_allocations": {
     "ishometeam": "item4 stage/team context",
     "p3name": "item4 stage/team context",
     "p4name": "item4 stage/team context",
-    "stagevar": "item4 stage/team context",
     "teammode": "item4 stage/team context"
   },
   "mechanics": [
@@ -316,19 +310,21 @@
       "id": "bgm",
       "name": "Background music and NoMusic integration",
       "group": "Assets and sound",
-      "status": "missing",
-      "gap": "Implement BGM playback and the NoMusic consumer.",
-      "allocation": "item4 dependency",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item4",
       "sources": [
-        "engine/assert_special.go:compileAssertSpecial"
+        "sound/music.go:Play",
+        "system/music.go:syncMusic",
+        "character/character.go:AssertSpecial"
       ]
     },
     {
       "id": "fonts",
-      "name": "Complete font/asset compatibility and loading errors",
+      "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Finish broader font/asset formats and errors; stock resource support exists.",
+      "gap": "Finish broader font/asset formats and errors, including legacy MIDI/tracker/CD music backends; WAV/MP3/Ogg BGM and stock fonts/assets are supported.",
       "allocation": "item4",
       "sources": [
         "font/font.go"
@@ -340,7 +336,7 @@
       "group": "Assets and sound",
       "status": "partial",
       "gap": "Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected.",
-      "allocation": "item3 presentation / item4 final conformance",
+      "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
         "character/ko_sound.go",
@@ -385,10 +381,10 @@
       "name": "Remaining stage, viewport and team trigger bindings",
       "group": "State machine",
       "status": "partial",
-      "gap": "Bind IsHomeTeam, P3Name, P4Name, StageVar and TeamMode with the later modes/team context.",
+      "gap": "Bind IsHomeTeam, P3Name, P4Name and TeamMode with team/mode lifecycle.",
       "allocation": "item4 context",
       "sources": [
-        "character/context.go:lookupViewport",
+        "character/world.go:LookupFunction",
         "evaluator/names.go"
       ]
     },
@@ -445,7 +441,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2a6d83eb21044b3d0c20cf32abb990b703675230d329f8ef892f55df8c9aa0b6"
+      "passed_source": "9e3a65a908d4599799d62f5023fedd07d89f06c1b64cfe78fdfdea45dab890c4"
     },
     {
       "id": "combat",
@@ -482,7 +478,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5e7728eebcab1b27de8a0f8915be02c31ac7be9c5e57d9e554a02c21da38b5dd"
+      "passed_source": "50306c3bdff562d0201833b5d6c550c78c8cbae113a711ee2b5e5b9bbbd99fdc"
     },
     {
       "id": "entities",
@@ -508,7 +504,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a4352223c48afe58a05f22a84fb93890f90eaf6186a2cc20034e443bf93e9467"
+      "passed_source": "e2e055282a1d12c01f3fbdf26ea5f75fd04e44d23365e977abfe342b0a9f8c96"
     },
     {
       "id": "effects-pause",
@@ -540,7 +536,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "0a222a1e4ec548c92c25ad1be8aaeff7b262facb247a89e6f08f51c09421ebfc"
+      "passed_source": "1bb8e72ebe2f97903cf28dd07ab104658cda81d742b65898236bbaf42835ce4b"
     },
     {
       "id": "match-flow",
@@ -591,11 +587,15 @@
         {
           "file": "system/feedback_flow_test.go",
           "name": "TestCombatClipboardComboAndDebugFlow"
+        },
+        {
+          "file": "system/music_flow_test.go",
+          "name": "TestMusicControllerAndSceneFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3cb6207a48aa8328434328b867afd157982887a1d10e445676b3fde93a2683e0"
+      "passed_source": "5512209bc0a18d992fc37864740e914e75d0c29b1c18b964c2cbad57e8d77180"
     }
   ],
   "presentation_followups": [

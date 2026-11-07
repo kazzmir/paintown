@@ -102,7 +102,7 @@ func Load(path, root string) (*Storyboard, error) {
 			return nil, fmt.Errorf("%s [%s] (line %d): end.time is required and must be nonnegative", source, def.Name, def.Line)
 		}
 		scene := &Scene{Name: def.Name, EndTime: def.EndTime, RawSprites: story.RawSprites,
-			MusicFile: def.MusicFile, MusicLoop: def.MusicLoop,
+			MusicFile: def.MusicFile, MusicLoop: def.MusicLoop, MusicSet: def.MusicSet,
 			Fader: FadeTool{FadeInTime: def.FadeInTime, FadeOutTime: def.FadeOutTime,
 				FadeInColor: rgb(def.FadeInColor), FadeOutColor: rgb(def.FadeOutColor)}}
 		if def.ClearColorSet {

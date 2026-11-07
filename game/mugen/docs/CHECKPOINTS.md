@@ -32,3 +32,7 @@ completed segments were not rerun. Color/audio precision remains open.
 M4ds added no new engine compatibility claim or generated fixture bank. Production
 Go advanced in M4dt. Former per-run transcripts are in this file's Git history;
 they are not maintained as a second live project tracker.
+
+M4dx connects streaming BGM/NoMusic and stage metadata through the production
+scene/mixer path. All five affected segments pass with race detection. The user
+allocated remaining functional work and deferred precision on 2026-11-07.

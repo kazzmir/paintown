@@ -39,14 +39,18 @@ type Mixer struct {
 	pending                     [4]byte
 	pendingOffset, pendingBytes int
 	closed                      bool
+	music                       *Music
 }
 
 func NewMixer(options Options) (*Mixer, error) {
 	if options.SampleRate <= 0 || options.MaxVoices <= 0 || !finite(options.Volume) || options.Volume < 0 || !finite(options.PanningWidth) {
 		return nil, fmt.Errorf("invalid sound mixer options")
 	}
-	return &Mixer{options: options, cache: map[*snd.Sound]*samples{}}, nil
+	return &Mixer{options: options, cache: map[*snd.Sound]*samples{}, music: &Music{rate: options.SampleRate}}, nil
 }
+
+// Music remains independent of SFX scene/channel clearing.
+func (m *Mixer) Music() *Music { return m.music }
 
 func finite(value float32) bool { return !math.IsNaN(float64(value)) && !math.IsInf(float64(value), 0) }
 
@@ -214,6 +218,8 @@ func (m *Mixer) frame() (float32, float32) {
 	}
 	clear(m.voices[len(active):])
 	m.voices = active
+	ml, mr := m.music.frame()
+	left, right = left+ml, right+mr
 	return left, right
 }
 
@@ -256,5 +262,6 @@ func (m *Mixer) Close() error {
 	m.voices = nil
 	m.cache = nil
 	m.closed = true
+	m.music.Stop()
 	return nil
 }

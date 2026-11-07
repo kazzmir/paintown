@@ -7,14 +7,17 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/sound"
+	"github.com/kazzmir/paintown/game/mugen/storyboard"
 )
 
 type engineSound struct {
-	queue     *sound.Queue
-	mixer     *sound.Mixer
-	player    *audio.Player
-	menuOwner uint64
-	warnings  map[string]bool
+	queue      *sound.Queue
+	mixer      *sound.Mixer
+	player     *audio.Player
+	menuOwner  uint64
+	warnings   map[string]bool
+	musicState State
+	musicScene *storyboard.Scene
 }
 
 func (e *Engine) soundConfig() config.SoundConfig {

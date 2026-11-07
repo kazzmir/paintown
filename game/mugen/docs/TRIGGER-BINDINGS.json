@@ -3,12 +3,11 @@
   "kind": "source-routing-inventory",
   "manual_sha256": "9a6636b9e14edc1c91b38de7357aae43049d2a612313d10be55f6e6117ab121c",
   "family_count": 127,
-  "route_present": 122,
+  "route_present": 123,
   "unbound": [
     "ishometeam",
     "p3name",
     "p4name",
-    "stagevar",
     "teammode"
   ],
   "triggers": [
@@ -906,8 +905,10 @@
     },
     {
       "name": "stagevar",
-      "status": "unbound",
-      "routes": [],
+      "status": "route-present",
+      "routes": [
+        "character/world.go:LookupFunction"
+      ],
       "variants_complete": false
     },
     {

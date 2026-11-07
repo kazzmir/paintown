@@ -908,6 +908,8 @@ func (c *Character) AssertSpecial(flag string) {
 			c.Timeline.NoBarDisplay = true
 		case "noko":
 			c.Timeline.NoKO = true
+		case "nomusic":
+			c.Timeline.NoMusic = true
 		}
 	}
 }

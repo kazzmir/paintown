@@ -38,6 +38,7 @@ type SceneDef struct {
 	DefaultPosSet   bool
 	MusicFile       string
 	MusicLoop       bool
+	MusicSet        bool
 	Layers          []*LayerDef
 }
 
@@ -139,6 +140,7 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 					scene.DefaultPosSet = true
 				case id == "bgm":
 					scene.MusicFile = getString(attr.Value)
+					scene.MusicSet = true
 				case id == "bgm.loop":
 					scene.MusicLoop = getBool(attr.Value)
 				default:

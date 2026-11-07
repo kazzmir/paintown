@@ -17,6 +17,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 type Motif struct {
@@ -35,14 +36,8 @@ type Motif struct {
 		Fight           string
 		FontFiles       []string
 	}
-	Music struct {
-		TitleBGM      string
-		TitleBGMLoop  bool
-		SelectBGM     string
-		SelectBGMLoop bool
-		VSBGM         string
-		VSBGMLoop     bool
-	}
+	Music map[string]sound.MusicSpec
+
 	TitleInfo struct {
 		FadeInTime  int
 		FadeOutTime int
@@ -151,7 +146,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		return nil, fmt.Errorf("%s [Info] localcoord (line %d): %w", absPath, defData.InfoLines["localcoord"], err)
 	}
 
-	motif := &Motif{Source: absPath}
+	motif := &Motif{Source: absPath, Music: map[string]sound.MusicSpec{"title": sound.DefaultMusic(true), "select": sound.DefaultMusic(true), "vs": sound.DefaultMusic(false), "victory": sound.DefaultMusic(false)}}
 	motif.Info.LocalCoord = local
 	motif.Files.FontFiles = make([]string, 11) // 1-10
 	motif.Fonts = make([]*font.Font, 11)
@@ -200,21 +195,24 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 			}
 		case "music":
 			for _, attr := range sec.Attributes {
-				switch strings.ToLower(attr.ID.String()) {
-				case "title.bgm":
-					motif.Music.TitleBGM = getString(attr.Value)
-				case "title.bgm.loop":
-					motif.Music.TitleBGMLoop = getBool(attr.Value)
-				case "select.bgm":
-					motif.Music.SelectBGM = getString(attr.Value)
-				case "select.bgm.loop":
-					motif.Music.SelectBGMLoop = getBool(attr.Value)
-				case "vs.bgm":
-					motif.Music.VSBGM = getString(attr.Value)
-				case "vs.bgm.loop":
-					motif.Music.VSBGMLoop = getBool(attr.Value)
+				screen, suffix, ok := strings.Cut(strings.ToLower(attr.ID.String()), ".bgm")
+				if !ok {
+					continue
 				}
+				key := map[string]string{"": "file", ".loop": "loop", ".volume": "volume", ".loopstart": "loopstart", ".loopend": "loopend"}[suffix]
+				if key == "" {
+					continue
+				}
+				track, present := motif.Music[screen]
+				if !present {
+					track = sound.DefaultMusic(false)
+				}
+				if err := track.SetParameter(key, attr.RawValue); err != nil {
+					return nil, fmt.Errorf("%s [Music] line %d: %w", absPath, attr.Line, err)
+				}
+				motif.Music[screen] = track
 			}
+
 		case "title info":
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())

@@ -14,6 +14,7 @@ import (
 type World struct {
 	Registry           *engine.Registry[*Character]
 	Roots              []*Character
+	StageInfo          map[string]string
 	Helpers            []*Character
 	HelperMax          int
 	ProjectileMax      int
@@ -392,6 +393,23 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 }
 
 func (c *Character) LookupFunction(name string, args []evaluator.Value) (evaluator.Value, bool) {
+	switch name {
+	case "stagevar":
+		if len(args) != 1 || c.World == nil || c.World.StageInfo == nil {
+			c.EvaluationWarning("StageVar requires a stage context and one selector")
+			return evaluator.Value{}, true
+		}
+		selector, ok := args[0].Text()
+		if !ok {
+			return evaluator.Value{}, true
+		}
+		value, ok := c.World.StageInfo[selector]
+		if !ok {
+			c.EvaluationWarning("StageVar: invalid selector " + selector)
+			return evaluator.Value{}, true
+		}
+		return evaluator.Text(value), true
+	}
 	if value, known := c.lookupProjectileEvent(name, args); known {
 		return value, true
 	}

@@ -160,6 +160,7 @@ type Scene struct {
 	DefaultPosition [2]float64
 	MusicFile       string
 	MusicLoop       bool
+	MusicSet        bool
 	ClearColor      color.RGBA
 	ClearColorSet   bool
 
@@ -350,6 +351,14 @@ func NewPlayer(sb *Storyboard) *Player {
 	}
 	sb.Scenes[p.currentIdx].Reset()
 	return p
+}
+
+// CurrentScene exposes scene-entry media commands to the presentation adapter.
+func (p *Player) CurrentScene() *Scene {
+	if p == nil || p.done || p.Error != nil || p.currentIdx < 0 || p.currentIdx >= len(p.sb.Scenes) {
+		return nil
+	}
+	return p.sb.Scenes[p.currentIdx]
 }
 
 // Update advances the storyboard by one tick. Returns true when done.

@@ -2,8 +2,8 @@ package config
 
 import "fmt"
 
-// SoundConfig retains the 1.1 sound settings. Resampling method/quality and BGM
-// are retained for later fidelity work; the current SFX mixer uses linear PCM.
+// SoundConfig retains the 1.1 sound settings. SFX and music use independent
+// gains. Resampling quality/method fidelity remains separate from playback.
 type SoundConfig struct {
 	Sound, StereoEffects, ReverseStereo    bool
 	SampleRate, BufferSize, WavChannels    int
@@ -46,4 +46,11 @@ func (s SoundConfig) EffectsVolume() float32 {
 		return 0
 	}
 	return float32(s.MasterVolume) * float32(s.WavVolume) / 10000
+}
+
+func (s SoundConfig) MusicVolume() float32 {
+	if !s.Sound {
+		return 0
+	}
+	return float32(s.MasterVolume) * float32(s.BGMVolume) / 10000
 }

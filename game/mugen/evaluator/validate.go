@@ -59,6 +59,21 @@ func validateConstants(expr Expression) error {
 			}
 			return nil
 		}
+		if name == "stagevar" {
+			if len(e.Arguments) != 1 {
+				return fmt.Errorf("StageVar requires one literal selector")
+			}
+			selector, ok := e.Arguments[0].(*Identifier)
+			if !ok {
+				return fmt.Errorf("StageVar requires a literal stage parameter")
+			}
+			switch strings.ToLower(selector.Name) {
+			case "info.name", "info.displayname", "info.author", "info.authorname":
+				return nil
+			default:
+				return fmt.Errorf("StageVar: invalid selector %s", selector.Name)
+			}
+		}
 		if (name == "const240p" || name == "const480p" || name == "const720p") && len(e.Arguments) != 1 {
 			return fmt.Errorf("%s requires one expression", e.Name)
 		}

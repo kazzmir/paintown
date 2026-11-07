@@ -68,6 +68,12 @@ configuration overrides can change them. Ctrl-D cycles debug output through
 players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 
+Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
+settings, with looping, sample loop points and independent music volume. NoMusic
+pauses/resumes the playback cursor while sound effects continue. Legacy MIDI,
+tracker and CD backends remain in the asset backlog. The stock stage references
+sound/kfm.mid, which is absent from the supplied local distribution.
+
 ## Build a standalone executable
 
 ```bash

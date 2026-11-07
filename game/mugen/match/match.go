@@ -194,6 +194,7 @@ func (m *Match) Setting(section, key string, fallback int) int {
 }
 
 func (m *Match) resetRound() error {
+	m.World.StageInfo = map[string]string{"info.name": m.Stage.Name, "info.displayname": m.Stage.DisplayName, "info.author": m.Stage.Author, "info.authorname": m.Stage.Author}
 	m.Timeline.ClearPauses()
 	m.Timeline.ResetRoundEffectClock()
 	m.Timeline.ClearShake()

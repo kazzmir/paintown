@@ -5,9 +5,9 @@ Checked items have a working implementation for the stated scope. Partial
 items name the remaining work. Counts below are feature/route counts, not
 an estimate of total effort or complete native compatibility.
 
-- Controllers: 89/89 routes; 1 known partial, 0 missing.
-- Triggers: 122/127 runtime routes; 5 missing.
-- Project items: 25 implemented, 6 partial, 2 missing.
+- Controllers: 89/89 routes; 0 known partial, 0 missing.
+- Triggers: 123/127 runtime routes; 4 missing.
+- Project items: 26 implemented, 6 partial, 1 missing.
 
 ## Completed scenario coverage
 
@@ -34,7 +34,7 @@ source changes reopen only the affected segments.
 - [x] Controller persistence and hit-pause eligibility.
 - [x] Borrowed states, animation and SelfState ownership.
 - [x] Remaining variable and StateTypeSet schemas.
-- [ ] Remaining stage, viewport and team trigger bindings. **partial** — Bind IsHomeTeam, P3Name, P4Name, StageVar and TeamMode with the later modes/team context. (item4 context)
+- [ ] Remaining stage, viewport and team trigger bindings. **partial** — Bind IsHomeTeam, P3Name, P4Name and TeamMode with team/mode lifecycle. (item4 context)
 
 ### Characters and combat
 
@@ -64,9 +64,9 @@ source changes reopen only the affected segments.
 
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
-- [ ] Background music and NoMusic integration. **missing** — Implement BGM playback and the NoMusic consumer. (item4 dependency)
-- [ ] Complete font/asset compatibility and loading errors. **partial** — Finish broader font/asset formats and errors; stock resource support exists. (item4)
-- [ ] Remaining renderer and audio fidelity issues. **partial** — Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected. (item3 presentation / item4 final conformance)
+- [x] Background music and NoMusic integration. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Finish broader font/asset formats and errors, including legacy MIDI/tracker/CD music backends; WAV/MP3/Ogg BGM and stock fonts/assets are supported. (item4)
+- [ ] Remaining renderer and audio fidelity issues. **partial** — Resolve remaining color/shadow/alpha precision and KO-echo playback differences; stock bitmap label placement is corrected. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
 
@@ -84,9 +84,8 @@ implementation tasks by themselves.
 
 | Controller | Remaining implementation |
 | --- | --- |
-| assertspecial | NoMusic has no BGM consumer. |
 
-Missing trigger routes: `ishometeam`, `p3name`, `p4name`, `stagevar`, `teammode`.
+Missing trigger routes: `ishometeam`, `p3name`, `p4name`, `teammode`.
 
 Remaining stage/team context belongs with the later modes/assets allocation.
 

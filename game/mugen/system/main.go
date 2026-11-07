@@ -66,6 +66,9 @@ func (e *Engine) Update() error {
 	if input.GlobalManager != nil {
 		input.GlobalManager.Update()
 	}
+	if err := e.syncMusic(); err != nil {
+		return err
+	}
 
 	if e.currentState != nil {
 		next, err := e.currentState.Update()
@@ -73,6 +76,9 @@ func (e *Engine) Update() error {
 			return err
 		}
 		e.currentState = next
+	}
+	if err := e.syncMusic(); err != nil {
+		return err
 	}
 	if err := e.flushSound(); err != nil {
 		return err

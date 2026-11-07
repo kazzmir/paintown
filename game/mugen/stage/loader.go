@@ -13,6 +13,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 func LoadStage(path string, dataDir string) (*Stage, error) {
@@ -33,6 +34,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 
 	stage := &Stage{
 		Source:       absPath,
+		Music:        sound.DefaultMusic(true),
 		SpriteImages: make(map[string]*background.SpriteImages),
 	}
 	stage.StageInfo.LocalCoord = coord.Default()
@@ -51,8 +53,25 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 		case name == "info":
 			consumed[name] = true
 			for _, attr := range sec.Attributes {
-				if strings.ToLower(attr.ID.String()) == "name" {
+				switch strings.ToLower(attr.ID.String()) {
+				case "name":
 					stage.Name = background.GetString(attr.Value)
+				case "displayname":
+					stage.DisplayName = background.GetString(attr.Value)
+				case "author":
+					stage.Author = background.GetString(attr.Value)
+				}
+			}
+		case name == "music":
+			consumed[name] = true
+			for _, attr := range sec.Attributes {
+				key := map[string]string{"bgmusic": "file", "bgmvolume": "volume", "bgmloopstart": "loopstart", "bgmloopend": "loopend"}[strings.ToLower(attr.ID.String())]
+				if key != "" {
+					if err := stage.Music.SetParameter(key, attr.RawValue); err != nil {
+						return nil, fmt.Errorf("%s [Music] line %d: %w", absPath, attr.Line, err)
+					}
+				} else if strings.EqualFold(attr.ID.String(), "bgvolume") {
+					stage.Music.Volume = max(0, min(200, 100+int(background.GetFloat(attr.Value))*100/255))
 				}
 			}
 		case name == "camera":
