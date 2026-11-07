@@ -258,8 +258,8 @@ func (m *Match) resetRound() error {
 	half := float64(m.Options.GameSpace.Width) / 2
 	m.World.ProjectileStageBounds = [2]float64{s.Camera.BoundLeft*stageScale - half, s.Camera.BoundRight*stageScale + half}
 	m.World.ProjectileStageBoundsKnown = true
-	m.cameraLeft, m.cameraRight = float32(m.CameraX-half), float32(m.CameraX+half)
-	m.Viewport.Zoom = 1
+	m.Viewport.Zoom = s.Camera.StartZoom
+	m.cameraLeft, m.cameraRight = float32(m.CameraX-half/m.Viewport.Zoom), float32(m.CameraX+half/m.Viewport.Zoom)
 	m.Viewport.CameraX, m.Viewport.CameraY = m.CameraX, m.CameraY
 	m.Viewport.CameraX = m.publishedCameraX()
 	for slot, p := range m.ActivePlayers() {

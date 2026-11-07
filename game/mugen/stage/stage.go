@@ -19,17 +19,18 @@ type Stage struct {
 	Music               sound.MusicSpec
 
 	Camera struct {
-		StartX                    float64
-		StartY                    float64
-		BoundLeft                 float64
-		BoundRight                float64
-		BoundHigh                 float64
-		BoundLow                  float64
-		VerticalFollow            float64
-		FloorTension              float64
-		Tension                   float64
-		CutHigh, CutLow           float64
-		OverdrawHigh, OverdrawLow float64
+		StartX                     float64
+		StartY                     float64
+		StartZoom, ZoomOut, ZoomIn float64
+		BoundLeft                  float64
+		BoundRight                 float64
+		BoundHigh                  float64
+		BoundLow                   float64
+		VerticalFollow             float64
+		FloorTension               float64
+		Tension                    float64
+		CutHigh, CutLow            float64
+		OverdrawHigh, OverdrawLow  float64
 	}
 
 	PlayerInfo struct {

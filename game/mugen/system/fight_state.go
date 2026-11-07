@@ -117,6 +117,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	toStage, _ := gameSpace.ScaleTo(stageSpace)
 	stageToGame, _ := stageSpace.ScaleTo(gameSpace)
 	cameraX, cameraY := m.CameraX*toStage, (m.CameraY-m.Viewport.CropY)*toStage
+	m.Stage.Background.CameraZoom = m.Viewport.ZoomScale()
 	allPalette := m.Timeline.AllPalette.Transform()
 	backgroundPalette := palette.Combine(m.Timeline.BackgroundPalette.Transform(), allPalette)
 	environment := m.Timeline.EnvironmentColor
@@ -152,6 +153,11 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		}
 	}
 	if !m.Timeline.GlobalNoShadow {
+		if m.Stage.Reflection.Intensity > 0 {
+			reflection := render.Shadow{Reflection: true, Intensity: m.Stage.Reflection.Intensity, YScale: 1, FloorY: m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY}
+			character.DrawPlayerShadows(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, reflection)
+			s.drawEffectShadows(s.gameCanvas, reflection)
+		}
 		shadow := render.Shadow{Intensity: m.Stage.Shadow.Intensity, YScale: m.Stage.Shadow.YScale, XShear: m.Stage.Shadow.XShear, FadeRange: m.Stage.Shadow.FadeRange, FloorY: m.Stage.StageInfo.ZOffset*stageToGame - m.CameraY}
 		character.DrawPlayerShadows(s.gameCanvas, m.Actors(), gameSpace, m.CameraX, shadow)
 		s.drawEffectShadows(s.gameCanvas, shadow)

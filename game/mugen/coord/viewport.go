@@ -6,7 +6,7 @@ import (
 )
 
 // Viewport is the world context shared by match entities. All values are in
-// common game units. Zoom is retained for the camera work; stock scenes use 1.
+// common game units. Zoom projects the world about the screen center and floor.
 type Viewport struct {
 	Space                     Space
 	CameraX, CameraY, GroundY float64
@@ -69,6 +69,23 @@ func StageViewport(configured, stage Space, fit bool, cutHigh, cutLow float64) (
 }
 
 type Transform struct{ ScaleX, ScaleY, X, Y float64 }
+
+func (v *Viewport) ZoomScale() float64 {
+	if v == nil || v.Zoom <= 0 {
+		return 1
+	}
+	return v.Zoom
+}
+
+// ZoomTransform follows camera translation, keeping the floor and horizontal
+// screen center fixed. HUD and explicitly screen-space effects do not use it.
+func (v *Viewport) ZoomTransform() Transform {
+	z := v.ZoomScale()
+	if v == nil {
+		return Transform{ScaleX: 1, ScaleY: 1}
+	}
+	return Transform{ScaleX: z, ScaleY: z, X: float64(v.Space.Width) / 2 * (1 - z), Y: (v.GroundY - v.CropY) * (1 - z)}
+}
 
 func (t Transform) Point(x, y float64) (float64, float64) {
 	return t.X + x*t.ScaleX, t.Y + y*t.ScaleY

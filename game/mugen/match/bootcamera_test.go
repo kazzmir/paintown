@@ -81,7 +81,8 @@ movecamera=0,0
 			if float32(v[0]) != float32(v[3])-float32(v[2]) || float32(v[1]) != float32(v[0])+float32(v[4]) {
 				t.Fatalf("player %d: edge/position identities lost: %v", slot+1, v[:7])
 			}
-			wantTop := cameraY*scale - float32(m.Viewport.GroundY)*scale/zoom - shake*float32(c.LocalCoordinateWidth())/320
+			ground := m.Viewport.GroundY + (float64(zoom)-1)*m.Viewport.CropY
+			wantTop := cameraY*scale - float32(ground)*scale/zoom - shake*float32(c.LocalCoordinateWidth())/320
 			wantHeight := float32(m.Viewport.Space.Height) * scale / zoom
 			if float32(v[0]) != wantTop || float32(v[4]) != wantHeight {
 				t.Fatalf("player %d: crop/zoom/shake: top=%v height=%v want=%v/%v", slot+1, v[0], v[4], wantTop, wantHeight)

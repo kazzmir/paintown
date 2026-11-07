@@ -55,7 +55,16 @@ func (m *Match) updateHorizontalCamera() {
 		return
 	}
 	half := float64(m.Options.GameSpace.Width) / 2
-	threshold := half - m.Stage.Camera.Tension*stageScale
+	zoom := 1.0
+	zoomEnabled := m.Stage.Camera.StartZoom != 1 || m.Stage.Camera.ZoomOut != 1 || m.Stage.Camera.ZoomIn != 1
+	if zoomEnabled {
+		zoom = m.Stage.Camera.ZoomIn
+		if right > left {
+			zoom = max(m.Stage.Camera.ZoomOut, min(zoom, max(1, 2*half-2*m.Stage.Camera.Tension*stageScale)/(right-left)))
+		}
+		half /= zoom
+	}
+	threshold := half - m.Stage.Camera.Tension*stageScale/zoom
 	low, high := right-threshold, left+threshold
 	wanted := m.cameraGoalX
 	if low > high {
@@ -86,12 +95,17 @@ func (m *Match) updateHorizontalCamera() {
 	}
 	m.cameraLeft, m.cameraRight = advance(m.cameraLeft, wantedLeft), advance(m.cameraRight, wantedRight)
 	width := float64(m.Options.GameSpace.Width)
-	if float64(m.cameraRight)-float64(m.cameraLeft) > width {
+	if !zoomEnabled && float64(m.cameraRight)-float64(m.cameraLeft) > width {
 		if m.cameraRight <= wantedRight {
 			m.cameraLeft = float32(float64(m.cameraRight) - width)
 		} else if m.cameraLeft >= wantedLeft {
 			m.cameraRight = float32(float64(m.cameraLeft) + width)
 		}
+	}
+	if zoomEnabled {
+		center := (float64(m.cameraLeft) + float64(m.cameraRight)) / 2
+		span := max(width/m.Stage.Camera.ZoomIn, min(width/m.Stage.Camera.ZoomOut, float64(m.cameraRight)-float64(m.cameraLeft)))
+		m.cameraLeft, m.cameraRight = float32(center-span/2), float32(center+span/2)
 	}
 	m.CameraX = float64(float32((float64(m.cameraLeft) + float64(m.cameraRight)) / 2))
 	m.Viewport.Zoom = float64(float32(width / (float64(m.cameraRight) - float64(m.cameraLeft))))

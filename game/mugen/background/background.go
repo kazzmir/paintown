@@ -40,6 +40,7 @@ type Background struct {
 	// SpriteData overrides the caller's shared archive for this background.
 	SpriteData *sff.SFF
 	LocalCoord coord.Space
+	CameraZoom float64 // zero retains the unzoomed motif/storyboard default
 	sprites    map[string]*SpriteImages
 }
 
@@ -76,6 +77,9 @@ func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, c
 	}
 	for _, element := range b.Elements {
 		if element.GetLayerNo() == layer {
+			if zoomed, ok := element.(interface{ setCameraZoom(float64) }); ok {
+				zoomed.setCameraZoom(b.CameraZoom)
+			}
 			tinted, hasTint := element.(interface{ setSceneTint([3]float32) })
 			if hasTint {
 				tinted.setSceneTint(tint)
@@ -157,6 +161,8 @@ type CommonElement struct {
 	LayerNo          int
 	Start            [2]float64
 	Delta            [2]float64
+	ZoomDelta        float64
+	cameraZoom       float64
 	Mask             bool
 	Tile             [2]int
 	Spacing          [2]int
@@ -181,6 +187,18 @@ type CommonElement struct {
 
 func (e *CommonElement) setPalette(transform palette.Transform) {
 	e.paletteTransform, e.renderError = transform, nil
+}
+
+func (e *CommonElement) setCameraZoom(zoom float64) { e.cameraZoom = zoom }
+
+func (e *CommonElement) zoomGeometry(geometry *ebiten.GeoM, center, floor float64) {
+	if e.cameraZoom <= 0 || e.cameraZoom == 1 {
+		return
+	}
+	z := 1 + (e.cameraZoom-1)*e.ZoomDelta
+	geometry.Translate(-center, -floor)
+	geometry.Scale(z, z)
+	geometry.Translate(center, floor)
 }
 
 func (e *CommonElement) paletteError() error { return e.renderError }
@@ -598,7 +616,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 					op.Filter = ebiten.FilterNearest
 
 					sX_line := topScale + (bottomScale-topScale)*(float64(y)/float64(h-1))
-					lineDrawX := 160.0 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*(e.Delta[0]*sX_line)
+					lineDrawX := float64(screen.Bounds().Dx())/2 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*(e.Delta[0]*sX_line)
 					lineDrawY := e.Start[1] + e.CurrentPos[1] + offY - cameraY*e.Delta[1]
 
 					op.GeoM.Translate(-float64(xAxis), -float64(yAxis)+float64(y))
@@ -611,6 +629,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 					op.GeoM.Scale(sX_line*flipX, sY*flipY)
 					op.GeoM.Translate(tilePosX, tilePosY)
 					op.GeoM.Translate(lineDrawX-winX, lineDrawY-winY)
+					e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
 
 					line := img.SubImage(image.Rect(0, y, w, y+1)).(*ebiten.Image)
 					e.drawPaletteImage(target, line, &op, trans, alpha)
@@ -629,6 +648,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 				op.GeoM.Scale(sX*flipX, sY*flipY)
 				op.GeoM.Translate(tilePosX, tilePosY)
 				op.GeoM.Translate(baseDrawX-winX, baseDrawY-winY)
+				e.zoomGeometry(&op.GeoM, float64(screen.Bounds().Dx())/2, zOffset)
 
 				e.drawPaletteImage(target, img, &op, trans, alpha)
 			}
@@ -690,14 +710,15 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		}
 
 		common := CommonElement{
-			Name:    sec.Name,
-			Mask:    false,
-			Delta:   [2]float64{1, 1},
-			Spacing: [2]int{0, 0},
-			Trans:   "none",
-			Window:  [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
-			Visible: true,
-			Enabled: true,
+			Name:      sec.Name,
+			Mask:      false,
+			Delta:     [2]float64{1, 1},
+			ZoomDelta: 1,
+			Spacing:   [2]int{0, 0},
+			Trans:     "none",
+			Window:    [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
+			Visible:   true,
+			Enabled:   true,
 		}
 		maskSet := false
 		var elemType string
@@ -734,6 +755,9 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				consumed[attr] = true
 			case "delta":
 				common.Delta = GetVector2(attr.Value)
+				consumed[attr] = true
+			case "zoomdelta":
+				common.ZoomDelta = GetFloat(attr.Value)
 				consumed[attr] = true
 			case "velocity":
 				common.Velocity = GetVector2(attr.Value)

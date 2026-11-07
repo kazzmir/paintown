@@ -124,6 +124,9 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 		screen = !p.SpaceSpecified || p.ScreenSpace
 		observed, _ := c.lookupViewport("screenwidth")
 		viewWidth := observed.Number()
+		if !screen {
+			viewWidth /= c.Viewport.ZoomScale()
+		}
 		switch p.PosType {
 		case "right":
 			x += viewWidth

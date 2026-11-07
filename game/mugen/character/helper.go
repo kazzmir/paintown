@@ -64,7 +64,7 @@ func (c *Character) CreateHelper(p engine.HelperParameters) error {
 			c.EvaluationWarning("Helper postype p2 has no opponent; using p1")
 		}
 	case "front", "back", "left", "right":
-		width := float64(c.LocalCoordinateWidth())
+		width := float64(c.LocalCoordinateWidth()) / c.Viewport.ZoomScale()
 		gameWidth := c.GameCoord.Width
 		if gameWidth <= 0 {
 			gameWidth = 320

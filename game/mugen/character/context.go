@@ -198,7 +198,8 @@ func (c *Character) lookupViewport(name string) (evaluator.Value, bool) {
 	case "screenpos x":
 		value = float32(c.X - float64(cameraX) + float64(width)/float64(zoom)/2)
 	case "screenpos y", "topedge", "bottomedge":
-		value = float32(c.Y - float64(cameraY) + v.GroundY*float64(scale)/float64(zoom))
+		ground := v.GroundY + (float64(zoom)-1)*v.CropY
+		value = float32(c.Y - float64(cameraY) + ground*float64(scale)/float64(zoom))
 		if c.Timeline != nil {
 			value += float32(c.Timeline.ShakeOffset()) * float32(c.LocalCoordinateWidth()) / 320
 		}

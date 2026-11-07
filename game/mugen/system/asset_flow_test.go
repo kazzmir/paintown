@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"image"
 	"image/color"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,10 +14,14 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/sff"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
 )
 
@@ -380,5 +386,303 @@ trigger1=1
 	write("outfits.def", []byte(strings.Replace(definition, `Pal\Gold.ACT`, `Pal\missing.act`, 1)))
 	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "pal2") {
 		t.Fatal("missing ACT lost resource context", err)
+	}
+}
+
+// One zoom lifecycle spans authored stage/BG settings, camera participation,
+// mixed character coordinates, world/screen drawing, boundaries and reset.
+// It checks functional projection; native zoom easing/raster parity is open.
+func TestStageZoomCameraRenderingAndResetFlow(t *testing.T) {
+	e := soundTestEngine(t)
+	e.cfg.Config.GameWidth, e.cfg.Config.GameHeight = 320, 240
+	root, err := filepath.Abs(e.dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "zoom.def")
+	if err := os.WriteFile(path, []byte(`[Info]
+name=Connected zoom
+[Camera]
+startzoom=.75
+zoomout=.5
+zoomin=1
+boundleft=-1000
+boundright=1000
+tension=30
+[PlayerInfo]
+p1startx=-40
+p2startx=40
+p1facing=1
+p2facing=-1
+leftbound=-10000
+rightbound=10000
+[Bound]
+screenleft=15
+screenright=15
+[StageInfo]
+localcoord=320,240
+zoffset=200
+[BG Follow]
+type=normal
+spriteno=0,0
+start=-128,20
+delta=0,0
+zoomdelta=1
+[BG Fixed]
+type=normal
+spriteno=0,1
+start=112,50
+delta=0,0
+zoomdelta=0
+`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	request := match.Request{Mode: "Versus Mode", StagePath: path, Players: [2]match.Selection{
+		{DefPath: filepath.Join(root, "chars/kfm/kfm.def"), Palette: 1},
+		{DefPath: filepath.Join(root, "chars/kfm720/kfm720.def"), Palette: 1},
+	}}
+	f, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := f.match
+	program := `[Statedef 5900]
+type=S
+[State 5900, enter]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+movetype=I
+ctrl=1
+anim=0
+[State 0, camera]
+type=ScreenBound
+trigger1=1
+value=var(50)
+movecamera=var(51),var(51)
+[State 0, zoom]
+type=VarSet
+trigger1=1
+fv=0
+value=CameraZoom
+[State 0, visible width]
+type=VarSet
+trigger1=1
+fv=1
+value=GameWidth
+[State 0, left edge]
+type=VarSet
+trigger1=1
+fv=2
+value=LeftEdge
+[State 0, right edge]
+type=VarSet
+trigger1=1
+fv=3
+value=RightEdge
+[Statedef 180]
+type=S
+movetype=I
+physics=N
+anim=0
+[State 180, idle]
+type=Null
+trigger1=1
+[Statedef 5150]
+type=L
+movetype=H
+physics=N
+anim=0
+[State 5150, idle]
+type=Null
+trigger1=1
+`
+	for _, p := range m.Players {
+		file, err := cns.ParseNamed(strings.NewReader(program), "connected-zoom.cns")
+		if err != nil {
+			t.Fatal(err)
+		}
+		file.SetLanguageVersion("1.1")
+		old := p.Character.StateFile
+		file.Data, file.Size, file.Movement = old.Data, old.Size, old.Movement
+		p.Character.StateFile, p.CMD = file, nil
+		p.Character.ChangeState(5900, -1, -1)
+		p.Character.InputSource = func(int, int) []string { return nil }
+		if err := p.Character.SetScreenBound(engine.ScreenBoundParameters{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	m.Options.Input = func(int, int) []string { return nil }
+	step := func(ticks int) {
+		t.Helper()
+		for n := 0; n < ticks; n++ {
+			if err := m.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	step(10)
+	if m.Viewport.Zoom != .75 {
+		t.Fatal("startzoom did not survive disabled camera participation", m.Viewport.Zoom)
+	}
+	// Fight-call entry restores authored root positions; spread the actors
+	// after that transition, as actual player movement does.
+	for n := 0; n < 650 && m.Phase != match.Active; n++ {
+		step(1)
+	}
+	if m.Phase != match.Active {
+		t.Fatal("zoom scene did not release fight control")
+	}
+	for side, p := range m.Players {
+		c := p.Character
+		c.IntVars[51] = 1
+		c.X = float64((side*2-1)*400) * float64(c.LocalCoordinateWidth()) / 320
+	}
+	step(120)
+	if math.Abs(m.Viewport.Zoom-.5) > .001 {
+		t.Fatal("separated roots did not zoom out to authored limit", m.Viewport.Zoom)
+	}
+	for side, p := range m.Players {
+		c := p.Character
+		if math.Abs(c.FloatVars[1]-float64(c.LocalCoordinateWidth())/.5) > .1 {
+			t.Fatal("zoomed viewport did not reach mixed-coordinate CNS", c.FloatVars[:3])
+		}
+		c.IntVars[50], c.IntVars[51], c.X = 1, 0, float64(side*2-1)*10000
+	}
+	step(2)
+	for side, p := range m.Players {
+		p.Character.X = float64(side*2-1) * 10000 // Retry after camera publication settles.
+	}
+	step(1)
+	for side, p := range m.Players {
+		c := p.Character
+		want := c.FloatVars[2] + c.ScreenLeftMargin
+		if side == 1 {
+			want = c.FloatVars[3] - c.ScreenRightMargin
+		}
+		if math.Abs(c.X-want) > .01 {
+			t.Fatal("screen constraint retained the unzoomed edge", c.X, c.FloatVars[2])
+		}
+		c.IntVars[50], c.IntVars[51], c.X = 0, 1, 0
+	}
+	step(120)
+	if math.Abs(m.Viewport.Zoom-1) > .001 {
+		t.Fatal("close roots did not return to zoomin", m.Viewport.Zoom)
+	}
+
+	// Small in-memory markers exercise the real BG/effect consumers. Existing
+	// KFM/KFM720 assets remain shared in place; no image bank is written.
+	colors := []color.NRGBA{{R: 17, G: 31, B: 47, A: 255}, {R: 53, G: 71, B: 89, A: 255}, {R: 97, G: 113, B: 131, A: 255}}
+	archive := &sff.SFF{Version: [4]byte{2, 1}}
+	for i, col := range colors {
+		pixels := image.NewNRGBA(image.Rect(0, 0, 16, 16))
+		for y := 0; y < 16; y++ {
+			for x := 0; x < 16; x++ {
+				pixels.SetNRGBA(x, y, col)
+			}
+		}
+		archive.Sprites = append(archive.Sprites, sff.Sprite{ImageNumber: uint16(i), Image: pixels, ImageOpaque: pixels})
+	}
+	m.Stage.Background.SpriteData = archive
+	for i, element := range m.Stage.Background.Elements {
+		element.(*background.NormalElement).Sprite = &archive.Sprites[i]
+	}
+	animations := &air.Data{Actions: map[int]*air.Action{0: {ID: 0, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 2, Time: -1}}}}}
+	lifetime := -1
+	for _, screen := range []bool{false, true} {
+		x, y := -64.0, -60.0
+		if screen {
+			x, y = 280, 100
+		}
+		if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: archive, Animations: animations, Scale: 1}, Action: 0, Facing: 1, X: x, Y: y, ScreenSpace: screen, OnTop: true, RemoveTime: &lifetime}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := m.Effects.Flush(); err != nil {
+		t.Fatal(err)
+	}
+	m.CameraX, m.CameraY = 0, 0
+	canvas := ebiten.NewImage(320, 240)
+	defer canvas.Deallocate()
+	read := func(surface *ebiten.Image) []byte {
+		pixels := make([]byte, surface.Bounds().Dx()*surface.Bounds().Dy()*4)
+		surface.ReadPixels(pixels)
+		return pixels
+	}
+	counts := func(pixels []byte) [3]int {
+		var result [3]int
+		for offset := 0; offset < len(pixels); offset += 4 {
+			for i, col := range colors {
+				if pixels[offset] == col.R && pixels[offset+1] == col.G && pixels[offset+2] == col.B && pixels[offset+3] == 255 {
+					result[i]++
+				}
+			}
+		}
+		return result
+	}
+	m.Viewport.Zoom = 1
+	f.Draw(canvas)
+	fullScene, hud := read(f.gameCanvas), read(f.hudCanvas)
+	full := counts(fullScene)
+	m.Viewport.Zoom = .5
+	f.Draw(canvas)
+	half := counts(read(f.gameCanvas))
+	if f.renderError != nil {
+		t.Fatal(f.renderError)
+	}
+	if full != [3]int{256, 256, 512} || half != [3]int{64, 256, 320} || !bytes.Equal(hud, read(f.hudCanvas)) {
+		t.Fatal("world/BG zoomdelta/screen-effect/HUD projection", full, half)
+	}
+	// Existing mixed-resolution fighter images also shrink before clipping.
+	actor := ebiten.NewImage(320, 240)
+	defer actor.Deallocate()
+	area := func(zoom float64) int {
+		m.Viewport.Zoom = zoom
+		actor.Clear()
+		character.DrawPlayers(actor, m.Actors()[:1], m.Options.GameSpace, 0, 200)
+		count := 0
+		for i, v := range read(actor) {
+			if i%4 == 3 && v != 0 {
+				count++
+			}
+		}
+		return count
+	}
+	large, small := area(1), area(.5)
+	if large < 100 || small < large/5 || small > large/3 {
+		t.Fatal("fighter pixels did not follow camera zoom", large, small)
+	}
+	m.Viewport.Zoom = 1
+	m.Stage.Reflection.Intensity = 128
+	f.Draw(canvas)
+	reflected := read(f.gameCanvas)
+	different := 0
+	for i := 200 * 320 * 4; i < len(reflected); i++ {
+		if reflected[i] != fullScene[i] {
+			different++
+		}
+	}
+	if different < 100 {
+		t.Fatal("stage reflection intensity produced no colored floor reflection", different)
+	}
+	m.Timeline.GlobalNoShadow = true
+	f.Draw(canvas)
+	if !bytes.Equal(read(f.gameCanvas)[200*320*4:], fullScene[200*320*4:]) {
+		t.Fatal("global shadow suppression retained stage reflections")
+	}
+	m.Timeline.GlobalNoShadow = false
+	for _, p := range m.Players {
+		p.Character.IntVars[50], p.Character.IntVars[51] = 0, 0
+	}
+	m.Players[1].Character.SetLife(0)
+	m.Players[1].Character.ChangeState(5150, 0, -1)
+	for n := 0; n < 900 && m.Round == 1; n++ {
+		step(1)
+	}
+	if m.Round != 2 || m.Viewport.Zoom != .75 || len(m.Effects.Active) != 0 {
+		t.Fatal("round reset lost startzoom or retained effects", m.Round, m.Viewport.Zoom)
 	}
 }

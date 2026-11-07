@@ -8,10 +8,14 @@ type Shadow struct {
 	Intensity              int
 	YScale, XShear, FloorY float64
 	FadeRange              [2]float64
+	Reflection             bool // colored floor reflection, preserving the sprite palette
 }
 
 func (s Shadow) Opacity(y float64, blend string, destination int) float32 {
 	opacity := float64(max(0, min(256, s.Intensity))) / 256
+	if s.Reflection {
+		return float32(opacity)
+	}
 	if s.YScale == 0 || blend == "sub" {
 		return 0
 	}

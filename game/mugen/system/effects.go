@@ -195,28 +195,42 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 	}
 	var style render.DrawStyle
+	if shadow == nil || shadow.Reflection {
+		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
+		style = render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.PaletteTransform(), m.Timeline.AllPalette.Transform())}
+	}
 	if shadow != nil {
 		opacity := shadow.Opacity(instance.Y, blend, alphaDst)
 		if opacity <= 0 {
 			return
 		}
-		op.ColorScale.Scale(0, 0, 0, opacity)
-		style.DestinationFactor = -1
+		if shadow.Reflection {
+			op.ColorScale.ScaleAlpha(opacity)
+		} else {
+			op.ColorScale.Scale(0, 0, 0, opacity)
+			style.DestinationFactor = -1
+		}
 		if !projected {
 			_, indexed := sprite.Image.(*image.Paletted)
 			reverse := shadow.SamplingReversal(op.GeoM, 0, indexed, sy < 0)
 			style.SourceReversal = &reverse
 			op.GeoM = shadow.SpriteGeometry(op.GeoM, 0, indexed, sy < 0)
 		}
-	} else {
-		nativeDestination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
-		style = render.DrawStyle{DestinationFactor: nativeDestination, Palette: palette.Combine(source.PaletteTransform(), m.Timeline.AllPalette.Transform())}
+	}
+	zoom := m.Viewport.ZoomTransform()
+	if !projected && !instance.ScreenSpace {
+		op.GeoM.Scale(zoom.ScaleX, zoom.ScaleY)
+		op.GeoM.Translate(zoom.X, zoom.Y)
 	}
 
 	if projected {
 		projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
 		if shadow != nil {
 			projection.Post = shadow.Projection(0)
+		}
+		if !instance.ScreenSpace {
+			projection.Post.Scale(zoom.ScaleX, zoom.ScaleY)
+			projection.Post.Translate(zoom.X, zoom.Y)
 		}
 		var err error
 		if _, indexed := sprite.Image.(*image.Paletted); indexed {

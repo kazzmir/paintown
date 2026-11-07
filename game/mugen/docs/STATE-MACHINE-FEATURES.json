@@ -319,7 +319,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven.",
+      "gap": "Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. Stage moving-floor/autoturn, normal/animated BG camera scaling/windowdelta, and stage xscale/yscale still lack complete consumers.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -339,7 +339,7 @@
       "name": "Deferred native fidelity and recovery calibration",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Remaining color/shadow/alpha, KO-echo playback and native AI policy precision; mixed-mode team health and Survival team recovery still need native confirmation. Turns and single-player Survival recovery now follow the supplied beta formula.",
+      "gap": "Native zoom easing/crop/raster behavior, remaining color/shadow/alpha, KO-echo playback and native AI policy precision; mixed-mode team health and Survival team recovery still need native confirmation. Turns and single-player Survival recovery now follow the supplied beta formula.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -413,6 +413,24 @@
         "mugen.sh"
       ],
       "validation": "Standalone Linux amd64 build; normal logo/intro window startup; stock KFM/KFM720 input-driven KO/result and private audio output. Connected segments pass. Other targets deferred by user."
+    },
+    {
+      "id": "stage-zoom",
+      "name": "Stage camera zoom, background zoomdelta and floor reflections",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "1.1 functional gap (resumed audit)",
+      "sources": [
+        "stage/loader.go:LoadStage",
+        "match/camera.go:updateHorizontalCamera",
+        "coord/viewport.go:ZoomTransform",
+        "background/background.go:zoomGeometry",
+        "system/effects.go:drawEffectPose",
+        "render/shadow.go:Opacity",
+        "system/fight_state.go:Draw"
+      ],
+      "validation": "Connected authored stage \u2192 camera participation/separation/return \u2192 mixed-coordinate queries/constraints \u2192 BG/world/screen effects/HUD \u2192 colored floor reflection/suppression \u2192 KO/reset. Native easing/blend/raster precision remains unverified."
     }
   ],
   "segments": [
@@ -493,7 +511,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1c8ca2911a8f51d4ad0d79603646ea90194a41a8d0245779676a19616866656c"
+      "passed_source": "316b5cd3c98e0fa25cafbd4b61b172a3fcf35ca6bf225a22f6799976e5f864f0"
     },
     {
       "id": "entities",
@@ -523,7 +541,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d4fc364c3f04b157b44c7bd2aa29810142987b754369a738e0340ee875546f04"
+      "passed_source": "e84cb43f54d92cc84da51819e39c3f3dc49ac515ce2b636de6b0216ba5e5934c"
     },
     {
       "id": "effects-pause",
@@ -555,7 +573,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "23b8484ca1de177ce963e1c2296cc6d6a5e68466435e34a3a23a714fbe5292df"
+      "passed_source": "d5cd59af4bb8f0f060f64576f36e8b486f644f5994102968081bf6010588ffb6"
     },
     {
       "id": "match-flow",
@@ -626,11 +644,15 @@
         {
           "file": "system/asset_flow_test.go",
           "name": "TestStoryboardAssetsTextSoundAndAnimationFlow"
+        },
+        {
+          "file": "system/asset_flow_test.go",
+          "name": "TestStageZoomCameraRenderingAndResetFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1c0c210d3beabc5ccbe0f6ab4733d5529550569ffb2645625881a408a722fd8a"
+      "passed_source": "3e81ede2eeae4867c3deba89a36c84ba66bdd20aaf1f13cfcd98d97af43e97ba"
     }
   ],
   "presentation_followups": [

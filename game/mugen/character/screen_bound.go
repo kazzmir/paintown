@@ -24,7 +24,7 @@ func (c *Character) constrainPosition() {
 }
 
 func (c *Character) screenPositionBounds() (left, right float64) {
-	half := float64(c.ScreenWidth) / 2
+	half := float64(c.ScreenWidth) / (2 * c.Viewport.ZoomScale())
 	camera := c.cameraPositionX()
 	front, back := c.edgeWidths()
 	leftMargin, rightMargin := back, front

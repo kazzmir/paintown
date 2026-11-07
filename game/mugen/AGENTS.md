@@ -97,4 +97,7 @@ The existing team/mode scenarios cover those values, reset carry and final roste
 exhaustion; affected segments pass with race detection. No generated control bank
 is retained. Survival bout/roster persistence is now covered too: single-opponent completion,
 human reserve ownership and original Turns roster position across handoff.
-Next functional gap is documented1.1 stage/BG zoom; see docs/HANDOFF.md.
+Documented1.1 stage/BG zoom and floor reflection consumers are implemented.
+One connected stage/render/constraint/KO-reset scenario passes with race detection.
+Native zoom easing/reflection precision remains unverified. Next: moving floors,
+stage auto-turn and BG scaling/window movement; see docs/HANDOFF.md.

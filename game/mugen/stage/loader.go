@@ -39,6 +39,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	}
 	stage.StageInfo.LocalCoord = coord.Default()
 	stage.StageInfo.ResetBG = true
+	stage.Camera.StartZoom, stage.Camera.ZoomOut, stage.Camera.ZoomIn = 1, 1, 1
 	stage.Shadow.Intensity, stage.Shadow.YScale = 128, .4
 	stageDir := filepath.Dir(absPath)
 
@@ -83,6 +84,12 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.Camera.StartX = background.GetFloat(attr.Value)
 				case "starty":
 					stage.Camera.StartY = background.GetFloat(attr.Value)
+				case "startzoom":
+					stage.Camera.StartZoom = background.GetFloat(attr.Value)
+				case "zoomout":
+					stage.Camera.ZoomOut = background.GetFloat(attr.Value)
+				case "zoomin":
+					stage.Camera.ZoomIn = background.GetFloat(attr.Value)
 				case "boundleft":
 					stage.Camera.BoundLeft = background.GetFloat(attr.Value)
 				case "boundright":
@@ -196,6 +203,11 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
+				case "reflect":
+					stage.Reflection.Intensity = 0
+					if background.GetBool(attr.Value) {
+						stage.Reflection.Intensity = 128
+					}
 				case "intensity":
 					stage.Reflection.Intensity = int(background.GetFloat(attr.Value))
 				}
@@ -281,6 +293,14 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 
 	if !screenLeftPresent || !screenRightPresent {
 		return nil, fmt.Errorf("%s [Bound]: screenleft and screenright are required", absPath)
+	}
+	for _, zoom := range []float64{stage.Camera.StartZoom, stage.Camera.ZoomOut, stage.Camera.ZoomIn} {
+		if zoom <= 0 || math.IsNaN(zoom) || math.IsInf(zoom, 0) {
+			return nil, fmt.Errorf("%s [Camera]: zoom scales must be positive and finite", absPath)
+		}
+	}
+	if stage.Camera.ZoomOut > stage.Camera.ZoomIn {
+		return nil, fmt.Errorf("%s [Camera]: zoomout exceeds zoomin", absPath)
 	}
 
 	// Parse animation data from AST (stages often embed AIR in .def)

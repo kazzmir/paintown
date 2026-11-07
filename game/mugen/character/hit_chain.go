@@ -93,8 +93,9 @@ func (c *Character) advanceProjectiles() {
 				v := s.parameters
 				p.VelX = float64(float32(p.VelX)*float32(v.VelocityMultiplier[0]) + float32(v.Accel[0]))
 				p.VelY = float64(float32(p.VelY)*float32(v.VelocityMultiplier[1]) + float32(v.Accel[1]))
-				left := p.cameraPositionX() - float64(p.LocalCoordinateWidth())/2
-				right := left + float64(p.LocalCoordinateWidth())
+				width := float64(p.LocalCoordinateWidth()) / p.Viewport.ZoomScale()
+				left := p.cameraPositionX() - width/2
+				right := left + width
 				outside := p.X < left-float64(v.EdgeBound) || p.X > right+float64(v.EdgeBound) || p.VelY < 0 && p.Y < v.HeightBound[0] || p.VelY > 0 && p.Y > v.HeightBound[1]
 				if p.World != nil && p.World.ProjectileStageBoundsKnown {
 					scale := float64(p.LocalCoordinateWidth()) / float64(p.GameCoord.Width)

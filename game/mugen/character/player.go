@@ -192,22 +192,7 @@ func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, 
 		blend, alphaSrc, alphaDst = ent.DrawTransparency.Mode, ent.DrawTransparency.Source, ent.DrawTransparency.Destination
 	}
 	var style render.DrawStyle
-	if shadow != nil {
-		opacity := shadow.Opacity(ent.Y*sy, blend, alphaDst)
-		if opacity <= 0 {
-			return
-		}
-		offset := 0.0
-		if ent.StateFile != nil && !ent.isProjectile {
-			offset = float64(ent.StateFile.Size.ShadowOffset) * sy
-		}
-		reverse := shadow.SamplingReversal(opts.GeoM, offset, indexed, elementFlipY != (characterScaleY < 0))
-		style.SourceReversal = &reverse
-		opts.GeoM = shadow.SpriteGeometry(opts.GeoM, offset, indexed, elementFlipY != (characterScaleY < 0))
-		opts.ColorScale.Reset()
-		opts.ColorScale.Scale(0, 0, 0, opacity)
-		style.DestinationFactor = -1
-	} else {
+	if shadow == nil || shadow.Reflection {
 		destination := render.ApplyBlend(opts, blend, alphaSrc, alphaDst)
 		style = render.DrawStyle{DestinationFactor: destination, Palette: ent.Palettes.Transform()}
 		if override != nil {
@@ -225,6 +210,31 @@ func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, 
 		}
 	}
 
+	if shadow != nil {
+		opacity := shadow.Opacity(ent.Y*sy, blend, alphaDst)
+		if opacity <= 0 {
+			return
+		}
+		offset := 0.0
+		if ent.StateFile != nil && !ent.isProjectile && !shadow.Reflection {
+			offset = float64(ent.StateFile.Size.ShadowOffset) * sy
+		}
+		reverse := shadow.SamplingReversal(opts.GeoM, offset, indexed, elementFlipY != (characterScaleY < 0))
+		style.SourceReversal = &reverse
+		opts.GeoM = shadow.SpriteGeometry(opts.GeoM, offset, indexed, elementFlipY != (characterScaleY < 0))
+		if shadow.Reflection {
+			opts.ColorScale.ScaleAlpha(opacity)
+		} else {
+			opts.ColorScale.Reset()
+			opts.ColorScale.Scale(0, 0, 0, opacity)
+			style.DestinationFactor = -1
+		}
+
+	}
+
+	zoom := ent.Viewport.ZoomTransform()
+	opts.GeoM.Scale(zoom.ScaleX, zoom.ScaleY)
+	opts.GeoM.Translate(zoom.X, zoom.Y)
 	var err error
 	if indexed {
 		err = p.indexSampler.DrawStyledImage(screen, ebitenSprite, opts, style)
@@ -259,6 +269,9 @@ func (p *Player) drawExplod(screen *ebiten.Image, ex *ExplodData, x, y, sx, sy f
 	}
 	opts.GeoM.Scale(sx, sy)
 	opts.GeoM.Translate(x, y)
+	zoom := p.Character.Viewport.ZoomTransform()
+	opts.GeoM.Scale(zoom.ScaleX, zoom.ScaleY)
+	opts.GeoM.Translate(zoom.X, zoom.Y)
 	screen.DrawImage(ebitenSprite, opts)
 }
 
