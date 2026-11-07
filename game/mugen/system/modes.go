@@ -143,7 +143,7 @@ func (r *modeRun) request() match.Request {
 }
 
 func (r *modeRun) restore(f *FightState) {
-	if !r.survival || f.match.Request.Campaign != r.id {
+	if !r.survival || r.index == 0 || f.match.Request.Campaign != r.id {
 		return
 	}
 	for member, p := range f.match.SidePlayers(0) {
@@ -153,10 +153,8 @@ func (r *modeRun) restore(f *FightState) {
 		if member >= len(r.carryLife) {
 			break
 		}
-		if r.carryLife[member] > 0 {
-			p.Character.SetLife(min(p.Character.MaxLife, r.carryLife[member]))
-			p.Character.SetPower(r.carryPower[member])
-		}
+		p.Character.SetLife(min(p.Character.MaxLife, r.carryLife[member]))
+		p.Character.SetPower(r.carryPower[member])
 	}
 }
 

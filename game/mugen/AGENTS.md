@@ -78,31 +78,13 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Resumed compatibility/color pass
+## Latest team checkpoint
 
-The user resumed work after stage/tracker playtesting. Legacy DEF ACT banks now
-load explicitly with shared/private sprite identity, initial outfit/default HUD
-portrait separation, helper ownership and round reset. One bounded original
-1.1b1 color control confirms the initial body/portrait distinction; all five
-connected segments pass with race detection. Native invalid-content rejection
-is not established (the native control required complete constants/CMD blocks
-and standard SFF1.0.1 metadata). Keep that limitation visible in the ledger.
-Remaining precision is still partial; do not claim full native equivalence.
-
-## Recovery checkpoint
-
-Native1.1b1 Turns2-vs-4 and single-player Survival controls establish elapsed-time
-recovery, initial-opponent-health weighting, integer ordering and win-pose timing.
-The existing team/mode scenarios cover those values, reset carry and final roster
-exhaustion; affected segments pass with race detection. No generated control bank
-is retained. Survival bout/roster persistence is now covered too: single-opponent completion,
-human reserve ownership and original Turns roster position across handoff.
-Documented1.1 stage/BG zoom and floor reflection consumers are implemented.
-One connected stage/render/constraint/KO-reset scenario passes with race detection.
-Native zoom easing/reflection precision remains unverified. Moving floors/dummy links,
-stage auto-turn, BG scaling/windowdelta and1.1 maskwindow now have consumers.
-The connected stage scenario and a standalone Cargo run pass; captures/overlays
-were inspected and removed. StageInfo xscale/yscale and legacy hires now have consumers too. One bounded
-original1.1b1 stage scene confirms BG scaling while fighter floor/viewport stay
-unchanged; the connected scenario agrees. Native easing/blend/scaled interaction
-precision remains partial. See docs/HANDOFF.md.
+Mixed-team health/round budgets and Survival Simul partner recovery/carry now
+match bounded original1.1b1 flows. Changed-source segments pass with race
+detection; Linux rebuilt. Native/scratch output was removed. The ledger reopens
+modes/teams for concrete remaining gaps: continuous Survival round/variable
+state before5900 entry, held-direction Turns ordering, and Team Co-op opponent
+selection. Continue there before optional pixel/audio precision. Palette, stage,
+tracker, zoom/moving-floor/reflection and global/hires scaling work remains.
+See docs/HANDOFF.md. Preserve the connected-scenario/cleanup workflow above.

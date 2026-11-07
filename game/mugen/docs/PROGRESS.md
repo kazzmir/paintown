@@ -7,7 +7,7 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 32 implemented, 2 partial, 0 missing.
+- Project items: 30 implemented, 4 partial, 0 missing.
 
 ## Completed scenario coverage
 
@@ -67,13 +67,13 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
-- [ ] Deferred native fidelity and recovery calibration. **partial** — Native zoom easing/crop/raster behavior, remaining color/shadow/alpha, KO-echo playback and native AI policy precision; mixed-mode team health and Survival team recovery still need native confirmation. Turns and single-player Survival recovery now follow the supplied beta formula. (deferred precision (user 2026-11-07))
+- [ ] Deferred native fidelity and recovery calibration. **partial** — Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; scaled stage/link/window interactions and strict compatibility edges remain unverified. Mixed-team health/round budgets and Survival team recovery now follow the supplied beta. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
 
 - [x] Opponent AI and authored CMD command flow. (item4)
-- [x] Arcade/survival progression, continue/ending and training/watch rules. (item4)
-- [x] Team/simul/turns lifecycle, partner context and recovery. (item4)
+- [ ] Arcade/survival progression, continue/ending and training/watch rules. **partial** — Survival must retain continuous RoundNo/RoundsExisted and declared persistent CNS variables across scheduled opponents. (item4)
+- [ ] Team/simul/turns lifecycle, partner context and recovery. **partial** — Turns roster-order switching and the Team Co-op opponent-mode menu still need implementation. (item4)
 - [x] Linux build and final playable acceptance. (Linux now; other targets deferred (user 2026-11-07))
 
 ## Controllers and trigger gaps

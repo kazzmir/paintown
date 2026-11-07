@@ -214,6 +214,67 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	}
 	step(ebiten.KeyEnter)
 	step()
+	// Native Survival Simul keeps667 maximum life and recovers a defeated
+	// partner without reviving it during the result. The next bout restores
+	// that recovered amount, including the partial partner and shared power.
+	selectSimul := NewSelectState(e, "Survival")
+	e.currentState = selectSimul
+	step(ebiten.KeyArrowDown)
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyArrowRight)
+	step(ebiten.KeyEnter)
+	f = enterFight()
+	settle := func(f *FightState) {
+		t.Helper()
+		f.match.Options.Input = func(int, int) []string { return nil }
+		for _, p := range f.match.Actors() {
+			p.Character.InputSource = f.match.Options.Input
+			p.Character.AILevel = 0
+		}
+		for n := 0; n < 700 && f.match.Phase != match.Active; n++ {
+			step()
+		}
+		if f.match.Phase != match.Active {
+			t.Fatal("Survival Simul did not release control")
+		}
+	}
+	settle(f)
+	leader, partner := f.match.SidePlayers(0)[0].Character, f.match.SidePlayers(0)[1].Character
+	if leader.MaxLife != 667 || partner.MaxLife != 667 {
+		t.Fatal("Survival Simul life normalization", leader.MaxLife, partner.MaxLife)
+	}
+	leader.SetLife(400)
+	leader.SetPower(500)
+	partner.SetLife(0)
+	partner.ChangeState(5150, 0, -1)
+	for n := 0; n < 30; n++ {
+		step()
+	}
+	complete(f, 0)
+	if leader.Life != 664 || partner.Life != 264 || partner.IsAlive() {
+		t.Fatal("native defeated-partner recovery/result latch", leader.Life, partner.Life, partner.IsAlive())
+	}
+	f = enterFight()
+	leader, partner = f.match.SidePlayers(0)[0].Character, f.match.SidePlayers(0)[1].Character
+	if leader.Life != 664 || partner.Life != 264 || !partner.IsAlive() || partner.GetPower() != 500 {
+		t.Fatal("Survival replaced partial partner recovery with full health")
+	}
+	settle(f)
+	for n := 0; n < 30; n++ {
+		step()
+	}
+	complete(f, 0)
+	f = enterFight()
+	if f.match.Players[0].Character.Life != 667 || f.match.Teams[0].Members[1].Character.Life != 528 {
+		t.Fatal("Survival second recovery/cap", f.match.Players[0].Character.Life, f.match.Teams[0].Members[1].Character.Life)
+	}
+	complete(f, 1)
+	if result, ok := e.currentState.(*GameOverScreenState); !ok || result.score != 2 {
+		t.Fatalf("Survival Simul defeat did not finish its streak: %T", e.currentState)
+	}
+	step(ebiten.KeyEnter)
+	step()
 	f = selectMode("Training")
 	for n := 0; n < 700 && f.match.Phase != match.Active; n++ {
 		step()

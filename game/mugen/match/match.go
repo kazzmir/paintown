@@ -124,6 +124,9 @@ func New(request Request, options Options) (*Match, error) {
 	if options.RoundTime < -1 || options.LifePercent <= 0 {
 		return nil, fmt.Errorf("invalid match time/life options")
 	}
+	if options.Team1Vs2Life <= 0 {
+		options.Team1Vs2Life = 150
+	}
 	m := &Match{Request: request, Options: options, Round: 1, Winner: -1, Timeline: &engine.Timeline{}}
 	helperMax := options.HelperMax
 	if helperMax == 0 {
@@ -294,13 +297,9 @@ func (m *Match) resetRound() error {
 			c.RoundsExisted = previous.RoundsExisted + 1
 		}
 		c.Ctrl = false
-		c.MaxLife = c.MaxLife * m.Options.LifePercent / 100
 		c.MaxLife = m.rosterLife(side, c.MaxLife)
-		if m.Teams[side].Mode == Single && m.Teams[1-side].Mode == Simul && m.Options.Team1Vs2Life > 0 {
-			c.MaxLife = c.MaxLife * m.Options.Team1Vs2Life / 100
-		}
 		c.Life = c.MaxLife
-		if m.Round > 1 && m.hasTurns() && m.Teams[side].entered[p] && previous.IsAlive() {
+		if m.Round > 1 && m.hasTurns() && m.Teams[side].entered[p] && previous.RoundWon && previous.Life > 0 {
 			c.Life = min(c.MaxLife, previous.Life)
 		}
 		m.Teams[side].entered[p] = true
@@ -653,18 +652,15 @@ func (m *Match) commitRoundResult() {
 	} else {
 		m.Draws++
 		limit := m.Setting("Round", "match.maxdrawgames", 1)
+		if m.hasTurns() {
+			limit = 0 // A draw consumes a Turns member and an opposing round.
+		}
 		if m.Draws > limit {
 			m.Wins[0]++
 			m.Wins[1]++
 		}
 	}
-	target := max(1, m.Setting("Round", "match.wins", 2))
-	if m.isSurvival() {
-		// Each defeated opponent advances the streak. Ordinary match.wins
-		// must not grant a fresh full-health round against that opponent.
-		target = 1
-	}
-	m.matchDone = m.Wins[0] >= target || m.Wins[1] >= target
+	m.matchDone = m.Wins[0] >= m.teamRoundLimit(1) || m.Wins[1] >= m.teamRoundLimit(0)
 	m.commitTeamResult()
 	for _, p := range m.Actors() {
 		p.Character.IsMatchOver = m.matchDone

@@ -339,7 +339,7 @@
       "name": "Deferred native fidelity and recovery calibration",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Native zoom easing/crop/raster behavior, remaining color/shadow/alpha, KO-echo playback and native AI policy precision; mixed-mode team health and Survival team recovery still need native confirmation. Turns and single-player Survival recovery now follow the supplied beta formula.",
+      "gap": "Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; scaled stage/link/window interactions and strict compatibility edges remain unverified. Mixed-team health/round budgets and Survival team recovery now follow the supplied beta.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -367,28 +367,29 @@
       "id": "modes",
       "name": "Arcade/survival progression, continue/ending and training/watch rules",
       "group": "Modes and platforms",
-      "status": "implemented",
-      "gap": "",
+      "status": "partial",
+      "gap": "Survival must retain continuous RoundNo/RoundsExisted and declared persistent CNS variables across scheduled opponents.",
       "allocation": "item4",
       "sources": [
         "system/modes.go:prepareMode",
         "system/modes.go:result",
         "system/mode_screens.go"
       ],
-      "validation": "Connected flow covers Arcade continue/ending, Survival one-opponent bout using the real match.wins default, Turns selection/loss/reserve carry into the next opponent and final roster exhaustion; race pass."
+      "validation": "Native Survival Simul:667 max;400\u2192664 and dead partner0\u2192264 retaining Alive0 at result, Alive1 next bout; second recovery caps leader667 and partner528. Connected progression/carry scenario passes with race detection."
     },
     {
       "id": "teams",
       "name": "Team/simul/turns lifecycle, partner context and recovery",
       "group": "Modes and platforms",
-      "status": "implemented",
-      "gap": "",
+      "status": "partial",
+      "gap": "Turns roster-order switching and the Team Co-op opponent-mode menu still need implementation.",
       "allocation": "item4",
       "sources": [
         "match/teams.go:commitTeamResult",
         "match/teams.go:recoverWinner",
         "system/team_select.go:selectedTeams"
-      ]
+      ],
+      "validation": "Original1.1b1 Simul-vs-four-Turns flow:1000/750 maximum life,797 recovery carry, second Simul defeat ends round4. Connected mixed/Single/Turns lifecycle passes with race detection."
     },
     {
       "id": "stage-triggers",
@@ -518,7 +519,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "642bafbaa68759ab060177c90046a60a87892b150c397ce51214fc19c09d1712"
+      "passed_source": "c15f0786ee7c85ee36ed2361dcedac724804eebb57de4b494092d50ffe3beafc"
     },
     {
       "id": "entities",
@@ -551,7 +552,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e8a0cd7386c663d20f81005e0e4d52b5771bc6338d889463cf7bfa21e0f880e7"
+      "passed_source": "87e62b27c7d4996b880fb4b1a30af7cad2d4d3b08a1097800912c2eca20020ae"
     },
     {
       "id": "effects-pause",
@@ -586,7 +587,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4db46e92babbfe8675e3c429313e70a577994352b736bb758d3b644859f49e27"
+      "passed_source": "de68e39bde0a90b3ec1360d442bdc7b6fbab0af779389b4d3ad7e525097f61c3"
     },
     {
       "id": "match-flow",
@@ -665,7 +666,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "38242ff85dfea34032187756d2747bb2e89d71309195ef499ca5571dd042cfc6"
+      "passed_source": "8060da6aebf79e136a3d722cb3bfdcb77b1197d397cccfd9bb2733ffd980bec6"
     }
   ],
   "presentation_followups": [

@@ -232,4 +232,90 @@ flag=timerfreeze
 	if turns.Winner != 0 || turns.Round != 5 || !turns.Teams[1].exhausted || turns.Teams[0].Active != 1 {
 		t.Fatal("turns failed to terminate on roster exhaustion")
 	}
+	// A complete mixed-team bout follows the original beta's alternating
+	// results: Simul gets two rounds against four Turns members, whose max
+	// life remains750. Two defeated Turns entrants must not end the match.
+	request.Teams[0].Mode = Simul
+	options.Team1Vs2Life = 150
+	mixed, err := New(request, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, team := range mixed.Teams {
+		for _, p := range team.Members {
+			p.Character.StateFile.States[-2] = freeze.States[-2]
+		}
+	}
+	advanceUntil(t, mixed, Active, 650)
+	for _, p := range mixed.SidePlayers(0) {
+		if p.Character.MaxLife != 1000 {
+			t.Fatal("mixed Simul maximum life", p.Character.MaxLife)
+		}
+		p.Character.SetLife(400)
+	}
+	if mixed.Players[1].Character.MaxLife != 750 {
+		t.Fatal("mixed Turns normalization", mixed.Players[1].Character.MaxLife)
+	}
+	defeat := func(side int, next Phase) {
+		t.Helper()
+		advanceUntil(t, mixed, Active, 650)
+		for mixed.elapsedFightTicks < 60 {
+			if err := mixed.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for _, p := range mixed.SidePlayers(side) {
+			p.Character.SetLife(0)
+			p.Character.ChangeState(5150, 0, -1)
+		}
+		advanceUntil(t, mixed, next, 650)
+	}
+	defeat(1, PreIntro)
+	for _, p := range mixed.SidePlayers(0) {
+		if p.Character.Life != 797 || p.Character.MaxLife != 1000 {
+			t.Fatal("mixed winner recovery/carry", p.Character.Life, p.Character.MaxLife)
+		}
+	}
+	defeat(0, PreIntro)
+	if mixed.Round != 3 || mixed.Teams[0].exhausted || mixed.Teams[1].Active != 1 {
+		t.Fatal("first Simul loss exhausted the team")
+	}
+	for _, p := range mixed.SidePlayers(0) {
+		if p.Character.Life != 1000 {
+			t.Fatal("defeated Simul member did not replenish for its second round")
+		}
+	}
+	defeat(1, PreIntro)
+	if mixed.Wins != [2]int{2, 1} || mixed.Teams[1].Active != 2 || mixed.Players[1].Character.MaxLife != 750 {
+		t.Fatal("mixed match ended/renormalized after two Turns defeats")
+	}
+	defeat(0, Finished)
+	if mixed.Winner != 1 || mixed.Round != 4 || !mixed.Teams[0].exhausted || mixed.Teams[1].exhausted {
+		t.Fatal("second Simul loss did not end the mixed match")
+	}
+
+	// A Single fighter likewise retains its round allowance. Its opposing
+	// four-member Turns roster receives half life, without boosting Single.
+	request.Teams[0] = TeamSelection{Mode: Single, Members: request.Teams[0].Members[:1]}
+	single, err := New(request, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if single.Players[0].Character.MaxLife != 1000 || single.Players[1].Character.MaxLife != 500 {
+		t.Fatal("Single/Turns life balance")
+	}
+	for loss := 0; loss < 2; loss++ {
+		advanceUntil(t, single, Active, 650)
+		single.Players[0].Character.SetLife(0)
+		single.Players[0].Character.ChangeState(5150, 0, -1)
+		if loss == 0 {
+			advanceUntil(t, single, PreIntro, 650)
+		} else {
+			advanceUntil(t, single, Finished, 650)
+		}
+	}
+	if single.Round != 2 || !single.Teams[0].exhausted || single.Teams[1].Active != 0 {
+		t.Fatal("Single did not retain two rounds against Turns")
+	}
+
 }

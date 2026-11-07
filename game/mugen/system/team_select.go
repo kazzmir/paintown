@@ -102,8 +102,12 @@ func (s *SelectState) selectedTeams(p1, p2 *CharacterPortrait) [2]match.TeamSele
 		for i := range teams[0].Members {
 			teams[0].Members[i].AILevel = 0
 		}
-		teams[1] = match.TeamSelection{Mode: match.Simul}
-		for index := 0; index < 2; index++ {
+		mode, count := match.Simul, 2
+		if s.title == "Survival Co-op" {
+			mode, count = match.Single, 1
+		}
+		teams[1] = match.TeamSelection{Mode: mode}
+		for index := 0; index < count; index++ {
 			ch := s.chars[(s.ticks+index)%len(s.chars)]
 			if ch.DefPath == "" {
 				ch = p2

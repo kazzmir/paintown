@@ -150,7 +150,7 @@ func (m *Match) commitTeamResult() {
 		}
 		if team.Mode == Turns && team.Active+1 < len(team.Members) {
 			team.next = team.Active + 1
-		} else {
+		} else if team.Mode == Turns || m.Wins[1-side] >= m.teamRoundLimit(side) {
 			team.exhausted = true
 		}
 	}
@@ -169,6 +169,23 @@ func (m *Match) isSurvival() bool {
 	return strings.Contains(strings.ToLower(m.Request.Mode), "survival")
 }
 
+// A Turns member has one round; Single/Simul retain the fight definition's
+// round allowance even against Turns. Survival opponents are single bouts.
+func (m *Match) teamRoundLimit(side int) int {
+	if m.isSurvival() && m.Teams[side].Mode != Turns {
+		return 1
+	}
+	return m.roundAllowance(side)
+}
+
+// Health balancing precedes Survival's one-loss/infinite-opponent overrides.
+func (m *Match) roundAllowance(side int) int {
+	if m.Teams[side].Mode == Turns {
+		return len(m.Teams[side].Members)
+	}
+	return max(1, m.Setting("Round", "match.wins", 2))
+}
+
 // The supplied 1.1b1's recovery routine (419350, caller 415262) first
 // truncates a per-thousand bonus, then multiplies by maximum life. Its time
 // window is always 100 counts, independent of the configured round limit.
@@ -181,7 +198,10 @@ func (m *Match) recoverWinner() {
 	if survival {
 		// Survival spreads the base across partners/reserves and reduces
 		// the time bonus for the team's first member (native 4246a0).
-		count := len(m.Teams[m.Winner].Members)
+		count := 1 // Simul's two active fighters form one round group.
+		if m.Teams[m.Winner].Mode == Turns {
+			count = len(m.Teams[m.Winner].Members)
+		}
 		if count > 1 {
 			base /= count
 			bonus = float32(float64(bonus) * (float64(count) - .5) / float64(count))
@@ -195,23 +215,43 @@ func (m *Match) recoverWinner() {
 	permille := int(float64(base) + float64(timed)*factor)
 	for _, p := range m.SidePlayers(m.Winner) {
 		c := p.Character
-		if c.IsAlive() {
-			c.SetLife(min(c.MaxLife, c.Life+c.MaxLife*permille/1000))
-		}
+		// A defeated Simul partner receives life too, retaining Alive0 during
+		// the result and returning with that amount on the next round/bout.
+		c.SetLife(min(c.MaxLife, c.Life+c.MaxLife*permille/1000))
 	}
 }
 
-// The beta balances the total reserve health of unequal Turns rosters: a
-// four-member team facing two members gets half life per entrant. The original
-// configured roster sizes remain in force after members are eliminated.
+// The beta compares concurrent members per required opponent defeat, with
+// Team.1VS2Life weighting Simul's strength. Only the stronger team's maximum
+// life is reduced (native4245ac..424643). Original roster/round allowances
+// remain in force after members are eliminated; it never boosts Single life.
 func (m *Match) rosterLife(side, life int) int {
-	team := m.Teams[side]
-	if team.Mode != Turns || m.Teams[1-side].Mode != Turns || len(team.Members) == 0 {
-		return max(1, life)
+	var strength [2]float32
+	for team := range m.Teams {
+		count := 1
+		if m.Teams[team].Mode == Simul {
+			count = 2
+		}
+		strength[team] = float32(float64(count) / float64(m.roundAllowance(1-team)))
+		if m.Teams[team].Mode == Simul {
+			strength[team] = float32(float64(strength[team]) * float64(m.Options.Team1Vs2Life) / 200)
+		}
 	}
-	own, other := len(team.Members), len(m.Teams[1-side].Members)
-	if other > 0 && other < own {
-		life = life * other / own
+	ratio := float32(strength[0] / strength[1])
+	factor := float32(1)
+	if ratio > 1 {
+		if side == 0 {
+			factor = float32(1 / float64(ratio))
+		}
+	} else if side == 1 {
+		factor = ratio
 	}
-	return max(1, life)
+	if m.isSurvival() && side == 0 && m.Teams[side].Mode == Turns {
+		// Native4246a0 reduces reserve teams by10% for each extra member;
+		// Simul keeps its ordinary1-vs-2 normalization instead.
+		factor = float32(1 - float64(len(m.Teams[side].Members)-1)*.1)
+	}
+	// The native consumer424b9b..424bae applies Life% in the same expression
+	// and rounds the resulting maximum, rather than truncating each factor.
+	return max(1, int(float64(life)*float64(factor)*float64(m.Options.LifePercent)/100+.5))
 }
