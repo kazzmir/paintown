@@ -30,11 +30,16 @@ func (m *Match) cameraActors() []*character.Character {
 func (m *Match) updateHorizontalCamera() {
 	stageScale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
 	left, right := math.Inf(1), math.Inf(-1)
+	top, bottom := math.Inf(1), math.Inf(-1)
 	leftVelocity, rightVelocity := 0.0, 0.0
 	participants := false
 	verticalParticipants := false
 	for _, actor := range m.cameraActors() {
 		verticalParticipants = verticalParticipants || actor.CameraMovementEnabled(1)
+		if actor.CameraMovementEnabled(1) {
+			y := actor.Y * float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
+			top, bottom = min(top, y), max(bottom, y)
+		}
 		if !actor.CameraMovementEnabled(0) {
 			continue
 		}
@@ -61,6 +66,14 @@ func (m *Match) updateHorizontalCamera() {
 		zoom = m.Stage.Camera.ZoomIn
 		if right > left {
 			zoom = max(m.Stage.Camera.ZoomOut, min(zoom, max(1, 2*half-2*m.Stage.Camera.Tension*stageScale)/(right-left)))
+		}
+		if high, low := m.Stage.Camera.TensionHigh, m.Stage.Camera.TensionLow; high != nil && low != nil {
+			// Native vertical tension is in unzoomed stage units. Its visible
+			// height must fit the participant span plus both margins.
+			span := bottom - top + (*high+*low)*stageScale
+			if span > 0 {
+				zoom = max(m.Stage.Camera.ZoomOut, min(zoom, float64(m.Options.GameSpace.Height)/span))
+			}
 		}
 		half /= zoom
 	}

@@ -343,7 +343,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Native zoom/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; camera/push ordering and strict compatibility edges remain unverified. Documented linked/parallax backgrounds, tiling, masks and BG clocks now have connected coverage. Mixed-team health/round budgets and Survival recovery are calibrated.",
+      "gap": "Horizontal zoom fitting, camera easing/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; legacy whole-stage-unit camera publication, intermediate camera/push ordering and strict asset-rejection edges remain unverified. Vertical edge tension, height-based zoom and post-zoom CameraPos Y now match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -445,9 +445,10 @@
         "background/background.go:stageGeometry",
         "background/geometry.go:drawWithBlending",
         "background/controllers.go:loadControllers",
-        "background/background.go:drawFrame"
+        "background/background.go:drawFrame",
+        "character/context.go:lookupViewport"
       ],
-      "validation": "Connected stage flow spans camera/zoom, global/hires scaling, reflections, three-element position links and moving floor publication, animated parallax with width, legacy xscale shear, masked animation spacing, camera-following infinite tiles, zoomed maskwindow, modern AIR blend override, named BG groups, disable/hide/action/resume and round reset. Affected segments pass with race detection; standalone Linux stock KFM/KFM720 stage capture inspected and removed. Geometry follows supplied bgs.html; arbitrary native raster/easing equivalence remains unproven."
+      "validation": "Connected stage/camera lifecycle covers startup/crop/shake, linked backgrounds, parallax/tiling/masks, reflections and round reset. Added real-loader 1.1 vertical tension, highest-player priority, vertical zoom fitting, mixed local coordinates, ScreenBound participation, Pause and legacy fallback. Original beta: high80/low40 gives cameras0/-80/-80/0/-180/0; high70/low30 at y=-200/0 gives zoom.8, CameraPosY-16, ScreenPosY70; shared y=-200 returns zoom1/camera-70. Affected segments pass with race detection; native helpers/captures/overlays removed."
     }
   ],
   "segments": [
@@ -531,7 +532,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8f7e742da5d1078fc05691297f94f6646b147a77df4c37e4bfa0ae9a42fb6686"
+      "passed_source": "15513d3fd2e0192c74d21f299cb223998df5a7bf312a205b70b7bba482dd534f"
     },
     {
       "id": "entities",
@@ -564,7 +565,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6c604513ae0ae0ffd3b475e1457cf06df1aee8a38a964f27b5c44347fb20d56d"
+      "passed_source": "86703d7769b47e6564da7419831d372ec62b14dc3f17f3ecedcc806f7d75cd67"
     },
     {
       "id": "effects-pause",
@@ -599,7 +600,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7c5605bbcf59022bd78ae2d74e428668dde07d1cec7d16e05eb131220dabac40"
+      "passed_source": "73271ff4604ae62eda35fe70c8b15e8670d0e58aae7dcf307f9e69fe48578697"
     },
     {
       "id": "match-flow",
@@ -678,13 +679,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d2324b2374fec3663cac843160de65747c5035f1d19b0505dec6185e5aab05ce"
+      "passed_source": "05141dc7f4fba00c4672b96ebaa6aa21fc87b641f3fc954f58b905ca583f183a"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Documented background link/parallax/tiling/mask/controller lifecycle passes connected acceptance; native pixel-exact shearing, camera easing and crop/push interactions remain precision work."
+    "Documented backgrounds and vertical edge-tension/zoom/query lifecycle pass connected acceptance against bounded beta observations. Horizontal zoom, legacy whole-unit camera publication, intermediate easing and crop/push/raster matching remain precision work."
   ]
 }

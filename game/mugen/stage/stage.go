@@ -29,6 +29,7 @@ type Stage struct {
 		VerticalFollow             float64
 		FloorTension               float64
 		Tension                    float64
+		TensionHigh, TensionLow    *float64 // both present select the 1.1 vertical camera
 		CutHigh, CutLow            float64
 		OverdrawHigh, OverdrawLow  float64
 	}

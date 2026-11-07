@@ -104,6 +104,12 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.Camera.FloorTension = background.GetFloat(attr.Value)
 				case "tension":
 					stage.Camera.Tension = background.GetFloat(attr.Value)
+				case "tensionhigh":
+					value := background.GetFloat(attr.Value)
+					stage.Camera.TensionHigh = &value
+				case "tensionlow":
+					value := background.GetFloat(attr.Value)
+					stage.Camera.TensionLow = &value
 				case "cuthigh":
 					stage.Camera.CutHigh = background.GetFloat(attr.Value)
 				case "cutlow":

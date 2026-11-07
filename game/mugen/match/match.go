@@ -693,7 +693,7 @@ func (m *Match) commitRoundResult() {
 func (m *Match) updateCamera() {
 	m.updateHorizontalCamera()
 	scale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
-	y := 0.0
+	top, bottom := math.Inf(1), math.Inf(-1)
 	participants := false
 	horizontalParticipants := false
 	for _, actor := range m.cameraActors() {
@@ -703,10 +703,19 @@ func (m *Match) updateCamera() {
 		}
 		participants = true
 		factor := float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
-		y = math.Min(y, actor.Y*factor)
+		top, bottom = min(top, actor.Y*factor), max(bottom, actor.Y*factor)
 	}
 	if participants && horizontalParticipants {
-		y = math.Min(0, y+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
+		y := math.Min(0, math.Min(0, top)+m.Stage.Camera.FloorTension*scale) * m.Stage.Camera.VerticalFollow
+		if high, low := m.Stage.Camera.TensionHigh, m.Stage.Camera.TensionLow; high != nil && low != nil {
+			zoom := m.Viewport.ZoomScale()
+			ground := m.Viewport.GroundY - m.Viewport.CropY
+			upper := top + ground/zoom - *high*scale
+			lower := bottom + (ground-float64(m.Options.GameSpace.Height))/zoom + *low*scale
+			// The goal starts at the stage baseline each tick. Highest-player
+			// visibility wins when the two margins cannot fit simultaneously.
+			y = min(upper, max(0, lower))
+		}
 		m.CameraY = math.Max(m.Stage.Camera.BoundHigh*scale, math.Min(m.Stage.Camera.BoundLow*scale, y)) + m.Viewport.CropY
 	}
 	m.Viewport.CameraX, m.Viewport.CameraY = m.publishedCameraX(), m.CameraY

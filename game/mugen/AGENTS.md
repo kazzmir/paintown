@@ -83,7 +83,19 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest keyboard checkpoint
+## Latest camera checkpoint
+
+Stage tensionhigh/tensionlow now select the 1.1 vertical camera and override
+legacy follow/floor tension. Vertical zoom uses participant span plus both
+stage-unit margins. CameraPos Y publishes post-zoom translation. Bounded beta
+flows establish high80/low40 cameras0/-80/-80/0/-180/0 and high70/low30's
+zoom.8/CameraPosY-16/ScreenPosY70. The connected camera scenario covers loader,
+mixed coordinate profiles, participant flags, pause, legacy fallback and reset.
+Changed-source segments pass with race detection; native scratch was removed.
+Preserve the user's uncommitted mugen.yaml changes and exclude them from Git.
+Horizontal zoom, legacy integer camera publication and easing/crop remain open.
+
+## Keyboard checkpoint
 
 YAML keyboard actions accept scalar names or lists of alternatives for either
 player. Lists replace one binding; omitted actions inherit; none/disabled/[]

@@ -144,7 +144,10 @@ sound/kfm.mid, which is absent from the supplied local distribution.
 
 Stage presentation includes camera zoom, moving floors (`zoffsetlink`), background
 scale/clip controls, linked elements, animated parallax floors, reflections, and
-legacy `hires` stage defaults. Tiled backgrounds follow camera travel; authored
+legacy `hires` stage defaults. Stages declaring both `tensionhigh` and
+`tensionlow` use the 1.1 vertical edge camera and height-based zoom fitting;
+these parameters override `verticalfollow` and `floortension`. Tiled backgrounds
+follow camera travel; authored
 BG controllers can pause, hide and change their animations. Native rendering
 precision is still tracked in the progress ledger.
 

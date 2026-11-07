@@ -192,7 +192,10 @@ func (c *Character) lookupViewport(name string) (evaluator.Value, bool) {
 	case "camerapos x":
 		value = cameraX
 	case "camerapos y":
-		value = cameraY
+		// Camera translation is published after zoom; the static stage crop
+		// remains outside that scale. ScreenPos/edges use the world camera.
+		crop := float32(v.CropY) * scale
+		value = (cameraY-crop)*zoom + crop
 	case "camerazoom":
 		value = zoom
 	case "screenpos x":
