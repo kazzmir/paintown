@@ -319,7 +319,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Finish broader font/asset formats and errors, including legacy MIDI/tracker/CD music backends; WAV/MP3/Ogg BGM and stock fonts/assets are supported.",
+      "gap": "Finish storyboard text/sounds and AIR 1.1 interpolation consumers. Linux MIDI/tracker playback now uses optional system FluidSynth/libopenmpt; physical CD playback remains unavailable. Stock fonts, WAV/MP3/Ogg and contextual asset errors are supported.",
       "allocation": "item4",
       "sources": [
         "font/font.go"
@@ -541,7 +541,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7f57efb800318c3530191e7bc7b9cdfa8ab23f6e9038381c1a23212d151b225b"
+      "passed_source": "269946fb1064e596a48990ec60b52f2b812af352db53f2792da3f0b28baa366f"
     },
     {
       "id": "match-flow",
@@ -612,7 +612,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "04566b1811a9f1b93e5a612413ae25d59eb4cb27d534e5ef1a4718a8a014a578"
+      "passed_source": "fa4bd3fab625f1ab950196ef4b5f466259b8996b2a691c7cb7fd2477444e1553"
     }
   ],
   "presentation_followups": [

@@ -25,12 +25,18 @@ ordered victories/ending, survival recovery/results and training/watch rules.
 A font-array adapter compile error was fixed; the failed segment then passed.
 All clients/scratch are gone; completed state-flow was not rerun.
 
-Next: remaining media/assets/fonts and final Linux build/playable acceptance.
-WAV/MP3/Ogg work. Linux has libfluidsynth.so.3, libopenmpt.so.0 and GM soundfonts;
-legacy MIDI/tracker integration can reuse them without copied binary assets.
-Storyboard text/sound and AIR1.1 interpolation also need a consumer audit.
-The distribution's referenced sound/kfm.mid is absent. Physical CD playback is a
-separate hardware/backend concern. Keep precision out of the functional queue.
+Next: storyboard text/sound/window and AIR1.1 interpolation consumers, then
+final Linux build/playable acceptance. Linux MIDI/MOD/S3M/XM/IT now render into
+the shared mixer through optional system FluidSynth/libopenmpt (stable C APIs,
+no headers or copied libraries). Set MUGEN_SOUNDFONT for a custom GM .sf2;
+installed system fonts are discovered by default. Other targets and physical CD
+playback remain unavailable/deferred. The supplied sound/kfm.mid is absent.
+
+The connected music flow passed synthesis→NoMusic pause/resume→sample loop→
+tracker replacement/loop→close, using tiny auto-deleted scratch songs. Both
+reopened segments passed with race detection; completed others stayed checked.
+Decoder setup runs outside the audio lock; replacement/close frees native
+objects. No native audio driver/thread is created by the port.
 
 The supplied data is temp/mugen-1.1b1/. Use the isolated wrapper from AGENTS.md
 for host-dependent runs, serial processes and automatic scratch cleanup.

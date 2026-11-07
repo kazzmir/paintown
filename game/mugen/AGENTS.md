@@ -69,5 +69,5 @@ human charge/chord/quarter-circle/strict-dash entry and actual stock AI specials
 Mode progression/screens, survival carry/results, training/watch and baseline
 recovery now pass four affected connected segments. Exact recovery calibration
 is deferred alongside native AI/raster/audio precision. Continue broader media/
-assets/fonts and final Linux acceptance. The user deferred other platform builds on 2026-11-07. Legacy MIDI/tracker/CD backends are still unimplemented. Precision
+assets/fonts and final Linux acceptance. The user deferred other platform builds on 2026-11-07. Linux MIDI/tracker now use optional system codecs and passed the connected media flow. Physical CD playback remains unavailable. Precision
 remains partial and deferred. Read docs/PROGRESS.md and docs/HANDOFF.md.

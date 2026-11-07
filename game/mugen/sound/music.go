@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -76,10 +77,12 @@ type musicStream interface {
 // device with SFX but survives ClearScene and root/round changes. NoMusic
 // suspends reading, preserving the exact playback cursor for resume.
 type Music struct {
+	playMu   sync.Mutex // decoder setup must not hold up the audio callback
 	mu       sync.Mutex
 	rate     int
 	reader   io.ReadSeeker
 	file     *os.File
+	decoder  io.Closer
 	spec     MusicSpec
 	position int64
 	end      int64
@@ -90,15 +93,21 @@ type Music struct {
 }
 
 func (m *Music) stopLocked() {
+	if m.decoder != nil {
+		m.decoder.Close()
+	}
 	if m.file != nil {
 		m.file.Close()
 	}
 	m.reader, m.file = nil, nil
+	m.decoder = nil
 	m.position, m.end, m.start = 0, 0, 0
 	m.spec = MusicSpec{}
 }
 
 func (m *Music) Stop() {
+	m.playMu.Lock()
+	defer m.playMu.Unlock()
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.stopLocked()
@@ -120,14 +129,17 @@ func (m *Music) Status() (MusicSpec, int64, bool, error) {
 // Play continues a looping file across screen transitions only when the next
 // screen also loops it. Non-looping entries and rematches can force a restart.
 func (m *Music) Play(spec MusicSpec, restart bool) error {
+	m.playMu.Lock()
+	defer m.playMu.Unlock()
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	if !restart && m.reader != nil && spec.File == m.spec.File && spec.Loop && m.spec.Loop && spec.LoopStart == m.spec.LoopStart && spec.LoopEnd == m.spec.LoopEnd {
 		m.spec.Volume = spec.Volume
+		m.mu.Unlock()
 		return nil
 	}
 	m.stopLocked()
 	m.err = nil
+	m.mu.Unlock()
 	if spec.File == "" {
 		return nil
 	}
@@ -143,30 +155,52 @@ func (m *Music) Play(spec MusicSpec, restart bool) error {
 		decoded, err = mp3.DecodeWithoutResampling(f)
 	case ".ogg", ".oga":
 		decoded, err = vorbis.DecodeWithoutResampling(f)
+	case ".mid", ".midi", ".mod", ".s3m", ".xm", ".it":
+		decoded, err = decodeLegacyMusic(f, strings.ToLower(filepath.Ext(spec.File)), m.rate)
 	default:
-		err = fmt.Errorf("unsupported BGM format %q (supported: WAV, MP3, Ogg Vorbis)", filepath.Ext(spec.File))
+		err = fmt.Errorf("unsupported BGM format %q (WAV, MP3, Ogg, MIDI, MOD/S3M/XM/IT supported; physical CD playback unavailable)", filepath.Ext(spec.File))
 	}
 	if err != nil {
 		f.Close()
 		return fmt.Errorf("%s: %w", spec.File, err)
 	}
 	length, sourceRate := decoded.Length(), decoded.SampleRate()
-	if sourceRate <= 0 || length <= 0 || spec.Volume < 0 {
+	closer, _ := decoded.(io.Closer)
+	cleanup := func() {
+		if closer != nil {
+			closer.Close()
+		}
 		f.Close()
+	}
+	if sourceRate <= 0 || length == 0 || spec.Volume < 0 {
+		cleanup()
 		return fmt.Errorf("%s: invalid/empty music stream", spec.File)
 	}
 	// Clamp loop positions before multiplying, avoiding overflow on authored
 	// offsets. Reject a reversed/empty loop instead of spinning at EOF.
 	sourceFrames := length / 4
+	if length < 0 { // a sample-clock sequencer discovers its length at EOF
+		sourceFrames = math.MaxInt64 / 8
+	}
 	start, end := min(spec.LoopStart, sourceFrames), sourceFrames
 	if spec.Loop && spec.LoopEnd > 0 {
 		end = min(spec.LoopEnd, sourceFrames)
 	}
 	if start < 0 || end <= 0 || (spec.Loop && start >= end) {
-		f.Close()
+		cleanup()
 		return fmt.Errorf("%s: invalid music loop %d..%d", spec.File, start, end)
 	}
-	m.reader = audio.ResampleReader(decoded, length, sourceRate, m.rate).(io.ReadSeeker)
+	var reader io.ReadSeeker = decoded
+	if sourceRate != m.rate {
+		if length < 0 {
+			cleanup()
+			return fmt.Errorf("cannot resample an unknown-length music stream")
+		}
+		reader = audio.ResampleReader(decoded, length, sourceRate, m.rate).(io.ReadSeeker)
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.reader, m.decoder = reader, closer
 	m.file, m.spec = f, spec
 	m.start = int64(float64(start)*float64(m.rate)/float64(sourceRate)) * 4
 	m.end = int64(float64(end)*float64(m.rate)/float64(sourceRate)) * 4

@@ -77,8 +77,8 @@ at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic
-pauses/resumes the playback cursor while sound effects continue. Legacy MIDI,
-tracker and CD backends remain in the asset backlog. The stock stage references
+pauses/resumes the playback cursor while sound effects continue. Linux MIDI and tracker support uses optional system libraries described below.
+Physical CD playback remains unavailable. The stock stage references
 sound/kfm.mid, which is absent from the supplied local distribution.
 
 ## Build a standalone executable
@@ -124,3 +124,10 @@ Generated testing data stays out of Git. Segment runs reuse shared assets/cache
 and remove scratch automatically. The 2026-11-06 cleanup reclaimed126.58 GiB from
 old run banks while preserving the reference distribution and working tools.
 See the [short handoff](docs/HANDOFF.md) and [implementation plan](docs/ITEM-3-PLAN.md).
+
+Linux legacy music optionally uses installed `libfluidsynth.so.3` for MIDI and
+`libopenmpt.so.0` for MOD/S3M/XM/IT. MIDI needs a GM SoundFont: set
+`MUGEN_SOUNDFONT=/path/to/font.sf2`, or use an installed TimGM6mb/FluidR3_GM font.
+No codec libraries or music assets are bundled. WAV/MP3/Ogg need no extra codec
+installation. Missing tracks/codecs produce a sound warning; physical CD audio
+is unavailable. Linux is the current validation target.

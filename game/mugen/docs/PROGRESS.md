@@ -65,7 +65,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Finish broader font/asset formats and errors, including legacy MIDI/tracker/CD music backends; WAV/MP3/Ogg BGM and stock fonts/assets are supported. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Finish storyboard text/sounds and AIR 1.1 interpolation consumers. Linux MIDI/tracker playback now uses optional system FluidSynth/libopenmpt; physical CD playback remains unavailable. Stock fonts, WAV/MP3/Ogg and contextual asset errors are supported. (item4)
 - [ ] Deferred native fidelity and recovery calibration. **partial** — Resolve remaining color/shadow/alpha and KO-echo differences, calibrate provisional turns/survival recovery and native AI decision policy; functional consumers exist. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
