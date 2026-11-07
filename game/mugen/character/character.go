@@ -311,6 +311,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		AnimTime:              0,
 		AnimElem:              0,
 		AnimElemTime:          0,
+		VictoryQuoteIndex:     -1,
 		StateType:             "S",
 		Physics:               "S",
 		MoveType:              "I",

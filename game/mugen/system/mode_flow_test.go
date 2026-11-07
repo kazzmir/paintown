@@ -108,6 +108,12 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if _, ok := e.currentState.(*WinScreenState); !ok {
 		t.Fatalf("nonfinal arcade win omitted victory: %T", e.currentState)
 	}
+	win := e.currentState.(*WinScreenState)
+	win.winner.Character.VictoryQuote(2)
+	e.cfg.Config.Language = "ja"
+	if quote := win.victoryQuote(); quote != "十年早いんだぞ" {
+		t.Fatal("authored localized VictoryQuote did not reach presentation", quote)
+	}
 	e.Draw(canvas)
 	step(ebiten.KeyEnter)
 	f = enterFight()

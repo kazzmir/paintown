@@ -319,10 +319,15 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Finish storyboard text/sounds and AIR 1.1 interpolation consumers. Linux MIDI/tracker playback now uses optional system FluidSynth/libopenmpt; physical CD playback remains unavailable. Stock fonts, WAV/MP3/Ogg and contextual asset errors are supported.",
+      "gap": "Physical CD (.da) playback remains unavailable on Linux. File music formats, FNT v1/v2/TrueType, storyboard text/sounds/windows, AIR 1.1 interpolation and contextual asset errors are implemented. Missing licensed Windows fonts use an observable fallback; exact raster matching is deferred.",
       "allocation": "item4",
       "sources": [
-        "font/font.go"
+        "font/font.go",
+        "sound/legacy_linux.go:decodeLegacyMusic",
+        "storyboard/loader.go:Load",
+        "storyboard/storyboard.go:SoundCommands",
+        "air/air.go:Sample",
+        "system/mode_screens.go:victoryQuote"
       ]
     },
     {
@@ -442,7 +447,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "9e3a65a908d4599799d62f5023fedd07d89f06c1b64cfe78fdfdea45dab890c4"
+      "passed_source": "bbb824a0e2cf71b7bd66af19906e9797ba441208e4e5a46ce2d5cd114ade3133"
     },
     {
       "id": "combat",
@@ -479,7 +484,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "46d476098c2e0ae3ed93d8bf9b48de9b31a3500a13777c836b11b32df02ee790"
+      "passed_source": "fa87da51c0258d5854c05286d184474c6bacbae8ec939241ce9b24179c1af274"
     },
     {
       "id": "entities",
@@ -509,7 +514,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6139b43e8bafdcf7ee0c49a203468c88fbdb707109fc85dc96ae5d8ead923ca9"
+      "passed_source": "d4f2d55e6e52556666f831f95f11f347764d7dc26444e59c0cd7e95273dc55f1"
     },
     {
       "id": "effects-pause",
@@ -541,7 +546,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "269946fb1064e596a48990ec60b52f2b812af352db53f2792da3f0b28baa366f"
+      "passed_source": "3e955dc1c5ecf20b3c2f6cfc1cf76cac15bedbfbd39e328c66aa341d30c12bd8"
     },
     {
       "id": "match-flow",
@@ -608,11 +613,15 @@
         {
           "file": "system/mode_flow_test.go",
           "name": "TestModeProgressionContinueSurvivalAndTrainingFlow"
+        },
+        {
+          "file": "system/asset_flow_test.go",
+          "name": "TestStoryboardAssetsTextSoundAndAnimationFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fa4bd3fab625f1ab950196ef4b5f466259b8996b2a691c7cb7fd2477444e1553"
+      "passed_source": "76f7c49d993ae803ba68eb7e720f72c0013037324a8067370fd549b245a2f314"
     }
   ],
   "presentation_followups": [

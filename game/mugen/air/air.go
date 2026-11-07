@@ -18,19 +18,22 @@ type Box struct {
 }
 
 type Element struct {
-	Group              int
-	Image              int
-	XOffset            int
-	YOffset            int
-	Time               int
-	Flags              string
-	Clsn1              []Box
-	Clsn2              []Box
-	Interpolate        bool
-	FlipX              bool
-	FlipY              bool
-	Blend              string
-	AlphaSrc, AlphaDst int
+	Group                 int
+	Image                 int
+	XOffset               int
+	YOffset               int
+	Time                  int
+	Flags                 string
+	Clsn1                 []Box
+	Clsn2                 []Box
+	Interpolate           bool // legacy inline offset interpolation
+	Interpolation         uint8
+	HasScale              bool
+	ScaleX, ScaleY, Angle float64
+	FlipX                 bool
+	FlipY                 bool
+	Blend                 string
+	AlphaSrc, AlphaDst    int
 }
 
 type Action struct {
@@ -79,6 +82,7 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 			var nextClsn2 []Box
 
 			consumed := make(map[*parsers.Attribute]bool)
+			var wrapInterpolation uint8
 
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
@@ -128,6 +132,13 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 					} else if idx >= 0 && idx < len(defaultClsn2) {
 						defaultClsn2[idx] = b
 					}
+				} else if kind, ok := interpolationKind(key); ok {
+					consumed[attr] = true
+					if len(action.Elements) == 0 {
+						wrapInterpolation |= kind
+					} else {
+						action.Elements[len(action.Elements)-1].Interpolation |= kind
+					}
 				} else if key == "loopstart" {
 					consumed[attr] = true
 					action.LoopStart = len(action.Elements)
@@ -156,6 +167,10 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 						action.Elements = append(action.Elements, el)
 					}
 				}
+			}
+
+			if len(action.Elements) > 0 {
+				action.Elements[len(action.Elements)-1].Interpolation |= wrapInterpolation
 			}
 
 			// Log unresolved
@@ -266,6 +281,20 @@ func parseElement(groupID string, list parsers.ValueList) (Element, error) {
 			}
 		}
 	}
+	if len(list.Values) > 6 {
+		el.HasScale = true
+		el.ScaleX = 1
+		el.ScaleY = 1
+		if list.Values[6] != nil {
+			el.ScaleX = getAsFloat(list.Values[6])
+		}
+	}
+	if len(list.Values) > 7 && list.Values[7] != nil {
+		el.ScaleY = getAsFloat(list.Values[7])
+	}
+	if len(list.Values) > 8 {
+		el.Angle = getAsFloat(list.Values[8])
+	}
 	return el, nil
 }
 
@@ -319,8 +348,109 @@ func (p *Player) NextElement() *Element {
 
 func (p *Player) GetInterpolationFactor() float64 {
 	el := p.CurrentElement()
-	if el == nil || !el.Interpolate || el.Time <= 0 {
+	if el == nil || (!el.Interpolate && el.Interpolation == 0) || el.Time <= 0 {
 		return 0
 	}
 	return float64(p.TickCounter) / float64(el.Time)
+}
+
+const (
+	interpolateOffset uint8 = 1 << iota
+	interpolateBlend
+	interpolateScale
+	interpolateAngle
+)
+
+func interpolationKind(key string) (uint8, bool) {
+	key = strings.ReplaceAll(strings.ToLower(key), " ", "")
+	switch key {
+	case "interpolateoffset":
+		return interpolateOffset, true
+	case "interpolateblend":
+		return interpolateBlend, true
+	case "interpolatescale":
+		return interpolateScale, true
+	case "interpolateangle":
+		return interpolateAngle, true
+	}
+	return 0, false
+}
+func getAsFloat(v parsers.Value) float64 {
+	if n, ok := v.(parsers.NumberValue); ok {
+		return n.Val
+	}
+	n, _ := strconv.ParseFloat(getAsString(v), 64)
+	return n
+}
+
+// Visual samples draw-only properties. Collision boxes and animation/state
+// clocks remain discrete; all consumers share the same AIR interpolation.
+type Visual struct {
+	Element                     *Element
+	X, Y, ScaleX, ScaleY, Angle float64
+	AlphaSrc, AlphaDst          int
+}
+
+func (a *Action) Sample(index, tick int) Visual {
+	v := Visual{ScaleX: 1, ScaleY: 1}
+	if a == nil || index < 0 || index >= len(a.Elements) {
+		return v
+	}
+	el := &a.Elements[index]
+	v.Element = el
+	v.X = float64(el.XOffset)
+	v.Y = float64(el.YOffset)
+	if el.HasScale {
+		v.ScaleX = el.ScaleX
+		v.ScaleY = el.ScaleY
+	}
+	v.Angle = el.Angle
+	v.AlphaSrc = el.AlphaSrc
+	v.AlphaDst = el.AlphaDst
+	flags := el.Interpolation
+	if el.Interpolate {
+		flags |= interpolateOffset
+	}
+	if flags == 0 || el.Time <= 0 {
+		return v
+	}
+	nextIndex := index + 1
+	if nextIndex >= len(a.Elements) {
+		nextIndex = a.LoopStart
+		if nextIndex < 0 {
+			nextIndex = 0
+		}
+	}
+	if nextIndex < 0 || nextIndex >= len(a.Elements) {
+		return v
+	}
+	next := &a.Elements[nextIndex]
+	factor := min(1, max(0, float64(tick)/float64(el.Time)))
+	lerp := func(x, y float64) float64 { return x + (y-x)*factor }
+	if flags&interpolateOffset != 0 {
+		v.X = lerp(v.X, float64(next.XOffset))
+		v.Y = lerp(v.Y, float64(next.YOffset))
+	}
+	if flags&interpolateScale != 0 {
+		nx, ny := 1.0, 1.0
+		if next.HasScale {
+			nx, ny = next.ScaleX, next.ScaleY
+		}
+		v.ScaleX = lerp(v.ScaleX, nx)
+		v.ScaleY = lerp(v.ScaleY, ny)
+	}
+	if flags&interpolateAngle != 0 {
+		v.Angle = lerp(v.Angle, next.Angle)
+	}
+	if flags&interpolateBlend != 0 && el.Blend == "alpha" && next.Blend == "alpha" {
+		v.AlphaSrc = int(lerp(float64(el.AlphaSrc), float64(next.AlphaSrc)))
+		v.AlphaDst = int(lerp(float64(el.AlphaDst), float64(next.AlphaDst)))
+	}
+	return v
+}
+func (p *Player) Visual() Visual {
+	if p == nil || p.Error != nil {
+		return Visual{ScaleX: 1, ScaleY: 1}
+	}
+	return p.Action.Sample(p.CurrentIdx, p.TickCounter)
 }

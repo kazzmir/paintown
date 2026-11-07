@@ -451,7 +451,8 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset 
 		return
 	}
 
-	el := e.Player.CurrentElement()
+	visual := e.Player.Visual()
+	el := visual.Element
 	if el == nil || el.Group == -1 {
 		return
 	}
@@ -470,44 +471,18 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset 
 		}
 	}
 
-	trans := e.Trans
-	alpha := e.Alpha
-
-	if el.Flags != "" {
-		f := strings.ToLower(el.Flags)
-		if strings.Contains(f, "a1") {
-			trans = "add1"
-		} else if strings.Contains(f, "a") {
-			if strings.Contains(f, "as") {
-				trans = "addalpha"
-				s, d := 256, 256
-				fmt.Sscanf(f, "as%dd%d", &s, &d)
-				alpha = [2]int{s, d}
-			} else {
-				trans = "add"
-			}
-		} else if strings.Contains(f, "s") {
-			trans = "sub"
-		}
+	trans, alpha := e.Trans, e.Alpha
+	switch el.Blend {
+	case "alpha":
+		trans = "addalpha"
+		alpha = [2]int{visual.AlphaSrc, visual.AlphaDst}
+	case "sub":
+		trans = "sub"
 	}
 
 	img := si.Masked
 	if !e.Mask {
 		img = si.Opaque
-	}
-
-	totalX := pivotX - el.XOffset
-	totalY := pivotY - el.YOffset
-
-	// Interpolation
-	factor := e.Player.GetInterpolationFactor()
-	if factor > 0 {
-		next := e.Player.NextElement()
-		if next != nil {
-			// Interpolate position relative to pivots
-			totalX = int(float64(totalX) + float64(el.XOffset-next.XOffset)*factor)
-			totalY = int(float64(totalY) + float64(el.YOffset-next.YOffset)*factor)
-		}
 	}
 
 	// Combine flips
@@ -527,11 +502,11 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset 
 		}
 	}
 
-	e.drawWithBlending(screen, img, totalX, totalY, cameraX, cameraY, zOffset, trans, alpha, nil)
+	e.drawWithBlending(screen, img, pivotX, pivotY, cameraX, cameraY, zOffset, trans, alpha, nil, visual)
 	e.Flip = oldFlip
 }
 
-func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image, xAxis int, yAxis int, cameraX, cameraY, zOffset float64, trans string, alpha [2]int, parallax *ParallaxElement) {
+func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image, xAxis int, yAxis int, cameraX, cameraY, zOffset float64, trans string, alpha [2]int, parallax *ParallaxElement, visual ...air.Visual) {
 	if img == nil || !e.Visible {
 		return
 	}
@@ -627,6 +602,12 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 					lineDrawY := e.Start[1] + e.CurrentPos[1] + offY - cameraY*e.Delta[1]
 
 					op.GeoM.Translate(-float64(xAxis), -float64(yAxis)+float64(y))
+					if len(visual) > 0 {
+						v := visual[0]
+						op.GeoM.Scale(v.ScaleX, v.ScaleY)
+						op.GeoM.Rotate(-v.Angle * math.Pi / 180)
+						op.GeoM.Translate(v.X, v.Y)
+					}
 					op.GeoM.Scale(sX_line*flipX, sY*flipY)
 					op.GeoM.Translate(tilePosX, tilePosY)
 					op.GeoM.Translate(lineDrawX-winX, lineDrawY-winY)
@@ -639,6 +620,12 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 				op.Filter = ebiten.FilterNearest
 
 				op.GeoM.Translate(-float64(xAxis), -float64(yAxis))
+				if len(visual) > 0 {
+					v := visual[0]
+					op.GeoM.Scale(v.ScaleX, v.ScaleY)
+					op.GeoM.Rotate(-v.Angle * math.Pi / 180)
+					op.GeoM.Translate(v.X, v.Y)
+				}
 				op.GeoM.Scale(sX*flipX, sY*flipY)
 				op.GeoM.Translate(tilePosX, tilePosY)
 				op.GeoM.Translate(baseDrawX-winX, baseDrawY-winY)

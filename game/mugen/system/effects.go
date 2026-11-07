@@ -107,7 +107,8 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 	if !instance.Active {
 		return
 	}
-	el := instance.Clock.CurrentElement()
+	visual := instance.Clock.Visual()
+	el := visual.Element
 	if el == nil || el.Group < 0 {
 		return
 	}
@@ -161,7 +162,9 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 	op := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
 	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 	op.GeoM.Scale(sx, sy)
-	op.GeoM.Translate(float64(el.XOffset*instance.Facing), float64(el.YOffset))
+	op.GeoM.Scale(visual.ScaleX, visual.ScaleY)
+	op.GeoM.Rotate(-visual.Angle * float64(instance.Facing) * math.Pi / 180)
+	op.GeoM.Translate(visual.X*float64(instance.Facing), visual.Y)
 	op.GeoM.Scale(source.Scale, source.Scale)
 	if instance.HasScale {
 		op.GeoM.Scale(instance.ScaleX, instance.ScaleY)
@@ -187,7 +190,7 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		op.GeoM.Rotate(-instance.Angle * math.Pi / 180)
 		op.GeoM.Translate(x, y)
 	}
-	blend, alphaSrc, alphaDst := el.Blend, el.AlphaSrc, el.AlphaDst
+	blend, alphaSrc, alphaDst := el.Blend, visual.AlphaSrc, visual.AlphaDst
 	if instance.HasBlend {
 		blend, alphaSrc, alphaDst = instance.Blend, instance.AlphaSrc, instance.AlphaDst
 	}

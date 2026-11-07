@@ -3,6 +3,7 @@ package storyboard
 import (
 	"bytes"
 	"fmt"
+	"image"
 	"image/color"
 	"os"
 	"path/filepath"
@@ -97,6 +98,7 @@ func Load(path, root string) (*Storyboard, error) {
 	clear := color.RGBA{A: 255}
 	clearSet := false
 	position := [2]float64{}
+	window := image.Rect(0, 0, story.LocalCoord.Width, story.LocalCoord.Height)
 	for _, def := range definition.Scenes {
 		if !def.EndTimeSet || def.EndTime < 0 {
 			return nil, fmt.Errorf("%s [%s] (line %d): end.time is required and must be nonnegative", source, def.Name, def.Line)
@@ -113,25 +115,52 @@ func Load(path, root string) (*Storyboard, error) {
 			position = [2]float64{float64(def.DefaultPosition[0]), float64(def.DefaultPosition[1])}
 		}
 		scene.DefaultPosition = position
+		if def.WindowSet {
+			window = image.Rect(def.Window[0], def.Window[1], def.Window[2]+1, def.Window[3]+1)
+		}
+		scene.Window = window
+		scene.WindowSet = true
+		for index, event := range def.Sounds {
+			if !event.Set {
+				continue
+			}
+			key := fmt.Sprintf("%d-%d", event.Group, event.Item)
+			if story.SoundBank == nil || story.SoundBank.Map[key] == nil {
+				return nil, fmt.Errorf("%s [%s] sound%d.value: sound %s unavailable", source, def.Name, index, key)
+			}
+			scene.Sounds = append(scene.Sounds, SoundEvent{StartTime: event.StartTime, Group: event.Group, Item: event.Item, Volume: max(0, min(100, event.Volume)), Pan: max(-127, min(127, event.Pan))})
+		}
 		if def.BGName != "" {
 			scene.Background = &background.Background{LocalCoord: story.LocalCoord}
 			scene.Background.LoadFromAST(ast, def.BGName, story.SpriteData, story.AIR)
 		}
 		for _, layer := range def.Layers {
-			if layer.AnimNo < 0 {
+			if layer.AnimNo < 0 && layer.Text == "" {
 				continue
 			}
-			action := story.AIR.Actions[layer.AnimNo]
-			if action == nil {
-				return nil, fmt.Errorf("%s [%s] layer%d.anim (line %d): action %d is missing", source, def.Name, layer.Index, layer.Line, layer.AnimNo)
+			l := &Layer{Index: layer.Index, Offset: [2]float64{float64(layer.OffsetX), float64(layer.OffsetY)}, StartTime: layer.StartTime, EndTime: layer.EndTime, EndTimeSet: layer.EndTime >= 0, RawSprites: story.RawSprites, Text: layer.Text, TextDelay: layer.TextDelay, FontSpec: layer.Font}
+			if layer.Text != "" {
+				if layer.AnimNo >= 0 {
+					return nil, fmt.Errorf("%s [%s] layer%d: text and anim are mutually exclusive", source, def.Name, layer.Index)
+				}
+				index := layer.Font[0]
+				if index < 0 || index >= len(story.Fonts) || story.Fonts[index] == nil {
+					return nil, fmt.Errorf("%s [%s] layer%d.font (line %d): font %d unavailable", source, def.Name, layer.Index, layer.Line, index)
+				}
+				l.Font = story.Fonts[index]
+			} else {
+				action := story.AIR.Actions[layer.AnimNo]
+				if action == nil {
+					return nil, fmt.Errorf("%s [%s] layer%d.anim (line %d): action %d is missing", source, def.Name, layer.Index, layer.Line, layer.AnimNo)
+				}
+				l.Player = air.NewPlayer(action)
+				if l.Player.Error != nil {
+					return nil, fmt.Errorf("%s [%s] layer%d: %w", source, def.Name, layer.Index, l.Player.Error)
+				}
 			}
-			player := air.NewPlayer(action)
-			if player.Error != nil {
-				return nil, fmt.Errorf("%s [%s] layer%d: %w", source, def.Name, layer.Index, player.Error)
-			}
-			scene.Layers = append(scene.Layers, &Layer{Index: layer.Index, Offset: [2]float64{float64(layer.OffsetX), float64(layer.OffsetY)},
-				StartTime: layer.StartTime, Player: player, RawSprites: story.RawSprites})
+			scene.Layers = append(scene.Layers, l)
 		}
+
 		story.Scenes = append(story.Scenes, scene)
 	}
 	return story, nil

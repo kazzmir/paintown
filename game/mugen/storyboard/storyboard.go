@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"math"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -11,8 +12,11 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 // FadeTool handles fade-in and fade-out transitions.
@@ -85,11 +89,21 @@ func (f *FadeTool) Draw(screen *ebiten.Image) {
 
 // Layer is an animated element displayed at a specific time in a scene.
 type Layer struct {
-	Index     int
-	Offset    [2]float64
-	StartTime int
-	Player    *air.Player
-	Enabled   bool
+	Index       int
+	Offset      [2]float64
+	StartTime   int
+	Player      *air.Player
+	Enabled     bool
+	EndTime     int
+	EndTimeSet  bool
+	Text        string
+	TextDelay   int
+	Font        *font.Font
+	FontSpec    [6]int
+	age         int
+	linear      render.Linear
+	nearest     render.Nearest
+	RenderError error
 
 	// Sprite data for drawing
 	Sprites    map[string]*background.SpriteImages
@@ -98,19 +112,46 @@ type Layer struct {
 }
 
 func (l *Layer) Update(ticker int) {
-	if ticker >= l.StartTime && !l.Enabled {
-		l.Enabled = true
-	}
-	if l.Enabled && l.Player != nil {
+	l.Enabled = ticker >= l.StartTime && (!l.EndTimeSet || ticker < l.EndTime)
+	l.age = max(0, ticker-l.StartTime)
+	// The first visible tick uses the first AIR frame.
+	if l.Enabled && l.age > 0 && l.Player != nil {
 		l.Player.Update()
 	}
 }
+func (l *Layer) VisibleText() string {
+	if !l.Enabled {
+		return ""
+	}
+	text := []rune(l.Text)
+	if l.TextDelay > 0 {
+		text = text[:min(len(text), l.age/l.TextDelay+1)]
+	}
+	return string(text)
+}
 
 func (l *Layer) Draw(screen *ebiten.Image, defaultX, defaultY float64) {
-	if !l.Enabled || l.Player == nil {
+	if !l.Enabled {
 		return
 	}
-	el := l.Player.CurrentElement()
+	if l.Font != nil {
+		align := font.AlignCenter
+		if l.FontSpec[2] > 0 {
+			align = font.AlignLeft
+		} else if l.FontSpec[2] < 0 {
+			align = font.AlignRight
+		}
+		tint := palette.Transform{Enabled: true, Color: 1, Mul: [3]float32{float32(l.FontSpec[3]) / 255, float32(l.FontSpec[4]) / 255, float32(l.FontSpec[5]) / 255}}
+		for line, text := range strings.Split(l.VisibleText(), "\n") {
+			l.RenderError = l.Font.DrawWithPalette(screen, text, int(defaultX+l.Offset[0]), int(defaultY+l.Offset[1])+line*(l.Font.Height+l.Font.SpacingY), l.FontSpec[1], align, tint)
+		}
+		return
+	}
+	if l.Player == nil {
+		return
+	}
+	visual := l.Player.Visual()
+	el := visual.Element
 	if el == nil {
 		return
 	}
@@ -132,22 +173,33 @@ func (l *Layer) Draw(screen *ebiten.Image, defaultX, defaultY float64) {
 		}
 	}
 
-	x := defaultX + l.Offset[0] + float64(el.XOffset) - float64(pivotX)
-	y := defaultY + l.Offset[1] + float64(el.YOffset) - float64(pivotY)
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(x, y)
-	op.Filter = ebiten.FilterNearest
-
-	// Optional additive blend based on action
-	if el.Flags != "" {
-		f := strings.ToLower(el.Flags)
-		if strings.Contains(f, "a") {
-			op.Blend = ebiten.BlendLighter
+	op := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
+	op.GeoM.Translate(-float64(pivotX), -float64(pivotY))
+	sx, sy := visual.ScaleX, visual.ScaleY
+	if el.FlipX {
+		sx = -sx
+	}
+	if el.FlipY {
+		sy = -sy
+	}
+	op.GeoM.Scale(sx, sy)
+	op.GeoM.Rotate(-visual.Angle * math.Pi / 180)
+	op.GeoM.Translate(defaultX+l.Offset[0]+visual.X, defaultY+l.Offset[1]+visual.Y)
+	destination := render.ApplyBlend(op, el.Blend, visual.AlphaSrc, visual.AlphaDst)
+	style := render.DrawStyle{DestinationFactor: destination}
+	if raw := l.RawSprites[key]; raw != nil {
+		if _, indexed := raw.Image.(*image.Paletted); indexed {
+			l.RenderError = l.nearest.DrawStyledImage(screen, img, op, style)
+			return
 		}
 	}
+	l.RenderError = l.linear.DrawStyledImage(screen, img, op, style)
 
-	screen.DrawImage(img, op)
+}
+
+type SoundEvent struct {
+	StartTime, Group, Item, Pan int
+	Volume                      float32
 }
 
 // Scene is a single scene in a storyboard.
@@ -163,6 +215,9 @@ type Scene struct {
 	MusicSet        bool
 	ClearColor      color.RGBA
 	ClearColorSet   bool
+	Sounds          []SoundEvent
+	Window          image.Rectangle
+	WindowSet       bool
 
 	ticker int
 
@@ -177,6 +232,7 @@ func (s *Scene) Reset() {
 	s.Fader.Ticker = 0
 	for _, l := range s.Layers {
 		l.Enabled = false
+		l.RenderError = nil
 		if l.Player != nil {
 			l.Player.Reset(1)
 		}
@@ -219,9 +275,21 @@ func (s *Scene) drawContent(screen *ebiten.Image) {
 		s.Background.DrawLayer(screen, 0, 0, 0, 0, spriteMap)
 	}
 
-	// Draw layers
+	// Draw layers (storyboard window does not clip the background).
+	target := screen
+	if s.WindowSet {
+		window := s.Window.Intersect(screen.Bounds())
+		if window.Empty() {
+			target = nil
+		} else {
+			target = screen.SubImage(window).(*ebiten.Image)
+		}
+	}
 	for _, l := range s.Layers {
-		l.Draw(screen, s.DefaultPosition[0], s.DefaultPosition[1])
+		if target == nil {
+			break
+		}
+		l.Draw(target, s.DefaultPosition[0], s.DefaultPosition[1])
 	}
 
 	// Foreground
@@ -361,6 +429,22 @@ func (p *Player) CurrentScene() *Scene {
 	return p.sb.Scenes[p.currentIdx]
 }
 
+// SoundCommands is sampled once before Update; skipping emits no old-scene
+// events. Ownership is assigned by the engine, so scene exit can retire SFX.
+func (p *Player) SoundCommands() []sound.Command {
+	scene := p.CurrentScene()
+	if scene == nil {
+		return nil
+	}
+	var commands []sound.Command
+	for _, event := range scene.Sounds {
+		if event.StartTime == scene.ticker {
+			commands = append(commands, sound.Command{Operation: sound.Play, Bank: p.sb.SoundBank, Group: event.Group, Item: event.Item, Channel: -1, VolumeScale: event.Volume, Frequency: 1, Pan: float32(event.Pan), DirectPan: true})
+		}
+	}
+	return commands
+}
+
 // Update advances the storyboard by one tick. Returns true when done.
 func (p *Player) Update(input InputState) bool {
 	if p.done || len(p.sb.Scenes) == 0 {
@@ -443,6 +527,12 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 		p.gameCanvas.Fill(scene.ClearColor)
 	}
 	scene.drawContent(p.canvas)
+	for _, layer := range scene.Layers {
+		if layer.RenderError != nil {
+			p.Error = fmt.Errorf("%s [%s] layer%d drawing: %w", p.sb.Source, scene.Name, layer.Index, layer.RenderError)
+			return
+		}
+	}
 	options := &ebiten.DrawImageOptions{Filter: ebiten.FilterNearest}
 	options.GeoM.Scale(storyTransform.ScaleX, storyTransform.ScaleY)
 	options.GeoM.Translate(storyTransform.X, storyTransform.Y)

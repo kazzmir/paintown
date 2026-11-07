@@ -121,7 +121,7 @@ func (h *FightHUD) playSound(section, key string) error {
 	return h.match.SoundQueue.Push(sound.Command{Operation: sound.Play, Owner: h.audioOwner, Bank: bank, Group: group, Item: item, Channel: -1, VolumeScale: 100, Frequency: 1})
 }
 
-func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy float64, blend string, alphaSrc, alphaDst int) {
+func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy float64, blend string, alphaSrc, alphaDst int, angle ...float64) {
 	if sprite == nil || sprite.Image == nil {
 		return
 	}
@@ -133,6 +133,9 @@ func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 	op.GeoM.Scale(sx, sy)
+	if len(angle) > 0 {
+		op.GeoM.Rotate(-angle[0] * math.Pi / 180)
+	}
 	op.GeoM.Translate(x, y)
 	destination := render.ApplyBlend(op, blend, alphaSrc, alphaDst)
 	transform := h.match.Timeline.AllPalette.Transform()
@@ -174,6 +177,7 @@ func (h *FightHUD) component(screen *ebiten.Image, section, key string, x, y flo
 	var sprite *sff.Sprite
 	var blend string
 	var alphaSrc, alphaDst int
+	var angle float64
 	if a := h.match.Fight.Attribute(section, key+".anim"); a != nil {
 		id := int(background.GetFloat(a.Value))
 		clockKey := section + "/" + key
@@ -189,10 +193,17 @@ func (h *FightHUD) component(screen *ebiten.Image, section, key string, x, y flo
 		if clock.Error != nil {
 			return
 		}
-		el := clock.Action.Elements[clock.CurrentIdx]
-		blend, alphaSrc, alphaDst = el.Blend, el.AlphaSrc, el.AlphaDst
-		x += float64(el.XOffset) * scale[0] * facing
-		y += float64(el.YOffset) * scale[1]
+		visual := clock.Visual()
+		el := visual.Element
+		if el == nil {
+			return
+		}
+		blend, alphaSrc, alphaDst = el.Blend, visual.AlphaSrc, visual.AlphaDst
+		x += visual.X * scale[0] * facing
+		y += visual.Y * scale[1]
+		scale[0] *= visual.ScaleX
+		scale[1] *= visual.ScaleY
+		angle = visual.Angle * facing
 		if el.FlipX {
 			facing = -facing
 		}
@@ -204,7 +215,7 @@ func (h *FightHUD) component(screen *ebiten.Image, section, key string, x, y flo
 		ids := h.values(section, key+".spr", 0, 0)
 		sprite = findSprite(h.match.Fight.Sprites, int(ids[0]), int(ids[1]))
 	}
-	h.sprite(screen, sprite, x, y, scale[0]*facing, scale[1], blend, alphaSrc, alphaDst)
+	h.sprite(screen, sprite, x, y, scale[0]*facing, scale[1], blend, alphaSrc, alphaDst, angle)
 }
 
 func (h *FightHUD) label(screen *ebiten.Image, section, key, text string, x, y float64) {

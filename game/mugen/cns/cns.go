@@ -200,6 +200,7 @@ type StateDef struct {
 }
 
 type CNS struct {
+	Quotes   map[string]map[int]string
 	Data     Data
 	Size     Size
 	Velocity Velocity
@@ -262,7 +263,28 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 	for _, section := range ast.Sections {
 		secName := strings.ToLower(strings.TrimSpace(section.Name))
 
-		if secName == "data" {
+		if secName == "quotes" || strings.HasSuffix(secName, ".quotes") {
+			language := strings.TrimSuffix(secName, ".quotes")
+			if secName == "quotes" {
+				language = "en"
+			}
+			if cns.Quotes == nil {
+				cns.Quotes = map[string]map[int]string{}
+			}
+			if cns.Quotes[language] == nil {
+				cns.Quotes[language] = map[int]string{}
+			}
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if !strings.HasPrefix(key, "victory") {
+					continue
+				}
+				n, err := strconv.Atoi(strings.TrimPrefix(key, "victory"))
+				if err == nil && n >= 0 && n < 100 {
+					cns.Quotes[language][n] = strings.ReplaceAll(getAsString(attr.Value), `\n`, "\n")
+				}
+			}
+		} else if secName == "data" {
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
 				if key == "life" {

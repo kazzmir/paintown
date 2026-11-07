@@ -50,6 +50,7 @@ type MugenConfig struct {
 		SuperTargetDefenceMul       float64
 	}
 	Config struct {
+		Language              string
 		GameWidth, GameHeight int
 		GameSpeed             int
 		DrawShadows           bool
@@ -206,6 +207,8 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					} else {
 						cfg.Config.GameHeight = int(value)
 					}
+				case "language":
+					cfg.Config.Language = strings.ToLower(getString(attr.Value))
 				case "gamespeed":
 					cfg.Config.GameSpeed = int(getFloat(attr.Value))
 				case "drawshadows":

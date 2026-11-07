@@ -109,10 +109,8 @@ func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, 
 		return
 	}
 
-	var currentElement *air.Element
-	if ent.AnimElem < len(animData.Elements) {
-		currentElement = &animData.Elements[ent.AnimElem]
-	}
+	visual := animData.Sample(ent.AnimElem, ent.AnimElemTime)
+	currentElement := visual.Element
 
 	if currentElement == nil {
 		return
@@ -148,7 +146,9 @@ func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, 
 		opts.GeoM.Scale(1, -1)
 	}
 
-	opts.GeoM.Translate(float64(currentElement.XOffset*ent.Facing), float64(currentElement.YOffset))
+	opts.GeoM.Scale(visual.ScaleX, visual.ScaleY)
+	opts.GeoM.Rotate(-visual.Angle * float64(ent.Facing) * math.Pi / 180)
+	opts.GeoM.Translate(visual.X*float64(ent.Facing), visual.Y)
 	characterScaleX, characterScaleY := ent.spriteScale()
 	if ent.AngleDrawingEnabled {
 		characterScaleX = float64(float32(characterScaleX) * ent.DrawScale[0])
@@ -187,7 +187,7 @@ func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, 
 	}
 	opts.GeoM.Translate(x, y)
 
-	blend, alphaSrc, alphaDst := currentElement.Blend, currentElement.AlphaSrc, currentElement.AlphaDst
+	blend, alphaSrc, alphaDst := currentElement.Blend, visual.AlphaSrc, visual.AlphaDst
 	if ent.DrawTransparency.Enabled {
 		blend, alphaSrc, alphaDst = ent.DrawTransparency.Mode, ent.DrawTransparency.Source, ent.DrawTransparency.Destination
 	}

@@ -99,7 +99,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	master := &cns.CNS{Data: constants.Data, Size: constants.Size,
 		Velocity: constants.Velocity, Movement: constants.Movement,
-		ConstantFields: constants.ConstantFields, States: make(map[int]*cns.StateDef)}
+		ConstantFields: constants.ConstantFields, Quotes: constants.Quotes, States: make(map[int]*cns.StateDef)}
 	type stateFile struct {
 		key  string
 		data *cns.CNS

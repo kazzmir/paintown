@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
+	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -80,10 +83,12 @@ func (e *Engine) modeLabel(screen *ebiten.Image, section, key, text string, x, y
 }
 
 type WinScreenState struct {
-	engine *Engine
-	winner *character.Player
-	ticks  int
-	next   func() (State, error)
+	engine   *Engine
+	winner   *character.Player
+	quote    string
+	quoteSet bool
+	ticks    int
+	next     func() (State, error)
 }
 
 func NewWinScreenState(e *Engine) *WinScreenState { return &WinScreenState{engine: e} }
@@ -118,10 +123,109 @@ func (s *WinScreenState) Draw(screen *ebiten.Image) {
 		p.DrawSprite(screen, p.Character, int(ids[0]), int(ids[1]), pos[0], pos[1], scale[0]*ratio*s.engine.themeValues("Victory Screen", "p1.facing", 1)[0], scale[1]*ratio)
 	}
 	s.engine.modeLabel(screen, "Victory Screen", "p1.name", name, 0, 0, s.engine.motif.Fonts)
-	s.engine.modeLabel(screen, "Victory Screen", "winquote", s.engine.themeText("Victory Screen", "winquote.text", "Winner!"), 0, 0, s.engine.motif.Fonts)
+	if !s.quoteSet {
+		s.quote = s.victoryQuote()
+		s.quoteSet = true
+	}
+	s.drawQuote(screen)
 	if bg := s.engine.motif.VictoryBG; bg != nil {
 		bg.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
 	}
+}
+
+func (s *WinScreenState) drawQuote(screen *ebiten.Image) {
+	e := s.engine
+	spec := e.themeValues("Victory Screen", "winquote.font", 1, 0, 1)
+	index := int(spec[0])
+	if index < 1 || index >= len(e.motif.Fonts) || e.motif.Fonts[index] == nil {
+		return
+	}
+	f := e.motif.Fonts[index]
+	bank := int(spec[1])
+	box := e.themeValues("Victory Screen", "winquote.window", 0, 0, float64(screen.Bounds().Dx()-1), float64(screen.Bounds().Dy()-1))
+	rect := image.Rect(int(box[0]), int(box[1]), int(box[2])+1, int(box[3])+1).Intersect(screen.Bounds())
+	if rect.Empty() {
+		return
+	}
+	target := screen.SubImage(rect).(*ebiten.Image)
+	text := s.quote
+	if e.themeText("Victory Screen", "winquote.textwrap", "") != "" {
+		var lines []string
+		for _, paragraph := range strings.Split(text, "\n") {
+			line := ""
+			for _, word := range strings.Fields(paragraph) {
+				candidate := word
+				if line != "" {
+					candidate = line + " " + word
+				}
+				if f.TextWidthForBank(candidate, bank) <= rect.Dx() {
+					line = candidate
+					continue
+				}
+				if line != "" {
+					lines = append(lines, line)
+					line = ""
+				}
+				for _, r := range word {
+					candidate = line + string(r)
+					if line != "" && f.TextWidthForBank(candidate, bank) > rect.Dx() {
+						lines = append(lines, line)
+						line = ""
+					}
+					line += string(r)
+				}
+			}
+			lines = append(lines, line)
+		}
+		text = strings.Join(lines, "\n")
+	}
+	for line, value := range strings.Split(text, "\n") {
+		e.modeLabel(target, "Victory Screen", "winquote", value, 0, line*(f.Height+f.SpacingY), e.motif.Fonts)
+	}
+}
+
+func (s *WinScreenState) victoryQuote() string {
+	fallback := s.engine.themeText("Victory Screen", "winquote.text", "Winner!")
+	if s.winner == nil || s.winner.Character.StateFile == nil {
+		return fallback
+	}
+	c := s.winner.Character
+	quotes := c.StateFile.Quotes
+	language := s.engine.cfg.Config.Language
+	if language == "" {
+		language = os.Getenv("LC_ALL")
+		if language == "" {
+			language = os.Getenv("LANG")
+		}
+		language = strings.ToLower(strings.SplitN(strings.SplitN(language, "_", 2)[0], ".", 2)[0])
+	}
+	lookup := func(index int) string {
+		if text := quotes[language][index]; text != "" {
+			return text
+		}
+		return quotes["en"][index]
+	}
+	if c.VictoryQuoteIndex >= 0 {
+		if text := lookup(c.VictoryQuoteIndex); text != "" {
+			return text
+		}
+	}
+	keys := map[int]bool{}
+	for index := range quotes["en"] {
+		keys[index] = true
+	}
+	for index := range quotes[language] {
+		keys[index] = true
+	}
+	indexes := make([]int, 0, len(keys))
+	for index := range keys {
+		indexes = append(indexes, index)
+	}
+	sort.Ints(indexes)
+	if len(indexes) > 0 {
+		return lookup(indexes[max(0, c.Time)%len(indexes)])
+	}
+	return fallback
 }
 
 type ContinueScreenState struct {

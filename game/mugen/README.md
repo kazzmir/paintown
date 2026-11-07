@@ -104,8 +104,10 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The checklist replaces test counts and typed-routing percentages as the progress
-view. The current stock one-on-one game is playable; full1.1 compatibility remains
-in progress.
+view. The current Linux implementation supports one-on-one, simul/turns, arcade and
+survival progression, training/watch, authored CMD and AI input, and storyboard
+text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains
+in progress: precision calibration and physical CD audio are still open.
 
 ```bash
 game/mugen/mugen.sh --coverage --gaps   # lightweight source/feature report

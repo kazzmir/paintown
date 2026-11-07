@@ -33,6 +33,7 @@ type PlayParameters struct {
 // Command uses a scene-local audio owner, independent of the input/player slot.
 // Pan is measured from screen center in 240p units, sampled at controller time.
 type Command struct {
+	DirectPan              bool // storyboard pan is already in the -127..127 device range
 	Operation              Operation
 	Owner                  uint64
 	Bank                   *snd.SoundBank

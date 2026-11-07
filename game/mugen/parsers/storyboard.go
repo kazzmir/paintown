@@ -40,6 +40,9 @@ type SceneDef struct {
 	MusicLoop       bool
 	MusicSet        bool
 	Layers          []*LayerDef
+	Sounds          []*SoundDef
+	Window          [4]int
+	WindowSet       bool
 }
 
 // LayerDef holds parsed data for a layer within a scene.
@@ -50,6 +53,16 @@ type LayerDef struct {
 	OffsetX   int
 	OffsetY   int
 	StartTime int
+	EndTime   int
+	Text      string
+	Font      [6]int
+	TextDelay int
+}
+
+type SoundDef struct {
+	Group, Item, StartTime, Pan int
+	Volume                      float32
+	Set                         bool
 }
 
 // ParseStoryboard parses a MUGEN storyboard .def file.
@@ -109,12 +122,47 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 			}
 			// The 1.1 reference supports layers 0 through 99.
 			for i := range scene.Layers {
-				scene.Layers[i] = &LayerDef{Index: i, AnimNo: -1}
+				scene.Layers[i] = &LayerDef{Index: i, AnimNo: -1, EndTime: -1, Font: [6]int{-1, 0, 1, 255, 255, 255}}
 			}
 
+			scene.Sounds = make([]*SoundDef, 100)
+			for i := range scene.Sounds {
+				scene.Sounds[i] = &SoundDef{Volume: 100}
+			}
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
 				switch {
+				case id == "window":
+					parts := storyNumbers(attr.Value)
+					for i := range scene.Window {
+						if i < len(parts) {
+							scene.Window[i] = int(parts[i])
+						}
+					}
+					scene.WindowSet = true
+				case strings.HasPrefix(id, "sound"):
+					dot := strings.IndexByte(id, '.')
+					if dot < 0 {
+						continue
+					}
+					index, err := strconv.Atoi(id[5:dot])
+					if err != nil || index < 0 || index >= 100 {
+						continue
+					}
+					event := scene.Sounds[index]
+					switch id[dot+1:] {
+					case "value":
+						v := getVector2(attr.Value)
+						event.Group = int(v[0])
+						event.Item = int(v[1])
+						event.Set = true
+					case "starttime":
+						event.StartTime = int(getFloat(attr.Value))
+					case "volumescale":
+						event.Volume = float32(getFloat(attr.Value))
+					case "pan":
+						event.Pan = int(getFloat(attr.Value))
+					}
 				case id == "end.time":
 					scene.EndTime = int(getFloat(attr.Value))
 					scene.EndTimeSet = true
@@ -152,6 +200,20 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 						v := getVector2(attr.Value)
 						scene.Layers[layerIdx].OffsetX = int(v[0])
 						scene.Layers[layerIdx].OffsetY = int(v[1])
+					} else if idx, ok := parseLayerAttr(id, "text"); ok {
+						scene.Layers[idx].Text = strings.ReplaceAll(getString(attr.Value), `\n`, "\n")
+						scene.Layers[idx].Line = attr.Line
+					} else if idx, ok := parseLayerAttr(id, "font"); ok {
+						v := storyNumbers(attr.Value)
+						for i, n := range v {
+							if i < 6 {
+								scene.Layers[idx].Font[i] = int(n)
+							}
+						}
+					} else if idx, ok := parseLayerAttr(id, "textdelay"); ok {
+						scene.Layers[idx].TextDelay = max(0, int(getFloat(attr.Value)))
+					} else if idx, ok := parseLayerAttr(id, "endtime"); ok {
+						scene.Layers[idx].EndTime = int(getFloat(attr.Value))
 					} else if layerIdx, ok := parseLayerAttr(id, "starttime"); ok {
 						scene.Layers[layerIdx].StartTime = int(getFloat(attr.Value))
 					}
@@ -235,4 +297,15 @@ func getVector3(v Value) [3]float64 {
 		return [3]float64{getFloat(v), 0, 0}
 	}
 	return [3]float64{}
+}
+
+func storyNumbers(v Value) []float64 {
+	if list, ok := v.(*ValueList); ok {
+		out := make([]float64, len(list.Values))
+		for i, n := range list.Values {
+			out[i] = getFloat(n)
+		}
+		return out
+	}
+	return []float64{getFloat(v)}
 }

@@ -203,6 +203,17 @@ func (m *Mixer) frame() (float32, float32) {
 			return a + (b-a)*fraction
 		}
 		lg, rg := m.panGains(voice.command.Pan)
+		if voice.command.DirectPan && m.options.Stereo {
+			pan := max(float32(-127), min(float32(127), voice.command.Pan))
+			if m.options.Reverse {
+				pan = -pan
+			}
+			right := int(pan) + 127
+			if right >= 254 {
+				right = 255
+			}
+			lg, rg = float32(255-right)/255, float32(right)/255
+		}
 		volume := max(0, min(128, math.Trunc(float64(voice.command.VolumeScale)*float64(m.options.Volume)*1.28)))
 		// SDL's panning effect and channel volume each truncate signed PCM.
 		scale := func(value, gain float32) float32 {
