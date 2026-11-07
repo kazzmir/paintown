@@ -1,43 +1,41 @@
 # Current handoff
 
-Follow AGENTS.md; PROGRESS.md is the single ledger. Author only game/mugen/;
-local commits, no pushes/binaries/assets/generated banks. Use the private
+Follow AGENTS.md; PROGRESS.md is the single ledger. Author only game/mugen/.
+Present each checkpoint's complete change list and obtain user approval BEFORE
+committing. No pushes, binaries, assets or generated banks. Use the private
 wrapper with env GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard,
 then edit/run. Reuse assets/cache; remove disposable output.
 
-Latest batch implements the 1.1 vertical camera selected by BOTH tensionhigh
-and tensionlow. The stage loader retains explicit zero vs absent parameters.
-The pair overrides verticalfollow/floortension. Highest-player visibility wins
-when margins conflict; the goal returns toward the stage baseline. Vertical
-zoom fits the eligible actor span PLUS both unzoomed stage margins, respecting
-zoomout/zoomin. Internal camera coordinates remain in world space; CameraPos Y
-publishes post-zoom translation, with static crop outside that scale.
+Latest batch fixes horizontal zoom: fit actor span PLUS both unzoomed tension
+margins. Camera bounds describe the fully zoomed-out view; narrower views can
+travel farther within fixed stage edges. Projectile stage bounds share those
+extents. Bounded beta observations and the connected camera scenario cover
+fitting, tension return, zoom limits and stage edges. Native values are retained
+in the scenario and feature catalog, without generated captures or fixture banks.
 
-Bounded original-beta jump/return flows establish high80/low40 cameras
-0/-80/-80/0/-180/0 and stage bounds. With high70/low30, y=-200/0 yields zoom.8,
-CameraPosY-16 and ScreenPosY70; both y=-200 return zoom1/camera-70. Actor axes,
-not sprite head offsets, drive those observations. No parameter matrices or
-asset copies were made. Native setup also confirmed required BG sprite and
-command declarations; broader strict content validation remains open.
+Legacy CameraPos queries remain fractional, including on a 640x480 stage with
+omitted mugenversion. Do not quantize CNS queries to implement the documented
+whole-stage-unit rendering rule; exact legacy raster rounding remains open.
 
-The existing connected camera scenario loads a small stage DEF, runs these
-poses with 320p/1280p actors, checks CNS viewport identities, pause, movecamera
-participation, legacy follow fallback and round reset. Begin scripted jumps
-AFTER Active: fight-start placement otherwise resets their initial positions.
-Changed-source segments pass with race detection. Linux rebuilt; root module
-hashes unchanged. Native helpers/overlays/captures/logs and segment scratch
-were inspected/removed. The user's local mugen.yaml edit is preserved and
-excluded from the checkpoint.
+The existing connected scenario also retains vertical edge tension, height-based
+zoom and post-zoom CameraPos Y, real stage loading, mixed 320p/1280p actors,
+participation, pause and reset. Begin scripted poses AFTER Active: fight-start
+placement resets positions. All four changed-source segments pass with race
+detection; state-flow remains complete without rerunning. Native helpers,
+captures, logs and symlink overlays were inspected/removed.
 
-Prior work covers alternative YAML keyboard keys (user tested), linked/animated
-backgrounds, teams/recovery, Survival carry/counters/RNG and co-op/Watch menus.
-Both upstream histories remain integrated, with Go1.26/Ebitengine2.10.6/
-purego0.11.3 synchronized in root/scoped metadata. Root files stay read-only.
-The original untracked go.sum backup remains at
+Configuration checkpoint 8eda46f84 untracks/ignores game/mugen/mugen.yaml while
+preserving the local file. Existing clones must back up their tracked YAML before
+pulling and restore it afterward; the user will notify the contributor. README
+retains the scalar/list keyboard override example, already user tested.
+
+Both upstream histories remain integrated, with Go 1.26/Ebitengine 2.10.6/
+purego 0.11.3 synchronized in root/scoped metadata. Root files stay read-only.
+Original untracked go.sum backup:
 `temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked`.
 
-Ledger remains32/34 checklist items, not native conformance or effort. Remaining:
-horizontal zoom fitting, legacy integer-stage camera publication, easing/crop/
-raster/color/shadow/alpha, KO echo, AI policy, intermediate camera/push ordering,
-strict asset compatibility, physical CD and absent licensed fonts. Linux target;
-other platforms deferred. Preserve unrelated work; no historical matrices.
+Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
+camera easing/crop/legacy raster, color/shadow/alpha, KO echo, AI policy,
+intermediate camera/push ordering, strict asset compatibility, physical CD and
+absent licensed fonts. Linux target; other platforms deferred. Preserve
+unrelated work and local YAML; no historical matrices.

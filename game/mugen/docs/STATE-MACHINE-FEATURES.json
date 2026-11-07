@@ -343,7 +343,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Horizontal zoom fitting, camera easing/crop/raster, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; legacy whole-stage-unit camera publication, intermediate camera/push ordering and strict asset-rejection edges remain unverified. Vertical edge tension, height-based zoom and post-zoom CameraPos Y now match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
+      "gap": "Camera easing/crop and legacy whole-stage-unit raster rounding, remaining color/shadow/alpha, KO-echo playback and AI-policy precision; intermediate camera/push ordering and strict asset-rejection edges remain unverified. Horizontal/vertical tension fitting, zoom-dependent horizontal bounds and fractional legacy CNS camera queries match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -446,9 +446,10 @@
         "background/geometry.go:drawWithBlending",
         "background/controllers.go:loadControllers",
         "background/background.go:drawFrame",
-        "character/context.go:lookupViewport"
+        "character/context.go:lookupViewport",
+        "match/camera.go:horizontalStageBounds"
       ],
-      "validation": "Connected stage/camera lifecycle covers startup/crop/shake, linked backgrounds, parallax/tiling/masks, reflections and round reset. Added real-loader 1.1 vertical tension, highest-player priority, vertical zoom fitting, mixed local coordinates, ScreenBound participation, Pause and legacy fallback. Original beta: high80/low40 gives cameras0/-80/-80/0/-180/0; high70/low30 at y=-200/0 gives zoom.8, CameraPosY-16, ScreenPosY70; shared y=-200 returns zoom1/camera-70. Affected segments pass with race detection; native helpers/captures/overlays removed."
+      "validation": "Connected stage/camera lifecycle covers startup/crop/shake, linked backgrounds, parallax/tiling/masks, reflections, vertical tension/zoom/post-zoom CameraPosY, mixed local coordinates, participation, Pause and reset. Added horizontal span-plus-margins fitting, tension return, zoom-dependent bounds and shared projectile stage extents. Bounded beta horizontal flow: camera/zoom 0/.761905,70/.761905,20/1,0/.5,560/1,400/.5. Legacy640p-stage flow preserves fractional CNS CameraPosX120.75/-120.75/120.25 and Y-20.75. Changed-source segments pass with race detection; native helpers/captures/overlays removed."
     }
   ],
   "segments": [
@@ -532,7 +533,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "15513d3fd2e0192c74d21f299cb223998df5a7bf312a205b70b7bba482dd534f"
+      "passed_source": "11c5168e12d684374c46b2bbb17f150147237c8834e4a76473f7ba462adc610e"
     },
     {
       "id": "entities",
@@ -565,7 +566,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "86703d7769b47e6564da7419831d372ec62b14dc3f17f3ecedcc806f7d75cd67"
+      "passed_source": "ea18b7b6abf1fe32869a0e7d8665b398a7eda8290306d12b7789467f1c6476ce"
     },
     {
       "id": "effects-pause",
@@ -600,7 +601,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "73271ff4604ae62eda35fe70c8b15e8670d0e58aae7dcf307f9e69fe48578697"
+      "passed_source": "106e79e106b7663c351366ea8be5f33ad1d28e7b5c2514a68a81275bfd9bff3e"
     },
     {
       "id": "match-flow",
@@ -679,13 +680,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "05141dc7f4fba00c4672b96ebaa6aa21fc87b641f3fc954f58b905ca583f183a"
+      "passed_source": "d0bedf18fc8cf242691f9633dfcf54faf53b87eb87f5b16a860b2b2efe173c54"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Documented backgrounds and vertical edge-tension/zoom/query lifecycle pass connected acceptance against bounded beta observations. Horizontal zoom, legacy whole-unit camera publication, intermediate easing and crop/push/raster matching remain precision work."
+    "Documented backgrounds and horizontal/vertical tension, zoom, bounds and query lifecycle pass connected acceptance against bounded beta observations. Legacy CNS camera queries remain fractional; whole-unit legacy raster rounding, intermediate easing and crop/push/raster matching remain precision work."
   ]
 }

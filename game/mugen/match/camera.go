@@ -24,6 +24,14 @@ func (m *Match) cameraActors() []*character.Character {
 	return append(actors, m.World.Helpers...)
 }
 
+// Stage camera bounds describe the fully zoomed-out view. Its outer edges
+// stay fixed as zoom changes; a narrower view can travel farther sideways.
+func (m *Match) horizontalStageBounds() (float64, float64) {
+	scale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+	half := float64(m.Options.GameSpace.Width) / (2 * m.Stage.Camera.ZoomOut)
+	return m.Stage.Camera.BoundLeft*scale - half, m.Stage.Camera.BoundRight*scale + half
+}
+
 // The native zoom-one horizontal camera keeps a tension region, eases after
 // each entity update and in the shared late phase. Both endpoints and the
 // movement delta round independently before the center/zoom are published.
@@ -64,8 +72,11 @@ func (m *Match) updateHorizontalCamera() {
 	zoomEnabled := m.Stage.Camera.StartZoom != 1 || m.Stage.Camera.ZoomOut != 1 || m.Stage.Camera.ZoomIn != 1
 	if zoomEnabled {
 		zoom = m.Stage.Camera.ZoomIn
-		if right > left {
-			zoom = max(m.Stage.Camera.ZoomOut, min(zoom, max(1, 2*half-2*m.Stage.Camera.Tension*stageScale)/(right-left)))
+		// Tension margins, like the vertical margins below, occupy unzoomed
+		// stage units. Fit the actor span plus both margins into the view.
+		span := right - left + 2*m.Stage.Camera.Tension*stageScale
+		if span > 0 {
+			zoom = max(m.Stage.Camera.ZoomOut, min(zoom, 2*half/span))
 		}
 		if high, low := m.Stage.Camera.TensionHigh, m.Stage.Camera.TensionLow; high != nil && low != nil {
 			// Native vertical tension is in unzoomed stage units. Its visible
@@ -77,7 +88,7 @@ func (m *Match) updateHorizontalCamera() {
 		}
 		half /= zoom
 	}
-	threshold := half - m.Stage.Camera.Tension*stageScale/zoom
+	threshold := half - m.Stage.Camera.Tension*stageScale
 	low, high := right-threshold, left+threshold
 	wanted := m.cameraGoalX
 	if low > high {
@@ -85,7 +96,8 @@ func (m *Match) updateHorizontalCamera() {
 	} else {
 		wanted = math.Max(low, math.Min(high, wanted))
 	}
-	wanted = math.Max(m.Stage.Camera.BoundLeft*stageScale, math.Min(m.Stage.Camera.BoundRight*stageScale, wanted))
+	stageLeft, stageRight := m.horizontalStageBounds()
+	wanted = math.Max(stageLeft+half, math.Min(stageRight-half, wanted))
 	m.cameraGoalX = wanted
 	wantedLeft, wantedRight := float32(wanted-half), float32(wanted+half)
 	bias := float32(float64(float32(.1)) * float64(m.Options.GameSpace.Width) / 320)

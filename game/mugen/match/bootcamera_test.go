@@ -49,7 +49,7 @@ trigger1=1
 value=0
 movecamera=var(50),var(51)
 `
-	for index, expression := range []string{"TopEdge", "BottomEdge", "ScreenPos Y", "Pos Y", "GameHeight", "EnemyNear, TopEdge", "EnemyNear, BottomEdge", "CameraPos Y"} {
+	for index, expression := range []string{"TopEdge", "BottomEdge", "ScreenPos Y", "Pos Y", "GameHeight", "EnemyNear, TopEdge", "EnemyNear, BottomEdge", "CameraPos Y", "CameraPos X", "CameraZoom", "ScreenPos X", "Pos X", "GameWidth"} {
 		program += fmt.Sprintf("[State 0, viewport %d]\ntype=VarSet\ntrigger1=1\nfv=%d\nvalue=%s\n", index, index, expression)
 	}
 	for _, player := range m.Players {
@@ -146,7 +146,7 @@ movecamera=var(50),var(51)
 	// These settled positions come from one original-beta jump/return flow;
 	// actors retain their different 320p/1280p local coordinate spaces.
 	path := filepath.Join(t.TempDir(), "vertical-camera.def")
-	if err := os.WriteFile(path, []byte(fmt.Sprintf(`[Info]
+	stageSource := fmt.Sprintf(`[Info]
 name=Connected vertical camera
 mugenversion=1.1
 [Camera]
@@ -176,7 +176,8 @@ zoffset=200
 spr=%q
 [BG Anchor]
 type=dummy
-`, filepath.Join(options.RootDir, "stages/kfm.sff"))), 0600); err != nil {
+`, filepath.Join(options.RootDir, "stages/kfm.sff"))
+	if err := os.WriteFile(path, []byte(stageSource), 0600); err != nil {
 		t.Fatal(err)
 	}
 	loaded, err := stage.LoadStage(path, options.RootDir)
@@ -201,10 +202,11 @@ type=dummy
 		t.Fatal(err)
 	}
 	advanceUntil(t, m, Active, 650) // The fight-start placement reset precedes the scripted jumps.
-	position := func(y0, y1 float64) {
+	place := func(x0, x1, y0, y1 float64) {
 		for side, p := range m.Players {
 			c := p.Character
-			c.X, c.Y = float64(side*80-40)*float64(c.LocalCoordinateWidth())/320, []float64{y0, y1}[side]*float64(c.LocalCoordinateWidth())/320
+			scale := float64(c.LocalCoordinateWidth()) / 320
+			c.X, c.Y = []float64{x0, x1}[side]*scale, []float64{y0, y1}[side]*scale
 			c.VelX, c.VelY = 0, 0
 			c.IntVars[50], c.IntVars[51] = 1, 1
 		}
@@ -212,6 +214,7 @@ type=dummy
 			step()
 		}
 	}
+	position := func(y0, y1 float64) { place(-40, 40, y0, y1) }
 	for _, pose := range [][3]float64{{0, 0, 0}, {-200, 0, -80}, {-200, -200, -80}, {-100, -100, 0}, {-400, -400, -180}, {0, 0, 0}} {
 		position(pose[0], pose[1])
 		if m.CameraY != pose[2] {
@@ -266,6 +269,86 @@ type=dummy
 	position(-200, 0)
 	if m.CameraY != -90 {
 		t.Fatal("legacy verticalfollow/floortension fallback changed", m.CameraY)
+	}
+
+	// Continue across horizontal tension, zoom return and both zoom-dependent
+	// stage-edge limits. One beta flow gives the settled camera/zoom pairs
+	// 0/.761905, 70/.761905, 20/1, 0/.5, 560/1 and 400/.5.
+	loaded.Camera.TensionHigh, loaded.Camera.TensionLow = nil, nil
+	loaded.Camera.VerticalFollow = 0
+	for index, pose := range [][4]float64{
+		{-150, 150, 0, 16.0 / 21}, {-80, 220, 70, 16.0 / 21},
+		{-80, 0, 20, 1}, {-300, 300, 0, .5},
+		{700, 720, 560, 1}, {100, 700, 400, .5},
+	} {
+		place(pose[0], pose[1], 0, 0)
+		if math.Abs(m.CameraX-pose[2]) > .02 || math.Abs(m.Viewport.Zoom-pose[3]) > .001 {
+			t.Fatal("native horizontal tension/zoom/return/bounds", pose, m.CameraX, m.Viewport.Zoom)
+		}
+		for _, p := range m.Players {
+			v := p.Character.FloatVars
+			factor := 320 / float64(p.Character.LocalCoordinateWidth())
+			if math.Abs(v[8]*factor-pose[2]) > .02 || math.Abs(v[9]-pose[3]) > .001 || math.Abs((v[10]-v[11]-v[12]/2)*factor) > .001 {
+				t.Fatal("mixed-coordinate horizontal camera/zoom/position queries", pose, v[8:13])
+			}
+		}
+		if index < 3 && math.Abs(m.Players[0].Character.FloatVars[10]-60) > .02 {
+			t.Fatal("native horizontal ScreenPos X", pose, m.Players[0].Character.FloatVars[10])
+		}
+	}
+	// Camera-disabled outliers cannot hold a wide zoom or force horizontal travel.
+	m.Players[0].Character.X = 0
+	m.Players[1].Character.X = 5000 * float64(m.Players[1].Character.LocalCoordinateWidth()) / 320
+	m.Players[1].Character.IntVars[50] = 0
+	for tick := 0; tick < 80; tick++ {
+		step()
+	}
+	if math.Abs(m.CameraX-100) > .02 || math.Abs(m.Viewport.Zoom-1) > .001 {
+		t.Fatal("ScreenBound movecamera=0 retained horizontal influence", m.CameraX, m.Viewport.Zoom)
+	}
+	// Reset publishes the same fixed stage extents to projectile retirement,
+	// even though the initial camera starts zoomed in.
+	m.Round++
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	if m.World.ProjectileStageBounds != [2]float64{-720, 720} || m.Viewport.Zoom != 1 {
+		t.Fatal("zoomed stage extents or startup zoom lost on reset", m.World.ProjectileStageBounds, m.Viewport.Zoom)
+	}
+
+	// The beta's omitted-version legacy stage still publishes fractional X/Y
+	// queries. Whole-stage-unit rendering must not quantize the CNS camera.
+	// Its 640p stage converts to the same 320p game with 320p/1280p actors.
+	legacySource := strings.NewReplacer(
+		"mugenversion=1.1\n", "", "localcoord=320,240", "localcoord=640,480",
+		"zoffset=200", "zoffset=400", "tension=60", "tension=120",
+		"boundleft=-400", "boundleft=-800", "boundright=400", "boundright=800",
+		"boundhigh=-180", "boundhigh=-360", "floortension=1000", "floortension=0",
+		"verticalfollow=0", "verticalfollow=.5", "tensionhigh=80\n", "", "tensionlow=40\n", "",
+	).Replace(stageSource)
+	if err := os.WriteFile(path, []byte(legacySource), 0600); err != nil {
+		t.Fatal(err)
+	}
+	m.Stage, err = stage.LoadStage(path, options.RootDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m.Round++
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	advanceUntil(t, m, Active, 650)
+	for _, pose := range [][3]float64{{140.75, 220.75, 120.75}, {-220.75, -140.75, -120.75}, {140.25, 220.25, 120.25}} {
+		place(pose[0], pose[1], -41.5, -41.5)
+		if math.Abs(m.CameraX-pose[2]) > .001 || m.CameraY != -20.75 {
+			t.Fatal("legacy fractional camera queries were rounded", pose, m.CameraX, m.CameraY)
+		}
+		for _, p := range m.Players {
+			factor := 320 / float64(p.Character.LocalCoordinateWidth())
+			if math.Abs(p.Character.FloatVars[8]*factor-pose[2]) > .001 || p.Character.FloatVars[7]*factor != -20.75 {
+				t.Fatal("legacy fractional CNS camera changed across local coordinates", p.Character.FloatVars[7:9])
+			}
+		}
 	}
 	m.Round++
 	if err := m.resetRound(); err != nil {

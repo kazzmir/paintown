@@ -148,7 +148,10 @@ Stage presentation includes camera zoom, moving floors (`zoffsetlink`), backgrou
 scale/clip controls, linked elements, animated parallax floors, reflections, and
 legacy `hires` stage defaults. Stages declaring both `tensionhigh` and
 `tensionlow` use the 1.1 vertical edge camera and height-based zoom fitting;
-these parameters override `verticalfollow` and `floortension`. Tiled backgrounds
+these parameters override `verticalfollow` and `floortension`. Horizontal zoom
+fits the player span plus both stage-space tension margins. Horizontal camera
+bounds describe the fully zoomed-out view; zooming in permits more camera travel
+within the same stage edges. Tiled backgrounds
 follow camera travel; authored
 BG controllers can pause, hide and change their animations. Native rendering
 precision is still tracked in the progress ledger.

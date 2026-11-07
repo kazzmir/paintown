@@ -88,15 +88,16 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 ## Latest camera checkpoint
 
-Stage tensionhigh/tensionlow now select the 1.1 vertical camera and override
-legacy follow/floor tension. Vertical zoom uses participant span plus both
-stage-unit margins. CameraPos Y publishes post-zoom translation. Bounded beta
-flows establish high80/low40 cameras0/-80/-80/0/-180/0 and high70/low30's
-zoom.8/CameraPosY-16/ScreenPosY70. The connected camera scenario covers loader,
-mixed coordinate profiles, participant flags, pause, legacy fallback and reset.
-Changed-source segments pass with race detection; native scratch was removed.
-Preserve the user's uncommitted mugen.yaml changes and exclude them from Git.
-Horizontal zoom, legacy integer camera publication and easing/crop remain open.
+Horizontal and vertical zoom fit actor spans PLUS unzoomed stage tension
+margins. Horizontal camera bounds describe the fully zoomed-out view; fixed
+outer edges also feed projectile stage retirement. Bounded original-beta flows
+establish fitting, return and zoom-dependent limits. Legacy stages still publish
+fractional CNS CameraPos X/Y: do not round these queries based on the documented
+whole-unit rendering rule. The connected scenario covers real loading, mixed
+coordinates, participation, pause and reset. Changed-source segments pass with
+race detection; native scratch was removed. Legacy raster rounding, intermediate
+easing and crop remain open. Local mugen.yaml is ignored/untracked by checkpoint
+8eda46f84; preserve its contents.
 
 ## Keyboard checkpoint
 
