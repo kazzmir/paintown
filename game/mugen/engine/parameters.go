@@ -189,6 +189,13 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileFloatRangeAlias(ctrl)
 	case "statetypeset":
 		return compileStateTypeSet(ctrl)
+	case "displaytoclipboard", "appendtoclipboard":
+		return compileClipboard(ctrl, name == "appendtoclipboard")
+	case "clearclipboard":
+		return func(_ *cns.StateController, env Environment) error {
+			env.ClearClipboard()
+			return nil
+		}, true, nil
 	case "varrandom":
 		return compileVarRandom(ctrl)
 	case "changeanim", "changeanim2":

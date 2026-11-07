@@ -64,7 +64,9 @@ rules. See [match notes](docs/MATCH.md) for details.
 Confirm both characters, select a stage with P1 left/right, and confirm to
 continue through versus into the fight. At the result, P1 Enter rematches.
 Escape returns to the title during a fight or result. These are stock bindings;
-configuration overrides can change them.
+configuration overrides can change them. Ctrl-D cycles debug output through
+players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
+at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 
 ## Build a standalone executable
 

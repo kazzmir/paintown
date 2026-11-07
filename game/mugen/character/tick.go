@@ -186,6 +186,7 @@ func TickCharacters(players []*Character) error {
 	}
 	for _, event := range contacts {
 		metadataOnly := event.defender.metadataOnlyHit(event.hit, event.guarded)
+		continuingCombo := event.defender.MoveType == "H" && !event.defender.GetHitGuarded
 		amount := event.defender.prepareContact(event.attacker, event.hit, event.guarded)
 		if event.defender.RuntimeError != nil {
 			return event.defender.RuntimeError
@@ -198,6 +199,9 @@ func TickCharacters(players []*Character) error {
 				event.attacker.projectileContact()
 			}
 			continue
+		}
+		if !event.defender.GetHitGuarded {
+			event.attacker.creditCombo(event.defender, event.hit, continuingCombo)
 		}
 		if event.guarded && !event.defender.GetHitGuarded {
 			c := event.attacker
@@ -272,6 +276,7 @@ func TickCharacters(players []*Character) error {
 			ordered = append(ordered, helper)
 		}
 	}
+	world.finishCombos()
 	advancedOwners := map[*Character]bool{}
 	for _, c := range players {
 		owner := c.rootPlayer()

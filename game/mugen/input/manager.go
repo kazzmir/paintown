@@ -106,6 +106,11 @@ func (im *InputManager) keyboard() KeyboardSource {
 	return physicalKeyboard{}
 }
 
+func (im *InputManager) DebugCyclePressed() bool {
+	source := im.keyboard()
+	return source.IsJustPressed(ebiten.KeyD) && (source.IsPressed(ebiten.KeyControlLeft) || source.IsPressed(ebiten.KeyControlRight))
+}
+
 func NewInputManager(cfg *config.MugenConfig) *InputManager {
 	return &InputManager{
 		P1Keyboard: cfg.Input.Player1Keyboard,

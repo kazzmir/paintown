@@ -1,35 +1,30 @@
 # Current handoff
 
-Use [PROGRESS.md](PROGRESS.md) as the single completion checklist and
+Use [PROGRESS.md](PROGRESS.md) as the single completion ledger and
 [WORKFLOW.md](WORKFLOW.md) as the implementation/test policy. Continue item3
-with coherent batches and local source/text commits. No pushes or generated
-fixture banks. Item4 modes/teams/AI/BGM/broader assets/platforms remains unallocated.
+in coherent batches with local source/text commits, no pushes or generated
+fixture banks. Item4 modes/teams/AI/BGM/assets/platforms remains unallocated.
 
-The latest implementation completes one-on-one Round/Fight/Win scheduling and
-remaining variable/StateTypeSet schemas. Announcement delays use match-owned
-simulation ages independent of phase/control; visible animation and expiry keep
-their real-frame clock. Default and numbered Round components coexist, delayed
-Fight graphics/sounds survive control grant, KO can overlap Win, and result states
-enter before the first applicable CNS pass. Variable integer literals validate
-before execution; runtime coercion remains supported. Legacy FVar aliases are
-explicit extensions using the same compiled schemas. StateTypeSet validates
-literal attributes and preserves omitted/U fields.
+Two implementation batches are now complete: announcement clocks/controller
+schemas (0867ef609), followed by formatted clipboard/debug display and combo
+bookkeeping/HUD. Clipboard compiles documented numeric printf conversions,
+escapes, six ordered expressions and mismatch defaults. Ctrl-D cycles root/helper
+debug selection and off when allowed. Combo contacts, HitAdd and helper/projectile
+ownership feed the root's displayed total; recovery resets bookkeeping while the
+HUD retains its timed result. New rounds clear both buffers and presentation.
 
-Validation: all five affected consolidated segments passed once with -race,
-covering18 top-level connected scenarios in four packages. The new in-memory
-round/controller flow covers intro release, expressions/ranges/type changes,
-message overlap, control-zero/delayed Fight sound, KO/win pose and round reset,
-including production drawing. Existing stock selection/input-driven matches,
-time-over/results/rematch and effect/entity scenarios pass. No native runs or
-copied resources/captures were generated. Segment scratch was removed and no
-owned test clients remain. Do not rerun completed suites without a related change.
+Each batch ran its affected consolidated suites once with -race. The latest
+pass covers19 top-level scenarios in four packages, including connected
+clipboard/contact/helper/debug/pause/recovery/display-expiry flow, announcement/
+controller/KO/round-reset flow and stock input-driven matches/rematches. Shared
+assets were read in place; scratch was automatically removed and no clients
+remain. Do not rerun completed suites without a related change/regression.
 
-Next batch: clipboard formatting/debug display and combo lifecycle/HUD. Then
-cold-start constraints/edge bindings and concrete presentation/audio defects,
-followed by affected end-state acceptance. Update only the single project ledger.
+Next: fix the retained negative-camera startup constraint and implement top/bottom
+edge queries. Then address the recorded concrete presentation/audio defects and
+run affected end-state acceptance. No new native parameter matrices are needed.
 
-The supplied distribution remains at temp/mugen-1.1b1/. Build cache/development
-headers/private Xvfb:97/Pulse/Wine tools remain. User-authorized cleanup removed
-old run banks and stale binaries; raw historical captures/prepared runs are gone.
-Do not regenerate matrices for legacy diagnostics. Use the isolated wrapper in
-AGENTS.md, keep display-dependent processes serial, and clean scratch after runs.
+The supplied distribution is temp/mugen-1.1b1/. Cache, development headers and
+private Xvfb:97/Pulse/Wine tools remain. Old copied run banks/raw captures were
+cleaned at the user's request; do not regenerate them for legacy diagnostics.
+Use the isolated wrapper from AGENTS.md and keep display-dependent runs serial.

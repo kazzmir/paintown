@@ -58,6 +58,7 @@ func reverseAttacks(players []*Character) error {
 				continue
 			}
 			hit := reverser.reversal.hit
+			continuingCombo := attacker.MoveType == "H" && !attacker.GetHitGuarded
 			reverser.reversal = nil
 			attacker.HitDefActive = false
 			target := attacker
@@ -69,6 +70,7 @@ func reverseAttacks(players []*Character) error {
 			}
 			reverser.HitCount += n
 			reverser.UniqHitCount += n
+			reverser.creditCombo(target, hit, continuingCombo)
 			if len(hit.GetPower) > 0 {
 				reverser.AddPower(hit.GetPower[0])
 			}

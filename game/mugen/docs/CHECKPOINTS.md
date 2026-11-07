@@ -19,6 +19,9 @@ Recent boundaries:
 M4dt completes announcement scheduling and residual schemas; all five affected
 segments pass with race detection. No generated fixture bank was added.
 
+M4du connects clipboard/debug display and combo lifecycle/HUD; all five affected
+segments pass with race detection, using shared assets and automatic cleanup.
+
 M4ds added no new engine compatibility claim or generated fixture bank. Production
 Go advanced in M4dt. Former per-run transcripts are in this file's Git history;
 they are not maintained as a second live project tracker.

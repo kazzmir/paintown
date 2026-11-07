@@ -6,21 +6,9 @@
     "fvarset"
   ],
   "controller_gaps": {
-    "appendtoclipboard": {
-      "gap": "Raw text only; numeric formatting and production debug display remain.",
-      "allocation": "item3"
-    },
-    "displaytoclipboard": {
-      "gap": "Raw text only; numeric formatting and production debug display remain.",
-      "allocation": "item3"
-    },
     "assertspecial": {
       "gap": "NoMusic has no BGM consumer.",
       "allocation": "item4 dependency"
-    },
-    "hitadd": {
-      "gap": "ComboCount has no production HUD/reset consumer.",
-      "allocation": "item3"
     }
   },
   "trigger_gap_allocations": {
@@ -247,22 +235,24 @@
       "id": "clipboard",
       "name": "Formatted clipboard and production debug display",
       "group": "Controllers and effects",
-      "status": "partial",
-      "gap": "Compile params/formatting and connect the debug display.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item3",
       "sources": [
-        "character/character.go:DisplayToClipboard"
+        "engine/clipboard.go:compileClipboard",
+        "system/debug.go:drawDebugClipboard"
       ]
     },
     {
       "id": "combo",
       "name": "Combo count lifecycle and HUD consumer",
       "group": "Characters and combat",
-      "status": "partial",
-      "gap": "Connect HitAdd to contact/reset bookkeeping and displayed combo count.",
+      "status": "implemented",
+      "gap": "",
       "allocation": "item3",
       "sources": [
-        "character/character.go:HitAdd"
+        "character/combo.go:creditCombo",
+        "system/hud_combo.go:drawCombos"
       ]
     },
     {
@@ -454,7 +444,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5db3ca13b2b17d52f97ad7f21fdc786527ba6f4c90aeb3c321c7c4aa6db10d5c"
+      "passed_source": "2a6d83eb21044b3d0c20cf32abb990b703675230d329f8ef892f55df8c9aa0b6"
     },
     {
       "id": "combat",
@@ -487,7 +477,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "642c1e71d43eeaa4d28eb41f95a311953e7ea72a2fefec02d230fec5e1fc1e69"
+      "passed_source": "d49036ba35f35cb4d0d56881d8953719b2d6ba58451b5b0ce826ccbd4a366d40"
     },
     {
       "id": "entities",
@@ -513,7 +503,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ab4d377417c002fc732a7c5f90b4a41641ee445636da446d703e523dc6561c9f"
+      "passed_source": "4b450febdc91ea846301498ccf6e1729e9f8d6053d6d5cc5772f8e6f16f7944b"
     },
     {
       "id": "effects-pause",
@@ -545,7 +535,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7156194edff7d902b7c8e663ec18e6a87bd690f223ec1df9d5df18aafb1e8862"
+      "passed_source": "bff0e589aebf7f147b5b836870daabba08d2f140128c2c7d19e163fb2cf2c4ad"
     },
     {
       "id": "match-flow",
@@ -592,11 +582,15 @@
         {
           "file": "system/round_flow_test.go",
           "name": "TestAnnouncementsAndControllerRoundFlow"
+        },
+        {
+          "file": "system/feedback_flow_test.go",
+          "name": "TestCombatClipboardComboAndDebugFlow"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ecffe9a9d429dbd2dae0e769f7fc4db9bf6feffe3eb9e1c766fa686299c85838"
+      "passed_source": "8e835fa0ff30eefef1712c14eedbaacb84605af0105e40783e0e90677357db62"
     }
   ],
   "presentation_followups": [

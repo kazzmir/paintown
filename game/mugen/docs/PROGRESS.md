@@ -5,9 +5,9 @@ Checked items have a working implementation for the stated scope. Partial
 items name the remaining work. Counts below are feature/route counts, not
 an estimate of total effort or complete native compatibility.
 
-- Controllers: 89/89 routes; 4 known partial, 0 missing.
+- Controllers: 89/89 routes; 1 known partial, 0 missing.
 - Triggers: 120/127 runtime routes; 7 missing.
-- Project items: 22 implemented, 9 partial, 2 missing.
+- Project items: 24 implemented, 7 partial, 2 missing.
 
 ## Completed scenario coverage
 
@@ -44,14 +44,14 @@ require running the historical data again.
 - [x] Hit/guard contacts, damage and reaction state transitions.
 - [x] Hit, fall, landing and recovery state progression.
 - [x] Death latching, KO and damage grace.
-- [ ] Combo count lifecycle and HUD consumer. **partial** — Connect HitAdd to contact/reset bookkeeping and displayed combo count.
+- [x] Combo count lifecycle and HUD consumer.
 - [ ] Cold-start screen constraint ordering. **partial** — Correct the retained negative-camera P2 first-pass constraint discrepancy.
 
 ### Controllers and effects
 
 - [x] Pause/SuperPause, movement allowances and clock ownership.
 - [x] Projectiles, Explods, trails, palettes and transforms.
-- [ ] Formatted clipboard and production debug display. **partial** — Compile params/formatting and connect the debug display.
+- [x] Formatted clipboard and production debug display.
 
 ### Match and presentation
 
@@ -84,10 +84,7 @@ implementation tasks by themselves.
 
 | Controller | Remaining implementation |
 | --- | --- |
-| appendtoclipboard | Raw text only; numeric formatting and production debug display remain. |
 | assertspecial | NoMusic has no BGM consumer. |
-| displaytoclipboard | Raw text only; numeric formatting and production debug display remain. |
-| hitadd | ComboCount has no production HUD/reset consumer. |
 
 Missing trigger routes: `bottomedge`, `ishometeam`, `p3name`, `p4name`, `stagevar`, `teammode`, `topedge`.
 

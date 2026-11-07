@@ -26,6 +26,7 @@ type FightHUD struct {
 	played        map[string]bool
 	levels        [2]int
 	pendingSounds map[string]hudSound
+	combos        [2]hudCombo
 	linearSampler render.Linear
 	indexSampler  render.Nearest
 	renderError   error
@@ -74,11 +75,13 @@ func (h *FightHUD) Update(_ match.Phase, round int) error {
 	if round != h.match.Round {
 		clear(h.played)
 		clear(h.pendingSounds)
+		h.combos = [2]hudCombo{}
 		for slot, p := range h.match.Players {
 			h.levels[slot] = p.Character.Power / 1000
 		}
 	}
 	h.updateMessages(round)
+	h.updateCombos()
 	if h.match.SimulationSkipped {
 		return nil
 	}
@@ -280,6 +283,7 @@ func (h *FightHUD) Draw(screen *ebiten.Image) {
 	m := h.match
 	if !m.Timeline.NoBarDisplay {
 		h.drawBars(screen)
+		h.drawCombos(screen)
 	}
 	pos := h.values("Round", "pos", 0, 0)
 	for _, group := range []string{"round", "round.default", "fight", "finish", "result"} {

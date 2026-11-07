@@ -207,7 +207,9 @@ type Character struct {
 	UniqHitCount int
 	// ComboCount is the displayed combo counter, distinct from the current
 	// attack's HitCount. Match combat owns its reset/credit rules.
-	ComboCount int
+	ComboCount    int
+	ComboRevision uint64
+	comboTarget   *Character
 	// Received combo metadata is independent of the attacker's NumHits/HUD count.
 	receivedHitCount  int32
 	receivedFallCount int32
@@ -1130,7 +1132,9 @@ func (c *Character) MoveHitReset() {
 }
 
 func (c *Character) HitAdd(val int) {
-	c.ComboCount += val
+	owner := c.rootPlayer()
+	owner.ComboCount = int(int32(owner.ComboCount) + int32(val))
+	owner.ComboRevision++
 }
 
 func (c *Character) ChangeAnim2(animNo int) {
@@ -1236,7 +1240,10 @@ func (c *Character) SetDrawingOffset(p engine.DrawingOffset) {
 func (c *Character) Offset(x, y float64) { c.SetDrawingOffset(engine.DrawingOffset{X: &x, Y: &y}) }
 
 func (c *Character) AppendToClipboard(text string) {
-	c.Clipboard += "\n" + text
+	if c.Clipboard != "" && !strings.HasSuffix(c.Clipboard, "\n") {
+		c.Clipboard += "\n"
+	}
+	c.Clipboard += text
 }
 
 func (c *Character) ClearClipboard() {

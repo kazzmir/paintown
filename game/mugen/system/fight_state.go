@@ -9,6 +9,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/combat"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/palette"
@@ -28,6 +29,8 @@ type FightState struct {
 	linearSampler                      render.Linear
 	indexSampler                       render.Nearest
 	renderError                        error
+	debugSelection                     int
+	debugFont                          *font.Font
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
@@ -43,7 +46,10 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	fmt.Printf("Match RNG seed: %d\n", game.World.RandomSeed())
 	game.Timeline.GameTime = engine.gameTime
 	game.Timeline.TicksPerSecond = int32(engine.ticksPerSecond())
-	s := &FightState{engine: engine, match: game}
+	s := &FightState{engine: engine, match: game, debugSelection: -1}
+	if engine.cfg.Debug.Debug {
+		s.debugSelection = 0
+	}
 	for slot, p := range game.Players {
 		p.Character.InputSource = func(playerID, facing int) []string {
 			if game.Request.Players[playerID-1].AILevel > 0 {
@@ -64,6 +70,7 @@ func (s *FightState) Update() (State, error) {
 	if s.renderError != nil {
 		return s, s.renderError
 	}
+	s.updateDebugSelection()
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		if err := s.match.ClearSounds(); err != nil {
 			return s, err
@@ -215,5 +222,8 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	// Native positive EnvColor covers the HUD with either under flag.
 	if environment.Time <= 0 {
 		drawFitted(s.hudCanvas, hud, err)
+	}
+	if err := s.drawDebugClipboard(screen); err != nil {
+		s.renderError = err
 	}
 }

@@ -57,7 +57,7 @@ artifact-dependent tests now require unavailable captures.
 
 Before each local commit audit explicit staged paths and UTF-8/no-NUL text; add no
 temp/testdata/binary or outside-scope files. Avoid force-adding directories. No
-new native data was promoted. Announcement scheduling and residual variable/
-StateTypeSet schemas are implemented and their affected segments passed with
-race detection. Next: clipboard/debug output and combo lifecycle/HUD. Read
+new native data was promoted. Announcement scheduling, residual schemas, clipboard/debug output and combo
+lifecycle/HUD are implemented. Their affected segments passed with race
+detection. Next: startup constraints and top/bottom edge bindings. Read
 docs/PROGRESS.md and docs/HANDOFF.md; do not restart historical research matrices.

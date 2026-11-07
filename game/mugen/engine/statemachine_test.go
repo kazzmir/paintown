@@ -180,6 +180,7 @@ func TestCompilationFailsBeforeSideEffects(t *testing.T) {
 		"type=LifeAdd\ntrigger1=1\nignorehitpause=var(0)",
 		"type=VarSet\ntrigger1=1\nv=0\nvalue=7.9",
 		"type=StateTypeSet\ntrigger1=1\nstatetype=Z",
+		"type=DisplayToClipboard\ntrigger1=1\ntext=\"bad %s\"\nparams=1",
 	} {
 		t.Run(bad, func(t *testing.T) {
 			h := newHost()
