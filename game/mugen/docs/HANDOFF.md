@@ -13,7 +13,10 @@ Current palette/AfterImage batch (end-state validation pending):
   Actor/effect textures track MappingRevision; PalFX/HitDef color effects keep
   their ordinary revision and clocks without forcing a base-image upload.
   Legacy initial-outfit portrait policy also invalidates mapping pixels.
-- Continue through shared body/portrait textures and frozen AfterImage poses,
+- Fighter/HUD cache entries now share immutable mapped pixels. The connected
+  outfit/reset scenario renders local PalFX beside an unaffected HUD sprite,
+  then expires the effect without changing the mapping revision.
+- Continue through frozen AfterImage poses,
   then run affected connected scenarios once at the end of the batch.
 - Priorca131d22c provides native RGBA mask/upload/filtering behavior, lazy shared
   BG/storyboard textures and sprite indexes. Linux matched40 fixed beta samples.

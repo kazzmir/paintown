@@ -276,9 +276,8 @@ func (p *Player) drawExplod(screen *ebiten.Image, ex *ExplodData, x, y, sx, sy f
 }
 
 type paletteCacheKey struct {
-	state     *palette.State
-	index     int
-	hitEffect bool
+	state *palette.State
+	index int
 }
 type cachedSprite struct {
 	revision uint64
@@ -286,16 +285,18 @@ type cachedSprite struct {
 }
 
 func (p *Player) getEbitenImage(entity *Character, g, i int) *ebiten.Image {
-	return p.getMappedSpriteImage(entity, g, i, true)
+	return p.getMappedSpriteImage(entity, g, i)
 }
 
-func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect bool) *ebiten.Image {
+func (p *Player) getMappedSpriteImage(entity *Character, g, i int) *ebiten.Image {
 	index, found := p.SFF.Index(g, i)
 	if !found {
 		return nil
 	}
 	state := entity.Palettes
-	key := paletteCacheKey{state, index, hitEffect}
+	// Local hit/PalFX is shader state. Body and HUD draws use the same
+	// immutable mapped pixels, with their own draw-time transforms.
+	key := paletteCacheKey{state, index}
 	revision := uint64(0)
 	if state != nil {
 		revision = state.MappingRevision
@@ -365,7 +366,7 @@ func (p *Player) DrawSprite(screen *ebiten.Image, entity *Character, group, item
 	if sprite == nil {
 		return
 	}
-	img := p.getMappedSpriteImage(entity, group, item, false)
+	img := p.getMappedSpriteImage(entity, group, item)
 	if img == nil {
 		return
 	}

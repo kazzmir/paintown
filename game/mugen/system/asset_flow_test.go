@@ -460,6 +460,36 @@ trigger1=1
 	}
 	reach(match.Active)
 	e.Draw(canvas)
+	// Local PalFX changes the fighter's draw while the HUD retains its mapped
+	// outfit. Both consumers can share a base texture through effect expiry.
+	root = p1.Character
+	mapping := root.Palettes.MappingRevision
+	root.Palettes.SetEffect(palette.Effect{Time: 1, Color: 256, Mul: [3]int{256, 256, 256}, Invert: true})
+	countColor := func(want color.NRGBA) int {
+		pixels := make([]byte, canvas.Bounds().Dx()*canvas.Bounds().Dy()*4)
+		canvas.ReadPixels(pixels)
+		count := 0
+		for i := 0; i < len(pixels); i += 4 {
+			if pixels[i] == want.R && pixels[i+1] == want.G && pixels[i+2] == want.B && pixels[i+3] == want.A {
+				count++
+			}
+		}
+		return count
+	}
+	drawPalettePair := func() {
+		canvas.Fill(color.Black)
+		p1.DrawScaled(canvas, 40, 40, 8, 8)
+		p1.DrawSprite(canvas, root, 0, 0, 80, 40, 8, 8)
+	}
+	drawPalettePair()
+	if countColor(gold) == 0 || countColor(color.NRGBA{105, 155, 255, 255}) == 0 || root.Palettes.MappingRevision != mapping {
+		t.Fatal("shared sprite pixels mixed fighter PalFX into HUD or changed mappings")
+	}
+	root.Palettes.AdvanceHitEffect()
+	drawPalettePair()
+	if countColor(gold) == 0 || countColor(color.NRGBA{105, 155, 255, 255}) != 0 || root.Palettes.MappingRevision != mapping || root.RuntimeError != nil {
+		t.Fatal("PalFX expiry did not restore mapped fighter pixels", root.RuntimeError)
+	}
 	// The beta upgrading contract requires modern characters to author their
 	// palette switch in state5900, even when their sprite file is still V1.
 	write("outfits.def", []byte(strings.Replace(definition, "2002.04.14", "1.0", 1)))
