@@ -347,16 +347,17 @@
         "system/mode_screens.go:victoryQuote",
         "character/palette_load.go:loadLegacyPalettes",
         "character/palette_load.go:BindPalette",
-        "palette/state.go:SelectLegacy"
+        "palette/state.go:SelectLegacy",
+        "air/air.go:ParseFromAST"
       ],
-      "validation": "Connected asset lifecycle covers ZIP/default/alternate DEF selection, spaced paths, selective v1/v2 portraits, linked pixel sources and shared/private palette colors, intro/versus/fight, outfits/reset, roster reload, ending and cleanup. Full gameplay sprite loading remains separate from portrait decoding. Existing font, retained storyboard and trailerless PCX paths remain covered. Match-flow passes with race detection; no copied stock banks or generated fixtures retained. Native raster/rejection parity and missing external media/fonts remain open."
+      "validation": "Connected asset lifecycle covers packed character selection/portraits, intros, fight/reset, endings and cleanup. Invalid AIR collision counts now fail before allocation with file/action/line context; correcting the same expanded pack permits a successful reload. AIR declarations and per-element box copies share a 1,048,576-box allocation ceiling. Existing fonts, retained storyboards, linked portraits and trailerless PCX remain covered. Four affected connected segments pass with race detection; strict native rejection/raster parity and external media/fonts remain open."
     },
     {
       "id": "raster-audio",
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Remaining camera easing, other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Self binding across asymmetric Pause allowances, finite TargetBind during attacker hitpause, body contact and prior camera observations match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
+      "gap": "Moving-zoom return precision (observed camera X difference about 0.15 pixels), other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision remain open. Five sampled camera/zoom points through spread, translation, closing and stage-bound travel match the beta; the subsequent return is functional but not exact. Strict native asset rejection remains unverified.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -468,7 +469,7 @@
         "background/background.go:drawPaletteImage",
         "character/width.go:HorizontalCameraBounds"
       ],
-      "validation": "Connected lifecycle covers loading, mixed coordinates, tension/zoom/bounds, participation, Width, Pause, linked/parallax backgrounds, cropped modern/legacy rendering and reset. Added camera-only stage clipping of the tension/Width fitting region while preserving offscreen actor positions. Beta bounds+/-100/zoomout.5 flow: disabled tracking at actors-1000/+1000 gives camera0/zoom.5; actors700/1300 give camera260/zoom1; actors0/1300 with Width edge20,30 give camera165/zoom32/51. Existing cropped HD BG/fighter/effect bounds and query observations remain covered. Four changed-source segments pass with race detection; native scratch removed."
+      "validation": "The connected camera lifecycle covers mixed coordinates, tension/zoom/bounds, Width, participation, Pause, modern/legacy cropped rendering and reset. One stable world-space beta spread/translate/close/bounds/return flow matches camera X/zoom at state times 1,10,21,41,81. At time 120, beta X 80.698 vs Go 80.848 remains an explicit precision gap; return/reset are functional. Linked/parallax background coverage is retained. Four affected segments pass with race detection; native scratch removed."
     }
   ],
   "segments": [
@@ -552,7 +553,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5e131690f4585ccbd7c0f5cdafce04834c60acbc6436b212debafa7022967d71"
+      "passed_source": "b485e77f98fea1c4b66a0167e23bb3a916c3cce74f71ef90f57907925306a4c8"
     },
     {
       "id": "entities",
@@ -585,7 +586,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c22e52198432f3d1006d9056be3c3c21f6f1567b2f4a55568d50185e0bb4288f"
+      "passed_source": "8971a066534908fd307c9e6ab97cbb9ae939a7a449cc218333b6730ac6a3d158"
     },
     {
       "id": "effects-pause",
@@ -620,7 +621,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c58b652d8ae4fd1c1d01cf2456cf814f6f5ed61d8d858a882cda36e8c868331a"
+      "passed_source": "d333a7ba196890e272f7deb5e14c5d334ecc56b6306c3956681bcb62e2f34f18"
     },
     {
       "id": "match-flow",
@@ -699,13 +700,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ec9141bcfe554a9476baa635d97b557069aa1a58cd76a5c594830b9b492150f2"
+      "passed_source": "7da6153d923ca5289ea649573f70a2531c1daf0226d9f46fb92997fad0332d4d"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Camera, body-push and moving-owner self-binding lifecycles match bounded beta observations. Finite TargetBind expiry during attacker hitpause now matches zero-velocity transfer and release without drift. Projectile contacts intentionally do not recoil the owner. Other pause/hitpause, binding and crop/raster combinations remain precision work."
+    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom matches five sampled beta points; return at state time 120 differs by about 0.15 pixels and remains open. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner."
   ]
 }

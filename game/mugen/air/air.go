@@ -3,6 +3,7 @@ package air
 import (
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 	"strings"
 
@@ -58,6 +59,17 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 	data := &Data{
 		Actions: make(map[int]*Action),
 	}
+	// Count declarations and per-element copies before allocating. A corrupt
+	// count must produce a load error, never a negative make length or an OOM.
+	const maxBoxes = 1 << 20
+	allocatedBoxes := 0
+	reserveBoxes := func(count int) error {
+		if count < 0 || count > maxBoxes-allocatedBoxes {
+			return fmt.Errorf("collision-box allocation exceeds %d boxes per AIR file", maxBoxes)
+		}
+		allocatedBoxes += count
+		return nil
+	}
 
 	for _, section := range ast.Sections {
 		name := strings.ToLower(strings.TrimSpace(section.Name))
@@ -96,23 +108,38 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 					attr.Value = parsers.StringValue{Val: strings.TrimSpace(parts[1])}
 				}
 
+				count := 0
+				if key == "clsn1default" || key == "clsn2default" || key == "clsn1" || key == "clsn2" {
+					rawCount := strings.TrimSpace(attr.RawValue)
+					if rawCount == "" {
+						rawCount = getAsString(attr.Value)
+					}
+					value, err := strconv.ParseFloat(rawCount, 64)
+					if number, ok := attr.Value.(parsers.NumberValue); ok {
+						value, err = number.Val, nil
+					}
+					if err != nil || math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > maxBoxes {
+						return nil, fmt.Errorf("AIR action %d line %d: invalid %s count %q", actionID, attr.Line, key, attr.RawValue)
+					}
+					count = int(value)
+					if err := reserveBoxes(count); err != nil {
+						return nil, fmt.Errorf("AIR action %d line %d: %w", actionID, attr.Line, err)
+					}
+				}
+
 				if key == "clsn1default" {
 					consumed[attr] = true
-					count := getAsInt(attr.Value)
 					defaultClsn1 = make([]Box, count)
 					nextClsn1 = nil // Reset frame-specific when default is set
 				} else if key == "clsn2default" {
 					consumed[attr] = true
-					count := getAsInt(attr.Value)
 					defaultClsn2 = make([]Box, count)
 					nextClsn2 = nil
 				} else if key == "clsn1" {
 					consumed[attr] = true
-					count := getAsInt(attr.Value)
 					nextClsn1 = make([]Box, count)
 				} else if key == "clsn2" {
 					consumed[attr] = true
-					count := getAsInt(attr.Value)
 					nextClsn2 = make([]Box, count)
 				} else if strings.HasPrefix(key, "clsn1[") {
 					consumed[attr] = true
@@ -160,6 +187,9 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 						if nextClsn2 != nil {
 							clsn2 = nextClsn2
 							nextClsn2 = nil
+						}
+						if err := reserveBoxes(len(clsn1) + len(clsn2)); err != nil {
+							return nil, fmt.Errorf("AIR action %d line %d: %w", actionID, attr.Line, err)
 						}
 						el.Clsn1 = append([]Box(nil), clsn1...) // Clone just in case
 						el.Clsn2 = append([]Box(nil), clsn2...)

@@ -169,3 +169,13 @@ scaling, moving floors, linked/animated backgrounds, reflections, legacy outfits
 and file music have functional consumers. Exact raster/camera/push and asset
 compatibility edges remain unverified; do not regenerate historical matrices.
 See docs/HANDOFF.md and preserve the cleanup workflow above.
+
+## Current compatibility checkpoint
+
+AIR collision declarations are checked before allocation; defaults and copied
+per-element boxes share a 1,048,576-box file budget. Preserve contextual errors
+through packed-character fight loading and successful reload after correction.
+One connected zoom-motion sequence matches five beta camera/zoom samples; its
+return still differs by about 0.15 pixels at state time 120. Keep that precision
+gap explicit. Four affected segments passed with race detection; state-flow
+stays checked. Linux rebuilt; current native helper/captures/overlay removed.

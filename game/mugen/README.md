@@ -146,6 +146,11 @@ opening selection again reloads the source pack as needed.
 The original ZIP is preserved. Packs support up to 1 GiB of expanded content and
 65,536 entries. No assets or local configuration files need to be added to Git.
 
+Invalid AIR collision-box counts report the animation file, action and line at
+load time. The port limits declarations and per-element collision-box copies to
+1,048,576 allocations per AIR file; this is a port resource ceiling, not a claim
+about the beta's exact rejection rules.
+
 ### Keyboard overrides in mugen.yaml
 
 Place `mugen.yaml` in your selected `--data-dir`, alongside `data/`, `chars/` and

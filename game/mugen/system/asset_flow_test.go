@@ -637,6 +637,28 @@ layer0.offset=80,80
 	if _, err := e.characterPacks.Resolve(invalid); err == nil || !strings.Contains(err.Error(), "invalid ZIP entry") {
 		t.Fatal("archive entry escaped its expansion directory", err)
 	}
+	// A bad AIR in a selectable pack must fail at the fight handoff with the
+	// asset/action/line intact. Restore the same pack and load it successfully;
+	// no copied bank or per-parameter fixture is needed.
+	animation := filepath.Join(filepath.Dir(first.DefPath), "outfits.air")
+	validAnimation, err := os.ReadFile(animation)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, count := range []string{"-1", "1e99"} {
+		if err := os.WriteFile(animation, []byte("[Begin Action 700]\nClsn2Default: "+count+"\n0,0,0,0,-1\n"), 0600); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := NewFightState(e, request); err == nil || !strings.Contains(err.Error(), "outfits.air") || !strings.Contains(err.Error(), "AIR action 700 line 2") || !strings.Contains(err.Error(), "clsn2default") {
+			t.Fatal("malformed packed animation lost its load context", err)
+		}
+	}
+	if err := os.WriteFile(animation, validAnimation, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewFightState(e, request); err != nil {
+		t.Fatal("corrected packed animation could not reload", err)
+	}
 	if err := e.Close(); err != nil {
 		t.Fatal(err)
 	}

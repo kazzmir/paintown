@@ -416,4 +416,148 @@ type=dummy
 	if m.CameraY != 0 || m.Viewport.Zoom != 1 {
 		t.Fatal("vertical camera state survived round reset")
 	}
+	cameraZoomMotionFlow(t, base)
+
+}
+
+// Continue through zoom motion using one beta spread/translate/close/bounds/
+// return sequence. Fixed world poses remove camera-relative PosSet feedback.
+func cameraZoomMotionFlow(t *testing.T, base *Match) {
+	t.Helper()
+	request, options := base.Request, base.Options
+	request.Teams = [2]TeamSelection{}
+	request.Players[1] = request.Players[0]
+	request.Players[1].Palette = 2
+	options.GameSpace = coord.Default()
+	m, err := New(request, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	camera := &m.Stage.Camera
+	camera.StartX, camera.StartY = 0, 0
+	camera.BoundLeft, camera.BoundRight = -400, 400
+	camera.BoundHigh, camera.BoundLow = 0, 0
+	camera.Tension, camera.VerticalFollow, camera.FloorTension = 60, 0, 0
+	camera.TensionHigh, camera.TensionLow = nil, nil
+	camera.StartZoom, camera.ZoomIn, camera.ZoomOut = 1, 1, .5
+	const program = `[Statedef 5900]
+type=S
+movetype=I
+physics=N
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=0
+ctrl=1
+velset=0,0
+[State 0, active]
+type=ChangeState
+trigger1=RoundState=2
+value=600
+[Statedef 600]
+type=S
+movetype=I
+physics=N
+anim=0
+ctrl=0
+velset=0,0
+[State 600, settle]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=1,1
+[State 600, position]
+type=PosSet
+trigger1=1
+x=ifelse(TeamSide=1,-40,40)-CameraPos X
+y=0
+[State 600, ready]
+type=ChangeState
+trigger1=Time=90
+value=700
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=0
+ctrl=0
+velset=0,0
+[State 700, camera]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=1,1
+[State 700, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, location]
+type=PosSet
+trigger1=1
+x=ifelse(Time<20,ifelse(TeamSide=1,-150,150),ifelse(Time<40,ifelse(TeamSide=1,-80,220),ifelse(Time<60,ifelse(TeamSide=1,-80,0),ifelse(Time<80,ifelse(TeamSide=1,-300,300),ifelse(Time<100,ifelse(TeamSide=1,700,720),ifelse(TeamSide=1,-40,40))))))-CameraPos X
+y=0
+[State 700, observe x]
+type=VarSet
+trigger1=1
+fv=0
+value=CameraPos X
+[State 700, observe zoom]
+type=VarSet
+trigger1=1
+fv=1
+value=CameraZoom
+`
+	for _, p := range m.Players {
+		file, err := cns.ParseNamed(strings.NewReader(program), "camera-motion.cns")
+		if err != nil {
+			t.Fatal(err)
+		}
+		file.SetLanguageVersion("1.1")
+		previous := p.Character.StateFile
+		file.Data, file.Size, file.Movement = previous.Data, previous.Size, previous.Movement
+		p.Character.StateFile, p.CMD = file, nil
+	}
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	observations := map[int][2]float64{
+		1: {-2.3465, .96929}, 10: {-.58743, .799}, 21: {8.5815, .76933},
+		41: {64.008, .78111}, 81: {77.076, .54067},
+	}
+	for tick := 0; tick < 1400; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		c := m.Players[0].Character
+		if c.StateNo != 700 {
+			continue
+		}
+		if want, ok := observations[c.Time-1]; ok {
+			if math.Abs(c.FloatVars[0]-want[0]) > .001 || math.Abs(c.FloatVars[1]-want[1]) > .00001 {
+				t.Fatalf("native moving zoom at state time %d: camera/zoom=%v want=%v", c.Time-1, c.FloatVars[:2], want)
+			}
+			delete(observations, c.Time-1)
+		}
+		if c.Time > 121 {
+			// Return is functional; its last fraction of a pixel is still precision
+			// work (beta X=80.698, Go approximately80.848 at state time120).
+			if len(observations) != 0 || m.Viewport.Zoom < .99 || m.CameraX > 100 {
+				t.Fatal("moving zoom did not return after stage-bound travel", observations, m.CameraX, m.Viewport.Zoom)
+			}
+			m.Round++
+			if err := m.resetRound(); err != nil {
+				t.Fatal(err)
+			}
+			if m.CameraX != 0 || m.Viewport.Zoom != 1 {
+				t.Fatal("round reset retained moving zoom state")
+			}
+			return
+		}
+	}
+	t.Fatal("camera motion sequence did not finish")
 }
