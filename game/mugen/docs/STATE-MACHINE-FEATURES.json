@@ -438,7 +438,7 @@
       "sources": [
         "mugen.sh"
       ],
-      "validation": "Standalone Linux amd64 build; normal logo/intro window startup; stock KFM/KFM720 input-driven KO/result and private audio output. Connected segments pass. Other targets deferred by user."
+      "validation": "Standalone Linux amd64 rebuilt. Owned-window KFM/KFM720 ZIP-entry startup rendered correctly; handled termination removed both pack expansions with no runtime/audio warnings. The probe shared canonical assets and packed only tiny DEF references; capture/overlay/helpers removed. Affected connected segments pass with race detection; earlier keyboard KO/rematch/KO and private audio acceptance remain recorded. Other targets deferred by user."
     },
     {
       "id": "stage-zoom",

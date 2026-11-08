@@ -7,38 +7,29 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-ZIP checkpoint a010d8e2d implements the beta's pack.zip and
-pack.zip:member.def selection syntax, including spaced filenames and case-folded
-Windows paths. Engine-owned expansions are shared across portraits, alternate
-DEFs, rosters, quick matches, rounds and rematches. Engine.Close stops readers
-before removing expansions; main now unwinds startup errors and handles Ctrl-C/
-SIGTERM through the normal game exit. Source ZIPs and user configuration stay intact.
+Latest batch checkpoints:
 
-The connected authored asset lifecycle includes packed selection/portraits,
-arcade intro, versus/fight, outfits and round reset, direct roster reload, ending,
-missing member/path errors and cleanup. Match-flow passes with race detection;
-other segments stay checked. No stock assets were copied into fixtures; segment
-scratch removes both ZIP input and expansions.
+- a010d8e2d: ZIP/default/alternate DEF loading through selection, portraits,
+  intros/endings, rosters, quick matches and resets; spaced filenames preserved.
+  Engine-owned temporary expansion handles errors and termination cleanup.
+- e841c13e9: selective SFF v1/v2 portrait loading follows linked pixel sources
+  and palette sequencing; gameplay continues to load the complete archive.
+- 43bf5139c: CMD [Remap] works for human/key-controlled-helper input and authored
+  AI. Beta confirms logical x=a and blank a semantics. Chords, charged releases,
+  Start, disabled slots and remapped stock AI attack/special/contact are covered.
+- 97fb7c45f: title return releases inactive pack files after stopping packed
+  music; selection reloads fresh paths/portraits. Game Speed updates the live
+  scheduler and subsequent match clock. No settings file is written.
+- Current checkpoint records rebuilt Linux ZIP startup/rendering and signal
+  cleanup. One inspected private-window capture showed both KFM profiles; no
+  runtime/audio warnings or surviving pack expansions. Canonical banks were
+  shared; test ZIPs contained tiny DEF references only. All scratch removed.
 
-Portrait checkpoint e841c13e9 adds SFF v1/v2 selective loading for 9000,0/9000,1
-and linked pixel sources. V1 retains palette sequencing while reading only the
-needed palette trailers/pixels; V2 resolves required link chains. Selection no
-longer decodes all combat frames. Gameplay still loads the full archive. The
-connected asset flow covers v1 linked/shared/private colors and stock v2 selection,
-then full fights/reset and ZIP cleanup. Match-flow passes with race detection.
-CMD checkpoint 43bf5139c implements [Remap] for human input, key-controlled
-helpers and authored AI. Beta confirms x=a, a= maps physical a to command x and
-disables logical a; physical x triggers neither. Mapping uses one snapshot, with
-shared-input chords, charged releases and Start supported. AI translates plans
-back to reachable physical buttons. Four affected segments pass with race
-detection; unchanged state-flow remains checked. Native scratch was removed.
-Current menu checkpoint retires expanded packs on title entry after closing
-packed music readers; selection can reload them without touching source ZIPs.
-Game Speed options update Ebitengine's scheduler immediately and the next match
-inherits that rate. Connected option/menu and packed asset lifecycles pass with
-race detection. Only match-flow reopened for this batch.
-Linux rebuild/playable acceptance will run at the end of this implementation batch. Prior 848b00caf and its four
-predecessors cover retained storyboard rendering, fades, font paths and PCX data.
+Four affected connected segments passed with race detection for CMD changes;
+subsequent asset/menu changes reopened only match-flow, which passed. All five
+segments are checked for current source. Root module hashes and ignored local
+YAML content remain unchanged. Earlier 848b00caf batch retains storyboard/frame/
+fade, font-path, PCX and playable KO/rematch coverage.
 
 Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
 camera easing, other pause/hitpause and binding combinations, crop/raster/

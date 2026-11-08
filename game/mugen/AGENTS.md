@@ -95,6 +95,10 @@ rosters and quick matches share expansions; Engine.Close stops sound readers
 before removing them. On title return, retire expansions after title music has
 closed packed streams. Preserve cleanup on startup errors and handled signals.
 Do not copy canonical assets into ZIP tests: extend the tiny authored asset flow.
+Selection uses selective SFF v1/v2 portraits and link dependencies; gameplay
+still loads the complete archive. Connected ZIP/portrait/menu lifecycles pass
+with race detection; rebuilt Linux ZIP startup and signal cleanup were observed.
+Options Game Speed updates the live scheduler and subsequent match clock.
 
 TrueType references use the shared resource resolver; invalid banks share
 fallback glyph textures. Preserve trailerless shared-palette PCX pixels even
@@ -132,6 +136,12 @@ covered. Projectile-owner corner push remains intentionally excluded. Local YAML
 stays ignored; standalone music-file playback CLI remains deferred by user request.
 
 ## Keyboard checkpoint
+
+CMD [Remap] is a character-level logical-to-configured-button lookup after the
+keyboard adapter: x=a reads configured a for logical x; blank disables that
+logical slot. Use simultaneous snapshots for shared mappings and swaps. AI
+converts its logical plans back to physical inputs; key-controlled helpers use
+the same map. The connected human/helper/AI flow passes with race detection.
 
 YAML keyboard actions accept scalar names or lists of alternatives for either
 player. Lists replace one binding; omitted actions inherit; none/disabled/[]
