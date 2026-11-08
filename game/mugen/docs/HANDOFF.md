@@ -16,6 +16,9 @@ Current sprite/rendering batch (end-state validation pending):
 - True-color backgrounds now use the shared linear sampler; indexed sprites
   retain nearest sampling. The connected stage scenario replays native RGBA
   mask/scale samples, then mask changes, visibility and background reset.
+- Backgrounds, motifs and storyboards now realize texture/mask variants on
+  demand and share uploads for identical immutable pixel views. Hidden/disabled
+  layers do not upload frames. Replacing a background archive rebuilds its map.
 - Latest accepted media checkpoint764918190 retains bounded WAV/SFX playback,
   extensible PCM/float support, Linux KO/rematch/KO and completed race checks.
 

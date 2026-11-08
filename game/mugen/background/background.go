@@ -21,8 +21,10 @@ import (
 )
 
 type SpriteImages struct {
-	Masked *ebiten.Image
-	Opaque *ebiten.Image
+	Masked                     *ebiten.Image
+	Opaque                     *ebiten.Image
+	maskedPixels, opaquePixels image.Image
+	cache                      *SpriteCache
 }
 
 // Projection maps logical background coordinates directly to the destination
@@ -45,11 +47,12 @@ type Background struct {
 	BGClearColor color.Color
 	Controllers  []*BGCtrlDef
 	// SpriteData overrides the caller's shared archive for this background.
-	SpriteData *sff.SFF
-	LocalCoord coord.Space
-	CameraZoom float64    // zero retains the unzoomed motif/storyboard default
-	StageScale [2]float64 // zero retains unit scale outside stage rendering
-	sprites    map[string]*SpriteImages
+	SpriteData    *sff.SFF
+	LocalCoord    coord.Space
+	CameraZoom    float64    // zero retains the unzoomed motif/storyboard default
+	StageScale    [2]float64 // zero retains unit scale outside stage rendering
+	sprites       map[string]*SpriteImages
+	spriteArchive *sff.SFF
 }
 
 // DrawLayer selects this background's optional archive before drawing. GPU
@@ -70,19 +73,15 @@ func (b *Background) DrawLayerWithPaletteTint(screen *ebiten.Image, layer int, c
 	}
 	images := shared
 	if b.SpriteData != nil {
-		if b.sprites == nil {
+		if b.sprites == nil || b.spriteArchive != b.SpriteData {
+			b.spriteArchive = b.SpriteData
 			b.sprites = make(map[string]*SpriteImages)
+			var textures SpriteCache
 			for _, sprite := range b.SpriteData.Sprites {
 				if sprite.Image == nil {
 					continue
 				}
-				images := &SpriteImages{Masked: ebiten.NewImageFromImage(sprite.Image)}
-				if sprite.ImageOpaque != nil {
-					images.Opaque = ebiten.NewImageFromImage(sprite.ImageOpaque)
-				} else {
-					images.Opaque = images.Masked
-				}
-				b.sprites[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = images
+				b.sprites[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = textures.Pair(sprite.Image, sprite.ImageOpaque)
 			}
 		}
 		images = b.sprites
@@ -454,7 +453,7 @@ func (e *NormalElement) DrawReflection(screen *ebiten.Image, cameraX, cameraY, z
 }
 
 func (e *NormalElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages) {
-	if e.Sprite == nil {
+	if e.Sprite == nil || !e.Visible || !e.Enabled {
 		return
 	}
 	e.spriteSampling(e.Sprite)
@@ -465,10 +464,7 @@ func (e *NormalElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset flo
 		return
 	}
 
-	img := si.Masked
-	if !e.Mask {
-		img = si.Opaque
-	}
+	img := si.Image(e.Mask)
 
 	e.draw(screen, img, int(e.Sprite.XAxis), int(e.Sprite.YAxis), cameraX, cameraY, zOffset)
 }
@@ -523,7 +519,7 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset 
 }
 
 func (e *AnimationElement) drawFrame(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages, parallax *ParallaxElement) {
-	if e.Player == nil {
+	if e.Player == nil || !e.Visible || !e.Enabled {
 		return
 	}
 
@@ -560,7 +556,7 @@ func (e *AnimationElement) drawFrame(screen *ebiten.Image, cameraX, cameraY, zOf
 		}
 	}
 
-	img := si.Masked // Anim and animated parallax are always masked.
+	img := si.Image(true) // Anim and animated parallax are always masked.
 
 	// Combine flips
 	oldFlip := e.Flip
@@ -616,6 +612,9 @@ func (e *ParallaxElement) DrawReflection(screen *ebiten.Image, cameraX, cameraY,
 }
 
 func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset float64, sprites map[string]*SpriteImages) {
+	if !e.Visible || !e.Enabled {
+		return
+	}
 	if e.Player != nil {
 		e.drawFrame(screen, cameraX, cameraY, zOffset, sprites, e)
 		return
@@ -624,10 +623,7 @@ func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset f
 		e.spriteSampling(e.Sprite)
 		si, ok := sprites[fmt.Sprintf("%d-%d", e.Sprite.GroupNumber, e.Sprite.ImageNumber)]
 		if ok {
-			img := si.Masked
-			if !e.Mask {
-				img = si.Opaque
-			}
+			img := si.Image(e.Mask)
 			e.drawWithBlending(screen, img, int(e.Sprite.XAxis), int(e.Sprite.YAxis), cameraX, cameraY, zOffset, e.Trans, e.Alpha, e)
 		}
 	}

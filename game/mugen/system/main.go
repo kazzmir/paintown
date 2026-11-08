@@ -214,21 +214,13 @@ func run() (runErr error) {
 		return err
 	}
 
-	// Cache sprites
+	// Keep CPU sprite views; upload only sprites/mask modes that actually draw.
 	if m.SpriteData != nil {
-		fmt.Printf("Caching %d sprites from motif...\n", len(m.SpriteData.Sprites))
+		var textures background.SpriteCache
 		for _, spr := range m.SpriteData.Sprites {
 			if spr.Image != nil {
 				key := fmt.Sprintf("%d-%d", spr.GroupNumber, spr.ImageNumber)
-				si := &background.SpriteImages{
-					Masked: ebiten.NewImageFromImage(spr.Image),
-				}
-				if spr.ImageOpaque != nil {
-					si.Opaque = ebiten.NewImageFromImage(spr.ImageOpaque)
-				} else {
-					si.Opaque = si.Masked
-				}
-				engine.sprites[key] = si
+				engine.sprites[key] = textures.Pair(spr.Image, spr.ImageOpaque)
 			}
 		}
 	}

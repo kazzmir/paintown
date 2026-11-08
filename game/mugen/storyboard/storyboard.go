@@ -166,7 +166,7 @@ func (l *Layer) Draw(screen *ebiten.Image, defaultX, defaultY float64) {
 	if !ok {
 		return
 	}
-	img := si.Masked
+	img := si.Image(true)
 	if img == nil {
 		return
 	}
@@ -334,17 +334,12 @@ func (s *Storyboard) prepareImages() {
 	}
 	if s.SpriteMap == nil {
 		s.SpriteMap = make(map[string]*background.SpriteImages)
+		var textures background.SpriteCache
 		for _, sprite := range s.Sprites {
 			if sprite.Image == nil {
 				continue
 			}
-			pair := &background.SpriteImages{Masked: ebiten.NewImageFromImage(sprite.Image)}
-			if sprite.ImageOpaque != nil {
-				pair.Opaque = ebiten.NewImageFromImage(sprite.ImageOpaque)
-			} else {
-				pair.Opaque = pair.Masked
-			}
-			s.SpriteMap[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = pair
+			s.SpriteMap[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = textures.Pair(sprite.Image, sprite.ImageOpaque)
 		}
 	}
 	for _, scene := range s.Scenes {

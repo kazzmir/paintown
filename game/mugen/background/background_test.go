@@ -47,13 +47,13 @@ func TestBackgroundArchiveOwnershipAndLayers(t *testing.T) {
 	archive := &sff.SFF{Sprites: []sff.Sprite{{Image: image.NewRGBA(image.Rect(0, 0, 3, 1)), ImageOpaque: image.NewRGBA(image.Rect(0, 0, 3, 1))}}}
 	b := &Background{SpriteData: archive, Elements: []Element{back, front}}
 	b.DrawLayer(nil, 0, 0, 0, 0, shared)
-	if back.calls != 1 || front.calls != 0 || back.seen["0-0"] == shared["0-0"] || back.seen["0-0"].Masked.Bounds().Dx() != 3 {
+	if back.calls != 1 || front.calls != 0 || back.seen["0-0"] == shared["0-0"] || back.seen["0-0"].Image(true).Bounds().Dx() != 3 {
 		t.Fatal("background did not select its archive for the requested layer")
 	}
 	owned := back.seen["0-0"]
 	b.DrawLayer(nil, 1, 0, 0, 0, shared)
 	b.DrawLayer(nil, 0, 0, 0, 0, shared)
-	if front.calls != 1 || back.calls != 2 || back.seen["0-0"] != owned || front.seen["0-0"] != owned || owned.Opaque == owned.Masked {
+	if front.calls != 1 || back.calls != 2 || back.seen["0-0"] != owned || front.seen["0-0"] != owned || owned.Image(false) == owned.Image(true) {
 		t.Fatal("background phases did not share their own masked/opaque cache")
 	}
 	owned.Masked.Dispose()
