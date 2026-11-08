@@ -7,31 +7,18 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Current palette/AfterImage batch (validated):
+Current legacy-asset batch (end-state validation pending):
 
-- Palette state now distinguishes mapping changes from shader effect changes.
-  Actor/effect textures track MappingRevision; PalFX/HitDef color effects keep
-  their ordinary revision and clocks without forcing a base-image upload.
-  Legacy initial-outfit portrait policy also invalidates mapping pixels.
-- Fighter/HUD cache entries now share immutable mapped pixels. The connected
-  outfit/reset scenario renders local PalFX beside an unaffected HUD sprite,
-  then expires the effect without changing the mapping revision.
-- AfterImage poses now save their AIR element tick, preserving interpolated
-  offsets/scales/angles after the live animation changes. One beta flow has
-  five retained marker runs at124/146/168/190/212; the connected stage scenario
-  continues through Pause, drain/resume and a real round reset.
-- AfterImage now snapshots mappings only and reuses them across local effect
-  changes. A real RemapPal creates an independent historical outfit; pose
-  offsets use fixed storage instead of allocating a slice per recorded frame.
-  Existing recording coverage spans effect changes, expiry/resume, Pause and
-  remapping without changing historical colors.
-- Existing palette/cache regressions and all four changed-source segments pass
-  with race detection; state-flow stays checked. Linux rebuilt and matches the
-  five beta pose runs after an animation change. Owned clients exited; all
-  current native/app captures, overlays, logs and helper scratch were removed.
-  Local YAML and root module hashes are unchanged. This is bounded acceptance,
-  not whole-renderer parity.
-- Prior ca131d22c provides native RGBA mask/upload/filtering behavior, lazy shared
+- PCX now decodes runs directly into visible rows, discarding padding without
+  allocating a second full decoded plane. Cross-row runs and trailerless shared
+  palettes are retained; visible indices outside a supplied palette are errors.
+- Next: apply the archive-wide decode budget to V1, repair legacy font metadata
+  parsing and cover failure/correction through the existing connected asset flow.
+- Prior a51b2146b retains mapping-specific texture revisions, shared fighter/HUD
+  pixels and AfterImage interpolation/outfit snapshots. Four affected segments
+  and palette/cache regressions passed with race detection; Linux matched five
+  beta trail positions. Native/app scratch was removed.
+- Prior ca131d22c retains native RGBA mask/upload/filtering behavior, lazy shared
   BG/storyboard textures and sprite indexes. Linux matched40 fixed beta samples.
 
 Prior 764918190 retains bounded WAV/SFX playback, extensible PCM/float support,

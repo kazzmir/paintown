@@ -1,7 +1,6 @@
 package sff
 
 import (
-	"bytes"
 	"encoding/binary"
 	"fmt"
 	"image"
@@ -19,31 +18,10 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 // bytes can coincidentally contain 0x0c at the usual trailer offset, so only
 // strip a trailer when the enclosing archive declares an embedded palette.
 func decodePCX(data []byte, palette color.Palette, embeddedPalette bool) (*image.Paletted, error) {
-	if len(data) < 128 {
-		return nil, fmt.Errorf("data too short for PCX header")
+	width, height, bytesPerLine, err := pcxLayout(data)
+	if err != nil {
+		return nil, err
 	}
-	if data[0] != 10 || data[3] != 8 || data[65] != 1 || data[2] > 1 {
-		return nil, fmt.Errorf("unsupported PCX format: manufacturer=%d encoding=%d bits=%d planes=%d", data[0], data[2], data[3], data[65])
-	}
-
-	// Read dimensions from header
-	xmin := int(binary.LittleEndian.Uint16(data[4:6]))
-	ymin := int(binary.LittleEndian.Uint16(data[6:8]))
-	xmax := int(binary.LittleEndian.Uint16(data[8:10]))
-	ymax := int(binary.LittleEndian.Uint16(data[10:12]))
-
-	width := xmax - xmin + 1
-	height := ymax - ymin + 1
-
-	if width <= 0 || height <= 0 || width > 10000 || height > 10000 {
-		return nil, fmt.Errorf("invalid PCX dimensions: %dx%d", width, height)
-	}
-
-	bytesPerLine := int(binary.LittleEndian.Uint16(data[66:68]))
-	if bytesPerLine < width || int64(bytesPerLine)*int64(height) > maxSpritePixels {
-		return nil, fmt.Errorf("invalid PCX row size %d for %dx%d", bytesPerLine, width, height)
-	}
-
 	if palette == nil {
 		palette = make(color.Palette, 256)
 		for i := range palette {
@@ -52,51 +30,77 @@ func decodePCX(data []byte, palette color.Palette, embeddedPalette bool) (*image
 	}
 
 	img := image.NewPaletted(image.Rect(0, 0, width, height), palette)
-
-	// Decode RLE
 	pixelEnd := len(data)
 	if embeddedPalette && len(data) >= 897 && data[len(data)-769] == 12 {
 		pixelEnd -= 769
 	}
-	r := bytes.NewReader(data[128:pixelEnd])
-
-	expectedBytes := bytesPerLine * height
-	pixelData := make([]byte, expectedBytes)
-	idx := 0
-
-	for idx < expectedBytes {
-		b, err := r.ReadByte()
-		if err != nil {
-			return nil, fmt.Errorf("PCX pixels: %w", err)
+	position, decoded := 128, 0
+	expected := bytesPerLine * height
+	for decoded < expected {
+		if position >= pixelEnd {
+			return nil, fmt.Errorf("PCX pixels: %w", io.ErrUnexpectedEOF)
 		}
-
-		if data[2] == 1 && (b&0xC0) == 0xC0 {
-			runLength := int(b & 0x3F)
-			if runLength == 0 || runLength > expectedBytes-idx {
-				return nil, fmt.Errorf("invalid PCX run length %d", runLength)
+		value, count := data[position], 1
+		position++
+		if data[2] == 1 && value&0xc0 == 0xc0 {
+			count = int(value & 0x3f)
+			if count == 0 || count > expected-decoded {
+				return nil, fmt.Errorf("invalid PCX run length %d", count)
 			}
-			colorByte, err := r.ReadByte()
-			if err != nil {
-				return nil, fmt.Errorf("PCX run: %w", err)
+			if position >= pixelEnd {
+				return nil, fmt.Errorf("PCX run: %w", io.ErrUnexpectedEOF)
 			}
-			for i := 0; i < runLength && idx < expectedBytes; i++ {
-				pixelData[idx] = colorByte
-				idx++
+			value = data[position]
+			position++
+		}
+		// Consume row padding without retaining a second full decoded plane.
+		// A run may span padding and the next row, as in legacy SFF tools.
+		for count > 0 {
+			row, column := decoded/bytesPerLine, decoded%bytesPerLine
+			span := min(count, bytesPerLine-column)
+			if column < width {
+				if int(value) >= len(palette) {
+					return nil, fmt.Errorf("PCX row %d: pixel index %d outside palette of %d colors", row, value, len(palette))
+				}
+				pixels := img.Pix[row*img.Stride+column : row*img.Stride+column+min(span, width-column)]
+				for i := range pixels {
+					pixels[i] = value
+				}
 			}
-		} else {
-			pixelData[idx] = b
-			idx++
+			decoded += span
+			count -= span
 		}
 	}
-
-	for y := 0; y < height; y++ {
-		srcStart := y * bytesPerLine
-		dstStart := y * img.Stride
-		// copy up to width bytes (bytesPerLine is often padded to even number)
-		copy(img.Pix[dstStart:dstStart+width], pixelData[srcStart:srcStart+width])
-	}
-
 	return img, nil
+}
+
+// pcxLayout validates dimensions before callers allocate decoded pixels.
+func pcxLayout(data []byte) (width, height, bytesPerLine int, err error) {
+	if len(data) < 128 {
+		return 0, 0, 0, fmt.Errorf("data too short for PCX header")
+	}
+	if data[0] != 10 || data[3] != 8 || data[65] != 1 || data[2] > 1 {
+		return 0, 0, 0, fmt.Errorf("unsupported PCX format: manufacturer=%d encoding=%d bits=%d planes=%d", data[0], data[2], data[3], data[65])
+	}
+
+	// Read dimensions from header
+	xmin := int(binary.LittleEndian.Uint16(data[4:6]))
+	ymin := int(binary.LittleEndian.Uint16(data[6:8]))
+	xmax := int(binary.LittleEndian.Uint16(data[8:10]))
+	ymax := int(binary.LittleEndian.Uint16(data[10:12]))
+
+	width = xmax - xmin + 1
+	height = ymax - ymin + 1
+
+	if width <= 0 || height <= 0 || width > 10000 || height > 10000 {
+		return 0, 0, 0, fmt.Errorf("invalid PCX dimensions: %dx%d", width, height)
+	}
+
+	bytesPerLine = int(binary.LittleEndian.Uint16(data[66:68]))
+	if bytesPerLine < width || int64(bytesPerLine)*int64(height) > maxSpritePixels {
+		return 0, 0, 0, fmt.Errorf("invalid PCX row size %d for %dx%d", bytesPerLine, width, height)
+	}
+	return width, height, bytesPerLine, nil
 }
 
 // ExtractPalette reads the 768-byte palette from the end of the PCX payload.
