@@ -35,7 +35,10 @@ func ReadWAVHeader(r io.ReadSeeker) (*Wave, error) {
 		return nil, fmt.Errorf("invalid RIFF/WAVE header")
 	}
 	end := int64(binary.LittleEndian.Uint32(header[4:8])) + 8
-	if end < 12 || end > fileSize {
+	// Some legacy SND writers include a final odd-chunk alignment byte in
+	// the RIFF length but omit that byte from the embedded payload. Allow
+	// that one byte only; chunk data itself must still fit the physical file.
+	if end < 12 || end > fileSize+1 {
 		return nil, fmt.Errorf("RIFF length %d outside payload %d", end, fileSize)
 	}
 	wave := &Wave{}
@@ -53,7 +56,7 @@ func ReadWAVHeader(r io.ReadSeeker) (*Wave, error) {
 			return nil, err
 		}
 		size := int64(binary.LittleEndian.Uint32(entry[4:]))
-		if size > end-offset-8 {
+		if size > min(end, fileSize)-offset-8 {
 			return nil, fmt.Errorf("WAV chunk %q exceeds RIFF length", entry[:4])
 		}
 		switch string(entry[:4]) {

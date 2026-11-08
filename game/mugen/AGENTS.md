@@ -216,6 +216,28 @@ seven-segment device acceptance in native and Go, including the quiet interval;
 Go cue levels match exactly and relative-start differences stay within the
 unchanged native capture criterion. The historical gap no longer reproduces,
 so no KO scheduler edit was needed. The known-difference batch is complete.
-Stop here for the user before compatibility/deferred work. Preserve exact
-expectations; do not create new image banks/matrices or treat unverified
+The user subsequently supplied sf2_mugen for a compatibility assessment. Preserve
+exact expectations; do not create new image banks/matrices or treat unverified
 permutations as known failures. Owned scratch was inspected and removed.
+
+## SF2 compatibility assessment — 2026-11-08
+
+The user supplied temp/sf2_mugen (and its ZIP). Its executable is byte-identical
+to the beta reference; the motif and many characters are legacy content. Preserve
+that pack/configuration/assets and its bundled executable in ignored storage.
+The first compatibility batch fixes Scene-prefixed storyboard backgrounds being
+misread as scenes, explicit empty roster slots and missing final WAV pad bytes.
+Named Scene identifiers still work; empty slots retain positions and cannot pick
+random fighters; WAV sample data must still fit physical bounds. Existing asset
+flows and SND bounds checks cover these paths; affected match-flow/SND pass with
+races. Other four segments stay checked. app_smoke input recipes can now navigate
+menus as well as quick matches, always targeting the owned window.
+
+Observed: SF2 intro/title/selection/portraits and music run. Matches still stop
+loading data/mugen1/font/sf2win.fnt: Type=Fixed, Size=22,10, image398x10; map also
+contains explicit variable positions, but sequential fixed glyph T starts at418.
+Do not reinterpret Fixed as Variable or alter the supplied pack without checking
+native font behavior. Custom selection layout/cursors/portrait presentation also
+remain incomplete; character gameplay has not been validated. PROGRESS.md keeps
+this concrete blocker in the existing partial asset row. Scratch was inspected
+and removed; only shared cache and the single ignored Go binary remain.

@@ -110,6 +110,7 @@ font3=legacy.fnt
 [Scene 0]
 end.time=12
 clearcolor=0,0,0
+bg.name=Scene0bg
 fadein.time=2
 fadein.col=200,80,40
 window=20,20,160,120
@@ -149,9 +150,12 @@ layer3.text="A;A"
 layer3.font=3,0,1
 layer3.offset=100,100
 layer3.starttime=2
-[Scene 2]
+[Scene Ending]
 end.time=3
 clearcolor=12,24,36
+[Scene0bgDef]
+[Scene0bg origin]
+type=dummy
 [Begin Action 700]
 Interpolate Offset
 Interpolate Scale
@@ -171,6 +175,9 @@ Interpolate Blend
 	story, err := sb.Load(path, root)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if len(story.Scenes) != 3 || story.Scenes[2].Name != "Scene Ending" || story.Scenes[0].Background == nil || len(story.Scenes[0].Background.Elements) != 1 {
+		t.Fatal("legacy scene-prefixed background was mistaken for a scene")
 	}
 	for _, f := range story.Fonts[1:3] {
 		if f == nil || f.Fallback != "" || f.TextWidth("AVé") <= 0 || f.TextWidth("AVé") > 80 || f.Glyph('é', 314) == nil {
@@ -662,7 +669,7 @@ layer0.offset=80,80
 	}
 	stagePath := filepath.Join(stageDir, "kfm.def")
 	selectPath := filepath.Join(dir, "packed select.def")
-	selectText := fmt.Sprintf("[Characters]\n\"%s\", stages/kfm.def\n\"%s:alternate.def\", random\nrandomselect\n[ExtraStages]\n\"%s\"\n[Options]\narcade.maxmatches=1\n", pack, pack, stagePath)
+	selectText := fmt.Sprintf("[Characters]\n\"%s\", stages/kfm.def\n\"%s:alternate.def\", random\nempty\nEmPtY\nrandomselect\n[ExtraStages]\n\"%s\"\n[Options]\narcade.maxmatches=1\n", pack, pack, stagePath)
 	if err := os.WriteFile(selectPath, []byte(selectText), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -670,8 +677,11 @@ layer0.offset=80,80
 	e.motif.Files.Select = selectPath
 	t.Cleanup(func() { e.motif.Files.Select = previousSelect })
 	selection := NewSelectState(e, "Arcade Mode")
-	if selection.loadError != nil || len(selection.chars) != 3 || len(selection.stages) != 2 || selection.stages[1] != stagePath {
+	if selection.loadError != nil || len(selection.chars) != 5 || len(selection.stages) != 2 || selection.stages[1] != stagePath {
 		t.Fatal("packed character/stage filenames did not reach selection", selection.loadError, selection.stages)
+	}
+	if !selection.chars[2].Empty || !selection.chars[3].Empty || selection.charAt(2, 0) != nil || selection.chosen(2, 0) != nil || selection.chosen(4, 0) == nil {
+		t.Fatal("empty slots shifted the roster or became random selections")
 	}
 	first, alternate := selection.chars[0], selection.chars[1]
 	if first.SmallPortrait == nil || first.BigPortrait == nil || alternate.Name != "Packed alternate" || filepath.Dir(first.DefPath) != filepath.Dir(alternate.DefPath) || first.IntroStoryboard == "" || first.EndingStoryboard == "" {

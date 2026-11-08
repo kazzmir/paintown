@@ -114,7 +114,9 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 				}
 			}
 
-		case strings.HasPrefix(name, "scene"):
+		// Scene identifiers follow the separate "Scene" word. Legacy
+		// backgrounds such as Scene0bgDef and Scene0bg must stay backgrounds.
+		case strings.HasPrefix(name, "scene ") || strings.HasPrefix(name, "scene\t"):
 			scene := &SceneDef{
 				Name:   sec.Name,
 				Line:   sec.Line,

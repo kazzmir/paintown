@@ -15,6 +15,7 @@ import (
 
 type CharacterPortrait struct {
 	Name, DefPath, IntroStoryboard, EndingStoryboard string
+	Empty                                            bool
 	Entry                                            parsers.CharacterEntry
 	SmallPortrait, BigPortrait                       *ebiten.Image
 }
@@ -40,6 +41,13 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 	}
 	for _, entry := range sd.Characters {
 		cp := &CharacterPortrait{Name: entry.Name, Entry: *entry}
+		if strings.EqualFold(entry.Name, "empty") {
+			// Keep the grid position without resolving a character or adding
+			// its stage/music to the playable roster.
+			cp.Name, cp.Empty = "", true
+			chars = append(chars, cp)
+			continue
+		}
 		if strings.EqualFold(entry.Name, "randomselect") {
 			cp.Name = "Random"
 			chars = append(chars, cp)

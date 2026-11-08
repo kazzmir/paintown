@@ -5,8 +5,26 @@ four checked known-difference checkpoints. Local source/text commits are
 authorized; no pushes, binaries, generated banks or tracked user configuration.
 Author only game/mugen/ and preserve unrelated/untracked work.
 
-The user-requested known-difference batch is complete. Stop for the user before
-starting compatibility and deferred work.
+The prior known-difference batch is complete. The user then supplied sf2_mugen
+for the first compatibility assessment; its executable matches the beta reference.
+
+Current SF2 checkpoint:
+- Fixed legacy Scene0bgDef/Scene0bg recognition, explicit empty roster slots and
+  WAVs counting one omitted final alignment byte. Actual sample truncation stays
+  rejected. Existing asset/packed-selection flows retain these cases; affected
+  match-flow and SND checks pass with races. Other segments stay checked.
+- Original pack intro/title, roster/portraits and music run in Linux. Its config
+  selects data/mugen1/system.def. The README has the data-root launch command.
+- Full fights still fail at data/mugen1/font/sf2win.fnt: Type=Fixed, Size=22,10,
+  image398x10, with variable-style coordinate columns. Sequential fixed glyph T
+  starts at418. Next establish native glyph/bounds behavior before relaxing
+  font loading; do not simply relabel the font or edit the pack. Balrog/Vega
+  gameplay remains unvalidated. Selection layout/cursor/portrait fidelity also
+  needs compatibility work. A missing sound/blank.mp3 is a nonfatal pack warning.
+- Pack, ZIP, bundled executable and user YAML are preserved. Scratch captures,
+  PCM, overlays and input recipes were inspected/removed. No new fixture bank.
+
+Prior closed scope:
 
 - Camera: preserve the unclipped participant midpoint before final stage limits.
   All eleven beta camera/zoom samples match through time 120 (X 80.6977).

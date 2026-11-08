@@ -66,8 +66,8 @@ def main():
     input_recipe = None
     if args.input_recipe is not None:
         path = args.input_recipe.resolve()
-        if args.stock_input or not args.match or not path.is_relative_to(project):
-            parser.error('A fixture input recipe requires a quick match, a path under mugen/, and no stock input')
+        if args.stock_input or not path.is_relative_to(project):
+            parser.error('An input recipe requires a path under mugen/ and no stock input')
         input_recipe = json.loads(path.read_text())
         when = input_recipe['settle_seconds']
         if not isinstance(when, (int, float)) or not math.isfinite(when) or not 0 <= when <= 30:

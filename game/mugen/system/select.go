@@ -133,7 +133,7 @@ func (s *SelectState) wrap(x, max int) int {
 // charAt returns the character at grid position (col, row), or nil.
 func (s *SelectState) charAt(col, row int) *CharacterPortrait {
 	idx := row*s.cols() + col
-	if idx < 0 || idx >= len(s.chars) {
+	if idx < 0 || idx >= len(s.chars) || s.chars[idx].Empty {
 		return nil
 	}
 	return s.chars[idx]
@@ -274,7 +274,10 @@ func (s *SelectState) confirm(slot int) (int, bool) {
 
 func (s *SelectState) chosen(col, row int) *CharacterPortrait {
 	ch := s.charAt(col, row)
-	if ch != nil && ch.DefPath != "" {
+	if ch == nil {
+		return nil
+	}
+	if ch.DefPath != "" {
 		return ch
 	}
 	var available []*CharacterPortrait

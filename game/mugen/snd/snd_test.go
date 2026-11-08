@@ -45,7 +45,12 @@ func TestPCMSampleDecoding(t *testing.T) {
 		{"float64", 3, 1, 64, []byte{0, 0, 0, 0, 0, 0, 224, 63}, []float32{.5}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			wave, err := ParseWAV(waveFixture(tc.format, tc.channels, tc.bits, tc.data))
+			data := waveFixture(tc.format, tc.channels, tc.bits, tc.data)
+			if len(tc.data)&1 != 0 {
+				// Legacy archives may count the final pad without storing it.
+				binary.LittleEndian.PutUint32(data[4:], uint32(len(data)-8+1))
+			}
+			wave, err := ParseWAV(data)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -80,6 +85,7 @@ func TestPCMSampleDecoding(t *testing.T) {
 
 func tinySND() []byte {
 	wave := waveFixture(1, 1, 8, []byte{0, 128, 255})
+	binary.LittleEndian.PutUint32(wave[4:], uint32(len(wave)-8+1))
 	b := make([]byte, 512+16)
 	copy(b, []byte("ElecbyteSnd"))
 	binary.LittleEndian.PutUint32(b[12:], 4)
@@ -137,6 +143,7 @@ func TestSNDBoundsAndTail(t *testing.T) {
 func TestWaveRejectsMalformedChunks(t *testing.T) {
 	for _, mutate := range []func([]byte) []byte{
 		func(b []byte) []byte { return b[:11] },
+		func(b []byte) []byte { return b[:len(b)-1] }, // a missing sample is not an omitted pad
 		func(b []byte) []byte { binary.LittleEndian.PutUint32(b[4:], 0xffffffff); return b },
 		func(b []byte) []byte { binary.LittleEndian.PutUint32(b[16:], 0xffffffff); return b },
 		func(b []byte) []byte { b[34] = 0; return b }, // sample-rate/byte-rate mismatch

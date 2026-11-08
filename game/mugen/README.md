@@ -37,6 +37,16 @@ Launch the title/menu and character/stage selection:
 game/mugen/mugen.sh --game --data-dir game/mugen/temp/mugen-1.1b1
 ```
 
+A complete pack can be used as its own data root. Its `data/mugen.cfg` selects
+the motif, which supplies the character/stage list and presentation assets:
+
+```bash
+game/mugen/mugen.sh --game --data-dir game/mugen/temp/sf2_mugen
+```
+
+Pack defaults and local YAML overrides determine the controls. Compatibility
+findings for the supplied SF2 pack are recorded in the [progress ledger](docs/PROGRESS.md).
+
 Stages belong under the selected data root's `stages/` directory, but the menu
 uses a selection list rather than scanning that directory. Add each stage DEF
 under `[ExtraStages]` in the active motif's `select.def`. With the supplied

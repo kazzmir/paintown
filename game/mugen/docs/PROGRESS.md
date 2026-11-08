@@ -76,7 +76,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; legacy-font native equivalence, native asset-rejection and exact raster parity remain unproven. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Supplied sf2_mugen startup, title, selection/portraits and music run, but fights are blocked by sf2win.fnt: its fixed-width map reaches beyond the PCX image. Native handling of these fixed-font maps needs a focused compatibility check; character gameplay is not yet validated. Custom selection cell/cursor/portrait presentation also remains incomplete. Physical CD (.da) playback is unavailable; missing licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven. (item4)
 - [ ] Remaining native rendering, audio and AI fidelity. **partial** — Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms

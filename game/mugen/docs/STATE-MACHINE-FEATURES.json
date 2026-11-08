@@ -217,9 +217,11 @@
         "system/options.go:NewOptionsState",
         "config/extended.go:UnmarshalYAML",
         "config/keys.go:SetBindings",
-        "input/manager.go:matchAction"
+        "input/manager.go:matchAction",
+        "system/charloader.go",
+        "system/select.go"
       ],
-      "validation": "Connected title/options/selection/match flow covers live Game Speed scheduler updates and inherited match clocks, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit. Packed ending/title return retires expanded files; reopening selection reloads fresh portraits/paths without deleting the source ZIP. Match-flow passes with race detection."
+      "validation": "Connected title/options/selection/match flow covers live Game Speed scheduler updates and inherited match clocks, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit. Packed ending/title return retires expanded files; reopening selection reloads fresh portraits/paths without deleting the source ZIP. Match-flow passes with race detection. Legacy empty slots retain their grid positions, load no character assets and cannot become random picks; explicit randomselect still resolves playable entries. The existing packed selection-to-match lifecycle covers both forms. SF2 pack roster/portraits reach the selection screen; custom screenpack layout/cursor fidelity is not established."
     },
     {
       "id": "announcements",
@@ -319,9 +321,10 @@
       "allocation": "item3",
       "sources": [
         "system/storyboard_state.go",
-        "storyboard/storyboard.go:DrawToWindow"
+        "storyboard/storyboard.go:DrawToWindow",
+        "parsers/storyboard.go"
       ],
-      "validation": "Connected asset lifecycle spans a partially opaque colored fade, animated/text/sound scene, clearcolor=-1 scene transition and blank ticks retaining prior pixels, repeated presentation without re-blending, explicit clear replacement and exit. Content composes once per simulation tick; fade RGB is premultiplied and one reusable texel replaces full-canvas allocations. Match-flow passes with race detection. Linux rebuilt and owned-window KO/rematch/KO inspected; scratch removed."
+      "validation": "Connected asset lifecycle spans a partially opaque colored fade, animated/text/sound scene, clearcolor=-1 scene transition and blank ticks retaining prior pixels, repeated presentation without re-blending, explicit clear replacement and exit. Content composes once per simulation tick; fade RGB is premultiplied and one reusable texel replaces full-canvas allocations. Match-flow passes with race detection. Linux rebuilt and owned-window KO/rematch/KO inspected; scratch removed. Scene sections require the separate Scene word and accept named identifiers; Scene0bgDef/Scene0bg remain background sections. The connected asset lifecycle loads one such background and a named ending scene. Supplied SF2 logo/intro/title run with music on Linux."
     },
     {
       "id": "bgm",
@@ -344,7 +347,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; legacy-font native equivalence, native asset-rejection and exact raster parity remain unproven.",
+      "gap": "Supplied sf2_mugen startup, title, selection/portraits and music run, but fights are blocked by sf2win.fnt: its fixed-width map reaches beyond the PCX image. Native handling of these fixed-font maps needs a focused compatibility check; character gameplay is not yet validated. Custom selection cell/cursor/portrait presentation also remains incomplete. Physical CD (.da) playback is unavailable; missing licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -368,7 +371,7 @@
         "background/sprites.go:Image",
         "sff/sff.go:parseWithSelection"
       ],
-      "validation": "Connected asset flow covers V1 commented font settings/maps, padded PCX rows, font bank changes across retained scenes, packed sprite failure/correction, outfits and round reset. PCX retains one decoded plane; V1 shares the V2 total pixel budget, charging linked sources once. Existing SFF/font regressions and affected match-flow pass with race detection; other segments stay checked. Rebuilt Linux displays both authored font banks with expected pixel colors. The beta displayed the scene background but no authored glyphs, so this case does not establish native font equivalence. All current native/app scratch was removed."
+      "validation": "Connected asset flow covers V1 commented font settings/maps, padded PCX rows, font bank changes across retained scenes, packed sprite failure/correction, outfits and round reset. PCX retains one decoded plane; V1 shares the V2 total pixel budget, charging linked sources once. Existing SFF/font regressions and affected match-flow pass with race detection; other segments stay checked. Rebuilt Linux displays both authored font banks with expected pixel colors. The beta displayed the scene background but no authored glyphs, so this case does not establish native font equivalence. All current native/app scratch was removed. SF2 pack mugen.exe is byte-identical to the supplied 1.1 Beta 1 P1 reference (SHA256 d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e), while several character DEFs target 2000/2001. Legacy storyboard BG headers, empty roster slots and odd final WAV padding are corrected. A complete final odd chunk may omit its one counted alignment byte; truncated sample payloads still fail. Existing SND decoding/archive/bounds checks and the affected match-flow segment pass with race detection. Linux startup/title/selection music were captured; an unmodified Balrog/Vega fight stops at the font before gameplay. Only owned scratch was removed; supplied pack, ZIP, executable and user configuration were preserved."
     },
     {
       "id": "raster-audio",
@@ -724,7 +727,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1d5347d22490606272cc0be23970fc1465dc49e226c34c496cc5adad76a929d2"
+      "passed_source": "52c7e625db95f6e331d615764d55e23a0d69614fcb497352249166699ccfde58"
     }
   ],
   "presentation_followups": [
@@ -732,7 +735,8 @@
     "Ordinary KO-echo gap is closed for the existing acceptance: both current native and Go device captures yield all seven segments and three native cue levels, including the quiet interval. The historical mismatch no longer reproduces on the current mixer/decoder; preserve the scheduler and original tolerances. Sample-exact device synchronization remains unverified.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
-    "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity."
+    "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
+    "SF2 compatibility assessment: same beta reference executable; old-content startup/title/selection/music work after storyboard BG, empty-slot and SND-padding fixes. Full fights remain blocked by fixed-width sf2win.fnt glyph bounds. Character gameplay and authored selection presentation remain open; do not change the pack to conceal these gaps."
   ],
   "known_differences": [
     {
