@@ -14,6 +14,7 @@ type afterImageFrame struct {
 	x, y         float64
 	facing       int
 	anim, elem   int
+	elemTime     int
 	frames       *air.Data
 	constants    *cns.CNS
 	angleEnabled bool
@@ -103,7 +104,8 @@ func (c *Character) advanceAfterImages() {
 		return
 	}
 	f := afterImageFrame{x: c.X, y: c.Y, facing: c.Facing, anim: c.GetAnim(), elem: c.AnimElem,
-		frames: c.AnimationFile(), constants: c.StateFile, angleEnabled: c.AngleDrawingEnabled,
+		elemTime: c.AnimElemTime,
+		frames:   c.AnimationFile(), constants: c.StateFile, angleEnabled: c.AngleDrawingEnabled,
 		angle: c.DrawAngle, scale: c.DrawScale, offset: append([]float64(nil), c.DrawOffset...),
 		visible: h.time > 0 || h.time == -1}
 	if f.visible && c.Palettes != nil {
@@ -166,6 +168,7 @@ func (p *Player) drawAfterImages(screen *ebiten.Image, c *Character, x, y, sx, s
 		snapshot := *c
 		snapshot.X, snapshot.Y, snapshot.Facing = f.x, f.y, f.facing
 		snapshot.Anim, snapshot.AnimElem, snapshot.animationFile = f.anim, f.elem, f.frames
+		snapshot.AnimElemTime = f.elemTime
 		snapshot.StateFile = f.constants
 		snapshot.Palettes = f.palettes
 		snapshot.AngleDrawingEnabled, snapshot.DrawAngle, snapshot.DrawScale = f.angleEnabled, f.angle, f.scale

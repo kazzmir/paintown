@@ -16,7 +16,11 @@ Current palette/AfterImage batch (end-state validation pending):
 - Fighter/HUD cache entries now share immutable mapped pixels. The connected
   outfit/reset scenario renders local PalFX beside an unaffected HUD sprite,
   then expires the effect without changing the mapping revision.
-- Continue through frozen AfterImage poses,
+- AfterImage poses now save their AIR element tick, preserving interpolated
+  offsets/scales/angles after the live animation changes. One beta flow has
+  five retained marker runs at124/146/168/190/212; the connected stage scenario
+  continues through Pause, drain/resume and a real round reset.
+- Continue through mapping-only history snapshots,
   then run affected connected scenarios once at the end of the batch.
 - Priorca131d22c provides native RGBA mask/upload/filtering behavior, lazy shared
   BG/storyboard textures and sprite indexes. Linux matched40 fixed beta samples.

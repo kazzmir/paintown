@@ -10,6 +10,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
@@ -1299,6 +1301,7 @@ y=0
 	}
 	cameraProjectionFlow(t, e, root)
 	rgbaBackgroundAssetFlow(t, root)
+	afterImageVisualFlow(t, root)
 }
 
 // Continue the stage lifecycle through native-confirmed PNG32/raw RGBA masks,
@@ -1596,5 +1599,250 @@ trigger1=1
 		if bounds(colors[1]) != wantBG {
 			t.Fatal("round reset lost BG compatibility/projection", legacy, bounds(colors[1]))
 		}
+	}
+}
+
+// One retained-pose lifecycle records AIR1.1 interpolation, changes animation,
+// freezes, drains/resumes the trail, then retires its state at a real round reset.
+func afterImageVisualFlow(t *testing.T, root string) {
+	t.Helper()
+	source, err := os.Open("../sff/testdata/formats.sff")
+	if err != nil {
+		t.Fatal(err)
+	}
+	archive, err := sff.Parse(source)
+	source.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	animations, err := air.Parse(strings.NewReader(`[Begin Action 0]
+-1,0,0,0,-1
+[Begin Action 700]
+0,4,0,0,20
+Interpolate Offset
+0,4,40,0,20
+[Begin Action 701]
+0,4,12,0,-1
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stageSource := fmt.Sprintf(`[Info]
+mugenversion=1.1
+[Camera]
+boundleft=0
+boundright=0
+boundhigh=0
+boundlow=0
+verticalfollow=0
+tension=60
+[PlayerInfo]
+p1startx=-100
+p2startx=100
+p1facing=1
+p2facing=-1
+leftbound=-1000
+rightbound=1000
+[Bound]
+screenleft=15
+screenright=15
+[StageInfo]
+localcoord=320,240
+zoffset=200
+[BGDef]
+spr=%q
+[BG Anchor]
+type=dummy
+`, filepath.Join(root, "stages/kfm.sff"))
+	path := filepath.Join(t.TempDir(), "trail.def")
+	if err := os.WriteFile(path, []byte(stageSource), 0600); err != nil {
+		t.Fatal(err)
+	}
+	selection := match.Selection{DefPath: filepath.Join(root, "chars/kfm/kfm.def"), Palette: 1}
+	m, err := match.New(match.Request{Players: [2]match.Selection{selection, selection}, StagePath: path, Mode: "versus"}, match.Options{RootDir: root, FightPath: "data/fight.def", GameSpace: coord.Default(), RoundTime: 99, LifePercent: 100, RandomSeed: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	const program = `[Statedef 5900]
+type=S
+movetype=I
+physics=N
+[State 5900, enter]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=0
+ctrl=1
+[State 0, begin]
+type=ChangeState
+trigger1=RoundState=2
+trigger1=TeamSide=1
+value=700
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=700
+ctrl=0
+velset=0,0
+[State 700, setup]
+type=AfterImage
+trigger1=Time=0
+time=-1
+length=6
+timegap=1
+framegap=1
+palcolor=256
+palbright=0,0,0
+palcontrast=256,256,256
+palpostbright=0,0,0
+paladd=0,0,0
+palmul=1,1,1
+trans=none
+[State 700, move]
+type=PosAdd
+trigger1=Time<=6
+x=20
+[State 700, height]
+type=PosSet
+trigger1=1
+y=-60
+[State 700, hold animation]
+type=ChangeAnim
+trigger1=Time=6
+value=701
+[State 700, observe]
+type=DisplayToClipboard
+trigger1=Time=6
+text="P0:%d,%d,%d,%d,%d,%d\n"
+params=Time,AnimElemTime(1),Pos X,CameraPos X,GameTime,RoundState
+[State 700, freeze]
+type=Pause
+trigger1=Time=6
+time=10000
+movetime=0
+[Statedef 8000]
+type=S
+movetype=I
+physics=N
+anim=701
+ctrl=0
+velset=0,0
+[State 8000, idle]
+type=Null
+trigger1=1
+[Statedef 180]
+type=S
+movetype=I
+physics=N
+anim=0
+ctrl=0
+[State 180, idle]
+type=Null
+trigger1=1
+[Statedef 5150]
+type=L
+movetype=H
+physics=N
+anim=0
+ctrl=0
+[State 5150, idle]
+type=Null
+trigger1=1
+`
+	for _, p := range m.Players {
+		file, err := cns.ParseNamed(strings.NewReader(program), "trail-flow.cns")
+		if err != nil {
+			t.Fatal(err)
+		}
+		file.SetLanguageVersion("1.1")
+		previous := p.Character.StateFile
+		file.Data, file.Size, file.Movement = previous.Data, previous.Size, previous.Movement
+		p.SFF, p.AIR, p.CMD = archive, animations, nil
+		p.Character.StateFile = file
+		p.Character.AirFile = animations
+		p.Character.Palettes = palette.New(archive)
+		p.Character.ChangeAnimation(0, 1)
+		p.Character.ChangeState(5900, -1, -1)
+	}
+	for tick := 0; tick < 700 && !m.Timeline.Paused(); tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !m.Timeline.Paused() {
+		t.Fatal("trail flow did not reach Pause")
+	}
+	canvas := ebiten.NewImage(320, 240)
+	defer canvas.Deallocate()
+	runs := func() [][2]int {
+		t.Helper()
+		canvas.Fill(color.NRGBA{255, 0, 255, 255})
+		character.DrawPlayers(canvas, m.Players, coord.Default(), 0, 200)
+		pixels := make([]byte, 320*240*4)
+		canvas.ReadPixels(pixels)
+		result := [][2]int{}
+		start := -1
+		for x := 0; x <= 320; x++ {
+			visible := x < 320 && pixels[(142*320+x)*4+2] == 75
+			if visible && start < 0 {
+				start = x
+			}
+			if !visible && start >= 0 {
+				result = append(result, [2]int{start, x})
+				start = -1
+			}
+		}
+		return result
+	}
+	// Observed in one beta interpolation/change-animation/Pause sequence.
+	want := [][2]int{{124, 132}, {146, 154}, {168, 176}, {190, 198}, {212, 220}}
+	if got := runs(); !slices.Equal(got, want) {
+		t.Fatal("native saved AIR pose positions", got, want)
+	}
+	for tick := 0; tick < 4; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := runs(); !slices.Equal(got, want) {
+		t.Fatal("paused trails changed their saved AIR clocks", got)
+	}
+	c := m.Players[0].Character
+	m.Timeline.ClearPauses()
+	c.ChangeState(8000, -1, -1)
+	c.SetAfterImageTime(0)
+	for tick := 0; tick < 8; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := runs(); !slices.Equal(got, [][2]int{{212, 220}}) {
+		t.Fatal("expired recording did not drain", got)
+	}
+	c.SetAfterImageTime(-1)
+	for tick := 0; tick < 3; tick++ {
+		c.X -= 20
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := runs(); len(got) < 2 {
+		t.Fatal("recording failed to resume", got)
+	}
+	old := c
+	m.Players[1].Character.SetLife(0)
+	m.Players[1].Character.ChangeState(5150, 0, -1)
+	for tick := 0; tick < 1100 && m.Round == 1; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if m.Round != 2 || m.Players[0].Character == old || m.Players[0].Character.HasAfterImage() {
+		t.Fatal("round reset retained trail history")
 	}
 }
