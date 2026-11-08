@@ -108,6 +108,34 @@ do not push their owner backward at the corner; direct and helper attacks can.
 `PosFreeze` stops velocity-driven movement while body push and CNS time continue.
 Pause/SuperPause use their separate actor clocks and movement allowances.
 
+### Adding characters
+
+Put character folders or ZIPs in your data directory's `chars/`, then add entries
+to the motif's `select.def` (normally `data/select.def`):
+
+```ini
+[Characters]
+fighter, stages/kfm.def
+fighter.zip, stages/kfm.def
+"other fighter.zip:Alternate.def", stages/kfm.def
+```
+
+`fighter.zip` uses `fighter.def` at the archive root. Use `pack.zip:path/file.def`
+for another DEF or a nested folder. Quoted filenames retain spaces; Windows
+separators and case-insensitive asset lookup work inside packs. Portraits,
+outfits, helpers, intros/endings and rematches use the same loaded pack.
+
+Quick matches also accept ZIP entries, for example:
+
+```bash
+game/mugen/mugen.sh --quick-match 'fighter.zip,other.zip:Alternate.def'
+```
+
+Each archive expands once into temporary storage and is reused until shutdown;
+normal exit, startup errors and handled termination remove its expanded files.
+The original ZIP is preserved. Packs support up to 1 GiB of expanded content and
+65,536 entries. No assets or local configuration files need to be added to Git.
+
 ### Keyboard overrides in mugen.yaml
 
 Place `mugen.yaml` in your selected `--data-dir`, alongside `data/`, `chars/` and

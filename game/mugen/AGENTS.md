@@ -90,6 +90,11 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 ## Latest asset checkpoints
 
+ZIP character references use an engine-owned CharacterPacks store. Selection,
+rosters and quick matches share expansions; Engine.Close stops sound readers
+before removing them. Preserve cleanup on startup errors and handled signals.
+Do not copy canonical assets into ZIP tests: extend the tiny authored asset flow.
+
 TrueType references use the shared resource resolver; invalid banks share
 fallback glyph textures. Preserve trailerless shared-palette PCX pixels even
 when a pixel resembles the palette marker; masked/opaque views share indices.

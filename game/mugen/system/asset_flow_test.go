@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/binary"
 	"fmt"
@@ -480,10 +481,155 @@ trigger1=1
 		t.Fatal("modern authored remap/portrait consumer")
 	}
 	e.Draw(canvas)
+	packedCharacterAssetFlow(t, e, canvas, dir, definition)
 	// Missing declared ACTs retain the DEF key/location; no directory fallback.
 	write("outfits.def", []byte(strings.Replace(definition, `Pal\Gold.ACT`, `Pal\missing.act`, 1)))
 	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "pal2") {
 		t.Fatal("missing ACT lost resource context", err)
+	}
+}
+
+// Continue the same authored asset lifecycle through the beta's ZIP selection
+// syntax, cached alternate DEFs, intro, teams/fight/reset, ending and cleanup.
+func packedCharacterAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image, dir, definition string) {
+	t.Helper()
+	files := make(map[string][]byte)
+	for _, name := range []string{"outfits.sff", "outfits.air", "outfits.cns", "outfits.cmd", "Pal/Green.ACT", "Pal/Gold.ACT"} {
+		data, err := os.ReadFile(filepath.Join(dir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		files[name] = data
+	}
+	definition += "[Arcade]\nintro.storyboard=Story\\Ending.def\nending.storyboard=Story\\Ending.def\n"
+	files["Outfits pack.def"] = []byte(definition)
+	files["Alternate.def"] = []byte(strings.Replace(definition, "Legacy outfits", "Packed alternate", 1))
+	files["Story/Ending.def"] = []byte(`[SceneDef]
+spr=..\outfits.sff
+[Scene 0]
+end.time=2
+clearcolor=0,0,0
+layer0.anim=700
+layer0.offset=80,80
+[Begin Action 700]
+0,0,0,0,-1
+`)
+	writePack := func(name string, contents map[string][]byte) string {
+		t.Helper()
+		var buffer bytes.Buffer
+		writer := zip.NewWriter(&buffer)
+		for member, data := range contents {
+			output, err := writer.Create(member)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := output.Write(data); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := writer.Close(); err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(dir, name)
+		if err := os.WriteFile(path, buffer.Bytes(), 0600); err != nil {
+			t.Fatal(err)
+		}
+		return path
+	}
+	pack := writePack("Outfits pack.ZIP", files)
+	stageDir := filepath.Join(dir, "Training Room")
+	if err := os.Symlink(filepath.Join(e.dataDir, "stages"), stageDir); err != nil {
+		t.Fatal(err)
+	}
+	stagePath := filepath.Join(stageDir, "kfm.def")
+	selectPath := filepath.Join(dir, "packed select.def")
+	selectText := fmt.Sprintf("[Characters]\n\"%s\", stages/kfm.def\n\"%s:alternate.def\", random\nrandomselect\n[ExtraStages]\n\"%s\"\n[Options]\narcade.maxmatches=1\n", pack, pack, stagePath)
+	if err := os.WriteFile(selectPath, []byte(selectText), 0600); err != nil {
+		t.Fatal(err)
+	}
+	previousSelect := e.motif.Files.Select
+	e.motif.Files.Select = selectPath
+	t.Cleanup(func() { e.motif.Files.Select = previousSelect })
+	selection := NewSelectState(e, "Arcade Mode")
+	if selection.loadError != nil || len(selection.chars) != 3 || len(selection.stages) != 2 || selection.stages[1] != stagePath {
+		t.Fatal("packed character/stage filenames did not reach selection", selection.loadError, selection.stages)
+	}
+	first, alternate := selection.chars[0], selection.chars[1]
+	if first.SmallPortrait == nil || first.BigPortrait == nil || alternate.Name != "Packed alternate" || filepath.Dir(first.DefPath) != filepath.Dir(alternate.DefPath) || first.IntroStoryboard == "" || first.EndingStoryboard == "" {
+		t.Fatal("ZIP portraits, alternate DEF, cache or storyboard paths were not loaded")
+	}
+	selection.p1CursorX, selection.p1CursorY, selection.p2CursorX, selection.p2CursorY = 0, 0, 1, 0
+	selection.palettes = [2]int{2, 1}
+	next, err := selection.startMatch()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := next.(*StoryboardState); !ok {
+		t.Fatal("packed arcade intro was skipped")
+	}
+	e.currentState = next
+	step := func() {
+		t.Helper()
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+		e.Draw(canvas)
+	}
+	var fight *FightState
+	for tick := 0; tick < 900; tick++ {
+		step()
+		if current, ok := e.currentState.(*FightState); ok && current.match.Phase == match.Active {
+			fight = current
+			break
+		}
+	}
+	if fight == nil || fight.match.Players[0].Character.PaletteNo != 2 {
+		t.Fatal("packed selection/intro/versus/fight handoff stalled")
+	}
+	fight.match.Players[1].Character.SetLife(0)
+	fight.match.Players[1].Character.ChangeState(5150, 0, -1)
+	for tick := 0; tick < 1000 && fight.match.Round == 1; tick++ {
+		step()
+	}
+	if fight.match.Round != 2 || fight.match.Players[0].Character.PaletteNo != 2 {
+		t.Fatal("packed round reset lost its character or palette")
+	}
+	// Direct ZIP references share the same extracted files. Resolving team
+	// members must not rewrite the caller's rematch/campaign template slices.
+	e.modeRun = nil
+	request := match.Request{Mode: "Versus Mode", StagePath: stagePath}
+	for side, name := range []string{pack, pack + ":ALTERNATE.DEF"} {
+		request.Teams[side] = match.TeamSelection{Mode: match.Single, Members: []match.Selection{{DefPath: name, Palette: side + 1}}}
+	}
+	rematch, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if request.Teams[0].Members[0].DefPath != pack || rematch.match.Players[0].DefPath != first.DefPath || rematch.match.Players[1].DefPath != alternate.DefPath {
+		t.Fatal("ZIP reload repeated expansion or mutated a roster template")
+	}
+	e.currentState = &StoryboardState{engine: e, storyboard: first.EndingStoryboard, nextState: func() State { return NewTitleState(e) }}
+	for tick := 0; tick < 3; tick++ {
+		step()
+	}
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatal("packed ending did not finish")
+	}
+	if _, err := e.characterPacks.Resolve(pack + ":missing.def"); err == nil || !strings.Contains(err.Error(), "missing.def") {
+		t.Fatal("missing packed DEF lost context", err)
+	}
+	invalid := writePack("Invalid.zip", map[string][]byte{"../escape.def": []byte("invalid")})
+	if _, err := e.characterPacks.Resolve(invalid); err == nil || !strings.Contains(err.Error(), "invalid ZIP entry") {
+		t.Fatal("archive entry escaped its expansion directory", err)
+	}
+	if err := e.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(first.DefPath); !os.IsNotExist(err) {
+		t.Fatal("expanded ZIP files survived engine shutdown", err)
+	}
+	if _, err := os.Stat(pack); err != nil {
+		t.Fatal("engine cleanup removed the source character ZIP", err)
 	}
 }
 

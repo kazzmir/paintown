@@ -7,24 +7,20 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-This five-commit batch includes:
-- 065f5fe40: finite TargetBind expiry during attacker hitpause transfers zero
-  velocity, preventing victim drift; connected throw/recovery/reset matches beta.
-- a8ab82ca0: nested Windows/mixed-case and absolute TrueType paths resolve;
-  fallback banks share glyph textures and corrupt files retain error context.
-- f660d1640: uncleared storyboard scenes retain pixels; colored fades use correct
-  premultiplication and reuse one texel.
-- b38e0535e: trailerless shared-palette PCX sprites no longer truncate at false
-  palette markers; masked/opaque views share decoded indices.
-- Current checkpoint: retained layers compose once per simulation tick, so extra
-  presentation refreshes cannot accumulate alpha. README and guidance refreshed.
+Current ZIP character checkpoint implements the beta's pack.zip and
+pack.zip:member.def selection syntax, including spaced filenames and case-folded
+Windows paths. Engine-owned expansions are shared across portraits, alternate
+DEFs, rosters, quick matches, rounds and rematches. Engine.Close stops readers
+before removing expansions; main now unwinds startup errors and handles Ctrl-C/
+SIGTERM through the normal game exit. Source ZIPs and user configuration stay intact.
 
-Affected connected segments passed with race detection. The last asset changes
-reopened only match-flow; other completed segments stayed checked. Linux rebuilt.
-Owned-window KFM/KFM720 keyboard acceptance reached KO/result, rematch and a
-second KO/result: 82 balanced events, two inspected captures, no runtime/audio
-errors. Scratch overlay, captures and logs removed. Root module hashes and local
-YAML contents remain unchanged. No binaries, assets or user configuration tracked.
+The connected authored asset lifecycle includes packed selection/portraits,
+arcade intro, versus/fight, outfits and round reset, direct roster reload, ending,
+missing member/path errors and cleanup. Match-flow passes with race detection;
+other segments stay checked. No stock assets were copied into fixtures; segment
+scratch removes both ZIP input and expansions. Linux rebuild/playable acceptance
+will run at the end of this implementation batch. Prior 848b00caf and its four
+predecessors cover retained storyboard rendering, fades, font paths and PCX data.
 
 Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
 camera easing, other pause/hitpause and binding combinations, crop/raster/

@@ -43,6 +43,7 @@ func Parse(r io.Reader) (*File, error) {
 		}
 		attr := &Attribute{Line: lineNo, Column: column}
 		key, raw, assigned := containerAttribute(line)
+		attr.RawKey = strings.TrimSpace(key)
 		key = strings.Join(strings.Fields(key), "")
 		if key == "" {
 			return nil, fmt.Errorf("line %d:%d: empty attribute name", lineNo, column)

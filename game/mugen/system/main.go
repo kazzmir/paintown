@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,6 +21,8 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 )
 
 type Engine struct {
@@ -35,6 +41,13 @@ type Engine struct {
 	pendingMatchSeed int64
 	modeRun          *modeRun
 	nextCampaign     uint64
+	characterPacks   resource.CharacterPacks
+	stop             <-chan struct{}
+}
+
+// Close stops streaming readers before removing this engine's expanded packs.
+func (e *Engine) Close() error {
+	return errors.Join(e.closeSound(), e.characterPacks.Close())
 }
 
 func (e *Engine) nextMatchSeed() int64 {
@@ -62,6 +75,11 @@ func (e *Engine) ticksPerSecond() int {
 }
 
 func (e *Engine) Update() error {
+	select {
+	case <-e.stop:
+		return ebiten.Termination
+	default:
+	}
 	if _, title := e.currentState.(*TitleState); title {
 		e.modeRun = nil
 	}
@@ -117,27 +135,27 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return e.logicalWidth, e.logicalHeight
 }
 
-func main() {
+func run() (runErr error) {
 	log.SetFlags(log.Lshortfile | log.Ldate | log.Lmicroseconds)
 
 	dataDir := flag.String("data-dir", "data-new/mugen", "Path to the MUGEN data directory")
-	quickMatch := flag.String("quick-match", "", "Start a versus match with two character DEF paths, separated by a comma")
+	quickMatch := flag.String("quick-match", "", "Start a versus match with two character directories, DEFs or ZIP[:DEF] entries, separated by a comma")
 	quickStage := flag.String("stage", "stages/kfm.def", "Stage DEF for --quick-match")
 	matchSeed := flag.Int64("match-seed", 0, "Initial match RNG seed for reproducible runs (1..2147483646; zero uses the clock)")
 	flag.Parse()
 	if *matchSeed < 0 || *matchSeed >= 2147483647 {
-		log.Fatal("match-seed must be zero or between 1 and 2147483646")
+		return fmt.Errorf("match-seed must be zero or between 1 and 2147483646")
 	}
 
 	// Verify data directory
 	if _, err := os.Stat(*dataDir); os.IsNotExist(err) {
-		log.Fatalf("Data directory does not exist: %s", *dataDir)
+		return fmt.Errorf("data directory does not exist: %s", *dataDir)
 	}
 
 	// Load configuration
 	cfg, err := config.LoadConfig(*dataDir)
 	if err != nil {
-		log.Fatalf("Failed to load mugen.cfg: %v", err)
+		return fmt.Errorf("load mugen.cfg: %w", err)
 	}
 
 	fmt.Printf("Loaded configuration from %s\n", filepath.Join(*dataDir, "data", "mugen.cfg"))
@@ -159,7 +177,7 @@ func main() {
 	// Load motif
 	m, err := motif.LoadMotif(cfg.Options.Motif, *dataDir)
 	if err != nil {
-		log.Fatalf("Failed to load motif %s: %v", cfg.Options.Motif, err)
+		return fmt.Errorf("load motif %s: %w", cfg.Options.Motif, err)
 	}
 
 	engine := &Engine{
@@ -174,8 +192,16 @@ func main() {
 		logicalHeight:    m.Info.LocalCoord.Height,
 		sprites:          make(map[string]*background.SpriteImages),
 	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	engine.stop = ctx.Done()
+	defer func() {
+		if closeErr := engine.Close(); runErr == nil {
+			runErr = closeErr
+		}
+	}()
 	if err := engine.startSoundDevice(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// Cache sprites
@@ -218,17 +244,17 @@ func main() {
 
 	engine.currentState = logoState
 	if *quickMatch != "" {
-		paths := strings.Split(*quickMatch, ",")
+		paths := parsers.SplitList(*quickMatch)
 		if len(paths) != 2 {
-			log.Fatal("--quick-match requires two character DEF paths")
+			return fmt.Errorf("--quick-match requires two character entries")
 		}
 		request := match.Request{Mode: "Versus Mode", StagePath: *quickStage}
 		for slot, path := range paths {
-			request.Players[slot] = match.Selection{DefPath: filepath.Join(*dataDir, strings.TrimSpace(path)), Palette: slot + 1}
+			request.Players[slot] = match.Selection{DefPath: strings.Trim(strings.TrimSpace(path), "\""), Palette: slot + 1}
 		}
 		engine.currentState, err = NewFightState(engine, request)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 
@@ -241,11 +267,11 @@ func main() {
 	// Set TPS based on GameSpeed config
 	ebiten.SetTPS(engine.ticksPerSecond())
 
-	err = ebiten.RunGame(engine)
-	if closeErr := engine.closeSound(); err == nil {
-		err = closeErr
-	}
-	if err != nil {
+	return ebiten.RunGame(engine)
+}
+
+func main() {
+	if err := run(); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -66,7 +66,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. ZIP character packs, file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
 - [ ] Remaining native rendering, audio and AI fidelity. **partial** — Remaining camera easing, other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Self binding across asymmetric Pause allowances, finite TargetBind during attacker hitpause, body contact and prior camera observations match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms

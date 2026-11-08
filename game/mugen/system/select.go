@@ -52,7 +52,7 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	}
 	charsDir := filepath.Join(engine.dataDir, "chars")
 
-	chars, stages, loadError := loadCharacters(selectDefPath, charsDir)
+	chars, stages, loadError := loadCharacters(selectDefPath, charsDir, &engine.characterPacks)
 
 	// Watch selects both rosters with P1; versus/co-op use two humans.
 	p2Modes := map[string]bool{

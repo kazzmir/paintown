@@ -22,8 +22,11 @@ type Attribute struct {
 	Value Value
 	// RawValue retains operators, quotes and numeric spelling for CNS expressions.
 	RawValue string
-	Line     int
-	Column   int
+	// RawKey preserves filename spelling in select.def rows. Attribute IDs
+	// keep their existing normalized spelling for CNS and layout consumers.
+	RawKey string
+	Line   int
+	Column int
 }
 
 // Identifier represents the left-hand side of an attribute assignment.

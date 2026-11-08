@@ -39,7 +39,7 @@ func soundTestEngine(t *testing.T) *Engine {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
-		if err := e.closeSound(); err != nil {
+		if err := e.Close(); err != nil {
 			t.Error(err)
 		}
 	})

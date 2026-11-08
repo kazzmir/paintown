@@ -35,6 +35,31 @@ type FightState struct {
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
+	// Resolve packed selections once at the presentation boundary. Match,
+	// round reset, helpers and storyboards then use ordinary immutable files.
+	resolve := func(selection *match.Selection) error {
+		if selection.DefPath == "" {
+			return nil
+		}
+		path, err := engine.characterPacks.Resolve(selection.DefPath, engine.dataDir, filepath.Join(engine.dataDir, "chars"))
+		if err != nil {
+			return fmt.Errorf("character %q: %w", selection.DefPath, err)
+		}
+		selection.DefPath = path
+		return nil
+	}
+	for side := range request.Players {
+		if err := resolve(&request.Players[side]); err != nil {
+			return nil, err
+		}
+		// A request copy must not rewrite a campaign/rematch template's slice.
+		request.Teams[side].Members = append([]match.Selection(nil), request.Teams[side].Members...)
+		for member := range request.Teams[side].Members {
+			if err := resolve(&request.Teams[side].Members[member]); err != nil {
+				return nil, err
+			}
+		}
+	}
 	if err := engine.ensureSound(); err != nil {
 		return nil, err
 	}

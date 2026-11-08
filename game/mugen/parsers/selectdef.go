@@ -48,6 +48,9 @@ func ParseSelectDefFromAST(ast *File) (*SelectDef, error) {
 			for _, attr := range sec.Attributes {
 				// attr.ID = character name (or "randomselect")
 				charName := strings.TrimSpace(attr.ID.String())
+				if attr.RawKey != "" {
+					charName = strings.Trim(strings.TrimSpace(attr.RawKey), "\"")
+				}
 				if strings.ToLower(charName) == "randomselect" {
 					// Placeholder for the random select icon slot
 					sd.Characters = append(sd.Characters, &CharacterEntry{
@@ -75,6 +78,9 @@ func ParseSelectDefFromAST(ast *File) (*SelectDef, error) {
 		case "extrastages":
 			for _, attr := range sec.Attributes {
 				stage := strings.TrimSpace(attr.ID.String())
+				if attr.RawKey != "" {
+					stage = strings.Trim(strings.TrimSpace(attr.RawKey), "\"")
+				}
 				if stage != "" {
 					sd.ExtraStages = append(sd.ExtraStages, stage)
 				}

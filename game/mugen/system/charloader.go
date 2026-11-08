@@ -19,7 +19,7 @@ type CharacterPortrait struct {
 	SmallPortrait, BigPortrait                       *ebiten.Image
 }
 
-func loadCharacters(selectDefPath, charsDir string) ([]*CharacterPortrait, []string, error) {
+func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPacks) ([]*CharacterPortrait, []string, error) {
 	f, err := os.Open(selectDefPath)
 	if err != nil {
 		return nil, nil, err
@@ -45,11 +45,7 @@ func loadCharacters(selectDefPath, charsDir string) ([]*CharacterPortrait, []str
 			chars = append(chars, cp)
 			continue
 		}
-		name := strings.ReplaceAll(entry.Name, `\`, "/")
-		if !strings.EqualFold(filepath.Ext(name), ".def") {
-			name = filepath.Join(name, filepath.Base(name)+".def")
-		}
-		cp.DefPath, err = resource.Resolve(name, charsDir)
+		cp.DefPath, err = packs.Resolve(entry.Name, charsDir)
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s character %q: %w", selectDefPath, entry.Name, err)
 		}
