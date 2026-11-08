@@ -29,15 +29,16 @@ func TestMusicControllerAndSceneFlow(t *testing.T) {
 	input.GlobalManager.Keyboard = &flowKeyboard{}
 	e.cfg.Sound.MasterVolume, e.cfg.Sound.BGMVolume, e.cfg.Sound.WavVolume = 50, 40, 0
 	var wav bytes.Buffer
+	const musicFrames = 2050 // cross two decoder blocks and a short final block
 	wav.WriteString("RIFF")
-	binary.Write(&wav, binary.LittleEndian, uint32(36+64*4))
+	binary.Write(&wav, binary.LittleEndian, uint32(36+musicFrames*4))
 	wav.WriteString("WAVEfmt ")
 	for _, value := range []any{uint32(16), uint16(1), uint16(2), uint32(44100), uint32(44100 * 4), uint16(4), uint16(16)} {
 		binary.Write(&wav, binary.LittleEndian, value)
 	}
 	wav.WriteString("data")
-	binary.Write(&wav, binary.LittleEndian, uint32(64*4))
-	for frame := 0; frame < 64; frame++ {
+	binary.Write(&wav, binary.LittleEndian, uint32(musicFrames*4))
+	for frame := 0; frame < musicFrames; frame++ {
 		binary.Write(&wav, binary.LittleEndian, int16(10000))
 		binary.Write(&wav, binary.LittleEndian, int16(-5000))
 	}
@@ -92,7 +93,7 @@ func TestMusicControllerAndSceneFlow(t *testing.T) {
 	if position() != 2 {
 		t.Fatal("one-shot screen failed to replace looping track", position())
 	}
-	step(70)
+	step(musicFrames + 6)
 	if _, _, playing, _ := bus.Status(); playing {
 		t.Fatal("one-shot music did not expire")
 	}

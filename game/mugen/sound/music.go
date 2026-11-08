@@ -90,6 +90,12 @@ type Music struct {
 	gain     float32
 	paused   bool
 	err      error
+	// Decode in bounded stereo blocks. position counts consumed frames, not
+	// read-ahead, so NoMusic and screen continuity retain the exact cursor.
+	pcm      [4096]byte
+	cursor   int
+	buffered int
+	readErr  error
 }
 
 func (m *Music) stopLocked() {
@@ -102,6 +108,7 @@ func (m *Music) stopLocked() {
 	m.reader, m.file = nil, nil
 	m.decoder = nil
 	m.position, m.end, m.start = 0, 0, 0
+	m.cursor, m.buffered, m.readErr = 0, 0, nil
 	m.spec = MusicSpec{}
 }
 
@@ -218,6 +225,11 @@ func (m *Music) frame() (float32, float32) {
 		return 0, 0
 	}
 	for attempt := 0; attempt < 2; attempt++ {
+		if m.cursor == m.buffered && m.readErr != nil {
+			m.err = m.readErr
+			m.stopLocked()
+			return 0, 0
+		}
 		if m.position >= m.end {
 			if !m.spec.Loop {
 				m.stopLocked()
@@ -229,21 +241,26 @@ func (m *Music) frame() (float32, float32) {
 				return 0, 0
 			}
 			m.position = m.start
+			m.cursor, m.buffered = 0, 0
 		}
-		var sample [4]byte
-		n, err := io.ReadFull(m.reader, sample[:])
-		m.position += int64(n)
-		if n == 4 {
+		if m.cursor == m.buffered {
+			count := min(int64(len(m.pcm)), m.end-m.position)
+			n, err := io.ReadFull(m.reader, m.pcm[:count])
+			m.cursor, m.buffered = 0, n/4*4
+			if err == io.EOF || err == io.ErrUnexpectedEOF {
+				m.end = m.position + int64(m.buffered)
+			} else {
+				m.readErr = err
+			}
+		}
+		if m.cursor < m.buffered {
+			sample := m.pcm[m.cursor : m.cursor+4]
+			m.cursor += 4
+			m.position += 4
 			gain := m.gain * float32(m.spec.Volume) / 100
 			return float32(int16(binary.LittleEndian.Uint16(sample[:2]))) / 32768 * gain,
 				float32(int16(binary.LittleEndian.Uint16(sample[2:]))) / 32768 * gain
 		}
-		if err != io.EOF && err != io.ErrUnexpectedEOF {
-			m.err = err
-			m.stopLocked()
-			return 0, 0
-		}
-		m.end = m.position - int64(n)
 	}
 	m.err = fmt.Errorf("%s: music loop yielded no complete sample", m.spec.File)
 	m.stopLocked()

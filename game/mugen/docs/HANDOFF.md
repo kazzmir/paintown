@@ -7,20 +7,15 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Latest checkpoint:
+Current media batch (end-state validation pending):
 
-- AIR count validation prevents negative/oversized allocations. A shared
-  1,048,576-box ceiling includes defaults and per-element copies. Packed-character
-  fight loading reports the bad file/action/line; correcting the same expansion
-  loads successfully. This is port error handling, not native rejection parity.
-- One stable world-space camera sequence covers spread, translation, closing,
-  stage-bound travel and return/reset inside the existing camera scenario.
-  Camera X/zoom matches five beta samples at state times 1,10,21,41,81. Return at
-  time 120 remains about 0.15 pixels apart (beta 80.698, Go 80.848). No camera runtime
-  change was needed for the five matching points; do not label the tail exact.
-- Four affected segments pass with race detection; unchanged state-flow stays
-  checked. Linux executable rebuilt. Native assets were symlinked; all current
-  helper/captures/overlay/logs removed. Root metadata and ignored YAML unchanged.
+- BGM decodes bounded 1,024-frame blocks instead of requesting one sample per
+  decoder call. Playback position counts consumed samples; NoMusic, loop edges,
+  menu continuity and replacement retain their existing cursor contract.
+- The existing connected music lifecycle now crosses two blocks and a short
+  final block. Run affected segments once after the complete media batch.
+- Prior51f7ae0b3 provides bounded AIR collision allocation and a camera motion
+  sequence. Its return precision gap stays open: beta80.698 vs Go80.848 at time120.
 
 Previous 88428c4d9 batch provides ZIP character selection/rosters/quick matches,
 selective portraits, CMD [Remap] for human/helper/AI, pack retirement and live
