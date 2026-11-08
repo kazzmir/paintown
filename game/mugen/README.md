@@ -275,6 +275,12 @@ reset; legacy HUD portraits retain their default bank as observed in1.1b1.
 Modern 1.x characters keep their authored `RemapPal` initialization, including
 those that still use SFF v1.
 
+Local palette effects share the mapped fighter/HUD textures without recoloring
+unaffected HUD sprites. AfterImage trails retain each pose's AIR interpolation
+clock and outfit across animation changes; the connected lifecycle covers Pause,
+expiry/resume, remapping and round reset. One Linux scene matches all five beta
+trail positions; broader rendering fidelity remains open.
+
 Shared-palette PCX sprites may omit their palette trailer. TrueType font paths
 support Windows separators, mixed-case folders and absolute filenames on Linux;
 missing fonts use the reported fallback described in [font notes](docs/BUILD.md).

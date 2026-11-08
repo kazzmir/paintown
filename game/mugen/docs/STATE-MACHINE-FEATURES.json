@@ -185,8 +185,12 @@
       "allocation": "item3",
       "sources": [
         "engine/parameters.go:compileCoreController",
-        "effect/scene.go:AdvanceWithPause"
-      ]
+        "effect/scene.go:AdvanceWithPause",
+        "palette/state.go:CloneMappings",
+        "character/after_image.go:advanceAfterImages",
+        "character/after_image.go:drawAfterImages"
+      ],
+      "validation": "Palette mappings invalidate base textures independently of shader effects; fighter/HUD draws share mapped pixels while retaining separate effects. AfterImage saves the AIR element clock and mapping-only outfit snapshot. Connected scenarios cover local-effect expiry, interpolation followed by an animation change, Pause, history drain/resume, remapping and round reset. Existing palette/cache regressions and four affected segments pass with race detection; state-flow stays checked. The rebuilt Linux game matches all five retained-pose positions in one beta scene. Other rendering combinations remain unverified; current scratch removed."
     },
     {
       "id": "rounds",
@@ -569,7 +573,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4b3f1a08526ff1c28d602720644ae4b1014db0d3c034161a82b4b1754235e774"
+      "passed_source": "1d0b3b2161ea83d412d37d56b40f6afa27a6efb254c3968b7e972b164ad203b5"
     },
     {
       "id": "entities",
@@ -602,7 +606,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b57398a077635face6d386cef6a0b75a873153481a298357e4976b44889ce4f0"
+      "passed_source": "e35c1dab06dd861b9394ef8209d016eef07d4044522116c6a1f035dd39f0ef0a"
     },
     {
       "id": "effects-pause",
@@ -637,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "73f94944afc4e9a0de7264655e098f3c013b73a459a6479e72bb27afda83d64b"
+      "passed_source": "b48e185f244dcf0c03b51f53a49d8c2f2e269828750d9f19139e4de78c148d3f"
     },
     {
       "id": "match-flow",
@@ -716,7 +720,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d532f6702aa301bea550dcb520e6f0c428b64ab75560592f2874a9062f796b24"
+      "passed_source": "88614df999ca7fcb559e1d11ad2121d016f88139a2a62752370d9f24c63a89a0"
     }
   ],
   "presentation_followups": [

@@ -1782,7 +1782,7 @@ trigger1=1
 	runs := func() [][2]int {
 		t.Helper()
 		canvas.Fill(color.NRGBA{255, 0, 255, 255})
-		character.DrawPlayers(canvas, m.Players, coord.Default(), 0, 200)
+		character.DrawPlayers(canvas, m.Players[:], coord.Default(), 0, 200)
 		pixels := make([]byte, 320*240*4)
 		canvas.ReadPixels(pixels)
 		result := [][2]int{}

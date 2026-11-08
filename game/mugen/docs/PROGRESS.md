@@ -17,10 +17,10 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [ ] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
-- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
-- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [ ] **match-flow**: title/selection → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [x] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
+- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
+- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [x] **match-flow**: title/selection → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 

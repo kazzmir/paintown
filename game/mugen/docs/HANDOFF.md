@@ -7,7 +7,7 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Current palette/AfterImage batch (end-state validation pending):
+Current palette/AfterImage batch (validated):
 
 - Palette state now distinguishes mapping changes from shader effect changes.
   Actor/effect textures track MappingRevision; PalFX/HitDef color effects keep
@@ -24,8 +24,14 @@ Current palette/AfterImage batch (end-state validation pending):
   changes. A real RemapPal creates an independent historical outfit; pose
   offsets use fixed storage instead of allocating a slice per recorded frame.
   Existing recording coverage spans effect changes, expiry/resume, Pause and
-  remapping without changing historical colors. Validate the complete batch.
-- Priorca131d22c provides native RGBA mask/upload/filtering behavior, lazy shared
+  remapping without changing historical colors.
+- Existing palette/cache regressions and all four changed-source segments pass
+  with race detection; state-flow stays checked. Linux rebuilt and matches the
+  five beta pose runs after an animation change. Owned clients exited; all
+  current native/app captures, overlays, logs and helper scratch were removed.
+  Local YAML and root module hashes are unchanged. This is bounded acceptance,
+  not whole-renderer parity.
+- Prior ca131d22c provides native RGBA mask/upload/filtering behavior, lazy shared
   BG/storyboard textures and sprite indexes. Linux matched40 fixed beta samples.
 
 Prior 764918190 retains bounded WAV/SFX playback, extensible PCM/float support,

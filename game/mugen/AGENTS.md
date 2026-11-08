@@ -199,3 +199,11 @@ caller-built archives retain dynamic fallback. Four affected segments passed
 with race detection after the upload correction; state-flow stayed checked.
 Linux matches 40 native RGB samples in one scene, not whole-renderer parity.
 All current helper/capture/overlay/log scratch was removed.
+
+Palette textures now track MappingRevision; local PalFX/HitDef effects still use
+ordinary Revision and independent shader transforms. Fighter/HUD mapped pixels
+are shared. AfterImage retains its saved AIR element clock and mapping-only
+snapshot; genuine remaps preserve historical outfits. Four affected segments
+and existing palette/cache regressions pass with race detection; state-flow
+stays checked. Rebuilt Linux matches five beta pose positions after an animation
+change. Current scratch was removed; broader rendering precision stays open.
