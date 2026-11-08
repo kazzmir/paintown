@@ -20,7 +20,7 @@ type afterImageFrame struct {
 	angleEnabled bool
 	angle        float64
 	scale        [2]float32
-	offset       []float64
+	offset       [2]float64
 	visible      bool
 	palettes     *palette.State
 }
@@ -106,14 +106,17 @@ func (c *Character) advanceAfterImages() {
 	f := afterImageFrame{x: c.X, y: c.Y, facing: c.Facing, anim: c.GetAnim(), elem: c.AnimElem,
 		elemTime: c.AnimElemTime,
 		frames:   c.AnimationFile(), constants: c.StateFile, angleEnabled: c.AngleDrawingEnabled,
-		angle: c.DrawAngle, scale: c.DrawScale, offset: append([]float64(nil), c.DrawOffset...),
+		angle: c.DrawAngle, scale: c.DrawScale,
 		visible: h.time > 0 || h.time == -1}
+	if len(c.DrawOffset) > 1 {
+		copy(f.offset[:], c.DrawOffset[:2])
+	}
 	if f.visible && c.Palettes != nil {
 		// Each pose retains the mappings used when recorded. Reuse immutable
 		// snapshots until the source changes; local PalFX is replaced at draw.
-		if h.paletteSource != c.Palettes || h.paletteSnapshot == nil || h.paletteRevision != c.Palettes.Revision {
-			h.paletteSource, h.paletteRevision = c.Palettes, c.Palettes.Revision
-			h.paletteSnapshot = c.Palettes.Clone()
+		if h.paletteSource != c.Palettes || h.paletteSnapshot == nil || h.paletteRevision != c.Palettes.MappingRevision {
+			h.paletteSource, h.paletteRevision = c.Palettes, c.Palettes.MappingRevision
+			h.paletteSnapshot = c.Palettes.CloneMappings()
 		}
 		f.palettes = h.paletteSnapshot
 	}
@@ -172,7 +175,7 @@ func (p *Player) drawAfterImages(screen *ebiten.Image, c *Character, x, y, sx, s
 		snapshot.StateFile = f.constants
 		snapshot.Palettes = f.palettes
 		snapshot.AngleDrawingEnabled, snapshot.DrawAngle, snapshot.DrawScale = f.angleEnabled, f.angle, f.scale
-		snapshot.DrawOffset = f.offset
+		snapshot.DrawOffset = f.offset[:]
 		snapshot.DrawTransparency = engine.Transparency{Enabled: true, Mode: "none"}
 		switch h.parameters.Trans {
 		case "add":

@@ -24,12 +24,19 @@ type State struct {
 func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: map[ID]ID{}} }
 
 func (s *State) Clone() *State {
+	copy := s.CloneMappings()
+	copy.hitFX = s.hitFX
+	copy.controllerFX = s.controllerFX
+	return copy
+}
+
+// CloneMappings freezes outfit/remap ownership without copying local PalFX.
+// AfterImage has its own color policy and shares this snapshot until remapped.
+func (s *State) CloneMappings() *State {
 	copy := New(s.Archive)
 	copy.Revision = s.Revision
 	copy.MappingRevision = s.MappingRevision
 	copy.legacyInitial = s.legacyInitial
-	copy.hitFX = s.hitFX
-	copy.controllerFX = s.controllerFX
 	for source, dest := range s.mappings {
 		copy.mappings[source] = dest
 	}

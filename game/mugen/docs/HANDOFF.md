@@ -20,8 +20,11 @@ Current palette/AfterImage batch (end-state validation pending):
   offsets/scales/angles after the live animation changes. One beta flow has
   five retained marker runs at124/146/168/190/212; the connected stage scenario
   continues through Pause, drain/resume and a real round reset.
-- Continue through mapping-only history snapshots,
-  then run affected connected scenarios once at the end of the batch.
+- AfterImage now snapshots mappings only and reuses them across local effect
+  changes. A real RemapPal creates an independent historical outfit; pose
+  offsets use fixed storage instead of allocating a slice per recorded frame.
+  Existing recording coverage spans effect changes, expiry/resume, Pause and
+  remapping without changing historical colors. Validate the complete batch.
 - Priorca131d22c provides native RGBA mask/upload/filtering behavior, lazy shared
   BG/storyboard textures and sprite indexes. Linux matched40 fixed beta samples.
 
