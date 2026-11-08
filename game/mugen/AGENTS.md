@@ -174,7 +174,9 @@ See docs/HANDOFF.md and preserve the cleanup workflow above.
 
 AIR collision allocation is bounded; packed failures retain file/action/line
 context and corrected assets reload. Moving zoom matches five beta samples;
-return at state time120 still differs by about0.15 pixels. Do not regenerate
+return now matches through time120 after preserving the unclipped participant
+midpoint. The user requested known camera/rendering/KO-echo closure before
+compatibility and deferred work (2026-11-08). Do not regenerate
 historical matrices. See the small ledger/catalog and handoff for remaining work.
 
 Retain consumed-vs-read-ahead music cursors, shared integer/float WAV decoding,

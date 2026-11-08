@@ -7,46 +7,35 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Current legacy-asset batch (validated on Linux):
+Current known-difference batch (user requested closure before compatibility):
 
-- PCX now decodes runs directly into visible rows, discarding padding without
-  allocating a second full decoded plane. Cross-row runs and trailerless shared
-  palettes are retained; visible indices outside a supplied palette are errors.
-- V1 archives now enforce the same total decoded-pixel budget as V2 before
-  allocating a frame. Linked images charge their source once; portrait loading
-  charges only retained sources. PCX errors include sprite identity.
-- FNT V1 settings/section headers accept inline comments; mapping suffixes
-  preserve literal quote/semicolon glyphs. Malformed integer/map fields now
-  retain file/line context instead of silently becoming zero.
-- Existing storyboard/packed-character flow now spans a tiny padded-row V1
-  font, bank changes across retained scenes, quoted/hex map characters, bad
-  font metadata and bad packed PCX, followed by correction and successful reload.
-  Existing SFF/font checks and affected match-flow pass with race detection;
-  the other four segments stayed checked. No new test file or asset bank.
-- Linux rebuilt and displays both authored font banks with expected colors.
-  The bounded beta scene showed its background but no authored glyphs; legacy
-  font native equivalence remains unverified. Do not claim native font parity.
-  Current native/app captures, overlays, logs and helpers were inspected and
-  removed; local YAML and root module hashes are unchanged.
-- Prior a51b2146b retains mapping-specific texture revisions, shared fighter/HUD
-  pixels and AfterImage interpolation/outfit snapshots. Four affected segments
-  and palette/cache regressions passed with race detection; Linux matched five
-  beta trail positions. Native/app scratch was removed.
-- Prior ca131d22c retains native RGBA mask/upload/filtering behavior, lazy shared
-  BG/storyboard textures and sprite indexes. Linux matched40 fixed beta samples.
+- Camera return is corrected. The clipped region controls zoom fitting; the
+  unclipped actors' midpoint controls centering before final stage limits.
+  One bounded beta trace isolates the mixed offscreen-return tick. All eleven
+  connected camera/zoom samples match, including time120 X80.6977 vs the prior
+  Go80.8480. Native scratch was inspected/removed. Batch segment checks pending.
+- Next close the documented sprite/shadow RGB, finite/overlap alpha and KO-echo
+  playback differences. Unverified binding/pause/AI/content combinations belong
+  to the later compatibility batch; do not invent parameter matrices for them.
+- Prior405ef3951 fixes legacy font comments/diagnostics, PCX row decoding and
+  V1 archive budgets. Linux font banks and connected assets pass; beta authored
+  glyphs remained blank, so native font compatibility is still unverified.
+- Priora51b2146b retains mapping-specific texture revisions, shared fighter/HUD
+  pixels and AfterImage interpolation/outfit snapshots. Priorca131d22c retains
+  byte-premultiplied RGBA uploads, filtering and shared/indexed sprite resources.
 
 Prior 764918190 retains bounded WAV/SFX playback, extensible PCM/float support,
 Linux KO/rematch/KO and completed decoder/mixer/media race checks.
 
-Prior 51f7ae0b3 bounds AIR collision allocation and covers camera motion. The
-return precision gap stays open: beta 80.698 vs Go 80.848 at state time 120.
+Prior51f7ae0b3 bounds AIR collision allocation and adds the camera motion
+sequence now extended through the corrected return.
 
 Previous 88428c4d9 batch provides ZIP character selection/rosters/quick matches,
 selective portraits, CMD [Remap] for human/helper/AI, pack retirement and live
 Game Speed. The user has approved continuing without individual commit review.
 
 Ledger stays 32/34 checklist items, not native conformance or effort. Remaining:
-the camera return above, other pause/hitpause and bindings, crop/raster/color/
+other pause/hitpause and bindings, crop/raster/color/
 shadow/alpha, KO echo, native AI policy, strict asset compatibility, physical CD,
 legacy-font equivalence and absent licensed fonts. Linux is the target; other
 platforms are deferred.

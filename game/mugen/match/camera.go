@@ -73,7 +73,7 @@ func (m *Match) updateHorizontalCamera() {
 	stageLeft, stageRight := m.horizontalStageBounds()
 	margin := m.Stage.Camera.Tension * stageScale
 	leftEdge, rightEdge := left-margin, right+margin
-	clippedLeft, clippedRight := leftEdge < stageLeft, rightEdge > stageRight
+	participantCenter := (leftEdge + rightEdge) / 2
 	leftEdge = max(stageLeft, min(stageRight, leftEdge))
 	rightEdge = max(stageLeft, min(stageRight, rightEdge))
 	half := float64(m.Options.GameSpace.Width) / 2
@@ -101,14 +101,11 @@ func (m *Match) updateHorizontalCamera() {
 	low, high := rightEdge-half, leftEdge+half
 	wanted := m.cameraGoalX
 	if low > high {
-		wanted = (leftEdge + rightEdge) / 2
-		// When zoomout cannot fit the whole region, preserve the stage edge
-		// that clipped it. An unclipped or two-sided region stays centered.
-		if clippedRight && !clippedLeft {
-			wanted = stageRight - half
-		} else if clippedLeft && !clippedRight {
-			wanted = stageLeft + half
-		}
+		// Clipping limits zoom fitting, not the actors' midpoint. When the
+		// minimum zoom cannot fit both actors, center their original region
+		// before applying the final stage limits below. Anchoring the clipped
+		// side instead makes a returning offscreen actor displace the camera.
+		wanted = participantCenter
 	} else {
 		wanted = math.Max(low, math.Min(high, wanted))
 	}

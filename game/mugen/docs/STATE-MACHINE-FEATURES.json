@@ -375,8 +375,8 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Moving-zoom return precision (observed camera X difference about 0.15 pixels), other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision remain open. Five sampled camera/zoom points through spread, translation, closing and stage-bound travel match the beta; the subsequent return is functional but not exact. Strict native asset rejection remains unverified.",
-      "allocation": "deferred precision (user 2026-11-07)",
+      "gap": "Known sprite/shadow RGB, finite/overlap alpha and KO-echo playback differences remain to close. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work.",
+      "allocation": "known differences first (user 2026-11-08)",
       "sources": [
         "render/linear.go",
         "character/ko_sound.go",
@@ -490,7 +490,7 @@
         "character/width.go:HorizontalCameraBounds",
         "background/sprites.go:Image"
       ],
-      "validation": "Connected stage lifecycle covers mixed coordinates, camera tension/zoom/bounds, Width, Pause, linked/parallax backgrounds, modern/legacy cropping and reset. It now also replays exact native PNG32/raw RGBA mask colors and fractional true-color filtering, then mask changes, visibility and reset. Background/motif/storyboard textures upload on demand and share linked pixel views. Four affected segments pass with race detection; Linux reproduces 40 native samples. Camera return at time 120 still differs by about 0.15 pixels."
+      "validation": "Connected stage lifecycle covers mixed coordinates, camera tension/zoom/bounds, Width, Pause, linked/parallax backgrounds, modern/legacy cropping and reset. It now also replays exact native PNG32/raw RGBA mask colors and fractional true-color filtering, then mask changes, visibility and reset. Background/motif/storyboard textures upload on demand and share linked pixel views. Four affected segments pass with race detection; Linux reproduces 40 native samples. Camera fitting now retains the original participant midpoint before stage limits. Eleven native camera/zoom samples through the offscreen return match, including time120 X80.6977; affected connected validation is pending for this batch."
     }
   ],
   "segments": [
@@ -728,7 +728,7 @@
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom matches five sampled beta points; return at state time 120 differs by about 0.15 pixels and remains open. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
+    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity."
   ]
 }

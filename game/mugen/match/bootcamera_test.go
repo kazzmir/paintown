@@ -528,6 +528,9 @@ value=CameraZoom
 	observations := map[int][2]float64{
 		1: {-2.3465, .96929}, 10: {-.58743, .799}, 21: {8.5815, .76933},
 		41: {64.008, .78111}, 81: {77.076, .54067},
+		99: {531.609, .949448}, 100: {535.943, .956343},
+		101: {480.412, .922284}, 105: {286.254, .956450},
+		110: {163.748, .979341}, 120: {80.6977, .995493},
 	}
 	for tick := 0; tick < 1400; tick++ {
 		if err := m.Update(); err != nil {
@@ -544,8 +547,8 @@ value=CameraZoom
 			delete(observations, c.Time-1)
 		}
 		if c.Time > 121 {
-			// Return is functional; its last fraction of a pixel is still precision
-			// work (beta X=80.698, Go approximately80.848 at state time120).
+			// The native return samples above include the mixed tick with one
+			// root still offscreen; both midpoint and zoom must survive it.
 			if len(observations) != 0 || m.Viewport.Zoom < .99 || m.CameraX > 100 {
 				t.Fatal("moving zoom did not return after stage-bound travel", observations, m.CameraX, m.Viewport.Zoom)
 			}
