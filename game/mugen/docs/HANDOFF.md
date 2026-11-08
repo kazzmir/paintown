@@ -6,28 +6,25 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Last reviewed commit 1a2c8ec0b implements vertical/airborne body collisions and
-shared screen clipping before CNS, preserving the measured late-push wall order.
+Latest approved local commit 375753396 preserves body push during PosFreeze.
+Prior camera and vertical/airborne/body-push observations remain covered.
 
-Latest batch fixes PosFreeze/body-push interaction. PosFreeze blocks ordinary
-velocity movement while the actor still participates in late body separation.
-Remove both the scheduler's frozen-actor exclusion and the opponent exclusion;
-retain real Pause/SuperPause and hitpause scheduling gates.
+Current checkpoint extends the existing entity lifecycle through moving-owner
+BindToRoot helpers with Pause allowances 2/0, two pauses, body contact, helper
+retirement and round reset. Existing runtime matches beta: the helper allowance
+is spent across pauses, frozen helpers retain their bound pose, and late body
+push follows binding. Exact observations are in the scenario and feature catalog.
+No runtime change or binary rebuild was needed. Only the changed entity segment
+ran, passing with race detection; all five segments remain checked. Native
+helper, capture, symlink overlay and logs were inspected and removed. Root module
+hashes and local YAML content remain unchanged. This checkpoint awaits review.
 
-One bounded beta lifecycle with stored VelX 2 gives positions no-freeze(-6,26),
-first frozen(-7,25), second frozen(-5,27), both frozen(-6,26). Velocities 2/2 and
-CNS times 350/350 continue. Exact observations live in the extended connected
-jump/body scenario and feature catalog. It retains prior interior/wall/vertical/
-Width/air phases, uses mixed 320p/1280p actors and checks freeze release, real
-Pause and round reset clearing velocity/freeze flags. All four changed-source
-segments pass with race detection; state-flow stays checked without rerunning.
-Native helper, symlink overlay, capture and logs were inspected and removed.
-Linux rebuilt successfully; root module hashes remain unchanged.
-
-Prior camera startup, tension/zoom/bounds/Width/offscreen and cropped HD modern/
-legacy BG/fighter/effect/foreground/mask observations remain covered. Projectile
-contacts intentionally do not recoil the owner; preserve that adapter exclusion.
-Historical matrices and old raw renderer gates are not required acceptance.
+Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
+camera easing, other pause/hitpause and target-binding combinations, crop/raster/
+color/shadow/alpha, KO echo, AI policy, strict asset compatibility, physical CD
+and absent licensed fonts. Linux target; other platforms deferred. Projectile
+contacts intentionally do not recoil the owner. Historical matrices and old
+raw renderer gates are not required acceptance.
 
 Local mugen.yaml remains ignored/untracked by 8eda46f84, with contents preserved.
 The user will notify the contributor to back up YAML before pulling that removal.
@@ -35,8 +32,3 @@ Standalone music-file playback CLI remains deferred; in-stage music works.
 Both upstream histories retain Go 1.26/Ebitengine 2.10.6/purego 0.11.3; root module
 files stay read-only. Original go.sum backup remains at
 `temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked`.
-
-Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
-camera easing, asymmetric pause/hitpause and binding combinations, crop/raster/
-color/shadow/alpha, KO echo, AI policy, strict asset compatibility, physical CD
-and absent licensed fonts. Linux target; other platforms deferred.

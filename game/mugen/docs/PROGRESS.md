@@ -18,7 +18,7 @@ source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
 - [x] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
-- [x] **entities**: helper creation → binding/retirement → orphan effect expiry → round identity reset.
+- [x] **entities**: helper creation → moving-owner binding/asymmetric Pause/body contact → retirement/orphan effect expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
 - [x] **match-flow**: title/selection → stock input-driven fight → KO/time-over → results → rematch/exit.
 
@@ -67,7 +67,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. File music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven. (item4)
-- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Remaining camera easing, asymmetric pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Body-push vertical/air/Width/wall/PosFreeze phases and prior tension/zoom/bounds, offscreen fitting, startup and cropped modern/legacy rendering match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered. (deferred precision (user 2026-11-07))
+- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Remaining camera easing, other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Moving-owner self binding across asymmetric Pause allowances, bound body contact and body-push vertical/air/Width/wall/PosFreeze phases match bounded beta flows, as do prior camera observations. Team recovery and documented backgrounds remain calibrated/covered. (deferred precision (user 2026-11-07))
 
 ### Modes and platforms
 

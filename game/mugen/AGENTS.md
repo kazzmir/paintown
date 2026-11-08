@@ -86,7 +86,18 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest collision checkpoint
+## Latest entity checkpoint
+
+The connected entity scenario now includes moving-owner BindToRoot helpers with
+different Pause movement allowances, two pauses, body contact, retirement and
+round reset. The existing runtime matches the bounded beta observations: helper
+allowances are spent cumulatively across pauses, frozen helpers retain their
+pose, and late body push follows binding. Only the changed entity segment was
+rerun; it passes with race detection. No runtime change or rebuild was needed.
+Native scratch was inspected and removed. Other pause/hitpause and target-binding
+combinations remain precision work; do not generalize this result to all binds.
+
+## Prior collision checkpoint
 
 PosFreeze blocks ordinary velocity movement, not shared body push. Keep frozen
 actors eligible on both sides of the late body-push pass. A bounded beta flow
@@ -95,9 +106,8 @@ and CNS clocks continue. The existing mixed-coordinate body scenario retains
 prior interior/wall/vertical/Width/air phases, then covers PosFreeze, release,
 real Pause and round reset. Four changed-source segments pass with race detection;
 native scratch removed. Shared pre-CNS clipping and vertical Clsn2 gating remain
-covered. Projectile-owner corner push remains intentionally excluded. Asymmetric
-pause/hitpause and binding combinations stay open. Local YAML stays ignored;
-standalone music-file playback CLI remains deferred by user request.
+covered. Projectile-owner corner push remains intentionally excluded. Local YAML
+stays ignored; standalone music-file playback CLI remains deferred by user request.
 
 ## Keyboard checkpoint
 
