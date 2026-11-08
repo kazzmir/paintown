@@ -40,7 +40,7 @@ func TestRoundResetRebindsRootsAndRetiresHelperIDs(t *testing.T) {
 }
 
 // Continue the entity lifecycle through moving-owner pauses, self binding,
-// bound body contact, retirement and replacement in a fresh round. The beta
+// bound body contact, retirement, a hit-paused throw and round replacement. Beta
 // observations use one shared asset distribution and no retained run bank.
 func helperPauseBindingFlow(t *testing.T, m *Match) {
 	t.Helper()
@@ -164,6 +164,101 @@ trigger1=1
 value=%s
 `, 710+side, 710+side, offset, 710+side, 710+side, push)
 	}
+	program += `[Statedef 720]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+velset=0,0
+[State 720, grab]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=0,0
+pausetime=8,2
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=1000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+p1stateno=722
+p2stateno=730
+id=1234
+[Statedef 730]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=Const240p(3),0
+[State 730, recover own states]
+type=SelfState
+trigger1=(EnemyNear,Time)>=12
+value=740
+ctrl=1
+[Statedef 740]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=1
+velset=0,0
+[State 740, recovered]
+type=Null
+trigger1=1
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+[State 5000, wait for custom destination]
+type=Null
+trigger1=1
+[Statedef 722]
+type=S
+movetype=A
+physics=N
+anim=9990
+ctrl=0
+velset=Const240p(2),0
+[State 722, throw binding]
+type=TargetBind
+trigger1=Var(0)=0
+ignorehitpause=1
+time=6
+pos=Const240p(30),0
+`
+	for phase, frame := range []int{3, 7, 10} {
+		for index, expression := range []string{"Time", "Target,Time", "Target,Vel X", "(Target,Pos X)-Pos X"} {
+			program += fmt.Sprintf("[State 722, throw snapshot]\ntype=VarSet\ntrigger1=Var(0)=%d\nignorehitpause=1\nfv=%d\nvalue=%s\n", frame, 12+phase*4+index, expression)
+		}
+	}
+	program += `[State 722, elapsed passes]
+type=VarAdd
+trigger1=1
+ignorehitpause=1
+v=0
+value=1
+[Statedef -2]
+[State -2, no push]
+type=PlayerPush
+trigger1=1
+ignorehitpause=1
+value=0
+[State -2, free camera]
+type=ScreenBound
+trigger1=1
+ignorehitpause=1
+value=0
+movecamera=0,0
+`
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-helper-pause-bind.cns")
 		if err != nil {
@@ -174,7 +269,11 @@ value=%s
 		file.Data, file.Size, file.Movement, file.Velocity, file.ConstantFields = old.Data, old.Size, old.Movement, old.Velocity, old.ConstantFields
 		units := float64(p.LocalCoord.Width) / 320
 		box := air.Box{X1: int(-10 * units), Y1: int(-60 * units), X2: int(10 * units)}
-		p.AIR = &air.Data{Actions: map[int]*air.Action{9990: {ID: 9990, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn2: []air.Box{box}}}}}}
+		attack := air.Box{X1: int(-30 * units), Y1: int(-60 * units), X2: int(30 * units)}
+		p.AIR = &air.Data{Actions: map[int]*air.Action{
+			9990: {ID: 9990, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn2: []air.Box{box}}}},
+			9991: {ID: 9991, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn1: []air.Box{attack}, Clsn2: []air.Box{box}}}},
+		}}
 		p.Character.StateFile, p.CMD = file, nil
 	}
 	m.Stage.Camera.StartX, m.Stage.Camera.StartY = 0, 0
@@ -227,6 +326,28 @@ value=%s
 	}
 	if _, live := m.World.Registry.Lookup(firstID); live || m.Players[1].Character.X*320/float64(m.Players[1].Character.LocalCoordinateWidth()) != 30 {
 		t.Fatal("retired bound helper retained identity or body push")
+	}
+	// Continue into a throw. The receiver's custom-state clock runs while
+	// the attacker is hit-paused, so its finite binding can expire first.
+	// Beta transfers zero velocity from the paused anchor, including over
+	// the receiver's authored entry velocity, and releases it without drift.
+	root.X, root.Y = 0, 0
+	root.ChangeState(720, -1, -1)
+	target := m.Players[1].Character
+	target.X, target.Y = 20*float64(target.LocalCoordinateWidth())/320, 0
+	target.ChangeState(701, -1, -1)
+	for tick := 0; tick < 35; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for index, expected := range []float64{0, 3, 0, 30, 0, 7, 0, 30, 2, 10, 0, 26} {
+		if root.FloatVars[12+index] != expected {
+			t.Fatalf("native hit-paused throw phase %d slot %d: got %v want %v", index/4, index%4, root.FloatVars[12+index], expected)
+		}
+	}
+	if target.StateNo != 740 || !target.Ctrl || target.VelX != 0 || target.HitPauseTime != 0 {
+		t.Fatal("throw did not release into the receiver's own recovery", target.StateNo, target.Ctrl, target.VelX, target.HitPauseTime)
 	}
 	m.Round++
 	if err := m.resetRound(); err != nil {

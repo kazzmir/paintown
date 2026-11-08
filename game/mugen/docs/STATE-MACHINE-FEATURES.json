@@ -124,7 +124,7 @@
         "character/binding.go:BindSelf",
         "character/binding.go:BindCallerToTarget"
       ],
-      "validation": "Connected entity lifecycle matches beta moving-owner BindToRoot observations with helper pause allowances 2/0 across two six-tick pauses. Owner Time25 captures helper (X,Time) pairs (32,23)/(10,21); Time45 gives (50,37)/(30,35), confirming cumulative allowance spending and frozen self-bound poses. Later bound body contact gives helper X4, enemy X36, helper Time70 at owner Time80. Retirement releases contact; reset retires old IDs, creates fresh IDs and restores allowances. The changed entity segment passes with race detection; no runtime change was required. Other binding/hitpause permutations remain unverified."
+      "validation": "Connected mixed-coordinate entity lifecycle covers moving-owner self binding, cumulative Pause allowances, bound body contact, retirement and reset. Asymmetric throw (pausetime 8,2) matches beta at elapsed passes 3/7/10: (attacker Time,target Time,target VelX,deltaX)=(0,3,0,30)/(0,7,0,30)/(2,10,0,26). A hit-paused anchor places targets but transfers zero velocity; expiry does not start victim drift. Scenario ends with own-state recovery/control and fresh helper identities/budgets after reset. Changed-source segments pass with race detection; native scratch removed. Other binding/pause combinations remain unverified."
     },
     {
       "id": "combat",
@@ -349,7 +349,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Remaining camera easing, other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Moving-owner self binding across asymmetric Pause allowances, bound body contact and body-push vertical/air/Width/wall/PosFreeze phases match bounded beta flows, as do prior camera observations. Team recovery and documented backgrounds remain calibrated/covered.",
+      "gap": "Remaining camera easing, other pause/hitpause and binding combinations, crop/raster edges, color/shadow/alpha, KO-echo playback and AI-policy precision; strict asset-rejection edges remain unverified. Self binding across asymmetric Pause allowances, finite TargetBind during attacker hitpause, body contact and prior camera observations match bounded beta flows. Team recovery and documented backgrounds remain calibrated/covered.",
       "allocation": "deferred precision (user 2026-11-07)",
       "sources": [
         "render/linear.go",
@@ -542,11 +542,11 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "588e66db3a91cf80a0ae1f8a59a26a2e6cbaf5c23ffd92817d4c73e5f1aa3dfe"
+      "passed_source": "7fa060706a71c4a4e42f2b17aa12012c6ec3e8bfe675a88050bf7e4476b3c7fb"
     },
     {
       "id": "entities",
-      "contract": "helper creation \u2192 moving-owner binding/asymmetric Pause/body contact \u2192 retirement/orphan effect expiry \u2192 round identity reset",
+      "contract": "helper creation \u2192 self binding/Pause/body contact \u2192 retirement/orphan effects \u2192 hit-paused throw/recovery \u2192 round identity reset",
       "source_dirs": [
         "air",
         "background",
@@ -575,7 +575,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a24a36552f0e2d99deaf43e750672639738882eaf9624e6bdee55136e8e8801a"
+      "passed_source": "7691858e6871a787620c1894733b7c21db6812267f2adea2f7db704549c54871"
     },
     {
       "id": "effects-pause",
@@ -610,7 +610,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "dcc1d8054b96ebf8cba7502f71d9ac364a6fa82a5de194ed45ffd639865f670e"
+      "passed_source": "00078d4875e1b028cd4c0e075b909b961f31c429fe97c183bdf7b642db9e3621"
     },
     {
       "id": "match-flow",
@@ -689,13 +689,13 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6680001d960972ada371ed8e0ddd6e1a432f4a5f0c9261d6bd0bace3d8539380"
+      "passed_source": "a1a147ceb4ab79796df8a6a04f48e64f69f3b25efc1509ae2e8d36084b1f25aa"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Camera and body-push lifecycles match bounded beta observations, including PosFreeze. Moving-owner self binding also matches asymmetric Pause allowance spending and later body contact. Projectile contacts intentionally do not recoil the owner. Other pause/hitpause, target-binding and crop/raster combinations remain precision work."
+    "Camera, body-push and moving-owner self-binding lifecycles match bounded beta observations. Finite TargetBind expiry during attacker hitpause now matches zero-velocity transfer and release without drift. Projectile contacts intentionally do not recoil the owner. Other pause/hitpause, binding and crop/raster combinations remain precision work."
   ]
 }

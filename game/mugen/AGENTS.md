@@ -36,9 +36,11 @@ teams/modes/AI, remaining stage/team context, assets and platform support. Defer
 color/shadow/alpha and KO-echo precision until functional coverage is finished.
 Continue autonomously with local source/text checkpoints. Author only game/mugen/.
 No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
-Before every local commit, present the complete change list and wait for the
-user's approval. This supersedes earlier authorization to commit automatically.
-Keep mugen.yaml local and ignored; document configuration examples in README.md.
+The user renewed autonomous local commit authorization on 2026-11-07. Continue
+through coherent checkpoints without individual commit approval; give a recap
+about every five commits, or sooner for a blocker needing user input. This
+supersedes the earlier pre-commit approval rule. Do not add user configuration
+files to Git. Keep mugen.yaml local and ignored; document examples in README.md.
 
 Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
 The requested origin/go-rewrite merge at172d3fb02 and reconciliation of the
@@ -86,16 +88,18 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest entity checkpoint
+## Latest binding checkpoint
 
-The connected entity scenario now includes moving-owner BindToRoot helpers with
-different Pause movement allowances, two pauses, body contact, retirement and
-round reset. The existing runtime matches the bounded beta observations: helper
-allowances are spent cumulatively across pauses, frozen helpers retain their
-pose, and late body push follows binding. Only the changed entity segment was
-rerun; it passes with race detection. No runtime change or rebuild was needed.
-Native scratch was inspected and removed. Other pause/hitpause and target-binding
-combinations remain precision work; do not generalize this result to all binds.
+Keep moving-owner self-binding coverage: cumulative helper Pause allowances,
+frozen helper poses, late body contact, retirement and fresh round identities.
+The same entity lifecycle now continues through an asymmetric hit-paused throw,
+finite TargetBind expiry and controllable own-state recovery. A hit-paused anchor
+still places its target but publishes zero velocity, preventing expiry from
+launching the victim with the anchor's stored velocity. Normal velocity transfer
+resumes with active movement. This matches the bounded beta observations; other
+pause/hitpause and target-binding combinations remain precision work. Four
+changed-source segments pass with race detection; state-flow stays checked.
+Linux rebuilt; native scratch inspected and removed. Do not regenerate matrices.
 
 ## Prior collision checkpoint
 

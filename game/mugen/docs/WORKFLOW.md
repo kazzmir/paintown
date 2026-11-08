@@ -8,7 +8,8 @@ implementation metadata, not a test-data bank.
 Implement a connected feature batch using the existing evidence and beta docs.
 Update the feature status after connecting its actual production consumer.
 Validate the affected state-machine segment at the end of the batch and record
-its completion. Commit locally for reversal. Do not stop for checkpoint approval
+its completion. Commit locally for reversal. Give a recap about every five
+commits; never add user configuration files to Git. Do not stop for checkpoint approval
 unless user input is actually needed.
 
 Existing tests are consolidated into five scenario suites: state-flow, combat,

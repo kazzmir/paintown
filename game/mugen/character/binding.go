@@ -225,9 +225,15 @@ func (c *Character) publishBindings() {
 		}
 		x, y := target.PositionOf(c)
 		target.X, target.Y = x+b.x*float64(c.Facing), y+b.y
-		scale := target.ScaleFrom(c)
-		target.VelX = c.VelX * float64(c.Facing*target.Facing) * scale
-		target.VelY = c.VelY * scale
+		// A hit-paused anchor still places its targets, but transfers no
+		// motion. Copying its stored velocity here makes an expired binding
+		// launch the victim before the anchor has resumed movement.
+		target.VelX, target.VelY = 0, 0
+		if !c.pausedThisTick {
+			scale := target.ScaleFrom(c)
+			target.VelX = c.VelX * float64(c.Facing*target.Facing) * scale
+			target.VelY = c.VelY * scale
+		}
 		target.bindingReported = true
 	}
 	for _, target := range c.World.Roots {
