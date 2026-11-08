@@ -311,7 +311,7 @@
         "system/storyboard_state.go",
         "storyboard/storyboard.go:DrawToWindow"
       ],
-      "validation": "Connected asset lifecycle spans a partially opaque colored fade, animated/text/sound scene, clearcolor=-1 scene transition and blank ticks retaining prior pixels, explicit clear replacement and exit. Fade RGB is correctly premultiplied and one reusable texel replaces per-frame full-canvas allocations. Match-flow passes with race detection; no captures or generated banks retained."
+      "validation": "Connected asset lifecycle spans a partially opaque colored fade, animated/text/sound scene, clearcolor=-1 scene transition and blank ticks retaining prior pixels, repeated presentation without re-blending, explicit clear replacement and exit. Content composes once per simulation tick; fade RGB is premultiplied and one reusable texel replaces full-canvas allocations. Match-flow passes with race detection. Linux rebuilt and owned-window KO/rematch/KO inspected; scratch removed."
     },
     {
       "id": "bgm",
@@ -693,7 +693,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7a466d058f4d67b4df3b5a2f7cbeff673b6f2d5e58bba96f9a80859c5fb603f8"
+      "passed_source": "ee09fefcb087eefd13114e861ba5a4597708e1f6c01e5b56b28f23632f056daa"
     }
   ],
   "presentation_followups": [

@@ -3,8 +3,9 @@
 A Go/Ebitengine rewrite of Paintown's MUGEN engine, targeting Elecbyte
 **M.U.G.E.N 1.1 beta 1**. The current build is semi-playable: stock KFM/KFM720
 matches run with stages, HUD, sound, combat, rounds and rematches. Full engine
-and asset compatibility remains in progress. Storyboard intros now honor their
-own canvas and scale correctly into the game/window; see
+and asset compatibility remains in progress. Storyboards honor their canvas,
+retain uncleared scenes and render colored fades consistently across display
+refreshes; see
 [storyboard verification](docs/STORYBOARD-CANVAS.md).
 
 ## Requirements and data
@@ -223,6 +224,10 @@ their DEF, preserving private sprite colors. Outfits follow selection and round
 reset; legacy HUD portraits retain their default bank as observed in1.1b1.
 Modern 1.x characters keep their authored `RemapPal` initialization, including
 those that still use SFF v1.
+
+Shared-palette PCX sprites may omit their palette trailer. TrueType font paths
+support Windows separators, mixed-case folders and absolute filenames on Linux;
+missing fonts use the reported fallback described in [font notes](docs/BUILD.md).
 
 Linux legacy music optionally uses installed `libfluidsynth.so.3` for MIDI and
 `libopenmpt.so.0` for MOD/S3M/XM/IT. MIDI needs a GM SoundFont: set

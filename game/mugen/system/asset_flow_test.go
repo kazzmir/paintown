@@ -199,6 +199,14 @@ Interpolate Blend
 	if !bytes.Equal(retained, previous) {
 		t.Fatal("clearcolor=-1 did not retain an otherwise blank frame")
 	}
+	step()
+	step() // Text and alpha layers now draw over the retained scene.
+	canvas.ReadPixels(previous)
+	e.Draw(canvas) // Another presentation of the same simulation tick.
+	canvas.ReadPixels(retained)
+	if !bytes.Equal(retained, previous) {
+		t.Fatal("presentation refresh re-blended retained scene layers")
+	}
 	cleared := false
 	for n := 0; n < 20 && e.currentState == state; n++ {
 		step()

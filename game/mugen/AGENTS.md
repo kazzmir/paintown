@@ -88,7 +88,19 @@ font for full CJK glyph coverage. Other platform builds are deferred. No pushes
 or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 
-## Latest binding checkpoint
+## Latest asset checkpoints
+
+TrueType references use the shared resource resolver; invalid banks share
+fallback glyph textures. Preserve trailerless shared-palette PCX pixels even
+when a pixel resembles the palette marker; masked/opaque views share indices.
+Storyboard clearcolor=-1 retains its canvas across ticks/scenes; compose layers
+once per simulation tick so repeated Draw calls cannot accumulate alpha. Colored
+fades use premultiplied RGB and a reusable one-pixel texture. The connected asset
+flow covers these paths through scene exit, remapping and round reset. Match-flow
+passes with race detection; Linux build and owned-window KO/rematch/KO passed.
+All current captures/overlays/logs removed. No user configuration tracked.
+
+## Binding checkpoint
 
 Keep moving-owner self-binding coverage: cumulative helper Pause allowances,
 frozen helper poses, late body contact, retirement and fresh round identities.

@@ -398,12 +398,14 @@ func (s InputState) IsSkipRequested() bool { return s.Skip }
 
 // Player manages playback of a storyboard frame-by-frame.
 type Player struct {
-	sb         *Storyboard
-	currentIdx int
-	done       bool
-	Error      error
-	canvas     *ebiten.Image
-	gameCanvas *ebiten.Image
+	sb           *Storyboard
+	currentIdx   int
+	done         bool
+	Error        error
+	canvas       *ebiten.Image
+	gameCanvas   *ebiten.Image
+	contentScene *Scene
+	contentTick  int
 }
 
 func NewPlayer(sb *Storyboard) *Player {
@@ -534,7 +536,12 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 	if scene.ClearColorSet {
 		p.gameCanvas.Fill(scene.ClearColor)
 	}
-	scene.drawContent(p.canvas)
+	// A display can draw the same simulation tick more than once. Retained
+	// scenes must not blend their layers again on each presentation refresh.
+	if p.contentScene != scene || p.contentTick != scene.ticker {
+		scene.drawContent(p.canvas)
+		p.contentScene, p.contentTick = scene, scene.ticker
+	}
 	for _, layer := range scene.Layers {
 		if layer.RenderError != nil {
 			p.Error = fmt.Errorf("%s [%s] layer%d drawing: %w", p.sb.Source, scene.Name, layer.Index, layer.RenderError)
