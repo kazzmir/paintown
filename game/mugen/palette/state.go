@@ -12,12 +12,13 @@ import (
 type ID [2]int
 
 type State struct {
-	Archive       *sff.SFF
-	Revision      uint64
-	mappings      map[ID]ID
-	legacyInitial bool
-	hitFX         HitEffect
-	controllerFX  Effect
+	Archive         *sff.SFF
+	Revision        uint64
+	MappingRevision uint64 // only changes when MappedImage pixels can change
+	mappings        map[ID]ID
+	legacyInitial   bool
+	hitFX           HitEffect
+	controllerFX    Effect
 }
 
 func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: map[ID]ID{}} }
@@ -25,6 +26,7 @@ func New(archive *sff.SFF) *State { return &State{Archive: archive, mappings: ma
 func (s *State) Clone() *State {
 	copy := New(s.Archive)
 	copy.Revision = s.Revision
+	copy.MappingRevision = s.MappingRevision
 	copy.legacyInitial = s.legacyInitial
 	copy.hitFX = s.hitFX
 	copy.controllerFX = s.controllerFX
@@ -51,8 +53,17 @@ func (s *State) SelectLegacy(dest ID) error {
 	if err := s.Remap(ID{1, 1}, dest); err != nil {
 		return err
 	}
-	s.legacyInitial = dest != (ID{1, 1})
+	initial := dest != (ID{1, 1})
+	if s.legacyInitial != initial {
+		s.legacyInitial = initial
+		s.mappingChanged()
+	}
 	return nil
+}
+
+func (s *State) mappingChanged() {
+	s.Revision++
+	s.MappingRevision++
 }
 
 func (s *State) Remap(source, dest ID) (result error) {
@@ -60,7 +71,7 @@ func (s *State) Remap(source, dest ID) (result error) {
 	defer func() {
 		if result == nil && clearInitial {
 			s.legacyInitial = false
-			s.Revision++
+			s.mappingChanged()
 		}
 	}()
 
@@ -72,11 +83,11 @@ func (s *State) Remap(source, dest ID) (result error) {
 		if source == wildcard {
 			if len(s.mappings) > 0 {
 				clear(s.mappings)
-				s.Revision++
+				s.mappingChanged()
 			}
 		} else if _, present := s.mappings[source]; present {
 			delete(s.mappings, source)
-			s.Revision++
+			s.mappingChanged()
 		}
 		return nil
 	}
@@ -108,7 +119,7 @@ func (s *State) Remap(source, dest ID) (result error) {
 		s.mappings = map[ID]ID{}
 	}
 	s.mappings[source] = dest
-	s.Revision++
+	s.mappingChanged()
 	return nil
 }
 

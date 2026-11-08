@@ -123,7 +123,7 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 
 	revision := uint64(0)
 	if source.Palette != nil {
-		revision = source.Palette.Revision
+		revision = source.Palette.MappingRevision
 	}
 	cached, present := s.effectImages[key]
 	if !present || cached.revision != revision {

@@ -298,7 +298,7 @@ func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect boo
 	key := paletteCacheKey{state, index, hitEffect}
 	revision := uint64(0)
 	if state != nil {
-		revision = state.Revision
+		revision = state.MappingRevision
 	}
 	if p.spriteCache == nil {
 		p.spriteCache = map[paletteCacheKey]cachedSprite{}
@@ -345,7 +345,7 @@ func (p *Player) pruneSpriteCache() {
 		retain(entity)
 	}
 	for key, cached := range p.spriteCache {
-		if !active[key.state] || (key.state != nil && key.state.Revision != cached.revision) {
+		if !active[key.state] || (key.state != nil && key.state.MappingRevision != cached.revision) {
 			cached.image.Dispose()
 			delete(p.spriteCache, key)
 		}
