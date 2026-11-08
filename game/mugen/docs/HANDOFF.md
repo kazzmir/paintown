@@ -12,8 +12,11 @@ Current legacy-asset batch (end-state validation pending):
 - PCX now decodes runs directly into visible rows, discarding padding without
   allocating a second full decoded plane. Cross-row runs and trailerless shared
   palettes are retained; visible indices outside a supplied palette are errors.
-- Next: apply the archive-wide decode budget to V1, repair legacy font metadata
-  parsing and cover failure/correction through the existing connected asset flow.
+- V1 archives now enforce the same total decoded-pixel budget as V2 before
+  allocating a frame. Linked images charge their source once; portrait loading
+  charges only retained sources. PCX errors include sprite identity.
+- Next: repair legacy font metadata parsing and cover failure/correction through
+  the existing connected asset flow.
 - Prior a51b2146b retains mapping-specific texture revisions, shared fighter/HUD
   pixels and AfterImage interpolation/outfit snapshots. Four affected segments
   and palette/cache regressions passed with race detection; Linux matched five

@@ -99,6 +99,7 @@ func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected 
 	spriteIndex := make(map[uint16]*Sprite)
 	sources := make([]v1Source, totalImages)
 	owners := make([]uint16, totalImages)
+	decodedPixels := int64(0)
 	decode := func(index uint16, data []byte) error {
 		sprite := &sff.Sprites[index]
 		if sprite.Image != nil {
@@ -108,13 +109,24 @@ func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected 
 		if data == nil {
 			data, err = readRegion(r, size, source.offset, source.length)
 			if err != nil {
-				return err
+				return fmt.Errorf("sprite %d (%d,%d): %w", index, sprite.GroupNumber, sprite.ImageNumber, err)
 			}
+		}
+		width, height, _, err := pcxLayout(data)
+		if err != nil {
+			return fmt.Errorf("sprite %d (%d,%d): %w", index, sprite.GroupNumber, sprite.ImageNumber, err)
+		}
+		pixels := int64(width) * int64(height)
+		if pixels > maxArchivePixels-decodedPixels {
+			return fmt.Errorf("sprite %d (%d,%d): decoded archive exceeds %d pixels", index, sprite.GroupNumber, sprite.ImageNumber, maxArchivePixels)
 		}
 		img, err := decodePCX(data, source.palette, source.embeddedPalette)
 		if err != nil {
 			return fmt.Errorf("sprite %d (%d,%d): %w", index, sprite.GroupNumber, sprite.ImageNumber, err)
 		}
+		// Linked sprites share this plane. Selective portrait loading charges
+		// only decoded sources, including an earlier non-portrait link owner.
+		decodedPixels += pixels
 		opaque := *img
 		opaque.Palette = source.opaque
 		if opaque.Palette == nil {
