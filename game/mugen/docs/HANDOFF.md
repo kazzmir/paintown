@@ -15,6 +15,10 @@ Current media batch (end-state validation pending):
 - SFX caches pan/gain/frequency factors on Play, SndPan and live volume changes;
   per-sample truncation stays unchanged. Owner stops compact the voice slice.
   The music lifecycle now spans live pan/mute/unmute/retirement during NoMusic.
+- WAV metadata parsing now seeks over sample/optional chunks instead of reading
+  the entire payload. SND and streaming consumers share validation and sample
+  conversion, including PCM/IEEE_FLOAT extensible headers. Unknown GUIDs and
+  inconsistent valid-bit/container/frame metadata remain explicit errors.
 - The existing connected music lifecycle now crosses two blocks and a short
   final block. Run affected segments once after the complete media batch.
 - Prior51f7ae0b3 provides bounded AIR collision allocation and a camera motion
