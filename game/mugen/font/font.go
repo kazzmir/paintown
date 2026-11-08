@@ -14,6 +14,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
@@ -116,20 +117,41 @@ func LoadFont(path string) (*Font, error) {
 	section := ""
 
 	lineIdx := 0
+	lineNumber := 0
+	metadataError := func(format string, args ...any) error {
+		return fmt.Errorf("%s: font metadata line %d: %s", path, lineNumber, fmt.Sprintf(format, args...))
+	}
+	integers := func(value string, count int) ([]int, error) {
+		parts := strings.Fields(strings.ReplaceAll(value, ",", " "))
+		if len(parts) != count {
+			return nil, metadataError("expected %d integers, got %q", count, value)
+		}
+		values := make([]int, count)
+		for i, part := range parts {
+			var err error
+			values[i], err = strconv.Atoi(part)
+			if err != nil {
+				return nil, metadataError("invalid integer %q", part)
+			}
+		}
+		return values, nil
+	}
 	for scanner.Scan() {
+		lineNumber++
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" || strings.HasPrefix(line, ";") {
 			continue
 		}
 
-		if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
-			section = strings.ToLower(line[1 : len(line)-1])
+		header := strings.TrimSpace(parsers.StripComment(line))
+		if strings.HasPrefix(header, "[") && strings.HasSuffix(header, "]") {
+			section = strings.ToLower(strings.TrimSpace(header[1 : len(header)-1]))
 			continue
 		}
 
 		switch section {
 		case "def":
-			parts := strings.SplitN(line, "=", 2)
+			parts := strings.SplitN(header, "=", 2)
 			if len(parts) < 2 {
 				continue
 			}
@@ -138,22 +160,36 @@ func LoadFont(path string) (*Font, error) {
 
 			switch key {
 			case "type":
-				if strings.ToLower(val) == "variable" {
+				switch strings.ToLower(val) {
+				case "variable":
 					fnt.Type = Variable
-				} else {
+				case "fixed":
 					fnt.Type = Fixed
+				default:
+					return nil, metadataError("invalid font type %q", val)
 				}
-			case "size":
-				val = strings.ReplaceAll(val, ",", " ")
-				fmt.Sscanf(val, "%d %d", &fnt.Width, &fnt.Height)
-			case "spacing":
-				val = strings.ReplaceAll(val, ",", " ")
-				fmt.Sscanf(val, "%d %d", &fnt.SpacingX, &fnt.SpacingY)
+			case "size", "spacing", "offset":
+				values, err := integers(val, 2)
+				if err != nil {
+					return nil, err
+				}
+				switch key {
+				case "size":
+					fnt.Width, fnt.Height = values[0], values[1]
+				case "spacing":
+					fnt.SpacingX, fnt.SpacingY = values[0], values[1]
+				case "offset":
+					fnt.OffsetX, fnt.OffsetY = values[0], values[1]
+				}
 			case "colors":
-				fnt.Colors, _ = strconv.Atoi(val)
-			case "offset":
-				val = strings.ReplaceAll(val, ",", " ")
-				fmt.Sscanf(val, "%d %d", &fnt.OffsetX, &fnt.OffsetY)
+				values, err := integers(val, 1)
+				if err != nil {
+					return nil, err
+				}
+				fnt.Colors = values[0]
+				if fnt.Colors < 0 || fnt.Colors > 256 {
+					return nil, metadataError("font colors %d outside 0..256", fnt.Colors)
+				}
 			}
 		case "map":
 			// Map format: char [start_x width]
@@ -165,8 +201,11 @@ func LoadFont(path string) (*Font, error) {
 
 			rawChar := parts[0]
 			var char rune
-			if strings.HasPrefix(rawChar, "0x") {
-				hex, _ := strconv.ParseInt(rawChar[2:], 16, 32)
+			if strings.HasPrefix(strings.ToLower(rawChar), "0x") {
+				hex, err := strconv.ParseUint(rawChar[2:], 16, 8)
+				if err != nil {
+					return nil, metadataError("invalid byte character %q", rawChar)
+				}
 				char = rune(hex)
 			} else {
 				char = rune(rawChar[0])
@@ -175,16 +214,20 @@ func LoadFont(path string) (*Font, error) {
 			startX := lineIdx * fnt.Width
 			glyphWidth := fnt.Width
 
-			if fnt.Type == Variable && len(parts) >= 3 {
-				x, _ := strconv.Atoi(parts[1])
-				w, _ := strconv.Atoi(parts[2])
-				startX = x
-				glyphWidth = w
+			// A literal quote is a valid map character, not the opening of a
+			// quoted string. Strip comments only from the coordinate suffix.
+			coordinates := strings.TrimSpace(parsers.StripComment(line[len(rawChar):]))
+			if fnt.Type == Variable && coordinates != "" {
+				values, err := integers(coordinates, 2)
+				if err != nil {
+					return nil, err
+				}
+				startX, glyphWidth = values[0], values[1]
 			}
 
 			// Clip glyph from fullImg
 			if startX < 0 || startX >= fullImg.Bounds().Max.X || glyphWidth <= 0 || glyphWidth > 8192 || fnt.Height <= 0 || fnt.Height > fullImg.Bounds().Max.Y {
-				return nil, fmt.Errorf("font glyph %q outside PCX or invalid size", char)
+				return nil, metadataError("font glyph %q outside PCX or invalid size", char)
 			}
 			rect := image.Rect(startX, 0, startX+glyphWidth, fnt.Height)
 			if rect.Max.X > fullImg.Bounds().Max.X {

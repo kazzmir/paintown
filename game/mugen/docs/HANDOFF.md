@@ -15,8 +15,11 @@ Current legacy-asset batch (end-state validation pending):
 - V1 archives now enforce the same total decoded-pixel budget as V2 before
   allocating a frame. Linked images charge their source once; portrait loading
   charges only retained sources. PCX errors include sprite identity.
-- Next: repair legacy font metadata parsing and cover failure/correction through
-  the existing connected asset flow.
+- FNT V1 settings/section headers accept inline comments; mapping suffixes
+  preserve literal quote/semicolon glyphs. Malformed integer/map fields now
+  retain file/line context instead of silently becoming zero.
+- Next: cover loading, malformed assets and correction through the existing
+  connected asset flow, then validate the complete batch.
 - Prior a51b2146b retains mapping-specific texture revisions, shared fighter/HUD
   pixels and AfterImage interpolation/outfit snapshots. Four affected segments
   and palette/cache regressions passed with race detection; Linux matched five
