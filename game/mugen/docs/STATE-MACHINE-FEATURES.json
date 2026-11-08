@@ -358,9 +358,12 @@
         "palette/state.go:SelectLegacy",
         "air/air.go:ParseFromAST",
         "snd/wav.go:ReadWAVHeader",
-        "sound/wav.go:decodeWaveMusic"
+        "sound/wav.go:decodeWaveMusic",
+        "sff/images.go:UploadPixels",
+        "sff/sff.go:Index",
+        "background/sprites.go:Image"
       ],
-      "validation": "Connected asset/media lifecycles cover packed selection/portraits, intros, fight/reset, endings, AIR failure/reload and cleanup. WAV music and SND share bounded metadata/sample conversion, including integer/float extensible headers, optional/late chunks, resampling, loops and bad-file replacement/recovery. Existing decoder/mixer tests and affected connected segments pass with race detection. Linux KO/rematch/KO with authored float WAV was observed. Strict native rejection/raster parity, physical CD and missing licensed fonts remain open."
+      "validation": "Connected asset/media lifecycles cover packed selection/portraits, intros, fight/reset, endings, AIR failure/reload, streamed WAV and cleanup. SFF true-color views now preserve native byte-premultiplied masks; backgrounds/motifs/storyboards share lazily uploaded immutable pixel views. Parsed archives index group/item lookup across actors/effects/backgrounds. Existing SFF/background tests and four affected segments pass with race detection. Linux RGBA scene matches all 40 sampled beta colors. Strict asset rejection, full raster parity, physical CD and absent licensed fonts remain open."
     },
     {
       "id": "raster-audio",
@@ -374,9 +377,11 @@
         "character/ko_sound.go",
         "font/font.go:DrawWithPalette",
         "match/teams.go:recoverWinner",
-        "match/teams.go:rosterLife"
+        "match/teams.go:rosterLife",
+        "sff/images.go:UploadPixels",
+        "background/background.go:drawPaletteImage"
       ],
-      "validation": "Original 1.1b1 connected flow: Turns 2-vs-4 life 1000/500, recovery 400\u2192798, 400\u2192744 at 20 elapsed counts, 100/500\u2192275 against a previously damaged winner, cap 900\u21921000; single-player Survival 400\u2192798. Affected connected scenarios pass with race detection."
+      "validation": "One supplied-beta scene establishes PNG32/raw RGBA mask=0 opacity after byte-truncated premultiplication, mask=1 source alpha and fractional true-color BG filtering. The connected loader/draw/mask/visibility/reset scenario and Linux application reproduce 40 fixed native RGB samples without changing expectations. The initial one-shade upload mismatch was corrected at every SFF upload consumer. Other rendering, camera, binding, audio and AI precision listed in the gap remain open."
     },
     {
       "id": "ai",
@@ -477,9 +482,10 @@
         "match/camera.go:horizontalStageBounds",
         "stage/stage.go:backgroundCamera",
         "background/background.go:drawPaletteImage",
-        "character/width.go:HorizontalCameraBounds"
+        "character/width.go:HorizontalCameraBounds",
+        "background/sprites.go:Image"
       ],
-      "validation": "The connected camera lifecycle covers mixed coordinates, tension/zoom/bounds, Width, participation, Pause, modern/legacy cropped rendering and reset. One stable world-space beta spread/translate/close/bounds/return flow matches camera X/zoom at state times 1,10,21,41,81. At time 120, beta X 80.698 vs Go 80.848 remains an explicit precision gap; return/reset are functional. Linked/parallax background coverage is retained. Four affected segments pass with race detection; native scratch removed."
+      "validation": "Connected stage lifecycle covers mixed coordinates, camera tension/zoom/bounds, Width, Pause, linked/parallax backgrounds, modern/legacy cropping and reset. It now also replays exact native PNG32/raw RGBA mask colors and fractional true-color filtering, then mask changes, visibility and reset. Background/motif/storyboard textures upload on demand and share linked pixel views. Four affected segments pass with race detection; Linux reproduces 40 native samples. Camera return at time 120 still differs by about 0.15 pixels."
     }
   ],
   "segments": [
@@ -563,7 +569,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b485e77f98fea1c4b66a0167e23bb3a916c3cce74f71ef90f57907925306a4c8"
+      "passed_source": "4b3f1a08526ff1c28d602720644ae4b1014db0d3c034161a82b4b1754235e774"
     },
     {
       "id": "entities",
@@ -596,7 +602,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8971a066534908fd307c9e6ab97cbb9ae939a7a449cc218333b6730ac6a3d158"
+      "passed_source": "b57398a077635face6d386cef6a0b75a873153481a298357e4976b44889ce4f0"
     },
     {
       "id": "effects-pause",
@@ -631,7 +637,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1f9467f56e932bd35423ce81352e8a9b9210966fbd9ebab327048225a741213e"
+      "passed_source": "73f94944afc4e9a0de7264655e098f3c013b73a459a6479e72bb27afda83d64b"
     },
     {
       "id": "match-flow",
@@ -710,13 +716,14 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d150fa4dd1ef269b9f763ae1f6a78ac37be5aa57a9cb35f818b60a5a836c8c61"
+      "passed_source": "d532f6702aa301bea550dcb520e6f0c428b64ab75560592f2874a9062f796b24"
     }
   ],
   "presentation_followups": [
     "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom matches five sampled beta points; return at state time 120 differs by about 0.15 pixels and remains open. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner."
+    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom matches five sampled beta points; return at state time 120 differs by about 0.15 pixels and remains open. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
+    "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity."
   ]
 }

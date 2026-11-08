@@ -198,6 +198,10 @@ Music streams in bounded blocks; loop points still count source sample frames.
 Physical CD playback remains unavailable. The stock stage references
 sound/kfm.mid, which is absent from the supplied local distribution.
 
+True-color backgrounds use linear filtering. For normal/parallax backgrounds,
+`mask=0` forces opacity after RGB premultiplication, making fully transparent
+pixels black; `mask=1` preserves transparency. Animated backgrounds stay masked.
+
 Stage presentation includes camera zoom, moving floors (`zoffsetlink`), background
 scale/clip controls, linked elements, animated parallax floors, reflections, and
 legacy `hires` stage defaults. Stages declaring both `tensionhigh` and

@@ -188,3 +188,14 @@ sample truncation. Native Linux codecs reuse their bounded PCM buffers.
 Existing decoder/mixer regressions and the two affected segments passed with
 race detection. Other segments stayed checked. Linux KO/rematch/KO with authored
 float WAV passed; all current captures/PCM/overlays/helper were removed.
+
+The current sprite batch confirms PNG32/raw RGBA mask=0 forces opacity after
+byte-truncated RGB premultiplication. Use sff.UploadPixels at SFF upload sites;
+Go's general 16-bit conversion brightens some partial-alpha colors by one.
+True-color BGs use linear filtering, indexed BGs nearest; anim BGs stay masked.
+Background/motif/storyboard SpriteCache uploads variants on demand and shares
+immutable linked views. Parsed SFF metadata has indexed group/item lookup;
+caller-built archives retain dynamic fallback. Four affected segments passed
+with race detection after the upload correction; state-flow stayed checked.
+Linux matches 40 native RGB samples in one scene, not whole-renderer parity.
+All current helper/capture/overlay/log scratch was removed.
