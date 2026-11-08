@@ -26,6 +26,7 @@ type StateController struct {
 type Data struct {
 	Commands         map[string][]Command
 	StateControllers []StateController
+	Remap            map[string]string // logical button -> physical button; blank disables it
 }
 
 // Parse extracts [Command] definitions and [State -1, x] controllers from a M.U.G.E.N .cmd file.
@@ -47,7 +48,22 @@ func Parse(r io.Reader) (*Data, error) {
 	for _, section := range ast.Sections {
 		secName := strings.ToLower(strings.TrimSpace(section.Name))
 
-		if secName == "defaults" {
+		if secName == "remap" {
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if buttonKey(key) == "" {
+					continue
+				}
+				physical := strings.ToLower(getAsString(attr.Value))
+				if physical != "" && buttonKey(physical) == "" {
+					return nil, fmt.Errorf("[Remap] %s (line %d): invalid button %q", key, attr.Line, physical)
+				}
+				if data.Remap == nil {
+					data.Remap = make(map[string]string)
+				}
+				data.Remap[key] = physical
+			}
+		} else if secName == "defaults" {
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
 				if key == "command.time" {

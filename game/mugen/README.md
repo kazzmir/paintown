@@ -108,6 +108,13 @@ do not push their owner backward at the corner; direct and helper attacks can.
 `PosFreeze` stops velocity-driven movement while body push and CNS time continue.
 Pause/SuperPause use their separate actor clocks and movement allowances.
 
+Character CMD files can use `[Remap]`: `x = a` makes authored `x` commands read
+the configured `a` input; a blank `a =` disables logical `a`. Mappings use one
+input snapshot, so several logical buttons may share an input and swaps work
+without cascading. Holds, charged releases, key-controlled helpers and authored
+AI commands use these mappings. Menu bindings continue to use the keyboard
+configuration below.
+
 ### Adding characters
 
 Put character folders or ZIPs in your data directory's `chars/`, then add entries

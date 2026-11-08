@@ -20,14 +20,20 @@ missing member/path errors and cleanup. Match-flow passes with race detection;
 other segments stay checked. No stock assets were copied into fixtures; segment
 scratch removes both ZIP input and expansions.
 
-Current portrait checkpoint adds SFF v1/v2 selective loading for 9000,0/9000,1
+Portrait checkpoint e841c13e9 adds SFF v1/v2 selective loading for 9000,0/9000,1
 and linked pixel sources. V1 retains palette sequencing while reading only the
 needed palette trailers/pixels; V2 resolves required link chains. Selection no
 longer decodes all combat frames. Gameplay still loads the full archive. The
 connected asset flow covers v1 linked/shared/private colors and stock v2 selection,
 then full fights/reset and ZIP cleanup. Match-flow passes with race detection.
-Linux rebuild/playable acceptance
-will run at the end of this implementation batch. Prior 848b00caf and its four
+Current CMD checkpoint implements [Remap] for human input, key-controlled
+helpers and authored AI. Beta confirms x=a, a= maps physical a to command x and
+disables logical a; physical x triggers neither. Mapping uses one snapshot, with
+shared-input chords, charged releases and Start supported. AI translates plans
+back to reachable physical buttons. Four affected segments pass with race
+detection; unchanged state-flow remains checked. Native scratch was removed.
+Next: retire pack expansions on title return and apply Game Speed options live.
+Linux rebuild/playable acceptance will run at the end of this implementation batch. Prior 848b00caf and its four
 predecessors cover retained storyboard rendering, fades, font paths and PCX data.
 
 Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:

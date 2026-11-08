@@ -40,7 +40,17 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 					}
 				}
 				if button && len(frames) > 0 {
-					b.commands = append(b.commands, frames)
+					for index, frame := range frames {
+						physical, reachable := c.CmdFile.PhysicalInputs(frame)
+						if !reachable {
+							frames = nil
+							break
+						}
+						frames[index] = physical
+					}
+					if len(frames) > 0 {
+						b.commands = append(b.commands, frames)
+					}
 				}
 			}
 		}
@@ -111,7 +121,7 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		b.queue = b.commands[int(b.random.Next()%int64(len(b.commands)))]
 		b.inputs, b.queue = b.queue[0], b.queue[1:]
 	} else {
-		b.inputs = []string{"ButtonX"}
+		b.inputs, _ = c.CmdFile.PhysicalInputs([]string{"ButtonX"})
 	}
 	return b.inputs
 }

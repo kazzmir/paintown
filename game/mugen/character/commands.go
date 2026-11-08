@@ -393,9 +393,8 @@ func (c *Character) updateCommands(isPaused bool) {
 		} else {
 			physicalRaw = GetRawInputs(c.InputSlot, c.Facing)
 		}
-		c.updateRecoveryInput(physicalRaw)
-		raw := make([]string, len(physicalRaw))
-		copy(raw, physicalRaw)
+		raw := c.CmdFile.RemapInputs(physicalRaw)
+		c.updateRecoveryInput(raw)
 
 		// Preserve actual press/release transitions. An unconditional direction
 		// latch changes D -> DF -> F into extra held diagonals and breaks

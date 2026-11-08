@@ -376,8 +376,11 @@
       "sources": [
         "match/ai.go:BasicAIInput",
         "character/commands.go:Match",
-        "character/command_inputs.go:CommandInputs"
-      ]
+        "character/command_inputs.go:CommandInputs",
+        "cmd/remap.go:RemapInputs",
+        "cmd/remap.go:PhysicalInputs"
+      ],
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open."
     },
     {
       "id": "modes",
@@ -548,7 +551,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7fa060706a71c4a4e42f2b17aa12012c6ec3e8bfe675a88050bf7e4476b3c7fb"
+      "passed_source": "5e131690f4585ccbd7c0f5cdafce04834c60acbc6436b212debafa7022967d71"
     },
     {
       "id": "entities",
@@ -581,7 +584,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7691858e6871a787620c1894733b7c21db6812267f2adea2f7db704549c54871"
+      "passed_source": "c22e52198432f3d1006d9056be3c3c21f6f1567b2f4a55568d50185e0bb4288f"
     },
     {
       "id": "effects-pause",
@@ -616,7 +619,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "00078d4875e1b028cd4c0e075b909b961f31c429fe97c183bdf7b642db9e3621"
+      "passed_source": "c58b652d8ae4fd1c1d01cf2456cf814f6f5ed61d8d858a882cda36e8c868331a"
     },
     {
       "id": "match-flow",
@@ -695,7 +698,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "be3401cef68d182ab11731025426d2531742c8849d218b12f2bb731fa1bdd660"
+      "passed_source": "7c302be7aca4c0adddeec50ff1443b921baa463b49317c1c2e5fdbac5db73afb"
     }
   ],
   "presentation_followups": [

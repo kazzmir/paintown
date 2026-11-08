@@ -8,6 +8,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 )
@@ -30,7 +31,13 @@ func TestAuthoredCommandsAndAICombatFlow(t *testing.T) {
 	}
 	e.currentState = f
 	f.match.Phase = match.Active
-	commands, err := cmd.Parse(strings.NewReader(`[Command]
+	commands, err := cmd.Parse(strings.NewReader(`[Remap]
+x=a
+y=a
+a=
+z=s
+s=z
+[Command]
 name="charged"
 command=~6$B,x+y
 time=15
@@ -42,6 +49,15 @@ time=15
 name="double"
 command=F,F
 time=10
+[Command]
+name="released-x"
+command=~3x
+[Command]
+name="disabled-a"
+command=a
+[Command]
+name="start"
+command=s
 `))
 	if err != nil {
 		t.Fatal(err)
@@ -72,6 +88,21 @@ velset=0,0
 [State 0, idle]
 type=Null
 trigger1=0
+[State 0, disabled button]
+type=VarAdd
+trigger1=command="disabled-a"
+v=53
+value=1
+[State 0, remapped start]
+type=VarAdd
+trigger1=command="start"
+v=54
+value=1
+[State 0, remapped charged release]
+type=VarAdd
+trigger1=command="released-x"
+v=55
+value=1
 [Statedef 8000]
 type=S
 movetype=A
@@ -134,23 +165,32 @@ value=0
 			t.Fatal(err)
 		}
 	}
+	// Beta x=a, a= makes authored x read physical a. Physical x does
+	// nothing; disabling logical a must not prevent it from supplying x/y.
+	step("ButtonX")
+	step()
+	if root.IntVars[50] != 0 || root.IntVars[53] != 0 {
+		t.Fatal("physical x bypassed the authored button remap")
+	}
 	for n := 0; n < 6; n++ {
 		step("DirBack")
 	}
 	step()
-	step("ButtonX", "ButtonY")
-	for n := 0; n < 4; n++ {
+	step("ButtonA") // One physical button supplies the x+y chord.
+	// Let the previous Back charge expire before pressing that same chord
+	// for the next move; remapping correctly makes both commands eligible.
+	for n := 0; n < 16; n++ {
 		step()
 	}
 	step("DirDown")
 	step("DirDown", "DirForward")
 	step("DirForward")
-	step("ButtonX")
+	step("ButtonA")
 	for n := 0; n < 4; n++ {
 		step()
 	}
 	step("DirForward")
-	step("ButtonA")
+	step("ButtonC")
 	step("DirForward")
 	for n := 0; n < 4; n++ {
 		step()
@@ -167,6 +207,20 @@ value=0
 	if root.IntVars[52] != 1 || root.StateNo != 0 {
 		t.Fatal("strict double-tap did not enter/recover", root.IntVars[52], root.StateNo)
 	}
+	if err := root.CreateHelper(engine.HelperParameters{ID: 77, StateNo: 0, KeyControl: true, Type: "normal", RemapPalette: [2]int{-1, 0}}); err != nil {
+		t.Fatal(err)
+	}
+	helper := root.Helpers[len(root.Helpers)-1]
+	root.IntVars[55] = 0
+	for n := 0; n < 4; n++ {
+		step("ButtonA")
+	}
+	step()
+	step("ButtonZ") // Logical Start reads physical z; physical Start reads z.
+	step()
+	if root.IntVars[53] != 0 || root.IntVars[54] != 1 || root.IntVars[55] != 1 || helper.IntVars[53] != 0 || helper.IntVars[54] != 1 || helper.IntVars[55] != 1 {
+		t.Fatal("root/helper remap, disabled slot, Start or charged release", root.IntVars[53:56], helper.IntVars[53:56])
+	}
 	for side := range request.Players {
 		request.Players[side].AILevel = 8
 	}
@@ -176,6 +230,11 @@ value=0
 		t.Fatal(err)
 	}
 	e.currentState = f
+	for _, player := range f.match.Actors() {
+		commands := *player.CMD
+		commands.Remap = map[string]string{"x": "a", "a": "x", "y": "b", "b": "y", "z": "c", "c": "z", "s": ""}
+		player.CMD, player.Character.CmdFile = &commands, &commands
+	}
 	sawAttack, sawSpecial, sawDamage := false, false, false
 	for frame := 0; frame < 2200 && !(sawAttack && sawSpecial && sawDamage); frame++ {
 		if err := e.Update(); err != nil {
