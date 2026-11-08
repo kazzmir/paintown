@@ -22,6 +22,11 @@ Current sprite/rendering batch (end-state validation pending):
 - Parsed SFF metadata now has indexed group/item lookup. Actors, effects and
   normal/animated/parallax backgrounds use it; caller-built archives retain
   dynamic linear lookup. Missing effect pixels report a contextual warning.
+- End-state checks found masked RGBA uploads one shade brighter than beta:
+  Go used 16-bit color conversion while native truncates byte products. Shared
+  SFF UploadPixels now applies native premultiplication across backgrounds,
+  actors, effects, HUD/selection portraits and bitmap fonts. Expected beta pixels
+  are unchanged; rerun affected connected scenarios after this correction.
 - Latest accepted media checkpoint764918190 retains bounded WAV/SFX playback,
   extensible PCM/float support, Linux KO/rematch/KO and completed race checks.
 

@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
 // SpriteCache belongs to one loaded background/storyboard. Linked immutable
@@ -25,7 +26,7 @@ func (c *SpriteCache) upload(pixels image.Image) *ebiten.Image {
 	// SFF views are comparable pointers. External image implementations may
 	// contain slices; those still upload, without using an invalid map key.
 	if !reflect.TypeOf(pixels).Comparable() {
-		return ebiten.NewImageFromImage(pixels)
+		return ebiten.NewImageFromImage(sff.UploadPixels(pixels))
 	}
 	if c.images == nil {
 		c.images = make(map[image.Image]*ebiten.Image)
@@ -33,7 +34,7 @@ func (c *SpriteCache) upload(pixels image.Image) *ebiten.Image {
 	if cached := c.images[pixels]; cached != nil {
 		return cached
 	}
-	img := ebiten.NewImageFromImage(pixels)
+	img := ebiten.NewImageFromImage(sff.UploadPixels(pixels))
 	c.images[pixels] = img
 	return img
 }

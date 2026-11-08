@@ -302,7 +302,7 @@ func (f *Font) getGlyphImage(char rune, bank int) *ebiten.Image {
 		img = indexed
 	}
 
-	eImg := ebiten.NewImageFromImage(img)
+	eImg := ebiten.NewImageFromImage(sff.UploadPixels(img))
 	f.imageCache[bank][char] = eImg
 	return eImg
 }

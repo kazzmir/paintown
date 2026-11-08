@@ -143,7 +143,7 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		if present {
 			cached.image.Deallocate()
 		}
-		cached = effectImage{revision, ebiten.NewImageFromImage(pixels)}
+		cached = effectImage{revision, ebiten.NewImageFromImage(sff.UploadPixels(pixels))}
 		s.effectImages[key] = cached
 	}
 	sprite := source.Sprites.Sprites[index]

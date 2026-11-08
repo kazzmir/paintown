@@ -127,7 +127,7 @@ func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy
 	}
 	img := h.images[sprite]
 	if img == nil {
-		img = ebiten.NewImageFromImage(sprite.Image)
+		img = ebiten.NewImageFromImage(sff.UploadPixels(sprite.Image))
 		h.images[sprite] = img
 	}
 	op := &ebiten.DrawImageOptions{}

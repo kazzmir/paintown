@@ -52,12 +52,33 @@ func (i *opaqueRGBA) At(x, y int) color.Color {
 	if !image.Pt(x, y).In(i.Bounds()) {
 		return color.RGBA{}
 	}
-	c := i.Image.At(x, y)
+	c := nativeRGBA(i.Image.At(x, y))
+	c.A = 255
+	return c
+}
+
+func nativeRGBA(c color.Color) color.RGBA {
 	if n, ok := c.(color.NRGBA); ok {
-		return color.RGBA{uint8(uint16(n.R) * uint16(n.A) / 255), uint8(uint16(n.G) * uint16(n.A) / 255), uint8(uint16(n.B) * uint16(n.A) / 255), 255}
+		return color.RGBA{uint8(uint16(n.R) * uint16(n.A) / 255), uint8(uint16(n.G) * uint16(n.A) / 255), uint8(uint16(n.B) * uint16(n.A) / 255), n.A}
 	}
-	r, g, b, _ := c.RGBA()
-	return color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255}
+	r, g, b, a := c.RGBA()
+	return color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), uint8(a >> 8)}
+}
+
+type uploadRGBA struct{ image.Image }
+
+func (*uploadRGBA) ColorModel() color.Model   { return color.RGBAModel }
+func (i *uploadRGBA) At(x, y int) color.Color { return nativeRGBA(i.Image.At(x, y)) }
+
+// UploadPixels keeps source pixels unchanged while using native byte-truncated
+// RGBA premultiplication. Go's general image conversion instead premultiplies
+// at 16-bit precision, changing some eight-bit colors by one. Indexed and
+// already-premultiplied views pass through without conversion.
+func UploadPixels(pixels image.Image) image.Image {
+	if _, straight := pixels.(*image.NRGBA); straight {
+		return &uploadRGBA{pixels}
+	}
+	return pixels
 }
 
 func trueColorImages(img image.Image) (image.Image, image.Image, error) {

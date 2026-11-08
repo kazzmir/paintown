@@ -105,9 +105,9 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 			if sprite.GroupNumber == 9000 && sprite.Image != nil {
 				switch sprite.ImageNumber {
 				case 0:
-					cp.SmallPortrait = ebiten.NewImageFromImage(sprite.Image)
+					cp.SmallPortrait = ebiten.NewImageFromImage(sff.UploadPixels(sprite.Image))
 				case 1:
-					cp.BigPortrait = ebiten.NewImageFromImage(sprite.Image)
+					cp.BigPortrait = ebiten.NewImageFromImage(sff.UploadPixels(sprite.Image))
 				}
 			}
 		}

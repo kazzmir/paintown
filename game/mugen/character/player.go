@@ -322,7 +322,7 @@ func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect boo
 	if pixels == nil {
 		return nil
 	}
-	img := ebiten.NewImageFromImage(pixels)
+	img := ebiten.NewImageFromImage(sff.UploadPixels(pixels))
 	p.spriteCache[key] = cachedSprite{revision, img}
 	return img
 }
