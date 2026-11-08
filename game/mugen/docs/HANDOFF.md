@@ -7,23 +7,16 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Latest media batch:
+Current sprite/rendering batch (end-state validation pending):
 
-- b6f684b72: bounded BGM read-ahead; playback cursors count consumed samples so
-  NoMusic, loop edges and menu continuity remain exact for the connected flow.
-- 32110fb35: cache SFX pan/gain/frequency factors on commands; retain native
-  per-sample truncation and live pan/mute/unmute/owner retirement.
-- 000617bb2: shared WAV metadata/sample decoding, including extensible PCM/float
-  GUIDs and bounds/valid-bit validation, without reading whole music payloads.
-- e29aa30b8: streamed/resampled PCM8/16/24/32 and float32/64 WAV music; Linux
-  MIDI/tracker buffer reuse. The existing music scenario also spans optional
-  RIFF chunks, late fmt, malformed replacement/recovery and float SND expiry.
-- Current checkpoint: existing snd/sound regressions and both affected connected
-  segments passed with race detection. The other three segments stayed checked.
-  Linux rebuilt; owned-window KFM/KFM720 KO/rematch/KO passed with 82 balanced
-  keyboard events and 1,980,955 private PCM frames. Authored float WAV remained
-  audible after SFX ended. No sound/runtime errors; captures/PCM/overlays/helper
-  removed. Root metadata and ignored YAML are unchanged. No user config tracked.
+- PNG32/raw RGBA now expose a lightweight unmasked view: force opacity after
+  native byte-truncated RGB premultiplication. One beta scene confirms both
+  formats, including opaque black for fully transparent texels. Indexed/opaque
+  sprites retain their existing views; linked nodes share the opaque view.
+- The same scene confirms linear true-color BG filtering under fractional
+  scaling. Implement this consumer before final connected validation.
+- Latest accepted media checkpoint764918190 retains bounded WAV/SFX playback,
+  extensible PCM/float support, Linux KO/rematch/KO and completed race checks.
 
 Prior 51f7ae0b3 bounds AIR collision allocation and covers camera motion. The
 return precision gap stays open: beta 80.698 vs Go 80.848 at state time 120.

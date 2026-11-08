@@ -278,7 +278,7 @@ func decodeV2(n v2Sprite, data []byte, pals []Palette) (image.Image, image.Image
 					img.Pix[i*4+3] = data[i*channels+3]
 				}
 			}
-			return img, img, nil
+			return trueColorImages(img)
 		}
 		if n.depth != 8 && n.depth != 5 {
 			return nil, nil, fmt.Errorf("raw color depth %d is unsupported", n.depth)
@@ -317,7 +317,7 @@ func decodeV2(n v2Sprite, data []byte, pals []Palette) (image.Image, image.Image
 			if (n.format == 11 && n.depth != 24) || (n.format == 12 && n.depth != 32) {
 				return nil, nil, fmt.Errorf("PNG color depth mismatch")
 			}
-			return img, img, nil
+			return trueColorImages(img)
 		}
 	default:
 		return nil, nil, fmt.Errorf("unsupported compression format")

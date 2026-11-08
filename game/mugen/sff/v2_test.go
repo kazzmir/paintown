@@ -47,10 +47,21 @@ func TestReferenceEncodedFormats(t *testing.T) {
 						want.A = byte(x * 31)
 					}
 				}
-				got := color.NRGBAModel.Convert(s.ImageOpaque.At(x, y)).(color.NRGBA)
+				pixels := s.ImageOpaque
+				if i == 3 || i == 5 {
+					pixels = s.Image
+				}
+				got := color.NRGBAModel.Convert(pixels.At(x, y)).(color.NRGBA)
 				// Fully transparent PNG pixels have no visible RGB requirement.
 				if got.A != want.A || (want.A != 0 && got != want) {
 					t.Fatalf("sprite %d pixel %d,%d=%v want %v", i, x, y, got, want)
+				}
+				opaque := color.NRGBAModel.Convert(s.ImageOpaque.At(x, y)).(color.NRGBA)
+				if i == 3 || i == 5 {
+					want = color.NRGBA{uint8(uint16(want.R) * uint16(want.A) / 255), uint8(uint16(want.G) * uint16(want.A) / 255), uint8(uint16(want.B) * uint16(want.A) / 255), 255}
+				}
+				if opaque != want {
+					t.Fatalf("sprite %d unmasked pixel %d,%d=%v want %v", i, x, y, opaque, want)
 				}
 				if i < 2 {
 					masked := color.NRGBAModel.Convert(s.Image.At(x, y)).(color.NRGBA)
