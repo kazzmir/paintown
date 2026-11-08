@@ -12,6 +12,13 @@ import (
 // DecodePCX decodes an 8-bit PCX image from the given byte slice.
 // If the palette is not nil, it is applied directly to the image.
 func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
+	return decodePCX(data, palette, true)
+}
+
+// SFF shared-palette sprites may omit the entire palette trailer. Their pixel
+// bytes can coincidentally contain 0x0c at the usual trailer offset, so only
+// strip a trailer when the enclosing archive declares an embedded palette.
+func decodePCX(data []byte, palette color.Palette, embeddedPalette bool) (*image.Paletted, error) {
 	if len(data) < 128 {
 		return nil, fmt.Errorf("data too short for PCX header")
 	}
@@ -48,7 +55,7 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 
 	// Decode RLE
 	pixelEnd := len(data)
-	if len(data) >= 897 && data[len(data)-769] == 12 {
+	if embeddedPalette && len(data) >= 897 && data[len(data)-769] == 12 {
 		pixelEnd -= 769
 	}
 	r := bytes.NewReader(data[128:pixelEnd])

@@ -284,6 +284,18 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 		{9000, 1, false, false, blue}, {0, 0, false, false, green}, {0, 1, true, false, green}, {9000, 0, true, false, green}, {0, 2, true, true, green},
 	} {
 		data := pcx(node.c)
+		if node.group == 0 && node.item == 1 {
+			// Shared-palette PCX without a trailer. Its literal pixel 12
+			// happens to sit where a tagged palette would usually start.
+			// The archive flag must prevent truncating 769 valid bytes.
+			data = append([]byte(nil), data[:128]...)
+			binary.LittleEndian.PutUint16(data[8:], 31)
+			binary.LittleEndian.PutUint16(data[10:], 31)
+			binary.LittleEndian.PutUint16(data[66:], 32)
+			pixels := bytes.Repeat([]byte{1}, 32*32)
+			pixels[0], pixels[255] = 0, 12
+			data = append(data, pixels...)
+		}
 		if node.linked {
 			data = nil
 		}
@@ -399,12 +411,17 @@ trigger1=1
 	}
 	reach(match.Active)
 	p1, p2 := fight.match.Players[0], fight.match.Players[1]
+	sharedPixels := p1.SFF.Sprites[2].Image.(*image.Paletted)
+	if sharedPixels.Bounds() != image.Rect(0, 0, 32, 32) || sharedPixels.ColorIndexAt(31, 7) != 12 || sharedPixels.ColorIndexAt(31, 31) != 1 || pixel(p1.Character, 2) != gold {
+		t.Fatal("shared-palette PCX pixels were mistaken for a palette trailer")
+	}
 	if p1.Character.PaletteNo != 2 || pixel(p1.Character, 1) != gold || pixel(p2.Character, 1) != green || pixel(p1.Character, 0) != blue || pixel(p1.Character, 3) != green || pixel(p1.Character, 4) != gold {
 		t.Fatal("selected ACT/shared/private/link color consumer")
 	}
 	// Exercise both production fighter and HUD sprite caches before remapping.
 	e.Draw(canvas)
 	p1.DrawSprite(canvas, p1.Character, 9000, 0, 10, 10, 1, 1)
+	p1.DrawSprite(canvas, p1.Character, 0, 1, 40, 10, 1, 1)
 	root := p1.Character
 	if err := root.CreateHelper(engine.HelperParameters{ID: 90, StateNo: 0, Type: "normal", RemapPalette: [2]int{-1, 0}}); err != nil {
 		t.Fatal(err)

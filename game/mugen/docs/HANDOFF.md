@@ -20,13 +20,21 @@ Invalid bank values share fallback glyph textures; TrueType banks share one set.
 The connected storyboard flow now renders local UTF-8 faces across scenes and
 checks corrupt-font rejection. Only match-flow reopened and passed with race
 detection. Scratch is automatic; no new asset banks or user configuration files.
-Current storyboard checkpoint preserves canvas pixels across ticks/scenes when
+
+Storyboard checkpoint f660d1640 preserves canvas pixels across ticks/scenes when
 clearcolor=-1; an explicit clear replaces them. Colored fades use correct
 premultiplied RGB and a reusable one-pixel texture instead of a full-canvas
 allocation per draw. The connected scene lifecycle covers fade, animation/text/
 sound, retained blank ticks, clear replacement and exit. Match-flow passes with
-race detection; completed other segments were not rerun. Rebuild Linux at the
-end of this implementation batch. Root modules and local YAML stay intact.
+race detection; completed other segments were not rerun.
+
+Current legacy sprite checkpoint honors the SFF shared-palette flag when decoding
+PCX payloads without palette trailers. A pixel 12 at the usual trailer offset
+must not discard 769 valid bytes. Masked/opaque views now share immutable decoded
+indices, avoiding a second RLE decode and buffer. The existing ACT/helper/reset
+asset flow covers the trailerless sprite, palette remapping and GPU drawing;
+match-flow passes with race detection. No new fixtures or retained scratch.
+Rebuild Linux at the end of this batch. Root modules and local YAML stay intact.
 
 Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
 camera easing, other pause/hitpause and binding combinations, crop/raster/

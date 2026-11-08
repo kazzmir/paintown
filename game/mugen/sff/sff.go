@@ -194,14 +194,18 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			}
 			palToUseOpaque = opaquePalette(palToUseOpaque)
 
-			img, err := DecodePCX(pcxData, palToUse)
+			img, err := decodePCX(pcxData, palToUse, !samePalette)
 			if err != nil {
 				return nil, fmt.Errorf("sprite %d (%d,%d): %w", i, group, item, err)
 			}
-			imgOpaque, err := DecodePCX(pcxData, palToUseOpaque)
-			if err != nil {
-				return nil, fmt.Errorf("sprite %d (%d,%d) opaque: %w", i, group, item, err)
+			// Masked and opaque consumers share immutable decoded indices.
+			// Only their palettes differ; decoding the same RLE twice wastes
+			// both load time and a complete pixel buffer for every v1 sprite.
+			imgOpaque := *img
+			if palToUseOpaque == nil {
+				palToUseOpaque = opaquePalette(img.Palette)
 			}
+			imgOpaque.Palette = palToUseOpaque
 			if err == nil {
 				paletteIndex := -1
 				if shared {
@@ -215,7 +219,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 					YAxis:        y,
 					Linked:       false,
 					Image:        img,
-					ImageOpaque:  imgOpaque,
+					ImageOpaque:  &imgOpaque,
 				})
 			}
 			spriteIndex[currentIndex] = &sff.Sprites[len(sff.Sprites)-1]

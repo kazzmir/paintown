@@ -336,6 +336,7 @@
       "sources": [
         "font/font.go",
         "font/truetype.go:loadTrueType",
+        "sff/pcx.go:decodePCX",
         "sound/legacy_linux.go:decodeLegacyMusic",
         "storyboard/loader.go:Load",
         "storyboard/storyboard.go:SoundCommands",
@@ -345,7 +346,7 @@
         "character/palette_load.go:BindPalette",
         "palette/state.go:SelectLegacy"
       ],
-      "validation": "Connected storyboard/match flow covers nested Windows-style/mixed-case and absolute TrueType paths, UTF-8 text, invalid banks and contextual corrupt-font rejection. Font fallback banks share texture caches. Legacy ACT outfit/shared-private sprite/helper/round-reset lifecycle remains covered; a bounded beta color flow confirms alternate body/default HUD portrait distinction. Missing licensed fonts, physical CD playback and exact raster/native rejection parity remain open."
+      "validation": "Connected storyboard/match flow covers authored TrueType paths, UTF-8 text, fallback banks and corrupt-font context. Legacy ACT/shared-private sprite/helper/reset lifecycle also loads trailerless shared PCX pixels containing a false palette marker, then remaps and renders them. V1 masked/opaque views share one decoded pixel buffer. Earlier beta outfit/portrait observations remain covered. Missing licensed fonts, physical CD playback and exact raster/native rejection parity remain open."
     },
     {
       "id": "raster-audio",
@@ -692,7 +693,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "755cef03cd644917cf87d24f52ee55831464b41369a525be248536635addc73c"
+      "passed_source": "7a466d058f4d67b4df3b5a2f7cbeff673b6f2d5e58bba96f9a80859c5fb603f8"
     }
   ],
   "presentation_followups": [
