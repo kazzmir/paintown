@@ -18,8 +18,10 @@ Current legacy-asset batch (end-state validation pending):
 - FNT V1 settings/section headers accept inline comments; mapping suffixes
   preserve literal quote/semicolon glyphs. Malformed integer/map fields now
   retain file/line context instead of silently becoming zero.
-- Next: cover loading, malformed assets and correction through the existing
-  connected asset flow, then validate the complete batch.
+- Existing storyboard/packed-character flow now spans a tiny padded-row V1
+  font, bank changes across retained scenes, quoted/hex map characters, bad
+  font metadata and bad packed PCX, followed by correction and successful reload.
+  No new test file or generated asset bank. Validate the complete batch next.
 - Prior a51b2146b retains mapping-specific texture revisions, shared fighter/HUD
   pixels and AfterImage interpolation/outfit snapshots. Four affected segments
   and palette/cache regressions passed with race detection; Linux matched five

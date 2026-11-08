@@ -60,6 +60,42 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	// A small legacy bitmap font spans padded PCX rows, color banks and
+	// commented metadata. Generate it in scratch rather than copying a bank.
+	pcx := make([]byte, 128)
+	pcx[0], pcx[1], pcx[2], pcx[3], pcx[65] = 10, 5, 1, 8, 1
+	binary.LittleEndian.PutUint16(pcx[8:], 4) // five visible pixels, eight encoded
+	binary.LittleEndian.PutUint16(pcx[10:], 2)
+	binary.LittleEndian.PutUint16(pcx[66:], 8)
+	pcx = append(pcx, 0xcb, 254, 0xc2, 255, 0xc3, 0, 0xc5, 255, 0xc3, 254, 12)
+	colors := make([]byte, 768)
+	copy(colors[252*3:], []byte{47, 113, 23, 211, 137, 29, 17, 91, 143, 173, 53, 19})
+	pcx = append(pcx, colors...)
+	fontMetadata := `[Def] ; legacy metadata
+Type=Variable ; retain explicit variable glyph widths
+Size=3,3 ; cell size
+Spacing=1,0 ; glyph gap
+Colors=2 ; two colors per bank
+Offset=0,0
+[Map] ; quote and hexadecimal semicolon are literal glyphs
+A 0 2
+" 2 1 ; a quote is not a string delimiter here
+0X3B 3 2 ; semicolon
+`
+	legacyFont := func(metadata string) []byte {
+		data := make([]byte, 32)
+		copy(data, "ElecbyteFnt\x00\x00")
+		data[12] = 1
+		binary.LittleEndian.PutUint32(data[16:], 32)
+		binary.LittleEndian.PutUint32(data[20:], uint32(len(pcx)))
+		binary.LittleEndian.PutUint32(data[24:], uint32(32+len(pcx)))
+		binary.LittleEndian.PutUint32(data[28:], uint32(len(metadata)))
+		return append(append(data, pcx...), metadata...)
+	}
+	legacyPath := filepath.Join(dir, "legacy.fnt")
+	if err := os.WriteFile(legacyPath, legacyFont(fontMetadata), 0600); err != nil {
+		t.Fatal(err)
+	}
 	source := fmt.Sprintf(`[Info]
 localcoord=320,240
 [SceneDef]
@@ -68,6 +104,7 @@ snd=%s
 font0=%s
 font1=nested.def
 font2=absolute.def
+font3=legacy.fnt
 [Scene 0]
 end.time=12
 clearcolor=0,0,0
@@ -85,6 +122,9 @@ layer1.endtime=8
 layer2.text="AVé"
 layer2.font=1,314,1
 layer2.offset=40,85
+layer3.text="A;A"
+layer3.font=3,1,1
+layer3.offset=100,100
 sound0.value=0,0
 sound0.starttime=2
 sound0.volumescale=75
@@ -103,6 +143,10 @@ layer2.text="AVé"
 layer2.font=2,-99,1
 layer2.offset=40,85
 layer2.starttime=2
+layer3.text="A;A"
+layer3.font=3,0,1
+layer3.offset=100,100
+layer3.starttime=2
 [Scene 2]
 end.time=3
 clearcolor=12,24,36
@@ -130,6 +174,10 @@ Interpolate Blend
 		if f == nil || f.Fallback != "" || f.TextWidth("AVé") <= 0 || f.TextWidth("AVé") > 80 || f.Glyph('é', 314) == nil {
 			t.Fatal("authored TrueType path/UTF-8 metrics did not reach storyboard", f)
 		}
+	}
+	legacy := story.Fonts[3]
+	if legacy == nil || legacy.TextWidth("A\";") != 8 || legacy.Glyph('"', 0) == nil || legacy.Glyph(';', 0) == nil {
+		t.Fatal("legacy commented metadata, variable widths or map characters were lost")
 	}
 	action := story.AIR.Actions[700]
 	visual := action.Sample(0, 2)
@@ -169,6 +217,9 @@ Interpolate Blend
 	}
 	step()
 	pcm := make([]byte, 735*4)
+	if got := color.NRGBAModel.Convert(canvas.At(200, 194)).(color.NRGBA); got != (color.NRGBA{47, 113, 23, 255}) {
+		t.Fatal("legacy padded PCX/color bank did not reach storyboard", got)
+	}
 	if _, err := e.sound.mixer.Read(pcm); err != nil {
 		t.Fatal(err)
 	}
@@ -204,6 +255,9 @@ Interpolate Blend
 	}
 	step()
 	step() // Text and alpha layers now draw over the retained scene.
+	if got := color.NRGBAModel.Convert(canvas.At(200, 194)).(color.NRGBA); got != (color.NRGBA{17, 91, 143, 255}) {
+		t.Fatal("legacy font bank did not change across the retained scene", got)
+	}
 	canvas.ReadPixels(previous)
 	e.Draw(canvas) // Another presentation of the same simulation tick.
 	canvas.ReadPixels(retained)
@@ -235,6 +289,18 @@ Interpolate Blend
 	}
 	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
 		t.Fatal(err)
+	}
+	if err := os.WriteFile(legacyPath, legacyFont(strings.Replace(fontMetadata, "Colors=2", "Colors=two", 1)), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := sb.Load(path, root); err == nil || !strings.Contains(err.Error(), "font3") || !strings.Contains(err.Error(), "legacy.fnt") || !strings.Contains(err.Error(), "metadata line 5") {
+		t.Fatal("malformed legacy font lost resource/line context", err)
+	}
+	if err := os.WriteFile(legacyPath, legacyFont(fontMetadata), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := sb.Load(path, root); err != nil {
+		t.Fatal("corrected legacy font could not reload", err)
 	}
 	if err := os.WriteFile(facePath, []byte("invalid font"), 0600); err != nil {
 		t.Fatal(err)
@@ -274,8 +340,9 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 		data := make([]byte, 128)
 		data[0], data[1], data[2], data[3], data[65] = 10, 5, 1, 8, 1
 		binary.LittleEndian.PutUint16(data[8:], 1)
-		binary.LittleEndian.PutUint16(data[66:], 2)
-		data = append(data, 0, 1, 12)
+		binary.LittleEndian.PutUint16(data[10:], 1)
+		binary.LittleEndian.PutUint16(data[66:], 4)
+		data = append(data, 0, 0xc4, 1, 0, 0xc2, 1, 12)
 		colors := make([]byte, 768)
 		copy(colors[3:], []byte{c.R, c.G, c.B})
 		return append(data, colors...)
@@ -690,6 +757,26 @@ layer0.offset=80,80
 	}
 	if _, err := NewFightState(e, request); err != nil {
 		t.Fatal("corrected packed animation could not reload", err)
+	}
+	spritePath := filepath.Join(filepath.Dir(first.DefPath), "outfits.sff")
+	validSprites, err := os.ReadFile(spritePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	badSprites := append([]byte(nil), validSprites...)
+	secondSprite := int(binary.LittleEndian.Uint32(badSprites[512:]))
+	binary.LittleEndian.PutUint16(badSprites[secondSprite+32+66:], 1)
+	if err := os.WriteFile(spritePath, badSprites, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewFightState(e, request); err == nil || !strings.Contains(err.Error(), "outfits.sff") || !strings.Contains(err.Error(), "sprite 1 (0,0)") || !strings.Contains(err.Error(), "PCX row size") {
+		t.Fatal("malformed packed sprite lost archive/frame context", err)
+	}
+	if err := os.WriteFile(spritePath, validSprites, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewFightState(e, request); err != nil {
+		t.Fatal("corrected packed sprites could not reload", err)
 	}
 	if err := e.Close(); err != nil {
 		t.Fatal(err)
