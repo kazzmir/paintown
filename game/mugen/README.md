@@ -100,6 +100,8 @@ Escape returns to the title during a fight or result. These are stock bindings;
 configuration overrides can change them. Ctrl-D cycles debug output through
 players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
+Options changes apply to the current session. Game Speed updates the live
+scheduler immediately, and subsequent matches inherit that clock rate.
 
 Body collisions use CNS ground/air widths and temporary `Width` values when
 the fighters' hurtboxes overlap vertically, including air/ground and air/air
@@ -138,8 +140,9 @@ Quick matches also accept ZIP entries, for example:
 game/mugen/mugen.sh --quick-match 'fighter.zip,other.zip:Alternate.def'
 ```
 
-Each archive expands once into temporary storage and is reused until shutdown;
-normal exit, startup errors and handled termination remove its expanded files.
+Each archive expands once for the active selection/matches. Returning to title,
+normal exit, startup errors and handled termination remove its expanded files;
+opening selection again reloads the source pack as needed.
 The original ZIP is preserved. Packs support up to 1 GiB of expanded content and
 65,536 entries. No assets or local configuration files need to be added to Git.
 

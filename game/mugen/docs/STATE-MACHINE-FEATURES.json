@@ -210,11 +210,12 @@
       "sources": [
         "system/flow_test.go:TestTitleSelectionVersusFightResultRematchAndExit",
         "system/fight_state.go:NewFightState",
+        "system/options.go:NewOptionsState",
         "config/extended.go:UnmarshalYAML",
         "config/keys.go:SetBindings",
         "input/manager.go:matchAction"
       ],
-      "validation": "Connected YAML-to-input-to-match flow accepts scalar and alternative-key lists; covers deduplication, independent value copies, disabled/invalid overrides, player ownership and partial release, menu selection, stock CNS wins using alternative then primary keys, round reset, rematch and exit. Affected segments and existing configuration/input regressions pass with race detection."
+      "validation": "Connected title/options/selection/match flow covers live Game Speed scheduler updates and inherited match clocks, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit. Packed ending/title return retires expanded files; reopening selection reloads fresh portraits/paths without deleting the source ZIP. Match-flow passes with race detection."
     },
     {
       "id": "announcements",
@@ -698,7 +699,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7c302be7aca4c0adddeec50ff1443b921baa463b49317c1c2e5fdbac5db73afb"
+      "passed_source": "ec9141bcfe554a9476baa635d97b557069aa1a58cd76a5c594830b9b492150f2"
     }
   ],
   "presentation_followups": [

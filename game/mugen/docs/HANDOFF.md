@@ -26,13 +26,17 @@ needed palette trailers/pixels; V2 resolves required link chains. Selection no
 longer decodes all combat frames. Gameplay still loads the full archive. The
 connected asset flow covers v1 linked/shared/private colors and stock v2 selection,
 then full fights/reset and ZIP cleanup. Match-flow passes with race detection.
-Current CMD checkpoint implements [Remap] for human input, key-controlled
+CMD checkpoint 43bf5139c implements [Remap] for human input, key-controlled
 helpers and authored AI. Beta confirms x=a, a= maps physical a to command x and
 disables logical a; physical x triggers neither. Mapping uses one snapshot, with
 shared-input chords, charged releases and Start supported. AI translates plans
 back to reachable physical buttons. Four affected segments pass with race
 detection; unchanged state-flow remains checked. Native scratch was removed.
-Next: retire pack expansions on title return and apply Game Speed options live.
+Current menu checkpoint retires expanded packs on title entry after closing
+packed music readers; selection can reload them without touching source ZIPs.
+Game Speed options update Ebitengine's scheduler immediately and the next match
+inherits that rate. Connected option/menu and packed asset lifecycles pass with
+race detection. Only match-flow reopened for this batch.
 Linux rebuild/playable acceptance will run at the end of this implementation batch. Prior 848b00caf and its four
 predecessors cover retained storyboard rendering, fades, font paths and PCX data.
 

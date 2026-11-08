@@ -80,7 +80,8 @@ func (e *Engine) Update() error {
 		return ebiten.Termination
 	default:
 	}
-	if _, title := e.currentState.(*TitleState); title {
+	_, wasTitle := e.currentState.(*TitleState)
+	if wasTitle {
 		e.modeRun = nil
 	}
 	if fight, ok := e.currentState.(*FightState); ok && fight.match != nil {
@@ -105,6 +106,15 @@ func (e *Engine) Update() error {
 	}
 	if err := e.flushSound(); err != nil {
 		return err
+	}
+	if _, title := e.currentState.(*TitleState); title && !wasTitle {
+		// Title music has replaced any packed scene track above. No active
+		// selection/match needs expanded files now; release them before the
+		// next roster load instead of retaining every pack until process exit.
+		e.modeRun = nil
+		if err := e.characterPacks.Close(); err != nil {
+			return err
+		}
 	}
 	e.gameTime++
 	// A transition may have constructed a fresh match during this update.

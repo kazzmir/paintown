@@ -98,6 +98,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		}
 	})
 	e.currentState = NewTitleState(e)
+	previousTPS := ebiten.TPS()
+	t.Cleanup(func() { ebiten.SetTPS(previousTPS) })
 	audible := false
 	var ticks int32
 	step := func(keys ...ebiten.Key) {
@@ -142,6 +144,32 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		}
 		audible = audible || !bytes.Equal(pcm, make([]byte, len(pcm)))
 	}
+	title := e.currentState.(*TitleState)
+	for index, item := range title.items {
+		if item == "options" {
+			title.selectIndex = index
+			break
+		}
+	}
+	step(ebiten.KeyEnter)
+	options, ok := e.currentState.(*OptionsState)
+	if !ok {
+		t.Fatalf("title did not open options: %T", e.currentState)
+	}
+	for index, item := range options.items {
+		if item.label == "Game Speed" {
+			options.cursor = index
+			break
+		}
+	}
+	step(ebiten.KeyArrowRight)
+	if ebiten.TPS() != e.ticksPerSecond() || ebiten.TPS() == previousTPS {
+		t.Fatal("Game Speed option did not update the live scheduler", ebiten.TPS(), e.ticksPerSecond())
+	}
+	step(ebiten.KeyEscape)
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatal("options did not return to title")
+	}
 	for i := 0; i < 37; i++ {
 		step()
 	}
@@ -177,6 +205,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatalf("versus did not enter fight: %T", e.currentState)
 	}
 	watchGameTime(t, f)
+	if f.match.Options.TicksPerSecond != int32(ebiten.TPS()) {
+		t.Fatal("match did not inherit the live Game Speed scheduler")
+	}
 	if f.match.World.RandomSeed() != 16807 {
 		t.Fatal("session seed was not handed to production match")
 	}

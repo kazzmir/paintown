@@ -92,7 +92,8 @@ or committed binaries/generated fixtures. See docs/HANDOFF.md.
 
 ZIP character references use an engine-owned CharacterPacks store. Selection,
 rosters and quick matches share expansions; Engine.Close stops sound readers
-before removing them. Preserve cleanup on startup errors and handled signals.
+before removing them. On title return, retire expansions after title music has
+closed packed streams. Preserve cleanup on startup errors and handled signals.
 Do not copy canonical assets into ZIP tests: extend the tiny authored asset flow.
 
 TrueType references use the shared resource resolver; invalid banks share

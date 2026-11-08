@@ -110,9 +110,12 @@ func NewOptionsState(engine *Engine) *OptionsState {
 		{
 			label:    "Game Speed",
 			getValue: func() int { return engine.cfg.Options.GameSpeed },
-			setValue: func(v int) { engine.cfg.Options.GameSpeed = v },
-			choices:  speedChoices,
-			min:      -2, max: 2,
+			setValue: func(v int) {
+				engine.cfg.Options.GameSpeed = v
+				ebiten.SetTPS(engine.ticksPerSecond())
+			},
+			choices: speedChoices,
+			min:     -2, max: 2,
 		},
 		{
 			label:    "Sound Volume",

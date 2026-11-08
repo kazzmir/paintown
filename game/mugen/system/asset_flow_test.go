@@ -622,6 +622,14 @@ layer0.offset=80,80
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatal("packed ending did not finish")
 	}
+	if _, err := os.Stat(first.DefPath); !os.IsNotExist(err) {
+		t.Fatal("title return retained inactive character pack storage", err)
+	}
+	reopened := NewSelectState(e, "Versus Mode")
+	if reopened.loadError != nil || reopened.chars[0].DefPath == first.DefPath || reopened.chars[0].SmallPortrait == nil {
+		t.Fatal("selection could not reload a retired character pack", reopened.loadError)
+	}
+	first = reopened.chars[0]
 	if _, err := e.characterPacks.Resolve(pack + ":missing.def"); err == nil || !strings.Contains(err.Error(), "missing.def") {
 		t.Fatal("missing packed DEF lost context", err)
 	}
