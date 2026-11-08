@@ -113,14 +113,8 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		return
 	}
 	source := instance.Source
-	index := -1
-	for i, sprite := range source.Sprites.Sprites {
-		if int(sprite.GroupNumber) == el.Group && int(sprite.ImageNumber) == el.Image {
-			index = i
-			break
-		}
-	}
-	if index < 0 {
+	index, found := source.Sprites.Index(el.Group, el.Image)
+	if !found {
 		s.effectWarning(fmt.Errorf("action %d sprite %d,%d is unavailable", instance.Action, el.Group, el.Image))
 		return
 	}
@@ -141,6 +135,10 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 				s.effectWarning(err)
 				return
 			}
+		}
+		if pixels == nil {
+			s.effectWarning(fmt.Errorf("action %d sprite %d,%d has no decoded pixels", instance.Action, el.Group, el.Image))
+			return
 		}
 		if present {
 			cached.image.Deallocate()

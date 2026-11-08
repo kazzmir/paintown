@@ -209,6 +209,7 @@ func parseV2(r io.ReadSeeker, h []byte, selected spriteSelection) (*SFF, error) 
 			state[i] = 2
 		}
 	}
+	out.indexSprites()
 	return out, nil
 }
 

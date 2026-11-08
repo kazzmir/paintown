@@ -19,6 +19,9 @@ Current sprite/rendering batch (end-state validation pending):
 - Backgrounds, motifs and storyboards now realize texture/mask variants on
   demand and share uploads for identical immutable pixel views. Hidden/disabled
   layers do not upload frames. Replacing a background archive rebuilds its map.
+- Parsed SFF metadata now has indexed group/item lookup. Actors, effects and
+  normal/animated/parallax backgrounds use it; caller-built archives retain
+  dynamic linear lookup. Missing effect pixels report a contextual warning.
 - Latest accepted media checkpoint764918190 retains bounded WAV/SFX playback,
   extensible PCM/float support, Linux KO/rematch/KO and completed race checks.
 

@@ -290,14 +290,8 @@ func (p *Player) getEbitenImage(entity *Character, g, i int) *ebiten.Image {
 }
 
 func (p *Player) getMappedSpriteImage(entity *Character, g, i int, hitEffect bool) *ebiten.Image {
-	index := -1
-	for n, sprite := range p.SFF.Sprites {
-		if int(sprite.GroupNumber) == g && int(sprite.ImageNumber) == i {
-			index = n
-			break
-		}
-	}
-	if index < 0 {
+	index, found := p.SFF.Index(g, i)
+	if !found {
 		return nil
 	}
 	state := entity.Palettes
@@ -400,11 +394,8 @@ func (p *Player) DrawSprite(screen *ebiten.Image, entity *Character, group, item
 }
 
 func (p *Player) FindSprite(group, image int) *sff.Sprite {
-	for i := range p.SFF.Sprites {
-		s := &p.SFF.Sprites[i]
-		if int(s.GroupNumber) == group && int(s.ImageNumber) == image {
-			return s
-		}
+	if i, ok := p.SFF.Index(group, image); ok {
+		return &p.SFF.Sprites[i]
 	}
 	return nil
 }

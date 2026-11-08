@@ -28,6 +28,7 @@ type SFF struct {
 	SharedPalette color.Palette
 	Version       [4]byte // major, minor, revision, patch
 	Palettes      []Palette
+	spriteIndex   map[[2]uint16]int // built once after parsing immutable metadata
 }
 
 // ParseWithPalette is like Parse but uses an initial palette (e.g. from an .act file).
@@ -291,7 +292,38 @@ func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected 
 	if sff.SharedPalette != nil {
 		sff.Palettes = []Palette{{GroupNumber: 1, ItemNumber: 1, Colors: opaquePalette(sff.SharedPalette)}}
 	}
+	sff.indexSprites()
 	return sff, nil
+}
+
+func (s *SFF) indexSprites() {
+	s.spriteIndex = make(map[[2]uint16]int, len(s.Sprites))
+	for i, sprite := range s.Sprites {
+		key := [2]uint16{sprite.GroupNumber, sprite.ImageNumber}
+		if _, exists := s.spriteIndex[key]; !exists {
+			s.spriteIndex[key] = i
+		}
+	}
+}
+
+// Index preserves the first matching sprite and rejects negative AIR sentinels.
+// Parsed archives have immutable metadata and an index. Caller-built archives
+// retain a linear fallback, so incrementally authored sprites remain usable.
+func (s *SFF) Index(group, item int) (int, bool) {
+	if s == nil || group < 0 || item < 0 || group > 65535 || item > 65535 {
+		return 0, false
+	}
+	key := [2]uint16{uint16(group), uint16(item)}
+	if s.spriteIndex != nil {
+		i, ok := s.spriteIndex[key]
+		return i, ok
+	}
+	for i, sprite := range s.Sprites {
+		if sprite.GroupNumber == key[0] && sprite.ImageNumber == key[1] {
+			return i, true
+		}
+	}
+	return 0, false
 }
 
 // Parse slices an SFF file into individual sprites.

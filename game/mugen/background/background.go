@@ -491,20 +491,19 @@ func (e *AnimationElement) SetAction(actionNo int) {
 	if e.AirData == nil {
 		return
 	}
-	if action, ok := e.AirData.Actions[actionNo]; ok {
-		e.Player = air.NewPlayer(action)
-		if e.SffData != nil {
-			for _, el := range action.Elements {
-				key := fmt.Sprintf("%d-%d", el.Group, el.Image)
-				if _, exists := e.Sprites[key]; !exists {
-					for j := range e.SffData.Sprites {
-						spr := &e.SffData.Sprites[j]
-						if spr.GroupNumber == uint16(el.Group) && spr.ImageNumber == uint16(el.Image) {
-							e.Sprites[key] = spr
-							break
-						}
-					}
-				}
+	action, ok := e.AirData.Actions[actionNo]
+	if !ok {
+		return
+	}
+	e.Player = air.NewPlayer(action)
+	if e.Sprites == nil {
+		e.Sprites = make(map[string]*sff.Sprite)
+	}
+	for _, el := range action.Elements {
+		key := fmt.Sprintf("%d-%d", el.Group, el.Image)
+		if _, exists := e.Sprites[key]; !exists {
+			if i, ok := e.SffData.Index(el.Group, el.Image); ok {
+				e.Sprites[key] = &e.SffData.Sprites[i]
 			}
 		}
 	}
@@ -836,12 +835,8 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			common.Type = Normal
 			ne := &NormalElement{CommonElement: common}
 			if sffData != nil {
-				for i := range sffData.Sprites {
-					spr := &sffData.Sprites[i]
-					if int(spr.GroupNumber) == spriteNo[0] && int(spr.ImageNumber) == spriteNo[1] {
-						ne.Sprite = spr
-						break
-					}
+				if i, ok := sffData.Index(spriteNo[0], spriteNo[1]); ok {
+					ne.Sprite = &sffData.Sprites[i]
 				}
 			}
 			b.Elements = append(b.Elements, ne)
@@ -849,23 +844,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			common.Type = Animation
 			common.Mask = true
 			ae := &AnimationElement{CommonElement: common, Sprites: make(map[string]*sff.Sprite), AirData: airData, SffData: sffData}
-			if airData != nil {
-				if action, ok := airData.Actions[actionNo]; ok {
-					ae.Player = air.NewPlayer(action)
-					if sffData != nil {
-						for _, el := range action.Elements {
-							key := fmt.Sprintf("%d-%d", el.Group, el.Image)
-							for j := range sffData.Sprites {
-								spr := &sffData.Sprites[j]
-								if spr.GroupNumber == uint16(el.Group) && spr.ImageNumber == uint16(el.Image) {
-									ae.Sprites[key] = spr
-									break
-								}
-							}
-						}
-					}
-				}
-			}
+			ae.SetAction(actionNo)
 			b.Elements = append(b.Elements, ae)
 		case "parallax":
 			common.Type = Parallax
@@ -881,12 +860,8 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				pe.SetAction(actionNo)
 			}
 			if !hasAction && sffData != nil {
-				for i := range sffData.Sprites {
-					spr := &sffData.Sprites[i]
-					if int(spr.GroupNumber) == spriteNo[0] && int(spr.ImageNumber) == spriteNo[1] {
-						pe.Sprite = spr
-						break
-					}
+				if i, ok := sffData.Index(spriteNo[0], spriteNo[1]); ok {
+					pe.Sprite = &sffData.Sprites[i]
 				}
 			}
 			b.Elements = append(b.Elements, pe)
