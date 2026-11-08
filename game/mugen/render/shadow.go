@@ -45,7 +45,7 @@ func (s Shadow) SpriteGeometry(geometry ebiten.GeoM, offset float64, indexed, fl
 		geometry.Translate(0, -1)
 	}
 	if indexed {
-		geometry.Translate(-.5, -.5)
+		geometry.Translate(-IndexedOffset, -IndexedOffset)
 	}
 	geometry.Concat(s.Projection(offset))
 	if flippedY != (s.YScale > 0) {
@@ -53,7 +53,7 @@ func (s Shadow) SpriteGeometry(geometry ebiten.GeoM, offset float64, indexed, fl
 	}
 	if indexed {
 		// Indexed shear has a half-game-pixel horizontal origin correction.
-		geometry.Translate(.5-s.XShear/2, .5)
+		geometry.Translate(IndexedOffset-s.XShear/2, IndexedOffset)
 	}
 	return geometry
 }

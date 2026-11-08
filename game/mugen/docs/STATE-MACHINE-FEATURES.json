@@ -375,7 +375,7 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Known sprite/shadow RGB, finite/overlap alpha and KO-echo playback differences remain to close. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work.",
+      "gap": "Only the documented KO-echo application playback discrepancy remains in the known-difference batch. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work.",
       "allocation": "known differences first (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -384,9 +384,12 @@
         "match/teams.go:recoverWinner",
         "match/teams.go:rosterLife",
         "sff/images.go:UploadPixels",
-        "background/background.go:drawPaletteImage"
+        "background/background.go:drawPaletteImage",
+        "render/nearest.go",
+        "render/shadow.go",
+        "system/fight_state.go:Draw"
       ],
-      "validation": "One supplied-beta scene establishes PNG32/raw RGBA mask=0 opacity after byte-truncated premultiplication, mask=1 source alpha and fractional true-color BG filtering. The connected loader/draw/mask/visibility/reset scenario and Linux application reproduce 40 fixed native RGB samples without changing expectations. The initial one-shade upload mismatch was corrected at every SFF upload consumer. Other rendering, camera, binding, audio and AI precision listed in the gap remain open."
+      "validation": "Camera return matches eleven beta samples. A bounded beta rendering scene establishes fixed 3/8 game-pixel indexed calibration, unsnapped source addressing and delta-first, ties-to-even byte interpolation. Rotated indexed sprite/shadow and overlapping RGBA RGB crops match exactly. The connected stage/asset lifecycle covers finite AIR alpha entries, overlap, pause, expiry, foreground over HUD, projected letterboxing and final AllPalFX. All five segments are checked with race detection; existing renderer color regressions also pass with race detection. Prior PNG32/raw RGBA background coverage retains its 40 fixed native samples. This closes the documented rendering discrepancies, not arbitrary renderer/asset compatibility."
     },
     {
       "id": "ai",
@@ -574,7 +577,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1d0b3b2161ea83d412d37d56b40f6afa27a6efb254c3968b7e972b164ad203b5"
+      "passed_source": "4627e49dd38fa6666e25b6acb77e3593b610fe4e927e51e844ef67d71a139df3"
     },
     {
       "id": "entities",
@@ -607,7 +610,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e35c1dab06dd861b9394ef8209d016eef07d4044522116c6a1f035dd39f0ef0a"
+      "passed_source": "fadbbbf685c373168f0e0cfc2ebd8206e28f8b2f15cebbe61b42e20253f039e2"
     },
     {
       "id": "effects-pause",
@@ -642,7 +645,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b48e185f244dcf0c03b51f53a49d8c2f2e269828750d9f19139e4de78c148d3f"
+      "passed_source": "9bed3c6b6499a772883e839913ff14941047654fd60adb2ed2dd8b3e118055bd"
     },
     {
       "id": "match-flow",
@@ -721,11 +724,11 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "54d24e88a5f1d382a9bca35c1594d7cdff9228845945e6aac44edbfa2fd375c9"
+      "passed_source": "1d5347d22490606272cc0be23970fc1465dc49e226c34c496cc5adad76a929d2"
     }
   ],
   "presentation_followups": [
-    "Remaining sprite/shadow max-one RGB and finite/overlap alpha precision differences remain open; stock FNT v2 bitmap label placement is corrected.",
+    "Known indexed sprite/shadow alignment and finite/overlap RGB differences are corrected. Native fixed 3/8 calibration replaces the old half-pixel plus source-grid approximation; byte interpolation rounds the weighted delta before adding the first texel. One bounded scene and the connected stage lifecycle retain exact native RGB expectations. OnTop effects blend over HUD before final AllPalFX.",
     "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",

@@ -199,3 +199,16 @@ checks and affected match-flow pass with race detection; other segments stay
 checked. Linux rebuilt and displayed both authored font banks. The beta scene
 showed no authored glyphs, so native font equivalence remains open. Current
 helper/capture/overlay/log scratch was removed; no user configuration tracked.
+
+## Known rendering correction — 2026-11-08
+
+Camera return, indexed sprite/shadow calibration and RGBA overlap RGB differences
+are corrected. Indexed geometry adds 3/8 game pixel with no source-grid snapping.
+Linear byte interpolation rounds the weighted delta to even before adding its
+base texel (the reference Linux GL sampler rule). OnTop Explods compose above HUD
+before final global PalFX, retaining window fit and projected subimage origins.
+The connected stage flow keeps native RGB digests and covers finite AIR blends,
+pause/expiry, HUD coverage and letterboxes. All five segments and existing render
+color regressions pass with races. Only KO-echo application playback remains in
+the current known-difference batch. Preserve exact expectations; do not create
+new image banks/matrices or treat unverified permutations as known failures.

@@ -3,6 +3,7 @@ package main
 import (
 	"archive/zip"
 	"bytes"
+	"crypto/sha256"
 	"encoding/binary"
 	"fmt"
 	"image"
@@ -25,6 +26,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
@@ -1064,9 +1066,11 @@ trigger1=1
 	f.Draw(canvas)
 	fullScene, hud := read(f.gameCanvas), read(f.hudCanvas)
 	full := counts(fullScene)
+	full[2] = counts(read(canvas))[2] // foreground is composed after the HUD
 	m.Viewport.Zoom = .5
 	f.Draw(canvas)
 	half := counts(read(f.gameCanvas))
+	half[2] = counts(read(canvas))[2]
 	if f.renderError != nil {
 		t.Fatal(f.renderError)
 	}
@@ -1111,6 +1115,40 @@ trigger1=1
 		t.Fatal("global shadow suppression retained stage reflections")
 	}
 	m.Timeline.GlobalNoShadow = false
+	// Foreground Explods cover the HUD and retain that ordering through the
+	// final palette pass. Their finite lifetime still belongs to the scene.
+	foregroundLife := 2
+	if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: archive, Animations: animations, Scale: 1}, Action: 0, Facing: 1,
+		X: 12, Y: 12, ScreenSpace: true, OnTop: true, RemoveTime: &foregroundLife}); err != nil {
+		t.Fatal(err)
+	}
+	if err := m.Effects.Flush(); err != nil {
+		t.Fatal(err)
+	}
+	f.Draw(canvas)
+	if got := color.NRGBAModel.Convert(canvas.At(16, 16)).(color.NRGBA); got != colors[2] {
+		t.Fatal("foreground effect did not cover the HUD", got)
+	}
+	// A projected foreground keeps parent coordinates inside a letterboxed
+	// subimage. Global inversion occurs on the source and the final scene,
+	// restoring this opaque marker while leaving outer letterboxes black.
+	wide := ebiten.NewImage(480, 240)
+	defer wide.Deallocate()
+	savedAspect := e.cfg.Video.KeepAspect
+	e.cfg.Video.KeepAspect = true
+	m.Effects.Active[len(m.Effects.Active)-1].XAngle = 15
+	savedPalette := m.Timeline.AllPalette
+	m.Timeline.AllPalette = palette.New(nil)
+	m.Timeline.AllPalette.SetEffect(palette.Effect{Time: -1, Color: 256, Mul: [3]int{256, 256, 256}, Invert: true})
+	f.Draw(wide)
+	if got := color.NRGBAModel.Convert(wide.At(96, 16)).(color.NRGBA); got != colors[2] {
+		t.Fatal("projected foreground/global palette/window origin", got)
+	}
+	if got := color.NRGBAModel.Convert(wide.At(10, 16)).(color.NRGBA); got.R != 0 || got.G != 0 || got.B != 0 {
+		t.Fatal("global palette colored an outer letterbox", got)
+	}
+	e.cfg.Video.KeepAspect = savedAspect
+	m.Timeline.AllPalette = savedPalette
 	// One original-beta scene establishes global BG scaling while retaining
 	// the fighter's floor: xscale2/yscale.5 draws this16px sprite at
 	// [220,60,252,68], with ScreenPosY200 and GameWidth320.
@@ -1659,7 +1697,11 @@ trigger1=1
 		bounds := func(col color.NRGBA) image.Rectangle {
 			t.Helper()
 			pixels := make([]byte, 1280*720*4)
-			fight.gameCanvas.ReadPixels(pixels)
+			if col == colors[3] {
+				canvas.ReadPixels(pixels) // OnTop effects follow the HUD.
+			} else {
+				fight.gameCanvas.ReadPixels(pixels)
+			}
 			rect := image.Rectangle{}
 			for offset := 0; offset < len(pixels); offset += 4 {
 				if pixels[offset] == col.R && pixels[offset+1] == col.G && pixels[offset+2] == col.B && pixels[offset+3] == 255 {
@@ -1724,6 +1766,15 @@ Interpolate Offset
 0,4,40,0,20
 [Begin Action 701]
 0,4,12,0,-1
+[Begin Action 702]
+0,1,0,0,-1
+[Begin Action 710]
+0,4,0,0,-1,,AS128D128
+[Begin Action 711]
+0,3,0,0,5,,AS128D128
+0,3,0,0,5,,AS192D64
+LoopStart
+0,3,0,0,-1,,AS160D96
 `))
 	if err != nil {
 		t.Fatal(err)
@@ -1945,5 +1996,79 @@ trigger1=1
 	}
 	if m.Round != 2 || m.Players[0].Character == old || m.Players[0].Character.HasAfterImage() {
 		t.Fatal("round reset retained trail history")
+	}
+	// Continue with the fresh actor's rotated indexed pose and floor shadow.
+	// These RGB digests are from one bounded beta scene using this same tiny
+	// archive; no copied images or per-parameter fixtures are required.
+	p := m.Players[0]
+	c = p.Character
+	c.AirFile, c.Palettes = animations, palette.New(archive)
+	if err := c.ChangeAnimation(702, 1); err != nil {
+		t.Fatal(err)
+	}
+	c.X, c.Y, c.Facing = -90, -60, 1
+	c.StartX, c.StartY = c.X, c.Y
+	c.DrawAngle, c.AngleDrawingEnabled, c.DrawScale = 17, true, [2]float32{1.25, .875}
+	c.DrawOffset, c.Timeline, c.DrawTransparency = nil, nil, engine.Transparency{}
+	canvas.Fill(color.NRGBA{255, 0, 255, 255})
+	character.DrawPlayerShadows(canvas, m.Players[:1], coord.Default(), 0, render.Shadow{Intensity: 128, YScale: .4, FloorY: 200})
+	character.DrawPlayers(canvas, m.Players[:1], coord.Default(), 0, 200)
+	checkRGB := func(region image.Rectangle, want string) {
+		t.Helper()
+		pixels := make([]byte, 320*240*4)
+		canvas.ReadPixels(pixels)
+		rgb := make([]byte, 0, region.Dx()*region.Dy()*3)
+		for y := region.Min.Y; y < region.Max.Y; y++ {
+			for x := region.Min.X; x < region.Max.X; x++ {
+				offset := (y*320 + x) * 4
+				rgb = append(rgb, pixels[offset:offset+3]...)
+			}
+		}
+		if got := fmt.Sprintf("%x", sha256.Sum256(rgb)); got != want {
+			t.Fatal("native rendering scene", region, got, want)
+		}
+	}
+	checkRGB(image.Rect(60, 128, 155, 160), "00773db1b67b2e0f9a25c6aed9cf9f4b94cec4a095765e4686a3e167c2467d6a")
+	checkRGB(image.Rect(60, 204, 155, 239), "3159f10da341df2081e209739c94b0f83abfd8b012cfe5ee406ba19aa65ec87c")
+	// Finite AIR alpha entries advance into an indefinite overlapping pose,
+	// survive a pause without accumulating draws, then expire together.
+	m.Effects.Clear()
+	effectLife := 20
+	for i, action := range []int{710, 711} {
+		if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: archive, Animations: animations, Scale: 1}, Action: action, Facing: 1,
+			X: 120 + float64(i)*10, Y: 100, ScreenSpace: true, OnTop: true, ScaleX: 5.5, ScaleY: 6.5, HasScale: true, RemoveTime: &effectLife}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := m.Effects.Flush(); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 12; tick++ {
+		if err := m.Effects.Advance(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	foreground := &FightState{match: m}
+	defer func() { foreground.beginEffectDraw(); foreground.endEffectDraw() }()
+	drawOverlap := func() {
+		canvas.Fill(color.NRGBA{255, 0, 255, 255})
+		character.DrawPlayerShadows(canvas, m.Players[:1], coord.Default(), 0, render.Shadow{Intensity: 128, YScale: .4, FloorY: 200})
+		character.DrawPlayers(canvas, m.Players[:1], coord.Default(), 0, 200)
+		foreground.drawEffects(canvas, 2)
+	}
+	drawOverlap()
+	checkRGB(image.Rect(133, 99, 180, 127), "36c2d43dc953a62bc1105ef9e6cfa0e4ad3a73c86718e9277f9ca78da785abe8")
+	if err := m.Effects.AdvanceWithPause(true, false); err != nil {
+		t.Fatal(err)
+	}
+	drawOverlap()
+	checkRGB(image.Rect(133, 99, 180, 127), "36c2d43dc953a62bc1105ef9e6cfa0e4ad3a73c86718e9277f9ca78da785abe8")
+	for tick := 0; tick < 8; tick++ {
+		if err := m.Effects.Advance(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if len(m.Effects.Active) != 0 {
+		t.Fatal("finite overlap effects failed to retire")
 	}
 }

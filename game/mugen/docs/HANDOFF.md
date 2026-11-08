@@ -13,10 +13,19 @@ Current known-difference batch (user requested closure before compatibility):
   unclipped actors' midpoint controls centering before final stage limits.
   One bounded beta trace isolates the mixed offscreen-return tick. All eleven
   connected camera/zoom samples match, including time120 X80.6977 vs the prior
-  Go80.8480. Native scratch was inspected/removed. Batch segment checks pending.
-- Next close the documented sprite/shadow RGB, finite/overlap alpha and KO-echo
-  playback differences. Unverified binding/pause/AI/content combinations belong
-  to the later compatibility batch; do not invent parameter matrices for them.
+  Go80.8480. Native scratch was inspected/removed. Affected batch segments pass with races.
+- Rendering differences are corrected: indexed calibration is 3/8 game pixel,
+  source addresses remain unsnapped, and linear byte interpolation rounds the
+  weighted delta to even before adding the first texel. OnTop effects compose
+  over HUD, then receive final AllPalFX. One bounded beta scene matches rotated
+  indexed sprite/shadow and RGBA overlap RGB crops exactly. The existing stage
+  flow retains those digests plus finite AIR alpha, pause/expiry, projected
+  letterboxing and global-palette ordering. All five segments and existing
+  renderer color regressions pass with race detection. No new image bank.
+- Only the ordinary KO-echo application discrepancy remains to examine. Compare
+  actual cue onsets/gains, since the old report differed in extracted quiet
+  intervals. Unverified binding/pause/AI/content combinations belong to the
+  later compatibility batch; do not invent parameter matrices for them.
 - Prior405ef3951 fixes legacy font comments/diagnostics, PCX row decoding and
   V1 archive budgets. Linux font banks and connected assets pass; beta authored
   glyphs remained blank, so native font compatibility is still unverified.
@@ -36,7 +45,7 @@ Game Speed. The user has approved continuing without individual commit review.
 
 Ledger stays 32/34 checklist items, not native conformance or effort. Remaining:
 other pause/hitpause and bindings, crop/raster/color/
-shadow/alpha, KO echo, native AI policy, strict asset compatibility, physical CD,
+filtering combinations, native AI policy, strict asset compatibility, physical CD,
 legacy-font equivalence and absent licensed fonts. Linux is the target; other
 platforms are deferred.
 Historical matrices/raw renderer gates are not mandatory acceptance.

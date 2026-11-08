@@ -63,6 +63,12 @@ func projectedDraw(dst, src *ebiten.Image, options *ebiten.DrawImageOptions, p P
 	if !ok {
 		return nil
 	}
+	// The shader's destination origin is the clipped subimage's minimum,
+	// whereas the projection and uploaded vertices use parent coordinates.
+	x, y := float64(dst.Bounds().Min.X), float64(dst.Bounds().Min.Y)
+	inv[2] += inv[0]*x + inv[1]*y
+	inv[5] += inv[3]*x + inv[4]*y
+	inv[8] += inv[6]*x + inv[7]*y
 	if *shader == nil {
 		compiled, err := ebiten.NewShader([]byte(withPaletteShader(projectShader(source))))
 		if err != nil {

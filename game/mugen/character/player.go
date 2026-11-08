@@ -179,11 +179,11 @@ func (p *Player) drawEntityPose(screen *ebiten.Image, ent *Character, x, y, sx, 
 		x += ent.DrawOffset[0] * sx
 		y += ent.DrawOffset[1] * sy
 	}
-	// Indexed sampling uses integer game pixel centers. RGB textures use the
-	// usual half-pixel centers and retain fractional axes.
+	// Indexed sprites use the beta's game-pixel calibration. Keep it separate
+	// from source texels so scale/rotation cannot change the addressing bias.
 	_, indexed := sprite.Image.(*image.Paletted)
 	if indexed {
-		x, y = x+0.5, y+0.5
+		x, y = x+render.IndexedOffset, y+render.IndexedOffset
 	}
 	opts.GeoM.Translate(x, y)
 

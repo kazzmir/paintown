@@ -175,7 +175,7 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 	}
 	x, y := instance.X, instance.Y
 	if _, indexed := sprite.Image.(*image.Paletted); indexed {
-		x, y = x+0.5, y+0.5
+		x, y = x+render.IndexedOffset, y+render.IndexedOffset
 	} else {
 		x, y = math.Trunc(x), math.Trunc(y)
 	}
@@ -220,6 +220,11 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		op.GeoM.Scale(zoom.ScaleX, zoom.ScaleY)
 		op.GeoM.Translate(zoom.X, zoom.Y)
 	}
+	if s.effectWindowProjection != nil && !projected {
+		projection := s.effectWindowProjection
+		op.GeoM.Scale(projection.ScaleX, projection.ScaleY)
+		op.GeoM.Translate(projection.X, projection.Y)
+	}
 
 	if projected {
 		projection := render.Perspective{X: x, Y: y, CenterX: float64(m.Options.GameSpace.Width) / 2, CenterY: float64(m.Options.GameSpace.Height) / 2, Distance: float64(m.Options.GameSpace.Width) * 500 / 320, Angle: instance.Angle, XAngle: instance.XAngle, YAngle: instance.YAngle}
@@ -229,6 +234,10 @@ func (s *FightState) drawEffectPose(screen *ebiten.Image, instance *effect.Insta
 		if !instance.ScreenSpace {
 			projection.Post.Scale(zoom.ScaleX, zoom.ScaleY)
 			projection.Post.Translate(zoom.X, zoom.Y)
+		}
+		if window := s.effectWindowProjection; window != nil {
+			projection.Post.Scale(window.ScaleX, window.ScaleY)
+			projection.Post.Translate(window.X, window.Y)
 		}
 		var err error
 		if _, indexed := sprite.Image.(*image.Paletted); indexed {

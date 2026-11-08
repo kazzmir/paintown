@@ -1,5 +1,14 @@
 # Fractional sprite sampling
 
+2026-11-08 correction: indexed actors/effects use the supplied beta executable's
+fixed3/8 game-pixel offset, with unsnapped source addresses. This supersedes the
+half-pixel/source1/16 approximation below. A bounded rotated indexed sprite and
+shadow scene matches native RGB crops exactly. Linear byte filtering rounds the
+weighted **difference** to even before adding its starting texel, closing the
+RGBA overlap ties. See the [primary Mesa interpolation implementation](https://chromium.googlesource.com/external/gitlab.freedesktop.org/mesa/mesa/+/379cc7b4a8f6b3cd85b31b11f8309f2ab6af28f1/src/gallium/auxiliary/gallivm/lp_bld_arit.c)
+and the current [progress ledger](PROGRESS.md). Earlier experiment notes below
+are historical; arbitrary renderer/platform compatibility remains unverified.
+
 M4co update: the bounded alpha precision gates are now exact. Both M4ck indexed
 counterexamples and all six M4az RGB alpha crops pass unchanged native goldens;
 all16 RGB crops and five actor regressions pass. ALPHA-NORMALIZATION.md records

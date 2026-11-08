@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
+	"math"
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -22,6 +24,8 @@ type FightState struct {
 	match                              *match.Match
 	hud                                *FightHUD
 	stageCanvas, gameCanvas, hudCanvas *ebiten.Image
+	presentationCanvas                 *ebiten.Image
+	effectWindowProjection             *coord.Transform
 	environmentColorImage              *ebiten.Image
 	viewportBackgroundImage            *ebiten.Image
 	effectImages                       map[effectImageKey]effectImage
@@ -216,13 +220,40 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		drawEnvironment()
 		s.drawEffects(s.gameCanvas, 1)
 	}
-	s.drawEffects(s.gameCanvas, 2)
 	s.hudCanvas.Clear()
 	// Consume HUD drawing even while covered, keeping lazy animation clocks
 	// and resource initialization independent of EnvColor visibility.
 	s.hud.Draw(s.hudCanvas)
 	screen.Fill(color.Black)
 	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
+	// OnTop Explods blend with the HUD, then receive the final global palette
+	// pass with the rest of the scene. Compose at window resolution so HUD
+	// glyphs retain their existing resolution and the world keeps its fit.
+	onTop := false
+	for _, instance := range m.Effects.Active {
+		onTop = onTop || instance.Active && instance.OnTop && !instance.Under
+	}
+	presentation := screen
+	finalPalette := allPalette
+	var fittedRegions []image.Rectangle
+	if onTop {
+		if s.presentationCanvas == nil || s.presentationCanvas.Bounds().Size() != screen.Bounds().Size() {
+			if s.presentationCanvas != nil {
+				s.presentationCanvas.Deallocate()
+			}
+			s.presentationCanvas = ebiten.NewImage(target.Width, target.Height)
+		}
+		presentation = s.presentationCanvas
+		presentation.Clear()
+		finalPalette = palette.Transform{}
+	}
+	fittedBounds := func(surface *ebiten.Image, transform coord.Transform) image.Rectangle {
+		// Raster coverage follows pixel centers after float32 vertex upload.
+		bound := func(v float64) int { return int(math.Ceil(float64(float32(v)) - .5)) }
+		return image.Rect(bound(transform.X), bound(transform.Y),
+			bound(transform.X+float64(surface.Bounds().Dx())*transform.ScaleX),
+			bound(transform.Y+float64(surface.Bounds().Dy())*transform.ScaleY)).Intersect(screen.Bounds())
+	}
 	drawFitted := func(surface *ebiten.Image, transform coord.Transform, err error) {
 		if err != nil {
 			return
@@ -234,8 +265,11 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
 		options.GeoM.Translate(transform.X, transform.Y)
 		// The beta applies AllPalFX again after scene blending/clamping.
-		if err := s.linearSampler.DrawStyledImage(screen, surface, options, render.DrawStyle{DestinationFactor: -1, Palette: allPalette}); err != nil {
+		if err := s.linearSampler.DrawStyledImage(presentation, surface, options, render.DrawStyle{DestinationFactor: -1, Palette: finalPalette}); err != nil {
 			s.renderError = fmt.Errorf("fight viewport sampler: %w", err)
+		}
+		if onTop {
+			fittedRegions = append(fittedRegions, fittedBounds(surface, transform))
 		}
 	}
 	world, err := coord.Project(gameSpace, target, s.engine.cfg.Video.KeepAspect)
@@ -269,7 +303,57 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	if environment.Time <= 0 {
 		drawFitted(s.hudCanvas, hud, err)
 	}
+	if onTop {
+		clip := fittedBounds(s.gameCanvas, world)
+		if !clip.Empty() {
+			s.effectWindowProjection = &world
+			s.drawEffects(presentation.SubImage(clip).(*ebiten.Image), 2)
+			s.effectWindowProjection = nil
+		}
+		if !allPalette.Enabled {
+			screen.DrawImage(presentation, nil)
+		} else {
+			// Apply once to the union of the fitted layers. Outer letterbox
+			// pixels retain black, and overlapping HUD/world regions do not
+			// receive the global effect twice.
+			var covered []image.Rectangle
+			for _, region := range fittedRegions {
+				pieces := []image.Rectangle{region}
+				for _, prior := range covered {
+					var remaining []image.Rectangle
+					for _, piece := range pieces {
+						remaining = append(remaining, subtractRectangle(piece, prior)...)
+					}
+					pieces = remaining
+				}
+				for _, piece := range pieces {
+					if piece.Empty() {
+						continue
+					}
+					options := &ebiten.DrawImageOptions{}
+					if err := s.linearSampler.DrawStyledImage(screen.SubImage(piece).(*ebiten.Image), presentation, options,
+						render.DrawStyle{DestinationFactor: -1, Palette: allPalette}); err != nil {
+						s.renderError = fmt.Errorf("fight foreground palette: %w", err)
+					}
+					covered = append(covered, piece)
+				}
+			}
+		}
+	}
 	if err := s.drawDebugClipboard(screen); err != nil {
 		s.renderError = err
+	}
+}
+
+func subtractRectangle(rect, covered image.Rectangle) []image.Rectangle {
+	overlap := rect.Intersect(covered)
+	if overlap.Empty() {
+		return []image.Rectangle{rect}
+	}
+	return []image.Rectangle{
+		image.Rect(rect.Min.X, rect.Min.Y, rect.Max.X, overlap.Min.Y),
+		image.Rect(rect.Min.X, overlap.Max.Y, rect.Max.X, rect.Max.Y),
+		image.Rect(rect.Min.X, overlap.Min.Y, overlap.Min.X, overlap.Max.Y),
+		image.Rect(overlap.Max.X, overlap.Min.Y, rect.Max.X, overlap.Max.Y),
 	}
 }

@@ -17,10 +17,10 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [ ] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
-- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
-- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [ ] **match-flow**: title/selection → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [x] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
+- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
+- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [x] **match-flow**: title/selection → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 
@@ -67,7 +67,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; legacy-font native equivalence, native asset-rejection and exact raster parity remain unproven. (item4)
-- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Known sprite/shadow RGB, finite/overlap alpha and KO-echo playback differences remain to close. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work. (known differences first (user 2026-11-08))
+- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Only the documented KO-echo application playback discrepancy remains in the known-difference batch. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work. (known differences first (user 2026-11-08))
 
 ### Modes and platforms
 

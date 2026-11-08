@@ -11,6 +11,11 @@ type Nearest struct {
 	projected *ebiten.Shader
 }
 
+// IndexedOffset is the beta's fixed indexed-sprite raster calibration. Unlike
+// a source-coordinate bias, it remains a game-pixel offset through scaling and
+// rotation. The supplied executable reports this value as its indexed offset.
+const IndexedOffset = 3.0 / 8
+
 const nearestShader = `//kage:unit pixels
 package main
 
@@ -18,8 +23,7 @@ var Reverse vec2
 var NativeDestination float
 
 func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
-	// Match the measured indexed source-address boundary bias.
-	p := floor(local.xy * 16 + vec2(0.5)) / 16
+	p := local.xy
 	// Native indexes texels before reversing the source axis. At an exact
 	// boundary the reversed axis selects the texel before the boundary.
 	p = mix(floor(p), ceil(p) - vec2(1), Reverse) + vec2(0.5)

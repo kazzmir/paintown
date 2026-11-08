@@ -15,6 +15,17 @@ package main
 
 var NativeDestination float
 
+// Round the weighted difference, then add the first byte. Rounding the final
+// sum gives different ties when the first byte is odd. This is the reference
+// Linux GL sampler's widened-UNORM interpolation (Mesa lp_build_lerp_simple).
+func lerpBytes(a, b vec4, weight float) vec4 {
+	delta := (b-a) * (weight / 256)
+	rounded := floor(delta + vec4(0.5))
+	tie := vec4(1) - sign(abs(fract(delta) - vec4(0.5)))
+	odd := rounded - 2 * floor(rounded / 2)
+	return a + rounded - tie * odd
+}
+
 func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	lo := vec2(0.5)
 	hi := imageSrc0Size() - vec2(0.5)
@@ -26,9 +37,9 @@ func Fragment(dst vec4, src vec2, tint vec4, local vec4) vec4 {
 	b := floor(imageSrc0At(origin + clamp(base + vec2(1, 0), lo, hi)) * 255 + vec4(0.5))
 	c := floor(imageSrc0At(origin + clamp(base + vec2(0, 1), lo, hi)) * 255 + vec4(0.5))
 	d := floor(imageSrc0At(origin + clamp(base + vec2(1, 1), lo, hi)) * 255 + vec4(0.5))
-	top := floor((a * (256-f.x) + b * f.x + vec4(128)) / 256)
-	bottom := floor((c * (256-f.x) + d * f.x + vec4(128)) / 256)
-	texel := floor((top * (256-f.y) + bottom * f.y + vec4(128)) / 256)
+	top := lerpBytes(a, b, f.x)
+	bottom := lerpBytes(c, d, f.x)
+	texel := lerpBytes(top, bottom, f.y)
 	color := applyPalette(texel) * tint
 	if NativeDestination >= 0 {
 		if texel.a == 0 { discard() }
