@@ -344,7 +344,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven.",
+      "gap": "Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; legacy-font native equivalence, native asset-rejection and exact raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -365,9 +365,10 @@
         "sound/wav.go:decodeWaveMusic",
         "sff/images.go:UploadPixels",
         "sff/sff.go:Index",
-        "background/sprites.go:Image"
+        "background/sprites.go:Image",
+        "sff/sff.go:parseWithSelection"
       ],
-      "validation": "Connected asset/media lifecycles cover packed selection/portraits, intros, fight/reset, endings, AIR failure/reload, streamed WAV and cleanup. SFF true-color views now preserve native byte-premultiplied masks; backgrounds/motifs/storyboards share lazily uploaded immutable pixel views. Parsed archives index group/item lookup across actors/effects/backgrounds. Existing SFF/background tests and four affected segments pass with race detection. Linux RGBA scene matches all 40 sampled beta colors. Strict asset rejection, full raster parity, physical CD and absent licensed fonts remain open."
+      "validation": "Connected asset flow covers V1 commented font settings/maps, padded PCX rows, font bank changes across retained scenes, packed sprite failure/correction, outfits and round reset. PCX retains one decoded plane; V1 shares the V2 total pixel budget, charging linked sources once. Existing SFF/font regressions and affected match-flow pass with race detection; other segments stay checked. Rebuilt Linux displays both authored font banks with expected pixel colors. The beta displayed the scene background but no authored glyphs, so this case does not establish native font equivalence. All current native/app scratch was removed."
     },
     {
       "id": "raster-audio",
@@ -720,7 +721,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "88614df999ca7fcb559e1d11ad2121d016f88139a2a62752370d9f24c63a89a0"
+      "passed_source": "54d24e88a5f1d382a9bca35c1594d7cdff9228845945e6aac44edbfa2fd375c9"
     }
   ],
   "presentation_followups": [

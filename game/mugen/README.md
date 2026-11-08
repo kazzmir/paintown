@@ -285,6 +285,13 @@ Shared-palette PCX sprites may omit their palette trailer. TrueType font paths
 support Windows separators, mixed-case folders and absolute filenames on Linux;
 missing fonts use the reported fallback described in [font notes](docs/BUILD.md).
 
+Legacy `.fnt` metadata accepts inline comments, variable glyph widths and
+hexadecimal map characters. Malformed settings report the file and line. PCX
+loading discards row padding without a second decoded image; V1/V2 archives
+share a total decode limit and linked sprites share their pixels. The connected
+Linux scenario covers bank changes and correction/reload of bad assets. Native
+equivalence for the authored legacy font remains unverified.
+
 Linux legacy music optionally uses installed `libfluidsynth.so.3` for MIDI and
 `libopenmpt.so.0` for MOD/S3M/XM/IT. MIDI needs a GM SoundFont: set
 `MUGEN_SOUNDFONT=/path/to/font.sf2`, or use an installed TimGM6mb/FluidR3_GM font.

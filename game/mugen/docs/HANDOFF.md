@@ -7,7 +7,7 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Current legacy-asset batch (end-state validation pending):
+Current legacy-asset batch (validated on Linux):
 
 - PCX now decodes runs directly into visible rows, discarding padding without
   allocating a second full decoded plane. Cross-row runs and trailerless shared
@@ -21,7 +21,13 @@ Current legacy-asset batch (end-state validation pending):
 - Existing storyboard/packed-character flow now spans a tiny padded-row V1
   font, bank changes across retained scenes, quoted/hex map characters, bad
   font metadata and bad packed PCX, followed by correction and successful reload.
-  No new test file or generated asset bank. Validate the complete batch next.
+  Existing SFF/font checks and affected match-flow pass with race detection;
+  the other four segments stayed checked. No new test file or asset bank.
+- Linux rebuilt and displays both authored font banks with expected colors.
+  The bounded beta scene showed its background but no authored glyphs; legacy
+  font native equivalence remains unverified. Do not claim native font parity.
+  Current native/app captures, overlays, logs and helpers were inspected and
+  removed; local YAML and root module hashes are unchanged.
 - Prior a51b2146b retains mapping-specific texture revisions, shared fighter/HUD
   pixels and AfterImage interpolation/outfit snapshots. Four affected segments
   and palette/cache regressions passed with race detection; Linux matched five
@@ -41,8 +47,9 @@ Game Speed. The user has approved continuing without individual commit review.
 
 Ledger stays 32/34 checklist items, not native conformance or effort. Remaining:
 the camera return above, other pause/hitpause and bindings, crop/raster/color/
-shadow/alpha, KO echo, native AI policy, strict asset compatibility, physical CD
-and absent licensed fonts. Linux is the target; other platforms are deferred.
+shadow/alpha, KO echo, native AI policy, strict asset compatibility, physical CD,
+legacy-font equivalence and absent licensed fonts. Linux is the target; other
+platforms are deferred.
 Historical matrices/raw renderer gates are not mandatory acceptance.
 
 Local mugen.yaml remains ignored/untracked by 8eda46f84, with contents preserved.

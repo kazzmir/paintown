@@ -85,7 +85,7 @@ A 0 2
 	legacyFont := func(metadata string) []byte {
 		data := make([]byte, 32)
 		copy(data, "ElecbyteFnt\x00\x00")
-		data[12] = 1
+		data[13] = 1
 		binary.LittleEndian.PutUint32(data[16:], 32)
 		binary.LittleEndian.PutUint32(data[20:], uint32(len(pcx)))
 		binary.LittleEndian.PutUint32(data[24:], uint32(32+len(pcx)))
@@ -196,6 +196,20 @@ Interpolate Blend
 	e.currentState = state
 	canvas := ebiten.NewImage(640, 480)
 	defer canvas.Deallocate()
+	gameSpace := coord.Space{Width: e.cfg.Config.GameWidth, Height: e.cfg.Config.GameHeight}
+	storyToGame, err := coord.Project(story.LocalCoord, gameSpace, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gameToWindow, err := coord.Project(gameSpace, coord.Space{Width: 640, Height: 480}, e.cfg.Video.KeepAspect)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacyPixel := func() color.NRGBA {
+		x := (100.5*storyToGame.ScaleX+storyToGame.X)*gameToWindow.ScaleX + gameToWindow.X
+		y := (97.5*storyToGame.ScaleY+storyToGame.Y)*gameToWindow.ScaleY + gameToWindow.Y
+		return color.NRGBAModel.Convert(canvas.At(int(x), int(y))).(color.NRGBA)
+	}
 	step := func() {
 		t.Helper()
 		if err := e.Update(); err != nil {
@@ -217,7 +231,7 @@ Interpolate Blend
 	}
 	step()
 	pcm := make([]byte, 735*4)
-	if got := color.NRGBAModel.Convert(canvas.At(200, 194)).(color.NRGBA); got != (color.NRGBA{47, 113, 23, 255}) {
+	if got := legacyPixel(); got != (color.NRGBA{47, 113, 23, 255}) {
 		t.Fatal("legacy padded PCX/color bank did not reach storyboard", got)
 	}
 	if _, err := e.sound.mixer.Read(pcm); err != nil {
@@ -255,7 +269,7 @@ Interpolate Blend
 	}
 	step()
 	step() // Text and alpha layers now draw over the retained scene.
-	if got := color.NRGBAModel.Convert(canvas.At(200, 194)).(color.NRGBA); got != (color.NRGBA{17, 91, 143, 255}) {
+	if got := legacyPixel(); got != (color.NRGBA{17, 91, 143, 255}) {
 		t.Fatal("legacy font bank did not change across the retained scene", got)
 	}
 	canvas.ReadPixels(previous)

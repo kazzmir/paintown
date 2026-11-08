@@ -172,38 +172,28 @@ See docs/HANDOFF.md and preserve the cleanup workflow above.
 
 ## Current compatibility checkpoint
 
-AIR collision declarations are checked before allocation; defaults and copied
-per-element boxes share a 1,048,576-box file budget. Preserve contextual errors
-through packed-character fight loading and successful reload after correction.
-One connected zoom-motion sequence matches five beta camera/zoom samples; its
-return still differs by about 0.15 pixels at state time 120. Keep that precision
-gap explicit. Four affected segments passed with race detection; state-flow
-stays checked. Linux rebuilt; current native helper/captures/overlay removed.
+AIR collision allocation is bounded; packed failures retain file/action/line
+context and corrected assets reload. Moving zoom matches five beta samples;
+return at state time120 still differs by about0.15 pixels. Do not regenerate
+historical matrices. See the small ledger/catalog and handoff for remaining work.
 
-The latest media batch shares WAV metadata/sample decoding between SND and
-streamed music (PCM8/16/24/32, float32/64, PCM/float extensible headers). Keep
-read-ahead separate from consumed cursor state across NoMusic, loops and track
-replacement. SFX factors update on Play/Pan/volume commands; retain two-stage
-sample truncation. Native Linux codecs reuse their bounded PCM buffers.
-Existing decoder/mixer regressions and the two affected segments passed with
-race detection. Other segments stayed checked. Linux KO/rematch/KO with authored
-float WAV passed; all current captures/PCM/overlays/helper were removed.
+Retain consumed-vs-read-ahead music cursors, shared integer/float WAV decoding,
+reused Linux codec buffers and SFX two-stage quantization. SFF uploads use
+sff.UploadPixels for native byte premultiplication; true-color BGs filter linearly,
+indexed BGs use nearest and animated BGs stay masked. Background/storyboard
+SpriteCache is lazy and shares linked views; parsed SFF metadata is indexed.
+Palette textures use MappingRevision; local effects retain Revision/clocks.
+Fighter/HUD pixels are shared with separate effects. AfterImage retains its AIR
+element clock and mapping-only historical outfits. Prior bounded Linux scenes
+matched40 beta RGBA samples and five trail positions, not whole-renderer parity.
 
-The current sprite batch confirms PNG32/raw RGBA mask=0 forces opacity after
-byte-truncated RGB premultiplication. Use sff.UploadPixels at SFF upload sites;
-Go's general 16-bit conversion brightens some partial-alpha colors by one.
-True-color BGs use linear filtering, indexed BGs nearest; anim BGs stay masked.
-Background/motif/storyboard SpriteCache uploads variants on demand and shares
-immutable linked views. Parsed SFF metadata has indexed group/item lookup;
-caller-built archives retain dynamic fallback. Four affected segments passed
-with race detection after the upload correction; state-flow stayed checked.
-Linux matches 40 native RGB samples in one scene, not whole-renderer parity.
-All current helper/capture/overlay/log scratch was removed.
-
-Palette textures now track MappingRevision; local PalFX/HitDef effects still use
-ordinary Revision and independent shader transforms. Fighter/HUD mapped pixels
-are shared. AfterImage retains its saved AIR element clock and mapping-only
-snapshot; genuine remaps preserve historical outfits. Four affected segments
-and existing palette/cache regressions pass with race detection; state-flow
-stays checked. Rebuilt Linux matches five beta pose positions after an animation
-change. Current scratch was removed; broader rendering precision stays open.
+Legacy PCX decodes directly into visible rows while consuming padding. V1 now
+uses the V2 total pixel budget; links charge their source once and portraits
+charge only decoded sources. FNT V1 accepts commented settings/section headers;
+map suffixes preserve quote/hex-semicolon characters. Numeric errors retain
+file/line context. The existing connected asset scenario covers font bank/scene
+changes, bad font/packed sprite correction, outfits and reset. Existing SFF/font
+checks and affected match-flow pass with race detection; other segments stay
+checked. Linux rebuilt and displayed both authored font banks. The beta scene
+showed no authored glyphs, so native font equivalence remains open. Current
+helper/capture/overlay/log scratch was removed; no user configuration tracked.
