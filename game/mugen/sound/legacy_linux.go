@@ -75,6 +75,8 @@ type nativeMusic struct {
 	rate             int
 	length, position int64
 	pending          []byte
+	block            [1024]int16
+	encoded          [2048]byte
 	render           func([]int16) (int, error)
 	seek             func(int64) error
 	close            func()
@@ -99,8 +101,7 @@ func (s *nativeMusic) Read(out []byte) (int, error) {
 		return 0, nil
 	}
 	if len(s.pending) == 0 {
-		var block [1024]int16
-		n, err := s.render(block[:])
+		n, err := s.render(s.block[:])
 		if err != nil {
 			return 0, err
 		}
@@ -108,8 +109,11 @@ func (s *nativeMusic) Read(out []byte) (int, error) {
 			s.length = s.position
 			return 0, io.EOF
 		}
-		s.pending = make([]byte, n*4)
-		for i, v := range block[:n*2] {
+		if n < 0 || n > len(s.block)/2 {
+			return 0, fmt.Errorf("legacy codec returned invalid frame count %d", n)
+		}
+		s.pending = s.encoded[:n*4]
+		for i, v := range s.block[:n*2] {
 			binary.LittleEndian.PutUint16(s.pending[i*2:], uint16(v))
 		}
 	}

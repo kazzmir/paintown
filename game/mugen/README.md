@@ -192,6 +192,9 @@ Only that file is overlaid on `mugen.cfg`; YAML files are not combined.
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic
 pauses/resumes the playback cursor while sound effects continue. Linux MIDI and tracker support uses optional system libraries described below.
+WAV music and SND effects accept mono/stereo PCM8/16/24/32 and float32/64,
+including standard PCM/float [extensible headers](https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatextensible).
+Music streams in bounded blocks; loop points still count source sample frames.
 Physical CD playback remains unavailable. The stock stage references
 sound/kfm.mid, which is absent from the supplied local distribution.
 

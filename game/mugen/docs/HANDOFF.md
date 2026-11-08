@@ -19,6 +19,10 @@ Current media batch (end-state validation pending):
   the entire payload. SND and streaming consumers share validation and sample
   conversion, including PCM/IEEE_FLOAT extensible headers. Unknown GUIDs and
   inconsistent valid-bit/container/frame metadata remain explicit errors.
+- WAV music now streams PCM8/16/24/32 and float32/64 through the shared SND
+  converter, with resampling and source-frame loop points. Native Linux codecs
+  reuse their PCM buffers. The connected media flow adds resampled mono PCM24,
+  float extensible BGM/SFX, late fmt/odd chunks, invalid replacement and recovery.
 - The existing connected music lifecycle now crosses two blocks and a short
   final block. Run affected segments once after the complete media batch.
 - Prior51f7ae0b3 provides bounded AIR collision allocation and a camera motion

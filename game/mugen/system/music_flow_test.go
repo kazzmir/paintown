@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"math"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -244,11 +245,122 @@ flag=nomusic
 	if runtime.GOOS == "linux" && (runtime.GOARCH == "amd64" || runtime.GOARCH == "arm64") {
 		legacyMusicFlow(t, e)
 	}
+	waveMusicFlow(t, e)
 	if err := e.closeSound(); err != nil {
 		t.Fatal(err)
 	}
 	if _, _, playing, _ := bus.Status(); playing {
 		t.Fatal("engine close retained the music file")
+	}
+}
+
+// Finish the same media lifecycle with resampled PCM24, extensible float PCM,
+// optional RIFF chunks, SND/BGM conversion, malformed replacement and recovery.
+func waveMusicFlow(t *testing.T, e *Engine) {
+	t.Helper()
+	dir := t.TempDir()
+	makeWave := func(format, channels, bits uint16, rate uint32, extended bool) []byte {
+		var body, samples, metadata bytes.Buffer
+		body.WriteString("WAVE")
+		body.WriteString("JUNK")
+		binary.Write(&body, binary.LittleEndian, uint32(3))
+		body.WriteString("abc\x00") // odd optional chunk, with its alignment byte
+		for frame := 0; frame < 2050; frame++ {
+			if format == 1 {
+				samples.Write([]byte{0, 0, 64}) // PCM24 mono, +0.5
+			} else {
+				binary.Write(&samples, binary.LittleEndian, math.Float32bits(.5))
+				binary.Write(&samples, binary.LittleEndian, math.Float32bits(-.25))
+			}
+		}
+		body.WriteString("data")
+		binary.Write(&body, binary.LittleEndian, uint32(samples.Len()))
+		body.Write(samples.Bytes())
+		tag := format
+		if extended {
+			tag = 0xfffe
+		}
+		align := channels * bits / 8
+		for _, value := range []any{tag, channels, rate, rate * uint32(align), align, bits} {
+			binary.Write(&metadata, binary.LittleEndian, value)
+		}
+		if extended {
+			for _, value := range []any{uint16(22), bits, uint32(3), uint32(format)} {
+				binary.Write(&metadata, binary.LittleEndian, value)
+			}
+			metadata.Write([]byte{0, 0, 16, 0, 128, 0, 0, 170, 0, 56, 155, 113})
+		}
+		body.WriteString("fmt ") // legal metadata after data; never decode it as PCM
+		binary.Write(&body, binary.LittleEndian, uint32(metadata.Len()))
+		body.Write(metadata.Bytes())
+		var file bytes.Buffer
+		file.WriteString("RIFF")
+		binary.Write(&file, binary.LittleEndian, uint32(body.Len()))
+		file.Write(body.Bytes())
+		return file.Bytes()
+	}
+	read := func(frames int) []byte {
+		t.Helper()
+		pcm := make([]byte, frames*4)
+		if _, err := e.sound.mixer.Read(pcm); err != nil {
+			t.Fatal(err)
+		}
+		return pcm
+	}
+	bus := e.sound.mixer.Music()
+	bus.SetPlayback(1, false)
+	path := filepath.Join(dir, "stream.wav")
+	if err := os.WriteFile(path, makeWave(1, 1, 24, 22050, false), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := bus.Play(sound.MusicSpec{File: path, Volume: 100}, true); err != nil {
+		t.Fatal(err)
+	}
+	pcm := read(1024)
+	if left, right := int16(binary.LittleEndian.Uint16(pcm[128:])), int16(binary.LittleEndian.Uint16(pcm[130:])); left <= 0 || left != right {
+		t.Fatal("resampled PCM24 mono did not reach both music channels", left, right)
+	}
+	read(4096)
+	if _, _, playing, err := bus.Status(); playing || err != nil {
+		t.Fatal("resampled one-shot did not end cleanly", playing, err)
+	}
+	data := makeWave(3, 2, 32, 44100, true)
+	invalid := append([]byte(nil), data...)
+	invalid[len(invalid)-1] ^= 1 // reject a foreign GUID sharing the PCM format tag
+	if err := os.WriteFile(path, invalid, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := bus.Play(sound.MusicSpec{File: path, Volume: 100}, true); err == nil || !strings.Contains(err.Error(), "subformat") || !strings.Contains(err.Error(), "stream.wav") {
+		t.Fatal("unsupported WAV subtype lost file context", err)
+	}
+	if err := os.WriteFile(path, data, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := bus.Play(sound.MusicSpec{File: path, Volume: 100, Loop: true, LoopStart: 8, LoopEnd: 16}, true); err != nil {
+		t.Fatal(err)
+	}
+	pcm = read(40)
+	if left, right := int16(binary.LittleEndian.Uint16(pcm)), int16(binary.LittleEndian.Uint16(pcm[2:])); left != 16384 || right != -8192 {
+		t.Fatal("extensible float replacement/loop retained stale samples", left, right)
+	}
+	if _, position, playing, err := bus.Status(); position != 16 || !playing || err != nil {
+		t.Fatal("float PCM loop failed", position, playing, err)
+	}
+	bus.Stop()
+	wave, err := snd.ParseWAV(data)
+	if err != nil || wave.Format != 3 || wave.ValidBits != 32 || wave.ChannelMask != 3 {
+		t.Fatal("SND and music did not share extensible format metadata", err)
+	}
+	bank := &snd.SoundBank{Map: map[string]*snd.Sound{"0-0": {Wave: wave}}}
+	if err := e.sound.mixer.SetVolume(.8); err != nil {
+		t.Fatal(err)
+	}
+	if err := e.sound.mixer.Apply(sound.Command{Operation: sound.Play, Owner: 77, Bank: bank, Channel: 1, VolumeScale: 100, Frequency: 1}); err != nil {
+		t.Fatal(err)
+	}
+	pcm = read(2052)
+	if left, right := int16(binary.LittleEndian.Uint16(pcm)), int16(binary.LittleEndian.Uint16(pcm[2:])); left <= 0 || right >= 0 || !bytes.Equal(pcm[len(pcm)-8:], make([]byte, 8)) {
+		t.Fatal("extensible SND voice did not play and expire independently", left, right)
 	}
 }
 

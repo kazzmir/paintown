@@ -14,7 +14,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
-	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
 
 // MusicSpec loop points count source sample frames, before device resampling.
@@ -157,7 +156,7 @@ func (m *Music) Play(spec MusicSpec, restart bool) error {
 	var decoded musicStream
 	switch strings.ToLower(filepath.Ext(spec.File)) {
 	case ".wav":
-		decoded, err = wav.DecodeWithoutResampling(f)
+		decoded, err = decodeWaveMusic(f)
 	case ".mp3":
 		decoded, err = mp3.DecodeWithoutResampling(f)
 	case ".ogg", ".oga":
