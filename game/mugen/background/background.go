@@ -2,6 +2,7 @@ package background
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 	"math"
 	"path/filepath"
@@ -171,6 +172,8 @@ type CommonElement struct {
 	sceneTint        [3]float32
 	sceneTintActive  bool
 	paletteSampler   render.Nearest
+	rgbSampler       render.Linear
+	trueColor        bool
 	renderError      error
 	Name             string
 	Type             ElementType
@@ -264,6 +267,14 @@ func (e *CommonElement) zoomGeometry(geometry *ebiten.GeoM, center, floor float6
 
 func (e *CommonElement) paletteError() error { return e.renderError }
 
+func (e *CommonElement) spriteSampling(sprite *sff.Sprite) {
+	e.trueColor = false
+	if sprite != nil && sprite.Image != nil {
+		_, indexed := sprite.Image.(*image.Paletted)
+		e.trueColor = !indexed
+	}
+}
+
 func (e *CommonElement) setSceneTint(tint [3]float32) {
 	e.sceneTint, e.sceneTintActive = tint, tint != [3]float32{1, 1, 1}
 }
@@ -283,11 +294,18 @@ func (e *CommonElement) drawPaletteImage(target, source *ebiten.Image, options *
 	}
 	// Projected stage layers need the triangle sampler even without PalFX:
 	// rectangle draws quantize fractional vertices before the viewport fit.
-	if !e.paletteTransform.Enabled && destination < 0 && e.projection.Space.Width <= 0 {
+	if !e.trueColor && !e.paletteTransform.Enabled && destination < 0 && e.projection.Space.Width <= 0 {
 		target.DrawImage(source, options)
 		return
 	}
-	if err := e.paletteSampler.DrawStyledImage(target, source, options, render.DrawStyle{DestinationFactor: destination, Palette: e.paletteTransform}); err != nil {
+	style := render.DrawStyle{DestinationFactor: destination, Palette: e.paletteTransform}
+	var err error
+	if e.trueColor {
+		err = e.rgbSampler.DrawStyledImage(target, source, options, style)
+	} else {
+		err = e.paletteSampler.DrawStyledImage(target, source, options, style)
+	}
+	if err != nil {
 		e.renderError = err
 	}
 }
@@ -439,6 +457,7 @@ func (e *NormalElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset flo
 	if e.Sprite == nil {
 		return
 	}
+	e.spriteSampling(e.Sprite)
 
 	key := fmt.Sprintf("%d-%d", e.Sprite.GroupNumber, e.Sprite.ImageNumber)
 	si, ok := sprites[key]
@@ -521,8 +540,10 @@ func (e *AnimationElement) drawFrame(screen *ebiten.Image, cameraX, cameraY, zOf
 	}
 
 	pivotX, pivotY := 0, 0
+	e.spriteSampling(nil)
 	if e.Sprites != nil {
 		if spr, ok := e.Sprites[key]; ok {
+			e.spriteSampling(spr)
 			pivotX = int(spr.XAxis)
 			pivotY = int(spr.YAxis)
 		}
@@ -600,6 +621,7 @@ func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset f
 		return
 	}
 	if e.Sprite != nil {
+		e.spriteSampling(e.Sprite)
 		si, ok := sprites[fmt.Sprintf("%d-%d", e.Sprite.GroupNumber, e.Sprite.ImageNumber)]
 		if ok {
 			img := si.Masked

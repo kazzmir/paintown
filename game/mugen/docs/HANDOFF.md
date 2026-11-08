@@ -13,8 +13,9 @@ Current sprite/rendering batch (end-state validation pending):
   native byte-truncated RGB premultiplication. One beta scene confirms both
   formats, including opaque black for fully transparent texels. Indexed/opaque
   sprites retain their existing views; linked nodes share the opaque view.
-- The same scene confirms linear true-color BG filtering under fractional
-  scaling. Implement this consumer before final connected validation.
+- True-color backgrounds now use the shared linear sampler; indexed sprites
+  retain nearest sampling. The connected stage scenario replays native RGBA
+  mask/scale samples, then mask changes, visibility and background reset.
 - Latest accepted media checkpoint764918190 retains bounded WAV/SFX playback,
   extensible PCM/float support, Linux KO/rematch/KO and completed race checks.
 

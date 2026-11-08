@@ -1268,6 +1268,79 @@ y=0
 		t.Fatal("round reset retained linked/controller/animation state")
 	}
 	cameraProjectionFlow(t, e, root)
+	rgbaBackgroundAssetFlow(t, root)
+}
+
+// Continue the stage lifecycle through native-confirmed PNG32/raw RGBA masks,
+// fractional scaling, visibility and reset, reusing the existing tiny archive.
+func rgbaBackgroundAssetFlow(t *testing.T, root string) {
+	t.Helper()
+	archive, err := filepath.Abs("../sff/testdata/formats.sff")
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := fmt.Sprintf("[Info]\nmugenversion=1.1\n[Bound]\nscreenleft=15\nscreenright=15\n[StageInfo]\nlocalcoord=320,240\nzoffset=200\n[BGDef]\nspr=%q\ndebugbg=1\n", archive)
+	for _, sprite := range [][2]int{{3, 80}, {5, 180}} {
+		for _, mode := range [][2]int{{0, 30}, {1, 50}} {
+			source += fmt.Sprintf("[BG %d mask%d]\ntype=normal\nspriteno=0,%d\nstart=%d,%d\ndelta=0,0\nmask=%d\n", sprite[0], mode[0], sprite[0], sprite[1]-160, mode[1], mode[0])
+		}
+	}
+	source += "[BG scaled]\ntype=normal\nspriteno=0,3\nstart=-79.75,70\ndelta=0,0\nmask=1\nscalestart=4,4\n"
+	path := filepath.Join(t.TempDir(), "rgba.def")
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := stage.LoadStage(path, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	canvas := ebiten.NewImage(320, 240)
+	defer canvas.Deallocate()
+	draw := func() {
+		t.Helper()
+		if err := loaded.DrawWithPalette(canvas, 0, 0, palette.Transform{}, palette.Transform{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	pixel := func(x, y int) [3]uint8 {
+		c := color.NRGBAModel.Convert(canvas.At(x, y)).(color.NRGBA)
+		return [3]uint8{c.R, c.G, c.B}
+	}
+	draw()
+	unmasked := [][3]uint8{{0, 0, 0}, {3, 16, 9}, {15, 32, 18}, {33, 48, 27}, {60, 65, 36}, {94, 81, 45}, {135, 97, 54}, {184, 114, 63}}
+	masked := [][3]uint8{{255, 0, 255}, {227, 16, 233}, {208, 32, 211}, {195, 48, 189}, {191, 65, 167}, {194, 81, 145}, {204, 97, 123}, {222, 114, 101}}
+	for _, x := range []int{80, 180} {
+		for offset := range unmasked {
+			if got := pixel(x+offset, 32); got != unmasked[offset] {
+				t.Fatal("native unmasked RGBA background", x, offset, got, unmasked[offset])
+			}
+			if got := pixel(x+offset, 52); got != masked[offset] {
+				t.Fatal("native masked RGBA background", x, offset, got, masked[offset])
+			}
+		}
+	}
+	for offset, want := range map[int][3]uint8{2: {253, 1, 254}, 6: {226, 16, 232}, 10: {207, 31, 210}, 14: {195, 46, 188}, 18: {191, 62, 166}, 22: {195, 77, 144}, 26: {205, 92, 122}, 29: {219, 104, 105}} {
+		if got := pixel(80+offset, 79); got != want {
+			t.Fatal("native fractional RGBA background filtering", offset, got, want)
+		}
+	}
+	first := loaded.Background.Elements[0].(*background.NormalElement)
+	first.Mask = true
+	loaded.Update()
+	draw()
+	if pixel(83, 32) != masked[3] {
+		t.Fatal("mask change reused the opaque texture")
+	}
+	first.SetVisible(false)
+	draw()
+	if pixel(83, 32) != ([3]uint8{255, 0, 255}) {
+		t.Fatal("hidden RGBA background retained its pixels")
+	}
+	loaded.ResetBackground()
+	draw()
+	if pixel(83, 32) != unmasked[3] {
+		t.Fatal("background reset retained the changed RGBA mask/visibility")
+	}
 }
 
 // Continue the connected stage scenario at HD game resolution with a cropped,
