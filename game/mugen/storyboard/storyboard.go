@@ -27,6 +27,7 @@ type FadeTool struct {
 	FadeOutColor color.RGBA
 	Ticker       int
 	State        int // 0=fadein, 1=normal, 2=fadeout, 3=done
+	overlay      *ebiten.Image
 }
 
 const (
@@ -79,12 +80,17 @@ func (f *FadeTool) Draw(screen *ebiten.Image) {
 		return
 	}
 
-	w, h := screen.Bounds().Dx(), screen.Bounds().Dy()
-	overlay := ebiten.NewImage(w, h)
-	overlay.Fill(color.RGBA{R: c.R, G: c.G, B: c.B, A: uint8(alpha * 255)})
+	if f.overlay == nil {
+		f.overlay = ebiten.NewImage(1, 1)
+	}
+	// Fade colors are straight RGB. NRGBA supplies their premultiplied
+	// representation to Ebitengine, including partially opaque colored fades.
+	f.overlay.Fill(color.NRGBA{R: c.R, G: c.G, B: c.B, A: uint8(alpha * 255)})
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy()))
+	op.GeoM.Translate(float64(screen.Bounds().Min.X), float64(screen.Bounds().Min.Y))
 	op.Blend = ebiten.BlendSourceOver
-	screen.DrawImage(overlay, op)
+	screen.DrawImage(f.overlay, op)
 }
 
 // Layer is an animated element displayed at a specific time in a scene.
@@ -512,6 +518,7 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 	}
 	if p.canvas == nil {
 		p.canvas = ebiten.NewImage(space.Width, space.Height)
+		p.canvas.Fill(color.Black)
 	}
 	if p.gameCanvas == nil || p.gameCanvas.Bounds().Dx() != game.Width || p.gameCanvas.Bounds().Dy() != game.Height {
 		if p.gameCanvas != nil {
@@ -521,7 +528,8 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 	}
 	p.sb.prepareImages()
 	scene := p.sb.Scenes[p.currentIdx]
-	p.canvas.Fill(color.Black)
+	// clearcolor=-1 deliberately retains pixels across ticks and scene
+	// changes. The scene clears this canvas only when it requests a color.
 	p.gameCanvas.Fill(color.Black)
 	if scene.ClearColorSet {
 		p.gameCanvas.Fill(scene.ClearColor)

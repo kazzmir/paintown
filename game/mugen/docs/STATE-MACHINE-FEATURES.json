@@ -308,8 +308,10 @@
       "gap": "",
       "allocation": "item3",
       "sources": [
-        "system/storyboard_state.go"
-      ]
+        "system/storyboard_state.go",
+        "storyboard/storyboard.go:DrawToWindow"
+      ],
+      "validation": "Connected asset lifecycle spans a partially opaque colored fade, animated/text/sound scene, clearcolor=-1 scene transition and blank ticks retaining prior pixels, explicit clear replacement and exit. Fade RGB is correctly premultiplied and one reusable texel replaces per-frame full-canvas allocations. Match-flow passes with race detection; no captures or generated banks retained."
     },
     {
       "id": "bgm",
@@ -690,7 +692,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b2035221a6633716c67af01cdd5ac3e589729e90456ba1e526c212813d537a52"
+      "passed_source": "755cef03cd644917cf87d24f52ee55831464b41369a525be248536635addc73c"
     }
   ],
   "presentation_followups": [

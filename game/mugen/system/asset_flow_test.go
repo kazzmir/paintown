@@ -68,6 +68,8 @@ font2=absolute.def
 [Scene 0]
 end.time=12
 clearcolor=0,0,0
+fadein.time=2
+fadein.col=200,80,40
 window=20,20,160,120
 layer0.anim=700
 layer0.offset=70,60
@@ -86,14 +88,21 @@ sound0.volumescale=75
 sound0.pan=-127
 [Scene 1]
 end.time=8
+clearcolor=-1,0,0
 layer0.anim=700
 layer0.offset=70,60
+layer0.starttime=2
 layer1.text="Done"
 layer1.font=0,0,1
 layer1.offset=40,40
+layer1.starttime=2
 layer2.text="AVé"
 layer2.font=2,-99,1
 layer2.offset=40,85
+layer2.starttime=2
+[Scene 2]
+end.time=3
+clearcolor=12,24,36
 [Begin Action 700]
 Interpolate Offset
 Interpolate Scale
@@ -144,6 +153,10 @@ Interpolate Blend
 		e.Draw(canvas)
 	}
 	step()
+	fade := color.NRGBAModel.Convert(canvas.At(400, 400)).(color.NRGBA)
+	if fade.R < 98 || fade.R > 101 || fade.G < 38 || fade.G > 41 || fade.B < 18 || fade.B > 21 || fade.A != 255 {
+		t.Fatal("colored fade lost its partial opacity", fade)
+	}
 	if story.Scenes[0].Layers[1].VisibleText() != "" {
 		t.Fatal("text appeared before start")
 	}
@@ -165,7 +178,9 @@ Interpolate Blend
 	if text := story.Scenes[0].Layers[1].VisibleText(); !strings.Contains(text, "B\n") {
 		t.Fatal("typewriter did not advance through newline", text)
 	}
+	previous := make([]byte, canvas.Bounds().Dx()*canvas.Bounds().Dy()*4)
 	for e.currentState == state && state.player.CurrentScene() == story.Scenes[0] {
+		canvas.ReadPixels(previous)
 		step()
 	}
 	if story.Scenes[0].Layers[1].VisibleText() != "" {
@@ -174,10 +189,27 @@ Interpolate Blend
 	if state.player.CurrentScene() != story.Scenes[1] || story.Scenes[1].Window != story.Scenes[0].Window {
 		t.Fatal("scene window/layer lifecycle did not carry correctly")
 	}
-	for n := 0; n < 10 && e.currentState == state; n++ {
-		step()
+	retained := make([]byte, len(previous))
+	canvas.ReadPixels(retained)
+	if story.Scenes[1].ClearColorSet || !bytes.Equal(retained, previous) {
+		t.Fatal("uncleared scene transition discarded previous pixels")
 	}
-	if e.currentState != next {
+	step() // No layers start yet: the retained image must survive another tick.
+	canvas.ReadPixels(retained)
+	if !bytes.Equal(retained, previous) {
+		t.Fatal("clearcolor=-1 did not retain an otherwise blank frame")
+	}
+	cleared := false
+	for n := 0; n < 20 && e.currentState == state; n++ {
+		step()
+		if state.player.CurrentScene() == story.Scenes[2] {
+			cleared = true
+			if got := color.NRGBAModel.Convert(canvas.At(320, 240)).(color.NRGBA); got != (color.NRGBA{12, 24, 36, 255}) {
+				t.Fatal("explicit scene color did not replace retained content", got)
+			}
+		}
+	}
+	if !cleared || e.currentState != next {
 		t.Fatal("storyboard did not exit")
 	}
 	legacyPaletteAssetFlow(t, e, canvas)
