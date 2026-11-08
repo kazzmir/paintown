@@ -337,6 +337,7 @@
         "font/font.go",
         "font/truetype.go:loadTrueType",
         "sff/pcx.go:decodePCX",
+        "sff/sff.go:ParsePortraits",
         "resource/characters.go:Resolve",
         "sound/legacy_linux.go:decodeLegacyMusic",
         "storyboard/loader.go:Load",
@@ -347,7 +348,7 @@
         "character/palette_load.go:BindPalette",
         "palette/state.go:SelectLegacy"
       ],
-      "validation": "Connected asset lifecycle covers ZIP/default/alternate DEF selection with spaced paths, portraits, packed intro, versus/fight, outfits, round reset, direct roster reload, ending and owned-file cleanup. Missing members and invalid ZIP paths retain context. Existing font, retained storyboard, trailerless PCX and palette/helper paths remain covered. Match-flow passes with race detection; no copied stock banks or generated fixtures retained. Native raster/rejection parity and missing external media/fonts remain open."
+      "validation": "Connected asset lifecycle covers ZIP/default/alternate DEF selection, spaced paths, selective v1/v2 portraits, linked pixel sources and shared/private palette colors, intro/versus/fight, outfits/reset, roster reload, ending and cleanup. Full gameplay sprite loading remains separate from portrait decoding. Existing font, retained storyboard and trailerless PCX paths remain covered. Match-flow passes with race detection; no copied stock banks or generated fixtures retained. Native raster/rejection parity and missing external media/fonts remain open."
     },
     {
       "id": "raster-audio",
@@ -694,7 +695,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2b1f06159b2be04059c1347b0ae863a6326892e450d6f4d4b350a4ec05c2e103"
+      "passed_source": "be3401cef68d182ab11731025426d2531742c8849d218b12f2bb731fa1bdd660"
     }
   ],
   "presentation_followups": [

@@ -290,7 +290,7 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 		shared, linked bool
 		c              color.NRGBA
 	}{
-		{9000, 1, false, false, blue}, {0, 0, false, false, green}, {0, 1, true, false, green}, {9000, 0, true, false, green}, {0, 2, true, true, green},
+		{9000, 1, false, false, blue}, {0, 0, false, false, green}, {0, 1, true, false, green}, {9000, 0, true, true, green}, {0, 2, true, true, green},
 	} {
 		data := pcx(node.c)
 		if node.group == 0 && node.item == 1 {
@@ -501,6 +501,10 @@ func packedCharacterAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image, dir
 		}
 		files[name] = data
 	}
+	portraits, err := sff.ParsePortraits(bytes.NewReader(files["outfits.sff"]))
+	if err != nil || portraits.Sprites[2].Image != nil || portraits.Sprites[3].Image == nil || !portraits.Sprites[3].Linked {
+		t.Fatal("portrait loading decoded fight frames or lost a linked portrait", err)
+	}
 	definition += "[Arcade]\nintro.storyboard=Story\\Ending.def\nending.storyboard=Story\\Ending.def\n"
 	files["Outfits pack.def"] = []byte(definition)
 	files["Alternate.def"] = []byte(strings.Replace(definition, "Legacy outfits", "Packed alternate", 1))
@@ -557,6 +561,9 @@ layer0.offset=80,80
 	first, alternate := selection.chars[0], selection.chars[1]
 	if first.SmallPortrait == nil || first.BigPortrait == nil || alternate.Name != "Packed alternate" || filepath.Dir(first.DefPath) != filepath.Dir(alternate.DefPath) || first.IntroStoryboard == "" || first.EndingStoryboard == "" {
 		t.Fatal("ZIP portraits, alternate DEF, cache or storyboard paths were not loaded")
+	}
+	if small, big := color.NRGBAModel.Convert(first.SmallPortrait.At(1, 0)), color.NRGBAModel.Convert(first.BigPortrait.At(1, 0)); small != (color.NRGBA{0, 120, 0, 255}) || big != (color.NRGBA{0, 0, 130, 255}) {
+		t.Fatal("selective portrait decode changed shared/private colors", small, big)
 	}
 	selection.p1CursorX, selection.p1CursorY, selection.p2CursorX, selection.p2CursorY = 0, 0, 1, 0
 	selection.palettes = [2]int{2, 1}

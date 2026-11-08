@@ -96,7 +96,7 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 		if err != nil {
 			return nil, nil, err
 		}
-		archive, err := sff.Parse(file)
+		archive, err := sff.ParsePortraits(file)
 		file.Close()
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s: %w", path, err)

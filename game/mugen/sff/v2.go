@@ -40,7 +40,7 @@ func readRegion(r io.ReadSeeker, size, offset, length int64) ([]byte, error) {
 	return b, err
 }
 
-func parseV2(r io.ReadSeeker, h []byte) (*SFF, error) {
+func parseV2(r io.ReadSeeker, h []byte, selected spriteSelection) (*SFF, error) {
 	size, err := r.Seek(0, io.SeekEnd)
 	if err != nil {
 		return nil, err
@@ -130,10 +130,15 @@ func parseV2(r io.ReadSeeker, h []byte) (*SFF, error) {
 		p := sprites[i*28 : (i+1)*28]
 		u16 := func(j int) uint16 { return binary.LittleEndian.Uint16(p[j : j+2]) }
 		nodes[i] = v2Sprite{u16(0), u16(2), u16(4), u16(6), u16(8), u16(10), u16(12), p[14], p[15], binary.LittleEndian.Uint32(p[16:20]), binary.LittleEndian.Uint32(p[20:24]), u16(24), u16(26)}
+		n := nodes[i]
+		out.Sprites[i] = Sprite{GroupNumber: n.group, ImageNumber: n.item, XAxis: int16(n.x), YAxis: int16(n.y), Linked: n.length == 0, PaletteIndex: int(n.palette), Format: n.format, ColorDepth: n.depth}
 	}
 	state := make([]byte, int(count))
 	budget := int64(0)
 	for start := range nodes {
+		if selected != nil && !selected(nodes[start].group, nodes[start].item) {
+			continue
+		}
 		if state[start] == 2 {
 			continue
 		}
@@ -155,7 +160,6 @@ func parseV2(r io.ReadSeeker, h []byte) (*SFF, error) {
 			if n.length > 256<<20 {
 				return nil, fmt.Errorf("sprite %d: excessive encoded length %d", idx, n.length)
 			}
-			out.Sprites[idx] = Sprite{GroupNumber: n.group, ImageNumber: n.item, XAxis: int16(n.x), YAxis: int16(n.y), Linked: n.length == 0, PaletteIndex: int(n.palette), Format: n.format, ColorDepth: n.depth}
 			if n.length == 0 {
 				idx = int(n.link)
 				continue

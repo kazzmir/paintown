@@ -32,6 +32,27 @@ type SFF struct {
 
 // ParseWithPalette is like Parse but uses an initial palette (e.g. from an .act file).
 func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, error) {
+	return parseWithSelection(r, initialPalette, nil)
+}
+
+// ParsePortraits retains archive metadata but decodes only 9000,0/9000,1 and
+// their linked pixel sources. Character selection need not decode fight frames.
+// Gameplay uses Parse to load and validate the complete sprite set.
+func ParsePortraits(r io.ReadSeeker) (*SFF, error) {
+	return parseWithSelection(r, nil, func(group, item uint16) bool {
+		return group == 9000 && item <= 1
+	})
+}
+
+type spriteSelection func(group, item uint16) bool
+
+type v1Source struct {
+	offset, length  int64
+	palette, opaque color.Palette
+	embeddedPalette bool
+}
+
+func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected spriteSelection) (*SFF, error) {
 	var header [512]byte
 	if _, err := io.ReadFull(r, header[:]); err != nil {
 		return nil, fmt.Errorf("read header: %w", err)
@@ -44,7 +65,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 
 	vHi := header[15]
 	if vHi == 2 {
-		return parseV2(r, header[:])
+		return parseV2(r, header[:], selected)
 	}
 	if vHi != 1 {
 		logger.LogUnresolved(fmt.Sprintf("SFF Error: Unsupported version %d.%d", vHi, header[12]))
@@ -75,6 +96,32 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 	currentPalette := initialPalette
 	currentShared := initialPalette != nil
 	spriteIndex := make(map[uint16]*Sprite)
+	sources := make([]v1Source, totalImages)
+	owners := make([]uint16, totalImages)
+	decode := func(index uint16, data []byte) error {
+		sprite := &sff.Sprites[index]
+		if sprite.Image != nil {
+			return nil
+		}
+		source := sources[index]
+		if data == nil {
+			data, err = readRegion(r, size, source.offset, source.length)
+			if err != nil {
+				return err
+			}
+		}
+		img, err := decodePCX(data, source.palette, source.embeddedPalette)
+		if err != nil {
+			return fmt.Errorf("sprite %d (%d,%d): %w", index, sprite.GroupNumber, sprite.ImageNumber, err)
+		}
+		opaque := *img
+		opaque.Palette = source.opaque
+		if opaque.Palette == nil {
+			opaque.Palette = opaquePalette(img.Palette)
+		}
+		sprite.Image, sprite.ImageOpaque = img, &opaque
+		return nil
+	}
 	var currentIndex uint16 = 0
 
 	for i := uint32(0); i < totalImages; i++ {
@@ -95,6 +142,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 		item := binary.LittleEndian.Uint16(sub[14:16])
 		prev := binary.LittleEndian.Uint16(sub[16:18])
 		samePalette := sub[18] == 1
+		wanted := selected == nil || selected(group, item)
 		if nextLoc != 0 && (int64(nextLoc) < location+32 || int64(nextLoc) > size) {
 			return nil, fmt.Errorf("sprite %d: invalid next offset %d", i, nextLoc)
 		}
@@ -105,13 +153,24 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			if !ok {
 				return nil, fmt.Errorf("sprite %d (%d,%d): invalid link %d", i, group, item, prev)
 			} else {
+				owner := owners[prev]
+				if wanted {
+					if err := decode(owner, nil); err != nil {
+						return nil, err
+					}
+				}
 				newSprite := *linkedSprite
+				newSprite.Image, newSprite.ImageOpaque = nil, nil
+				if wanted {
+					newSprite.Image, newSprite.ImageOpaque = sff.Sprites[owner].Image, sff.Sprites[owner].ImageOpaque
+				}
 				newSprite.GroupNumber = group
 				newSprite.ImageNumber = item
 				newSprite.XAxis = x
 				newSprite.YAxis = y
 				newSprite.Linked = true
 				sff.Sprites = append(sff.Sprites, newSprite)
+				owners[currentIndex] = owner
 			}
 			spriteIndex[currentIndex] = &sff.Sprites[len(sff.Sprites)-1]
 		} else {
@@ -127,9 +186,19 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 				return nil, fmt.Errorf("sprite %d (%d,%d): invalid PCX length %d", i, group, item, pcxLen)
 			}
 
-			pcxData := make([]byte, pcxLen)
-			if _, err := io.ReadFull(r, pcxData); err != nil {
-				return nil, fmt.Errorf("sprite %d (%d,%d): %w", i, group, item, err)
+			// Unselected v1 frames only contribute palette state. Read their
+			// small palette trailer, retaining an offset if a later portrait
+			// links to their pixels. Shared-palette frames require no read.
+			var pcxData []byte
+			if wanted || !samePalette {
+				offset, length := location+32, pcxLen
+				if !wanted && length > 769 {
+					offset, length = offset+length-769, 769
+				}
+				pcxData, err = readRegion(r, size, offset, length)
+				if err != nil {
+					return nil, fmt.Errorf("sprite %d (%d,%d): %w", i, group, item, err)
+				}
 			}
 
 			// MUGEN SFF v1 Palette Rules:
@@ -194,33 +263,17 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			}
 			palToUseOpaque = opaquePalette(palToUseOpaque)
 
-			img, err := decodePCX(pcxData, palToUse, !samePalette)
-			if err != nil {
-				return nil, fmt.Errorf("sprite %d (%d,%d): %w", i, group, item, err)
+			paletteIndex := -1
+			if shared {
+				paletteIndex = 0
 			}
-			// Masked and opaque consumers share immutable decoded indices.
-			// Only their palettes differ; decoding the same RLE twice wastes
-			// both load time and a complete pixel buffer for every v1 sprite.
-			imgOpaque := *img
-			if palToUseOpaque == nil {
-				palToUseOpaque = opaquePalette(img.Palette)
-			}
-			imgOpaque.Palette = palToUseOpaque
-			if err == nil {
-				paletteIndex := -1
-				if shared {
-					paletteIndex = 0
+			sff.Sprites = append(sff.Sprites, Sprite{PaletteIndex: paletteIndex, GroupNumber: group, ImageNumber: item, XAxis: x, YAxis: y})
+			owners[currentIndex] = currentIndex
+			sources[currentIndex] = v1Source{location + 32, pcxLen, palToUse, palToUseOpaque, !samePalette}
+			if wanted {
+				if err := decode(currentIndex, pcxData); err != nil {
+					return nil, err
 				}
-				sff.Sprites = append(sff.Sprites, Sprite{
-					PaletteIndex: paletteIndex,
-					GroupNumber:  group,
-					ImageNumber:  item,
-					XAxis:        x,
-					YAxis:        y,
-					Linked:       false,
-					Image:        img,
-					ImageOpaque:  &imgOpaque,
-				})
 			}
 			spriteIndex[currentIndex] = &sff.Sprites[len(sff.Sprites)-1]
 		}
