@@ -333,6 +333,7 @@
       "allocation": "item4",
       "sources": [
         "font/font.go",
+        "font/truetype.go:loadTrueType",
         "sound/legacy_linux.go:decodeLegacyMusic",
         "storyboard/loader.go:Load",
         "storyboard/storyboard.go:SoundCommands",
@@ -342,7 +343,7 @@
         "character/palette_load.go:BindPalette",
         "palette/state.go:SelectLegacy"
       ],
-      "validation": "Legacy ACT outfit/shared-private sprite/helper/round-reset lifecycle passes; one original 1.1b1 color scenario confirms alternate body/default HUD portrait distinction."
+      "validation": "Connected storyboard/match flow covers nested Windows-style/mixed-case and absolute TrueType paths, UTF-8 text, invalid banks and contextual corrupt-font rejection. Font fallback banks share texture caches. Legacy ACT outfit/shared-private sprite/helper/round-reset lifecycle remains covered; a bounded beta color flow confirms alternate body/default HUD portrait distinction. Missing licensed fonts, physical CD playback and exact raster/native rejection parity remain open."
     },
     {
       "id": "raster-audio",
@@ -689,7 +690,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a1a147ceb4ab79796df8a6a04f48e64f69f3b25efc1509ae2e8d36084b1f25aa"
+      "passed_source": "b2035221a6633716c67af01cdd5ac3e589729e90456ba1e526c212813d537a52"
     }
   ],
   "presentation_followups": [

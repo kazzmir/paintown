@@ -25,6 +25,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
+	"golang.org/x/image/font/gofont/goregular"
 )
 
 // One asset lifecycle loads existing sprites/SND/fonts without copies, runs
@@ -40,12 +41,30 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Exercise authored font paths through the storyboard consumer. Nested
+	// Windows spellings and absolute paths must load the supplied face rather
+	// than silently selecting the missing-font fallback.
+	facePath := filepath.Join(dir, "Fonts", "Nested", "Face.TTF")
+	if err := os.MkdirAll(filepath.Dir(facePath), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(facePath, goregular.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for name, file := range map[string]string{"nested.def": `fonts\nested\face.ttf`, "absolute.def": facePath} {
+		definition := "[FNT v2]\nfntversion=2,00\n[Def]\nType=truetype\nSize=0,18\nSpacing=100,1\nFile=" + file + "\nBlend=1\n"
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(definition), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
 	source := fmt.Sprintf(`[Info]
 localcoord=320,240
 [SceneDef]
 spr=%s
 snd=%s
 font0=%s
+font1=nested.def
+font2=absolute.def
 [Scene 0]
 end.time=12
 clearcolor=0,0,0
@@ -58,6 +77,9 @@ layer1.offset=40,40
 layer1.textdelay=2
 layer1.starttime=1
 layer1.endtime=8
+layer2.text="AVé"
+layer2.font=1,314,1
+layer2.offset=40,85
 sound0.value=0,0
 sound0.starttime=2
 sound0.volumescale=75
@@ -69,6 +91,9 @@ layer0.offset=70,60
 layer1.text="Done"
 layer1.font=0,0,1
 layer1.offset=40,40
+layer2.text="AVé"
+layer2.font=2,-99,1
+layer2.offset=40,85
 [Begin Action 700]
 Interpolate Offset
 Interpolate Scale
@@ -88,6 +113,11 @@ Interpolate Blend
 	story, err := sb.Load(path, root)
 	if err != nil {
 		t.Fatal(err)
+	}
+	for _, f := range story.Fonts[1:3] {
+		if f == nil || f.Fallback != "" || f.TextWidth("AVé") <= 0 || f.TextWidth("AVé") > 80 || f.Glyph('é', 314) == nil {
+			t.Fatal("authored TrueType path/UTF-8 metrics did not reach storyboard", f)
+		}
 	}
 	action := story.AIR.Actions[700]
 	visual := action.Sample(0, 2)
@@ -159,6 +189,15 @@ Interpolate Blend
 	}
 	if _, err := sb.Load(path, root); err == nil || !strings.Contains(err.Error(), "layer1.font") {
 		t.Fatal("missing font lost asset context", err)
+	}
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(facePath, []byte("invalid font"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := sb.Load(path, root); err == nil || !strings.Contains(err.Error(), "font1") || !strings.Contains(err.Error(), "TrueType") {
+		t.Fatal("corrupt authored font was silently replaced or lost context", err)
 	}
 }
 

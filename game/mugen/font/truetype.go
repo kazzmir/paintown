@@ -1,12 +1,14 @@
 package font
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/font/opentype"
@@ -27,33 +29,18 @@ func loadTrueType(defPath, name string, f *Font, blend bool) (*Font, error) {
 		search = append(search, filepath.Join(windows, "Fonts"))
 	}
 	search = append(search, "/usr/share/fonts/truetype/msttcorefonts")
+	path, err := resource.Resolve(name, search...)
 	var data []byte
-	for _, dir := range search {
-		if dir == "" {
-			continue
-		}
-		path := filepath.Join(dir, name)
-		b, err := os.ReadFile(path)
-		if os.IsNotExist(err) && filepath.Base(name) == name {
-			entries, _ := os.ReadDir(dir)
-			for _, entry := range entries {
-				if !entry.IsDir() && strings.EqualFold(entry.Name(), name) {
-					b, err = os.ReadFile(filepath.Join(dir, entry.Name()))
-					break
-				}
-			}
-		}
-		if err == nil {
-			data = b
-			break
-		}
-		if !os.IsNotExist(err) {
-			return nil, fmt.Errorf("%s: TrueType file %s: %w", defPath, path, err)
-		}
-	}
-	if data == nil {
+	if errors.Is(err, os.ErrNotExist) {
 		data = goregular.TTF
 		f.Fallback = name + " -> embedded Go Regular"
+	} else if err != nil {
+		return nil, fmt.Errorf("%s: TrueType file: %w", defPath, err)
+	} else {
+		data, err = os.ReadFile(path)
+		if err != nil {
+			return nil, fmt.Errorf("%s: TrueType file %s: %w", defPath, path, err)
+		}
 	}
 	collection, err := opentype.ParseCollection(data)
 	if err != nil {

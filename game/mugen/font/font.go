@@ -246,6 +246,18 @@ func LoadFont(path string) (*Font, error) {
 }
 
 func (f *Font) getGlyphImage(char rune, bank int) *ebiten.Image {
+	// Invalid banks render the same fallback glyphs. Keep one image set for
+	// that fallback instead of allocating a texture set for every authored
+	// bank value. TrueType has no color banks at all.
+	if f.ttf != nil {
+		bank = 0
+	} else if f.fontV2 {
+		if _, exists := f.bankGlyphs[bank]; !exists {
+			bank = -1
+		}
+	} else if bank < 0 || bank >= len(f.Palettes) || f.Palettes[bank] == nil {
+		bank = -1
+	}
 	if f.imageCache == nil {
 		f.imageCache = make(map[int]map[rune]*ebiten.Image)
 	}

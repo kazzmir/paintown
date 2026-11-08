@@ -41,8 +41,9 @@ unavailable, and other platform validation is deferred by the user.
 FNT v2 loads its bitmap SFF or TrueType file relative to the definition. For
 TrueType, the search then checks directories in `MUGEN_FONT_DIRS` (the platform
 path-list separator), Windows `%WINDIR%/Fonts` when available, and Linux's common
-`/usr/share/fonts/truetype/msttcorefonts` directory. Filename matching in each
-font directory is case insensitive. Corrupt existing files fail; missing files
+`/usr/share/fonts/truetype/msttcorefonts` directory. Windows separators and
+case-insensitive matching apply to every component of nested paths. Absolute
+filenames are used directly. Corrupt or ambiguous existing paths fail; missing files
 use x/image's embedded Go Regular. `Font.Fallback` records the substitution and
 motif loading reports it through the logger.
 

@@ -7,22 +7,23 @@ No pushes, binaries, assets or generated banks. Use the private wrapper with
 GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
 Reuse assets/cache; remove disposable output.
 
-Latest approved local commit 64fd8adf5 covers moving-owner helper binding across
-asymmetric Pause allowances, body contact, retirement and reset. Prior PosFreeze,
-camera and vertical/airborne/body-push observations remain covered.
+065f5fe40 fixes finite TargetBind expiry during attacker hitpause: targets follow
+the anchor's position with zero velocity, preventing premature victim drift.
+The mixed-coordinate throw/recovery/reset scenario matches beta; four affected
+segments passed with race detection and Linux was rebuilt. Earlier helper/Pause,
+PosFreeze, camera and body-push observations remain covered.
 
-Current checkpoint fixes TargetBind velocity publication during attacker
-hitpause. Targets still follow the anchor's position, but receive zero velocity
-until it resumes. Copying stored velocity prematurely moved victims after a
-finite bind expired. The connected entity scenario now includes an asymmetric
-throw, expiry without drift, own-state recovery/control and round reset, using
-mixed character coordinates. Beta observations are recorded in the scenario.
-All four changed-source segments pass with race detection; state-flow stays
-checked without rerunning. The scenario's placeholder/recovery setup was corrected
-before completion. Linux rebuilt; native helper, capture, symlink overlay and
-logs removed. Root module hashes and local YAML content remain unchanged.
-This checkpoint was approved; subsequent local checkpoints may proceed without
-individual approval under the user's renewed five-commit recap workflow.
+Current font checkpoint uses the shared resource resolver for nested Windows
+separators, mixed-case components and absolute TrueType paths. Present corrupt
+or ambiguous paths fail with context; absent fonts retain the reported fallback.
+Invalid bank values share fallback glyph textures; TrueType banks share one set.
+The connected storyboard flow now renders local UTF-8 faces across scenes and
+checks corrupt-font rejection. Only match-flow reopened and passed with race
+detection. Scratch is automatic; no new asset banks or user configuration files.
+Next concrete asset gap: storyboard clearcolor=-1 is parsed but its canvas is
+unconditionally cleared while drawing. Preserve scene pixels and reuse fade
+resources; validate through the same connected scene lifecycle. Rebuild Linux
+at the end of this implementation batch. Root modules and local YAML stay intact.
 
 Ledger remains 32/34 checklist items, not native conformance or effort. Remaining:
 camera easing, other pause/hitpause and binding combinations, crop/raster/
