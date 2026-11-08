@@ -1,58 +1,44 @@
 # Current handoff
 
-Follow AGENTS.md; PROGRESS.md is the single ledger. Author only game/mugen/.
-Local checkpoint commits are authorized without individual approval. Recap about
-every five commits; ask only for needed input. Never track user configuration.
-No pushes, binaries, assets or generated banks. Use the private wrapper with
-GOTOOLCHAIN=go1.26.9. Runs stay serial: await exit, guard, then edit/run.
-Reuse assets/cache; remove disposable output.
+Follow AGENTS.md. PROGRESS.md is the single completion ledger, now including
+four checked known-difference checkpoints. Local source/text commits are
+authorized; no pushes, binaries, generated banks or tracked user configuration.
+Author only game/mugen/ and preserve unrelated/untracked work.
 
-Current known-difference batch (user requested closure before compatibility):
+The user-requested known-difference batch is complete. Stop for the user before
+starting compatibility and deferred work.
 
-- Camera return is corrected. The clipped region controls zoom fitting; the
-  unclipped actors' midpoint controls centering before final stage limits.
-  One bounded beta trace isolates the mixed offscreen-return tick. All eleven
-  connected camera/zoom samples match, including time120 X80.6977 vs the prior
-  Go80.8480. Native scratch was inspected/removed. Affected batch segments pass with races.
-- Rendering differences are corrected: indexed calibration is 3/8 game pixel,
-  source addresses remain unsnapped, and linear byte interpolation rounds the
-  weighted delta to even before adding the first texel. OnTop effects compose
-  over HUD, then receive final AllPalFX. One bounded beta scene matches rotated
-  indexed sprite/shadow and RGBA overlap RGB crops exactly. The existing stage
-  flow retains those digests plus finite AIR alpha, pause/expiry, projected
-  letterboxing and global-palette ordering. All five segments and existing
-  renderer color regressions pass with race detection. No new image bank.
-- Only the ordinary KO-echo application discrepancy remains to examine. Compare
-  actual cue onsets/gains, since the old report differed in extracted quiet
-  intervals. Unverified binding/pause/AI/content combinations belong to the
-  later compatibility batch; do not invent parameter matrices for them.
-- Prior405ef3951 fixes legacy font comments/diagnostics, PCX row decoding and
-  V1 archive budgets. Linux font banks and connected assets pass; beta authored
-  glyphs remained blank, so native font compatibility is still unverified.
-- Priora51b2146b retains mapping-specific texture revisions, shared fighter/HUD
-  pixels and AfterImage interpolation/outfit snapshots. Priorca131d22c retains
-  byte-premultiplied RGBA uploads, filtering and shared/indexed sprite resources.
+- Camera: preserve the unclipped participant midpoint before final stage limits.
+  All eleven beta camera/zoom samples match through time 120 (X 80.6977).
+- Rendering: fixed 3/8 indexed calibration, unsnapped source addresses and
+  delta-first ties-to-even byte filtering close sprite/shadow/RGBA differences.
+  OnTop effects blend over HUD before final AllPalFX; projected clipping keeps
+  parent coordinates. Rebuilt Linux output matches all four target beta RGB
+  regions exactly. Connected finite AIR blends, pause/expiry, HUD coverage,
+  letterboxes and global-palette composition pass.
+- KO echo: both current native and Go device captures pass the existing frozen
+  seven-segment reference, including the formerly missing quiet interval. Three
+  Go cue levels match exactly; relative starts differ at most 0.05s, within the
+  unchanged 0.35s capture criterion. Historical mismatch no longer reproduces;
+  retain the scheduler. Sample-exact device synchronization is not established.
+- All five connected segments are checked with race detection; existing render
+  color regressions also pass with races. Linux binary rebuilt. All owned
+  scratch/captures/PCM/logs/overlays were inspected and removed. Retain the single
+  ignored temp/bin/mugen-go executable and shared cache.
 
-Prior 764918190 retains bounded WAV/SFX playback, extensible PCM/float support,
-Linux KO/rematch/KO and completed decoder/mixer/media race checks.
+Checklist stays 32/34 implemented items, not conformance or effort. Next work is
+compatibility: representative external characters/stages, legacy/font behavior,
+unverified pause/binding/crop/filtering combinations and native AI policy.
+Physical CD audio, absent licensed fonts and other platforms remain deferred.
+Do not regenerate historical matrices or reopen completed segments by default.
 
-Prior51f7ae0b3 bounds AIR collision allocation and adds the camera motion
-sequence now extended through the corrected return.
+Retain shared asset/ZIP/portrait lifecycles, legacy PCX/FNT diagnostics and budgets,
+RGBA byte uploads, palette mapping revisions and saved AfterImage AIR clocks.
+Retain consumed-vs-read-ahead music cursors, shared PCM/float WAV decoding, reused
+Linux codec buffers and SFX quantization. Earlier details are in Git history.
 
-Previous 88428c4d9 batch provides ZIP character selection/rosters/quick matches,
-selective portraits, CMD [Remap] for human/helper/AI, pack retirement and live
-Game Speed. The user has approved continuing without individual commit review.
-
-Ledger stays 32/34 checklist items, not native conformance or effort. Remaining:
-other pause/hitpause and bindings, crop/raster/color/
-filtering combinations, native AI policy, strict asset compatibility, physical CD,
-legacy-font equivalence and absent licensed fonts. Linux is the target; other
-platforms are deferred.
-Historical matrices/raw renderer gates are not mandatory acceptance.
-
-Local mugen.yaml remains ignored/untracked by 8eda46f84, with contents preserved.
-The user will notify the contributor to back up YAML before pulling that removal.
-Standalone music-file playback CLI remains deferred; in-stage music works.
-Both upstream histories retain Go 1.26/Ebitengine 2.10.6/purego 0.11.3; root module
-files stay read-only. Original go.sum backup remains at
-`temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked`.
+Use the private round-task-env.py wrapper with GOTOOLCHAIN=go1.26.9; runtimes stay
+serial: await exit, separate owned-client guard, then edits/new runs. Root module
+files stay read-only; use mugen.mod/mugen.sum. Preserve ignored local mugen.yaml.
+Standalone music-file playback CLI remains deferred. Root go.sum backup remains
+at temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked.

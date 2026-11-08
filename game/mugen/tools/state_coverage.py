@@ -137,6 +137,7 @@ def report():
                         'mechanics': dict(Counter(row['status'] for row in features))},
             'controller_extensions': extra, 'controllers': controllers, 'triggers': triggers,
             'mechanics': features, 'segments': load_audit('segments').statuses(catalog), 'structural_errors': errors,
+            'known_differences': catalog.get('known_differences', []),
             'presentation_followups': catalog['presentation_followups']}
 
 
@@ -156,12 +157,20 @@ def markdown(value):
              'Checked items have a working implementation for the stated scope. Partial',
              'items name the remaining work. Counts below are feature/route counts, not',
              'an estimate of total effort or complete native compatibility.', '',
-             *[f'- {line}' for line in summary_lines(value)], '',
-             '## Completed scenario coverage', '',
+             *[f'- {line}' for line in summary_lines(value)], '']
+    if value['known_differences']:
+        lines.extend(['## Known difference checkpoints', '',
+                      'These checkmarks close the documented discrepancies for the observed scope.',
+                      'Broader compatibility and deferred capabilities remain listed below.', ''])
+        for row in value['known_differences']:
+            mark = 'x' if row['completed'] else ' '
+            lines.append(f"- [{mark}] **{row['name']}**: {row['validation']}")
+        lines.append('')
+    lines.extend(['## Completed scenario coverage', '',
              'Completed segments are excluded from default runs. Only a change to their',
              'covered source, a reported regression, or an explicit rerun reopens them.',
              'Checkmarks record successful runs against the covered source fingerprint;',
-             'source changes reopen only the affected segments.', '']
+             'source changes reopen only the affected segments.', ''])
     for row in value['segments']:
         mark = 'x' if row['complete'] else ' '
         lines.append(f"- [{mark}] **{row['id']}**: {row['contract']}.")

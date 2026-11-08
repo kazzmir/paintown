@@ -80,8 +80,9 @@ copies only tiny writable config text, and deletes scratch by default. All
 checkpoint captures/PCM/logs/overlays were inspected and removed. Keep the one
 ignored temp/bin/mugen-go executable and shared build cache for reuse.
 
-Remaining: physical CD (.da) audio is unsupported. Exact native color/shadow/
-alpha/KO echo and AI policy remain precision work. Turns, mixed-team health/round
+Remaining: physical CD (.da) audio is unsupported. The documented color/shadow/
+alpha/KO-echo discrepancies are closed; arbitrary content/rules/AI compatibility
+remains unverified. Turns, mixed-team health/round
 budgets and Survival team recovery are calibrated against supplied beta flows.
 Licensed Windows fonts are absent; the observable fallback needs a supplied
 font for full CJK glyph coverage. Other platform builds are deferred. No pushes
@@ -200,7 +201,7 @@ checked. Linux rebuilt and displayed both authored font banks. The beta scene
 showed no authored glyphs, so native font equivalence remains open. Current
 helper/capture/overlay/log scratch was removed; no user configuration tracked.
 
-## Known rendering correction — 2026-11-08
+## Known-difference closure — 2026-11-08
 
 Camera return, indexed sprite/shadow calibration and RGBA overlap RGB differences
 are corrected. Indexed geometry adds 3/8 game pixel with no source-grid snapping.
@@ -209,6 +210,12 @@ base texel (the reference Linux GL sampler rule). OnTop Explods compose above HU
 before final global PalFX, retaining window fit and projected subimage origins.
 The connected stage flow keeps native RGB digests and covers finite AIR blends,
 pause/expiry, HUD coverage and letterboxes. All five segments and existing render
-color regressions pass with races. Only KO-echo application playback remains in
-the current known-difference batch. Preserve exact expectations; do not create
-new image banks/matrices or treat unverified permutations as known failures.
+color regressions pass with races. Rebuilt Linux output matches all four native
+rendering regions exactly. Ordinary KO echo now passes the existing frozen
+seven-segment device acceptance in native and Go, including the quiet interval;
+Go cue levels match exactly and relative-start differences stay within the
+unchanged native capture criterion. The historical gap no longer reproduces,
+so no KO scheduler edit was needed. The known-difference batch is complete.
+Stop here for the user before compatibility/deferred work. Preserve exact
+expectations; do not create new image banks/matrices or treat unverified
+permutations as known failures. Owned scratch was inspected and removed.

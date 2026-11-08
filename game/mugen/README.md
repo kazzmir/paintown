@@ -249,7 +249,9 @@ native conformance or remaining effort); see the explicit partial rows.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains
-in progress: precision calibration and physical CD audio are still open.
+in progress. The documented camera, sprite/shadow, alpha-composition and KO-echo
+differences are closed for the checked scenes; the progress ledger records each
+checkpoint. Broader content/rules/AI compatibility and physical CD audio remain.
 
 ```bash
 game/mugen/mugen.sh --coverage --gaps   # lightweight source/feature report

@@ -375,8 +375,8 @@
       "name": "Remaining native rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Only the documented KO-echo application playback discrepancy remains in the known-difference batch. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work.",
-      "allocation": "known differences first (user 2026-11-08)",
+      "gap": "Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work.",
+      "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
         "character/ko_sound.go",
@@ -389,7 +389,7 @@
         "render/shadow.go",
         "system/fight_state.go:Draw"
       ],
-      "validation": "Camera return matches eleven beta samples. A bounded beta rendering scene establishes fixed 3/8 game-pixel indexed calibration, unsnapped source addressing and delta-first, ties-to-even byte interpolation. Rotated indexed sprite/shadow and overlapping RGBA RGB crops match exactly. The connected stage/asset lifecycle covers finite AIR alpha entries, overlap, pause, expiry, foreground over HUD, projected letterboxing and final AllPalFX. All five segments are checked with race detection; existing renderer color regressions also pass with race detection. Prior PNG32/raw RGBA background coverage retains its 40 fixed native samples. This closes the documented rendering discrepancies, not arbitrary renderer/asset compatibility."
+      "validation": "Camera return matches eleven beta samples. A bounded beta rendering scene establishes fixed 3/8 game-pixel indexed calibration, unsnapped source addressing and delta-first, ties-to-even byte interpolation. Rotated indexed sprite/shadow and overlapping RGBA RGB crops match exactly. The connected stage/asset lifecycle covers finite AIR alpha entries, overlap, pause, expiry, foreground over HUD, projected letterboxing and final AllPalFX. All five segments are checked with race detection; existing renderer color regressions also pass with race detection. Prior PNG32/raw RGBA background coverage retains its 40 fixed native samples. This closes the documented rendering discrepancies, not arbitrary renderer/asset compatibility. Rebuilt Linux application matches all four target native RGB regions exactly (indexed sprite, true-color sprite, shadows, overlap). Native and Go ordinary KO playback both pass the original seven-segment reference with unchanged amplitude8/time 0.35s criteria. Go amplitude error is 0 and maximum relative-start difference 0.05s. The old missing quiet interval does not reproduce; sample-exact device synchronization is not inferred."
     },
     {
       "id": "ai",
@@ -729,9 +729,35 @@
   ],
   "presentation_followups": [
     "Known indexed sprite/shadow alignment and finite/overlap RGB differences are corrected. Native fixed 3/8 calibration replaces the old half-pixel plus source-grid approximation; byte interpolation rounds the weighted delta before adding the first texel. One bounded scene and the connected stage lifecycle retain exact native RGB expectations. OnTop effects blend over HUD before final AllPalFX.",
-    "Ordinary KO-echo application capture differed by one extracted quiet interval; existing state/PCM observations do not establish the playback cause.",
+    "Ordinary KO-echo gap is closed for the existing acceptance: both current native and Go device captures yield all seven segments and three native cue levels, including the quiet interval. The historical mismatch no longer reproduces on the current mixer/decoder; preserve the scheduler and original tolerances. Sample-exact device synchronization remains unverified.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity."
+  ],
+  "known_differences": [
+    {
+      "id": "camera-return",
+      "name": "Offscreen camera return",
+      "completed": true,
+      "validation": "Unclipped participant midpoint fixes the mixed-return tick; all eleven beta camera/zoom samples match through time 120."
+    },
+    {
+      "id": "indexed-shadow",
+      "name": "Indexed sprite and shadow alignment",
+      "completed": true,
+      "validation": "Fixed 3/8 game-pixel calibration and unsnapped addressing reproduce the bounded beta rotated-sprite/shadow RGB crops exactly in the Linux application."
+    },
+    {
+      "id": "rgba-overlap",
+      "name": "Finite and overlapping alpha composition",
+      "completed": true,
+      "validation": "Delta-first byte interpolation and foreground-over-HUD composition reproduce the bounded RGBA overlap crop exactly. Connected AIR transitions, pause/expiry, letterboxing and final global PalFX pass."
+    },
+    {
+      "id": "ko-echo",
+      "name": "Ordinary KO echo playback",
+      "completed": true,
+      "validation": "Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed."
+    }
   ]
 }

@@ -9,6 +9,16 @@ an estimate of total effort or complete native compatibility.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project items: 32 implemented, 2 partial, 0 missing.
 
+## Known difference checkpoints
+
+These checkmarks close the documented discrepancies for the observed scope.
+Broader compatibility and deferred capabilities remain listed below.
+
+- [x] **Offscreen camera return**: Unclipped participant midpoint fixes the mixed-return tick; all eleven beta camera/zoom samples match through time 120.
+- [x] **Indexed sprite and shadow alignment**: Fixed 3/8 game-pixel calibration and unsnapped addressing reproduce the bounded beta rotated-sprite/shadow RGB crops exactly in the Linux application.
+- [x] **Finite and overlapping alpha composition**: Delta-first byte interpolation and foreground-over-HUD composition reproduce the bounded RGBA overlap crop exactly. Connected AIR transitions, pause/expiry, letterboxing and final global PalFX pass.
+- [x] **Ordinary KO echo playback**: Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed.
+
 ## Completed scenario coverage
 
 Completed segments are excluded from default runs. Only a change to their
@@ -67,7 +77,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; legacy-font native equivalence, native asset-rejection and exact raster parity remain unproven. (item4)
-- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Only the documented KO-echo application playback discrepancy remains in the known-difference batch. Other pause/hitpause and binding combinations, crop/raster edges and AI-policy precision are unverified compatibility work. (known differences first (user 2026-11-08))
+- [ ] Remaining native rendering, audio and AI fidelity. **partial** — Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 
