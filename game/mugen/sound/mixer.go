@@ -24,9 +24,12 @@ type samples struct {
 }
 
 type voice struct {
-	command  Command
-	samples  *samples
-	position float64
+	command     Command
+	samples     *samples
+	position    float64
+	step        float64
+	volume      float64
+	left, right float32
 }
 
 // Mixer is an endless signed-16-bit stereo PCM reader. All device interaction
@@ -69,13 +72,14 @@ func (m *Mixer) Apply(command Command) error {
 		m.voices = nil
 		return nil
 	case StopOwner, Stop:
-		var keep []*voice
+		keep := m.voices[:0]
 		for _, voice := range m.voices {
 			if voice.command.Owner == command.Owner && (command.Operation == StopOwner || voice.command.Channel == command.Channel) {
 				continue
 			}
 			keep = append(keep, voice)
 		}
+		clear(m.voices[len(keep):])
 		m.voices = keep
 		return nil
 	case Pan:
@@ -85,6 +89,7 @@ func (m *Mixer) Apply(command Command) error {
 		for _, voice := range m.voices {
 			if voice.command.Owner == command.Owner && voice.command.Channel == command.Channel && command.Channel >= 0 {
 				voice.command.Pan = command.Pan
+				m.preparePan(voice)
 			}
 		}
 		return nil
@@ -134,8 +139,12 @@ func (m *Mixer) Apply(command Command) error {
 	if existing != nil {
 		*existing = voice{command: command, samples: decoded}
 	} else {
-		m.voices = append(m.voices, &voice{command: command, samples: decoded})
+		existing = &voice{command: command, samples: decoded}
+		m.voices = append(m.voices, existing)
 	}
+	existing.step = float64(decoded.rate) / float64(m.options.SampleRate) * float64(command.Frequency)
+	m.preparePan(existing)
+	m.prepareVolume(existing)
 	return nil
 }
 
@@ -146,8 +155,35 @@ func (m *Mixer) SetVolume(volume float32) error {
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.options.Volume == volume {
+		return nil
+	}
 	m.options.Volume = volume
+	for _, voice := range m.voices {
+		m.prepareVolume(voice)
+	}
 	return nil
+}
+
+func (m *Mixer) prepareVolume(v *voice) {
+	v.volume = max(0, min(128, math.Trunc(float64(v.command.VolumeScale)*float64(m.options.Volume)*1.28)))
+}
+
+// Channel parameters change on commands, not on individual PCM samples.
+// Keep the two-stage native truncation in frame; only invariant factors move.
+func (m *Mixer) preparePan(v *voice) {
+	v.left, v.right = m.panGains(v.command.Pan)
+	if v.command.DirectPan && m.options.Stereo {
+		pan := max(float32(-127), min(float32(127), v.command.Pan))
+		if m.options.Reverse {
+			pan = -pan
+		}
+		right := int(pan) + 127
+		if right >= 254 {
+			right = 255
+		}
+		v.left, v.right = float32(255-right)/255, float32(right)/255
+	}
 }
 
 func (m *Mixer) panGains(pan float32) (float32, float32) {
@@ -202,27 +238,14 @@ func (m *Mixer) frame() (float32, float32) {
 			a, b := data.pcm[index*data.channels+channel], data.pcm[next*data.channels+channel]
 			return a + (b-a)*fraction
 		}
-		lg, rg := m.panGains(voice.command.Pan)
-		if voice.command.DirectPan && m.options.Stereo {
-			pan := max(float32(-127), min(float32(127), voice.command.Pan))
-			if m.options.Reverse {
-				pan = -pan
-			}
-			right := int(pan) + 127
-			if right >= 254 {
-				right = 255
-			}
-			lg, rg = float32(255-right)/255, float32(right)/255
-		}
-		volume := max(0, min(128, math.Trunc(float64(voice.command.VolumeScale)*float64(m.options.Volume)*1.28)))
 		// SDL's panning effect and channel volume each truncate signed PCM.
 		scale := func(value, gain float32) float32 {
 			panned := math.Trunc(float64(value * 32768 * gain))
-			return float32(math.Trunc(panned*volume/128) / 32768)
+			return float32(math.Trunc(panned*voice.volume/128) / 32768)
 		}
-		left += scale(sample(0), lg)
-		right += scale(sample(1), rg)
-		voice.position += float64(data.rate) / float64(m.options.SampleRate) * float64(voice.command.Frequency)
+		left += scale(sample(0), voice.left)
+		right += scale(sample(1), voice.right)
+		voice.position += voice.step
 		if voice.command.Loop || voice.position < float64(data.frames) {
 			active = append(active, voice)
 		}

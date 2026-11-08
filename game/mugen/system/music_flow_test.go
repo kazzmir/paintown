@@ -13,6 +13,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/snd"
 	"github.com/kazzmir/paintown/game/mugen/sound"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
 )
@@ -146,12 +147,39 @@ flag=nomusic
 		t.Fatal("helper NoMusic did not suspend the BGM cursor", position(), before)
 	}
 	e.cfg.Sound.WavVolume = 80
-	if err := e.sound.queue.Push(sound.Command{Operation: sound.Play, Owner: 99, Bank: root.OwnSounds, Group: 0, Item: 0, Channel: 1, VolumeScale: 100, Frequency: 1}); err != nil {
+	wave, err := snd.ParseWAV(wav.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	bank := &snd.SoundBank{Map: map[string]*snd.Sound{"0-0": {Wave: wave}}}
+	if err := e.sound.queue.Push(sound.Command{Operation: sound.Play, Owner: 99, Bank: bank, Group: 0, Item: 0, Channel: 1, VolumeScale: 100, Frequency: 1, Loop: true}); err != nil {
 		t.Fatal(err)
 	}
 	pcm = step(735)
 	if position() != before || bytes.Equal(pcm, make([]byte, len(pcm))) {
 		t.Fatal("NoMusic also paused SFX")
+	}
+	centerLeft := int16(binary.LittleEndian.Uint16(pcm))
+	if err := e.sound.queue.Push(sound.Command{Operation: sound.Pan, Owner: 99, Channel: 1, Pan: 240}); err != nil {
+		t.Fatal(err)
+	}
+	pcm = step(3)
+	if left := int16(binary.LittleEndian.Uint16(pcm)); left <= 0 || left >= centerLeft {
+		t.Fatal("live SFX pan did not update the playing voice", left, centerLeft)
+	}
+	e.cfg.Sound.WavVolume = 0
+	if pcm = step(3); !bytes.Equal(pcm, make([]byte, len(pcm))) || position() != before {
+		t.Fatal("live SFX mute leaked audio or advanced paused BGM")
+	}
+	e.cfg.Sound.WavVolume = 80
+	if pcm = step(3); bytes.Equal(pcm, make([]byte, len(pcm))) {
+		t.Fatal("unmuting SFX lost the looping voice")
+	}
+	if err := e.sound.queue.Push(sound.Command{Operation: sound.StopOwner, Owner: 99}); err != nil {
+		t.Fatal(err)
+	}
+	if pcm = step(3); !bytes.Equal(pcm, make([]byte, len(pcm))) {
+		t.Fatal("retired SFX owner retained a voice")
 	}
 	e.cfg.Sound.WavVolume = 0
 	root.IntVars[55] = 0

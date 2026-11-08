@@ -12,6 +12,9 @@ Current media batch (end-state validation pending):
 - BGM decodes bounded 1,024-frame blocks instead of requesting one sample per
   decoder call. Playback position counts consumed samples; NoMusic, loop edges,
   menu continuity and replacement retain their existing cursor contract.
+- SFX caches pan/gain/frequency factors on Play, SndPan and live volume changes;
+  per-sample truncation stays unchanged. Owner stops compact the voice slice.
+  The music lifecycle now spans live pan/mute/unmute/retirement during NoMusic.
 - The existing connected music lifecycle now crosses two blocks and a short
   final block. Run affected segments once after the complete media batch.
 - Prior51f7ae0b3 provides bounded AIR collision allocation and a camera motion
