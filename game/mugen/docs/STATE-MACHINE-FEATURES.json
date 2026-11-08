@@ -298,8 +298,13 @@
       "gap": "",
       "allocation": "item3",
       "sources": [
-        "system/sound.go"
-      ]
+        "system/sound.go",
+        "sound/mixer.go:preparePan",
+        "sound/mixer.go:prepareVolume",
+        "snd/wav.go:ReadWAVHeader",
+        "snd/wav.go:DecodePCMInto"
+      ],
+      "validation": "Existing decoder/mixer regressions pass with race detection. The connected media scenario covers live pan/mute/unmute and owner retirement during NoMusic, plus extensible float SND playback and expiry. Pan/gain/frequency factors move out of sample mixing while per-sample quantization stays unchanged. Linux KO/rematch/KO with private audio passed; generated scratch removed."
     },
     {
       "id": "storyboards",
@@ -324,15 +329,18 @@
       "sources": [
         "sound/music.go:Play",
         "system/music.go:syncMusic",
-        "character/character.go:AssertSpecial"
-      ]
+        "character/character.go:AssertSpecial",
+        "sound/wav.go:decodeWaveMusic",
+        "sound/legacy_linux.go:Read"
+      ],
+      "validation": "BGM decodes bounded blocks while position counts consumed samples. One connected lifecycle spans menu continuity, one-shot expiry, loop edges, NoMusic, SFX separation, round/scene clearing, rematch, streamed/resampled PCM24, extensible float WAV replacement and malformed-file recovery. Native Linux codecs reuse PCM buffers. The affected effects-pause/match-flow segments pass with race detection. Rebuilt Linux KO/rematch/KO played authored float WAV through the real device; all captures/PCM/overlays removed."
     },
     {
       "id": "fonts",
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Physical CD (.da) playback remains unavailable. ZIP character packs, file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits are implemented for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven.",
+      "gap": "Physical CD (.da) playback remains unavailable. ZIP character packs, streamed integer/float WAV and other file music, fonts, storyboard/AIR consumers and legacy ACT outfits/portraits work for the connected scenarios. Missing licensed fonts use a reported fallback; native asset-rejection and exact raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -348,9 +356,11 @@
         "character/palette_load.go:loadLegacyPalettes",
         "character/palette_load.go:BindPalette",
         "palette/state.go:SelectLegacy",
-        "air/air.go:ParseFromAST"
+        "air/air.go:ParseFromAST",
+        "snd/wav.go:ReadWAVHeader",
+        "sound/wav.go:decodeWaveMusic"
       ],
-      "validation": "Connected asset lifecycle covers packed character selection/portraits, intros, fight/reset, endings and cleanup. Invalid AIR collision counts now fail before allocation with file/action/line context; correcting the same expanded pack permits a successful reload. AIR declarations and per-element box copies share a 1,048,576-box allocation ceiling. Existing fonts, retained storyboards, linked portraits and trailerless PCX remain covered. Four affected connected segments pass with race detection; strict native rejection/raster parity and external media/fonts remain open."
+      "validation": "Connected asset/media lifecycles cover packed selection/portraits, intros, fight/reset, endings, AIR failure/reload and cleanup. WAV music and SND share bounded metadata/sample conversion, including integer/float extensible headers, optional/late chunks, resampling, loops and bad-file replacement/recovery. Existing decoder/mixer tests and affected connected segments pass with race detection. Linux KO/rematch/KO with authored float WAV was observed. Strict native rejection/raster parity, physical CD and missing licensed fonts remain open."
     },
     {
       "id": "raster-audio",
@@ -621,7 +631,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d333a7ba196890e272f7deb5e14c5d334ecc56b6306c3956681bcb62e2f34f18"
+      "passed_source": "1f9467f56e932bd35423ce81352e8a9b9210966fbd9ebab327048225a741213e"
     },
     {
       "id": "match-flow",
@@ -700,7 +710,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7da6153d923ca5289ea649573f70a2531c1daf0226d9f46fb92997fad0332d4d"
+      "passed_source": "d150fa4dd1ef269b9f763ae1f6a78ac37be5aa57a9cb35f818b60a5a836c8c61"
     }
   ],
   "presentation_followups": [

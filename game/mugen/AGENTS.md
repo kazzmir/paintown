@@ -179,3 +179,12 @@ One connected zoom-motion sequence matches five beta camera/zoom samples; its
 return still differs by about 0.15 pixels at state time 120. Keep that precision
 gap explicit. Four affected segments passed with race detection; state-flow
 stays checked. Linux rebuilt; current native helper/captures/overlay removed.
+
+The latest media batch shares WAV metadata/sample decoding between SND and
+streamed music (PCM8/16/24/32, float32/64, PCM/float extensible headers). Keep
+read-ahead separate from consumed cursor state across NoMusic, loops and track
+replacement. SFX factors update on Play/Pan/volume commands; retain two-stage
+sample truncation. Native Linux codecs reuse their bounded PCM buffers.
+Existing decoder/mixer regressions and the two affected segments passed with
+race detection. Other segments stayed checked. Linux KO/rematch/KO with authored
+float WAV passed; all current captures/PCM/overlays/helper were removed.
