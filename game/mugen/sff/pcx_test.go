@@ -79,6 +79,24 @@ func TestV1LinksAndFailures(t *testing.T) {
 	if a != 65535 {
 		t.Fatal("opaque link color zero")
 	}
+	// A legacy archive may begin with a private portrait, followed by a
+	// shared portrait with no palette trailer. Selective loading must retain
+	// that initial palette even before any combat sprite establishes a bank.
+	portraits := tinyV1()
+	binary.LittleEndian.PutUint16(portraits[512+12:], 9000)
+	second := len(portraits) - 32
+	pcx := tinyPCX()[:130]
+	binary.LittleEndian.PutUint32(portraits[second+4:], uint32(len(pcx)))
+	binary.LittleEndian.PutUint16(portraits[second+12:], 9000)
+	portraits[second+18] = 1
+	portraits = append(portraits, pcx...)
+	loaded, err := ParsePortraits(bytes.NewReader(portraits))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := color.NRGBAModel.Convert(loaded.Sprites[1].Image.At(1, 0)); got != (color.NRGBA{8, 9, 10, 255}) {
+		t.Fatal("shared portrait lost the archive's first palette", got)
+	}
 	for _, mutate := range []func([]byte) []byte{
 		func(b []byte) []byte { return b[:len(b)-1] },
 		func(b []byte) []byte { binary.LittleEndian.PutUint32(b[20:], 3); return b },

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -26,11 +27,25 @@ func Parse(r io.Reader) (*File, error) {
 		if line == "" {
 			continue
 		}
+		if len(line) >= 3 && strings.Trim(line, "=") == "" {
+			continue // legacy CMD decorative separators are not assignments
+		}
 		if strings.Count(line, "\"")%2 != 0 {
 			return nil, fmt.Errorf("line %d:%d: unterminated string", lineNo, column)
 		}
 		if line[0] == '[' {
 			end := strings.IndexByte(line, ']')
+			if end < 0 {
+				// The beta accepts a bare numeric state header without its
+				// closing bracket. Keep other malformed sections diagnosable.
+				fields := strings.Fields(line[1:])
+				if len(fields) == 2 && (strings.EqualFold(fields[0], "state") || strings.EqualFold(fields[0], "statedef")) {
+					if _, err := strconv.Atoi(fields[1]); err == nil {
+						line += "]"
+						end = len(line) - 1
+					}
+				}
+			}
 			if end < 0 || strings.TrimSpace(line[end+1:]) != "" || strings.TrimSpace(line[1:end]) == "" {
 				return nil, fmt.Errorf("line %d:%d: malformed section %q", lineNo, column, line)
 			}

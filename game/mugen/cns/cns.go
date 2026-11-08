@@ -245,6 +245,28 @@ func ParseNamed(r io.Reader, name string) (*CNS, error) {
 }
 
 func ParseFromAST(ast *parsers.File) (*CNS, error) {
+	// Constants use first-definition precedence too. Filter a shallow view so
+	// validation and the runtime structs agree without mutating the source AST
+	// or validating duplicate values that the native loader never consumes.
+	filtered := &parsers.File{}
+	constantKeys := map[string]bool{}
+	for _, section := range ast.Sections {
+		group := strings.ToLower(strings.TrimSpace(section.Name))
+		if group == "data" || group == "size" || group == "velocity" || group == "movement" {
+			copy := *section
+			copy.Attributes = nil
+			for _, attr := range section.Attributes {
+				key := group + "." + strings.ToLower(attr.ID.String())
+				if !constantKeys[key] {
+					constantKeys[key] = true
+					copy.Attributes = append(copy.Attributes, attr)
+				}
+			}
+			section = &copy
+		}
+		filtered.Sections = append(filtered.Sections, section)
+	}
+	ast = filtered
 	cns := &CNS{
 		States: make(map[int]*StateDef),
 		Data:   Data{Power: 3000},
@@ -513,11 +535,24 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				ctrl.Name = strings.TrimSpace(parts[1])
 			}
 
+			typeSet := false
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
 
 				if key == "type" {
-					ctrl.Type = getAsString(attr.Value)
+					if !typeSet {
+						ctrl.Type, typeSet = getAsString(attr.Value), true
+					} else {
+						// Old StateTypeSet controllers use a second Type=A
+						// as the state attribute, not as another controller kind.
+						parameter := "type"
+						if strings.EqualFold(ctrl.Type, "StateTypeSet") {
+							parameter = "statetype"
+						}
+						if _, present := ctrl.Params[parameter]; !present {
+							ctrl.Params[parameter] = attributeExpression(attr)
+						}
+					}
 				} else if key == "persistent" {
 					ctrl.Persistent = getAsInt(attr.Value)
 					ctrl.PersistentSource = attributeExpression(attr)

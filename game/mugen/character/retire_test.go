@@ -1,6 +1,7 @@
 package character
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
@@ -29,8 +30,11 @@ func TestOrphanExplodClockExpiryBindingAndRoundReset(t *testing.T) {
 			t.Fatal(err)
 		}
 		h := world.Helpers[len(world.Helpers)-1]
-		if err := h.CreateExplod(engine.ExplodParameters{Action: 0, PosType: "p1", BindID: -2, BindTime: -1, RemoveTime: lifetime, Facing: 1, VFacing: 1}); err != nil {
+		if err := engine.ExecuteExplodParameters(map[string]string{"anim": "0", "postype": "p1", "bindid": "-2", "bindtime": "-1", "removetime": strconv.Itoa(lifetime), "scale": "54"}, h, "legacy"); err != nil {
 			t.Fatal(err)
+		}
+		if h.Explods[0].Visual.ScaleX != 54 || h.Explods[0].Visual.ScaleY != 1 {
+			t.Fatal("scalar Explod scale changed its default vertical scale")
 		}
 		return h, h.Explods[0]
 	}

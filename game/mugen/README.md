@@ -46,6 +46,10 @@ game/mugen/mugen.sh --game --data-dir game/mugen/temp/sf2_mugen
 
 Pack defaults and local YAML overrides determine the controls. Compatibility
 findings for the supplied SF2 pack are recorded in the [progress ledger](docs/PROGRESS.md).
+Its selection and legacy loading fixes now reach live fights. All 12 roster
+entries compile; full gameplay across every character remains unverified. The
+original motif displays eight normal portraits and places four boss slots below
+the visible screen, including in the bundled native engine.
 
 Stages belong under the selected data root's `stages/` directory, but the menu
 uses a selection list rather than scanning that directory. Add each stage DEF

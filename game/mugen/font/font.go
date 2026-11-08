@@ -193,7 +193,8 @@ func LoadFont(path string) (*Font, error) {
 			}
 		case "map":
 			// Map format: char [start_x width]
-			// start_x and width only present for Variable fonts
+			// Explicit map coordinates override the default fixed cell too.
+			// Legacy fonts may declare Fixed while supplying variable maps.
 			parts := strings.Fields(line)
 			if len(parts) == 0 {
 				continue
@@ -217,7 +218,7 @@ func LoadFont(path string) (*Font, error) {
 			// A literal quote is a valid map character, not the opening of a
 			// quoted string. Strip comments only from the coordinate suffix.
 			coordinates := strings.TrimSpace(parsers.StripComment(line[len(rawChar):]))
-			if fnt.Type == Variable && coordinates != "" {
+			if coordinates != "" {
 				values, err := integers(coordinates, 2)
 				if err != nil {
 					return nil, err

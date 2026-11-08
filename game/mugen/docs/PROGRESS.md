@@ -18,6 +18,7 @@ Broader compatibility and deferred capabilities remain listed below.
 - [x] **Indexed sprite and shadow alignment**: Fixed 3/8 game-pixel calibration and unsnapped addressing reproduce the bounded beta rotated-sprite/shadow RGB crops exactly in the Linux application.
 - [x] **Finite and overlapping alpha composition**: Delta-first byte interpolation and foreground-over-HUD composition reproduce the bounded RGBA overlap crop exactly. Connected AIR transitions, pause/expiry, letterboxing and final global PalFX pass.
 - [x] **Ordinary KO echo playback**: Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed.
+- [x] **SF2 selection and legacy character loading**: Saved roster handoff and an independent automatic opponent fix the reported selection failure. Authored layout/cursors/portrait colors and legacy font/CNS forms load. All 12 roster entries compile 1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. The four boss slots are also offscreen in the native pack. Full roster gameplay remains unverified.
 
 ## Completed scenario coverage
 
@@ -76,7 +77,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Supplied sf2_mugen startup, title, selection/portraits and music run, but fights are blocked by sf2win.fnt: its fixed-width map reaches beyond the PCX image. Native handling of these fixed-font maps needs a focused compatibility check; character gameplay is not yet validated. Custom selection cell/cursor/portrait presentation also remains incomplete. Physical CD (.da) playback is unavailable; missing licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — SF2 selection and legacy font/CNS loading blockers are corrected. All 12 roster entries compile, but complete move/round behavior across that roster remains unverified. Live fights still report nonfatal AnimElem, unavailable constant/sound/effect and numeric-conversion diagnostics. Physical CD (.da) playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven. (item4)
 - [ ] Remaining native rendering, audio and AI fidelity. **partial** — Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms

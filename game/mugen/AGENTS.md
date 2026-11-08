@@ -233,11 +233,21 @@ flows and SND bounds checks cover these paths; affected match-flow/SND pass with
 races. Other four segments stay checked. app_smoke input recipes can now navigate
 menus as well as quick matches, always targeting the owned window.
 
-Observed: SF2 intro/title/selection/portraits and music run. Matches still stop
-loading data/mugen1/font/sf2win.fnt: Type=Fixed, Size=22,10, image398x10; map also
-contains explicit variable positions, but sequential fixed glyph T starts at418.
-Do not reinterpret Fixed as Variable or alter the supplied pack without checking
-native font behavior. Custom selection layout/cursors/portrait presentation also
-remain incomplete; character gameplay has not been validated. PROGRESS.md keeps
-this concrete blocker in the existing partial asset row. Scratch was inspected
-and removed; only shared cache and the single ignored Go binary remain.
+The follow-up fixes the reported Arcade selection failure: saved rosters survive
+cursor changes, and automatic opponents do not depend on a hidden invalid P2
+cursor. Retain first Select Info values, row,column startcells, blank skipping,
+authored cell/cursor sprites, portrait scale/axes and first-portrait palette
+bootstrap. Native selection confirms eight normal portraits; the pack itself
+places four boss slots below its visible canvas. Do not change the pack layout.
+
+Native victory text ATW confirms that explicit glyph coordinates override Fixed
+font cell defaults. Bounds checks remain. Legacy CNS accepts StateTypeSet's
+second Type parameter, AnimElem time intervals/counter comparisons, first-value
+constants, bare numeric state headers, CMD dividers and scalar Explod scale.
+The existing connected combat/entity/asset scenarios retain these cases rather
+than adding per-character fixtures. All five segments and existing SFF/font/CNS/
+parser/evaluator regressions pass with races. All 12 roster entries compile
+1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with
+input, HUD and audio. Nonfatal expression/resource warnings remain; this is not
+full-roster gameplay parity. Keep the partial asset row honest. Scratch was
+inspected and removed; shared cache and one ignored Go binary remain.

@@ -270,7 +270,10 @@ func (p *Parser) parsePrimary() (Expression, error) {
 		return &StringExpr{Value: tok.lit}, nil
 	case tokIdentifier:
 		name := strings.ToLower(tok.lit)
-		if isLegacy(name) && p.peek().typ == tokOperator {
+		// Equality introduces AnimElem's legacy element/time clause. Other
+		// operators compare the ordinary current-element counter.
+		legacyClause := name != "animelem" || p.peek().lit == "=" || p.peek().lit == "!="
+		if isLegacy(name) && p.peek().typ == tokOperator && legacyClause {
 			return p.legacy(tok.lit)
 		}
 		// Only component triggers permit a separate axis word, including tabs.
@@ -441,6 +444,35 @@ func (p *Parser) legacy(name string) (Expression, error) {
 		}
 		if _, ok := precedence[comparison]; !ok || precedence[comparison] < 8 || precedence[comparison] > 9 {
 			return nil, p.errorf("invalid legacy time comparison")
+		}
+		if lower == "animelem" && (p.peek().typ == tokLBracket || p.peek().typ == tokLParen) {
+			if comparison != "=" && comparison != "!=" {
+				return nil, p.errorf("an AnimElem time interval requires = or !=")
+			}
+			open := p.advance()
+			first, err := p.legacyInteger()
+			if err != nil {
+				return nil, err
+			}
+			if p.advance().typ != tokComma {
+				return nil, p.errorf("expected AnimElem interval separator")
+			}
+			last, err := p.legacyInteger()
+			if err != nil {
+				return nil, err
+			}
+			close := p.advance()
+			if close.typ != tokRBracket && close.typ != tokRParen {
+				return nil, p.errorf("expected AnimElem interval end")
+			}
+			// The legacy clause compares this element's elapsed time. Keep
+			// its literal-index grammar while sharing ordinary interval math.
+			operator := "="
+			if (op == "!=") != (comparison == "!=") {
+				operator = "!="
+			}
+			return &Group{Expression: &Binary{Left: &Call{Name: "animelemtime", Arguments: []Expression{arg}}, Operator: operator,
+				Right: &Interval{Left: first, Right: last, LeftInc: open.typ == tokLBracket, RightInc: close.typ == tokRBracket}}}, nil
 		}
 		extra, err := p.legacyInteger()
 		if err != nil {

@@ -12,7 +12,7 @@ import hashlib
 import json
 import math
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import shutil
 import subprocess
@@ -42,6 +42,12 @@ def asset_overlay(reference, destination, writable):
             else:
                 output.symlink_to(child, target_is_directory=child.is_dir())
     populate(reference, destination, Path())
+
+
+def relative_asset_path(path):
+    normalized = path.replace('\\', '/')
+    return (not Path(normalized).is_absolute() and not PureWindowsPath(path).drive
+            and '..' not in Path(normalized).parts and not any(ord(c) < 32 for c in path))
 
 
 def main():
@@ -103,10 +109,10 @@ def main():
         parser.error('Use a simple lowercase run name')
     if not args.seconds or args.seconds != sorted(set(args.seconds)) or not 1 <= min(args.seconds) <= max(args.seconds) <= 60:
         parser.error('Capture times must be increasing unique seconds from 1 through 60')
-    if Path(args.motif).is_absolute() or '..' in Path(args.motif).parts or not re.fullmatch('[a-zA-Z0-9_./-]+', args.motif):
+    if not relative_asset_path(args.motif):
         parser.error('Motif must be a relative path within the disposable distribution')
     for path in (args.match or []) + [args.stage]:
-        if Path(path).is_absolute() or '..' in Path(path).parts or not re.fullmatch('[a-zA-Z0-9_./-]+', path):
+        if not relative_asset_path(path):
             parser.error('Match paths must be relative paths within the disposable distribution')
     work = project / 'temp/app-runs' / args.name
     work.mkdir(parents=True, exist_ok=False)

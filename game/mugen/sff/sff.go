@@ -215,7 +215,8 @@ func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected 
 			}
 
 			// MUGEN SFF v1 Palette Rules:
-			// 1. Portraits (Group 9000) use their own palette and NEVER update currentPalette/SharedPalette.
+			// 1. Private portraits retain their palette. The first may bootstrap
+			//    inheritance when no combat/ACT palette has been established.
 			// 2. If an ACT palette is provided, (0,0) MUST use it, even if samePalette is false.
 			// 3. Otherwise, if samePalette is false, extract the PCX palette and update the shared state.
 			var palToUse color.Palette
@@ -227,7 +228,9 @@ func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected 
 					shared = false
 					palToUse, _ = ExtractPalette(pcxData, true)
 					palToUseOpaque, _ = ExtractPalette(pcxData, false)
-					// Portraits don't update currentPalette/SharedPalette
+					if currentPalette == nil && palToUse != nil {
+						currentPalette, currentShared = palToUse, true
+					}
 				} else {
 					palToUse = currentPalette
 					palToUseOpaque = currentPalette
@@ -273,6 +276,9 @@ func parseWithSelection(r io.ReadSeeker, initialPalette color.Palette, selected 
 			}
 			if palToUseOpaque == nil {
 				palToUseOpaque = palToUse
+			}
+			if group != 9000 && sff.SharedPalette == nil && palToUse != nil {
+				sff.SharedPalette = palToUse
 			}
 			palToUseOpaque = opaquePalette(palToUseOpaque)
 

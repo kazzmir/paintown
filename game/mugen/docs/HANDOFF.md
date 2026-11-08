@@ -1,7 +1,7 @@
 # Current handoff
 
 Follow AGENTS.md. PROGRESS.md is the single completion ledger, now including
-four checked known-difference checkpoints. Local source/text commits are
+the four prior known-difference closures and the SF2 selection/loading fix. Local source/text commits are
 authorized; no pushes, binaries, generated banks or tracked user configuration.
 Author only game/mugen/ and preserve unrelated/untracked work.
 
@@ -9,18 +9,29 @@ The prior known-difference batch is complete. The user then supplied sf2_mugen
 for the first compatibility assessment; its executable matches the beta reference.
 
 Current SF2 checkpoint:
-- Fixed legacy Scene0bgDef/Scene0bg recognition, explicit empty roster slots and
-  WAVs counting one omitted final alignment byte. Actual sample truncation stays
-  rejected. Existing asset/packed-selection flows retain these cases; affected
-  match-flow and SND checks pass with races. Other segments stay checked.
-- Original pack intro/title, roster/portraits and music run in Linux. Its config
-  selects data/mugen1/system.def. The README has the data-root launch command.
-- Full fights still fail at data/mugen1/font/sf2win.fnt: Type=Fixed, Size=22,10,
-  image398x10, with variable-style coordinate columns. Sequential fixed glyph T
-  starts at418. Next establish native glyph/bounds behavior before relaxing
-  font loading; do not simply relabel the font or edit the pack. Balrog/Vega
-  gameplay remains unvalidated. Selection layout/cursor/portrait fidelity also
-  needs compatibility work. A missing sound/blank.mp3 is a nonfatal pack warning.
+- The reported Arcade failure came from reading an invalid hidden P2 cursor.
+  Handoff now uses saved roster snapshots and independent automatic opponents.
+  First Select Info values, row,column startcells, blank skipping, authored
+  cell/cursor sprites and portrait scale/axes are consumed. First private SFF
+  portraits can seed shared palettes without replacing combat/ACT palettes.
+- Native comparison confirms the first layout and explicit glyph coordinates
+  even for Type=Fixed (victory text ATW). The original pack shows eight normal
+  portraits; four boss slots are below the canvas in native too. Preserve it.
+- Fixed legacy StateTypeSet Type parameters, AnimElem time ranges/counter
+  comparisons, duplicate constants, bare numeric state headers, CMD dividers
+  and scalar Explod scale. A grouped audit compiles all 12 roster entries:
+  1,743 state programs, zero errors. Linux title-to-Arcade Ryu/Dhalsim and a
+  Guile/Honda fight run with keyboard input, HUD, health changes and audio.
+  All five connected segments and existing format/parser regressions pass
+  with races. Cases extend existing flows; no per-character fixture bank.
+- Full move/round compatibility across the roster is still unverified. Live
+  fights report nonfatal invalid AnimElem indices, Honda's unavailable
+  movement.stand.friction.threshold constant and missing sound/effect resources;
+  numeric conversion diagnostics also occur. Missing sound/blank.mp3 is a
+  nonfatal pack warning. These do not stop the observed fights.
+- Prior Scene0bgDef/Scene0bg, explicit empty-slot and final WAV alignment fixes
+  remain covered. Actual truncated samples stay rejected. The README contains
+  the launch command for the pack's data/mugen1/system.def motif.
 - Pack, ZIP, bundled executable and user YAML are preserved. Scratch captures,
   PCM, overlays and input recipes were inspected/removed. No new fixture bank.
 

@@ -16,6 +16,7 @@ import (
 type CharacterPortrait struct {
 	Name, DefPath, IntroStoryboard, EndingStoryboard string
 	Empty                                            bool
+	SmallAxis, BigAxis                               [2]int16
 	Entry                                            parsers.CharacterEntry
 	SmallPortrait, BigPortrait                       *ebiten.Image
 }
@@ -114,8 +115,10 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 				switch sprite.ImageNumber {
 				case 0:
 					cp.SmallPortrait = ebiten.NewImageFromImage(sff.UploadPixels(sprite.Image))
+					cp.SmallAxis = [2]int16{sprite.XAxis, sprite.YAxis}
 				case 1:
 					cp.BigPortrait = ebiten.NewImageFromImage(sff.UploadPixels(sprite.Image))
+					cp.BigAxis = [2]int16{sprite.XAxis, sprite.YAxis}
 				}
 			}
 		}

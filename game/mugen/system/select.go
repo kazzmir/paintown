@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
+	"math"
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/render"
 )
 
 // SelectState handles character and stage selection.
@@ -37,6 +42,10 @@ type SelectState struct {
 	teamReady              [2]bool
 	rosters                [2][]match.Selection
 	opponentTeamChosen     bool
+	cursorClocks           [2]*air.Player
+	spriteCache            background.SpriteCache
+	indexSampler           render.Nearest
+	linearSampler          render.Linear
 }
 
 func NewSelectState(engine *Engine, title string) *SelectState {
@@ -72,35 +81,18 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 		loadError:     loadError,
 		palettes:      [2]int{1, 2},
 		showP2:        p2Modes[title],
-		p1CursorX:     si.P1StartCell[0],
-		p1CursorY:     si.P1StartCell[1],
-		p2CursorX:     si.P2StartCell[0],
-		p2CursorY:     si.P2StartCell[1],
+		p1CursorX:     si.P1StartCell[1],
+		p1CursorY:     si.P1StartCell[0],
+		p2CursorX:     si.P2StartCell[1],
+		p2CursorY:     si.P2StartCell[0],
 	}
 
+	s.normalizeCursor(&s.p1CursorX, &s.p1CursorY)
+	if s.showP2 {
+		s.normalizeCursor(&s.p2CursorX, &s.p2CursorY)
+	}
 	s.initTeams()
 	return s
-}
-
-// drawCursorOutline draws a hollow rectangle border on screen at (x, y) with size (w, h).
-func drawCursorOutline(screen *ebiten.Image, x, y, w, h float64, c color.RGBA, alpha float32) {
-	thickness := 1.0
-	lines := [][4]float64{
-		{x, y, w, thickness},         // top
-		{x, y + h - 1, w, thickness}, // bottom
-		{x, y, thickness, h},         // left
-		{x + w - 1, y, thickness, h}, // right
-	}
-	pix := ebiten.NewImage(1, 1)
-	pix.Fill(c)
-	for _, l := range lines {
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Scale(l[2], l[3])
-		op.GeoM.Translate(l[0], l[1])
-		op.Blend = ebiten.BlendSourceOver
-		op.ColorScale.ScaleAlpha(alpha)
-		screen.DrawImage(pix, op)
-	}
 }
 
 func (s *SelectState) rows() int {
@@ -133,7 +125,7 @@ func (s *SelectState) wrap(x, max int) int {
 // charAt returns the character at grid position (col, row), or nil.
 func (s *SelectState) charAt(col, row int) *CharacterPortrait {
 	idx := row*s.cols() + col
-	if idx < 0 || idx >= len(s.chars) || s.chars[idx].Empty {
+	if col < 0 || col >= s.cols() || row < 0 || row >= s.rows() || idx < 0 || idx >= len(s.chars) || s.chars[idx] == nil || s.chars[idx].Empty {
 		return nil
 	}
 	return s.chars[idx]
@@ -144,6 +136,11 @@ func (s *SelectState) Update() (State, error) {
 		return s, s.loadError
 	}
 	s.ticks++
+	for _, clock := range s.cursorClocks {
+		if clock != nil {
+			clock.Update()
+		}
+	}
 
 	if s.engine.motif.SelectBG != nil {
 		s.engine.motif.SelectBG.Update()
@@ -183,19 +180,19 @@ func (s *SelectState) Update() (State, error) {
 	// P1 cursor
 	if !s.p1Done {
 		if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
-			s.p1CursorX = s.wrap(s.p1CursorX-1, s.cols())
+			s.moveCursor(&s.p1CursorX, &s.p1CursorY, -1, 0)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
-			s.p1CursorX = s.wrap(s.p1CursorX+1, s.cols())
+			s.moveCursor(&s.p1CursorX, &s.p1CursorY, 1, 0)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if input.GlobalManager.IsJustPressed(1, input.ActionUp) {
-			s.p1CursorY = s.wrap(s.p1CursorY-1, s.rows())
+			s.moveCursor(&s.p1CursorX, &s.p1CursorY, 0, -1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if input.GlobalManager.IsJustPressed(1, input.ActionDown) {
-			s.p1CursorY = s.wrap(s.p1CursorY+1, s.rows())
+			s.moveCursor(&s.p1CursorX, &s.p1CursorY, 0, 1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if palette, ok := s.confirm(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
@@ -213,19 +210,19 @@ func (s *SelectState) Update() (State, error) {
 			inputSlot = 1
 		}
 		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionLeftUI) {
-			s.p2CursorX = s.wrap(s.p2CursorX-1, s.cols())
+			s.moveCursor(&s.p2CursorX, &s.p2CursorY, -1, 0)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionRightUI) {
-			s.p2CursorX = s.wrap(s.p2CursorX+1, s.cols())
+			s.moveCursor(&s.p2CursorX, &s.p2CursorY, 1, 0)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionUp) {
-			s.p2CursorY = s.wrap(s.p2CursorY-1, s.rows())
+			s.moveCursor(&s.p2CursorX, &s.p2CursorY, 0, -1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if input.GlobalManager.IsJustPressed(inputSlot, input.ActionDown) {
-			s.p2CursorY = s.wrap(s.p2CursorY+1, s.rows())
+			s.moveCursor(&s.p2CursorX, &s.p2CursorY, 0, 1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
 		if palette, ok := s.confirm(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
@@ -280,6 +277,10 @@ func (s *SelectState) chosen(col, row int) *CharacterPortrait {
 	if ch.DefPath != "" {
 		return ch
 	}
+	return s.randomCharacter()
+}
+
+func (s *SelectState) randomCharacter() *CharacterPortrait {
 	var available []*CharacterPortrait
 	for _, candidate := range s.chars {
 		if candidate.DefPath != "" {
@@ -293,7 +294,26 @@ func (s *SelectState) chosen(col, row int) *CharacterPortrait {
 }
 
 func (s *SelectState) startMatch() (State, error) {
-	p1, p2 := s.chosen(s.p1CursorX, s.p1CursorY), s.chosen(s.p2CursorX, s.p2CursorY)
+	// A chosen team is a snapshot, independent of the current cursor. Modes
+	// with an automatic opponent must not depend on the hidden P2 cursor.
+	picks := [2]*CharacterPortrait{s.chosen(s.p1CursorX, s.p1CursorY), s.chosen(s.p2CursorX, s.p2CursorY)}
+	for side, roster := range s.rosters {
+		if len(roster) == 0 {
+			continue
+		}
+		selected := roster[0]
+		picks[side] = &CharacterPortrait{Name: selected.Name, DefPath: selected.DefPath}
+		for _, ch := range s.chars {
+			if ch.DefPath == selected.DefPath {
+				picks[side] = ch
+				break
+			}
+		}
+	}
+	if !s.showP2 && picks[1] == nil {
+		picks[1] = s.randomCharacter()
+	}
+	p1, p2 := picks[0], picks[1]
 	if p1 == nil || p2 == nil {
 		return s, fmt.Errorf("selection has no playable characters")
 	}
@@ -346,61 +366,44 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 	gridX := si.Pos[0]
 	gridY := si.Pos[1]
 
-	// Cursor pulse alpha
-	pulse := float32(0.5 + 0.5*float64(s.ticks%60)/60.0)
-
 	for row := 0; row < s.rows(); row++ {
 		for col := 0; col < s.cols(); col++ {
-			cx := float64(gridX + col*(cellW+spacing))
-			cy := float64(gridY + row*(cellH+spacing))
-
+			cx, cy := float64(gridX+col*(cellW+spacing)), float64(gridY+row*(cellH+spacing))
 			ch := s.charAt(col, row)
-
-			// Cell background
-			cellBG := ebiten.NewImage(cellW, cellH)
-			cellBG.Fill(color.RGBA{30, 30, 60, 200})
-			bgOp := &ebiten.DrawImageOptions{}
-			bgOp.GeoM.Translate(cx, cy)
-			screen.DrawImage(cellBG, bgOp)
-
-			// Small portrait (group 9000, image 0)
-			if ch != nil && ch.SmallPortrait != nil {
-				pw := float64(ch.SmallPortrait.Bounds().Dx())
-				ph := float64(ch.SmallPortrait.Bounds().Dy())
-				scaleX := float64(cellW) / pw
-				scaleY := float64(cellH) / ph
-				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Scale(scaleX, scaleY)
-				op.GeoM.Translate(cx, cy)
-				screen.DrawImage(ch.SmallPortrait, op)
+			if ch != nil || si.ShowEmptyBoxes {
+				s.drawSelectionSprite(screen, si.CellBgSpr, cx, cy, 1, 1, nil)
 			}
-
-			// P1 cursor outline (blue)
-			if row == s.p1CursorY && col == s.p1CursorX {
-				drawCursorOutline(screen, cx, cy, float64(cellW), float64(cellH), color.RGBA{80, 160, 255, 220}, pulse)
-			}
-
-			// P2 cursor outline (red) — only in two-player modes
-			if s.showP2 && row == s.p2CursorY && col == s.p2CursorX {
-				p2Alpha := pulse
-				if row == s.p1CursorY && col == s.p1CursorX {
-					// Blink when on same cell as P1
-					if (s.ticks/15)%2 == 0 {
-						p2Alpha = 0
-					}
+			if ch != nil {
+				if ch.SmallPortrait != nil {
+					op := &ebiten.DrawImageOptions{}
+					op.GeoM.Translate(-float64(ch.SmallAxis[0]), -float64(ch.SmallAxis[1]))
+					op.GeoM.Scale(si.PortraitScale[0], si.PortraitScale[1])
+					op.GeoM.Translate(cx, cy)
+					screen.DrawImage(ch.SmallPortrait, op)
+				} else if ch.DefPath == "" {
+					s.drawSelectionSprite(screen, si.CellRandSpr, cx, cy, 1, 1, nil)
 				}
-				drawCursorOutline(screen, cx, cy, float64(cellW), float64(cellH), color.RGBA{255, 80, 80, 220}, p2Alpha)
+			}
+			if row == s.p1CursorY && col == s.p1CursorX {
+				s.drawSelectionCursor(screen, 0, cx, cy)
+			}
+			if s.showP2 && row == s.p2CursorY && col == s.p2CursorX {
+				if !si.P2Cursor.Blink || row != s.p1CursorY || col != s.p1CursorX || s.ticks/15%2 != 0 {
+					s.drawSelectionCursor(screen, 1, cx, cy)
+				}
 			}
 		}
 	}
 
 	// Big portrait panels — P1 left, P2 right
 	s.drawFacePanel(screen, s.p1CursorX, s.p1CursorY,
-		si.P1FaceOffset, si.P1FaceScale,
+		si.P1FaceOffset, si.P1FaceScale, si.P1FaceFacing,
 		si.P1NameOffset, si.P1NameFont)
-	s.drawFacePanel(screen, s.p2CursorX, s.p2CursorY,
-		si.P2FaceOffset, si.P2FaceScale,
-		si.P2NameOffset, si.P2NameFont)
+	if s.showP2 {
+		s.drawFacePanel(screen, s.p2CursorX, s.p2CursorY,
+			si.P2FaceOffset, si.P2FaceScale, si.P2FaceFacing,
+			si.P2NameOffset, si.P2NameFont)
+	}
 
 	// Mode title (e.g. "Arcade Mode")
 	if s.title != "" {
@@ -436,7 +439,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 // faceOff is the top-left corner to draw from; faceScale is the (sx, sy) multiplier.
 // nameOff and nameFont are the position+font for the character name.
 func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
-	faceOff [2]float64, faceScale [2]float64,
+	faceOff [2]float64, faceScale [2]float64, facing int,
 	nameOff [2]int, nameFont [3]int) {
 
 	ch := s.charAt(col, row)
@@ -456,11 +459,17 @@ func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
 
 	// Big portrait (group 9000, image 1), fall back to small (image 0)
 	portrait := ch.BigPortrait
+	axis := ch.BigAxis
 	if portrait == nil {
 		portrait = ch.SmallPortrait
+		axis = ch.SmallAxis
 	}
 	if portrait != nil {
 		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(-float64(axis[0]), -float64(axis[1]))
+		if facing < 0 {
+			sx = -sx
+		}
 		op.GeoM.Scale(sx, sy)
 		op.GeoM.Translate(faceOff[0], faceOff[1])
 		op.Filter = ebiten.FilterNearest
@@ -480,5 +489,111 @@ func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
 			}
 			f.Draw(screen, ch.Name, nameOff[0], nameOff[1], nameFont[1], align)
 		}
+	}
+}
+
+// Empty cells retain their authored indices, but are not automatic opponents.
+func (s *SelectState) normalizeCursor(x, y *int) {
+	*x, *y = max(0, min(*x, s.cols()-1)), max(0, min(*y, s.rows()-1))
+	start := *y*s.cols() + *x
+	for n := 0; n < s.rows()*s.cols(); n++ {
+		index := (start + n) % (s.rows() * s.cols())
+		cx, cy := index%s.cols(), index/s.cols()
+		if s.charAt(cx, cy) != nil {
+			*x, *y = cx, cy
+			return
+		}
+	}
+}
+
+func (s *SelectState) moveCursor(x, y *int, dx, dy int) {
+	oldX, oldY := *x, *y
+	limit := s.cols()
+	if dy != 0 {
+		limit = s.rows()
+	}
+	for n := 0; n < limit; n++ {
+		*x, *y = s.wrap(*x+dx, s.cols()), s.wrap(*y+dy, s.rows())
+		if s.engine.motif.SelectInfo.MoveOverEmptyBoxes || s.charAt(*x, *y) != nil {
+			return
+		}
+	}
+	*x, *y = oldX, oldY
+}
+
+func (s *SelectState) drawSelectionCursor(screen *ebiten.Image, side int, x, y float64) {
+	cursor, done := s.engine.motif.SelectInfo.P1Cursor, s.p1Done
+	if side == 1 {
+		cursor, done = s.engine.motif.SelectInfo.P2Cursor, s.p2Done
+	}
+	animation, sprite := cursor.ActiveAnimation, cursor.ActiveSprite
+	if done {
+		if cursor.DoneAnimation != nil {
+			animation, sprite = cursor.DoneAnimation, nil
+		} else if cursor.DoneSprite != nil {
+			animation, sprite = nil, cursor.DoneSprite
+		}
+	}
+	if animation != nil && s.engine.motif.SystemAIR != nil {
+		action := s.engine.motif.SystemAIR.Actions[*animation]
+		if action != nil {
+			clock := s.cursorClocks[side]
+			if clock == nil || clock.Action != action {
+				clock = air.NewPlayer(action)
+				s.cursorClocks[side] = clock
+			}
+			pose := clock.Visual()
+			if pose.Element != nil {
+				s.drawSelectionSprite(screen, [2]int{pose.Element.Group, pose.Element.Image}, x, y, 1, 1, &pose)
+			}
+		}
+	} else if sprite != nil {
+		s.drawSelectionSprite(screen, *sprite, x, y, 1, 1, nil)
+	}
+}
+
+func (s *SelectState) drawSelectionSprite(screen *ebiten.Image, pair [2]int, x, y, sx, sy float64, pose *air.Visual) {
+	archive := s.engine.motif.SpriteData
+	if archive == nil || pair[0] < 0 || pair[1] < 0 {
+		return
+	}
+	index, found := archive.Index(pair[0], pair[1])
+	if !found {
+		return
+	}
+	sprite := archive.Sprites[index]
+	if sprite.Image == nil {
+		return
+	}
+	if s.engine.sprites == nil {
+		s.engine.sprites = map[string]*background.SpriteImages{}
+	}
+	key := fmt.Sprintf("%d-%d", pair[0], pair[1])
+	cached := s.engine.sprites[key]
+	if cached == nil {
+		cached = s.spriteCache.Pair(sprite.Image, sprite.ImageOpaque)
+		s.engine.sprites[key] = cached
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
+	destination := float32(-1)
+	if pose != nil {
+		if pose.Element.FlipX {
+			op.GeoM.Scale(-1, 1)
+		}
+		if pose.Element.FlipY {
+			op.GeoM.Scale(1, -1)
+		}
+		op.GeoM.Scale(pose.ScaleX, pose.ScaleY)
+		op.GeoM.Rotate(-pose.Angle * math.Pi / 180)
+		op.GeoM.Translate(pose.X, pose.Y)
+		destination = render.ApplyBlend(op, pose.Element.Blend, pose.AlphaSrc, pose.AlphaDst)
+	}
+	op.GeoM.Scale(sx, sy)
+	op.GeoM.Translate(x, y)
+	if _, indexed := sprite.Image.(*image.Paletted); indexed {
+		_ = s.indexSampler.DrawImage(screen, cached.Image(true), op, destination)
+	} else {
+		_ = s.linearSampler.DrawImage(screen, cached.Image(true), op, destination)
 	}
 }

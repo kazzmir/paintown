@@ -130,11 +130,16 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 		if present {
 			tuple, err := evaluator.ParseReferenceTupleForVersion(raw, 2, ctrl.LanguageVersion)
-			if err != nil && key == "random" {
-				// A scalar, with or without one trailing comma, defaults Y to zero.
+			if err != nil && (key == "random" || key == "scale") {
+				// Scalar fields retain their missing Y component's default.
+				// Legacy screenpacks use scale=54 for a horizontal strip.
 				single := strings.TrimSuffix(strings.TrimSpace(raw), ",")
 				if values, singleErr := evaluator.ParseReferenceTupleForVersion(single, 1, ctrl.LanguageVersion); singleErr == nil {
-					tuple, err = append(values, &evaluator.Number{Value: 0}), nil
+					missing := float64(0)
+					if key == "scale" {
+						missing = 1
+					}
+					tuple, err = append(values, &evaluator.Number{Value: missing}), nil
 				}
 			}
 			if err != nil {

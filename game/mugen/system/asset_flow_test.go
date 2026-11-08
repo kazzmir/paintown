@@ -25,6 +25,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/motif"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -324,6 +325,16 @@ Interpolate Blend
 	}
 	if _, err := sb.Load(path, root); err != nil {
 		t.Fatal("corrected legacy font could not reload", err)
+	}
+	// The beta honors explicit map coordinates even when a legacy font says
+	// Fixed. Aliases reuse atlas pixels instead of advancing beyond its edge.
+	fixed := strings.Replace(fontMetadata, "Type=Variable", "Type=Fixed", 1) + "B 0 2\n"
+	if err := os.WriteFile(legacyPath, legacyFont(fixed), 0600); err != nil {
+		t.Fatal(err)
+	}
+	reloaded, err := sb.Load(path, root)
+	if err != nil || reloaded.Fonts[3].TextWidth("AB\";") != 11 {
+		t.Fatal("fixed font ignored explicit map coordinates/aliases", err)
 	}
 	if err := os.WriteFile(facePath, []byte("invalid font"), 0600); err != nil {
 		t.Fatal(err)
@@ -673,15 +684,51 @@ layer0.offset=80,80
 	if err := os.WriteFile(selectPath, []byte(selectText), 0600); err != nil {
 		t.Fatal(err)
 	}
-	previousSelect := e.motif.Files.Select
-	e.motif.Files.Select = selectPath
-	t.Cleanup(func() { e.motif.Files.Select = previousSelect })
+	// Retain the first layout in a legacy motif with alternative settings
+	// below it, and interpret startcell as row,column.
+	motifPath := filepath.Join(dir, "packed motif.def")
+	motifSource := fmt.Sprintf(`[Info]
+localcoord=320,240
+[Files]
+spr=%s
+select=%s
+fight=%s
+[Select Info]
+rows=3
+columns=2
+pos=10,20
+p1.cursor.startcell=0,1
+p2.cursor.startcell=0,99
+portrait.scale=.5,.5
+showemptyboxes=0
+moveoveremptyboxes=0
+rows=1
+columns=1
+pos=0,0
+`, filepath.Join(e.dataDir, "data/mugen1/system.sff"), selectPath, filepath.Join(e.dataDir, "data/mugen1/fight.def"))
+	if err := os.WriteFile(motifPath, []byte(motifSource), 0600); err != nil {
+		t.Fatal(err)
+	}
+	previousMotif := e.motif
+	e.motif, err = motif.LoadMotif(motifPath, e.dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { e.motif = previousMotif }()
 	selection := NewSelectState(e, "Arcade Mode")
 	if selection.loadError != nil || len(selection.chars) != 5 || len(selection.stages) != 2 || selection.stages[1] != stagePath {
 		t.Fatal("packed character/stage filenames did not reach selection", selection.loadError, selection.stages)
 	}
-	if !selection.chars[2].Empty || !selection.chars[3].Empty || selection.charAt(2, 0) != nil || selection.chosen(2, 0) != nil || selection.chosen(4, 0) == nil {
+	if !selection.chars[2].Empty || !selection.chars[3].Empty || selection.charAt(2%selection.cols(), 2/selection.cols()) != nil || selection.chosen(2%selection.cols(), 2/selection.cols()) != nil || selection.chosen(4%selection.cols(), 4/selection.cols()) == nil {
 		t.Fatal("empty slots shifted the roster or became random selections")
+	}
+	if selection.cols() != 2 || selection.rows() != 3 || e.motif.SelectInfo.Pos != [2]int{10, 20} || selection.p1CursorX != 1 || selection.p1CursorY != 0 {
+		t.Fatal("first motif layout or row,column startcell was lost", e.motif.SelectInfo, selection.p1CursorX, selection.p1CursorY)
+	}
+	x, y := 0, 0
+	selection.moveCursor(&x, &y, 0, 1)
+	if x != 0 || y != 2 {
+		t.Fatal("cursor did not skip empty slots", x, y)
 	}
 	first, alternate := selection.chars[0], selection.chars[1]
 	if first.SmallPortrait == nil || first.BigPortrait == nil || alternate.Name != "Packed alternate" || filepath.Dir(first.DefPath) != filepath.Dir(alternate.DefPath) || first.IntroStoryboard == "" || first.EndingStoryboard == "" {
@@ -692,6 +739,12 @@ layer0.offset=80,80
 	}
 	selection.p1CursorX, selection.p1CursorY, selection.p2CursorX, selection.p2CursorY = 0, 0, 1, 0
 	selection.palettes = [2]int{2, 1}
+	// Arcade has no manually selected opposing cursor. Invalid/empty hidden
+	// coordinates must not prevent its scheduled opponent from being built.
+	selection.p2CursorX, selection.p2CursorY = 0, 17
+	selection.pickMember(0, first, 2)
+	selection.p1CursorX, selection.p1CursorY = 0, 1 // selected roster survives cursor changes
+
 	next, err := selection.startMatch()
 	if err != nil {
 		t.Fatal(err)

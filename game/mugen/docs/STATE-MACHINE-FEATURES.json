@@ -221,7 +221,7 @@
         "system/charloader.go",
         "system/select.go"
       ],
-      "validation": "Connected title/options/selection/match flow covers live Game Speed scheduler updates and inherited match clocks, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit. Packed ending/title return retires expanded files; reopening selection reloads fresh portraits/paths without deleting the source ZIP. Match-flow passes with race detection. Legacy empty slots retain their grid positions, load no character assets and cannot become random picks; explicit randomselect still resolves playable entries. The existing packed selection-to-match lifecycle covers both forms. SF2 pack roster/portraits reach the selection screen; custom screenpack layout/cursor fidelity is not established."
+      "validation": "Connected title/options/selection/match flow covers live Game Speed, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit and packed-asset retirement/reload. Legacy empty slots retain their positions and cannot become random picks. The packed selection-to-match lifecycle now covers first-value layout precedence, row,column startcells, blank skipping, saved roster snapshots and an invalid hidden opponent cursor. SF2 native comparison establishes the first layout, authored cell/cursor sprites and scaled portraits; first private SFF portraits can seed later shared palettes without replacing an established combat/ACT palette. Linux Arcade now reaches Ryu versus Dhalsim with input, AI, HUD and audio. The original pack places four boss slots below the visible screen in both engines; eight normal portraits are visible."
     },
     {
       "id": "announcements",
@@ -347,7 +347,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Supplied sf2_mugen startup, title, selection/portraits and music run, but fights are blocked by sf2win.fnt: its fixed-width map reaches beyond the PCX image. Native handling of these fixed-font maps needs a focused compatibility check; character gameplay is not yet validated. Custom selection cell/cursor/portrait presentation also remains incomplete. Physical CD (.da) playback is unavailable; missing licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven.",
+      "gap": "SF2 selection and legacy font/CNS loading blockers are corrected. All 12 roster entries compile, but complete move/round behavior across that roster remains unverified. Live fights still report nonfatal AnimElem, unavailable constant/sound/effect and numeric-conversion diagnostics. Physical CD (.da) playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -369,9 +369,13 @@
         "sff/images.go:UploadPixels",
         "sff/sff.go:Index",
         "background/sprites.go:Image",
-        "sff/sff.go:parseWithSelection"
+        "sff/sff.go:parseWithSelection",
+        "cns/cns.go:ParseFromAST",
+        "evaluator/parser.go",
+        "parsers/parser.go",
+        "engine/explod.go"
       ],
-      "validation": "Connected asset flow covers V1 commented font settings/maps, padded PCX rows, font bank changes across retained scenes, packed sprite failure/correction, outfits and round reset. PCX retains one decoded plane; V1 shares the V2 total pixel budget, charging linked sources once. Existing SFF/font regressions and affected match-flow pass with race detection; other segments stay checked. Rebuilt Linux displays both authored font banks with expected pixel colors. The beta displayed the scene background but no authored glyphs, so this case does not establish native font equivalence. All current native/app scratch was removed. SF2 pack mugen.exe is byte-identical to the supplied 1.1 Beta 1 P1 reference (SHA256 d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e), while several character DEFs target 2000/2001. Legacy storyboard BG headers, empty roster slots and odd final WAV padding are corrected. A complete final odd chunk may omit its one counted alignment byte; truncated sample payloads still fail. Existing SND decoding/archive/bounds checks and the affected match-flow segment pass with race detection. Linux startup/title/selection music were captured; an unmodified Balrog/Vega fight stops at the font before gameplay. Only owned scratch was removed; supplied pack, ZIP, executable and user configuration were preserved."
+      "validation": "Connected asset flow covers V1 commented font maps, padded PCX rows, bank/scene changes, malformed packed sprite correction, outfits and round reset. Explicit glyph coordinates are honored even for Type=Fixed; the native SF2 victory font displays the ATW probe with these metrics. First private portrait palettes bootstrap later shared portraits without overriding established ACT/combat palettes. The SF2 executable is byte-identical to the supplied beta reference; assets remain unchanged. After the prior storyboard/empty-slot/WAV-padding fixes, this batch corrects legacy StateTypeSet Type parameters, AnimElem time ranges and counter comparisons, first-definition constants, bare numeric state headers, CMD dividers and scalar Explod scale. A grouped audit compiles all 12 roster entries (1,743 state programs, zero errors). Linux title-to-Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. All five connected segments and existing SFF/font/CNS/parser/evaluator regressions pass with race detection. This establishes loading and observed fights, not complete roster or native gameplay parity. Owned captures/PCM/overlays/helpers were inspected and removed; pack, ZIP, executable and local YAML were preserved."
     },
     {
       "id": "raster-audio",
@@ -540,7 +544,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "52c3a6091e5d0b58ca014356ee2fa3b36d455b1c0214702cc57958f7a9893f81"
+      "passed_source": "1c732598ea511cff049a1b1c65621b5107322ec3940fc13711c07ad3d179616f"
     },
     {
       "id": "combat",
@@ -580,7 +584,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4627e49dd38fa6666e25b6acb77e3593b610fe4e927e51e844ef67d71a139df3"
+      "passed_source": "fadc6cde63b3cc5118eb91dc911c66d73eafbd52231e08b64430fd31d950bac3"
     },
     {
       "id": "entities",
@@ -613,7 +617,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fadbbbf685c373168f0e0cfc2ebd8206e28f8b2f15cebbe61b42e20253f039e2"
+      "passed_source": "17dbaa00a4cba793b21137efd4abc6d0a0737bd39fa6d84e12bf218d19754e61"
     },
     {
       "id": "effects-pause",
@@ -648,7 +652,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "9bed3c6b6499a772883e839913ff14941047654fd60adb2ed2dd8b3e118055bd"
+      "passed_source": "31529ad1a147050a4b99f89d26924a697f596bd4593e4c9167bba42e00d156c2"
     },
     {
       "id": "match-flow",
@@ -727,7 +731,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "52c7e625db95f6e331d615764d55e23a0d69614fcb497352249166699ccfde58"
+      "passed_source": "319f5692c2c956093649a0fe2921b79c586fc82755a99dbde0805e2948be93d1"
     }
   ],
   "presentation_followups": [
@@ -736,7 +740,7 @@
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
-    "SF2 compatibility assessment: same beta reference executable; old-content startup/title/selection/music work after storyboard BG, empty-slot and SND-padding fixes. Full fights remain blocked by fixed-width sf2win.fnt glyph bounds. Character gameplay and authored selection presentation remain open; do not change the pack to conceal these gaps."
+    "SF2 reported selection crash and legacy character-loading blockers are corrected. Native layout/font controls, all 12 roster program compilation and two live Linux fights establish this checkpoint. Eight normal portraits are visible; four boss slots are below the original pack canvas in native too. Remaining nonfatal expression/resource warnings and broader character move/round compatibility need follow-up; preserve the supplied pack."
   ],
   "known_differences": [
     {
@@ -762,6 +766,12 @@
       "name": "Ordinary KO echo playback",
       "completed": true,
       "validation": "Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed."
+    },
+    {
+      "id": "sf2-selection-loading",
+      "name": "SF2 selection and legacy character loading",
+      "completed": true,
+      "validation": "Saved roster handoff and an independent automatic opponent fix the reported selection failure. Authored layout/cursors/portrait colors and legacy font/CNS forms load. All 12 roster entries compile 1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. The four boss slots are also offscreen in the native pack. Full roster gameplay remains unverified."
     }
   ]
 }

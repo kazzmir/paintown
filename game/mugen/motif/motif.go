@@ -20,6 +20,13 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
+// SelectCursor keeps authored cursor sprites/actions; clocks belong to selection.
+type SelectCursor struct {
+	ActiveSprite, DoneSprite       *[2]int
+	ActiveAnimation, DoneAnimation *int
+	Blink                          bool
+}
+
 type Motif struct {
 	Source string
 	AST    *parsers.File
@@ -65,31 +72,35 @@ type Motif struct {
 	}
 
 	SelectInfo struct {
-		FadeInTime    int
-		FadeOutTime   int
-		Rows          int
-		Columns       int
-		Wrapping      bool
-		Pos           [2]int
-		CellSize      [2]int
-		CellSpacing   int
-		CellBgSpr     [2]int
-		CellRandSpr   [2]int
-		P1StartCell   [2]int
-		P2StartCell   [2]int
-		TitleOffset   [2]int
-		TitleFont     [3]int
-		P1FaceOffset  [2]float64
-		P2FaceOffset  [2]float64
-		P1FaceScale   [2]float64
-		P2FaceScale   [2]float64
-		P1NameOffset  [2]int
-		P2NameOffset  [2]int
-		P1NameFont    [3]int
-		P2NameFont    [3]int
-		CursorMoveSnd [2]int
-		CursorDoneSnd [2]int
-		CancelSnd     [2]int
+		FadeInTime                         int
+		FadeOutTime                        int
+		Rows                               int
+		Columns                            int
+		Wrapping                           bool
+		Pos                                [2]int
+		CellSize                           [2]int
+		CellSpacing                        int
+		CellBgSpr                          [2]int
+		CellRandSpr                        [2]int
+		PortraitScale                      [2]float64
+		ShowEmptyBoxes, MoveOverEmptyBoxes bool
+		P1Cursor, P2Cursor                 SelectCursor
+		P1FaceFacing, P2FaceFacing         int
+		P1StartCell                        [2]int
+		P2StartCell                        [2]int
+		TitleOffset                        [2]int
+		TitleFont                          [3]int
+		P1FaceOffset                       [2]float64
+		P2FaceOffset                       [2]float64
+		P1FaceScale                        [2]float64
+		P2FaceScale                        [2]float64
+		P1NameOffset                       [2]int
+		P2NameOffset                       [2]int
+		P1NameFont                         [3]int
+		P2NameFont                         [3]int
+		CursorMoveSnd                      [2]int
+		CursorDoneSnd                      [2]int
+		CancelSnd                          [2]int
 	}
 
 	VSScreen struct {
@@ -153,6 +164,12 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 	motif.Files.FontFiles = make([]string, 11) // 1-10
 	motif.Fonts = make([]*font.Font, 11)
 	motif.TitleInfo.ItemNames = make(map[string]string)
+	motif.SelectInfo.CellBgSpr, motif.SelectInfo.CellRandSpr = [2]int{-1, -1}, [2]int{-1, -1}
+	motif.SelectInfo.PortraitScale = [2]float64{1, 1}
+	motif.SelectInfo.P1FaceScale, motif.SelectInfo.P2FaceScale = [2]float64{1, 1}, [2]float64{1, 1}
+	motif.SelectInfo.P1FaceFacing, motif.SelectInfo.P2FaceFacing = 1, 1
+	motif.SelectInfo.ShowEmptyBoxes, motif.SelectInfo.MoveOverEmptyBoxes = true, true
+	motif.SelectInfo.P2Cursor.Blink = true
 
 	motifDir := filepath.Dir(absPath)
 
@@ -256,8 +273,15 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 				}
 			}
 		case "select info":
+			seen := map[string]bool{}
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
+				// Screenpacks put alternative layouts below the active one.
+				// The beta takes the first value of each attribute.
+				if seen[id] {
+					continue
+				}
+				seen[id] = true
 				switch id {
 				case "fadein.time":
 					motif.SelectInfo.FadeInTime = int(getFloat(attr.Value))
@@ -283,6 +307,41 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 				case "cell.random.spr":
 					v := getVector2(attr.Value)
 					motif.SelectInfo.CellRandSpr = [2]int{int(v[0]), int(v[1])}
+				case "portrait.scale":
+					motif.SelectInfo.PortraitScale = getVector2(attr.Value)
+				case "showemptyboxes":
+					motif.SelectInfo.ShowEmptyBoxes = getBool(attr.Value)
+				case "moveoveremptyboxes":
+					motif.SelectInfo.MoveOverEmptyBoxes = getBool(attr.Value)
+				case "p1.face.facing":
+					motif.SelectInfo.P1FaceFacing = int(getFloat(attr.Value))
+				case "p2.face.facing":
+					motif.SelectInfo.P2FaceFacing = int(getFloat(attr.Value))
+				case "p1.cursor.active.spr", "p2.cursor.active.spr", "p1.cursor.done.spr", "p2.cursor.done.spr",
+					"p1.cursor.active.anim", "p2.cursor.active.anim", "p1.cursor.done.anim", "p2.cursor.done.anim", "p1.cursor.blink", "p2.cursor.blink":
+					cursor := &motif.SelectInfo.P1Cursor
+					if strings.HasPrefix(id, "p2.") {
+						cursor = &motif.SelectInfo.P2Cursor
+					}
+					switch {
+					case strings.HasSuffix(id, ".blink"):
+						cursor.Blink = getBool(attr.Value)
+					case strings.HasSuffix(id, ".spr"):
+						v := getVector2(attr.Value)
+						pair := [2]int{int(v[0]), int(v[1])}
+						if strings.Contains(id, ".active.") {
+							cursor.ActiveSprite = &pair
+						} else {
+							cursor.DoneSprite = &pair
+						}
+					default:
+						value := int(getFloat(attr.Value))
+						if strings.Contains(id, ".active.") {
+							cursor.ActiveAnimation = &value
+						} else {
+							cursor.DoneAnimation = &value
+						}
+					}
 				case "p1.cursor.startcell":
 					v := getVector2(attr.Value)
 					motif.SelectInfo.P1StartCell = [2]int{int(v[0]), int(v[1])}

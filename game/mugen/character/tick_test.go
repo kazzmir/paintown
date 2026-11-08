@@ -38,6 +38,9 @@ func TestExcludedCustomHitLeavesDirectAdaptersUnchanged(t *testing.T) {
 func TestContactContinuationDoesNotRepeatNegativeStatesOrTimeZero(t *testing.T) {
 	file, err := cns.Parse(strings.NewReader(`[Data]
 life=1000
+life=2000
+intpersistindex=0
+intpersistindex=[3,4]
 [Statedef 0]
 movetype=A
 physics=N
@@ -51,6 +54,7 @@ pausetime=8,8
 ground.velocity=0,0
 ground.hittime=11
 [Statedef 5000]
+type=S
 movetype=H
 physics=N
 anim=0
@@ -59,6 +63,11 @@ type=VarAdd
 trigger1=Time=0
 v=31
 value=1
+ =======
+[State 5000
+type=StateTypeSet
+trigger1=AnimElem=1,[0,3] && AnimElem>=1 && Time=0
+type=A
 [Statedef -2]
 [State -2, frame count]
 type=VarAdd
@@ -90,8 +99,8 @@ value=1
 		t.Fatal(err)
 	}
 	for _, c := range players {
-		if c.IntVars[30] != 2 || c.IntVars[31] != 1 || c.Time != 1 || c.Life != 975 {
-			t.Fatalf("contact duplicated/skipped phases: negative=%d entry=%d time=%d life=%d", c.IntVars[30], c.IntVars[31], c.Time, c.Life)
+		if c.IntVars[30] != 2 || c.IntVars[31] != 1 || c.Time != 1 || c.Life != 975 || c.StateType != "A" {
+			t.Fatalf("contact/legacy reaction phases: negative=%d entry=%d time=%d life=%d type=%s", c.IntVars[30], c.IntVars[31], c.Time, c.Life, c.StateType)
 		}
 	}
 	if err := TickCharacters(players); err != nil {
