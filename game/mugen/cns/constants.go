@@ -83,6 +83,12 @@ func (c *CNS) readConstantFields(ast *parsers.File) error {
 // of its source literal. Required-field validation for whole characters belongs
 // to the loader; state-only CNS files may omit all constant groups.
 func (c *CNS) LookupConstant(name string) (number float64, integer, found bool) {
+	return c.LookupConstantInSpace(name, 320)
+}
+
+// Omitted coordinate constants are beta defaults expressed in 320p. Authored
+// values already use the character's units; recovery multipliers are unitless.
+func (c *CNS) LookupConstantInSpace(name string, width int) (number float64, integer, found bool) {
 	name = strings.ToLower(name)
 	spec, ok := constantSpecs[name]
 	if !ok || spec.unsupported || c == nil {
@@ -105,11 +111,43 @@ func (c *CNS) LookupConstant(name string) (number float64, integer, found bool) 
 		}
 		return float64(c.Data.Power), true, true
 	case "movement.yaccel":
-		return float64(float32(c.Movement.YAccel)), false, true
+		return float64(float32(c.Movement.YAccel) * float32(width) / 320), false, true
 	case "movement.stand.friction":
 		return float64(float32(c.Movement.StandFriction)), false, true
 	case "movement.crouch.friction":
 		return float64(float32(c.Movement.CrouchFriction)), false, true
 	}
+	if defaults, ok := optionalConstantDefaults[spec.source]; ok && spec.component < len(defaults) {
+		number = float64(float32(defaults[spec.component]))
+		if spec.source != "velocity.air.gethit.airrecover.mul" {
+			number = float64(float32(number) * float32(width) / 320)
+		}
+		return number, spec.integer, true
+	}
 	return 0, spec.integer, false
+}
+
+// Beta defaults for fields added in 1.0. Pre-1.0 characters legitimately omit
+// these while using the current common states for friction, falls and recovery.
+// Authored values (including zero) above always take precedence.
+var optionalConstantDefaults = map[string][]float64{
+	"movement.stand.friction.threshold":                  {2},
+	"movement.crouch.friction.threshold":                 {.05},
+	"movement.air.gethit.groundlevel":                    {25},
+	"movement.air.gethit.groundrecover.ground.threshold": {-20},
+	"movement.air.gethit.groundrecover.groundlevel":      {10},
+	"movement.air.gethit.airrecover.threshold":           {-1},
+	"movement.air.gethit.airrecover.yaccel":              {.35},
+	"movement.air.gethit.trip.groundlevel":               {15},
+	"movement.down.bounce.offset":                        {0, 20},
+	"movement.down.bounce.yaccel":                        {.4},
+	"movement.down.bounce.groundlevel":                   {12},
+	"movement.down.friction.threshold":                   {.05},
+	"velocity.air.gethit.groundrecover":                  {-.15, -3.5},
+	"velocity.air.gethit.airrecover.mul":                 {.5, .2},
+	"velocity.air.gethit.airrecover.add":                 {0, -4.5},
+	"velocity.air.gethit.airrecover.back":                {-1},
+	"velocity.air.gethit.airrecover.fwd":                 {0},
+	"velocity.air.gethit.airrecover.up":                  {-2},
+	"velocity.air.gethit.airrecover.down":                {1.5},
 }

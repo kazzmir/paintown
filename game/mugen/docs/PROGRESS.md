@@ -19,6 +19,8 @@ Broader compatibility and deferred capabilities remain listed below.
 - [x] **Finite and overlapping alpha composition**: Delta-first byte interpolation and foreground-over-HUD composition reproduce the bounded RGBA overlap crop exactly. Connected AIR transitions, pause/expiry, letterboxing and final global PalFX pass.
 - [x] **Ordinary KO echo playback**: Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed.
 - [x] **SF2 selection and legacy character loading**: Saved roster handoff and an independent automatic opponent fix the reported selection failure. Authored layout/cursors/portrait colors and legacy font/CNS forms load. All 12 roster entries compile 1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. The four boss slots are also offscreen in the native pack. Full roster gameplay remains unverified.
+- [x] **Rendered selection/VS and legacy bounce recovery**: Corrected character-to-motif portrait scaling and authored VS portraits, windows, names and artwork. Connected checks now inspect pixels and cover omitted-constant bounce → lying down → get-up → control. All five segments pass with races; Linux stock/SF2 screens and a 60-second Honda/Dhalsim run were inspected.
+- [x] **SF2 Ryu/Dhalsim round-two script repair**: The native beta also stays in state5900 because both supplied scripts only exit on round one. tools/sf2_playable.py creates a separate ignored working copy sharing assets and adding the two later-round exits. The repaired copy completes round two with movement and attacks from both characters; original pack and engine state semantics are preserved.
 
 ## Completed scenario coverage
 
@@ -28,10 +30,10 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [x] **combat**: logical input → attack/contact → damage/state continuation; jump → CNS landing recovery.
+- [x] **combat**: logical input → attack/contact → damage/state continuation; jump/landing → sweep → legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [x] **match-flow**: title/selection → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 
@@ -77,7 +79,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — SF2 selection and legacy font/CNS loading blockers are corrected. All 12 roster entries compile, but complete move/round behavior across that roster remains unverified. Live fights still report nonfatal AnimElem, unavailable constant/sound/effect and numeric-conversion diagnostics. Physical CD (.da) playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Complete move/round behavior across the 12-character SF2 roster remains unverified. Nonfatal invalid AnimElem, unavailable sound/effect and numeric-conversion diagnostics remain. The original Ryu/Dhalsim state5900 round-two stall also occurs in native; tools/sf2_playable.py makes a separate corrected working copy for those two scripts. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven. (item4)
 - [ ] Remaining native rendering, audio and AI fidelity. **partial** — Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms

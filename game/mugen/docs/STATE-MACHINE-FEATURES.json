@@ -29,7 +29,8 @@
       "sources": [
         "evaluator/runtime.go:EvaluateValue",
         "evaluator/value.go:CoerceInt"
-      ]
+      ],
+      "validation": "Legacy projectile elapsed-time suffixes such as Parent, ProjHitTime1 normalize to the existing typed ID query; the contact continuation scenario checks parity with ProjHitTime(1). Optional 1.0 movement/recovery constants now provide native defaults for old characters. Native observations at 320p and 1280p confirm dimensional scaling while recovery multipliers remain unitless. Explicit values, including zero, retain precedence."
     },
     {
       "id": "triggers",
@@ -221,7 +222,7 @@
         "system/charloader.go",
         "system/select.go"
       ],
-      "validation": "Connected title/options/selection/match flow covers live Game Speed, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit and packed-asset retirement/reload. Legacy empty slots retain their positions and cannot become random picks. The packed selection-to-match lifecycle now covers first-value layout precedence, row,column startcells, blank skipping, saved roster snapshots and an invalid hidden opponent cursor. SF2 native comparison establishes the first layout, authored cell/cursor sprites and scaled portraits; first private SFF portraits can seed later shared palettes without replacing an established combat/ACT palette. Linux Arcade now reaches Ryu versus Dhalsim with input, AI, HUD and audio. The original pack places four boss slots below the visible screen in both engines; eight normal portraits are visible."
+      "validation": "Connected title/options/selection/match flow covers live Game Speed, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit and packed-asset retirement/reload. Legacy empty slots retain their positions and cannot become random picks. The packed selection-to-match lifecycle now covers first-value layout precedence, row,column startcells, blank skipping, saved roster snapshots and an invalid hidden opponent cursor. SF2 native comparison establishes the first layout, authored cell/cursor sprites and scaled portraits; first private SFF portraits can seed later shared palettes without replacing an established combat/ACT palette. Linux Arcade now reaches Ryu versus Dhalsim with input, AI, HUD and audio. The original pack places four boss slots below the visible screen in both engines; eight normal portraits are visible. Follow-up corrects character-to-motif portrait units (320p KFM and 1280p KFM720 occupy equal authored cells), selection portrait offsets/windows, VS portrait sprite/position/scale/facing/window, legacy pos and modern offset aliases, name alignment/spacing, match counter and fades. Motif backgrounds retain their archive independently of startup texture maps. The connected menu flow now checks rendered VS background and both clipped portraits; earlier checks only established state transitions. Rebuilt stock selection/VS and SF2 VS artwork were inspected."
     },
     {
       "id": "announcements",
@@ -347,7 +348,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "SF2 selection and legacy font/CNS loading blockers are corrected. All 12 roster entries compile, but complete move/round behavior across that roster remains unverified. Live fights still report nonfatal AnimElem, unavailable constant/sound/effect and numeric-conversion diagnostics. Physical CD (.da) playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven.",
+      "gap": "Complete move/round behavior across the 12-character SF2 roster remains unverified. Nonfatal invalid AnimElem, unavailable sound/effect and numeric-conversion diagnostics remain. The original Ryu/Dhalsim state5900 round-two stall also occurs in native; tools/sf2_playable.py makes a separate corrected working copy for those two scripts. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -375,7 +376,7 @@
         "parsers/parser.go",
         "engine/explod.go"
       ],
-      "validation": "Connected asset flow covers V1 commented font maps, padded PCX rows, bank/scene changes, malformed packed sprite correction, outfits and round reset. Explicit glyph coordinates are honored even for Type=Fixed; the native SF2 victory font displays the ATW probe with these metrics. First private portrait palettes bootstrap later shared portraits without overriding established ACT/combat palettes. The SF2 executable is byte-identical to the supplied beta reference; assets remain unchanged. After the prior storyboard/empty-slot/WAV-padding fixes, this batch corrects legacy StateTypeSet Type parameters, AnimElem time ranges and counter comparisons, first-definition constants, bare numeric state headers, CMD dividers and scalar Explod scale. A grouped audit compiles all 12 roster entries (1,743 state programs, zero errors). Linux title-to-Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. All five connected segments and existing SFF/font/CNS/parser/evaluator regressions pass with race detection. This establishes loading and observed fights, not complete roster or native gameplay parity. Owned captures/PCM/overlays/helpers were inspected and removed; pack, ZIP, executable and local YAML were preserved."
+      "validation": "Connected asset flow covers V1 commented font maps, padded PCX rows, bank/scene changes, malformed packed sprite correction, outfits and round reset. Explicit glyph coordinates are honored even for Type=Fixed; the native SF2 victory font displays the ATW probe with these metrics. First private portrait palettes bootstrap later shared portraits without overriding established ACT/combat palettes. The SF2 executable is byte-identical to the supplied beta reference; assets remain unchanged. After the prior storyboard/empty-slot/WAV-padding fixes, this batch corrects legacy StateTypeSet Type parameters, AnimElem time ranges and counter comparisons, first-definition constants, bare numeric state headers, CMD dividers and scalar Explod scale. A grouped audit compiles all 12 roster entries (1,743 state programs, zero errors). Linux title-to-Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. All five connected segments and existing SFF/font/CNS/parser/evaluator regressions pass with race detection. This establishes loading and observed fights, not complete roster or native gameplay parity. Owned captures/PCM/overlays/helpers were inspected and removed; pack, ZIP, executable and local YAML were preserved. Follow-up adds omitted beta movement/recovery defaults, including the reported state5101 bounce offset, with character-coordinate scaling. Existing sweep coverage continues through bounce, lying down, get-up and control restoration with optional constants removed. All five connected segments pass with races. Rebuilt Honda/Dhalsim ran for 60 seconds with audio and no missing-constant or unknown-projectile-trigger diagnostics. Stock and SF2 selection/VS presentation were inspected. A native time-over flow reproduces the original pack second-round state5900 stall; the separate repaired copy completes round two with movement and attacks from both Ryu and Dhalsim. Original pack assets/configuration stay unchanged."
     },
     {
       "id": "raster-audio",
@@ -544,11 +545,11 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1c732598ea511cff049a1b1c65621b5107322ec3940fc13711c07ad3d179616f"
+      "passed_source": "12cc92ddad90046cf8abd79a9128d8965abdb02cad0c4286ff6fc9774c333cc6"
     },
     {
       "id": "combat",
-      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation; jump \u2192 CNS landing recovery",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation; jump/landing \u2192 sweep \u2192 legacy bounce/recovery",
       "source_dirs": [
         "air",
         "background",
@@ -580,11 +581,15 @@
         {
           "file": "match/bootcamera_test.go",
           "name": "TestCameraStartupViewportAndResetFlow"
+        },
+        {
+          "file": "match/sweep_test.go",
+          "name": "TestStockMixedMatchSweepCompletesRecovery"
         }
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fadc6cde63b3cc5118eb91dc911c66d73eafbd52231e08b64430fd31d950bac3"
+      "passed_source": "2358ba41531a1964cb621f46a0cfcd26a20dad6ec89a16f35fc105fe35621562"
     },
     {
       "id": "entities",
@@ -617,7 +622,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "17dbaa00a4cba793b21137efd4abc6d0a0737bd39fa6d84e12bf218d19754e61"
+      "passed_source": "dc11f096ca42c3234f94db07d14042716322bc06686d5b78d87577e8252baa5a"
     },
     {
       "id": "effects-pause",
@@ -652,11 +657,11 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "31529ad1a147050a4b99f89d26924a697f596bd4593e4c9167bba42e00d156c2"
+      "passed_source": "1688941194855aae0414dd3ce59d90e4e7dc80b6fd745cdc1db41c77c7dd2c74"
     },
     {
       "id": "match-flow",
-      "contract": "title/selection \u2192 stock input-driven fight \u2192 KO/time-over \u2192 results \u2192 rematch/exit",
+      "contract": "title/selection \u2192 rendered VS \u2192 stock input-driven fight \u2192 KO/time-over \u2192 results \u2192 rematch/exit",
       "source_dirs": [
         "air",
         "background",
@@ -731,7 +736,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "319f5692c2c956093649a0fe2921b79c586fc82755a99dbde0805e2948be93d1"
+      "passed_source": "c52ea50355af1c2b5dfefb21e510d6d0df9e47d33db5783566b19005ac0ebf4d"
     }
   ],
   "presentation_followups": [
@@ -740,7 +745,7 @@
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
-    "SF2 reported selection crash and legacy character-loading blockers are corrected. Native layout/font controls, all 12 roster program compilation and two live Linux fights establish this checkpoint. Eight normal portraits are visible; four boss slots are below the original pack canvas in native too. Remaining nonfatal expression/resource warnings and broader character move/round compatibility need follow-up; preserve the supplied pack."
+    "SF2 original tiny grid is authored and matches native. Stock mixed-resolution portrait shrinkage, missing VS presentation and missing optional constants are corrected. Original Ryu/Dhalsim round-two initialization also stalls in native: a separate ignored playable copy repairs those two scripts without changing engine state semantics or the source pack. Full-roster gameplay and remaining expression/resource warnings stay open."
   ],
   "known_differences": [
     {
@@ -772,6 +777,18 @@
       "name": "SF2 selection and legacy character loading",
       "completed": true,
       "validation": "Saved roster handoff and an independent automatic opponent fix the reported selection failure. Authored layout/cursors/portrait colors and legacy font/CNS forms load. All 12 roster entries compile 1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. The four boss slots are also offscreen in the native pack. Full roster gameplay remains unverified."
+    },
+    {
+      "id": "frontend-recovery",
+      "name": "Rendered selection/VS and legacy bounce recovery",
+      "completed": true,
+      "validation": "Corrected character-to-motif portrait scaling and authored VS portraits, windows, names and artwork. Connected checks now inspect pixels and cover omitted-constant bounce \u2192 lying down \u2192 get-up \u2192 control. All five segments pass with races; Linux stock/SF2 screens and a 60-second Honda/Dhalsim run were inspected."
+    },
+    {
+      "id": "sf2-round-two",
+      "name": "SF2 Ryu/Dhalsim round-two script repair",
+      "completed": true,
+      "validation": "The native beta also stays in state5900 because both supplied scripts only exit on round one. tools/sf2_playable.py creates a separate ignored working copy sharing assets and adding the two later-round exits. The repaired copy completes round two with movement and attacks from both characters; original pack and engine state semantics are preserved."
     }
   ]
 }

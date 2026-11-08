@@ -69,6 +69,12 @@ type=StateTypeSet
 trigger1=AnimElem=1,[0,3] && AnimElem>=1 && Time=0
 type=A
 [Statedef -2]
+[State -2, legacy projectile time alias]
+type=VarSet
+trigger1=1
+ignorehitpause=1
+v=29
+value=ProjHitTime1 - ProjHitTime(1)
 [State -2, frame count]
 type=VarAdd
 trigger1=1
@@ -83,6 +89,7 @@ value=1
 	actions := &air.Data{Actions: map[int]*air.Action{0: {Elements: []air.Element{{Time: -1, Clsn1: []air.Box{box}, Clsn2: []air.Box{box}}}}}}
 	players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 	for slot, c := range players {
+		c.lastProjectileEvent = &projectileEvent{id: 1, age: 5, kind: "hit"}
 		c.InputSlot = slot + 1
 		c.Opponents = []*Character{players[1-slot]}
 		c.ChangeState(0, -1, -1)
@@ -99,7 +106,7 @@ value=1
 		t.Fatal(err)
 	}
 	for _, c := range players {
-		if c.IntVars[30] != 2 || c.IntVars[31] != 1 || c.Time != 1 || c.Life != 975 || c.StateType != "A" {
+		if c.IntVars[29] != 0 || c.IntVars[30] != 2 || c.IntVars[31] != 1 || c.Time != 1 || c.Life != 975 || c.StateType != "A" {
 			t.Fatalf("contact/legacy reaction phases: negative=%d entry=%d time=%d life=%d type=%s", c.IntVars[30], c.IntVars[31], c.Time, c.Life, c.StateType)
 		}
 	}

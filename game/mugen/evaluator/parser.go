@@ -285,6 +285,17 @@ func (p *Parser) parsePrimary() (Expression, error) {
 			}
 		}
 		var expr Expression = &Identifier{Name: tok.lit}
+		// Old characters also spell the projectile ID as a suffix on the
+		// elapsed-time trigger: Parent, ProjHitTime1 = 1.
+		if p.peek().typ != tokLParen {
+			for _, base := range []string{"projhittime", "projguardedtime", "projcontacttime", "projcanceltime"} {
+				if suffix, found := strings.CutPrefix(name, base); found && suffix != "" {
+					if id, err := strconv.ParseUint(suffix, 10, 31); err == nil {
+						expr = &Call{Name: base, Arguments: []Expression{&Number{Value: float64(id)}}}
+					}
+				}
+			}
+		}
 		if p.peek().typ == tokLParen {
 			p.advance()
 			var args []Expression

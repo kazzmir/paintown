@@ -91,8 +91,8 @@ def main():
             when += gap
         tail = input_recipe['tail_seconds']
         if (not isinstance(tail, (int, float)) or not math.isfinite(tail)
-                or not 0 <= tail <= 10 or not args.seconds or when + tail > min(args.seconds)):
-            parser.error('Capture must follow the complete input recipe and tail')
+                or not 0 <= tail <= 10 or not args.seconds or when + tail > max(args.seconds)):
+            parser.error('Final capture must follow the complete input recipe and tail')
     if args.match_seed is not None and (not args.match or not 1 <= args.match_seed < 2147483647):
         parser.error('A seeded smoke run requires a quick match and a seed in1..2147483646')
     if not 64<=args.width<=4096 or not 64<=args.height<=4096:

@@ -375,11 +375,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 			}
 			if ch != nil {
 				if ch.SmallPortrait != nil {
-					op := &ebiten.DrawImageOptions{}
-					op.GeoM.Translate(-float64(ch.SmallAxis[0]), -float64(ch.SmallAxis[1]))
-					op.GeoM.Scale(si.PortraitScale[0], si.PortraitScale[1])
-					op.GeoM.Translate(cx, cy)
-					screen.DrawImage(ch.SmallPortrait, op)
+					ch.drawPortrait(screen, [2]int{9000, 0}, [2]float64{cx + si.PortraitOffset[0], cy + si.PortraitOffset[1]}, si.PortraitScale, 1, s.engine.logicalWidth, nil)
 				} else if ch.DefPath == "" {
 					s.drawSelectionSprite(screen, si.CellRandSpr, cx, cy, 1, 1, nil)
 				}
@@ -397,11 +393,11 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 
 	// Big portrait panels — P1 left, P2 right
 	s.drawFacePanel(screen, s.p1CursorX, s.p1CursorY,
-		si.P1FaceOffset, si.P1FaceScale, si.P1FaceFacing,
+		si.P1FaceOffset, si.P1FaceScale, si.P1FaceFacing, si.P1FaceWindow,
 		si.P1NameOffset, si.P1NameFont)
 	if s.showP2 {
 		s.drawFacePanel(screen, s.p2CursorX, s.p2CursorY,
-			si.P2FaceOffset, si.P2FaceScale, si.P2FaceFacing,
+			si.P2FaceOffset, si.P2FaceScale, si.P2FaceFacing, si.P2FaceWindow,
 			si.P2NameOffset, si.P2NameFont)
 	}
 
@@ -439,7 +435,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 // faceOff is the top-left corner to draw from; faceScale is the (sx, sy) multiplier.
 // nameOff and nameFont are the position+font for the character name.
 func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
-	faceOff [2]float64, faceScale [2]float64, facing int,
+	faceOff [2]float64, faceScale [2]float64, facing int, window *[4]int,
 	nameOff [2]int, nameFont [3]int) {
 
 	ch := s.charAt(col, row)
@@ -447,34 +443,11 @@ func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
 		return
 	}
 
-	// Apply default scale of 1 if not set
-	sx := faceScale[0]
-	sy := faceScale[1]
-	if sx == 0 {
-		sx = 1
+	pair := [2]int{9000, 1}
+	if ch.BigPortrait == nil {
+		pair[1] = 0
 	}
-	if sy == 0 {
-		sy = 1
-	}
-
-	// Big portrait (group 9000, image 1), fall back to small (image 0)
-	portrait := ch.BigPortrait
-	axis := ch.BigAxis
-	if portrait == nil {
-		portrait = ch.SmallPortrait
-		axis = ch.SmallAxis
-	}
-	if portrait != nil {
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(-float64(axis[0]), -float64(axis[1]))
-		if facing < 0 {
-			sx = -sx
-		}
-		op.GeoM.Scale(sx, sy)
-		op.GeoM.Translate(faceOff[0], faceOff[1])
-		op.Filter = ebiten.FilterNearest
-		screen.DrawImage(portrait, op)
-	}
+	ch.drawPortrait(screen, pair, faceOff, faceScale, facing, s.engine.logicalWidth, window)
 
 	// Character name using per-player font
 	if nameFont[0] >= 1 && nameFont[0] < len(s.engine.motif.Fonts) {

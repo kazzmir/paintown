@@ -51,6 +51,19 @@ entries compile; full gameplay across every character remains unverified. The
 original motif displays eight normal portraits and places four boss slots below
 the visible screen, including in the bundled native engine.
 
+Ryu and Dhalsim's supplied scripts also stall on round two in the native engine:
+their initialization state only exits on round one. Create a corrected working
+copy once, then use it for play:
+
+```bash
+python3 game/mugen/tools/sf2_playable.py
+game/mugen/mugen.sh --game --data-dir game/mugen/temp/sf2_mugen_playable
+```
+
+This leaves the original pack intact, links its media assets, and copies two
+repaired character scripts plus the small writable configuration/log files.
+Keep the original pack available. Neither pack nor local YAML belongs in Git.
+
 Stages belong under the selected data root's `stages/` directory, but the menu
 uses a selection list rather than scanning that directory. Add each stage DEF
 under `[ExtraStages]` in the active motif's `select.def`. With the supplied

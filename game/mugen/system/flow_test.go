@@ -179,6 +179,27 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !ok {
 		t.Fatalf("title did not open selection: %T", e.currentState)
 	}
+	// The 320p KFM and 1280p KFM720 portraits must occupy the same 100px
+	// authored cells in this 1280p motif, rather than shrinking the first.
+	for _, portrait := range s.chars[:2] {
+		canvas := ebiten.NewImage(128, 128)
+		portrait.drawPortrait(canvas, [2]int{9000, 0}, [2]float64{4, 4}, [2]float64{1, 1}, 1, e.logicalWidth, nil)
+		pixels := make([]byte, 128*128*4)
+		canvas.ReadPixels(pixels)
+		canvas.Deallocate()
+		left, right := 128, 0
+		for y := 0; y < 128; y++ {
+			for x := 0; x < 128; x++ {
+				if pixels[(y*128+x)*4+3] > 0 {
+					left = min(left, x)
+					right = max(right, x)
+				}
+			}
+		}
+		if right-left < 90 {
+			t.Fatal("mixed-coordinate selection portrait shrank", portrait.Name, left, right)
+		}
+	}
 	// Start both on the first stock cell, then move P2 with the stock D key.
 	s.p1CursorX, s.p1CursorY, s.p2CursorX, s.p2CursorY = 0, 0, 0, 0
 	step(ebiten.KeyD)
@@ -198,6 +219,48 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	}
 	if !strings.HasSuffix(v.request.Players[0].DefPath, "kfm/kfm.def") || !strings.HasSuffix(v.request.Players[1].DefPath, "kfm720/kfm720.def") || v.request.Players[1].Palette != 2 || v.request.StagePath != "stages/stage0-720.def" {
 		t.Fatal("selection handoff lost metadata", v.request)
+	}
+	// Exercise the actual VS renderer before handing off. The former flow
+	// checked only its type, allowing an empty names-only screen to pass.
+	canvas := ebiten.NewImage(e.logicalWidth, e.logicalHeight)
+	v.ticks = m.VSScreen.FadeInTime + 1
+	v.Draw(canvas)
+	withPortraits := make([]byte, e.logicalWidth*e.logicalHeight*4)
+	canvas.ReadPixels(withPortraits)
+	portraits := v.portraits
+	v.portraits = [2]*CharacterPortrait{}
+	v.Draw(canvas)
+	background := make([]byte, len(withPortraits))
+	canvas.ReadPixels(background)
+	canvas.Deallocate()
+	v.portraits = portraits
+	var changed [2]int
+	backgroundPixels := 0
+	for y := 0; y < e.logicalHeight; y++ {
+		for x := 0; x < e.logicalWidth; x++ {
+			i := (y*e.logicalWidth + x) * 4
+			if background[i] != 0 || background[i+1] != 0 || background[i+2] != 0 {
+				backgroundPixels++
+			}
+			if bytes.Equal(withPortraits[i:i+4], background[i:i+4]) {
+				continue
+			}
+			side := 0
+			if x >= e.logicalWidth/2 {
+				side = 1
+			}
+			window := m.VSScreen.P1Portrait.Window
+			if side == 1 {
+				window = m.VSScreen.P2Portrait.Window
+			}
+			if window == nil || x < window[0] || x > window[2] || y < window[1] || y > window[3] {
+				t.Fatal("VS portrait escaped its authored window", x, y)
+			}
+			changed[side]++
+		}
+	}
+	if backgroundPixels < 50000 || changed[0] < 1000 || changed[1] < 1000 {
+		t.Fatal("VS background or portraits missing", backgroundPixels, changed)
 	}
 	step(ebiten.KeyNumpadEnter)
 	f, ok := e.currentState.(*FightState)

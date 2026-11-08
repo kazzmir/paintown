@@ -27,6 +27,13 @@ type SelectCursor struct {
 	Blink                          bool
 }
 
+type Portrait struct {
+	Sprite        [2]int
+	Offset, Scale [2]float64
+	Facing        int
+	Window        *[4]int
+}
+
 type Motif struct {
 	Source string
 	AST    *parsers.File
@@ -83,6 +90,8 @@ type Motif struct {
 		CellBgSpr                          [2]int
 		CellRandSpr                        [2]int
 		PortraitScale                      [2]float64
+		PortraitOffset                     [2]float64
+		P1FaceWindow, P2FaceWindow         *[4]int
 		ShowEmptyBoxes, MoveOverEmptyBoxes bool
 		P1Cursor, P2Cursor                 SelectCursor
 		P1FaceFacing, P2FaceFacing         int
@@ -104,15 +113,17 @@ type Motif struct {
 	}
 
 	VSScreen struct {
-		Time        int
-		FadeInTime  int
-		FadeOutTime int
-		P1Pos       [2]int
-		P2Pos       [2]int
-		P1NamePos   [2]int
-		P2NamePos   [2]int
-		P1NameFont  [3]int
-		P2NameFont  [3]int
+		Time                         int
+		FadeInTime                   int
+		FadeOutTime                  int
+		P1Pos                        [2]int
+		P2Pos                        [2]int
+		P1NamePos                    [2]int
+		P2NamePos                    [2]int
+		P1NameFont                   [3]int
+		P2NameFont                   [3]int
+		P1Portrait, P2Portrait       Portrait
+		P1NameSpacing, P2NameSpacing [2]int
 	}
 
 	OptionInfo struct {
@@ -170,6 +181,9 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 	motif.SelectInfo.P1FaceFacing, motif.SelectInfo.P2FaceFacing = 1, 1
 	motif.SelectInfo.ShowEmptyBoxes, motif.SelectInfo.MoveOverEmptyBoxes = true, true
 	motif.SelectInfo.P2Cursor.Blink = true
+	motif.VSScreen.Time = 150
+	motif.VSScreen.P1Portrait = Portrait{Sprite: [2]int{9000, 1}, Scale: [2]float64{1, 1}, Facing: 1}
+	motif.VSScreen.P2Portrait = Portrait{Sprite: [2]int{9000, 1}, Scale: [2]float64{1, 1}, Facing: -1}
 
 	motifDir := filepath.Dir(absPath)
 
@@ -309,6 +323,15 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 					motif.SelectInfo.CellRandSpr = [2]int{int(v[0]), int(v[1])}
 				case "portrait.scale":
 					motif.SelectInfo.PortraitScale = getVector2(attr.Value)
+				case "portrait.offset":
+					motif.SelectInfo.PortraitOffset = getVector2(attr.Value)
+				case "p1.face.window", "p2.face.window":
+					window := background.GetVector4(attr.Value)
+					if id == "p1.face.window" {
+						motif.SelectInfo.P1FaceWindow = &window
+					} else {
+						motif.SelectInfo.P2FaceWindow = &window
+					}
 				case "showemptyboxes":
 					motif.SelectInfo.ShowEmptyBoxes = getBool(attr.Value)
 				case "moveoveremptyboxes":
@@ -386,25 +409,40 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 				}
 			}
 		case "vs screen":
+			seen := map[string]bool{}
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
+				if seen[id] {
+					continue
+				}
+				seen[id] = true
+				portrait := &motif.VSScreen.P1Portrait
+				if strings.HasPrefix(id, "p2.") {
+					portrait = &motif.VSScreen.P2Portrait
+				}
 				switch id {
+				case "p1.spr", "p2.spr":
+					v := getVector2(attr.Value)
+					portrait.Sprite = [2]int{int(v[0]), int(v[1])}
+				case "p1.offset", "p2.offset", "p1.pos", "p2.pos":
+					portrait.Offset = getVector2(attr.Value)
+				case "p1.scale", "p2.scale":
+					portrait.Scale = getVector2(attr.Value)
+				case "p1.facing", "p2.facing":
+					portrait.Facing = int(getFloat(attr.Value))
+				case "p1.window", "p2.window":
+					v := background.GetVector4(attr.Value)
+					portrait.Window = &v
 				case "time":
 					motif.VSScreen.Time = int(getFloat(attr.Value))
 				case "fadein.time":
 					motif.VSScreen.FadeInTime = int(getFloat(attr.Value))
 				case "fadeout.time":
 					motif.VSScreen.FadeOutTime = int(getFloat(attr.Value))
-				case "p1.pos":
-					v := getVector2(attr.Value)
-					motif.VSScreen.P1Pos = [2]int{int(v[0]), int(v[1])}
-				case "p2.pos":
-					v := getVector2(attr.Value)
-					motif.VSScreen.P2Pos = [2]int{int(v[0]), int(v[1])}
-				case "p1.name.pos":
+				case "p1.name.pos", "p1.name.offset":
 					v := getVector2(attr.Value)
 					motif.VSScreen.P1NamePos = [2]int{int(v[0]), int(v[1])}
-				case "p2.name.pos":
+				case "p2.name.pos", "p2.name.offset":
 					v := getVector2(attr.Value)
 					motif.VSScreen.P2NamePos = [2]int{int(v[0]), int(v[1])}
 				case "p1.name.font":
@@ -413,6 +451,12 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 				case "p2.name.font":
 					i, b, a := getFontInfo(attr.Value)
 					motif.VSScreen.P2NameFont = [3]int{i, b, a}
+				case "p1.name.spacing":
+					v := getVector2(attr.Value)
+					motif.VSScreen.P1NameSpacing = [2]int{int(v[0]), int(v[1])}
+				case "p2.name.spacing":
+					v := getVector2(attr.Value)
+					motif.VSScreen.P2NameSpacing = [2]int{int(v[0]), int(v[1])}
 				}
 			}
 		case "option info":
@@ -614,8 +658,8 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 			if err != nil {
 				return nil, loadError(fmt.Errorf("%s: %w", spritePath, err))
 			}
-			bg.SpriteData = archive
 		}
+		bg.SpriteData = archive
 		bg.LoadFromAST(ast, spec.prefix, archive, motif.SystemAIR)
 	}
 

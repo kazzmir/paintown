@@ -251,3 +251,25 @@ parser/evaluator regressions pass with races. All 12 roster entries compile
 input, HUD and audio. Nonfatal expression/resource warnings remain; this is not
 full-roster gameplay parity. Keep the partial asset row honest. Scratch was
 inspected and removed; shared cache and one ignored Go binary remain.
+
+## SF2 presentation and recovery follow-up — 2026-11-08
+
+The reported stock portrait shrinkage required character-to-motif coordinate
+conversion. Keep selection offsets/windows and rendered VS portraits, scale,
+facing/windows, old pos/new offset aliases, name alignment/spacing, match text,
+fades and background archive ownership. The connected menu flow now checks
+actual VS pixels/clipping; its prior checkmark only covered transitions.
+Optional 1.0 movement/recovery constants use native defaults, scaled into the
+character's units except unitless multipliers. Native 320p/1280p observations
+and the connected sweep/bounce/get-up/control flow cover the reported state5101
+crash. Legacy projectile-time suffixes bind to typed ID queries. All five
+segments pass with races; stock/SF2 screens and 60-second Honda/Dhalsim inspected.
+
+The Ryu/Dhalsim round-two state5900 stall also reproduces in native. Do not add
+an engine timeout or automatic state exit to hide that content bug. Preserve
+the original pack. tools/sf2_playable.py creates temp/sf2_mugen_playable with two
+repaired initialization scripts and small writable config/log copies; all media
+is shared by links. Both characters move/attack and complete round two there.
+RETAIN this ignored working copy for user play, the original pack and shared
+cache/single executable. Diagnostic overlays/captures/PCM/helpers were removed.
+Broader roster behavior and nonfatal AnimElem/resource warnings remain open.

@@ -1,7 +1,8 @@
 # Current handoff
 
 Follow AGENTS.md. PROGRESS.md is the single completion ledger, now including
-the four prior known-difference closures and the SF2 selection/loading fix. Local source/text commits are
+the prior closures and the SF2 loading, presentation/recovery and pack fixes.
+Local source/text commits are
 authorized; no pushes, binaries, generated banks or tracked user configuration.
 Author only game/mugen/ and preserve unrelated/untracked work.
 
@@ -24,16 +25,33 @@ Current SF2 checkpoint:
   Guile/Honda fight run with keyboard input, HUD, health changes and audio.
   All five connected segments and existing format/parser regressions pass
   with races. Cases extend existing flows; no per-character fixture bank.
-- Full move/round compatibility across the roster is still unverified. Live
-  fights report nonfatal invalid AnimElem indices, Honda's unavailable
-  movement.stand.friction.threshold constant and missing sound/effect resources;
-  numeric conversion diagnostics also occur. Missing sound/blank.mp3 is a
-  nonfatal pack warning. These do not stop the observed fights.
+- Follow-up fixes stock KFM portrait shrinkage by converting character units
+  into motif units. VS now consumes portraits, facing/scale/windows, legacy pos
+  and modern offset, names/spacing, match text, fades and background archives.
+  The connected flow checks actual background/portrait pixels and clipping;
+  earlier coverage only checked the transition. Stock/SF2 screens were inspected.
+- Omitted 1.0 movement/recovery constants now use beta defaults. Native 320p/
+  1280p observations confirm dimensional scaling and unitless recovery factors.
+  The existing sweep flow continues through the reported state5101 bounce,
+  lying down, get-up and restored control with optional constants removed.
+  Legacy ProjHitTime1 suffixes bind to ID queries. All five segments pass with
+  races; rebuilt Honda/Dhalsim ran for 60 seconds with audio and no missing-
+  constant or unknown-projectile-trigger diagnostics.
+- Ryu/Dhalsim's second-round stall also occurs in native: both custom state5900
+  scripts only exit when RoundNo=1. Preserve engine semantics and the original
+  pack. tools/sf2_playable.py makes temp/sf2_mugen_playable, sharing assets and
+  copying two repaired scripts plus writable config/log files. This retained
+  ignored working copy is for the user's play, not disposable test scratch.
+  Round two completes with movement and attacks from both characters there.
+- Full move/round compatibility across the roster remains unverified. Nonfatal
+  invalid AnimElem, missing sound/effect and numeric conversion diagnostics
+  remain. Missing sound/blank.mp3 is a nonfatal pack warning.
 - Prior Scene0bgDef/Scene0bg, explicit empty-slot and final WAV alignment fixes
   remain covered. Actual truncated samples stay rejected. The README contains
   the launch command for the pack's data/mugen1/system.def motif.
 - Pack, ZIP, bundled executable and user YAML are preserved. Scratch captures,
-  PCM, overlays and input recipes were inspected/removed. No new fixture bank.
+  PCM, diagnostic overlays and input recipes were inspected/removed. Retain the
+  small playable copy above and single ignored executable. No new fixture bank.
 
 Prior closed scope:
 

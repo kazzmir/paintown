@@ -39,9 +39,17 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 // ParsePortraits retains archive metadata but decodes only 9000,0/9000,1 and
 // their linked pixel sources. Character selection need not decode fight frames.
 // Gameplay uses Parse to load and validate the complete sprite set.
-func ParsePortraits(r io.ReadSeeker) (*SFF, error) {
+func ParsePortraits(r io.ReadSeeker, extra ...[2]int) (*SFF, error) {
 	return parseWithSelection(r, nil, func(group, item uint16) bool {
-		return group == 9000 && item <= 1
+		if group == 9000 && item <= 1 {
+			return true
+		}
+		for _, pair := range extra {
+			if int(group) == pair[0] && int(item) == pair[1] {
+				return true
+			}
+		}
+		return false
 	})
 }
 
