@@ -14,7 +14,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
-func loadV2(path string, data []byte, languages ...string) (*Font, error) {
+func loadV2(path string, data []byte, height string, languages ...string) (*Font, error) {
 	ast, err := parsers.Parse(bytes.NewReader(data))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
@@ -73,6 +73,13 @@ func loadV2(path string, data []byte, languages ...string) (*Font, error) {
 	}
 	switch strings.ToLower(values["type"]) {
 	case "truetype":
+		if raw := strings.TrimSpace(height); raw != "" {
+			n, err := strconv.Atoi(raw)
+			if err != nil || n < 1 || n > 2048 {
+				return nil, fmt.Errorf("%s: invalid TrueType height override %q", path, height)
+			}
+			f.Height = n
+		}
 		blend := values["blend"] != "0"
 		return loadTrueType(path, file, f, blend)
 	case "bitmap":

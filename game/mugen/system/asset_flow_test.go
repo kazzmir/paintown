@@ -127,6 +127,9 @@ font0=%s
 font0=missing-later.def
 font1=nested.def
 font2=absolute.def
+font2.height=14
+font2.height=999
+font0.height=99
 font3=legacy.fnt
 [Scene 0]
 end.time=12
@@ -217,6 +220,9 @@ Interpolate Blend
 		if f == nil || f.Fallback != "" || f.TextWidth("AVé") <= 0 || f.TextWidth("AVé") > 80 || f.Glyph('é', 314) == nil {
 			t.Fatal("authored TrueType path/UTF-8 metrics did not reach storyboard", f)
 		}
+	}
+	if story.Fonts[2].Height != 14 || story.Fonts[1].Height != 18 || story.Fonts[0].Height != 6 {
+		t.Fatal("story font height override changed another font or bitmap cells")
 	}
 	legacy := story.Fonts[3]
 	if legacy == nil || legacy.TextWidth("A\";") != 8 || legacy.Glyph('"', 0) == nil || legacy.Glyph(';', 0) == nil {
@@ -883,7 +889,7 @@ spriteno=1234,5678
 			t.Fatal(err)
 		}
 	}
-	fightPath := write("locale HUD/fight.def", read(filepath.Join(e.dataDir, "data/mugen1/fight.def"))+"\n[ja.Round]\nmatch.wins=1\n[ja.Time]\npos=15,20\n")
+	fightPath := write("locale HUD/fight.def", read(filepath.Join(e.dataDir, "data/mugen1/fight.def"))+"\n[Files]\nfont7="+filepath.Join(dir, "locale font.def")+"\nfont7.height=14\nfont7.height=999\n[ja.Round]\nmatch.wins=1\n[ja.Time]\npos=15,20\ncounter.font=7,0,0\n")
 	write("locale select.def", fmt.Sprintf("[Characters]\n\"%s\", \"%s\", order=1\n\"%s\", \"%s\", order=2\n[Options]\narcade.maxmatches=1,0\n[ja.Options]\narcade.maxmatches=0,1\narcade.maxmatches=1,0\n", path, stagePath, path, stagePath))
 	motifPath := write("locale motif.def", fmt.Sprintf(`[Info]
 name="English motif"
@@ -898,6 +904,8 @@ spr=%s
 select=locale select.def
 fight=%s
 font1=locale font.def
+font1.height=15
+font1.height=999
 [Select Info]
 rows=1
 columns=1
@@ -907,7 +915,7 @@ columns=1
 		t.Fatal(err)
 	}
 	selection := NewSelectState(e, "Versus Mode")
-	if selection.loadError != nil || len(selection.chars) != 2 || selection.chars[0].Name != "Localized" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 12 {
+	if selection.loadError != nil || len(selection.chars) != 2 || selection.chars[0].Name != "Localized" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 15 {
 		t.Fatal("localized motif/relative roster/portraits", selection.loadError)
 	}
 	// Roster order and mode limits must use the same selected language. Both
@@ -950,6 +958,9 @@ columns=1
 	}
 	reach(match.Active)
 	p := f.match.Players[0]
+	if f.match.Fight.Fonts[7] == nil || f.match.Fight.Fonts[7].Height != 14 {
+		t.Fatal("HUD font height did not reach fight presentation")
+	}
 	if p.Character.Life != 500 || p.Character.StateFile.Data.Power != 2000 || p.Character.StateFile.Data.Attack != 110 || p.LocalCoord.Width != 320 || p.AIR.Actions[0].Elements[0].Time != -1 || p.Character.StateFile.Quotes["ja"][0] != "Localized quote" || p.Definition.Files["pal2"] != "" || f.match.Stage.Name != "Localized stage" || f.match.Stage.Author != "" || len(f.match.Stage.Background.Elements) != 1 || f.match.Fight.Attribute("Time", "pos").RawValue != "15,20" || f.match.Fight.Attribute("Round", "round.time") != nil {
 		t.Fatal("localized combat metadata/constants/HUD or group replacement", p.Definition, f.match.Stage.Name)
 	}

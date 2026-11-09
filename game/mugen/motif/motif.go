@@ -583,7 +583,7 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 		if err != nil {
 			return nil, err
 		}
-		loaded, err := font.LoadFont(fontPath, languages...)
+		loaded, err := font.LoadFontWithHeight(fontPath, defData.Files[key+".height"], languages...)
 		if err != nil {
 			return nil, assetError(key, fmt.Errorf("%s: %w", fontPath, err))
 		}

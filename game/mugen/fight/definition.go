@@ -143,7 +143,7 @@ func Load(path, root string, languages ...string) (*Definition, error) {
 		if err != nil {
 			return nil, err
 		}
-		definition.Fonts[index], err = font.LoadFont(path, languages...)
+		definition.Fonts[index], err = font.LoadFontWithHeight(path, files.Files[key+".height"], languages...)
 		if err != nil {
 			return nil, context(key, fmt.Errorf("%s: %w", path, err))
 		}

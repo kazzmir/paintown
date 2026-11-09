@@ -1053,6 +1053,12 @@
       "name": "Idle title demo and intro cycling",
       "completed": false,
       "validation": "Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Batch acceptance pending."
+    },
+    {
+      "id": "authored-font-height",
+      "name": "Authored TrueType font height overrides",
+      "completed": false,
+      "validation": "Motif, fight HUD and storyboard font loading accept first fontN.height values for TrueType rasterization. Bitmap atlases retain authored cell sizes. The shared font loader preserves resource/fallback behavior and bounded height diagnostics. Existing scene/localized-selection/VS/HUD/fight lifecycle now includes independent height overrides and ignored later duplicates; batch acceptance pending. The supplied Japanese motif actively declares font6.height=13."
     }
   ]
 }

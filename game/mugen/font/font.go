@@ -65,12 +65,18 @@ type Glyph struct {
 }
 
 func LoadFont(path string, languages ...string) (*Font, error) {
+	return LoadFontWithHeight(path, "", languages...)
+}
+
+// LoadFontWithHeight applies an optional authored fontN.height to TrueType
+// rasterization. Bitmap fonts keep their authored cell and atlas dimensions.
+func LoadFontWithHeight(path, height string, languages ...string) (*Font, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 	if strings.EqualFold(filepath.Ext(path), ".def") {
-		return loadV2(path, data, languages...)
+		return loadV2(path, data, height, languages...)
 	}
 
 	if len(data) < 32 {

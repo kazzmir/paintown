@@ -17,6 +17,7 @@ type StoryboardDef struct {
 	SprLine, SndLine int
 	FontFiles        [10]string
 	FontLines        [10]int
+	FontHeights      [10]string
 	StartScene       int
 	Scenes           []*SceneDef
 }
@@ -124,9 +125,15 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 					sb.StartScene = int(getFloat(attr.Value))
 				default:
 					if strings.HasPrefix(id, "font") {
-						index, err := strconv.Atoi(strings.TrimPrefix(id, "font"))
+						name := strings.TrimPrefix(id, "font")
+						number, suffix, height := strings.Cut(name, ".")
+						index, err := strconv.Atoi(number)
 						if err == nil && index >= 0 && index < len(sb.FontFiles) {
-							sb.FontFiles[index], sb.FontLines[index] = getString(attr.Value), attr.Line
+							if !height {
+								sb.FontFiles[index], sb.FontLines[index] = getString(attr.Value), attr.Line
+							} else if suffix == "height" {
+								sb.FontHeights[index] = attr.RawValue
+							}
 						}
 					}
 				}

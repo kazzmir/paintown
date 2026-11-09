@@ -87,7 +87,7 @@ func Load(path, root string, languages ...string) (*Storyboard, error) {
 		if err != nil {
 			return nil, context(key, definition.FontLines[i], err)
 		}
-		story.Fonts[i], err = font.LoadFont(fontPath, languages...)
+		story.Fonts[i], err = font.LoadFontWithHeight(fontPath, definition.FontHeights[i], languages...)
 		if err != nil {
 			return nil, context(key, definition.FontLines[i], fmt.Errorf("%s: %w", fontPath, err))
 		}
