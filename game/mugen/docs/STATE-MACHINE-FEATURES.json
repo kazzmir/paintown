@@ -146,9 +146,11 @@
         "character/hit_damage.go:contactDamage",
         "character/corner_push.go:recordCornerPush",
         "character/hit_damage.go:GetDefenceDamageMultiplier",
-        "character/targets.go:AddTargetLife"
+        "character/targets.go:AddTargetLife",
+        "character/character.go:GetInGuardDist",
+        "character/projectile.go:CreateProjectile"
       ],
-      "validation": "Stock input/contact/recovery and complete match flows pass. A bounded original-beta projectile/direct/helper corner-contact flow confirms the existing projectile exclusion: explicit -12 leaves the owner at 0; direct/helper attackers move 130 to approximately 93.294, with receiver life990/980/970. Corrected the old missing-owner-path note; no owner-recoil behavior was added. HitDef now combines base attack/defence with runtime adjustments. Negative, nonabsolute TargetLifeAdd/LifeAdd share defence reductions, including SuperPause; healing and absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual. The existing mixed-coordinate combat scenario matches twelve native observations, then completes recovery and round reset. All five segments are checked with races; rebuilt Linux reproduces the same twelve values. Scratch removed; no mod scripts or user configuration changed."
+      "validation": "Stock input/contact/recovery and complete match flows pass. A bounded original-beta projectile/direct/helper corner-contact flow confirms the existing projectile exclusion: explicit -12 leaves the owner at 0; direct/helper attackers move 130 to approximately 93.294, with receiver life990/980/970. Corrected the old missing-owner-path note; no owner-recoil behavior was added. HitDef now combines base attack/defence with runtime adjustments. Negative, nonabsolute TargetLifeAdd/LifeAdd share defence reductions, including SuperPause; healing and absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual. The existing mixed-coordinate combat scenario matches twelve native observations, then completes recovery and round reset. All five segments are checked with races; rebuilt Linux reproduces the same twelve values. Scratch removed; no mod scripts or user configuration changed. InGuardDist includes opposing helpers and live projectiles after their owner returns to idle. Projectile defaults use size.proj.attack.dist; explicit guard.dist retains precedence and coordinate units. Native approach/pass/retirement observations and owned-keyboard fireball blocking agree with rebuilt Linux: 5 chip damage and a guard event rather than a hit. The existing mixed-coordinate combat scenario continues through recovery, damage adjustments and round reset. Four changed-source segments pass with races; state-flow stays checked. Shared assets were reused and diagnostic scratch removed."
     },
     {
       "id": "recovery",
@@ -559,7 +561,7 @@
     },
     {
       "id": "combat",
-      "contract": "logical input \u2192 attack/contact \u2192 damage/stat scaling/life adjustments/recovery/reset \u2192 held guard/release \u2192 jump/air-jump budget/landing/reset \u2192 sweep/legacy bounce/recovery",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/stat scaling/life adjustments/recovery/reset \u2192 held/projectile/helper guard/release \u2192 jump/air-jump budget/landing/reset \u2192 sweep/legacy bounce/recovery",
       "source_dirs": [
         "air",
         "background",
@@ -599,7 +601,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "03c6a4e593b17665d4d265f7c7ad86b0023d7d7b209ee36b21c3e8b190b3c9f8"
+      "passed_source": "b8d62efea09e86561b7c1b791a91b0e35f57757bbe9ccbccf2d732f8475b0e9a"
     },
     {
       "id": "entities",
@@ -632,7 +634,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d40ce2e0b65226d8818f6149d45d4f5f733383dbfa508936d5662601c06f73e1"
+      "passed_source": "f12fc374bea2e4bb1f4beaf6f7c055b3a98d76478575ea24dfc67e291b798d7f"
     },
     {
       "id": "effects-pause",
@@ -667,7 +669,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1113bf8b98ad4935c81dc5c06c0442626cf2c4715b618cc992697a9595bf0d6a"
+      "passed_source": "03a94e9d9a57f49f876ed3919a1795d67a824a1b23646ac197895c59575ac571"
     },
     {
       "id": "match-flow",
@@ -746,7 +748,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2944985795965888694a9b2ea4d7390bfaa3e9ceed0d9434e82f2d50d60aaf06"
+      "passed_source": "03db5b43eff145ea00db70f8ca4e6dc359e160a3ff41e13beacbf89101863608"
     }
   ],
   "presentation_followups": [
@@ -842,6 +844,12 @@
       "name": "Base combat stats and life-adjustment scaling",
       "completed": true,
       "validation": "HitDef now combines base attack/defence with runtime adjustments. Negative, nonabsolute TargetLifeAdd/LifeAdd share defence reductions, including SuperPause; healing and absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual. The existing mixed-coordinate combat scenario matches twelve native observations, then completes recovery and round reset. All five segments are checked with races; rebuilt Linux reproduces the same twelve values. Scratch removed; no mod scripts or user configuration changed."
+    },
+    {
+      "id": "independent-attack-guarding",
+      "name": "Guarding against independently moving attacks",
+      "completed": true,
+      "validation": "InGuardDist includes opposing helpers and live projectiles after their owner returns to idle. Projectile defaults use size.proj.attack.dist; explicit guard.dist retains precedence and coordinate units. Native approach/pass/retirement observations and owned-keyboard fireball blocking agree with rebuilt Linux: 5 chip damage and a guard event rather than a hit. The existing mixed-coordinate combat scenario continues through recovery, damage adjustments and round reset. Four changed-source segments pass with races; state-flow stays checked. Shared assets were reused and diagnostic scratch removed."
     }
   ]
 }

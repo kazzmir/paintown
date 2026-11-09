@@ -1408,13 +1408,37 @@ func (c *Character) GetRoundsExisted() int {
 }
 
 func (c *Character) GetInGuardDist() bool {
-	for _, target := range c.Opponents {
-		if strings.ToUpper(target.MoveType) == "A" {
-			// Range extends in the attacker's facing. The defender may face
-			// away and vertical separation does not affect this query.
-			targetX, _ := c.PositionOf(target)
-			relDist := (c.X - targetX) * float64(target.Facing)
-			if relDist >= 0 && relDist < target.GuardDistance*c.ScaleFrom(target) {
+	withinRange := func(target *Character) bool {
+		if target == nil || target.destroyed || !strings.EqualFold(target.MoveType, "A") {
+			return false
+		}
+		if target.isProjectile && (!target.HitDefActive || target.projectile != nil && (target.projectile.removing || target.projectile.hits <= 0)) {
+			return false
+		}
+		// Range extends in the attacker's facing, from its current position.
+		// The defender may face away; vertical separation does not affect it.
+		targetX, _ := c.PositionOf(target)
+		relDist := (c.X - targetX) * float64(target.Facing)
+		return relDist >= 0 && relDist < target.GuardDistance*c.ScaleFrom(target)
+	}
+	for _, opponent := range c.Opponents {
+		if withinRange(opponent) {
+			return true
+		}
+		if opponent == nil || opponent.destroyed {
+			continue
+		}
+		// Projectiles remain threats after the issuing fighter returns to idle.
+		// Their removal animation can remain visible after the attack retires.
+		for _, projectile := range opponent.Projectiles {
+			if withinRange(projectile) {
+				return true
+			}
+		}
+	}
+	if c.World != nil {
+		for _, helper := range c.World.Helpers {
+			if helper.TeamSide != c.TeamSide && withinRange(helper) {
 				return true
 			}
 		}

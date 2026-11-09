@@ -1,12 +1,18 @@
 # Current handoff
 
 Follow AGENTS.md. PROGRESS.md is the single completion ledger. Continue engine
-state-machine work; the user will provide another mod for compatibility testing.
+compatibility work; the user will provide another mod for compatibility testing.
 Do not repair more mod scripts. Failures that also reproduce in the original
 beta are content findings. Keep the existing optional SF2 playable copy intact.
 
 Latest engine checkpoints:
 
+- Guard range now includes opposing helpers and live projectiles independently
+  of the owner’s move type. Projectiles use size.proj.attack.dist by default;
+  explicit guard.dist retains precedence and units. Retiring attacks stop
+  contributing even while their removal animation remains. Native range flows
+  and rebuilt Linux keyboard blocking agree (5 chip, guard event, no hit). The
+  existing mixed-coordinate combat scenario continues through recovery/reset.
 - Base attack/defence now reach live contact damage. Negative nonabsolute
   TargetLifeAdd/LifeAdd share base, runtime and SuperPause defence reductions.
   Healing/absolute additions stay unscaled; the beta ignores issuer attack for
@@ -31,9 +37,8 @@ Latest engine checkpoints:
 - Guard-distance behavior in the related native observation matched the current
   implementation. Preserve it rather than applying uniform controller scaling.
 
-All five connected segments are checked with race detection. The damage batch
-changed covered source for all five; completed segments remain checked after
-validation. Linux is rebuilt.
+All five connected segments are checked with race detection. The latest four
+changed-source segments passed; state-flow stayed checked. Linux is rebuilt.
 Native and Linux keyboard flows each accepted two air jumps across two flights
 and returned to idle. The latest held-button flows also agree: one attack while
 held, then a second after release/repress. Current diagnostic scratch/captures/

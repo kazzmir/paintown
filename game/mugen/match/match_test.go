@@ -290,6 +290,161 @@ guard.dist=Const240p(180)
 	if defender.StateNo != 0 || !defender.Ctrl || defender.Y != 0 {
 		t.Fatal("guard/jump lifecycle did not return to idle", defender.StateNo, defender.Time, defender.Y)
 	}
+	projectileGuardFlow(t, m)
+}
+
+// Continue guarding through independently moving projectiles and helpers while
+// their owner remains idle, then block a real fireball, recover and retire them.
+// Beta observations distinguish the projectile default90 from physical160.
+func projectileGuardFlow(t *testing.T, m *Match) {
+	t.Helper()
+	var script strings.Builder
+	script.WriteString(`[Statedef 9001]
+type=S
+movetype=I
+physics=N
+ctrl=0
+anim=9990
+velset=0,0
+[State place]
+type=PosSet
+trigger1=1
+x=Const240p(-100)
+[State helper]
+type=Helper
+trigger1=Time=60
+id=55
+stateno=9003
+postype=p1
+pos=Const240p(120),0
+helpertype=normal
+`)
+	for _, row := range []struct{ tick, id, action, lifetime int }{{0, 11, 9990, 45}, {100, 22, 9992, 110}} {
+		fmt.Fprintf(&script, `[State projectile]
+type=Projectile
+trigger1=Time=%d
+projid=%d
+projanim=%d
+projhitanim=9991
+projremanim=9991
+projremovetime=%d
+projstagebound=1000
+projedgebound=1000
+offset=Const240p(40),0
+velocity=Const240p(4),0
+attr=S,SP
+hitflag=MAF
+guardflag=MA
+damage=20,5
+pausetime=0,0
+guard.pausetime=0,0
+ground.velocity=0,0
+guard.velocity=0
+guard.hittime=10
+guard.slidetime=10
+guard.ctrltime=10
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+`, row.tick, row.id, row.action, row.lifetime)
+	}
+	for index, row := range []struct {
+		tick       int
+		expression string
+	}{
+		{10, "EnemyNear,InGuardDist"}, {25, "EnemyNear,InGuardDist"}, {50, "EnemyNear,InGuardDist"},
+		{25, "NumProj"}, {50, "NumProj"}, {65, "EnemyNear,InGuardDist"},
+		{85, "EnemyNear,InGuardDist"}, {65, "NumHelper(55)"}, {85, "NumHelper(55)"},
+		{43, "EnemyNear,InGuardDist"}, {75, "EnemyNear,InGuardDist"}, {65, "MoveType=I"},
+		{190, "EnemyNear,Life"}, {190, "ProjGuardedTime(22)>=0"}, {190, "ProjHitTime(22)>=0"},
+		{190, "NumProj"}, {190, "EnemyNear,Ctrl"}, {190, "MoveType=I"},
+	} {
+		fmt.Fprintf(&script, "[State snapshot]\ntype=VarSet\ntrigger1=Time=%d\nv=%d\nvalue=%s\n", row.tick, 40+index, row.expression)
+	}
+	script.WriteString(`[Statedef 9002]
+type=S
+movetype=I
+physics=N
+ctrl=0
+anim=9990
+velset=0,0
+[State place]
+type=PosSet
+trigger1=1
+x=Const240p(100)
+[State accept input]
+type=CtrlSet
+trigger1=Time=95
+value=1
+[Statedef 9003]
+type=S
+movetype=A
+physics=N
+ctrl=0
+anim=9990
+velset=Const240p(8),0
+[State threat]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+guard.dist=Const240p(64)
+[State retire]
+type=DestroySelf
+trigger1=Time=20
+`)
+	states, err := cns.Parse(strings.NewReader(script.String()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	poses, err := air.Parse(strings.NewReader(`[Begin Action 9990]
+0,0,0,0,-1
+[Begin Action 9991]
+0,0,0,0,5
+[Begin Action 9992]
+Clsn1Default: 1
+Clsn1[0]=-6,-70,6,-40
+0,0,0,0,-1
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	caster, receiver := m.Players[0].Character, m.Players[1].Character
+	for slot, player := range m.Players {
+		c := player.Character
+		for number, state := range states.States {
+			c.StateFile.States[number] = state
+		}
+		for number, action := range poses.Actions {
+			c.AirFile.Actions[number] = action
+		}
+		c.Facing = 1 - 2*slot
+		c.Y, c.VelX, c.VelY = 0, 0, 0
+		c.HitPauseTime, c.ShakeTime, c.HitTime = 0, 0, -1
+		c.SetLife(c.MaxLife)
+		c.InputSource = func(int, int) []string { return nil }
+		c.ChangeState(9001+slot, 0, -1)
+	}
+	receiver.InputSource = func(int, int) []string {
+		if caster.Time >= 100 && caster.Time < 195 {
+			return []string{"DirBack"}
+		}
+		return nil
+	}
+	for tick := 0; tick < 240; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("projectile/helper guard lifecycle", err)
+		}
+	}
+	for index, expected := range []int{0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 995, 1, 0, 0, 1, 1} {
+		if got := caster.GetVar(40 + index); got != expected {
+			t.Fatalf("native guard lifecycle observation %d: got %d want %d (receiver state/time/life %d/%d/%d)", index, got, expected, receiver.StateNo, receiver.Time, receiver.Life)
+		}
+	}
+	if caster.MoveType != "I" || len(caster.Projectiles) != 0 || len(m.World.Helpers) != 0 || receiver.Life != 995 || receiver.GetInGuardDist() || receiver.StateNo != 0 || !receiver.Ctrl {
+		t.Fatal("retired attack still held guard or prevented recovery", caster.MoveType, len(caster.Projectiles), len(m.World.Helpers), receiver.Life, receiver.StateNo, receiver.Ctrl)
+	}
+	caster.ChangeState(0, 1, -1)
 }
 
 // Continue the stock input/contact flow through one native-calibrated damage

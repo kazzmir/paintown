@@ -55,6 +55,9 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 		p.LocalCoord.Width = parameters.CoordinateWidth
 		p.LocalCoord.Height = max(1, int(float32(c.LocalCoord.Height)*ratio))
 	}
+	// The default comes from the issuer's projectile range, rather than its
+	// physical attack range. HitDef can still replace it with guard.dist.
+	p.GuardDistance = float64(float32(c.StateFile.Size.ProjAttackDist) * ratio)
 	p.Timeline, p.SuperTargetDefenceMul = c.Timeline, c.SuperTargetDefenceMul
 	p.PowerRules = c.PowerRules
 	p.Palettes, p.PaletteNo = c.Palettes, c.PaletteNo

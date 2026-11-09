@@ -352,3 +352,11 @@ The existing connected combat flow retains twelve beta observations, recovery
 and fresh-round reset; stock CMD rewrites var(1), so instrumentation uses unused
 slots. All segments are checked with races; rebuilt Linux observations match.
 Diagnostic scratch removed; no mod or user configuration changes.
+
+Compatibility work resumed at the user’s request on 2026-11-08. InGuardDist must
+include enemy helpers and live projectiles while their root is idle. Projectile
+defaults use the issuer’s size.proj.attack.dist converted into the projectile’s
+coordinate profile; explicit guard.dist wins. Removal visuals are not attacks.
+Keep the existing mixed-coordinate guard/contact/recovery/reset scenario. Native
+and Linux fireball blocking agree; four changed-source segments pass with races.
+State-flow stays checked. Shared assets were reused; diagnostic scratch removed.
