@@ -24,6 +24,7 @@ Broader compatibility and deferred capabilities remain listed below.
 - [x] **Crossover command and walking turns**: Matched supplied Elecbyte behavior: command evaluation sees the old heading, controlled ground state entry sees the opponent-facing heading and authored velocity, and walking uses turn action 5 without resetting its state clock. The connected flow covers NoAutoTurn release, physical input and stage-disabled turning. Locked attacks retain facing. Linux Ryu/Dhalsim jump-over and continued input were inspected; all segments are checked with races.
 - [x] **Stable held guard and movement exits**: Held guard retains its state clock instead of falling through into ordinary walking/crouching. Native beta confirms Ctrl=1 during standing/crouching guard, immediate forward movement on release and up-back jumping. The existing mixed-coordinate combat scenario continues through posture changes, a real blocked punch/recovery, re-guard, release and jump/landing. Four changed-source segments pass with races; state-flow stays checked. Linux rebuilt and visible guard/posture/release inspected; diagnostic scratch removed.
 - [x] **Visible incoming character-intro effects**: Explod creation accepts the legacy velocity spelling used by stock KFM. The incoming block now moves onscreen before impact, followed by the broken pieces. Native beta and rebuilt Linux pre-impact scenes were inspected. The existing title-to-match scenario checks actual incoming-block pixels, break, control and complete rounds; all five connected segments pass with races. Diagnostic scratch removed.
+- [x] **Borrowed-state effect creation context**: Explods created in an opponent’s state retain the creating coordinate profile for offsets, motion and private-sprite scale while using the issuer’s banks. Deferred creation preserves animation/admission gates. The connected mixed-coordinate entity flow continues through Pause, SelfState, expiry and round reset. All five affected segments pass with races; rebuilt Linux position and sprite dimensions agree with the beta scene. The related guard-distance observation matched existing behavior. Scratch removed; no mod scripts changed.
 
 ## Completed scenario coverage
 
@@ -34,7 +35,7 @@ source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
 - [x] **combat**: logical input → attack/contact → damage/state continuation → held guard/posture/contact/release/jump; sweep → legacy bounce/recovery.
-- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
+- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
 - [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
@@ -82,7 +83,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Complete move/round behavior across the 12-character SF2 roster remains unverified. Nonfatal invalid AnimElem, unavailable sound/effect and numeric-conversion diagnostics remain. The original Ryu/Dhalsim state5900 round-two stall also occurs in native; tools/sf2_playable.py makes a separate corrected working copy for those two scripts. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Broader native asset acceptance and raster parity remain unproven. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; no further SF2 mod repairs are planned. (item4)
 - [ ] Remaining native rendering, audio and AI fidelity. **partial** — Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms

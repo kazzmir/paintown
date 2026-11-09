@@ -6,6 +6,20 @@ Local source/text commits are
 authorized; no pushes, binaries, generated banks or tracked user configuration.
 Author only game/mugen/ and preserve unrelated/untracked work.
 
+Latest direction: resume engine state-machine coverage; the user will supply
+another mod. Do not fix more SF2 scripts or count native-reproducing content
+defects against engine completion. Preserve the existing optional playable copy.
+
+Current engine checkpoint: borrowed-state Explods now latch their evaluation
+coordinate width through deferred creation, convert geometry into issuer storage
+units and keep the creating state's private-sprite scale. Banks stay with the
+issuer. The connected entity flow spans mixed-coordinate contact, unavailable
+animation gating, effect creation/Pause, SelfState, expiry and round identity
+reset. All five affected segments pass with races. Rebuilt Linux effect position
+and dimensions agree with the beta scene. The related guard-distance observation
+matched existing behavior, so that controller was preserved. Scratch removed;
+no mod scripts or user configuration changed.
+
 The prior known-difference batch is complete. The user then supplied sf2_mugen
 for the first compatibility assessment; its executable matches the beta reference.
 

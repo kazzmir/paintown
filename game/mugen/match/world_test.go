@@ -258,6 +258,71 @@ trigger1=1
 ignorehitpause=1
 value=0
 movecamera=0,0
+[Statedef 750]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+velset=0,0
+[State 750, custom-state contact]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=0,0
+pausetime=0,0
+ground.hittime=1000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+p1stateno=752
+p2stateno=760
+[Statedef 752]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 752, hold]
+type=Null
+trigger1=1
+[Statedef 760]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 760, unavailable action keeps its parameter gate]
+type=Explod
+trigger1=Time=0
+anim=9998
+pos=(var(56):=99),0
+[State 760, effect in the borrowed coordinate profile]
+type=Explod
+trigger1=Time=0
+id=77
+anim=9992
+postype=p1
+pos=Const240p(16),Const240p(-32)
+vel=Const240p(2),Const240p(-1)
+accel=0,Const240p(.5)
+removetime=30
+[State 760, freeze the effect and receiver together]
+type=Pause
+trigger1=Time=3
+time=4
+movetime=0
+[State 760, own-state recovery retains the effect's creation units]
+type=SelfState
+trigger1=Time=8
+value=740
+ctrl=1
 `
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-helper-pause-bind.cns")
@@ -273,6 +338,7 @@ movecamera=0,0
 		p.AIR = &air.Data{Actions: map[int]*air.Action{
 			9990: {ID: 9990, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn2: []air.Box{box}}}},
 			9991: {ID: 9991, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn1: []air.Box{attack}, Clsn2: []air.Box{box}}}},
+			9992: {ID: 9992, LoopStart: -1, Elements: []air.Element{{Group: 191, Image: 0, Time: -1}}},
 		}}
 		p.Character.StateFile, p.CMD = file, nil
 	}
@@ -349,6 +415,7 @@ movecamera=0,0
 	if target.StateNo != 740 || !target.Ctrl || target.VelX != 0 || target.HitPauseTime != 0 {
 		t.Fatal("throw did not release into the receiver's own recovery", target.StateNo, target.Ctrl, target.VelX, target.HitPauseTime)
 	}
+	borrowedEffectRecoveryFlow(t, m)
 	m.Round++
 	if err := m.resetRound(); err != nil {
 		t.Fatal(err)
@@ -370,5 +437,62 @@ movecamera=0,0
 		if root.FloatVars[index] != expected {
 			t.Fatal("new round did not restore helper binding/pause budget", index, root.FloatVars[index], expected)
 		}
+	}
+}
+
+// Continue the same entity lifecycle through a differently scaled borrowed
+// state, private effect creation, a real Pause, SelfState and effect retirement.
+func borrowedEffectRecoveryFlow(t *testing.T, m *Match) {
+	t.Helper()
+	owner, receiver := m.Players[0].Character, m.Players[1].Character
+	units := float64(receiver.LocalCoordinateWidth()) / 320
+	owner.X, owner.Y = 0, 0
+	receiver.X, receiver.Y = 20*units, 0
+	owner.ChangeState(750, 0, -1)
+	receiver.ChangeState(701, 0, -1)
+	var explod *character.ExplodData
+	paused, recovered := 0, false
+	wasFrozen, age, x, y := false, 0, 0.0, 0.0
+	for tick := 0; tick < 70; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("borrowed effect lifecycle", err)
+		}
+		if explod == nil {
+			for _, candidate := range receiver.Explods {
+				if candidate.ID == 77 {
+					explod = candidate
+				}
+			}
+			if explod != nil {
+				state, _ := receiver.ResolveState(receiver.StateNo)
+				if state != owner.StateFile.States[760] || explod.CurrentTime != 0 || explod.OffsetX != 16*units*float64(receiver.Facing) || explod.OffsetY != -32*units || explod.VelX != 2*units || explod.VelY != -units || explod.AccelY != .5*units {
+					t.Fatal("borrowed effect lost evaluation units", receiver.StateNo, explod)
+				}
+				if explod.Visual.Source.Sprites != m.Players[1].SFF || explod.Visual.Source.Animations != m.Players[1].AIR || explod.Visual.Source.Scale != float64(m.Options.GameSpace.Width)/float64(owner.LocalCoordinateWidth()) {
+					t.Fatal("borrowed effect lost issuer bank or creating state's pixel scale")
+				}
+			}
+		}
+		if explod == nil {
+			continue
+		}
+		frozen := m.Timeline.Paused() // IsPaused is the separate hit-pause query.
+		if frozen && wasFrozen {
+			if explod.CurrentTime != age || explod.X != x || explod.Y != y {
+				t.Fatal("paused borrowed effect advanced", explod.CurrentTime, age)
+			}
+			paused++
+		}
+		wasFrozen, age, x, y = frozen, explod.CurrentTime, explod.X, explod.Y
+		if receiver.StateNo == 740 && receiver.Ctrl && explod.Visual.Active {
+			state, _ := receiver.ResolveState(740)
+			if state != receiver.StateFile.States[740] || explod.Visual.Source.Scale != float64(m.Options.GameSpace.Width)/float64(owner.LocalCoordinateWidth()) {
+				t.Fatal("SelfState changed a live effect's creation profile")
+			}
+			recovered = true
+		}
+	}
+	if explod == nil || paused < 2 || !recovered || explod.Visual.Active || len(receiver.Explods) != 0 || receiver.IntVars[56] != 0 {
+		t.Fatal("borrowed effect/pause/recovery/retirement incomplete", explod != nil, paused, recovered, len(receiver.Explods), receiver.IntVars[56])
 	}
 }

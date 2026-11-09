@@ -49,10 +49,26 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 	if width <= 0 {
 		width = 320
 	}
+	coordinateWidth := p.CoordinateWidth
+	if coordinateWidth <= 0 {
+		coordinateWidth = c.LocalCoordinateWidth()
+	}
+	if coordinateWidth != c.LocalCoordinateWidth() {
+		factor := float32(c.LocalCoordinateWidth()) / float32(coordinateWidth)
+		vector := func(x, y float64) (float64, float64) {
+			return float64(float32(x) * factor), float64(float32(y) * factor)
+		}
+		p.X, p.Y = vector(p.X, p.Y)
+		p.VelX, p.VelY = vector(p.VelX, p.VelY)
+		p.AccelX, p.AccelY = vector(p.AccelX, p.AccelY)
+		p.RandomX, p.RandomY = vector(p.RandomX, p.RandomY)
+	}
 	scale := float64(width) / float64(c.LocalCoordinateWidth())
 	source := c.CommonEffects
 	if !p.Common {
-		source = effect.Source{Animations: c.AirFile, Palette: c.Palettes, Scale: scale}
+		// Native keeps the issuer's bank but uses the creating state's pixel
+		// units. Keep that scale after SelfState changes the current owner.
+		source = effect.Source{Animations: c.AirFile, Palette: c.Palettes, Scale: float64(width) / float64(coordinateWidth)}
 		if c.Palettes != nil {
 			source.Sprites = c.Palettes.Archive
 			if p.OwnPalette {

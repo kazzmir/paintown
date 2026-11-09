@@ -42,6 +42,12 @@ about every five commits, or sooner for a blocker needing user input. This
 supersedes the earlier pre-commit approval rule. Do not add user configuration
 files to Git. Keep mugen.yaml local and ignored; document examples in README.md.
 
+On 2026-11-08 the user redirected work back to engine state-machine coverage
+and will supply another mod for compatibility testing. Do not repair further
+mod scripts. Record defects that also reproduce in native as content findings;
+they are not engine implementation tasks. Retain the existing optional SF2
+playable copy/tool and original assets without further mod changes.
+
 Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
 The requested origin/go-rewrite merge at172d3fb02 and reconciliation of the
 earlier remote dependency commit dc3423cf1 update root metadata and the overlay:
@@ -305,3 +311,15 @@ left the incoming block stationary offscreen. Native beta and rebuilt Go show
 the pre-impact wood in the same observed scene. The existing title-to-match flow
 checks actual incoming-block pixels before the kick, break, control and rounds.
 All five segments pass with races; Linux rebuilt; diagnostic scratch removed.
+
+Borrowed-state Explods carry their evaluation coordinate width through deferred
+admission. Convert position, velocity, acceleration and random displacement into
+the issuer's storage units once, then keep the creating state's private-sprite
+pixel scale. Sprite/AIR/palette banks remain the issuer's. This matches the beta
+mixed-coordinate scene and survives Pause, SelfState and expiry. The old unused
+stateEnvironment.CreateExplod adapter is removed; do not reintroduce double
+conversion. The connected entity flow covers creation gating, contact, pause,
+own-state recovery and round reset. All five segments pass with races; Linux
+rebuilt and its marker position/dimensions agree with native. Guard-distance
+behavior in the related native observation matched the existing implementation.
+Diagnostic scratch removed; no mod scripts or user configuration changed.

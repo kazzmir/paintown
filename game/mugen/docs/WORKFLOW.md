@@ -5,6 +5,12 @@ The goal is a working Go MUGEN 1.1 beta engine. Progress is recorded once in
 actions for partial or missing work. The small JSON catalog behind that page is
 implementation metadata, not a test-data bank.
 
+Continue engine mechanics and state-machine coverage independently of any mod.
+The user will supply further compatibility content. A script defect that also
+reproduces in the original beta is a content finding, not an engine task; do not
+spend further implementation work repairing the SF2 pack. Keep its existing
+optional playable copy available for the user.
+
 Implement a connected feature batch using the existing evidence and beta docs.
 Update the feature status after connecting its actual production consumer.
 Validate the affected state-machine segment at the end of the batch and record
