@@ -50,6 +50,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Protection, sound and palette fallback through contact recovery**
 - [x] **HitOverride slot admission, clearing and reaction recovery**
 - [x] **Nested VM failures stop evaluation before partial writes**
+- [x] **Legacy and v2 font definition precedence**
 
 ## Completed scenario coverage
 

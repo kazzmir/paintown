@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f77d8759faa721d06e20941a27c5d34b524cd8f6d8266b2c15011248fdc8cf7e"
+      "passed_source": "6d0b6a6cab00a5370f417a5dc2b11abd98584417c7e90974d6add37e11528f18"
     }
   ],
   "presentation_followups": [
@@ -981,6 +981,12 @@
       "name": "Nested VM failures stop evaluation before partial writes",
       "completed": true,
       "validation": "A fatal error in a redirect ID retains its runtime error through coercion rather than becoming ordinary bottom. Fatal assignment indices and interval lower bounds stop before evaluating later expressions. Ordinary bottom and valid eager evaluation retain their policies. The existing runtime recovery scenario includes terminal branches covering parameters and trigger conditions, source-context errors, unchanged position/velocity and suppressed later assignment side effects. All five changed-source segments pass with race detection. This closes the source-audited error propagation paths; it does not claim arbitrary expression conformance."
+    },
+    {
+      "id": "font-field-precedence",
+      "name": "Legacy and v2 font definition precedence",
+      "completed": true,
+      "validation": "Legacy FNT metadata and v2 header/Def settings keep the first authored value, including empty/invalid primary declarations. Later duplicates cannot replace a resource, alter metrics/bank/blending settings or cause spurious validation failures. Native loads both bitmap formats with deliberately invalid later metadata; rebuilt Linux loads the same v2 content. The connected storyboard asset flow covers bitmap/TrueType/legacy loading, text and color banks across scenes, a bad primary resource diagnostic and corrected-content reload. The affected match-flow segment passes with race detection; four unchanged segments remain checked. Linux rebuilt and owned-window capture inspected; scratch overlays removed."
     }
   ]
 }

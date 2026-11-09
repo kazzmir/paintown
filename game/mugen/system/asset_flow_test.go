@@ -59,7 +59,7 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, file := range map[string]string{"nested.def": `fonts\nested\face.ttf`, "absolute.def": facePath} {
-		definition := "[FNT v2]\nfntversion=2,00\n[Def]\nType=truetype\nSize=0,18\nSpacing=100,1\nFile=" + file + "\nBlend=1\n"
+		definition := "[FNT v2]\nfntversion=2,00\nfntversion=0,00\n[Def]\nType=truetype\nSize=0,18\nSpacing=100,1\nOffset=0,0\nFile=" + file + "\nBlend=1\nType=invalid\nSize=invalid\nSpacing=invalid\nOffset=invalid\nFile=missing.ttf\nBlend=0\n"
 		if err := os.WriteFile(filepath.Join(dir, name), []byte(definition), 0600); err != nil {
 			t.Fatal(err)
 		}
@@ -81,6 +81,11 @@ Size=3,3 ; cell size
 Spacing=1,0 ; glyph gap
 Colors=2 ; two colors per bank
 Offset=0,0
+Type=invalid
+Size=invalid
+Spacing=invalid
+Colors=invalid
+Offset=invalid
 [Map] ; quote and hexadecimal semicolon are literal glyphs
 A 0 2
 " 2 1 ; a quote is not a string delimiter here
@@ -98,6 +103,13 @@ A 0 2
 	}
 	legacyPath := filepath.Join(dir, "legacy.fnt")
 	if err := os.WriteFile(legacyPath, legacyFont(fontMetadata), 0600); err != nil {
+		t.Fatal(err)
+	}
+	// Bitmap and TrueType font definitions share native first-value admission.
+	// Reuse the stock sprite bank; ignored later fields cannot redirect it.
+	bitmapPath := filepath.Join(dir, "bitmap.def")
+	bitmapDefinition := "[FNT v2]\nfntversion=2,00\nfntversion=0,00\n[Def]\nType=bitmap\nBankType=palette\nSize=3,6\nSpacing=1,0\nOffset=0,1\nFile=" + filepath.Join(root, "font/f-4x6.sff") + "\nType=invalid\nBankType=invalid\nSize=invalid\nSpacing=invalid\nOffset=invalid\nFile=missing.sff\n"
+	if err := os.WriteFile(bitmapPath, []byte(bitmapDefinition), 0600); err != nil {
 		t.Fatal(err)
 	}
 	source := fmt.Sprintf(`[Info]
@@ -169,7 +181,7 @@ Interpolate Scale
 Interpolate Angle
 Interpolate Blend
 0,0,40,20,4,,AS128D128,2,0.5,90
-`, filepath.Join(root, "data/kfm/intro.sff"), filepath.Join(root, "chars/kfm/kfm.snd"), filepath.Join(root, "font/f-4x6.def"))
+`, filepath.Join(root, "data/kfm/intro.sff"), filepath.Join(root, "chars/kfm/kfm.snd"), bitmapPath)
 	path := filepath.Join(dir, "scene.def")
 	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
 		t.Fatal(err)
@@ -336,6 +348,20 @@ Interpolate Blend
 	reloaded, err := sb.Load(path, root)
 	if err != nil || reloaded.Fonts[3].TextWidth("AB\";") != 11 {
 		t.Fatal("fixed font ignored explicit map coordinates/aliases", err)
+	}
+	// A bad first resource stays an error even when a later one is valid.
+	badFirst := strings.Replace(bitmapDefinition, "File="+filepath.Join(root, "font/f-4x6.sff"), "File=missing-primary.sff\nFile="+filepath.Join(root, "font/f-4x6.sff"), 1)
+	if err := os.WriteFile(bitmapPath, []byte(badFirst), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := sb.Load(path, root); err == nil || !strings.Contains(err.Error(), "font0") || !strings.Contains(err.Error(), "missing-primary.sff") {
+		t.Fatal("bad first font resource was replaced or lost context", err)
+	}
+	if err := os.WriteFile(bitmapPath, []byte(bitmapDefinition), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := sb.Load(path, root); err != nil {
+		t.Fatal("corrected first font resource did not reload", err)
 	}
 	if err := os.WriteFile(facePath, []byte("invalid font"), 0600); err != nil {
 		t.Fatal(err)

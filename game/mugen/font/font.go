@@ -116,6 +116,7 @@ func LoadFont(path string, languages ...string) (*Font, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(txtData))
 	section := ""
 
+	metadataSeen := make(map[string]bool)
 	lineIdx := 0
 	lineNumber := 0
 	metadataError := func(format string, args ...any) error {
@@ -156,6 +157,10 @@ func LoadFont(path string, languages ...string) (*Font, error) {
 				continue
 			}
 			key := strings.ToLower(strings.TrimSpace(parts[0]))
+			if metadataSeen[key] {
+				continue
+			}
+			metadataSeen[key] = true
 			val := strings.TrimSpace(parts[1])
 
 			switch key {

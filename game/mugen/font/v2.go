@@ -22,13 +22,17 @@ func loadV2(path string, data []byte, languages ...string) (*Font, error) {
 	ast = parsers.Localize(ast, languages...)
 	values := make(map[string]string)
 	version := ""
+	versionSet := false
 	for _, section := range ast.Sections {
 		for _, a := range section.Attributes {
-			if strings.EqualFold(section.Name, "fnt v2") && strings.EqualFold(a.ID.String(), "fntversion") {
-				version = a.RawValue
+			if strings.EqualFold(section.Name, "fnt v2") && strings.EqualFold(a.ID.String(), "fntversion") && !versionSet {
+				version, versionSet = a.RawValue, true
 			}
 			if strings.EqualFold(section.Name, "def") {
-				values[strings.ToLower(a.ID.String())] = strings.Trim(strings.TrimSpace(a.RawValue), "\"")
+				key := strings.ToLower(a.ID.String())
+				if _, present := values[key]; !present {
+					values[key] = strings.Trim(strings.TrimSpace(a.RawValue), "\"")
+				}
 			}
 		}
 	}

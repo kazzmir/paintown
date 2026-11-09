@@ -5,28 +5,17 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (three local checkpoints):
+Latest batch (one local checkpoint):
 
-- Target controllers preserve numeric fallback after relationship/ID admission.
-  The mixed-coordinate lifecycle covers suppressed unused expressions, matched
-  life/power/velocity/facing/state updates, retirement, recovery and round reset.
-  All twelve native observations match rebuilt Linux. Real admitted VM errors
-  retain source context and remain fatal.
+- Legacy and v2 font fields retain first values. Native loads duplicate bitmap
+  metadata with later invalid fields; rebuilt Linux loads the same v2 font.
+  The storyboard asset lifecycle spans bitmap/TrueType/legacy text, banks,
+  primary-resource errors and corrected reloads without copied fixture banks.
 
-- Protection, sound and palette commands preserve ordinary numeric fallback.
-  Clearing shields/overrides leads to normal contact and both actors recovering;
-  later media arguments still run. Genuine VM errors stop before application,
-  including deprecated PlaySnd volume. All twelve native slots match Linux.
-
-- HitOverride invalid slots select zero; timers below -1 clear it. The same
-  fight spans four contacts through override/normal reactions, clearing and
-  recovery; all twelve native observations match rebuilt Linux. Nested fatal
-  redirect/index/bound errors retain their identity and stop later evaluation.
-  Terminal scenario branches preserve source context and prevent partial writes.
-
-All five connected segments pass with race detection. Linux is rebuilt; owned
-captures/overlays/helpers were inspected and removed. Broader content/rules/AI
-compatibility remains partial; no new fixture banks or per-piece documents.
+The affected match-flow segment passes with races; four unchanged segments stay
+checked. Linux is rebuilt. Owned font captures/overlays were removed.
+Next: stage/background/fight definition admission, then broader compatibility
+where the available content or beta documentation identifies a concrete gap.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 
