@@ -45,6 +45,7 @@ type Engine struct {
 	nextCampaign     uint64
 	characterPacks   resource.CharacterPacks
 	stop             <-chan struct{}
+	focus            func() bool
 }
 
 // Close stops streaming readers before removing this engine's expanded packs.
@@ -63,6 +64,13 @@ func (e *Engine) nextMatchSeed() int64 {
 		e.random = engine.NewRandomStream(time.Now().Unix())
 	}
 	return e.random.Next()
+}
+
+func (e *Engine) hasFocus() bool {
+	if e.focus != nil {
+		return e.focus()
+	}
+	return ebiten.IsFocused()
 }
 
 func (e *Engine) ticksPerSecond() int {
@@ -285,6 +293,7 @@ func run() (runErr error) {
 
 	// Set TPS based on GameSpeed config
 	ebiten.SetTPS(engine.ticksPerSecond())
+	ebiten.SetRunnableOnUnfocused(!cfg.Misc.PauseOnDefocus)
 
 	return ebiten.RunGame(engine)
 }

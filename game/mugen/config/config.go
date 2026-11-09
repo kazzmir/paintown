@@ -90,6 +90,10 @@ type MugenConfig struct {
 		TeamRamp      AIRamp
 		SurvivalRamp  AIRamp
 	}
+	Misc struct {
+		PauseOnDefocus                       bool
+		SFXBackgroundMode, BGMBackgroundMode string
+	}
 	Input struct {
 		Player1Keyboard Keys
 		Player2Keyboard Keys
@@ -143,6 +147,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 
 	cfg := &MugenConfig{}
 	cfg.Sound = DefaultSoundConfig()
+	cfg.Misc.SFXBackgroundMode, cfg.Misc.BGMBackgroundMode = "play", "play"
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
 	cfg.Config.HelperMax = 56
 	cfg.Config.PlayerProjectileMax = 32
@@ -321,6 +326,17 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					cfg.Sound.SFXResampleQuality = int(getFloat(attr.Value))
 				case "bgmresamplequality":
 					cfg.Sound.BGMResampleQuality = int(getFloat(attr.Value))
+				}
+			}
+		case name == "misc":
+			for _, attr := range sec.Attributes {
+				switch strings.ToLower(attr.ID.String()) {
+				case "pauseondefocus":
+					cfg.Misc.PauseOnDefocus = getBool(attr.Value)
+				case "sfxbackgroundmode":
+					cfg.Misc.SFXBackgroundMode = strings.ToLower(getString(attr.Value))
+				case "bgmbackgroundmode":
+					cfg.Misc.BGMBackgroundMode = strings.ToLower(getString(attr.Value))
 				}
 			}
 		case name == "arcade":

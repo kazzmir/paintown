@@ -99,7 +99,11 @@ func (e *Engine) flushSound() error {
 	if err := e.ensureSound(); err != nil {
 		return err
 	}
-	if err := e.sound.mixer.SetVolume(e.soundConfig().EffectsVolume()); err != nil {
+	volume := e.soundConfig().EffectsVolume()
+	if e.cfg != nil && e.cfg.Misc.SFXBackgroundMode == "mute" && !e.hasFocus() {
+		volume = 0
+	}
+	if err := e.sound.mixer.SetVolume(volume); err != nil {
 		return err
 	}
 	for _, command := range e.sound.queue.Drain() {

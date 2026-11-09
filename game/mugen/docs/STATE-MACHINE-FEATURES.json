@@ -1071,6 +1071,12 @@
       "name": "Shadow and quick-versus configuration consumers",
       "completed": false,
       "validation": "DrawShadows now gates fighter/effect floor rendering; explicit --stage retains precedence, while omitted quick-versus stage uses the documented Debug.StartStage with a conventional fallback. The connected zoom/reflection/foreground/reset lifecycle checks the disabled renderer. Supplied mugen.cfg/readme document these options. Batch acceptance pending."
+    },
+    {
+      "id": "background-runtime-policy",
+      "name": "Background simulation and audio policy",
+      "completed": false,
+      "validation": "Documented Misc.PauseOnDefocus reaches the Linux runtime scheduler. Background SFX Mute changes gain without retiring voices; BGM Pause preserves its consumed cursor, Mute advances silently, and Play continues. Unfocused fullscreen BGM uses Pause as documented. The existing music/NoMusic/SFX/story/rematch/codec lifecycle now includes focus loss, silent advance, focus recovery and demo music handoff. Host-device scheduling precision remains partial. Batch acceptance pending."
     }
   ]
 }

@@ -91,7 +91,20 @@ func (e *Engine) syncMusic() error {
 	if fight, ok := e.currentState.(*FightState); ok && fight.match != nil {
 		paused = fight.match.Timeline.NoMusic
 	}
-	bus.SetPlayback(e.soundConfig().MusicVolume(), paused)
+	volume := e.soundConfig().MusicVolume()
+	if e.cfg != nil && !e.hasFocus() {
+		mode := e.cfg.Misc.BGMBackgroundMode
+		if e.cfg.Video.FullScreen {
+			mode = "pause"
+		}
+		switch mode {
+		case "pause":
+			paused = true
+		case "mute":
+			volume = 0
+		}
+	}
+	bus.SetPlayback(volume, paused)
 	_, _, _, err := bus.Status()
 	e.soundWarning(err)
 	return nil

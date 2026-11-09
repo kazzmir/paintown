@@ -236,6 +236,45 @@ flag=nomusic
 	if current, _, playing, _ := bus.Status(); !playing || current.File != path {
 		t.Fatal("return to title failed to restore menu music")
 	}
+	// A focus loss suspends the consumed cursor in Pause mode; Mute keeps
+	// decoding silently, and focus return resumes the same looping track.
+	e.focus = func() bool { return false }
+	e.cfg.Misc.BGMBackgroundMode = "pause"
+	before = position()
+	if pcm = step(2); position() != before || !bytes.Equal(pcm, make([]byte, len(pcm))) {
+		t.Fatal("background Pause advanced or sounded the track")
+	}
+	e.cfg.Misc.BGMBackgroundMode = "mute"
+	if pcm = step(2); position() == before || !bytes.Equal(pcm, make([]byte, len(pcm))) {
+		t.Fatal("background Mute stopped the cursor or leaked audio")
+	}
+	e.focus = func() bool { return true }
+	if pcm = step(2); bytes.Equal(pcm, make([]byte, len(pcm))) {
+		t.Fatal("foreground return did not resume music")
+	}
+	e.focus = nil
+	e.cfg.Misc.BGMBackgroundMode = "play"
+	// Demo previews preserve the title track; the default demo fight policy
+	// stops it even when the match supplies an otherwise valid stage override.
+	e.demo = &demoRun{request: request}
+	e.currentState = NewVersusState(e, request)
+	before = position()
+	step(2)
+	if position() == before {
+		t.Fatal("demo preview stopped title music")
+	}
+	demoFight, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState = demoFight
+	step(2)
+	if _, _, playing, _ := bus.Status(); playing {
+		t.Fatal("demo ignored default fight.stopbgm")
+	}
+	e.demo = nil
+	e.currentState = NewTitleState(e)
+	step(2)
 	e.motif.Music["vs"] = sound.MusicSpec{File: "missing-track.ogg", Volume: 100}
 	e.currentState = NewVersusState(e, match.Request{})
 	step(2)
