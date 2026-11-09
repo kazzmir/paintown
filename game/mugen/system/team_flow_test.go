@@ -45,9 +45,20 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 	if !s.choosingStage || len(s.rosters[0]) != 2 || len(s.rosters[1]) != 2 {
 		t.Fatal("team grid did not collect complete rosters")
 	}
+	// DEF identity does not identify a select.def row. The selected roster
+	// must retain its own music even when other matching entries change.
+	for _, ch := range s.chars {
+		if ch.DefPath == s.rosters[1][0].DefPath {
+			ch.Entry.Music = "unselected-row.mp3"
+		}
+	}
 	step(ebiten.KeyEnter)
-	if _, ok := e.currentState.(*VersusState); !ok {
+	vs, ok := e.currentState.(*VersusState)
+	if !ok {
 		t.Fatalf("team selection did not enter versus: %T", e.currentState)
+	}
+	if vs.request.Music != "" {
+		t.Fatal("selected row music was replaced during handoff", vs.request.Music)
 	}
 	step(ebiten.KeyEnter)
 	f, ok := e.currentState.(*FightState)

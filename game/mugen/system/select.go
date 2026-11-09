@@ -42,6 +42,7 @@ type SelectState struct {
 	teamCounts, teamCursor [2]int
 	teamReady              [2]bool
 	rosters                [2][]match.Selection
+	rosterPortraits        [2][]CharacterPortrait
 	opponentTeamChosen     bool
 	cursorClocks           [2]*air.Player
 	spriteCache            background.SpriteCache
@@ -163,6 +164,7 @@ func (s *SelectState) Update() (State, error) {
 			s.p1Done = false
 			s.p2Done = false
 			s.rosters = [2][]match.Selection{}
+			s.rosterPortraits = [2][]CharacterPortrait{}
 			if s.title == "Team Co-op" || s.title == "Survival Co-op" || s.title == "Team Arcade" || s.title == "Watch Mode" {
 				s.initTeams()
 			}
@@ -309,6 +311,10 @@ func (s *SelectState) startMatch() (State, error) {
 	picks := [2]*CharacterPortrait{s.chosen(s.p1CursorX, s.p1CursorY), s.chosen(s.p2CursorX, s.p2CursorY)}
 	for side, roster := range s.rosters {
 		if len(roster) == 0 {
+			continue
+		}
+		if len(s.rosterPortraits[side]) > 0 {
+			picks[side] = &s.rosterPortraits[side][0]
 			continue
 		}
 		selected := roster[0]

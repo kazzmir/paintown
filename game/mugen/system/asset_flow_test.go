@@ -1141,7 +1141,12 @@ bgclearcolor=255,255,255
 	selection.pickMember(0, first, 2)
 	selection.p1CursorX, selection.p1CursorY = 0, 1 // selected roster survives cursor changes
 
+	// The saved choice owns its presentation even if another cell or a later
+	// refresh resolves the same DEF with different entry metadata.
+	savedIntro := first.IntroStoryboard
+	first.IntroStoryboard = ""
 	next, err := selection.startMatch()
+	first.IntroStoryboard = savedIntro
 	if err != nil {
 		t.Fatal(err)
 	}

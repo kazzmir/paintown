@@ -88,6 +88,7 @@ func (s *SelectState) pickMember(side int, ch *CharacterPortrait, palette int) b
 		selected.AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))
 	}
 	s.rosters[side] = append(s.rosters[side], selected)
+	s.rosterPortraits[side] = append(s.rosterPortraits[side], *ch)
 	return len(s.rosters[side]) >= s.teamCounts[side]
 }
 

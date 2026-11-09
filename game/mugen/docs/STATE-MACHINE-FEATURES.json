@@ -1035,6 +1035,12 @@
       "name": "First character storyboards and portrait sprites",
       "completed": false,
       "validation": "Selection now retains first character Arcade fields across repeated groups, including explicit blanks, and first duplicate portrait sprites, matching normal archive lookups. The existing packed/legacy asset lifecycle contains ignored later missing stories and a later duplicate large portrait, followed by intro/VS/fight/reset/ending and pack retirement. Batch acceptance pending."
+    },
+    {
+      "id": "selected-entry-presentation-snapshot",
+      "name": "Roster entry presentation through selection handoff",
+      "completed": false,
+      "validation": "Confirmed selections retain value snapshots of their portrait/story/entry metadata alongside match rosters. Handoff no longer finds the first same-DEF row and substitutes its music or intro; backing out clears both snapshots and rosters. Existing packed intro-to-fight and team selection/VS/HUD/exit lifecycles exercise metadata changes after confirmation. Batch acceptance pending."
     }
   ]
 }
