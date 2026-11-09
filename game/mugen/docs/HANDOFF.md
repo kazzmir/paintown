@@ -5,31 +5,17 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (six local checkpoints):
+Latest batch (one local checkpoint):
 
-- AI command plans use timed steps. A remapped 300-tick charge now completes
-  through CMD, attack/contact/damage/recovery, followed by fresh stock AI combat.
-- Variable writes admit IDs/ranges before evaluating values. Invalid/reversed
-  destinations skip side effects/errors; valid ranges evaluate once and use
-  ordinary-bottom zero fallback. Real admitted VM errors stay fatal.
-- Pause/SuperPause use zero for ordinary bottom, preserve omitted defaults and
-  later arguments, and retain zero-duration power updates and normal clocks.
-- CMD defaults are global. First settings/remaps/attributes win; buffers are
-  1–30 ticks. Full characters need a nonempty command set with resource context.
-- Statedef/persistent settings keep first values while repeated triggers remain
-  separate conditions. Entry/control/motion/power and recovery match native.
-- Scalar controls/effects/stats accept ordinary-bottom fallback. Nonzero negative
-  scaled LifeAdd/TargetLifeAdd have a one-point minimum; explicit zero stays
-  zero and a zero attack still makes zero-damage contact. Both actors recover
-  and effect art retires in the connected combat flow.
+- Target controllers preserve numeric fallback after relationship/ID admission.
+  The mixed-coordinate lifecycle covers suppressed unused expressions, matched
+  life/power/velocity/facing/state updates, retirement, recovery and round reset.
+  All twelve native observations match rebuilt Linux. Real admitted VM errors
+  retain source context and remain fatal.
 
-All five connected segments pass with race detection against current source.
-Linux is rebuilt. Bounded native comparisons agree for variables, pause clocks,
-command windows (5/30/1), state entry/persistence and scalar/life adjustments; AI command availability is
-covered by the connected scenario, not a claim of native AI decision parity.
-Current diagnostic scratch/captures were inspected and removed. The progress
-page now lists short completion checkmarks; detailed scope/evidence is in its
-feature catalog and Git history. No new test banks or per-parameter documents.
+All five connected segments pass with race detection. Linux is rebuilt; owned
+captures/overlays were inspected and removed. Next: protection/override admission
+and remaining sound/palette runtime compatibility, using coherent scenarios.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

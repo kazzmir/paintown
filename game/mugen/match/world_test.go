@@ -341,6 +341,7 @@ ctrl=1
 `
 	program += targetAdmissionProgram
 	program += helperAdmissionProgram
+	program += targetNumericProgram()
 	for _, phase := range []struct {
 		state, slot int
 		expressions []string
@@ -493,6 +494,28 @@ ctrl=1
 		t.Fatal("helper bank vacancy did not recover", root.StateNo, len(m.World.Helpers))
 	}
 	m.World.HelperMax = oldLimit
+	// A final grab keeps ID admission ahead of numeric fallback and continues
+	// through motion/facing/life/power changes and target-state release.
+	root.SetLife(1000)
+	target.SetLife(1000)
+	target.SetPower(0)
+	root.X, root.Y, root.Facing = 0, 0, 1
+	target.X, target.Y, target.Facing = 20*float64(target.LocalCoordinateWidth())/320, 0, -1
+	target.SelfState(701, 0, -1)
+	root.ChangeState(830, 0, -1)
+	for tick := 0; tick < 20; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("target numeric lifecycle", err)
+		}
+	}
+	for index, expected := range []int{0, -5, 0, -5, 3, 3, -5, -1, 50, 990, 0, 0} {
+		if root.GetVar(40+index) != expected {
+			t.Fatal("native target numeric observation", index, root.GetVar(40+index), expected)
+		}
+	}
+	if root.StateNo != 740 || !root.Ctrl || root.HasTargets(-1) || target.StateNo != 0 {
+		t.Fatal("target state release did not complete", root.StateNo, target.StateNo)
+	}
 	m.Round++
 	if err := m.resetRound(); err != nil {
 		t.Fatal(err)
@@ -515,6 +538,35 @@ ctrl=1
 			t.Fatal("new round did not restore helper binding/pause budget", index, root.FloatVars[index], expected)
 		}
 	}
+}
+
+func targetNumericProgram() string {
+	var script strings.Builder
+	script.WriteString("[Statedef 830]\ntype=S\nmovetype=A\nphysics=N\nctrl=0\nanim=9991\n[State clear]\ntype=VarRangeSet\ntrigger1=Time=0\nfirst=40\nlast=51\nvalue=0\n[State acquire]\ntype=HitDef\ntrigger1=Time=0\nattr=S,NT\nhitflag=MAF\ndamage=0,0\npausetime=0,0\nground.type=High\nground.hittime=1000\nground.velocity=0,0\nsparkno=-1\nguard.sparkno=-1\nhitsound=-1\nguardsound=-1\ngetpower=0,0\ngivepower=0,0\nid=7\np1stateno=831\np2stateno=832\n[Statedef 831]\ntype=S\nmovetype=A\nphysics=N\nctrl=0\nanim=9990\n")
+	for _, step := range []struct {
+		kind   string
+		tick   int
+		params string
+	}{
+		{"TargetLifeAdd", 0, "id=1/0\nvalue=(var(40):=9)"},
+		{"TargetPowerAdd", 0, "id=1/0\nvalue=~(1/0)"},
+		{"TargetLifeAdd", 1, "id=7\nvalue=1/0\nkill=1/0\nabsolute=1/0"},
+		{"TargetVelSet", 1, "id=7\nx=1/0\ny=(var(41):=-5)"},
+		{"VarSet", 1, "v=42\nvalue=Target,Vel X"}, {"VarSet", 1, "v=43\nvalue=Target,Vel Y"},
+		{"TargetVelAdd", 2, "id=7\nx=(var(44):=3)\ny=1/0"},
+		{"VarSet", 2, "v=45\nvalue=Target,Vel X"}, {"VarSet", 2, "v=46\nvalue=Target,Vel Y"},
+		{"TargetFacing", 3, "id=7\nvalue=1/0"}, {"VarSet", 3, "v=47\nvalue=Target,Facing"},
+		{"TargetPowerAdd", 3, "id=7\nvalue=50"}, {"TargetPowerAdd", 4, "id=7\nvalue=1/0"},
+		{"VarSet", 4, "v=48\nvalue=Target,Power"},
+		{"TargetLifeAdd", 4, "id=7\nvalue=-10\nkill=1/0\nabsolute=1/0"}, {"VarSet", 4, "v=49\nvalue=Target,Life"},
+		{"TargetDrop", 4, "excludeid=7\nkeepone=1/0"},
+		{"TargetState", 5, "id=7\nvalue=1/0"}, {"VarSet", 5, "v=50\nvalue=EnemyNear,StateNo"},
+		{"VarSet", 6, "v=51\nvalue=NumTarget"}, {"SelfState", 7, "value=740\nctrl=1"},
+	} {
+		fmt.Fprintf(&script, "[State target continuation]\ntype=%s\ntrigger1=Time=%d\n%s\n", step.kind, step.tick, step.params)
+	}
+	script.WriteString("[Statedef 832]\ntype=S\nmovetype=H\nphysics=N\nctrl=0\nanim=9990\n[State hold]\ntype=Null\ntrigger1=1\n")
+	return script.String()
 }
 
 const helperAdmissionProgram = `

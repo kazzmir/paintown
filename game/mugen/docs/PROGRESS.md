@@ -46,6 +46,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **CMD defaults, duplicate settings and loading contract**
 - [x] **State entry and persistence first-value precedence**
 - [x] **Scalar control/effect fallback and minimum life adjustments**
+- [x] **Target numeric fallback after relationship and ID admission**
 
 ## Completed scenario coverage
 

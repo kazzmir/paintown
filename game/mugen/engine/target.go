@@ -52,7 +52,7 @@ func targetHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(E
 		return nil, true, err
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		values, err := evaluateTargetArguments(args, env, false)
+		values, err := evaluateTargetArguments(args, env, true)
 		if err != nil || values == nil {
 			return err
 		}

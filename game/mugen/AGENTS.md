@@ -110,7 +110,8 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   and value-copy isolation. User YAML remains ignored and untouched.
 - Variable destination/range admission precedes value evaluation. Invalid IDs
   and invalid/reversed ranges are no-ops; valid ranges evaluate once. Target
-  controllers check existence then ID, and TargetBind checks ID before time/pos.
+  controllers check existence then ID, then apply numeric fallback; TargetBind
+  checks ID before time/pos.
   ParentVarSet/Add require a live parent before evaluating their arguments.
 - Helper bank admission precedes expressions. Forward deferred creation through
   stateEnvironment: convert position once after admission, leave size overrides

@@ -574,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4d61b32e14838ba372f12f459dde4e2893babb4b27bc7ba0914e13c6fedad388"
+      "passed_source": "10743f5804ff2cdd9253ee1fd9fc1a9de5a909079271b46a961a64d9d9d5198a"
     },
     {
       "id": "combat",
@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "bf317306a71b27c2c9c4efeb260cfba2b2319006911d4411b2f9c4b732258f23"
+      "passed_source": "eee4d625802195f93a9dbf6393c0a0a41e92483d54650417c204aa87ccb793ad"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4f0b4a0de0191543ad2302d34d8343577e2405b3843058dc155bada27e5a554e"
+      "passed_source": "afca962d0b9645e1ae408270096a42a159e8348ffe61f77deac2bc7b8111d5b2"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a20446a80bf4968465da969ac3f23e714b94b3bbe02941991d82fc4a34715d8f"
+      "passed_source": "1ab27e6ee0d506ad865a8d3177038adfe9ef94770bc1ce9b784b1cb571581140"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ddc450c8c33c13c593b11b93ca5414595e853fa93bb977cd7e505873baa48d29"
+      "passed_source": "7d70dbaf5b2cd3a3d025e6f6545411b318d8cbb0a726e46652b5a501fdda8e97"
     }
   ],
   "presentation_followups": [
@@ -957,6 +957,12 @@
       "name": "Scalar control/effect fallback and minimum life adjustments",
       "completed": true,
       "validation": "PlayerPush, AttackDist, PosFreeze, HitAdd, VictoryQuote, attack/defence multipliers and RemoveExplod accept ordinary-bottom zero fallback while true VM failures retain their checks. Nonzero negative nonabsolute LifeAdd/TargetLifeAdd retain a one-point minimum after defence scaling; explicit zero stays zero, and zero attack can still produce a zero-damage contact. The existing runtime combat lifecycle spans guard-range change, freeze release, selective effect removal, stat adjustment, real contact, life changes, both actors recovering and effect retirement. All five segments pass with races. Rebuilt Linux matches all twelve native observations. Diagnostic overlay/capture/helper removed; shared assets reused."
+    },
+    {
+      "id": "target-numeric-fallback",
+      "name": "Target numeric fallback after relationship and ID admission",
+      "completed": true,
+      "validation": "The mixed-coordinate entity lifecycle now spans unmatched bottom IDs (skipping side effects and unused VM failures), matched numeric fallback for life/power/velocity/facing/state, target retention/drop and own-state recovery followed by round reset. All twelve native observations match rebuilt Linux; all five connected segments pass with race detection. Ordinary bottom becomes zero only after relationship/ID admission; admitted real VM failures remain fatal. Owned overlay and captures removed."
     }
   ]
 }
