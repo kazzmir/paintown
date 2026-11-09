@@ -298,6 +298,36 @@ physics=N
 anim=9990
 ctrl=0
 velset=0,0
+[State 760, recovery constants retain their dimensions]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=Const(velocity.air.gethit.airrecover.mul.x)
+[State 760, recovery constants retain their dimensions]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=Const(velocity.air.gethit.airrecover.mul.y)
+[State 760, recovery constants retain their dimensions]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=Const(movement.stand.friction)
+[State 760, recovery constants retain their dimensions]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=Const(velocity.air.gethit.airrecover.add.y)
+[State 760, recovery constants retain their dimensions]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=EnemyNear,Const(velocity.air.gethit.airrecover.mul.x)
+[State 760, recovery constants retain their dimensions]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=EnemyNear,Const(size.height)
 [State 760, unavailable action keeps its parameter gate]
 type=Explod
 trigger1=Time=0
@@ -834,6 +864,11 @@ func borrowedEffectRecoveryFlow(t *testing.T, m *Match) {
 				}
 			}
 			helperRecovered = helperRecovered || helpers == 2
+		}
+	}
+	for index, expected := range []float64{.5, float64(float32(.2)), float64(float32(.85)), -4.5, .5, 60} {
+		if receiver.FloatVars[24+index] != expected {
+			t.Fatal("borrowed/redirected recovery constant units", index, receiver.FloatVars[24+index], expected)
 		}
 	}
 	for index, expected := range []int{-48, -96, 40, 1280, 100, 1, -80, -160, 10, -20, 200, 1280} {

@@ -25,6 +25,24 @@ func ConstantSupported(name string) bool {
 	return known && !spec.unsupported
 }
 
+// ConstantUsesCoordinates distinguishes dimensional CNS constants from ratios,
+// counters and resource indices for both defaults and redirected observations.
+func ConstantUsesCoordinates(name string) bool {
+	spec, ok := constantSpecs[strings.ToLower(name)]
+	if !ok || spec.unsupported {
+		return false
+	}
+	switch {
+	case strings.HasPrefix(spec.source, "velocity."):
+		return spec.source != "velocity.air.gethit.airrecover.mul"
+	case strings.HasPrefix(spec.source, "size."):
+		return spec.source != "size.xscale" && spec.source != "size.yscale" && spec.source != "size.proj.doscale"
+	case strings.HasPrefix(spec.source, "movement."):
+		return spec.source != "movement.airjump.num" && !strings.HasSuffix(spec.source, ".friction")
+	}
+	return false
+}
+
 func (c *CNS) readConstantFields(ast *parsers.File) error {
 	c.ConstantFields = make(map[string][]float64)
 	types := make(map[string]bool)
@@ -119,7 +137,7 @@ func (c *CNS) LookupConstantInSpace(name string, width int) (number float64, int
 	}
 	if defaults, ok := optionalConstantDefaults[spec.source]; ok && spec.component < len(defaults) {
 		number = float64(float32(defaults[spec.component]))
-		if spec.source != "velocity.air.gethit.airrecover.mul" {
+		if ConstantUsesCoordinates(name) {
 			number = float64(float32(number) * float32(width) / 320)
 		}
 		return number, spec.integer, true

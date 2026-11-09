@@ -1023,6 +1023,12 @@
       "name": "Authored victory background clear color",
       "completed": true,
       "validation": "All five motif BGDef groups use the same first-field metadata/resource path. Victory drawing applies the authored clear color before background layers, portraits and text. The existing real-mode lifecycle loads a stock-resource motif with a first color and an ignored duplicate, completes loss/continue/retry and Arcade victory, checks the exposed victory canvas, then continues through ending, Survival and training/watch. The connected match-flow segment and other affected batch segments pass with races. This is a functional metadata-to-screen fix; it does not claim arbitrary native screen/raster parity."
+    },
+    {
+      "id": "redirected-constant-dimensions",
+      "name": "Recovery constant dimensions across borrowed and redirected states",
+      "completed": false,
+      "validation": "Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. Batch acceptance pending."
     }
   ]
 }

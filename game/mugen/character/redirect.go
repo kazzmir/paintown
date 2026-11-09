@@ -1,7 +1,7 @@
 package character
 
 import (
-	"strings"
+	"github.com/kazzmir/paintown/game/mugen/cns"
 
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
@@ -60,7 +60,7 @@ func (r *redirectEnvironment) GetHitVar(name string) float64 {
 	}
 	value := r.Character.GetHitVar(name)
 	switch name {
-	case "xvel", "yvel", "yoff", "yaccel", "fall.xvel", "fall.yvel":
+	case "xvel", "yvel", "xoff", "yoff", "yaccel", "fall.xvel", "fall.yvel":
 		return float64(float32(value) * r.scale())
 	}
 	return value
@@ -83,14 +83,7 @@ func (r *redirectEnvironment) LookupConstant(name string) (evaluator.Value, bool
 	if !known {
 		return value, false
 	}
-	coordinate := strings.HasPrefix(name, "velocity.")
-	if strings.HasPrefix(name, "size.") {
-		coordinate = name != "size.xscale" && name != "size.yscale" && name != "size.proj.doscale"
-	}
-	if strings.HasPrefix(name, "movement.") {
-		coordinate = name != "movement.airjump.num" && !strings.HasSuffix(name, ".friction")
-	}
-	if coordinate {
+	if cns.ConstantUsesCoordinates(name) {
 		scaled := float32(value.Number()) * r.scale()
 		if value.Kind() == evaluator.IntKind {
 			value = evaluator.Int(int32(scaled))

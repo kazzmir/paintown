@@ -57,6 +57,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Escaped quote admission in state debug text**
 - [x] **AI plans for charged chords and strict command steps**
 - [x] **Authored victory background clear color**
+- [ ] **Recovery constant dimensions across borrowed and redirected states**: Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. Batch acceptance pending.
 
 ## Completed scenario coverage
 
@@ -65,11 +66,11 @@ covered source, a reported regression, or an explicit rerun reopens them.
 Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
-- [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
-- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
-- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [ ] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
+- [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
+- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
+- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 
