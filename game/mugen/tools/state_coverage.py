@@ -161,10 +161,13 @@ def markdown(value):
     if value['known_differences']:
         lines.extend(['## Known difference checkpoints', '',
                       'These checkmarks close the documented discrepancies for the observed scope.',
-                      'Broader compatibility and deferred capabilities remain listed below.', ''])
+                      'Broader compatibility and deferred capabilities remain listed below.',
+                      'Scope and validation details remain in the [feature catalog](STATE-MACHINE-FEATURES.json)',
+                      'and Git history; this checklist records completion without repeating run logs.', ''])
         for row in value['known_differences']:
             mark = 'x' if row['completed'] else ' '
-            lines.append(f"- [{mark}] **{row['name']}**: {row['validation']}")
+            detail = '' if row['completed'] else ': ' + row['validation']
+            lines.append(f"- [{mark}] **{row['name']}**{detail}")
         lines.append('')
     lines.extend(['## Completed scenario coverage', '',
              'Completed segments are excluded from default runs. Only a change to their',

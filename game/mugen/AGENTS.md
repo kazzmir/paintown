@@ -70,380 +70,99 @@ tracked fixtures remain. Never regenerate removed matrices just to pass legacy
 pixel diagnostics. --check-all is explicit historical diagnostics only and some
 artifact-dependent tests now require unavailable captures.
 
-## Current checkpoint
+## Current state and boundaries
 
-All89 documented controller and127 trigger families have runtime routes. The
-functional batches connect BGM/NoMusic/stage context, simul/turns and team queries,
-authored CMD/AI, campaign/continue/ending/survival/training/watch, and asset
-consumers (AIR1.1 interpolation, storyboard text/sounds/windows, victory quotes).
-All five connected segments pass with race detection. Read docs/PROGRESS.md
-for the current checkmarks; routes do not prove arbitrary native semantics.
+The ledger has 89 controller routes, 127 trigger routes and 32/34 implemented
+project rows. All five connected segments are checked with race detection;
+Linux is rebuilt. These are scoped checks, not arbitrary native conformance.
+The two partial rows cover broader asset/font/media acceptance and native AI/
+rules/fidelity combinations. Physical CD audio, absent licensed/CJK fonts and
+other platforms are deferred. Standalone music-file CLI playback was deferred
+by the user. Do not turn unknown permutations into mandatory test matrices.
 
-Linux is the user-selected target. The standalone amd64 build and normal startup
-passed, as did an owned-window KFM/KFM720 keyboard-driven KO/result run with
-private audio output. app_smoke.py now shares canonical assets using symlinks,
-copies only tiny writable config text, and deletes scratch by default. All
-checkpoint captures/PCM/logs/overlays were inspected and removed. Keep the one
-ignored temp/bin/mugen-go executable and shared build cache for reuse.
+Use supplied Elecbyte runtime observations and beta docs/CNS as the reference.
+Paintown C++ turning is not normative. Original SF2 later-round state5900 stalls
+also reproduce in native: do not add an engine timeout or repair more mod scripts.
+Retain temp/sf2_mugen_playable and its existing ten-script repair tool/copy,
+original SF2 pack/ZIP/executable, canonical temp/mugen-1.1b1, shared cache and the
+single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
 
-Remaining: physical CD (.da) audio is unsupported. The documented color/shadow/
-alpha/KO-echo discrepancies are closed; arbitrary content/rules/AI compatibility
-remains unverified. Turns, mixed-team health/round
-budgets and Survival team recovery are calibrated against supplied beta flows.
-Licensed Windows fonts are absent; the observable fallback needs a supplied
-font for full CJK glyph coverage. Other platform builds are deferred. No pushes
-or committed binaries/generated fixtures. See docs/HANDOFF.md.
+## Implementation invariants
 
+- Keep first character/motif Info/Files, CNS constants, Statedef attributes,
+  persistent settings and ordinary controller parameters. Preserve repeated
+  trigger conditions and legacy StateTypeSet's second Type parameter.
+  Duplicate AIR actions keep the first lookup but still undergo validation.
+- Localize complete groups with English fallback, original source lines and
+  stable scene order. Commands/states and individual BG elements are exempt.
+  Standalone AIR stays undecorated; preserve runtime victory-quote banks.
+  Motif-relative select.def precedes shared data.
+- CMD defaults apply globally; first settings/remaps/command attributes win.
+  Keep time >=1, buffer 1–30, nonempty full-character command sets and original
+  resource context. A disabled remap stays disabled; remaps read simultaneous
+  physical snapshots. Declared command labels cannot fall back to held buttons.
+- /x+y holds the entire chord; normal chords require button press edges. Held
+  sequence endings complete on a fresh edge. Preserve release/charge windows.
+  Histories size lazily from CMD durations; AI uses timed input steps, not one
+  allocated frame per charge tick. Player/helper buffers remain independent.
+- YAML key alternatives apply to menus and gameplay; omitted actions inherit,
+  lists replace, and none/disabled/[] disable. Keep KeyA(0), shared-key ownership
+  and value-copy isolation. User YAML remains ignored and untouched.
+- Variable destination/range admission precedes value evaluation. Invalid IDs
+  and invalid/reversed ranges are no-ops; valid ranges evaluate once. Target
+  controllers check existence then ID, and TargetBind checks ID before time/pos.
+  ParentVarSet/Add require a live parent before evaluating their arguments.
+- Helper bank admission precedes expressions. Forward deferred creation through
+  stateEnvironment: convert position once after admission, leave size overrides
+  in helper units, and retain issuer profile/banks/state programs. DestroySelf
+  parameters still evaluate for roots in native; do not generalize no-op gates.
+- Confirmed ordinary-bottom zero fallback covers movement, life/control/power,
+  transitions/entry, animations, variables/ranges and Pause/SuperPause. Preserve
+  omitted defaults and later argument evaluation. Real VM failures remain fatal
+  with source context and no partly applied vector/power/pause effects. Other
+  parameter policies require evidence; do not blanket-convert controller values.
+- Command reads see the old heading; controlled ground destination entry sees
+  corrected facing/velocity. Walk/crouch turns use action5/6 without resetting
+  Time. Preserve locked attack/air headings, NoAutoTurn, stage disable and paused
+  commands; rematch current input without appending another history tick.
+- Held guard keeps Ctrl=1 and its clock; it must not fall into walking/crouching
+  each pass. Forward release and up-back jump remain available. InGuardDist
+  includes enemy helpers/live projectiles after their owner goes idle; removal
+  art is not an attack. Preserve explicit guard.dist and profile conversion.
+- Common state45 owns air-jump startup/motion/animation. Require a fresh raw up
+  edge, control, height and budget; low held input cannot activate later. Reset
+  the per-flight budget in S/C before held guard can return early.
+- Base attack/defence reach contact damage. Negative nonabsolute LifeAdd and
+  TargetLifeAdd use receiver defence, including SuperPause; healing/absolute
+  additions stay unscaled. Native TargetLifeAdd ignores issuer attack.
+- Hit-paused binding anchors place victims but transfer zero velocity. Preserve
+  self-binding/Pause allowances, expiry, recovery and fresh round identities.
+  PosFreeze suppresses velocity movement, not late body push. Keep pre-CNS
+  clipping and vertical Clsn2 gating; projectile-owner corner push is excluded.
+- Borrowed Explods retain creating-state geometry/private-pixel units and issuer
+  banks through deferred admission, Pause/SelfState/expiry. Convert storage once;
+  do not restore the obsolete extra CreateExplod adapter. Legacy velocity is an
+  alias for vel, keeping KFM's incoming intro blocks visible.
+- Keep ZIP expansions engine-owned: stop audio readers before deletion, close
+  title music before retiring packs, and clean startup errors/signals. Reuse
+  canonical media by links in scenarios. Portraits decode selectively; gameplay
+  loads the bank. Keep resource bounds/context and corrected-content reloads.
+- Preserve PCX padding/shared-palette handling, SFF pixel budgets/link charging,
+  commented FNT maps and explicit glyph coordinates. TrueType uses the resource
+  resolver and reported fallback. Lazy sprite caches share pixels, while fighter
+  and HUD effects stay separate; palettes use MappingRevision for outfit changes.
+- Retain linked/animated BG clocks and geometry, moving floors/reflections and
+  camera return based on the unclipped participant midpoint. Storyboards retain
+  clearcolor=-1 canvases and compose once per tick. OnTop/HUD/global PalFX order
+  and window/subimage origins stay intact.
+- Preserve indexed 3/8 game-pixel calibration without grid snapping, byte
+  premultiplication, nearest indexed/linear true-color sampling and delta-first
+  round-to-even interpolation. Keep AfterImage AIR clocks and saved mappings.
+  Existing bounded RGB/KO-echo acceptance is not whole-renderer/audio parity.
+- Audio uses consumed cursors, shared WAV decoding and reusable Linux codec
+  buffers. Retain SFX two-stage quantization and existing KO-echo scheduling.
 
-## Latest asset checkpoints
-
-ZIP character references use an engine-owned CharacterPacks store. Selection,
-rosters and quick matches share expansions; Engine.Close stops sound readers
-before removing them. On title return, retire expansions after title music has
-closed packed streams. Preserve cleanup on startup errors and handled signals.
-Do not copy canonical assets into ZIP tests: extend the tiny authored asset flow.
-Selection uses selective SFF v1/v2 portraits and link dependencies; gameplay
-still loads the complete archive. Connected ZIP/portrait/menu lifecycles pass
-with race detection; rebuilt Linux ZIP startup and signal cleanup were observed.
-Options Game Speed updates the live scheduler and subsequent match clock.
-
-TrueType references use the shared resource resolver; invalid banks share
-fallback glyph textures. Preserve trailerless shared-palette PCX pixels even
-when a pixel resembles the palette marker; masked/opaque views share indices.
-Storyboard clearcolor=-1 retains its canvas across ticks/scenes; compose layers
-once per simulation tick so repeated Draw calls cannot accumulate alpha. Colored
-fades use premultiplied RGB and a reusable one-pixel texture. The connected asset
-flow covers these paths through scene exit, remapping and round reset. Match-flow
-passes with race detection; Linux build and owned-window KO/rematch/KO passed.
-All current captures/overlays/logs removed. No user configuration tracked.
-
-## Binding checkpoint
-
-Keep moving-owner self-binding coverage: cumulative helper Pause allowances,
-frozen helper poses, late body contact, retirement and fresh round identities.
-The same entity lifecycle now continues through an asymmetric hit-paused throw,
-finite TargetBind expiry and controllable own-state recovery. A hit-paused anchor
-still places its target but publishes zero velocity, preventing expiry from
-launching the victim with the anchor's stored velocity. Normal velocity transfer
-resumes with active movement. This matches the bounded beta observations; other
-pause/hitpause and target-binding combinations remain precision work. Four
-changed-source segments pass with race detection; state-flow stays checked.
-Linux rebuilt; native scratch inspected and removed. Do not regenerate matrices.
-
-## Prior collision checkpoint
-
-PosFreeze blocks ordinary velocity movement, not shared body push. Keep frozen
-actors eligible on both sides of the late body-push pass. A bounded beta flow
-with stored velocity 2 toggles freeze on either actor and both; body separation
-and CNS clocks continue. The existing mixed-coordinate body scenario retains
-prior interior/wall/vertical/Width/air phases, then covers PosFreeze, release,
-real Pause and round reset. Four changed-source segments pass with race detection;
-native scratch removed. Shared pre-CNS clipping and vertical Clsn2 gating remain
-covered. Projectile-owner corner push remains intentionally excluded. Local YAML
-stays ignored; standalone music-file playback CLI remains deferred by user request.
-
-## Keyboard checkpoint
-
-CMD [Remap] is a character-level logical-to-configured-button lookup after the
-keyboard adapter: x=a reads configured a for logical x; blank disables that
-logical slot. Use simultaneous snapshots for shared mappings and swaps. AI
-converts its logical plans back to physical inputs; key-controlled helpers use
-the same map. The connected human/helper/AI flow passes with race detection.
-
-YAML keyboard actions accept scalar names or lists of alternatives for either
-player. Lists replace one binding; omitted actions inherit; none/disabled/[]
-disable. Input handles alternatives in menus and gameplay, preserving KeyA(0),
-disabled mappings and value-copy isolation. The connected menu-to-fight scenario
-now loads a small override and exercises alternatives through two rounds,
-rematch/exit, plus ownership/release and malformed binding behavior. Affected
-segments and existing config/input regressions pass with race detection.
-See README for the user-facing contract.
-
-## Background checkpoint
-
-Linked backgrounds now compose immediate-parent start/motion/delta without
-double-counting velocity. Animated parallax, width vs legacy xscale geometry,
-camera-following tiling, zoomed masks, AIR blends and BG disable/hide/action
-clocks have real consumers. The shared controller loader groups by preceding
-definition and no longer duplicates named stage groups. One connected stage
-scenario spans this lifecycle and round reset; affected segments pass with race
-detection. Linux rebuilt and a stock owned-window stage capture inspected;
-all current run scratch/captures/overlays removed.
-
-The ledger has32/34 implemented rows; only assets and precision remain partial.
-Team/mode/Survival checkpoints were tested/pushed by the user. Stage/global/hires
-scaling, moving floors, linked/animated backgrounds, reflections, legacy outfits
-and file music have functional consumers. Exact raster/camera/push and asset
-compatibility edges remain unverified; do not regenerate historical matrices.
-See docs/HANDOFF.md and preserve the cleanup workflow above.
-
-## Current compatibility checkpoint
-
-AIR collision allocation is bounded; packed failures retain file/action/line
-context and corrected assets reload. Moving zoom matches five beta samples;
-return now matches through time120 after preserving the unclipped participant
-midpoint. The user requested known camera/rendering/KO-echo closure before
-compatibility and deferred work (2026-11-08). Do not regenerate
-historical matrices. See the small ledger/catalog and handoff for remaining work.
-
-Retain consumed-vs-read-ahead music cursors, shared integer/float WAV decoding,
-reused Linux codec buffers and SFX two-stage quantization. SFF uploads use
-sff.UploadPixels for native byte premultiplication; true-color BGs filter linearly,
-indexed BGs use nearest and animated BGs stay masked. Background/storyboard
-SpriteCache is lazy and shares linked views; parsed SFF metadata is indexed.
-Palette textures use MappingRevision; local effects retain Revision/clocks.
-Fighter/HUD pixels are shared with separate effects. AfterImage retains its AIR
-element clock and mapping-only historical outfits. Prior bounded Linux scenes
-matched40 beta RGBA samples and five trail positions, not whole-renderer parity.
-
-Legacy PCX decodes directly into visible rows while consuming padding. V1 now
-uses the V2 total pixel budget; links charge their source once and portraits
-charge only decoded sources. FNT V1 accepts commented settings/section headers;
-map suffixes preserve quote/hex-semicolon characters. Numeric errors retain
-file/line context. The existing connected asset scenario covers font bank/scene
-changes, bad font/packed sprite correction, outfits and reset. Existing SFF/font
-checks and affected match-flow pass with race detection; other segments stay
-checked. Linux rebuilt and displayed both authored font banks. The beta scene
-showed no authored glyphs, so native font equivalence remains open. Current
-helper/capture/overlay/log scratch was removed; no user configuration tracked.
-
-## Known-difference closure — 2026-11-08
-
-Camera return, indexed sprite/shadow calibration and RGBA overlap RGB differences
-are corrected. Indexed geometry adds 3/8 game pixel with no source-grid snapping.
-Linear byte interpolation rounds the weighted delta to even before adding its
-base texel (the reference Linux GL sampler rule). OnTop Explods compose above HUD
-before final global PalFX, retaining window fit and projected subimage origins.
-The connected stage flow keeps native RGB digests and covers finite AIR blends,
-pause/expiry, HUD coverage and letterboxes. All five segments and existing render
-color regressions pass with races. Rebuilt Linux output matches all four native
-rendering regions exactly. Ordinary KO echo now passes the existing frozen
-seven-segment device acceptance in native and Go, including the quiet interval;
-Go cue levels match exactly and relative-start differences stay within the
-unchanged native capture criterion. The historical gap no longer reproduces,
-so no KO scheduler edit was needed. The known-difference batch is complete.
-The user subsequently supplied sf2_mugen for a compatibility assessment. Preserve
-exact expectations; do not create new image banks/matrices or treat unverified
-permutations as known failures. Owned scratch was inspected and removed.
-
-## SF2 compatibility assessment — 2026-11-08
-
-The user supplied temp/sf2_mugen (and its ZIP). Its executable is byte-identical
-to the beta reference; the motif and many characters are legacy content. Preserve
-that pack/configuration/assets and its bundled executable in ignored storage.
-The first compatibility batch fixes Scene-prefixed storyboard backgrounds being
-misread as scenes, explicit empty roster slots and missing final WAV pad bytes.
-Named Scene identifiers still work; empty slots retain positions and cannot pick
-random fighters; WAV sample data must still fit physical bounds. Existing asset
-flows and SND bounds checks cover these paths; affected match-flow/SND pass with
-races. Other four segments stay checked. app_smoke input recipes can now navigate
-menus as well as quick matches, always targeting the owned window.
-
-The follow-up fixes the reported Arcade selection failure: saved rosters survive
-cursor changes, and automatic opponents do not depend on a hidden invalid P2
-cursor. Retain first Select Info values, row,column startcells, blank skipping,
-authored cell/cursor sprites, portrait scale/axes and first-portrait palette
-bootstrap. Native selection confirms eight normal portraits; the pack itself
-places four boss slots below its visible canvas. Do not change the pack layout.
-
-Native victory text ATW confirms that explicit glyph coordinates override Fixed
-font cell defaults. Bounds checks remain. Legacy CNS accepts StateTypeSet's
-second Type parameter, AnimElem time intervals/counter comparisons, first-value
-constants, bare numeric state headers, CMD dividers and scalar Explod scale.
-The existing connected combat/entity/asset scenarios retain these cases rather
-than adding per-character fixtures. All five segments and existing SFF/font/CNS/
-parser/evaluator regressions pass with races. All 12 roster entries compile
-1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with
-input, HUD and audio. Nonfatal expression/resource warnings remain; this is not
-full-roster gameplay parity. Keep the partial asset row honest. Scratch was
-inspected and removed; shared cache and one ignored Go binary remain.
-
-## SF2 presentation and recovery follow-up — 2026-11-08
-
-The reported stock portrait shrinkage required character-to-motif coordinate
-conversion. Keep selection offsets/windows and rendered VS portraits, scale,
-facing/windows, old pos/new offset aliases, name alignment/spacing, match text,
-fades and background archive ownership. The connected menu flow now checks
-actual VS pixels/clipping; its prior checkmark only covered transitions.
-Optional 1.0 movement/recovery constants use native defaults, scaled into the
-character's units except unitless multipliers. Native 320p/1280p observations
-and the connected sweep/bounce/get-up/control flow cover the reported state5101
-crash. Legacy projectile-time suffixes bind to typed ID queries. All five
-segments pass with races; stock/SF2 screens and 60-second Honda/Dhalsim inspected.
-
-The Ryu/Dhalsim round-two state5900 stall also reproduces in native. Do not add
-an engine timeout or automatic state exit to hide that content bug. Preserve
-the original pack. tools/sf2_playable.py creates temp/sf2_mugen_playable with all
-matching initialization repairs (ten scripts) and small writable config/log
-copies; all media is shared by links. --update extends older copies, preserving
-configuration and refusing local script edits. The retained copy is updated.
-All ten initialization programs exit on round two; Guile/Chun-Li also completed
-intro, KO/reset, round-two control and movement in the full match adapter.
-RETAIN this ignored working copy for user play, the original pack and shared
-cache/single executable. Diagnostic overlays/captures/PCM/helpers were removed.
-Broader roster behavior and nonfatal AnimElem/resource warnings remain open.
-
-## Crossover facing — 2026-11-08
-
-The user reports Paintown C++ turning never worked; use supplied Elecbyte runtime
-observations and beta CNS as the reference, not that C++ behavior. Command
-expressions read the old facing; a controlled ground transition turns before
-destination entry expressions/velset. Common idle/crouch/walk turns run before
-the positive pass, play action5/6 and retain the state clock. Preserve locked
-attack/air headings, NoAutoTurn, stage disable and physical input on direction
-rematch without appending another tick. Pause-release commands remain buffered
-through the rematch. The existing contact scenario now continues through a
-mixed-coordinate crossover/landing/attack/walk lifecycle with native heading,
-animation and velocity observations. All segments pass with races. Linux
-Ryu/Dhalsim jump-over and continued input were inspected; scratch removed.
-Other air-cancel, binding/hitpause and charge-history combinations remain open.
-
-Held guard must not fall through into automatic walking/crouch transitions: the
-beta retains Ctrl=1 while common CNS owns guard posture. Keep forward release
-and up-back jump available. The connected stock input/contact scenario now
-continues through held high/low guard, blocked punch/recovery, release, re-guard
-and jump/landing. Changed-source segments pass with races; Linux rebuilt and
-visible guard flow inspected. Diagnostic scratch removed.
-
-Explod creation accepts the legacy velocity spelling when vel is absent. The
-shipped KFM intro uses it for both incoming wood and broken pieces; ignoring it
-left the incoming block stationary offscreen. Native beta and rebuilt Go show
-the pre-impact wood in the same observed scene. The existing title-to-match flow
-checks actual incoming-block pixels before the kick, break, control and rounds.
-All five segments pass with races; Linux rebuilt; diagnostic scratch removed.
-
-Borrowed-state Explods carry their evaluation coordinate width through deferred
-admission. Convert position, velocity, acceleration and random displacement into
-the issuer's storage units once, then keep the creating state's private-sprite
-pixel scale. Sprite/AIR/palette banks remain the issuer's. This matches the beta
-mixed-coordinate scene and survives Pause, SelfState and expiry. The old unused
-stateEnvironment.CreateExplod adapter is removed; do not reintroduce double
-conversion. The connected entity flow covers creation gating, contact, pause,
-own-state recovery and round reset. All five segments pass with races; Linux
-rebuilt and its marker position/dimensions agree with native. Guard-distance
-behavior in the related native observation matched the existing implementation.
-Diagnostic scratch removed; no mod scripts or user configuration changed.
-
-Automatic air jumps now select common state45 on a fresh raw up edge (including
-upper diagonals), subject to control, airborne posture, minimum height and the
-per-flight budget. A held/buffered low press must not activate later at height.
-Common CNS owns the start delay, directional velocity and animation. Reset the
-budget in S/C before held guard can return early. The existing mixed-coordinate
-jump scenario spans denied low/held input, allowed forward air jump, exhausted
-budget, landing and a second flight, then its prior body/pause/reset lifecycle.
-Four changed-source segments pass with races; state-flow stays checked. Native
-and rebuilt Linux input flows finish with two accepted jumps across two flights.
-All diagnostic scratch removed. No mod scripts or user configuration changed.
-
-Declared CMD labels are authoritative in Character.Command: after checking
-ActiveCommands, return false for a declared but inactive label. Do not let raw
-button fallback reactivate a normal press throughout a hold. Preserve explicit
-/held, ~release and authored buffer windows. The connected human/helper/AI flow
-now spans two held attack/recovery cycles, release/repress and those modifiers.
-Four affected segments pass with races; state-flow stays checked. Native and
-rebuilt Linux stock KFM each attack once while held, then again after repress.
-Diagnostic scratch removed; user configuration and mod scripts unchanged.
-
-Base attack/defence must reach contact damage, including guard and the shared
-projectile/helper path. Negative nonabsolute TargetLifeAdd/LifeAdd use the
-receiver’s base/runtime/SuperPause damage factor; positive and absolute additions
-stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual.
-The existing connected combat flow retains twelve beta observations, recovery
-and fresh-round reset; stock CMD rewrites var(1), so instrumentation uses unused
-slots. All segments are checked with races; rebuilt Linux observations match.
-Diagnostic scratch removed; no mod or user configuration changes.
-
-Compatibility work resumed at the user’s request on 2026-11-08. InGuardDist must
-include enemy helpers and live projectiles while their root is idle. Projectile
-defaults use the issuer’s size.proj.attack.dist converted into the projectile’s
-coordinate profile; explicit guard.dist wins. Removal visuals are not attacks.
-Keep the existing mixed-coordinate guard/contact/recovery/reset scenario. Native
-and Linux fireball blocking agree; four changed-source segments pass with races.
-State-flow stays checked. Shared assets were reused; diagnostic scratch removed.
-
-Confirmed ordinary-bottom fallback now covers position/velocity, life/control/
-power updates, state transitions and entry ctrl/velset. Keep omitted attributes
-separate from explicit bottom and continue later argument evaluation. Check
-Value.RuntimeError before zero coercion: bitwise-not-of-bottom remains a fatal
-VM error, with source context and no partly applied vector. The existing combat
-scenario covers the connected runtime/recovery path and fatal diagnostics. All
-five segments pass with races; rebuilt Linux matches twelve beta observations.
-Shared assets reused; diagnostic scratch removed. Other entry/controller
-parameters retain their existing policies; do not assume uniform VM coercion.
-
-Animation selection uses the first duplicate AIR action; later blocks are still
-validated and included in allocation bounds. ChangeAnim/ChangeAnim2 restart at
-element1 for invalid selectors and use ordinary-bottom argument fallback. Keep
-Player.Reset strict for clock validation. The connected combat/runtime scenario
-and rebuilt Linux match twelve beta observations and recover stand/control.
-All five segments pass with races; diagnostic scratch removed.
-
-Hold-only commands ignore buffer.time. /x+y holds the whole chord; ordinary
-x+y still requires simultaneous per-button press edges. Held sequence endings
-complete on a fresh down transition and retain their normal command buffer.
-Preserve human/helper remapping, recovery and subsequent AI in the existing
-connected command scenario. Rebuilt Linux matches twelve native keyboard
-observations; four affected segments pass with races, state-flow stays checked.
-Probe overlays/captures removed; shared assets reused.
-
-Character DEF metadata/resources and motif Info/Files retain first definitions,
-including blank stcommon and original source lines. Later bad duplicates are
-ignored; a bad primary reference must still report its own path/line. Preserve
-the existing legacy-palette/ZIP-selection/fight/reload asset scenario. Native
-and rebuilt Linux duplicate-definition loading agree. Affected match-flow passes
-with races; other completed segments stay checked. Probe overlays/captures removed.
-
-Language selection now reaches definition assets across storyboard/selection/VS/
-fight/KO/rematch. Use parsers.Localize for whole-group selection, retaining source
-lines, scene order and exemptions. Keep standalone AIR undecorated and preserve
-quote banks for the runtime selector. Motif-relative rosters precede shared data.
-All five segments pass with races; rebuilt Linux matches the twelve native
-observation slots. The diagnostic overlay/captures were inspected and removed.
-
-Target parameter admission now follows target existence, then ID selection.
-TargetBind checks ID before time/position; ParentVarSet/Add require a live parent
-before evaluating index/value. Keep compile-time and admitted VM errors strict.
-The connected entity flow spans grab/drop, skipped effects/errors, actual parent
-writes, helper retirement and recovery/reset. All five segments pass with races;
-rebuilt Linux matches twelve native slots. Diagnostic scratch was removed.
-
-Helper admission uses CreateHelperEvaluated so a full bank skips every parameter
-expression. Keep direct creation capacity checks and compile-time validation.
-In borrowed contexts, forward CreateHelperEvaluated through the state adapter:
-convert admitted positions once, retain helper-unit size overrides and issuer
-banks/profile/programs. The connected Pause/SelfState/retirement flow and rebuilt
-Linux match twelve native mixed-profile context observations.
-The connected entity flow covers rejection, unused errors, retirement/vacancy
-reuse, parent confirmation and reset. All five segments pass with races; rebuilt
-Linux matches twelve native slots. The helper probe overlay/capture was removed.
-
-CommandBuffer reserves CMD motion/charge/buffer windows before recording input;
-keep sizing overflow-safe and storage lazy. Independent player/helper histories
-survive long charges/motions and are discarded on fresh matches. The existing
-human/helper/recovery/AI scenario passes; native/Linux counts agree for long and
-short charge, expired/delayed motion and fresh presses. Four affected segments
-pass with races; state-flow stays checked. Command probe scratch was removed.
-
-AI command plans store timed input steps, removing the old 120-frame planner
-cutoff without per-tick plan allocation. Preserve remapping and incremental
-playback through the ordinary CMD/CNS path. The connected flow completes a
-300-tick AI charge, contact/recovery and fresh stock combat; four affected
-segments pass with races and Linux rebuilt. Native AI policy remains partial.
-
-Variable writes admit destinations before values: invalid register IDs and
-invalid/reversed ranges are no-ops, including unused side effects/VM errors.
-Valid ranges evaluate once and coerce ordinary bottom to zero; genuine admitted
-VM failures stay fatal. The connected runtime recovery and rebuilt Linux match
-twelve native observations; all five segments pass with races. Scratch removed.
-
-Pause/SuperPause use zero for ordinary bottom, preserve omitted defaults and
-continue later arguments, including zero-duration power updates. True VM errors
-stay fatal before applying effects. The shared-clock lifecycle and rebuilt Linux
-match twelve native observations; all five segments pass with races. Native
-DestroySelf evaluates parameters even for roots; do not generalize helper gates.
-
-CMD defaults are global before command parsing; first values/remaps/attributes
-win, including disabled slots. Keep command time >=1, buffer time 1–30 and the
-full-character nonempty-command requirement with source context. Existing human/
-helper/long-charge AI and asset reload scenarios pass; native/Linux windows are
-5/30/1. Four affected segments pass with races; state-flow stays checked.
+Details and native observations remain in docs/STATE-MACHINE-FEATURES.json,
+PROGRESS.md and Git history. Keep future handoffs short; do not append a full
+checkpoint narrative to this file. Verify root modules with
+`sha256sum -c game/mugen/temp/upstream-post-merge-module.sha256`.

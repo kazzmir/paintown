@@ -477,6 +477,9 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
+				if _, exists := currentState.Parameters[key]; exists {
+					continue
+				}
 				currentState.Parameters[key] = attributeExpression(attr)
 				if key == "type" {
 					currentState.Type = getAsString(attr.Value)
@@ -535,7 +538,7 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				ctrl.Name = strings.TrimSpace(parts[1])
 			}
 
-			typeSet := false
+			typeSet, persistentSet := false, false
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
 
@@ -554,6 +557,10 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 						}
 					}
 				} else if key == "persistent" {
+					if persistentSet {
+						continue
+					}
+					persistentSet = true
 					ctrl.Persistent = getAsInt(attr.Value)
 					ctrl.PersistentSource = attributeExpression(attr)
 				} else if key == "ignorehitpause" {

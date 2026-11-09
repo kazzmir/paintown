@@ -873,6 +873,69 @@ func animationCompatFlow(t *testing.T, m *Match) {
 	if c.StateNo != 0 || !c.Ctrl || c.Anim != 0 || c.Y != 0 {
 		t.Fatal("animation changes did not recover to stand/control", c.StateNo, c.Ctrl, c.Anim, c.Y)
 	}
+	// Continue through duplicate entry settings and persistence, while repeated
+	// triggers remain separate conditions. Preserve the first complete entry.
+	var entry strings.Builder
+	entry.WriteString(`[Statedef 9830]
+type=S
+type=A
+movetype=I
+movetype=A
+physics=N
+physics=S
+ctrl=1
+ctrl=0
+anim=0
+anim=9990
+velset=2,-1
+velset=9,-5
+poweradd=100
+poweradd=200
+[State origin]
+type=VarSet
+trigger1=Time=0
+v=58
+value=Pos X
+`)
+	for _, observation := range []struct {
+		slot       int
+		expression string
+	}{
+		{40, "Ctrl"}, {41, "StateType=S"}, {42, "MoveType=I"}, {43, "Anim"}, {44, "Vel X"}, {45, "Vel Y"}, {46, "Power"},
+	} {
+		fmt.Fprintf(&entry, "[State entry observation]\ntype=VarSet\ntrigger1=Time=0\nv=%d\nvalue=%s\n", observation.slot, observation.expression)
+	}
+	entry.WriteString("[State first persistence]\ntype=VarAdd\ntrigger1=1\npersistent=0\npersistent=1\nv=47\nvalue=1\n[State repeated trigger conditions]\ntype=VarAdd\ntrigger1=Time=0\ntrigger1=Time>0\nv=48\nvalue=1\n")
+	for _, observation := range []struct {
+		slot       int
+		expression string
+	}{{49, "Pos X-var(58)"}, {50, "Pos Y"}, {51, "Time"}} {
+		fmt.Fprintf(&entry, "[State motion observation]\ntype=VarSet\ntrigger1=Time=1\nv=%d\nvalue=%s\n", observation.slot, observation.expression)
+	}
+	entry.WriteString("[State land]\ntype=PosSet\ntrigger1=Time=3\ny=0\n[State stop]\ntype=VelSet\ntrigger1=Time=3\nx=0\ny=0\n[State recover]\ntype=SelfState\ntrigger1=Time=3\nvalue=0\nctrl=1\n")
+	definitions, err := cns.ParseNamed(strings.NewReader(entry.String()), "state-header-precedence.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.StateFile.States[9830] = definitions.States[9830]
+	for index := 40; index < 52; index++ {
+		c.SetVar(index, 0)
+	}
+	c.SetPower(0)
+	c.ChangeState(9830, -1, -1)
+	for tick := 0; tick < 8; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("state-header continuation", err)
+		}
+	}
+	for index, expected := range []int{1, 1, 1, 0, 2, -1, 100, 1, 0, 2, -1, 1} {
+		if c.GetVar(40+index) != expected {
+			t.Fatal("native state-header observation", index, c.GetVar(40+index), expected)
+		}
+	}
+	if c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelX != 0 || c.VelY != 0 {
+		t.Fatal("state-header lifecycle did not recover", c.StateNo, c.Ctrl, c.Y)
+	}
 }
 
 func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {

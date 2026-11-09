@@ -1,126 +1,55 @@
 # Current handoff
 
 Follow AGENTS.md. PROGRESS.md is the single completion ledger. Continue engine
-compatibility work using supplied beta content and packs. Do not repair more
-mod scripts. Failures that also reproduce in native are content findings.
-Keep the original packs and existing optional SF2 playable copy intact.
+compatibility using supplied beta content; no further mod-script repairs.
+Defects reproducing in native are content findings. Native AI policy and
+arbitrary content compatibility remain partial, even when routes are present.
 
-Latest compatibility checkpoints:
+Latest batch (five local checkpoints):
 
-- CMD defaults apply before commands regardless of placement. Keep first
-  settings/remaps/attributes, disabled mappings and buffer bounds 1–30. Full
-  character loads require a nonempty command set with resource context; fixed
-  content reloads. Human/helper/long-charge AI and asset/ZIP scenarios pass.
-  Native/Linux window counts agree at 5/30/1; four affected segments pass with
-  races, state-flow stays checked. Linux rebuilt; diagnostic scratch removed.
+- AI command plans use timed steps. A remapped 300-tick charge now completes
+  through CMD, attack/contact/damage/recovery, followed by fresh stock AI combat.
+- Variable writes admit IDs/ranges before evaluating values. Invalid/reversed
+  destinations skip side effects/errors; valid ranges evaluate once and use
+  ordinary-bottom zero fallback. Real admitted VM errors stay fatal.
+- Pause/SuperPause use zero for ordinary bottom, preserve omitted defaults and
+  later arguments, and retain zero-duration power updates and normal clocks.
+- CMD defaults are global. First settings/remaps/attributes win; buffers are
+  1–30 ticks. Full characters need a nonempty command set with resource context.
+- Statedef/persistent settings keep first values while repeated triggers remain
+  separate conditions. Entry/control/motion/power and recovery match native.
 
-- Pause/SuperPause ordinary numeric bottom uses zero; omitted values retain
-  defaults and later arguments run. Zero-duration SuperPause still changes
-  power. True VM errors remain fatal before applying effects. The shared-clock
-  lifecycle and rebuilt Linux match twelve native observations; all five
-  segments pass with races. DestroySelf on a root still evaluates parameters
-  in native; preserve that existing behavior rather than generalizing gates.
+All five connected segments pass with race detection against current source.
+Linux is rebuilt. Bounded native comparisons agree for variables, pause clocks,
+command windows (5/30/1) and state entry/persistence; AI command availability is
+covered by the connected scenario, not a claim of native AI decision parity.
+Current diagnostic scratch/captures were inspected and removed. The progress
+page now lists short completion checkmarks; detailed scope/evidence is in its
+feature catalog and Git history. No new test banks or per-parameter documents.
 
-- Variable register/range destinations admit value evaluation. Invalid IDs,
-  invalid ranges and reversed ranges skip the value and continue. Valid ranges
-  evaluate once and use ordinary-bottom zero fallback; genuine admitted VM
-  errors stay fatal. The connected runtime flow and rebuilt Linux match twelve
-  native observations; all five segments pass with races. Scratch removed.
+Preserve the implementation invariants in AGENTS.md, especially:
 
-- AI plans use timed input steps, including long charges, without allocating
-  one input array per tick. The connected command flow now completes a remapped
-  300-tick AI charge, attack/damage/recovery and a fresh stock AI fight. Four
-  affected segments pass with races; state-flow stays checked. Linux rebuilt.
-  This covers authored command availability, not native AI decision parity.
+- Borrowed helper admission converts position once, retains helper-unit size
+  overrides and issuer banks/profile/programs through parent SelfState.
+- No-op gates differ: native DestroySelf still evaluates parameters on roots.
+- Declared commands, held chords/guard, fresh-edge air jumps, crossover facing,
+  hit-paused bindings, combat stat scaling and borrowed Explod ownership.
+- Resource/palette/font bounds, native raster calibration and audio cursors.
 
-- Command history reserves the loaded CMD motion, charge and buffer window
-  before input is recorded. Keep sizing overflow-safe and allocation lazy;
-  player/helper buffers remain independent and fresh matches discard history.
-  The connected human/helper/recovery/AI flow covers long and short charges,
-  expired/delayed motions and fresh presses. Native/Linux counts agree; four
-  affected segments pass with races, state-flow stays checked.
-
-- Helper-bank capacity is checked before any Helper parameter expression.
-  CreateHelperEvaluated preserves this gate; direct creation retains its own
-  capacity check. Borrowed contexts must forward CreateHelperEvaluated through
-  the state adapter: convert positions once after admission, retain helper-unit
-  size overrides and issuer banks/profile/programs. Native/Linux mixed-profile
-  context observations agree through parent SelfState and helper retirement.
-  The entity flow covers full-bank rejection, skipped failures,
-  retirement/vacancy reuse, parent confirmation and round reset. All five
-  segments pass with races; rebuilt Linux matches twelve native slots.
-
-- Target controllers admit expressions only after target existence and ID
-  selection. TargetBind checks ID before time/position. ParentVarSet/Add skip
-  their expressions without a live parent. Keep compilation and admitted VM
-  failures strict. The same entity lifecycle now covers grab/drop, skipped
-  effects/errors, actual helper-parent writes, retirement and recovery. All
-  five segments pass with races; rebuilt Linux matches twelve native slots.
-
-- Config.Language now reaches all definition asset consumers. Localized groups
-  replace whole sections; missing sections fall back to English. Keep source
-  lines, scene order, command/state/BG exemptions and runtime quote banks.
-  Standalone AIR stays undecorated; localized Files can choose another bank.
-  Motif-local select.def resolves before shared data. The connected asset
-  lifecycle and all five segments pass with races; rebuilt Linux matches the
-  twelve native observation slots. Font glyph availability remains partial.
-
-- Character DEF and motif Info/Files use first values, including blanks and
-  original source lines. Ignored bad duplicates cannot replace sprites, fonts,
-  coordinate profiles or legacy palette policy. The existing asset/ZIP/menu/
-  fight/reload lifecycle passes; rebuilt Linux agrees with native loading and
-  metadata. Other completed segments stayed checked.
-- Hold-only commands ignore buffer.time; /x+y holds the entire chord. Held
-  sequence endings complete on their down edge and use the ordinary buffer.
-  Simultaneous-press chords keep per-button edges. The connected human/helper/
-  recovery/AI scenario passes; rebuilt Linux matches twelve native keyboard
-  observations. Four changed-source segments pass; state-flow stays checked.
-- AIR lookup retains the first duplicate action while validating later blocks.
-  Invalid ChangeAnim element selectors restart at element1; ordinary bottom
-  animation arguments use zero fallback. The connected combat/runtime flow and
-  rebuilt Linux match all twelve native observations, then recover control.
-- Ordinary invalid numeric results now use beta zero fallback in the confirmed
-  movement, life/control/power and state-transition paths, plus entry ctrl and
-  velset. Omitted attributes retain their defaults; later arguments still run.
-  Genuine VM errors remain terminal with source context. The existing combat
-  scenario spans movement/life/power, entry, SelfState recovery and fatal vector
-  diagnostics. Rebuilt Linux matches all twelve native observations.
-- InGuardDist includes opposing helpers and live projectiles independently of
-  their owner’s move type. Projectile defaults use size.proj.attack.dist in the
-  projectile’s coordinate profile; explicit guard.dist wins. Retiring attacks
-  stop contributing even while removal artwork remains. Native range flows and
-  Linux keyboard blocking agree: 5 chip damage, guard event, no hit.
-- Base attack/defence reach contact damage. Negative nonabsolute TargetLifeAdd
-  and LifeAdd share base/runtime/SuperPause defence reductions; healing and
-  absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack
-  despite its manual. The connected mixed-coordinate flow retains the twelve
-  native observations, recovery and fresh-round reset.
-
-Preserve earlier declared CMD press/hold/release windows, fresh-edge air jumps
-and per-flight budgets, borrowed-state Explod geometry/private-sprite scale,
-crossover facing and stable held guard. Paintown C++ turning is not normative.
-Preserve camera/sprite/shadow/alpha calibration, OnTop/HUD/global palette order,
-consumed-vs-read-ahead audio cursors and bounded SFF/font loading. Details are in
-AGENTS.md, the ledger and Git history.
-
-All five connected segments are checked with race detection after the runtime
-batch. Linux is rebuilt; owned-window observations agree with native. Shared
-assets were reused; current diagnostic scratch/captures/overlays were removed.
-The ledger remains 32/34 implemented items, 89 controller and 127 trigger routes.
-These are scoped checkmarks, not arbitrary native conformance or an effort
-estimate. Broad font/media acceptance, native AI policy and unverified rules/
-fidelity combinations remain partial. Physical CD audio, absent licensed fonts
-and other platforms are deferred. Do not regenerate historical matrices.
+Remaining: broader font/media/pack acceptance, native AI policy and unverified
+rules/fidelity combinations. Physical CD, absent licensed/CJK fonts and other
+platforms are deferred; Linux is the selected target. Do not regenerate matrices
+or call unknown combinations new implementation gaps without evidence.
 
 Author only game/mugen/. Local source/text commits are authorized; no pushes,
-binaries, generated banks or user configuration in Git. Preserve ignored
-mugen.yaml and unrelated/untracked work, including initial_placement_render_probe.py.
-Retain canonical temp/mugen-1.1b1, original SF2 assets, temp/sf2_mugen_playable,
-the shared build cache and one ignored temp/bin/mugen-go executable.
+binaries, generated banks or user configuration in Git. Keep ignored mugen.yaml
+and unrelated work, including tests/initial_placement_render_probe.py, untouched.
+Retain canonical temp/mugen-1.1b1, original SF2 pack/ZIP/executable,
+temp/sf2_mugen_playable, shared cache and one ignored temp/bin/mugen-go binary.
 
-Use the readonly mugen.mod/mugen.sum overlay. This host uses
-python3 game/mugen/temp/round-task-env.py with GOTOOLCHAIN=go1.26.9 and the
-authorized elevated prefix. Native/app/Go runs stay serial: await exit, then a
-separate owned-client guard before edits/new runs. Never reset shared servers.
-Root module files and user YAML remain unchanged. Root go.sum backup:
+Use the readonly mugen.mod/mugen.sum overlay with GOTOOLCHAIN=go1.26.9 through
+python3 game/mugen/temp/round-task-env.py. Native/app/Go runs stay serial: await
+exit, then a separate owned-client guard before edits/new runs. Never reset
+shared display/audio/Wine servers or expose cookies/unrelated process args.
+Root modules/user YAML remain unchanged. Root go.sum backup:
 temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked.

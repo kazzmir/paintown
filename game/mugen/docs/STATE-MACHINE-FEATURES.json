@@ -55,7 +55,7 @@
       "sources": [
         "engine/entry.go:EnterState"
       ],
-      "validation": "For a grounded, controllable command transition, automatic facing precedes destination entry expressions and velset. Native command observation still reads the old heading; first attack controllers read the corrected heading with entry velocity 4 retained. Explicit facep2 remains an independent entry rule. The connected contact/crossover lifecycle retains these observations. Ordinary bottom ctrl/velset values use the measured beta zero fallback; fatal VM errors retain their source context."
+      "validation": "For a grounded, controllable command transition, automatic facing precedes destination entry expressions and velset. Native command observation still reads the old heading; first attack controllers read the corrected heading with entry velocity 4 retained. Explicit facep2 remains an independent entry rule. The connected contact/crossover lifecycle retains these observations. Ordinary bottom ctrl/velset values use the measured beta zero fallback; fatal VM errors retain their source context. First Statedef attributes now retain entry/metadata precedence across control, type, physics, animation, velocity and power. The connected runtime/animation lifecycle matches twelve native entry/motion/persistence observations and recovers control."
     },
     {
       "id": "negative-states",
@@ -78,7 +78,8 @@
       "allocation": "item3",
       "sources": [
         "engine/statemachine.go:ExecuteState"
-      ]
+      ],
+      "validation": "Repeated persistent attributes retain their first value; repeated trigger lines remain separate conditions. The connected runtime/animation scenario covers once-only persistence and contradictory triggers through own-state recovery. Native and rebuilt Linux observations agree; all five segments pass with races."
     },
     {
       "id": "custom-states",
@@ -573,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f9f3326aab934628c68d76802da064bc38811503fef1afa612e75a107a7b3f5a"
+      "passed_source": "6cac7c37600c75c3d32f47e44c63f184064ea070816ce1e322325248fb6b1f68"
     },
     {
       "id": "combat",
@@ -617,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1a9fb64183a9cd8ddbd7b39614daab131c22ee159cb57aebbf0776aef1cef81a"
+      "passed_source": "c8234e5146f460be0a572b5d6ba47ed040a8c6cdfef1738548c730c82b0b7072"
     },
     {
       "id": "entities",
@@ -650,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ac7c0af580101e0b7e4cc4e4bbda37fcb953bc3ae407a9ca3b8b7eb027eee5c8"
+      "passed_source": "00d67ba58636cffd83ab1bf1bf8b080e69e128fee60629ac89bf0ec5c94fc18a"
     },
     {
       "id": "effects-pause",
@@ -685,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2bab5a364441b5512155411b99123766ef32e2a34d08a5440349022a718e13b1"
+      "passed_source": "d1b1a5199a0321afa4f849f7444199e75a15b9d81c20fc18798da7532aeb8946"
     },
     {
       "id": "match-flow",
@@ -764,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d630afe5381655b61fc9f5e474cc353477d6bb771c21e04b3e92186eea9d4dfc"
+      "passed_source": "d0bf24b3fac13c80dc87d4cf2cc093a5eab32897f81f82ae08e8d74de4ecd5b2"
     }
   ],
   "presentation_followups": [
@@ -944,6 +945,12 @@
       "name": "CMD defaults, duplicate settings and loading contract",
       "completed": true,
       "validation": "CMD defaults are resolved before commands regardless of section order. First duplicate defaults, remaps and command attributes win, including disabled mappings. Command time is at least one tick and buffer time is limited to 1\u201330. Full character loading rejects empty command sets with the CMD path and DEF context, and corrected content reloads. Existing human/helper/long-charge AI and asset/ZIP/reload scenarios cover these consumers. Four affected segments pass with races; state-flow stays checked. Rebuilt Linux matches native command-window counts 5/30/1. Diagnostic overlay/capture removed; shared assets reused."
+    },
+    {
+      "id": "state-header-precedence",
+      "name": "State entry and persistence first-value precedence",
+      "completed": true,
+      "validation": "Statedef attributes retain the first authored value in both raw entry parameters and parsed metadata. Repeated persistent attributes also retain the first value; repeated trigger lines remain separate conditions. The existing animation/runtime combat lifecycle continues through duplicate type/movetype/physics/control/animation/velocity/power settings, one-shot persistence, contradictory triggers and own-state recovery. All five segments pass with races. Rebuilt Linux matches all twelve native entry/motion/persistence observations. Diagnostic overlay/capture removed; shared assets reused."
     }
   ]
 }
