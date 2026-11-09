@@ -1,131 +1,53 @@
 # Current handoff
 
-Follow AGENTS.md. PROGRESS.md is the single completion ledger, now including
-the prior closures and the SF2 loading, presentation/recovery and pack fixes.
-Local source/text commits are
-authorized; no pushes, binaries, generated banks or tracked user configuration.
-Author only game/mugen/ and preserve unrelated/untracked work.
+Follow AGENTS.md. PROGRESS.md is the single completion ledger. Continue engine
+state-machine work; the user will provide another mod for compatibility testing.
+Do not repair more mod scripts. Failures that also reproduce in the original
+beta are content findings. Keep the existing optional SF2 playable copy intact.
 
-Latest direction: resume engine state-machine coverage; the user will supply
-another mod. Do not fix more SF2 scripts or count native-reproducing content
-defects against engine completion. Preserve the existing optional playable copy.
+Latest engine checkpoints:
 
-Current engine checkpoint: borrowed-state Explods now latch their evaluation
-coordinate width through deferred creation, convert geometry into issuer storage
-units and keep the creating state's private-sprite scale. Banks stay with the
-issuer. The connected entity flow spans mixed-coordinate contact, unavailable
-animation gating, effect creation/Pause, SelfState, expiry and round identity
-reset. All five affected segments pass with races. Rebuilt Linux effect position
-and dimensions agree with the beta scene. The related guard-distance observation
-matched existing behavior, so that controller was preserved. Scratch removed;
-no mod scripts or user configuration changed.
+- Air jumps now enter common state45 on a fresh up edge, with control, height
+  and per-flight limits. CNS owns velocity/animation. Grounded S/C restores the
+  budget before held guard can return early. The mixed 320p/1280p jump flow now
+  spans denied low/held input, allowed directional air jump, exhausted budget,
+  landing and a fresh flight, then body contact, Pause and round reset.
+- Borrowed-state Explods latch their evaluation coordinate width through
+  deferred admission. Geometry converts once into issuer storage units;
+  private-sprite scale retains the creating state's profile after SelfState.
+  Banks remain the issuer's. The connected entity flow covers contact, missing-
+  action gating, creation/Pause, own-state recovery, expiry and fresh identities.
+  Rebuilt Linux marker position and dimensions agree with the beta scene.
+- Guard-distance behavior in the related native observation matched the current
+  implementation. Preserve it rather than applying uniform controller scaling.
 
-The prior known-difference batch is complete. The user then supplied sf2_mugen
-for the first compatibility assessment; its executable matches the beta reference.
+All five connected segments are checked with race detection. The latest four
+changed-source segments passed; state-flow stayed checked. Linux is rebuilt.
+Native and Linux keyboard flows each accepted two air jumps across two flights
+and returned to idle. Current diagnostic scratch/captures/overlays were removed.
 
-Current SF2 checkpoint:
-- Extended the playable-copy repair across all ten matching state5900 scripts;
-  the earlier Ryu/Dhalsim-only list missed other opponents. The retained copy
-  is updated. --update preserves configuration, shares media and refuses local
-  script edits. All ten exit on round two; full Guile/Chun-Li intro/KO/reset/
-  round-two control/walking passed. Original scripts and user YAML unchanged.
-- KFM's incoming intro wood used Explod velocity, while only vel was consumed.
-  Creation now accepts that legacy alias. The connected title-to-match flow
-  checks visible incoming wood before impact, then break/control and rounds.
-  Native beta and rebuilt Linux pre-impact scenes were inspected. All five
-  segments pass with races; diagnostic scratch removed.
-- Fixed the reported rapid guard release/re-entry: held guard no longer falls
-  through into general walking/crouch transitions. Beta guard retains Ctrl=1;
-  common CNS owns posture, while release-forward and up-back jump stay usable.
-  The existing mixed-coordinate input/contact flow now spans held high/low guard,
-  blocked punch/recovery, release, re-guard and jump/landing. Four changed-source
-  segments pass with races; state-flow stays checked. Linux rebuilt and the
-  visible guard flow inspected. Scratch removed; shared assets/YAML preserved.
-- Crossover facing now follows the native beta command/state boundary. Command
-  expressions see the old heading, then controlled ground moves turn before
-  destination entry/velset. Walking turns play action5 and rematch the current
-  physical direction without another input tick. Locked attacks retain facing.
-  The connected contact flow includes landing-to-attack, held walking,
-  NoAutoTurn release, mixed-coordinate opponents and stage disable. All five
-  segments pass with races; Linux Ryu/Dhalsim crossover/input and audio inspected.
-  User cautioned that Paintown C++ turning was broken: it is not the reference.
-  Other turn/binding/hitpause/charge permutations remain unverified.
-- The reported Arcade failure came from reading an invalid hidden P2 cursor.
-  Handoff now uses saved roster snapshots and independent automatic opponents.
-  First Select Info values, row,column startcells, blank skipping, authored
-  cell/cursor sprites and portrait scale/axes are consumed. First private SFF
-  portraits can seed shared palettes without replacing combat/ACT palettes.
-- Native comparison confirms the first layout and explicit glyph coordinates
-  even for Type=Fixed (victory text ATW). The original pack shows eight normal
-  portraits; four boss slots are below the canvas in native too. Preserve it.
-- Fixed legacy StateTypeSet Type parameters, AnimElem time ranges/counter
-  comparisons, duplicate constants, bare numeric state headers, CMD dividers
-  and scalar Explod scale. A grouped audit compiles all 12 roster entries:
-  1,743 state programs, zero errors. Linux title-to-Arcade Ryu/Dhalsim and a
-  Guile/Honda fight run with keyboard input, HUD, health changes and audio.
-  All five connected segments and existing format/parser regressions pass
-  with races. Cases extend existing flows; no per-character fixture bank.
-- Follow-up fixes stock KFM portrait shrinkage by converting character units
-  into motif units. VS now consumes portraits, facing/scale/windows, legacy pos
-  and modern offset, names/spacing, match text, fades and background archives.
-  The connected flow checks actual background/portrait pixels and clipping;
-  earlier coverage only checked the transition. Stock/SF2 screens were inspected.
-- Omitted 1.0 movement/recovery constants now use beta defaults. Native 320p/
-  1280p observations confirm dimensional scaling and unitless recovery factors.
-  The existing sweep flow continues through the reported state5101 bounce,
-  lying down, get-up and restored control with optional constants removed.
-  Legacy ProjHitTime1 suffixes bind to ID queries. All five segments pass with
-  races; rebuilt Honda/Dhalsim ran for 60 seconds with audio and no missing-
-  constant or unknown-projectile-trigger diagnostics.
-- Ryu/Dhalsim's second-round stall also occurs in native: both custom state5900
-  scripts only exit when RoundNo=1. Preserve engine semantics and the original
-  pack. tools/sf2_playable.py makes temp/sf2_mugen_playable, sharing assets and
-  copying all matching repaired scripts plus writable config/log files. This retained
-  ignored working copy is for the user's play, not disposable test scratch.
-  Round two completes with movement and attacks from both characters there.
-- Full move/round compatibility across the roster remains unverified. Nonfatal
-  invalid AnimElem, missing sound/effect and numeric conversion diagnostics
-  remain. Missing sound/blank.mp3 is a nonfatal pack warning.
-- Prior Scene0bgDef/Scene0bg, explicit empty-slot and final WAV alignment fixes
-  remain covered. Actual truncated samples stay rejected. The README contains
-  the launch command for the pack's data/mugen1/system.def motif.
-- Pack, ZIP, bundled executable and user YAML are preserved. Scratch captures,
-  PCM, diagnostic overlays and input recipes were inspected/removed. Retain the
-  small playable copy above and single ignored executable. No new fixture bank.
+The ledger remains 32/34 implemented items, with 89 controller and 127 trigger
+routes. These are scoped functional checkmarks, not arbitrary native conformance
+or an effort estimate. Broad font/media acceptance, native AI policy and
+unverified compatibility/fidelity combinations remain partial. Physical CD audio,
+absent licensed fonts and other platforms are deferred. Do not regenerate old
+matrices or turn unverified permutations into independent implementation tasks.
 
-Prior closed scope:
+Preserve earlier camera return, indexed/shadow/RGBA calibration, OnTop/HUD/global
+palette order, consumed-vs-read-ahead audio cursors and bounded SFF/font loading.
+Keep crossover turns before destination entry, current-frame direction rematch,
+stable held guard and the Explod velocity alias. Details/checkmarks are in the
+ledger and Git history. Paintown C++ turning is not a normative reference.
 
-- Camera: preserve the unclipped participant midpoint before final stage limits.
-  All eleven beta camera/zoom samples match through time 120 (X 80.6977).
-- Rendering: fixed 3/8 indexed calibration, unsnapped source addresses and
-  delta-first ties-to-even byte filtering close sprite/shadow/RGBA differences.
-  OnTop effects blend over HUD before final AllPalFX; projected clipping keeps
-  parent coordinates. Rebuilt Linux output matches all four target beta RGB
-  regions exactly. Connected finite AIR blends, pause/expiry, HUD coverage,
-  letterboxes and global-palette composition pass.
-- KO echo: both current native and Go device captures pass the existing frozen
-  seven-segment reference, including the formerly missing quiet interval. Three
-  Go cue levels match exactly; relative starts differ at most 0.05s, within the
-  unchanged 0.35s capture criterion. Historical mismatch no longer reproduces;
-  retain the scheduler. Sample-exact device synchronization is not established.
-- All five connected segments are checked with race detection; existing render
-  color regressions also pass with races. Linux binary rebuilt. All owned
-  scratch/captures/PCM/logs/overlays were inspected and removed. Retain the single
-  ignored temp/bin/mugen-go executable and shared cache.
+Author only game/mugen/. Local source/text commits are authorized; no pushes,
+binaries, generated banks or user configuration in Git. Preserve ignored
+mugen.yaml and unrelated/untracked work, including initial_placement_render_probe.py.
+Retain canonical temp/mugen-1.1b1, original SF2 assets, temp/sf2_mugen_playable,
+the shared build cache and one ignored temp/bin/mugen-go executable.
 
-Checklist stays 32/34 implemented items, not conformance or effort. Next work is
-compatibility: representative external characters/stages, legacy/font behavior,
-unverified pause/binding/crop/filtering combinations and native AI policy.
-Physical CD audio, absent licensed fonts and other platforms remain deferred.
-Do not regenerate historical matrices or reopen completed segments by default.
-
-Retain shared asset/ZIP/portrait lifecycles, legacy PCX/FNT diagnostics and budgets,
-RGBA byte uploads, palette mapping revisions and saved AfterImage AIR clocks.
-Retain consumed-vs-read-ahead music cursors, shared PCM/float WAV decoding, reused
-Linux codec buffers and SFX quantization. Earlier details are in Git history.
-
-Use the private round-task-env.py wrapper with GOTOOLCHAIN=go1.26.9; runtimes stay
-serial: await exit, separate owned-client guard, then edits/new runs. Root module
-files stay read-only; use mugen.mod/mugen.sum. Preserve ignored local mugen.yaml.
-Standalone music-file playback CLI remains deferred. Root go.sum backup remains
-at temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked.
+Use the readonly mugen.mod/mugen.sum overlay. This host uses
+python3 game/mugen/temp/round-task-env.py with GOTOOLCHAIN=go1.26.9 and the
+authorized elevated prefix. Native/app/Go runs stay serial: await exit, then a
+separate owned-client guard before edits/new runs. Never reset shared servers.
+Root module files and user YAML remain unchanged. Root go.sum backup:
+temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked.

@@ -407,6 +407,17 @@ func (c *Character) updateCommands(isPaused bool) {
 	}
 }
 
+// Air jumps require a new physical up edge, including either upper diagonal.
+// A buffered/held holdup command must not turn an earlier low press into a jump
+// when the actor eventually reaches the minimum height.
+func (c *Character) justPressedUp() bool {
+	if c.Commands == nil {
+		return false
+	}
+	last := len(c.Commands.History) - 1
+	return c.Commands.tickMatches(last, "/$U") && !c.Commands.tickMatches(last-1, "/$U")
+}
+
 // Turning changes forward/back for the current physical input, without adding
 // another simulation tick or rewriting earlier motion/charge history.
 func (c *Character) turnCommandFrame() {

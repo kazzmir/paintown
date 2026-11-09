@@ -10,6 +10,8 @@ refreshes; see
 Grounded command moves now turn toward the opponent before state entry;
 walking uses the authored turning animation and preserves physical direction
 after a crossover. Ongoing locked attacks retain their facing.
+Air jumps honor each character's height and per-flight count settings: release
+and press jump again in midair. Landing restores the available air jumps.
 
 ## Requirements and data
 

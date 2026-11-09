@@ -323,3 +323,14 @@ own-state recovery and round reset. All five segments pass with races; Linux
 rebuilt and its marker position/dimensions agree with native. Guard-distance
 behavior in the related native observation matched the existing implementation.
 Diagnostic scratch removed; no mod scripts or user configuration changed.
+
+Automatic air jumps now select common state45 on a fresh raw up edge (including
+upper diagonals), subject to control, airborne posture, minimum height and the
+per-flight budget. A held/buffered low press must not activate later at height.
+Common CNS owns the start delay, directional velocity and animation. Reset the
+budget in S/C before held guard can return early. The existing mixed-coordinate
+jump scenario spans denied low/held input, allowed forward air jump, exhausted
+budget, landing and a second flight, then its prior body/pause/reset lifecycle.
+Four changed-source segments pass with races; state-flow stays checked. Native
+and rebuilt Linux input flows finish with two accepted jumps across two flights.
+All diagnostic scratch removed. No mod scripts or user configuration changed.

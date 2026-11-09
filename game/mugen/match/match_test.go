@@ -297,7 +297,7 @@ func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
 	frame := 0
 	for _, p := range m.Players {
 		p.Character.InputSource = func(int, int) []string {
-			if frame < 5 {
+			if frame < 5 || frame >= 6 && frame < 24 {
 				return []string{"DirUp"}
 			}
 			return nil
@@ -310,6 +310,9 @@ func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
 		}
 		for slot, p := range m.Players {
 			c := p.Character
+			if c.StateNo == 45 || c.AirJumpCount != 0 {
+				t.Fatal("held low-height press became an air jump", slot+1, frame, c.StateNo, c.AirJumpCount)
+			}
 			airborne[slot] = airborne[slot] || c.Y < 0 && c.StateType == "A"
 			landing[slot] = landing[slot] || c.StateNo == 52
 		}
@@ -320,7 +323,57 @@ func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
 			t.Fatalf("player %d jump/landing incomplete: airborne=%v landing=%v state=%d ctrl=%v y=%v vy=%v", slot+1, airborne[slot], landing[slot], c.StateNo, c.Ctrl, c.Y, c.VelY)
 		}
 	}
+	airJumpLandingFlow(t, m)
 	bodyPushFlow(t, m)
+}
+
+// Continue the mixed-coordinate stock jump through a fresh air-jump command,
+// exhausted budget, authored velocity, landing and a second complete flight.
+func airJumpLandingFlow(t *testing.T, m *Match) {
+	t.Helper()
+	for flight := 0; flight < 2; flight++ {
+		frame := 0
+		for _, p := range m.Players {
+			p.Character.InputSource = func(int, int) []string {
+				switch {
+				case frame < 5:
+					return []string{"DirUp"}
+				case frame == 16:
+					return []string{"DirUp", "DirForward"}
+				case frame == 30:
+					return []string{"DirUp", "DirBack"}
+				}
+				return nil
+			}
+		}
+		var entries [2]int
+		var previous [2]int
+		var launched [2]bool
+		for ; frame < 180; frame++ {
+			if err := m.Update(); err != nil {
+				t.Fatal("stock air-jump lifecycle", err)
+			}
+			for slot, p := range m.Players {
+				c := p.Character
+				if c.StateNo == 45 && previous[slot] != 45 {
+					entries[slot]++
+				}
+				if previous[slot] == 45 && c.StateNo == 50 {
+					launched[slot] = c.VelX > 0 && c.VelY < 0
+				}
+				if c.AirJumpCount > 1 || entries[slot] > 1 {
+					t.Fatal("stock per-flight air-jump budget exceeded", flight, slot+1, frame)
+				}
+				previous[slot] = c.StateNo
+			}
+		}
+		for slot, p := range m.Players {
+			c := p.Character
+			if entries[slot] != 1 || !launched[slot] || c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelY != 0 || c.AirJumpCount != 0 {
+				t.Fatal("stock air-jump/landing/reset incomplete", flight, slot+1, entries, launched, c.StateNo, c.Y, c.AirJumpCount)
+			}
+		}
+	}
 }
 
 // Continue the jump/landing scenario through one beta body-push lifecycle:

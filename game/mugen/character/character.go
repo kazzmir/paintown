@@ -1716,6 +1716,11 @@ func (c *Character) GetStateFile() *cns.CNS {
 	return c.StateFile
 }
 func (c *Character) HandleBuiltinTransitions() {
+	// Ground contact restores the per-flight budget even while held guard
+	// keeps the rest of the ordinary movement adapter from running.
+	if c.StateType == "S" || c.StateType == "C" {
+		c.AirJumpCount = 0
+	}
 	if c.StateNo == 5110 {
 
 		if !c.IsAlive() && c.GetAnimTime() == 0 {
@@ -1797,6 +1802,9 @@ func (c *Character) HandleBuiltinTransitions() {
 		if c.Ctrl && !c.Command("holddown") && (c.StateNo != 12 || c.MissingStateAllowed(12)) {
 			c.ChangeState(12, -1, -1) // Crouch to Stand, including an undefined exit.
 		}
+	} else if st == "A" && c.Ctrl && c.Command("holdup") && c.justPressedUp() && c.AirJumpCount < c.StateFile.Movement.AirJumpNum && c.Y <= -float64(c.StateFile.Movement.AirJumpHeight) {
+		// The common state owns the direction, velocity and three-pass start.
+		c.ChangeState(45, 0, -1)
 	}
 
 	// Falling recovery routes belong to authored common/custom CNS (5050).
@@ -1809,21 +1817,8 @@ func (c *Character) HandleBuiltinTransitions() {
 		c.AirJumpCount++
 	}
 
-	// Reset AirJumpCount on landing
-	if st == "S" || st == "C" {
-		c.AirJumpCount = 0
-	}
-
 	// Intro/round-over entry is owned by the match. Re-entering 191 or 180
 	// here every tick would restart scripted intros and victory pose deciders.
-
-	// Vertical Runs (110, 115) - Very simplified
-	if st == "S" && phys == "S" {
-		if c.Command("holdup") && c.Command("holdfwd") && c.StateNo != 40 {
-			// Some characters have a run-up or high jump
-			// c.ChangeState(110, -1, -1)
-		}
-	}
 }
 
 func (c *Character) ApplyFriction() {

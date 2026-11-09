@@ -25,6 +25,7 @@ Broader compatibility and deferred capabilities remain listed below.
 - [x] **Stable held guard and movement exits**: Held guard retains its state clock instead of falling through into ordinary walking/crouching. Native beta confirms Ctrl=1 during standing/crouching guard, immediate forward movement on release and up-back jumping. The existing mixed-coordinate combat scenario continues through posture changes, a real blocked punch/recovery, re-guard, release and jump/landing. Four changed-source segments pass with races; state-flow stays checked. Linux rebuilt and visible guard/posture/release inspected; diagnostic scratch removed.
 - [x] **Visible incoming character-intro effects**: Explod creation accepts the legacy velocity spelling used by stock KFM. The incoming block now moves onscreen before impact, followed by the broken pieces. Native beta and rebuilt Linux pre-impact scenes were inspected. The existing title-to-match scenario checks actual incoming-block pixels, break, control and complete rounds; all five connected segments pass with races. Diagnostic scratch removed.
 - [x] **Borrowed-state effect creation context**: Explods created in an opponent’s state retain the creating coordinate profile for offsets, motion and private-sprite scale while using the issuer’s banks. Deferred creation preserves animation/admission gates. The connected mixed-coordinate entity flow continues through Pause, SelfState, expiry and round reset. All five affected segments pass with races; rebuilt Linux position and sprite dimensions agree with the beta scene. The related guard-distance observation matched existing behavior. Scratch removed; no mod scripts changed.
+- [x] **Automatic air-jump state entry and budget**: The engine now selects common state45 from fresh airborne up input, honoring control, minimum height and the per-flight limit. Low/held input cannot activate later at height. Common CNS owns directional velocity and animation; grounded S/C restores the budget before guard can return early. The mixed-coordinate jump/body/Pause/reset scenario spans two flights. Four changed-source segments pass with races; state-flow stays checked. Native and rebuilt Linux keyboard flows each accepted two air jumps and returned to idle. Scratch removed.
 
 ## Completed scenario coverage
 
@@ -34,7 +35,7 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [x] **combat**: logical input → attack/contact → damage/state continuation → held guard/posture/contact/release/jump; sweep → legacy bounce/recovery.
+- [x] **combat**: logical input → attack/contact → damage/state continuation → held guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
 - [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.

@@ -103,9 +103,11 @@
         "character/coordinates.go:pushBoxesOverlapY",
         "character/ownership.go:automaticTurn",
         "character/commands.go:turnCommandFrame",
-        "character/character.go:changeStateWithEntry"
+        "character/character.go:changeStateWithEntry",
+        "character/character.go:HandleBuiltinTransitions",
+        "character/commands.go:justPressedUp"
       ],
-      "validation": "Connected jump/body-push lifecycle retains beta interior, wall, vertical, Width and air contact observations. Added PosFreeze on either root, then both, with mixed 320p/1280p coordinates. At stored VelX 2, beta positions are no-freeze(-6,26), first frozen(-7,25), second frozen(-5,27), both frozen(-6,26); velocities 2/2 and CNS times 350/350 continue. PosFreeze suppresses ordinary velocity movement, not late body separation. Scenario also checks release, real Pause and round reset clearing velocity/freeze state. Four changed-source segments pass with race detection; native scratch removed. Crossover follow-up uses the supplied Elecbyte beta and its CNS, rather than Paintown C++ turning behavior. A controlled ground command reads the old heading, then turns before destination entry expressions/velset; locked and airborne moves retain their heading. Common stand/crouch/walk auto-turn runs before the positive pass and plays the authored turn action. The existing contact scenario continues through landing-to-attack, held walking, NoAutoTurn release, mixed-coordinate opponent positions and stage-disabled turning. Current physical direction is rematched without an extra input tick, retaining pause-release commands. Native heading/action observations and entry velocity 4 match; all five segments pass with races. Rebuilt Linux Ryu/Dhalsim jump-over and continued input were inspected with audio; scratch removed."
+      "validation": "Connected jump/body-push lifecycle retains beta interior, wall, vertical, Width and air contact observations. Added PosFreeze on either root, then both, with mixed 320p/1280p coordinates. At stored VelX 2, beta positions are no-freeze(-6,26), first frozen(-7,25), second frozen(-5,27), both frozen(-6,26); velocities 2/2 and CNS times 350/350 continue. PosFreeze suppresses ordinary velocity movement, not late body separation. Scenario also checks release, real Pause and round reset clearing velocity/freeze state. Four changed-source segments pass with race detection; native scratch removed. Crossover follow-up uses the supplied Elecbyte beta and its CNS, rather than Paintown C++ turning behavior. A controlled ground command reads the old heading, then turns before destination entry expressions/velset; locked and airborne moves retain their heading. Common stand/crouch/walk auto-turn runs before the positive pass and plays the authored turn action. The existing contact scenario continues through landing-to-attack, held walking, NoAutoTurn release, mixed-coordinate opponent positions and stage-disabled turning. Current physical direction is rematched without an extra input tick, retaining pause-release commands. Native heading/action observations and entry velocity 4 match; all five segments pass with races. Rebuilt Linux Ryu/Dhalsim jump-over and continued input were inspected with audio; scratch removed. Automatic air jumps now consume the authored count/height settings and select common state45 on a new up edge. The existing mixed-coordinate jump flow rejects low/held input, accepts the directional air jump, rejects the exhausted attempt, lands and restores the next-flight budget. CNS keeps velocity/animation ownership. Native and rebuilt Linux keyboard flows each accepted two air jumps across two flights and returned to idle."
     },
     {
       "id": "helper-lifecycle",
@@ -554,7 +556,7 @@
     },
     {
       "id": "combat",
-      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation \u2192 held guard/posture/contact/release/jump; sweep \u2192 legacy bounce/recovery",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation \u2192 held guard/release \u2192 jump/air-jump budget/landing/reset \u2192 sweep/legacy bounce/recovery",
       "source_dirs": [
         "air",
         "background",
@@ -594,7 +596,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5c977da6928cc78f8992680c3f5d636d0bfaf0b50afde14eebf59456f9f45939"
+      "passed_source": "f88bf0268cf11860931bbbb9c6be830a1d7412b4e83f2501ba63d2d28670553a"
     },
     {
       "id": "entities",
@@ -627,7 +629,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e9cdf843b07dd06a1315987f51f92b81cbf1063b83f17e8264a3c0a596e14629"
+      "passed_source": "87fd5733408198cdbcaf08fae7a7e12fa526fbb1315efb2cfa7060d3f8ab0ca9"
     },
     {
       "id": "effects-pause",
@@ -662,7 +664,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f193db1469763347cb465ad6fe8f90502e02542320c6a9f24fda272fc04b40f8"
+      "passed_source": "4e5338def86c0f62df2af9abdb596227d1c63b2e85113911e75d781e41696906"
     },
     {
       "id": "match-flow",
@@ -741,7 +743,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "287e3eb7102d1005e733c0ceb28011946bab39c1bd9f5f3099138c1d654d2957"
+      "passed_source": "d65e975425289f0aa38c688d7158d34b0cc26d1a59f7b20c960e76503d831fc9"
     }
   ],
   "presentation_followups": [
@@ -819,6 +821,12 @@
       "name": "Borrowed-state effect creation context",
       "completed": true,
       "validation": "Explods created in an opponent\u2019s state retain the creating coordinate profile for offsets, motion and private-sprite scale while using the issuer\u2019s banks. Deferred creation preserves animation/admission gates. The connected mixed-coordinate entity flow continues through Pause, SelfState, expiry and round reset. All five affected segments pass with races; rebuilt Linux position and sprite dimensions agree with the beta scene. The related guard-distance observation matched existing behavior. Scratch removed; no mod scripts changed."
+    },
+    {
+      "id": "automatic-air-jump",
+      "name": "Automatic air-jump state entry and budget",
+      "completed": true,
+      "validation": "The engine now selects common state45 from fresh airborne up input, honoring control, minimum height and the per-flight limit. Low/held input cannot activate later at height. Common CNS owns directional velocity and animation; grounded S/C restores the budget before guard can return early. The mixed-coordinate jump/body/Pause/reset scenario spans two flights. Four changed-source segments pass with races; state-flow stays checked. Native and rebuilt Linux keyboard flows each accepted two air jumps and returned to idle. Scratch removed."
     }
   ]
 }
