@@ -64,6 +64,18 @@ command=x
 [Command]
 name="held-x"
 command=/x
+buffer.time=20
+[Command]
+name="held-chord"
+command=/x+y
+buffer.time=20
+[Command]
+name="held-sequence"
+command=/x,/z
+buffer.time=3
+[Command]
+name="simultaneous"
+command=x+z
 [Command]
 name="buffered-x"
 command=x
@@ -255,10 +267,10 @@ value=0
 	// explicitly buffered alias retains exactly its authored window.
 	root.IntVars[59], helper.IntVars[59] = 1, 1
 	for press := 1; press <= 2; press++ {
-		for frame := 0; frame < 12; frame++ {
+		for frame := 0; frame < 32; frame++ {
 			step("ButtonA")
 			for _, actor := range []*character.Character{root, helper} {
-				if actor.Command("x") != (frame == 0) || !actor.Command("held-x") || actor.Command("buffered-x") != (frame < 3) {
+				if actor.Command("x") != (frame == 0) || !actor.Command("held-x") || !actor.Command("held-chord") || actor.Command("buffered-x") != (frame < 3) {
 					t.Fatal("declared press/hold/buffer semantics were bypassed", press, frame, actor.InputSlot, actor.ActiveCommands)
 				}
 			}
@@ -269,8 +281,29 @@ value=0
 			}
 		}
 		step()
-		if root.Command("held-x") || helper.Command("held-x") || !root.Command("released-x") || !helper.Command("released-x") {
+		if root.Command("held-x") || helper.Command("held-x") || root.Command("held-chord") || helper.Command("held-chord") || !root.Command("released-x") || !helper.Command("released-x") {
 			t.Fatal("held-button release did not reach the authored release command")
+		}
+	}
+	// A held final symbol completes a sequence once and retains its authored
+	// buffer, unlike a standalone hold. Rolling the second button does not
+	// satisfy an ordinary simultaneous-press chord.
+	root.IntVars[59], helper.IntVars[59] = 0, 0
+	for frame := 0; frame < 6; frame++ {
+		step("ButtonA")
+	}
+	for frame := 0; frame < 12; frame++ {
+		step("ButtonA", "ButtonStart") // Logical z reads the physical Start key.
+		for _, actor := range []*character.Character{root, helper} {
+			if !actor.Command("held-chord") || actor.Command("held-sequence") != (frame < 3) || actor.Command("simultaneous") || actor.StateNo != 0 || !actor.Ctrl {
+				t.Fatal("held sequence/chord completion or recovery", frame, actor.ActiveCommands, actor.StateNo, actor.Ctrl)
+			}
+		}
+	}
+	step()
+	for _, actor := range []*character.Character{root, helper} {
+		if actor.Command("held-x") || actor.Command("held-chord") || actor.Command("held-sequence") {
+			t.Fatal("released holds survived into idle", actor.ActiveCommands)
 		}
 	}
 	for side := range request.Players {

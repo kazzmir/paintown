@@ -377,3 +377,11 @@ element1 for invalid selectors and use ordinary-bottom argument fallback. Keep
 Player.Reset strict for clock validation. The connected combat/runtime scenario
 and rebuilt Linux match twelve beta observations and recover stand/control.
 All five segments pass with races; diagnostic scratch removed.
+
+Hold-only commands ignore buffer.time. /x+y holds the whole chord; ordinary
+x+y still requires simultaneous per-button press edges. Held sequence endings
+complete on a fresh down transition and retain their normal command buffer.
+Preserve human/helper remapping, recovery and subsequent AI in the existing
+connected command scenario. Rebuilt Linux matches twelve native keyboard
+observations; four affected segments pass with races, state-flow stays checked.
+Probe overlays/captures removed; shared assets reused.

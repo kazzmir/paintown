@@ -7,6 +7,11 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Hold-only commands ignore buffer.time; /x+y holds the entire chord. Held
+  sequence endings complete on their down edge and use the ordinary buffer.
+  Simultaneous-press chords keep per-button edges. The connected human/helper/
+  recovery/AI scenario passes; rebuilt Linux matches twelve native keyboard
+  observations. Four changed-source segments pass; state-flow stays checked.
 - AIR lookup retains the first duplicate action while validating later blocks.
   Invalid ChangeAnim element selectors restart at element1; ordinary bottom
   animation arguments use zero fallback. The connected combat/runtime flow and

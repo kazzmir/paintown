@@ -65,8 +65,21 @@ func (cb *CommandBuffer) Match(cmdStr string, maxTime, bufferTime int) bool {
 		expanded = append(expanded, part)
 	}
 	parts = expanded
+	final := parts[len(parts)-1]
+	finalHeld := strings.HasPrefix(strings.TrimPrefix(final, ">"), "/")
+	if len(parts) == 1 && finalHeld {
+		// Hold-only commands ignore buffer.time; releasing the physical key
+		// must not keep a held command active throughout an authored buffer.
+		bufferTime = 1
+	}
 	for end := len(cb.History) - 1; end >= 0 && end >= len(cb.History)-max(1, bufferTime); end-- {
-		if !cb.tickMatches(end, parts[len(parts)-1]) {
+		if !cb.tickMatches(end, final) {
+			continue
+		}
+		// A held symbol that completes a sequence is an event. Its initial
+		// down transition completes the motion and starts the normal buffer;
+		// keeping it down cannot continually complete the same sequence.
+		if len(parts) > 1 && finalHeld && cb.tickMatches(end-1, final) {
 			continue
 		}
 		held := true
@@ -176,7 +189,16 @@ func (cb *CommandBuffer) tickMatches(tickIdx int, target string) bool {
 
 	target = strings.TrimPrefix(strings.TrimSpace(target), ">")
 	if strings.Contains(target, "+") {
+		heldChord := strings.HasPrefix(target, "/")
+		if heldChord {
+			target = strings.TrimPrefix(target, "/")
+		}
 		for _, part := range strings.Split(target, "+") {
+			part = strings.TrimSpace(part)
+			if heldChord {
+				// /x+y is one held chord, not held x plus a new y press.
+				part = "/" + part
+			}
 			if !cb.tickMatches(tickIdx, part) {
 				return false
 			}

@@ -425,7 +425,7 @@
         "cmd/remap.go:PhysicalInputs",
         "character/character.go:Command"
       ],
-      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races."
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused."
     },
     {
       "id": "modes",
@@ -601,7 +601,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fc3b947f403759b0d43bf800ba89f8ad28f1b24da5e37158c7688f9c178915fc"
+      "passed_source": "cf6aac4336a011e20b433ec3c81f6fead2bb5ba1808c15b8ba671459aff91549"
     },
     {
       "id": "entities",
@@ -634,7 +634,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d326384950cf0b73bb8d0db88d6b1145ec017844226c6e4f470172c9492aa9e2"
+      "passed_source": "64d67be539f4894c1ebff9ce0401edc9e569cef28379039886badbde9b9d0de6"
     },
     {
       "id": "effects-pause",
@@ -669,7 +669,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d4003dd890746c3c092502e78811f081265c574154be09461e1c9b69175f2b8a"
+      "passed_source": "fa0dfc2d460642faa816f217b21d2d487627faab838c6d188cf2330844db987f"
     },
     {
       "id": "match-flow",
@@ -748,7 +748,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "34ab996647d60502d30de231288636db683bbaf2ccb27611675236e814bcf6a8"
+      "passed_source": "f299e2cbf54319118880e2a9f8b2518672cc538e18f1a2500415f11d77eaf287"
     }
   ],
   "presentation_followups": [
@@ -862,6 +862,12 @@
       "name": "Animation selection and duplicate AIR compatibility",
       "completed": true,
       "validation": "AIR action lookup preserves the first duplicate definition while validating later blocks. ChangeAnim/ChangeAnim2 restart at the first element for out-of-range selectors and coerce ordinary bottom arguments to zero. The existing combat/runtime scenario continues through twelve native animation observations and stand/control recovery. All five segments pass with races; rebuilt Linux matches the twelve beta observations exactly. Shared assets reused; diagnostic scratch removed."
+    },
+    {
+      "id": "held-command-compat",
+      "name": "Held chords, release and command-buffer compatibility",
+      "completed": true,
+      "validation": "Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused."
     }
   ]
 }
