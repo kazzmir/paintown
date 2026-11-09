@@ -1,61 +1,44 @@
 # Current handoff
 
 Follow AGENTS.md. PROGRESS.md is the single completion ledger. Continue engine
-compatibility work; the user will provide another mod for compatibility testing.
-Do not repair more mod scripts. Failures that also reproduce in the original
-beta are content findings. Keep the existing optional SF2 playable copy intact.
+compatibility work using supplied beta content and packs. Do not repair more
+mod scripts. Failures that also reproduce in native are content findings.
+Keep the original packs and existing optional SF2 playable copy intact.
 
-Latest engine checkpoints:
+Latest compatibility checkpoints:
 
-- Guard range now includes opposing helpers and live projectiles independently
-  of the owner’s move type. Projectiles use size.proj.attack.dist by default;
-  explicit guard.dist retains precedence and units. Retiring attacks stop
-  contributing even while their removal animation remains. Native range flows
-  and rebuilt Linux keyboard blocking agree (5 chip, guard event, no hit). The
-  existing mixed-coordinate combat scenario continues through recovery/reset.
-- Base attack/defence now reach live contact damage. Negative nonabsolute
-  TargetLifeAdd/LifeAdd share base, runtime and SuperPause defence reductions.
-  Healing/absolute additions stay unscaled; the beta ignores issuer attack for
-  TargetLifeAdd despite its documentation. Twelve native clipboard observations
-  match rebuilt Linux exactly. The existing stock/mixed-coordinate combat flow
-  continues through those operations, recovery, KO and a fresh-round reset.
-- Declared CMD labels now use their matched press/hold/release/buffer rules.
-  Raw fallback cannot reactivate an inactive declared button while it stays
-  held. The connected player/helper attack/recovery flow preserves explicit
-  held input, charged release and buffer windows, then continues into stock AI.
-- Air jumps now enter common state45 on a fresh up edge, with control, height
-  and per-flight limits. CNS owns velocity/animation. Grounded S/C restores the
-  budget before held guard can return early. The mixed 320p/1280p jump flow now
-  spans denied low/held input, allowed directional air jump, exhausted budget,
-  landing and a fresh flight, then body contact, Pause and round reset.
-- Borrowed-state Explods latch their evaluation coordinate width through
-  deferred admission. Geometry converts once into issuer storage units;
-  private-sprite scale retains the creating state's profile after SelfState.
-  Banks remain the issuer's. The connected entity flow covers contact, missing-
-  action gating, creation/Pause, own-state recovery, expiry and fresh identities.
-  Rebuilt Linux marker position and dimensions agree with the beta scene.
-- Guard-distance behavior in the related native observation matched the current
-  implementation. Preserve it rather than applying uniform controller scaling.
+- Ordinary invalid numeric results now use beta zero fallback in the confirmed
+  movement, life/control/power and state-transition paths, plus entry ctrl and
+  velset. Omitted attributes retain their defaults; later arguments still run.
+  Genuine VM errors remain terminal with source context. The existing combat
+  scenario spans movement/life/power, entry, SelfState recovery and fatal vector
+  diagnostics. Rebuilt Linux matches all twelve native observations.
+- InGuardDist includes opposing helpers and live projectiles independently of
+  their owner’s move type. Projectile defaults use size.proj.attack.dist in the
+  projectile’s coordinate profile; explicit guard.dist wins. Retiring attacks
+  stop contributing even while removal artwork remains. Native range flows and
+  Linux keyboard blocking agree: 5 chip damage, guard event, no hit.
+- Base attack/defence reach contact damage. Negative nonabsolute TargetLifeAdd
+  and LifeAdd share base/runtime/SuperPause defence reductions; healing and
+  absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack
+  despite its manual. The connected mixed-coordinate flow retains the twelve
+  native observations, recovery and fresh-round reset.
 
-All five connected segments are checked with race detection. The latest four
-changed-source segments passed; state-flow stayed checked. Linux is rebuilt.
-Native and Linux keyboard flows each accepted two air jumps across two flights
-and returned to idle. The latest held-button flows also agree: one attack while
-held, then a second after release/repress. Current diagnostic scratch/captures/
-overlays were removed.
+Preserve earlier declared CMD press/hold/release windows, fresh-edge air jumps
+and per-flight budgets, borrowed-state Explod geometry/private-sprite scale,
+crossover facing and stable held guard. Paintown C++ turning is not normative.
+Preserve camera/sprite/shadow/alpha calibration, OnTop/HUD/global palette order,
+consumed-vs-read-ahead audio cursors and bounded SFF/font loading. Details are in
+AGENTS.md, the ledger and Git history.
 
-The ledger remains 32/34 implemented items, with 89 controller and 127 trigger
-routes. These are scoped functional checkmarks, not arbitrary native conformance
-or an effort estimate. Broad font/media acceptance, native AI policy and
-unverified compatibility/fidelity combinations remain partial. Physical CD audio,
-absent licensed fonts and other platforms are deferred. Do not regenerate old
-matrices or turn unverified permutations into independent implementation tasks.
-
-Preserve earlier camera return, indexed/shadow/RGBA calibration, OnTop/HUD/global
-palette order, consumed-vs-read-ahead audio cursors and bounded SFF/font loading.
-Keep crossover turns before destination entry, current-frame direction rematch,
-stable held guard and the Explod velocity alias. Details/checkmarks are in the
-ledger and Git history. Paintown C++ turning is not a normative reference.
+All five connected segments are checked with race detection after the runtime
+batch. Linux is rebuilt; owned-window observations agree with native. Shared
+assets were reused; current diagnostic scratch/captures/overlays were removed.
+The ledger remains 32/34 implemented items, 89 controller and 127 trigger routes.
+These are scoped checkmarks, not arbitrary native conformance or an effort
+estimate. Broad font/media acceptance, native AI policy and unverified rules/
+fidelity combinations remain partial. Physical CD audio, absent licensed fonts
+and other platforms are deferred. Do not regenerate historical matrices.
 
 Author only game/mugen/. Local source/text commits are authorized; no pushes,
 binaries, generated banks or user configuration in Git. Preserve ignored

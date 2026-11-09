@@ -123,6 +123,15 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 	for _, name := range entryOrder {
 		for _, expr := range program.values[name] {
 			value := evaluator.EvaluateValue(expr, env)
+			if err := value.RuntimeError(); err != nil {
+				return stateError(state, fmt.Errorf("state %d entry %s: %w", state.ID, name, err))
+			}
+			// The beta coerces ordinary bottom to zero for these entry
+			// attributes, continuing to later vector components. Fatal VM
+			// errors remain errors and omitted attributes still retain state.
+			if value.IsBottom() && (name == "ctrl" || name == "velset") {
+				value = evaluator.Int(0)
+			}
 			if !value.IsNumber() {
 				return stateError(state, fmt.Errorf("state %d entry %s = %s evaluated to %v", state.ID, name, expr.String(), value))
 			}

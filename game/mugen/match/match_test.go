@@ -9,6 +9,7 @@ import (
 
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
@@ -189,6 +190,7 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			}
 			heldGuardFlow(t, m)
 			combatScalingFlow(t, m)
+			runtimeFallbackFlow(t, m)
 			return
 		}
 	}
@@ -629,6 +631,114 @@ Clsn1[0]=-1000,-1000,1000,1000
 		c := player.Character
 		if c.Life != c.MaxLife || c.AttackMul != 1 || c.DefenceMul != 1 || c.GetDefenceDamageMultiplier() != .5 || c.StateFile.Data.Attack != 150 {
 			t.Fatal("round reset lost base stats or retained temporary damage adjustments", c.Life, c.AttackMul, c.DefenceMul, c.GetDefenceDamageMultiplier())
+		}
+	}
+}
+
+// Continue the recovered fight through ordinary bottom-valued controller
+// arguments, a same-tick state entry and SelfState back to grounded control.
+// These twelve observations match a single native beta runtime sequence.
+func runtimeFallbackFlow(t *testing.T, m *Match) {
+	t.Helper()
+	var script strings.Builder
+	script.WriteString("[Statedef 9700]\ntype=S\nmovetype=I\nphysics=N\nctrl=0\nanim=0\n")
+	operation := func(kind, params string) {
+		fmt.Fprintf(&script, "[State operation]\ntype=%s\ntrigger1=Time=0\n%s\n", kind, params)
+	}
+	snapshot := func(index int, expression string) {
+		operation("VarSet", fmt.Sprintf("v=%d\nvalue=%s", 40+index, expression))
+	}
+	operation("AssertSpecial", "flag=noko")
+	operation("PosSet", "x=40\ny=-20")
+	operation("PosSet", "x=1/0\ny=(var(58):=9)")
+	snapshot(0, "Pos X")
+	snapshot(1, "Pos Y")
+	operation("PosAdd", "x=(var(58):=var(58)+1)\ny=1/0")
+	snapshot(2, "Pos X")
+	operation("VelSet", "x=2\ny=4")
+	operation("VelMul", "x=1/0\ny=.5")
+	snapshot(3, "Vel X")
+	snapshot(4, "Vel Y")
+	operation("LifeAdd", "value=1/0")
+	snapshot(5, "Life")
+	operation("LifeSet", "value=1/0")
+	operation("LifeAdd", "value=100")
+	snapshot(6, "Life")
+	operation("PowerSet", "value=50")
+	operation("PowerSet", "value=1/0")
+	operation("PowerAdd", "value=100")
+	operation("PowerAdd", "value=1/0")
+	snapshot(7, "Power")
+	operation("CtrlSet", "value=1/0")
+	snapshot(8, "Ctrl")
+	operation("PosSet", "x=11\ny=-30")
+	operation("VelSet", "x=0\ny=0")
+	operation("ChangeState", "value=9702\nctrl=1\nanim=0")
+	script.WriteString("[Statedef 9702]\ntype=S\nmovetype=I\nphysics=N\nanim=0\nctrl=1/0\nvelset=1/0,2\n")
+	snapshot(9, "Vel X")
+	snapshot(10, "Vel Y")
+	operation("LifeAdd", "value=-1000\nkill=1/0\nabsolute=1/0")
+	snapshot(11, "Life")
+	script.WriteString(`[State land]
+type=PosSet
+trigger1=Time=1
+y=1/0
+[State stop]
+type=VelSet
+trigger1=Time=1
+x=0
+y=0
+[State recover]
+type=SelfState
+trigger1=Time=1
+value=1/0
+ctrl=1
+[Statedef 9703]
+[State fatal controller]
+type=PosSet
+trigger1=1
+x=4
+y=~(1/0)
+[Statedef 9704]
+velset=~(1/0),2
+[State fatal entry]
+type=Null
+trigger1=1
+`)
+	states, err := cns.ParseNamed(strings.NewReader(script.String()), "runtime-fallback.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := m.Players[0].Character
+	for number, state := range states.States {
+		c.StateFile.States[number] = state
+	}
+	c.ChangeState(9700, 0, -1)
+	for tick := 0; tick < 8; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("runtime fallback lifecycle", err)
+		}
+	}
+	for index, expected := range []int{0, 9, 10, 0, 2, 1000, 100, 100, 0, 0, 2, 1} {
+		if got := c.GetVar(40 + index); got != expected {
+			t.Fatalf("native runtime observation %d: got %d want %d", index, got, expected)
+		}
+	}
+	if c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelX != 0 || c.VelY != 0 || c.Life != 1 || !c.IsAlive() || c.GetVar(58) != 10 {
+		t.Fatal("runtime fallback did not preserve evaluation or recover", c.StateNo, c.Ctrl, c.Y, c.VelX, c.VelY, c.Life, c.IsAlive(), c.GetVar(58))
+	}
+	// Genuine VM failures remain terminal and cannot partly apply a vector.
+	for _, number := range []int{9703, 9704} {
+		fatal := character.NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+		fatal.X, fatal.VelX, fatal.VelY = 37, 4, 5
+		var err error
+		if number == 9703 {
+			_, err = fatal.SM.ExecuteState(states.States[number], fatal)
+		} else {
+			err = fatal.SM.EnterState(states.States[number], fatal, engine.EntryOverrides{})
+		}
+		if err == nil || !strings.Contains(err.Error(), "bitwise not of bottom") || !strings.Contains(err.Error(), "runtime-fallback.cns") || fatal.X != 37 || fatal.VelX != 4 || fatal.VelY != 5 {
+			t.Fatal("fatal VM error was hidden or partly applied", number, err, fatal.X, fatal.VelX, fatal.VelY)
 		}
 	}
 }

@@ -360,3 +360,13 @@ coordinate profile; explicit guard.dist wins. Removal visuals are not attacks.
 Keep the existing mixed-coordinate guard/contact/recovery/reset scenario. Native
 and Linux fireball blocking agree; four changed-source segments pass with races.
 State-flow stays checked. Shared assets were reused; diagnostic scratch removed.
+
+Confirmed ordinary-bottom fallback now covers position/velocity, life/control/
+power updates, state transitions and entry ctrl/velset. Keep omitted attributes
+separate from explicit bottom and continue later argument evaluation. Check
+Value.RuntimeError before zero coercion: bitwise-not-of-bottom remains a fatal
+VM error, with source context and no partly applied vector. The existing combat
+scenario covers the connected runtime/recovery path and fatal diagnostics. All
+five segments pass with races; rebuilt Linux matches twelve beta observations.
+Shared assets reused; diagnostic scratch removed. Other entry/controller
+parameters retain their existing policies; do not assume uniform VM coercion.

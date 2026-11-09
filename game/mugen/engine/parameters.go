@@ -224,7 +224,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "changestate", "selfstate":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"ctrl", true, false}, {"anim", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}, {"ctrl", true, false}, {"anim", true, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			ctrlValue, hasCtrl := v["ctrl"]
 			animValue, hasAnim := v["anim"]
 			overrides := EntryOverrides{HasCtrl: hasCtrl, Ctrl: ctrlValue.Bool(), HasAnim: hasAnim, Anim: int(animValue.Number())}
@@ -249,7 +249,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "velset", "veladd", "velmul", "posset", "posadd":
-		return typedHandlerWithBottom(ctrl, []argumentSpec{{"x", false, false}, {"y", false, false}}, name == "velset" || name == "veladd", func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"x", false, false}, {"y", false, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			x, y := 0.0, 0.0
 			if name == "velset" {
 				x, y = env.GetVel()
@@ -281,7 +281,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "lifeadd":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"kill", true, false}, {"absolute", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}, {"kill", true, false}, {"absolute", true, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			amount := int(v["value"].Number())
 			absolute, hasAbsolute := v["absolute"]
 			if amount < 0 && (!hasAbsolute || !absolute.Bool()) {
@@ -302,7 +302,8 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 	case "sprpriority":
 		return compileSprPriority(ctrl)
 	case "ctrlset", "lifeset", "powerset", "poweradd", "hitadd":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, v map[string]evaluator.Value) error {
+		zeroBottom := name != "hitadd"
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}}, zeroBottom, func(env Environment, v map[string]evaluator.Value) error {
 			n := int(v["value"].Number())
 			switch name {
 			case "ctrlset":

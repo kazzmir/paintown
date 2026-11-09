@@ -53,7 +53,7 @@
       "sources": [
         "engine/entry.go:EnterState"
       ],
-      "validation": "For a grounded, controllable command transition, automatic facing precedes destination entry expressions and velset. Native command observation still reads the old heading; first attack controllers read the corrected heading with entry velocity 4 retained. Explicit facep2 remains an independent entry rule. The connected contact/crossover lifecycle retains these observations."
+      "validation": "For a grounded, controllable command transition, automatic facing precedes destination entry expressions and velset. Native command observation still reads the old heading; first attack controllers read the corrected heading with entry velocity 4 retained. Explicit facep2 remains an independent entry rule. The connected contact/crossover lifecycle retains these observations. Ordinary bottom ctrl/velset values use the measured beta zero fallback; fatal VM errors retain their source context."
     },
     {
       "id": "negative-states",
@@ -557,11 +557,11 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f50f248d324cb6ae30e7a69cb19cd0ce4015da762d229e6f4aa5c5e99321ba94"
+      "passed_source": "724b9bdacf48fc87d1abe5e5db5746fe3ade43ffe0eb5255bcc6c388eddb43e9"
     },
     {
       "id": "combat",
-      "contract": "logical input \u2192 attack/contact \u2192 damage/stat scaling/life adjustments/recovery/reset \u2192 held/projectile/helper guard/release \u2192 jump/air-jump budget/landing/reset \u2192 sweep/legacy bounce/recovery",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/stat scaling/life adjustments/runtime fallback/recovery/reset \u2192 held/projectile/helper guard/release \u2192 jump/air-jump budget/landing/reset \u2192 sweep/legacy bounce/recovery",
       "source_dirs": [
         "air",
         "background",
@@ -601,7 +601,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b8d62efea09e86561b7c1b791a91b0e35f57757bbe9ccbccf2d732f8475b0e9a"
+      "passed_source": "8cfc6f7b2f67df8af5646b949f040b7ef39de5df21dc2a73781b06eb0817ea26"
     },
     {
       "id": "entities",
@@ -634,7 +634,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f12fc374bea2e4bb1f4beaf6f7c055b3a98d76478575ea24dfc67e291b798d7f"
+      "passed_source": "d22c0fa6a393951c3c3464a8dc6e5ff32aa56876284d302a7c6fe47ef96a3633"
     },
     {
       "id": "effects-pause",
@@ -669,7 +669,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "03a94e9d9a57f49f876ed3919a1795d67a824a1b23646ac197895c59575ac571"
+      "passed_source": "6a2d469d99224359bb3785b7cba098cdbc51f42f7cec583dbbf6c132a3bcf497"
     },
     {
       "id": "match-flow",
@@ -748,7 +748,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "03db5b43eff145ea00db70f8ca4e6dc359e160a3ff41e13beacbf89101863608"
+      "passed_source": "15a51d2489a083d9b718eb4ff2dcada92cf5dbac5325f2cffe5aedb670b50c8f"
     }
   ],
   "presentation_followups": [
@@ -850,6 +850,12 @@
       "name": "Guarding against independently moving attacks",
       "completed": true,
       "validation": "InGuardDist includes opposing helpers and live projectiles after their owner returns to idle. Projectile defaults use size.proj.attack.dist; explicit guard.dist retains precedence and coordinate units. Native approach/pass/retirement observations and owned-keyboard fireball blocking agree with rebuilt Linux: 5 chip damage and a guard event rather than a hit. The existing mixed-coordinate combat scenario continues through recovery, damage adjustments and round reset. Four changed-source segments pass with races; state-flow stays checked. Shared assets were reused and diagnostic scratch removed."
+    },
+    {
+      "id": "core-runtime-fallback",
+      "name": "Runtime numeric fallback through state recovery",
+      "completed": true,
+      "validation": "Confirmed beta zero fallback for ordinary invalid numeric results in position/velocity controllers, life/control/power updates, state transitions, and entry ctrl/velset. Argument evaluation continues; omitted attributes retain their defaults. Genuine VM failures still return source-context errors without partly applying a vector. The existing combat scenario spans movement, life/power, same-tick entry, SelfState recovery and fatal diagnostics. All five connected segments pass with races; rebuilt Linux matches all twelve native observations. Shared assets were reused and diagnostic scratch removed."
     }
   ]
 }
