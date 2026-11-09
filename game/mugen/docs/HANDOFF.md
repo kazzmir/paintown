@@ -5,7 +5,7 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (three local checkpoints):
+Latest batch (four local checkpoints):
 
 - Legacy and v2 font fields retain first values. Native loads duplicate bitmap
   metadata with later invalid fields; rebuilt Linux loads the same v2 font.
@@ -22,10 +22,15 @@ Latest batch (three local checkpoints):
   banks. The connected storyboard/pack lifecycle passes with races; native and
   Linux complete the same intro-to-title flow.
 
-All five segments are checked with races; Linux is rebuilt. Prior scratch was
-removed. One immediate follow-up remains in the checklist: intro presentation
-inside a widescreen motif. The current disposable scene-compat overlay/captures
-remain only for that follow-up and must be removed when it finishes.
+- Storyboards retain motif-aspect presentation, centered layer/window origins
+  and visible side margins. Omitted windows do not crop the viewport. Native
+  also clips BGs with the scene window, contrary to its manual. Native/Linux
+  frame, sprite and clipped-region geometry agree for the checked 4:3-to-16:9
+  flow; small font/edge raster differences remain in the fidelity backlog.
+
+All five segments are checked with races; Linux is rebuilt. Owned temporary
+captures/overlays/drivers were removed. Keep arbitrary source-aspect, BG mask,
+font/filtering and device/native-AI combinations partial; do not start matrices.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

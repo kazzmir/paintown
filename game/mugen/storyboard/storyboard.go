@@ -271,38 +271,45 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 }
 
 func (s *Scene) drawContent(screen *ebiten.Image) {
+	s.drawContentAt(screen, 0)
+}
+
+// Layers and their authored window use a top-middle origin, like native
+// backgrounds. Overscan belongs to the visible viewport, not the nominal
+// storyboard width; the fitted vertical margin remains part of the origin.
+func (s *Scene) drawContentAt(screen *ebiten.Image, top float64) {
+	originX := float64(screen.Bounds().Dx()) / 2
 	if s.ClearColorSet {
 		screen.Fill(s.ClearColor)
 	}
 
-	// Build sprite map for background rendering
-	if s.Background != nil {
-		spriteMap := s.buildSpriteMap(screen)
-		s.Background.DrawLayer(screen, 0, 0, 0, 0, spriteMap)
-	}
-
-	// Draw layers (storyboard window does not clip the background).
+	// The supplied beta applies the scene window to BGs too, despite the
+	// manual's exemption. Preserve the full viewport origin while clipping.
 	target := screen
 	if s.WindowSet {
-		window := s.Window.Intersect(screen.Bounds())
+		window := s.Window.Add(image.Pt(int(originX), int(top))).Intersect(screen.Bounds())
 		if window.Empty() {
 			target = nil
 		} else {
 			target = screen.SubImage(window).(*ebiten.Image)
 		}
 	}
-	for _, l := range s.Layers {
-		if target == nil {
-			break
+	if target == nil {
+		return
+	}
+	backgroundLayer := func(layer int) {
+		if s.Background == nil {
+			return
 		}
-		l.Draw(target, s.DefaultPosition[0], s.DefaultPosition[1])
+		sprites := s.buildSpriteMap(screen)
+		projection := background.Projection{Space: coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}, Transform: coord.Transform{ScaleX: 1, ScaleY: 1}}
+		_ = s.Background.DrawLayerWithPaletteTint(target, layer, 0, 0, top, sprites, palette.Transform{}, [3]float32{1, 1, 1}, projection)
 	}
-
-	// Foreground
-	if s.Background != nil {
-		spriteMap := s.buildSpriteMap(screen)
-		s.Background.DrawLayer(screen, 1, 0, 0, 0, spriteMap)
+	backgroundLayer(0)
+	for _, l := range s.Layers {
+		l.Draw(target, originX+s.DefaultPosition[0], top+s.DefaultPosition[1])
 	}
+	backgroundLayer(1)
 
 }
 
@@ -513,9 +520,21 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 		p.Error = fmt.Errorf("%s storyboard canvas: %w", p.sb.Source, err)
 		return
 	}
-	if p.canvas == nil {
-		p.canvas = ebiten.NewImage(space.Width, space.Height)
+	// Keep enough source pixels for the whole visible viewport. A fitted
+	// nominal canvas would discard layers and backgrounds in the side margins.
+	width := int(math.Ceil(float64(game.Width) / storyTransform.ScaleX))
+	height := int(math.Ceil(float64(game.Height) / storyTransform.ScaleY))
+	x := (float64(game.Width) - float64(width)*storyTransform.ScaleX) / 2
+	y := (float64(game.Height) - float64(height)*storyTransform.ScaleY) / 2
+	top := (storyTransform.Y - y) / storyTransform.ScaleY
+	storyTransform.X, storyTransform.Y = x, y
+	if p.canvas == nil || p.canvas.Bounds().Dx() != width || p.canvas.Bounds().Dy() != height {
+		if p.canvas != nil {
+			p.canvas.Deallocate()
+		}
+		p.canvas = ebiten.NewImage(width, height)
 		p.canvas.Fill(color.Black)
+		p.contentScene = nil
 	}
 	if p.gameCanvas == nil || p.gameCanvas.Bounds().Dx() != game.Width || p.gameCanvas.Bounds().Dy() != game.Height {
 		if p.gameCanvas != nil {
@@ -534,7 +553,7 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 	// A display can draw the same simulation tick more than once. Retained
 	// scenes must not blend their layers again on each presentation refresh.
 	if p.contentScene != scene || p.contentTick != scene.ticker {
-		scene.drawContent(p.canvas)
+		scene.drawContentAt(p.canvas, top)
 		p.contentScene, p.contentTick = scene, scene.ticker
 	}
 	for _, layer := range scene.Layers {

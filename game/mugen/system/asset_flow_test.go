@@ -43,6 +43,9 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 	t.Cleanup(func() { input.GlobalManager = oldInput })
 	input.GlobalManager = input.NewInputManager(e.cfg)
 	input.GlobalManager.Keyboard = &flowKeyboard{}
+	oldWidth, oldHeight := e.cfg.Config.GameWidth, e.cfg.Config.GameHeight
+	e.cfg.Config.GameWidth, e.cfg.Config.GameHeight = 320, 240
+	defer func() { e.cfg.Config.GameWidth, e.cfg.Config.GameHeight = oldWidth, oldHeight }()
 	dir := t.TempDir()
 	root, err := filepath.Abs(e.dataDir)
 	if err != nil {
@@ -176,9 +179,15 @@ layer3.starttime=2
 [Scene Ending]
 end.time=3
 clearcolor=12,24,36
+window=-1000,-1000,1000,1000
+layer0.anim=701
+layer0.offset=-120,120
 [Scene0bgDef]
 [Scene0bg origin]
-type=dummy
+type=normal
+spriteno=0,0
+start=-120,190
+delta=0,0
 [Begin Action 700]
 Interpolate Offset
 Interpolate Scale
@@ -190,6 +199,8 @@ Interpolate Scale
 Interpolate Angle
 Interpolate Blend
 0,0,40,20,4,,AS128D128,2,0.5,90
+[Begin Action 701]
+0,0,0,0,-1
 `, filepath.Join(root, "data/kfm/intro.sff"), filepath.Join(root, "chars/kfm/kfm.snd"), bitmapPath)
 	path := filepath.Join(dir, "scene.def")
 	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
@@ -228,7 +239,10 @@ Interpolate Blend
 	e.currentState = state
 	canvas := ebiten.NewImage(640, 480)
 	defer canvas.Deallocate()
-	gameSpace := coord.Space{Width: e.cfg.Config.GameWidth, Height: e.cfg.Config.GameHeight}
+	gameSpace, err := coord.GameSpaceForStage(e.cfg.Config.GameWidth, e.motif.Info.LocalCoord)
+	if err != nil {
+		t.Fatal(err)
+	}
 	storyToGame, err := coord.Project(story.LocalCoord, gameSpace, true)
 	if err != nil {
 		t.Fatal(err)
@@ -238,7 +252,7 @@ Interpolate Blend
 		t.Fatal(err)
 	}
 	legacyPixel := func() color.NRGBA {
-		x := (100.5*storyToGame.ScaleX+storyToGame.X)*gameToWindow.ScaleX + gameToWindow.X
+		x := (float64(gameSpace.Width)/2+100.5*storyToGame.ScaleX)*gameToWindow.ScaleX + gameToWindow.X
 		y := (97.5*storyToGame.ScaleY+storyToGame.Y)*gameToWindow.ScaleY + gameToWindow.Y
 		return color.NRGBAModel.Convert(canvas.At(int(x), int(y))).(color.NRGBA)
 	}
@@ -310,19 +324,26 @@ Interpolate Blend
 	if !bytes.Equal(retained, previous) {
 		t.Fatal("presentation refresh re-blended retained scene layers")
 	}
-	cleared := false
+	cleared, sawMargin := false, false
 	for n := 0; n < 20 && e.currentState == state; n++ {
 		step()
 		if state.player.CurrentScene() == story.Scenes[2] {
 			cleared = true
+			if story.Scenes[2].Layers[0].Enabled {
+				sawMargin = true
+				if got := color.NRGBAModel.Convert(canvas.At(600, 310)).(color.NRGBA); got == (color.NRGBA{12, 24, 36, 255}) || got.A != 255 {
+					t.Fatal("wide storyboard viewport clipped side-margin layer", got)
+				}
+			}
 			if got := color.NRGBAModel.Convert(canvas.At(320, 240)).(color.NRGBA); got != (color.NRGBA{12, 24, 36, 255}) {
 				t.Fatal("explicit scene color did not replace retained content", got)
 			}
 		}
 	}
-	if !cleared || e.currentState != next {
+	if !cleared || !sawMargin || e.currentState != next {
 		t.Fatal("storyboard did not exit")
 	}
+	e.cfg.Config.GameWidth, e.cfg.Config.GameHeight = oldWidth, oldHeight
 	legacyPaletteAssetFlow(t, e, canvas)
 
 	// A malformed referenced resource remains a contextual load error, rather

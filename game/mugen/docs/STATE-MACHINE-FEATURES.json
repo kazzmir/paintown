@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e2fdc1f86935ab1f2dbba558c9d7f23958056a249838ce8472e6738061b7cd0c"
+      "passed_source": "3653dcae085e6456cbc51dd662ffcce1ef91732854586fa6b0076c29b16db4f1"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1677397f0dc48180de6a188da34e665cc532bca3f3b43d133c11ae129dd42ff3"
+      "passed_source": "b291a6cec3d7e7610e7b1eab76d0277be037311e58d7c9a0610d75d67bfc378b"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "359760468c84f65ceeee11cd5ae9a79fb45cb71b0f971b8ba2fc774cf62e2c1c"
+      "passed_source": "e6f49aa0bec699cdd3664d226875274cf421587133d4863e1e5659431f99205b"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "30bad470d3fdcbf7f9be7f51b28afe3dc38cff0bee95b578c53494c0a24bcb8b"
+      "passed_source": "5c79f958fe20f50e1bbc51b28a2c4f7c0ac708c1833a75474ae9be55395c8cf6"
     }
   ],
   "presentation_followups": [
@@ -1003,8 +1003,8 @@
     {
       "id": "motif-storyboard-presentation",
       "name": "Storyboard presentation inside a widescreen motif",
-      "completed": false,
-      "validation": "In the same 320x240 window, native presents the intro inside the 16:9 motif frame (top/bottom margins) and places its caption at x175,y58; Go fills the 4:3 window and starts the caption near x20,y35. Check parent presentation canvas and omitted layer origin against native before changing defaults. Current owned diagnostic overlay/captures are temporary inputs for this immediate follow-up."
+      "completed": true,
+      "validation": "Storyboard playback keeps the motif-aspect game frame at configured game width. Layers and authored windows use a top-middle origin; a viewport-sized retained surface permits artwork beyond nominal storyboard side bounds. Omitted scene/BG windows no longer introduce masking; authored scene windows carry forward. Native also clips BGs with the scene window, contrary to its manual; separate BG definitions confirm this. Native/Linux comparisons agree on frame extent, sprite/side-margin placement and clipped regions for a 320x240 storyboard inside a 16:9 motif/window flow. Caption/edge raster samples differ by about one pixel; arbitrary source-aspect/filtering parity is not established. The existing asset lifecycle covers configured/motif aspect mismatch, timed art/text/audio, clipping, retention, repeated draws, margin art and exit. All five segments are checked with race detection, Linux rebuilt, and owned captures/overlays/drivers removed."
     }
   ]
 }

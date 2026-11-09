@@ -674,8 +674,6 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			Trans:       "default",
 			Alpha:       [2]int{256, 256},
 			legacyTrans: legacyTrans,
-			Window:      [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
-			windowSet:   true,
 			Visible:     true,
 			Enabled:     true,
 		}
@@ -744,9 +742,11 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				common.Alpha[1] = int(v[1])
 				consumed[attr] = true
 			case "window":
+				common.windowSet = true
 				common.Window = GetVector4(attr.Value)
 				consumed[attr] = true
 			case "maskwindow":
+				common.windowSet = true
 				common.Window = GetVector4(attr.Value)
 				common.maskWindow = true
 				// 1.1 uses a top-middle origin and exclusive bottom/right;

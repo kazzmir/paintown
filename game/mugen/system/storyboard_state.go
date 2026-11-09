@@ -88,6 +88,17 @@ func (s *StoryboardState) Update() (State, error) {
 func (s *StoryboardState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	if s.player != nil {
-		s.player.DrawToWindow(screen, coord.Space{Width: s.engine.cfg.Config.GameWidth, Height: s.engine.cfg.Config.GameHeight}, s.engine.cfg.Video.KeepAspect)
+		game := coord.Space{Width: s.engine.cfg.Config.GameWidth, Height: s.engine.cfg.Config.GameHeight}
+		// Storyboards are menu presentation; native keeps the motif's aspect
+		// until a fight selects the stage aspect, using the configured game width.
+		if s.engine.motif != nil && s.engine.motif.Info.LocalCoord.Width > 0 && s.engine.motif.Info.LocalCoord.Height > 0 {
+			var err error
+			game, err = coord.GameSpaceForStage(game.Width, s.engine.motif.Info.LocalCoord)
+			if err != nil {
+				s.loadError = err
+				return
+			}
+		}
+		s.player.DrawToWindow(screen, game, s.engine.cfg.Video.KeepAspect)
 	}
 }

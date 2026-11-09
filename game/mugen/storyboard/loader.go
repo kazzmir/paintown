@@ -99,7 +99,8 @@ func Load(path, root string, languages ...string) (*Storyboard, error) {
 	clear := color.RGBA{A: 255}
 	clearSet := false
 	position := [2]float64{}
-	window := image.Rect(0, 0, story.LocalCoord.Width, story.LocalCoord.Height)
+	window := image.Rectangle{}
+	windowSet := false
 	for _, def := range definition.Scenes {
 		if !def.EndTimeSet || def.EndTime < 0 {
 			return nil, fmt.Errorf("%s [%s] (line %d): end.time is required and must be nonnegative", source, def.Name, def.Line)
@@ -118,9 +119,10 @@ func Load(path, root string, languages ...string) (*Storyboard, error) {
 		scene.DefaultPosition = position
 		if def.WindowSet {
 			window = image.Rect(def.Window[0], def.Window[1], def.Window[2]+1, def.Window[3]+1)
+			windowSet = true
 		}
 		scene.Window = window
-		scene.WindowSet = true
+		scene.WindowSet = windowSet
 		for index, event := range def.Sounds {
 			if !event.Set {
 				continue
