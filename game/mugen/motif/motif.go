@@ -188,8 +188,32 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 
 	motifDir := filepath.Dir(absPath)
 
-	for _, sec := range ast.Sections {
-		switch strings.ToLower(sec.Name) {
+	groups := make(map[string][]*parsers.Section)
+	for _, section := range ast.Sections {
+		name := strings.ToLower(section.Name)
+		switch name {
+		case "info", "files", "music", "title info", "select info", "vs screen", "option info":
+			groups[name] = append(groups[name], section)
+		default:
+			if strings.HasSuffix(name, "bgdef") {
+				groups[name] = append(groups[name], section)
+			}
+		}
+	}
+	readGroups := make(map[string]bool)
+	for _, original := range ast.Sections {
+		sec := original
+		name := strings.ToLower(sec.Name)
+		if group := groups[name]; len(group) > 0 {
+			if readGroups[name] {
+				continue
+			}
+			readGroups[name] = true
+			copy := *sec
+			copy.Attributes = parsers.FirstAttributes(group...)
+			sec = &copy
+		}
+		switch name {
 		case "info":
 			for _, attr := range sec.Attributes {
 				if defData.InfoLines[strings.ToLower(attr.ID.String())] != attr.Line {
@@ -638,17 +662,13 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 		archive := motif.SpriteData
 		var filename string
 		var line int
-		for _, section := range ast.Sections {
-			if !strings.EqualFold(section.Name, spec.prefix+"def") {
-				continue
-			}
-			for _, attr := range section.Attributes {
-				if strings.EqualFold(attr.ID.String(), "spr") {
-					filename, line = getString(attr.Value), attr.Line
-				}
+		declared := false
+		for _, attr := range parsers.FirstAttributes(groups[spec.prefix+"def"]...) {
+			if strings.EqualFold(attr.ID.String(), "spr") {
+				filename, line, declared = getString(attr.Value), attr.Line, true
 			}
 		}
-		if filename != "" {
+		if declared {
 			loadError := func(err error) error {
 				return fmt.Errorf("%s [%sdef] spr (line %d): %w", absPath, spec.prefix, line, err)
 			}

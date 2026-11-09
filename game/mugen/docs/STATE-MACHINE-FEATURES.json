@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a13c9a36182928c85db0598e6ad3e10506d3692026b79d9ebd9f89de1b9ca5f7"
+      "passed_source": "30bad470d3fdcbf7f9be7f51b28afe3dc38cff0bee95b578c53494c0a24bcb8b"
     }
   ],
   "presentation_followups": [
@@ -993,6 +993,18 @@
       "name": "Stage, background and fight layout field precedence",
       "completed": true,
       "validation": "Stage metadata/resources retain first fields across repeated groups. Background elements/controller groups retain first fields within each independent instance, without collapsing repeated BG names or AIR/state/CMD records. Fight layout lookups retain first fields for HUD and round scheduling. Native and rebuilt Linux both load/render the same stage with later invalid localcoord/sprite/type/controller fields and an ignored offscreen timer position. The connected camera/linked-parallax/reset and announcement/combo/expiry flows pass with races; four changed-source segments pass and unchanged state-flow stays checked. Owned overlays/captures removed; shared banks reused."
+    },
+    {
+      "id": "motif-storyboard-field-precedence",
+      "name": "Motif and storyboard declaration admission",
+      "completed": true,
+      "validation": "Motif music/title/selection/VS/options/background declarations and storyboard metadata/scene/layer/sound fields retain first values. Ordinary singleton groups merge first fields without collapsing ordered scenes, BG instances or AIR frames. Explicitly blank private motif BG sprite declarations remain resource errors rather than falling back to the shared bank. The connected storyboard/pack lifecycle passes with race detection through timed text/sound, scene completion, bad primary resources, corrected reload and pack retirement; other segments stay checked. Native and rebuilt Linux complete the same intro-to-title flow with deliberately invalid later resource/scene/menu fields. The visual comparison identifies the separate presentation follow-up below."
+    },
+    {
+      "id": "motif-storyboard-presentation",
+      "name": "Storyboard presentation inside a widescreen motif",
+      "completed": false,
+      "validation": "In the same 320x240 window, native presents the intro inside the 16:9 motif frame (top/bottom margins) and places its caption at x175,y58; Go fills the 4:3 window and starts the caption near x20,y35. Check parent presentation canvas and omitted layer origin against native before changing defaults. Current owned diagnostic overlay/captures are temporary inputs for this immediate follow-up."
     }
   ]
 }

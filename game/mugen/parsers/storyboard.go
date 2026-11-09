@@ -78,12 +78,30 @@ func ParseStoryboard(r io.Reader) (*StoryboardDef, error) {
 func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 	sb := &StoryboardDef{LocalCoord: coord.Default()}
 
-	for _, sec := range ast.Sections {
+	groups := make(map[string][]*Section)
+	for _, section := range ast.Sections {
+		name := strings.ToLower(strings.TrimSpace(section.Name))
+		if name == "info" || name == "scenedef" {
+			groups[name] = append(groups[name], section)
+		}
+	}
+	readGroups := make(map[string]bool)
+	for _, original := range ast.Sections {
+		sec := original
 		name := strings.ToLower(strings.TrimSpace(sec.Name))
-
+		if group := groups[name]; len(group) > 0 {
+			if readGroups[name] {
+				continue
+			}
+			readGroups[name] = true
+			copy := *sec
+			copy.Attributes = FirstAttributes(group...)
+			sec = &copy
+		}
+		fields := FirstAttributes(sec)
 		switch {
 		case name == "info":
-			for _, attr := range sec.Attributes {
+			for _, attr := range fields {
 				if strings.EqualFold(attr.ID.String(), "localcoord") {
 					space, err := coord.Parse(attr.RawValue)
 					if err != nil {
@@ -93,7 +111,7 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 				}
 			}
 		case name == "scenedef":
-			for _, attr := range sec.Attributes {
+			for _, attr := range fields {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
 				case "spr":
@@ -131,7 +149,7 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 			for i := range scene.Sounds {
 				scene.Sounds[i] = &SoundDef{Volume: 100}
 			}
-			for _, attr := range sec.Attributes {
+			for _, attr := range fields {
 				id := strings.ToLower(attr.ID.String())
 				switch {
 				case id == "window":

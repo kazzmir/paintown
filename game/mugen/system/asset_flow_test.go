@@ -114,24 +114,32 @@ A 0 2
 	}
 	source := fmt.Sprintf(`[Info]
 localcoord=320,240
+localcoord=invalid
 [SceneDef]
 spr=%s
+spr=missing-later.sff
 snd=%s
+snd=missing-later.snd
 font0=%s
+font0=missing-later.def
 font1=nested.def
 font2=absolute.def
 font3=legacy.fnt
 [Scene 0]
 end.time=12
+end.time=99
 clearcolor=0,0,0
+clearcolor=255,255,255
 bg.name=Scene0bg
 fadein.time=2
 fadein.col=200,80,40
 window=20,20,160,120
 layer0.anim=700
+layer0.anim=9999
 layer0.offset=70,60
 layer1.text="AB\nCD"
 layer1.font=0,0,1,255,180,100
+layer1.font=99,0,1
 layer1.offset=40,40
 layer1.textdelay=2
 layer1.starttime=1
@@ -143,6 +151,7 @@ layer3.text="A;A"
 layer3.font=3,1,1
 layer3.offset=100,100
 sound0.value=0,0
+sound0.value=9999,9999
 sound0.starttime=2
 sound0.volumescale=75
 sound0.pan=-127
@@ -1043,7 +1052,32 @@ moveoveremptyboxes=0
 rows=1
 columns=1
 pos=0,0
-`, filepath.Join(e.dataDir, "data/mugen1/system.sff"), filepath.Base(selectPath), filepath.Join(e.dataDir, "data/mugen1/fight.def"))
+[Title Info]
+menu.pos=20,30
+menu.pos=9999,9999
+menu.itemname.arcade="First arcade"
+menu.itemname.arcade="Ignored arcade"
+[Music]
+title.bgm=
+title.bgm=missing-later.mp3
+title.bgm.loop=1
+title.bgm.loop=invalid
+[TitleBGDef]
+spr=%q
+spr=missing-later.sff
+bgclearcolor=12,24,36
+bgclearcolor=255,255,255
+`, filepath.Join(e.dataDir, "data/mugen1/system.sff"), filepath.Base(selectPath), filepath.Join(e.dataDir, "data/mugen1/fight.def"), filepath.Join(e.dataDir, "data/mugen1/system.sff"))
+	if err := os.WriteFile(motifPath, []byte(motifSource), 0600); err != nil {
+		t.Fatal(err)
+	}
+	badBackground := strings.Replace(motifSource, "[TitleBGDef]\nspr=", "[TitleBGDef]\nspr=\nspr=", 1)
+	if err := os.WriteFile(motifPath, []byte(badBackground), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := motif.LoadMotif(motifPath, e.dataDir); err == nil || !strings.Contains(err.Error(), "titlebgdef") || !strings.Contains(err.Error(), "empty resource") {
+		t.Fatal("authored blank BG resource was rescued or lost context", err)
+	}
 	if err := os.WriteFile(motifPath, []byte(motifSource), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -1053,7 +1087,7 @@ pos=0,0
 		t.Fatal(err)
 	}
 	defer func() { e.motif = previousMotif }()
-	if e.motif.Info.Name != "First motif" || e.motif.Info.LocalCoord.Width != 320 || e.motif.Fonts[1] == nil {
+	if e.motif.Info.Name != "First motif" || e.motif.Info.LocalCoord.Width != 320 || e.motif.Fonts[1] == nil || e.motif.TitleInfo.MenuPos != [2]float64{20, 30} || e.motif.TitleInfo.ItemNames["arcade"] != "First arcade" || e.motif.TitleBG.BGClearColor != (color.RGBA{12, 24, 36, 255}) || e.motif.Music["title"].File != "" {
 		t.Fatal("motif loading replaced first metadata/resources", e.motif.Info, e.motif.Files)
 	}
 	selection := NewSelectState(e, "Arcade Mode")

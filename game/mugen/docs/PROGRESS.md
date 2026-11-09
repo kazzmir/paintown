@@ -52,6 +52,8 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Nested VM failures stop evaluation before partial writes**
 - [x] **Legacy and v2 font definition precedence**
 - [x] **Stage, background and fight layout field precedence**
+- [x] **Motif and storyboard declaration admission**
+- [ ] **Storyboard presentation inside a widescreen motif**: In the same 320x240 window, native presents the intro inside the 16:9 motif frame (top/bottom margins) and places its caption at x175,y58; Go fills the 4:3 window and starts the caption near x20,y35. Check parent presentation canvas and omitted layer origin against native before changing defaults. Current owned diagnostic overlay/captures are temporary inputs for this immediate follow-up.
 
 ## Completed scenario coverage
 
