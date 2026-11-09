@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "20fed4f36a20a9d21e5983f19ae94ad08dcf640d44a68343572ffee298e7b366"
+      "passed_source": "33c5597960cc8761127e3651ad2f4a7fe7260418b53109575a99ba23b285593e"
     }
   ],
   "presentation_followups": [
@@ -1065,6 +1065,12 @@
       "name": "Legacy configuration first-field admission before YAML overrides",
       "completed": false,
       "validation": "Legacy mugen.cfg singleton groups merge first fields before the independent explicit YAML layer. Native retains initial320x240 game resolution with a later Config640x480 group. The existing complete title/selection/VS/input/fight/KO/rematch scenario uses later invalid dimensions/motif/rules while retaining YAML key alternatives. No local user configuration changed. Batch acceptance pending."
+    },
+    {
+      "id": "configuration-runtime-consumers",
+      "name": "Shadow and quick-versus configuration consumers",
+      "completed": false,
+      "validation": "DrawShadows now gates fighter/effect floor rendering; explicit --stage retains precedence, while omitted quick-versus stage uses the documented Debug.StartStage with a conventional fallback. The connected zoom/reflection/foreground/reset lifecycle checks the disabled renderer. Supplied mugen.cfg/readme document these options. Batch acceptance pending."
     }
   ]
 }

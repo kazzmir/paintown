@@ -1618,6 +1618,12 @@ trigger1=1
 		t.Fatal("global shadow suppression retained stage reflections")
 	}
 	m.Timeline.GlobalNoShadow = false
+	e.cfg.Config.DrawShadows = false
+	f.Draw(canvas)
+	if !bytes.Equal(read(f.gameCanvas)[200*320*4:], fullScene[200*320*4:]) {
+		t.Fatal("DrawShadows=0 did not suppress floor reflection rendering")
+	}
+	e.cfg.Config.DrawShadows = true
 	// Foreground Explods cover the HUD and retain that ordering through the
 	// final palette pass. Their finite lifetime still belongs to the scene.
 	foregroundLife := 2

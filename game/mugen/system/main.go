@@ -160,7 +160,7 @@ func run() (runErr error) {
 
 	dataDir := flag.String("data-dir", "data-new/mugen", "Path to the MUGEN data directory")
 	quickMatch := flag.String("quick-match", "", "Start a versus match with two character directories, DEFs or ZIP[:DEF] entries, separated by a comma")
-	quickStage := flag.String("stage", "stages/kfm.def", "Stage DEF for --quick-match")
+	quickStage := flag.String("stage", "", "Stage DEF for --quick-match (defaults to Debug.StartStage)")
 	matchSeed := flag.Int64("match-seed", 0, "Initial match RNG seed for reproducible runs (1..2147483646; zero uses the clock)")
 	flag.Parse()
 	if *matchSeed < 0 || *matchSeed >= 2147483647 {
@@ -260,7 +260,14 @@ func run() (runErr error) {
 		if len(paths) != 2 {
 			return fmt.Errorf("--quick-match requires two character entries")
 		}
-		request := match.Request{Mode: "Versus Mode", StagePath: *quickStage}
+		stage := strings.TrimSpace(*quickStage)
+		if stage == "" {
+			stage = cfg.Debug.StartStage
+		}
+		if stage == "" {
+			stage = "stages/kfm.def"
+		}
+		request := match.Request{Mode: "Versus Mode", StagePath: stage}
 		for slot, path := range paths {
 			request.Players[slot] = match.Selection{DefPath: strings.Trim(strings.TrimSpace(path), "\""), Palette: slot + 1}
 		}
