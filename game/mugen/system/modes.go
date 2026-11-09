@@ -66,7 +66,7 @@ func (s *SelectState) prepareMode(request match.Request) (match.Request, error) 
 		if err != nil {
 			return request, err
 		}
-		definition, err := parsers.ParseSelectDef(file)
+		definition, err := parsers.ParseSelectDef(file, s.engine.cfg.Config.Language)
 		file.Close()
 		if err != nil {
 			return request, err

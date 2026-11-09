@@ -884,7 +884,7 @@ spriteno=1234,5678
 		}
 	}
 	fightPath := write("locale HUD/fight.def", read(filepath.Join(e.dataDir, "data/mugen1/fight.def"))+"\n[ja.Round]\nmatch.wins=1\n[ja.Time]\npos=15,20\n")
-	write("locale select.def", fmt.Sprintf("[Characters]\n\"%s\", \"%s\"\n", path, stagePath))
+	write("locale select.def", fmt.Sprintf("[Characters]\n\"%s\", \"%s\", order=1\n\"%s\", \"%s\", order=2\n[Options]\narcade.maxmatches=1,0\n[ja.Options]\narcade.maxmatches=0,1\narcade.maxmatches=1,0\n", path, stagePath, path, stagePath))
 	motifPath := write("locale motif.def", fmt.Sprintf(`[Info]
 name="English motif"
 localcoord=320,240
@@ -907,9 +907,25 @@ columns=1
 		t.Fatal(err)
 	}
 	selection := NewSelectState(e, "Versus Mode")
-	if selection.loadError != nil || len(selection.chars) != 1 || selection.chars[0].Name != "Localized" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 12 {
+	if selection.loadError != nil || len(selection.chars) != 2 || selection.chars[0].Name != "Localized" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 12 {
 		t.Fatal("localized motif/relative roster/portraits", selection.loadError)
 	}
+	// Roster order and mode limits must use the same selected language. Both
+	// rows name one DEF, but only the order-two row belongs to this campaign.
+	arcade := NewSelectState(e, "Arcade Mode")
+	campaign := match.Request{Mode: "Arcade Mode"}
+	for side := range campaign.Teams {
+		campaign.Teams[side] = match.TeamSelection{Mode: match.Single, Members: []match.Selection{{DefPath: path, Palette: 1}}}
+	}
+	savedRun := e.modeRun
+	campaign, err = arcade.prepareMode(campaign)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(e.modeRun.opponents) != 1 || e.modeRun.opponents[0].Entry.Order != 2 || campaign.MatchNo != 1 {
+		t.Fatal("localized first mode limits did not reach the opponent schedule")
+	}
+	e.modeRun = savedRun
 	request := match.Request{Mode: "Versus Mode", StagePath: stagePath, Players: [2]match.Selection{{DefPath: path, Palette: 1}, {DefPath: path, Palette: 1}}}
 	vs := NewVersusState(e, request)
 	if vs.loadError != nil || vs.portraits[0].Name != "Localized" {

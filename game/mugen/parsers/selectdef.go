@@ -11,7 +11,7 @@ type CharacterEntry struct {
 	Stage        string // stage .def, e.g. "stages/kfm.def" or "random"
 	Music        string // optional override music
 	IncludeStage bool   // whether stage appears in vs/stage-select
-	Order        int    // arcade order priority (1-10)
+	Order        int    // arcade order priority (1-30)
 }
 
 // SelectDef holds parsed data from select.def.
@@ -40,6 +40,13 @@ func ParseSelectDefFromAST(ast *File) (*SelectDef, error) {
 		sd.ArcadeMaxMatches[i] = 0
 	}
 
+	var optionGroups []*Section
+	for _, sec := range ast.Sections {
+		if strings.EqualFold(sec.Name, "options") {
+			optionGroups = append(optionGroups, sec)
+		}
+	}
+	optionsRead := false
 	for _, sec := range ast.Sections {
 		name := strings.ToLower(strings.TrimSpace(sec.Name))
 
@@ -87,7 +94,11 @@ func ParseSelectDefFromAST(ast *File) (*SelectDef, error) {
 			}
 
 		case "options":
-			for _, attr := range sec.Attributes {
+			if optionsRead {
+				continue
+			}
+			optionsRead = true
+			for _, attr := range FirstAttributes(optionGroups...) {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
 				case "arcade.maxmatches":
