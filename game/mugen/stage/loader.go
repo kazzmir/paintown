@@ -50,8 +50,26 @@ func LoadStage(path string, dataDir string, languages ...string) (*Stage, error)
 	consumed := make(map[string]bool)
 	screenLeftPresent, screenRightPresent := false, false
 
-	for _, sec := range ast.Sections {
+	groups := make(map[string][]*parsers.Section)
+	for _, section := range ast.Sections {
+		name := strings.ToLower(section.Name)
+		switch name {
+		case "info", "music", "camera", "playerinfo", "stageinfo", "bound", "shadow", "reflection", "bgdef":
+			groups[name] = append(groups[name], section)
+		}
+	}
+	for _, original := range ast.Sections {
+		sec := original
 		name := strings.ToLower(sec.Name)
+		if group := groups[name]; len(group) > 0 {
+			if consumed[name] {
+				continue
+			}
+			consumed[name] = true
+			copy := *sec
+			copy.Attributes = parsers.FirstAttributes(group...)
+			sec = &copy
+		}
 		switch {
 		case name == "info":
 			consumed[name] = true

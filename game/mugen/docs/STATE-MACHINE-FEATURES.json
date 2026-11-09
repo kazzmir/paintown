@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "472e67b587f865d02e8a5d6578672f5369febfdbf93ba05be7879f26ace03b88"
+      "passed_source": "e2fdc1f86935ab1f2dbba558c9d7f23958056a249838ce8472e6738061b7cd0c"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f6ebeba47f97680a991dd63b21b45be1c67099235892d0a5153ff44974a34eb5"
+      "passed_source": "1677397f0dc48180de6a188da34e665cc532bca3f3b43d133c11ae129dd42ff3"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "26fbef88d768d1fcd0aa207f2ab55113bec41eb206410b411986ec2024375f2c"
+      "passed_source": "359760468c84f65ceeee11cd5ae9a79fb45cb71b0f971b8ba2fc774cf62e2c1c"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6d0b6a6cab00a5370f417a5dc2b11abd98584417c7e90974d6add37e11528f18"
+      "passed_source": "a13c9a36182928c85db0598e6ad3e10506d3692026b79d9ebd9f89de1b9ca5f7"
     }
   ],
   "presentation_followups": [
@@ -987,6 +987,12 @@
       "name": "Legacy and v2 font definition precedence",
       "completed": true,
       "validation": "Legacy FNT metadata and v2 header/Def settings keep the first authored value, including empty/invalid primary declarations. Later duplicates cannot replace a resource, alter metrics/bank/blending settings or cause spurious validation failures. Native loads both bitmap formats with deliberately invalid later metadata; rebuilt Linux loads the same v2 content. The connected storyboard asset flow covers bitmap/TrueType/legacy loading, text and color banks across scenes, a bad primary resource diagnostic and corrected-content reload. The affected match-flow segment passes with race detection; four unchanged segments remain checked. Linux rebuilt and owned-window capture inspected; scratch overlays removed."
+    },
+    {
+      "id": "stage-background-layout-precedence",
+      "name": "Stage, background and fight layout field precedence",
+      "completed": true,
+      "validation": "Stage metadata/resources retain first fields across repeated groups. Background elements/controller groups retain first fields within each independent instance, without collapsing repeated BG names or AIR/state/CMD records. Fight layout lookups retain first fields for HUD and round scheduling. Native and rebuilt Linux both load/render the same stage with later invalid localcoord/sprite/type/controller fields and an ignored offscreen timer position. The connected camera/linked-parallax/reset and announcement/combo/expiry flows pass with races; four changed-source segments pass and unchanged state-flow stays checked. Owned overlays/captures removed; shared banks reused."
     }
   ]
 }

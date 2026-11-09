@@ -93,7 +93,9 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   persistent settings and ordinary controller parameters. Preserve repeated
   trigger conditions and legacy StateTypeSet's second Type parameter.
   Duplicate AIR actions keep the first lookup but still undergo validation.
-  Legacy/v2 font metadata also keeps first fields, including primary errors.
+  Legacy/v2 font metadata, stage metadata/resources and fight layout lookups
+  also keep first fields. BG/controller fields are first within each instance;
+  repeated BG names remain separate objects. Retain primary-error locations.
 - Localize complete groups with English fallback, original source lines and
   stable scene order. Commands/states and individual BG elements are exempt.
   Standalone AIR stays undecorated; preserve runtime victory-quote banks.

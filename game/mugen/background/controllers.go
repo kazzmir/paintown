@@ -26,7 +26,7 @@ func (b *Background) loadControllers(ast *parsers.File, prefix string) {
 		if strings.HasPrefix(name, prefix+"ctrldef") {
 			definition = &BGCtrlDef{}
 			b.Controllers = append(b.Controllers, definition)
-			for _, attribute := range section.Attributes {
+			for _, attribute := range parsers.FirstAttributes(section) {
 				switch strings.ToLower(attribute.ID.String()) {
 				case "looptime":
 					definition.Looptime = int(GetFloat(attribute.Value))
@@ -41,7 +41,7 @@ func (b *Background) loadControllers(ast *parsers.File, prefix string) {
 			}
 			controller := &BGCtrl{Params: make(map[string]parsers.Value)}
 			definition.Ctrls = append(definition.Ctrls, controller)
-			for _, attribute := range section.Attributes {
+			for _, attribute := range parsers.FirstAttributes(section) {
 				switch strings.ToLower(attribute.ID.String()) {
 				case "type":
 					controller.Type = GetString(attribute.Value)

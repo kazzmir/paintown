@@ -1220,10 +1220,11 @@ func TestStageZoomCameraRenderingAndResetFlow(t *testing.T) {
 		t.Fatal(err)
 	}
 	path := filepath.Join(t.TempDir(), "zoom.def")
-	if err := os.WriteFile(path, []byte(`[Info]
+	if err := os.WriteFile(path, []byte(fmt.Sprintf(`[Info]
 name=Connected zoom
 [Camera]
 startzoom=.75
+startzoom=2
 zoomout=.5
 zoomin=1
 boundleft=-1000
@@ -1241,22 +1242,29 @@ screenleft=15
 screenright=15
 [StageInfo]
 localcoord=320,240
+localcoord=invalid
 zoffset=200
 zoffsetlink=90
 autoturn=0
 xscale=1
 yscale=1
 hires=1
+[BGDef]
+spr=%q
+spr=missing-later.sff
 [BG Follow]
 type=normal
+type=invalid
 spriteno=0,0
+spriteno=9999,9999
 start=-128,20
+start=9000,9000
 delta=0,0
 zoomdelta=1
 scalestart=1,1
 scaledelta=.125,0
 windowdelta=1,0
-[BG Fixed]
+[BG Follow]
 type=normal
 spriteno=0,1
 start=112,50
@@ -1272,7 +1280,11 @@ type=dummy
 id=90
 start=0,20
 positionlink=1
-`), 0600); err != nil {
+[StageInfo]
+localcoord=invalid
+[Camera]
+startzoom=9
+`, filepath.Join(root, "stages/kfm.sff"))), 0600); err != nil {
 		t.Fatal(err)
 	}
 	request := match.Request{Mode: "Versus Mode", StagePath: path, Players: [2]match.Selection{
@@ -1678,11 +1690,17 @@ tilespacing=16,0
 trans=none
 mask=0
 [BGCtrlDef Scene clocks]
+looptime=0
+looptime=1
 [BGCtrl Accelerate root]
 type=PosAdd
+type=Null
 ctrlid=501
+ctrlid=999
 time=2
+time=200
 x=4
+x=100
 [BGCtrl Disable floor]
 type=Enabled
 ctrlid=503

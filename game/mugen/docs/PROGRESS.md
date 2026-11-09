@@ -51,6 +51,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **HitOverride slot admission, clearing and reaction recovery**
 - [x] **Nested VM failures stop evaluation before partial writes**
 - [x] **Legacy and v2 font definition precedence**
+- [x] **Stage, background and fight layout field precedence**
 
 ## Completed scenario coverage
 

@@ -31,20 +31,19 @@ type Definition struct {
 	CommonSounds     *snd.SoundBank
 }
 
-// Attribute returns the last matching attribute in a named layout section.
+// Attribute returns the first matching attribute in a named layout section.
 func (d *Definition) Attribute(section, name string) *parsers.Attribute {
-	var found *parsers.Attribute
 	for _, group := range d.AST.Sections {
 		if !strings.EqualFold(strings.TrimSpace(group.Name), section) {
 			continue
 		}
 		for _, attribute := range group.Attributes {
 			if strings.EqualFold(attribute.ID.String(), name) {
-				found = attribute
+				return attribute
 			}
 		}
 	}
-	return found
+	return nil
 }
 
 func Load(path, root string, languages ...string) (*Definition, error) {

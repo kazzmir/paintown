@@ -5,17 +5,21 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (one local checkpoint):
+Latest batch (two local checkpoints):
 
 - Legacy and v2 font fields retain first values. Native loads duplicate bitmap
   metadata with later invalid fields; rebuilt Linux loads the same v2 font.
   The storyboard asset lifecycle spans bitmap/TrueType/legacy text, banks,
   primary-resource errors and corrected reloads without copied fixture banks.
 
-The affected match-flow segment passes with races; four unchanged segments stay
-checked. Linux is rebuilt. Owned font captures/overlays were removed.
-Next: stage/background/fight definition admission, then broader compatibility
-where the available content or beta documentation identifies a concrete gap.
+- Stage resources/metadata and fight layouts keep first fields. BG/controller
+  fields keep first values per instance; repeated BG names stay distinct.
+  Native and Linux render the same combined duplicate-setting stage/HUD flow.
+  Connected camera/linked-parallax/reset and round/combo/expiry flows pass.
+
+All five segments are checked with races (four changed-source segments ran;
+unchanged state-flow stayed checked). Linux is rebuilt. Owned captures/overlays
+were removed. Next: motif and storyboard declaration admission.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

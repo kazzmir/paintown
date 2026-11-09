@@ -635,10 +635,12 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		viewport = coord.Default()
 	}
 	legacyTrans := true
+	versionSet := false
 	for _, sec := range ast.Sections {
 		if strings.EqualFold(sec.Name, "Info") {
 			for _, attr := range sec.Attributes {
-				if strings.EqualFold(attr.ID.String(), "mugenversion") {
+				if strings.EqualFold(attr.ID.String(), "mugenversion") && !versionSet {
+					versionSet = true
 					value := attr.Value
 					if list, ok := value.(*parsers.ValueList); ok && len(list.Values) > 0 {
 						value = list.Values[0]
@@ -655,6 +657,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			continue
 		}
 
+		fields := parsers.FirstAttributes(sec)
 		// Guard against empty sections
 		if len(sec.Attributes) == 0 {
 			continue
@@ -684,7 +687,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		hasAction := false
 		consumed := make(map[*parsers.Attribute]bool)
 
-		for _, attr := range sec.Attributes {
+		for _, attr := range fields {
 			id := strings.ToLower(attr.ID.String())
 			switch id {
 			case "id":
@@ -785,7 +788,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 		var width, scalestart, scaledelta [2]float64
 		modernScale, legacyScale := false, false
 
-		for _, attr := range sec.Attributes {
+		for _, attr := range fields {
 			id := strings.ToLower(attr.ID.String())
 			switch id {
 			case "xscale":
@@ -822,7 +825,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			common.Mask = true
 		}
 
-		for _, attr := range sec.Attributes {
+		for _, attr := range fields {
 			if !consumed[attr] {
 				logger.LogUnresolved(fmt.Sprintf("[%s] %s = %v", sec.Name, attr.ID.String(), attr.Value))
 			}

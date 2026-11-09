@@ -49,6 +49,7 @@ fight.spr = 80,0
 fight.offset = 640,300
 fight.displaytime = 4
 fight.time = 6
+fight.time = 600
 fight.snd = 1,0
 fight.sndtime = 6
 ctrl.time = 0
@@ -68,6 +69,9 @@ win.spr = 80,0
 win.offset = 640,300
 win.time = 3
 win.displaytime = 2
+[Round]
+fight.time = 600
+match.wins = 1
 `))
 	if err != nil {
 		t.Fatal(err)

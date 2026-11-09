@@ -34,7 +34,8 @@ func TestCombatClipboardComboAndDebugFlow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.match.Fight.AST.Sections = append(f.match.Fight.AST.Sections, layout.Sections...)
+	// Put the scenario override first, matching the native layout lookup.
+	f.match.Fight.AST.Sections = append(layout.Sections, f.match.Fight.AST.Sections...)
 	frames, err := air.Parse(strings.NewReader(`[Begin Action 0]
 Clsn1: 1
 Clsn1[0] = -250,-40,250,0
