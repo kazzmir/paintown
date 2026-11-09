@@ -370,3 +370,10 @@ scenario covers the connected runtime/recovery path and fatal diagnostics. All
 five segments pass with races; rebuilt Linux matches twelve beta observations.
 Shared assets reused; diagnostic scratch removed. Other entry/controller
 parameters retain their existing policies; do not assume uniform VM coercion.
+
+Animation selection uses the first duplicate AIR action; later blocks are still
+validated and included in allocation bounds. ChangeAnim/ChangeAnim2 restart at
+element1 for invalid selectors and use ordinary-bottom argument fallback. Keep
+Player.Reset strict for clock validation. The connected combat/runtime scenario
+and rebuilt Linux match twelve beta observations and recover stand/control.
+All five segments pass with races; diagnostic scratch removed.

@@ -191,6 +191,7 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			heldGuardFlow(t, m)
 			combatScalingFlow(t, m)
 			runtimeFallbackFlow(t, m)
+			animationCompatFlow(t, m)
 			return
 		}
 	}
@@ -740,6 +741,77 @@ trigger1=1
 		if err == nil || !strings.Contains(err.Error(), "bitwise not of bottom") || !strings.Contains(err.Error(), "runtime-fallback.cns") || fatal.X != 37 || fatal.VelX != 4 || fatal.VelY != 5 {
 			t.Fatal("fatal VM error was hidden or partly applied", number, err, fatal.X, fatal.VelX, fatal.VelY)
 		}
+	}
+}
+
+// Continue through duplicate AIR definitions, animation changes with invalid
+// selectors and numeric fallbacks, then return to ordinary stand/control.
+func animationCompatFlow(t *testing.T, m *Match) {
+	t.Helper()
+	frames, err := air.Parse(strings.NewReader(`[Begin Action 0]
+0,0,0,0,4
+0,0,0,0,6
+[Begin Action 9990]
+0,0,0,0,-1
+[Begin Action 900]
+0,0,0,0,2
+0,0,0,0,3
+0,0,0,0,5
+[Begin Action 900]
+0,0,0,0,-1
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var script strings.Builder
+	script.WriteString("[Statedef 9800]\ntype=S\nmovetype=I\nphysics=N\nctrl=0\nanim=9990\n")
+	for phase, row := range []struct{ value, element, first, second string }{
+		{"900", "1", "AnimElemTime(2)", "AnimTime"},
+		{"1/0", "1", "Anim", "AnimTime"},
+		{"900", "1/0", "AnimElemNo(0)", "AnimTime"},
+		{"900", "0", "AnimElemNo(0)", "AnimTime"},
+		{"900", "99", "AnimElemNo(0)", "AnimTime"},
+		{"900", "-1", "AnimElemNo(0)", "AnimTime"},
+	} {
+		fmt.Fprintf(&script, "[State change]\ntype=ChangeAnim\ntrigger1=Time=%d\nvalue=%s\nelem=%s\n", phase*3, row.value, row.element)
+		for index, expression := range []string{row.first, row.second} {
+			fmt.Fprintf(&script, "[State observe]\ntype=VarSet\ntrigger1=Time=%d\nv=%d\nvalue=%s\n", phase*3, 40+phase*2+index, expression)
+		}
+	}
+	script.WriteString("[State recover]\ntype=SelfState\ntrigger1=Time=18\nvalue=0\nctrl=1\n")
+	states, err := cns.Parse(strings.NewReader(script.String()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := m.Players[0].Character
+	for number, action := range frames.Actions {
+		previous, exists := c.AirFile.Actions[number]
+		t.Cleanup(func() {
+			if exists {
+				c.AirFile.Actions[number] = previous
+			} else {
+				delete(c.AirFile.Actions, number)
+			}
+		})
+		c.AirFile.Actions[number] = action
+	}
+	c.StateFile.States[9800] = states.States[9800]
+	for index := 40; index < 52; index++ {
+		c.SetVar(index, 0)
+	}
+	c.ChangeState(9800, 0, -1)
+	for tick := 0; tick < 24; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("animation compatibility lifecycle", err)
+		}
+	}
+	for index, expected := range []int{-2, -10, 0, -10, 1, -10, 1, -10, 1, -10, 1, -10} {
+		if got := c.GetVar(40 + index); got != expected {
+			t.Fatalf("native animation observation %d: got %d want %d", index, got, expected)
+		}
+	}
+	if c.StateNo != 0 || !c.Ctrl || c.Anim != 0 || c.Y != 0 {
+		t.Fatal("animation changes did not recover to stand/control", c.StateNo, c.Ctrl, c.Anim, c.Y)
 	}
 }
 

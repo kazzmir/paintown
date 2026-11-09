@@ -61,6 +61,11 @@ func (c *Character) changeAnimationFrom(frames *air.Data, number, element int) e
 		c.EvaluationWarning(fmt.Sprintf("ChangeAnim: action %d is missing", number))
 		return nil
 	}
+	// Invalid ChangeAnim element selectors restart at the first element in
+	// the beta. Keep Player.Reset strict for callers validating AIR clocks.
+	if element < 1 || element > len(action.Elements) {
+		element = 1
+	}
 	player := air.NewPlayer(action)
 	if element != 1 {
 		player.Reset(element)

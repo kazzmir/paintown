@@ -199,7 +199,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 	case "varrandom":
 		return compileVarRandom(ctrl)
 	case "changeanim", "changeanim2":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"elem", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}, {"elem", true, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			element := 1
 			if value, present := v["elem"]; present {
 				element = int(value.Number())

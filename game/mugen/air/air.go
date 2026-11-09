@@ -210,7 +210,12 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 				}
 			}
 
-			data.Actions[actionID] = action
+			// The beta resolves duplicate action numbers to their first
+			// definition. Still validate later blocks and charge their boxes
+			// against the allocation limit before discarding them.
+			if _, exists := data.Actions[actionID]; !exists {
+				data.Actions[actionID] = action
+			}
 		}
 	}
 

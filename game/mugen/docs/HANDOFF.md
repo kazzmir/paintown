@@ -7,6 +7,10 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- AIR lookup retains the first duplicate action while validating later blocks.
+  Invalid ChangeAnim element selectors restart at element1; ordinary bottom
+  animation arguments use zero fallback. The connected combat/runtime flow and
+  rebuilt Linux match all twelve native observations, then recover control.
 - Ordinary invalid numeric results now use beta zero fallback in the confirmed
   movement, life/control/power and state-transition paths, plus entry ctrl and
   velset. Omitted attributes retain their defaults; later arguments still run.

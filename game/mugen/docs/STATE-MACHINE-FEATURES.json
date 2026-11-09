@@ -88,7 +88,7 @@
       "sources": [
         "character/ownership.go:ResolveState"
       ],
-      "validation": " Borrowed-state Explod creation now carries its evaluation width through deferred admission, converts geometry once into issuer storage units and retains the creating state\u2019s private-sprite scale after SelfState. The existing connected entity lifecycle covers mixed-coordinate contact, creation gating, Pause, own-state recovery, expiry and reset; native and rebuilt Linux marker positions/dimensions agree."
+      "validation": " Borrowed-state Explod creation now carries its evaluation width through deferred admission, converts geometry once into issuer storage units and retains the creating state\u2019s private-sprite scale after SelfState. The existing connected entity lifecycle covers mixed-coordinate contact, creation gating, Pause, own-state recovery, expiry and reset; native and rebuilt Linux marker positions/dimensions agree. Animation selection now retains first duplicate AIR actions and restarts invalid element selectors, with native numeric fallback."
     },
     {
       "id": "world-ticks",
@@ -557,7 +557,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "724b9bdacf48fc87d1abe5e5db5746fe3ade43ffe0eb5255bcc6c388eddb43e9"
+      "passed_source": "eb748b52c0e40fcd46bbbba2ebcc94ed199b2ac2d2a0135c31d26bf729e521bf"
     },
     {
       "id": "combat",
@@ -601,7 +601,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8cfc6f7b2f67df8af5646b949f040b7ef39de5df21dc2a73781b06eb0817ea26"
+      "passed_source": "fc3b947f403759b0d43bf800ba89f8ad28f1b24da5e37158c7688f9c178915fc"
     },
     {
       "id": "entities",
@@ -634,7 +634,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d22c0fa6a393951c3c3464a8dc6e5ff32aa56876284d302a7c6fe47ef96a3633"
+      "passed_source": "d326384950cf0b73bb8d0db88d6b1145ec017844226c6e4f470172c9492aa9e2"
     },
     {
       "id": "effects-pause",
@@ -669,7 +669,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6a2d469d99224359bb3785b7cba098cdbc51f42f7cec583dbbf6c132a3bcf497"
+      "passed_source": "d4003dd890746c3c092502e78811f081265c574154be09461e1c9b69175f2b8a"
     },
     {
       "id": "match-flow",
@@ -748,7 +748,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "15a51d2489a083d9b718eb4ff2dcada92cf5dbac5325f2cffe5aedb670b50c8f"
+      "passed_source": "34ab996647d60502d30de231288636db683bbaf2ccb27611675236e814bcf6a8"
     }
   ],
   "presentation_followups": [
@@ -856,6 +856,12 @@
       "name": "Runtime numeric fallback through state recovery",
       "completed": true,
       "validation": "Confirmed beta zero fallback for ordinary invalid numeric results in position/velocity controllers, life/control/power updates, state transitions, and entry ctrl/velset. Argument evaluation continues; omitted attributes retain their defaults. Genuine VM failures still return source-context errors without partly applying a vector. The existing combat scenario spans movement, life/power, same-tick entry, SelfState recovery and fatal diagnostics. All five connected segments pass with races; rebuilt Linux matches all twelve native observations. Shared assets were reused and diagnostic scratch removed."
+    },
+    {
+      "id": "animation-selection-compat",
+      "name": "Animation selection and duplicate AIR compatibility",
+      "completed": true,
+      "validation": "AIR action lookup preserves the first duplicate definition while validating later blocks. ChangeAnim/ChangeAnim2 restart at the first element for out-of-range selectors and coerce ordinary bottom arguments to zero. The existing combat/runtime scenario continues through twelve native animation observations and stand/control recovery. All five segments pass with races; rebuilt Linux matches the twelve beta observations exactly. Shared assets reused; diagnostic scratch removed."
     }
   ]
 }
