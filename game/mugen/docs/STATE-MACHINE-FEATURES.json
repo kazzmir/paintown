@@ -52,7 +52,8 @@
       "allocation": "item3",
       "sources": [
         "engine/entry.go:EnterState"
-      ]
+      ],
+      "validation": "For a grounded, controllable command transition, automatic facing precedes destination entry expressions and velset. Native command observation still reads the old heading; first attack controllers read the corrected heading with entry velocity 4 retained. Explicit facep2 remains an independent entry rule. The connected contact/crossover lifecycle retains these observations."
     },
     {
       "id": "negative-states",
@@ -98,9 +99,12 @@
       "sources": [
         "character/tick.go:TickCharacters",
         "character/character.go:ResolvePushCollision",
-        "character/coordinates.go:pushBoxesOverlapY"
+        "character/coordinates.go:pushBoxesOverlapY",
+        "character/ownership.go:automaticTurn",
+        "character/commands.go:turnCommandFrame",
+        "character/character.go:changeStateWithEntry"
       ],
-      "validation": "Connected jump/body-push lifecycle retains beta interior, wall, vertical, Width and air contact observations. Added PosFreeze on either root, then both, with mixed 320p/1280p coordinates. At stored VelX 2, beta positions are no-freeze(-6,26), first frozen(-7,25), second frozen(-5,27), both frozen(-6,26); velocities 2/2 and CNS times 350/350 continue. PosFreeze suppresses ordinary velocity movement, not late body separation. Scenario also checks release, real Pause and round reset clearing velocity/freeze state. Four changed-source segments pass with race detection; native scratch removed."
+      "validation": "Connected jump/body-push lifecycle retains beta interior, wall, vertical, Width and air contact observations. Added PosFreeze on either root, then both, with mixed 320p/1280p coordinates. At stored VelX 2, beta positions are no-freeze(-6,26), first frozen(-7,25), second frozen(-5,27), both frozen(-6,26); velocities 2/2 and CNS times 350/350 continue. PosFreeze suppresses ordinary velocity movement, not late body separation. Scenario also checks release, real Pause and round reset clearing velocity/freeze state. Four changed-source segments pass with race detection; native scratch removed. Crossover follow-up uses the supplied Elecbyte beta and its CNS, rather than Paintown C++ turning behavior. A controlled ground command reads the old heading, then turns before destination entry expressions/velset; locked and airborne moves retain their heading. Common stand/crouch/walk auto-turn runs before the positive pass and plays the authored turn action. The existing contact scenario continues through landing-to-attack, held walking, NoAutoTurn release, mixed-coordinate opponent positions and stage-disabled turning. Current physical direction is rematched without an extra input tick, retaining pause-release commands. Native heading/action observations and entry velocity 4 match; all five segments pass with races. Rebuilt Linux Ryu/Dhalsim jump-over and continued input were inspected with audio; scratch removed."
     },
     {
       "id": "helper-lifecycle",
@@ -545,7 +549,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "12cc92ddad90046cf8abd79a9128d8965abdb02cad0c4286ff6fc9774c333cc6"
+      "passed_source": "a46811655d5d5f18a68de0d1b4e7d69947e5cebc4739f947e90636e16846146e"
     },
     {
       "id": "combat",
@@ -589,7 +593,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2358ba41531a1964cb621f46a0cfcd26a20dad6ec89a16f35fc105fe35621562"
+      "passed_source": "853e1a45ca2b8730ec77f1417424142d26078d3da3ae5ff2df06ead0f351ed20"
     },
     {
       "id": "entities",
@@ -622,7 +626,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "dc11f096ca42c3234f94db07d14042716322bc06686d5b78d87577e8252baa5a"
+      "passed_source": "00dc788437fe47451e3901a8eccd5310f1c88178c2a0fa5d04fe4a92fc7be9e0"
     },
     {
       "id": "effects-pause",
@@ -657,7 +661,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1688941194855aae0414dd3ce59d90e4e7dc80b6fd745cdc1db41c77c7dd2c74"
+      "passed_source": "983b589473c0a64e59c8d92e56fb7c0d4b0d0d1e735714d985d0c579472d21d2"
     },
     {
       "id": "match-flow",
@@ -736,7 +740,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c52ea50355af1c2b5dfefb21e510d6d0df9e47d33db5783566b19005ac0ebf4d"
+      "passed_source": "20083aca28158ccd2308899e17f70f3644a05e16503bbd9938a3023d7628e0f7"
     }
   ],
   "presentation_followups": [
@@ -745,7 +749,8 @@
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
-    "SF2 original tiny grid is authored and matches native. Stock mixed-resolution portrait shrinkage, missing VS presentation and missing optional constants are corrected. Original Ryu/Dhalsim round-two initialization also stalls in native: a separate ignored playable copy repairs those two scripts without changing engine state semantics or the source pack. Full-roster gameplay and remaining expression/resource warnings stay open."
+    "SF2 original tiny grid is authored and matches native. Stock mixed-resolution portrait shrinkage, missing VS presentation and missing optional constants are corrected. Original Ryu/Dhalsim round-two initialization also stalls in native: a separate ignored playable copy repairs those two scripts without changing engine state semantics or the source pack. Full-roster gameplay and remaining expression/resource warnings stay open.",
+    "The reported crossover-facing gap is corrected for command-to-state handoff and ordinary walking turns, using native beta observations and CNS. Arbitrary air cancels, turning during bindings/hitpause and charge-history permutations remain unverified; do not treat Paintown C++ turning as the reference."
   ],
   "known_differences": [
     {
@@ -789,6 +794,12 @@
       "name": "SF2 Ryu/Dhalsim round-two script repair",
       "completed": true,
       "validation": "The native beta also stays in state5900 because both supplied scripts only exit on round one. tools/sf2_playable.py creates a separate ignored working copy sharing assets and adding the two later-round exits. The repaired copy completes round two with movement and attacks from both characters; original pack and engine state semantics are preserved."
+    },
+    {
+      "id": "crossover-turning",
+      "name": "Crossover command and walking turns",
+      "completed": true,
+      "validation": "Matched supplied Elecbyte behavior: command evaluation sees the old heading, controlled ground state entry sees the opponent-facing heading and authored velocity, and walking uses turn action 5 without resetting its state clock. The connected flow covers NoAutoTurn release, physical input and stage-disabled turning. Locked attacks retain facing. Linux Ryu/Dhalsim jump-over and continued input were inspected; all segments are checked with races."
     }
   ]
 }

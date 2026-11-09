@@ -64,6 +64,9 @@ type Character struct {
 	stateOwner          *Character
 	pendingStateEntry   *cns.StateDef
 	pendingMissingEntry bool
+	commandState        bool
+	autoTurnPending     bool
+	autoTurnBlocked     bool
 	allowMissingState   bool
 	binding             *actorBinding
 	boundThisTick       bool
@@ -441,6 +444,7 @@ func (c *Character) runStateTick() bool {
 	c.pausedThisTick = c.HitPauseTime > 0
 	isPaused := c.IsPaused()
 	// Clear frame-local specials
+	c.autoTurnBlocked = c.Specials["noautoturn"]
 	c.Specials = make(map[string]bool)
 	c.PushDisabled = false
 	c.screenBoundsDisabled = c.Parent != nil && !c.PlayerHelper
@@ -469,7 +473,6 @@ func (c *Character) runStateTick() bool {
 	if len(c.pauseCommands) > 0 {
 		sort.Strings(c.ActiveCommands)
 		c.LastCommandMatched = strings.Join(c.ActiveCommands, ", ")
-		c.pauseCommands = nil
 	}
 
 	// 3. MUGEN multi-level state processing:
@@ -477,9 +480,12 @@ func (c *Character) runStateTick() bool {
 
 	// Paused passes still evaluate controllers with ignorehitpause.
 	c.statePassBudget = engine.StatePassBudget{}
+	c.autoTurnPending = !isPaused
 	if err := c.SM.RunStatePassWithBudget(c.StateFile.States, c, &c.statePassBudget); err != nil {
 		c.RuntimeError = fmt.Errorf("player %d: %w", c.InputSlot, err)
 	}
+	c.pauseCommands = nil
+	c.commandState = false
 	if c.RuntimeError != nil {
 		c.updateActive = false
 		return false
@@ -545,23 +551,6 @@ func (c *Character) finishTick() {
 				// Multiply by Facing to get world-space displacement.
 				c.X += c.VelX * float64(c.Facing)
 				c.Y += c.VelY
-
-				// Engine turning belongs to the common idle/crouch/walk states;
-				// custom states retain their facing. Preserve world momentum on flip.
-				if c.Time > 0 && (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && (c.World == nil || !c.World.StageNoAutoTurn) && len(c.Opponents) > 0 {
-					opponent := c.Opponents[0]
-					newFacing := c.Facing
-					opponentX, _ := c.PositionOf(opponent)
-					if opponentX > c.X {
-						newFacing = 1
-					} else if opponentX < c.X {
-						newFacing = -1
-					}
-					if newFacing != c.Facing {
-						c.Facing = newFacing
-						c.VelX = -c.VelX // Preserve absolute momentum across the flip
-					}
-				}
 			}
 
 			// Native integrates position before applying the physics forces.
@@ -1958,6 +1947,12 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 		}
 	} else {
 		c.EvaluationWarning(fmt.Sprintf("state transition: state %d is missing from the state owner", stateNo))
+	}
+	// The command's arguments read the old heading. A controlled ground
+	// transition turns before destination entry expressions/velset are applied.
+	// Already-running attacks and airborne cancels retain their heading.
+	if !external && c.commandState && c.Ctrl && c.MoveType != "H" && (c.StateType == "S" || c.StateType == "C") {
+		c.automaticTurn(false)
 	}
 	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, name)
 	c.PrevStateNo = c.StateNo

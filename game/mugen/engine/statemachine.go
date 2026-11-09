@@ -261,6 +261,9 @@ func (sm *StateMachine) registerCoreControllers() {
 // ExecuteState executes all valid controllers within a given state definition.
 // Returns true if a state transition (ChangeState/SelfState) occurred.
 func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool, error) {
+	if host, ok := env.(interface{ SetStateExecutionLevel(int) }); ok {
+		host.SetStateExecutionLevel(state.ID)
+	}
 	program, err := sm.compileState(state)
 	if err != nil {
 		return false, err

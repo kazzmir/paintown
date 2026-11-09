@@ -10,6 +10,15 @@ The prior known-difference batch is complete. The user then supplied sf2_mugen
 for the first compatibility assessment; its executable matches the beta reference.
 
 Current SF2 checkpoint:
+- Crossover facing now follows the native beta command/state boundary. Command
+  expressions see the old heading, then controlled ground moves turn before
+  destination entry/velset. Walking turns play action5 and rematch the current
+  physical direction without another input tick. Locked attacks retain facing.
+  The connected contact flow includes landing-to-attack, held walking,
+  NoAutoTurn release, mixed-coordinate opponents and stage disable. All five
+  segments pass with races; Linux Ryu/Dhalsim crossover/input and audio inspected.
+  User cautioned that Paintown C++ turning was broken: it is not the reference.
+  Other turn/binding/hitpause/charge permutations remain unverified.
 - The reported Arcade failure came from reading an invalid hidden P2 cursor.
   Handoff now uses saved roster snapshots and independent automatic opponents.
   First Select Info values, row,column startcells, blank skipping, authored

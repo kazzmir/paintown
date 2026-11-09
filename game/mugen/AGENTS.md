@@ -273,3 +273,18 @@ is shared by links. Both characters move/attack and complete round two there.
 RETAIN this ignored working copy for user play, the original pack and shared
 cache/single executable. Diagnostic overlays/captures/PCM/helpers were removed.
 Broader roster behavior and nonfatal AnimElem/resource warnings remain open.
+
+## Crossover facing — 2026-11-08
+
+The user reports Paintown C++ turning never worked; use supplied Elecbyte runtime
+observations and beta CNS as the reference, not that C++ behavior. Command
+expressions read the old facing; a controlled ground transition turns before
+destination entry expressions/velset. Common idle/crouch/walk turns run before
+the positive pass, play action5/6 and retain the state clock. Preserve locked
+attack/air headings, NoAutoTurn, stage disable and physical input on direction
+rematch without appending another tick. Pause-release commands remain buffered
+through the rematch. The existing contact scenario now continues through a
+mixed-coordinate crossover/landing/attack/walk lifecycle with native heading,
+animation and velocity observations. All segments pass with races. Linux
+Ryu/Dhalsim jump-over and continued input were inspected; scratch removed.
+Other air-cancel, binding/hitpause and charge-history combinations remain open.

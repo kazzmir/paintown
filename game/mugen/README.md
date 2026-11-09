@@ -7,6 +7,9 @@ and asset compatibility remains in progress. Storyboards honor their canvas,
 retain uncleared scenes and render colored fades consistently across display
 refreshes; see
 [storyboard verification](docs/STORYBOARD-CANVAS.md).
+Grounded command moves now turn toward the opponent before state entry;
+walking uses the authored turning animation and preserves physical direction
+after a crossover. Ongoing locked attacks retain their facing.
 
 ## Requirements and data
 

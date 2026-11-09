@@ -31,7 +31,44 @@ func (c *Character) PreparePositiveState() error {
 			c.SetHitFall(false)
 		}
 	}
+	if c.autoTurnPending {
+		c.autoTurnPending = false
+		if c.Time > 0 && (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && c.MoveType == "I" && (c.StateType == "S" || c.StateType == "C") {
+			c.automaticTurn(true)
+		}
+	}
 	return c.RuntimeError
+}
+
+func (c *Character) SetStateExecutionLevel(level int) {
+	c.commandState = level == -1
+}
+
+// Native automatic turns run at the command/positive-state boundary, rather
+// than after movement. Command transitions keep their destination animation;
+// ordinary stand/crouch/walk turns play the authored turning action.
+func (c *Character) automaticTurn(animation bool) {
+	if c.IsPaused() || c.autoTurnBlocked || c.Specials["noautoturn"] || c.World != nil && c.World.StageNoAutoTurn || c.Parent != nil && !c.PlayerHelper {
+		return
+	}
+	previous := c.Facing
+	c.FaceOpponent()
+	if c.Facing == previous {
+		return
+	}
+	c.turnCommandFrame()
+	c.autoTurnPending = false
+	if animation {
+		action := 5
+		if c.StateType == "C" {
+			action = 6
+		}
+		if frames := c.AnimationFile(); frames != nil && frames.Actions[action] != nil {
+			if err := c.ChangeAnimation(action, 1); err != nil {
+				c.RuntimeError = err
+			}
+		}
+	}
 }
 
 func (c *Character) MissingStateAllowed(number int) bool {

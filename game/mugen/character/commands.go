@@ -403,24 +403,56 @@ func (c *Character) updateCommands(isPaused bool) {
 
 		sort.Strings(raw)
 		c.Commands.Add(raw)
+		c.matchCurrentCommands()
+	}
+}
 
-		if len(c.Commands.History) > 0 {
-			var matched []string
-			for name, cmdList := range c.CmdFile.Commands {
-				for _, cmd := range cmdList {
-					// MUGEN command matching
-					if c.Commands.Match(cmd.Sequence, cmd.Time, cmd.BufferTime) {
-						c.ActiveCommands = append(c.ActiveCommands, name)
-						matched = append(matched, name)
-						break // Found a match for this command name
-					}
-				}
-			}
-			if len(matched) > 0 {
-				sort.Strings(matched)
-				c.LastCommandMatched = strings.Join(matched, ", ")
-			}
+// Turning changes forward/back for the current physical input, without adding
+// another simulation tick or rewriting earlier motion/charge history.
+func (c *Character) turnCommandFrame() {
+	if c.Commands == nil || c.CmdFile == nil || len(c.Commands.History) == 0 {
+		return
+	}
+	last := len(c.Commands.History) - 1
+	frame := append([]string(nil), c.Commands.History[last]...)
+	for i, key := range frame {
+		if key == "DirForward" {
+			frame[i] = "DirBack"
+		} else if key == "DirBack" {
+			frame[i] = "DirForward"
 		}
 	}
+	sort.Strings(frame)
+	c.Commands.History[last] = frame
+	c.matchCurrentCommands()
+}
 
+func (c *Character) matchCurrentCommands() {
+	c.ActiveCommands = nil
+	c.LastCommandMatched = ""
+	if c.Commands != nil && c.CmdFile != nil && len(c.Commands.History) > 0 {
+		var matched []string
+		for name, cmdList := range c.CmdFile.Commands {
+			for _, cmd := range cmdList {
+				// MUGEN command matching
+				if c.Commands.Match(cmd.Sequence, cmd.Time, cmd.BufferTime) {
+					c.ActiveCommands = append(c.ActiveCommands, name)
+					matched = append(matched, name)
+					break // Found a match for this command name
+				}
+			}
+		}
+		// Turning may rematch held directions on the pause-release pass.
+		// Its previously buffered command must still reach this CNS pass.
+		for name := range c.pauseCommands {
+			if !c.Command(name) {
+				c.ActiveCommands = append(c.ActiveCommands, name)
+				matched = append(matched, name)
+			}
+		}
+		if len(matched) > 0 {
+			sort.Strings(matched)
+			c.LastCommandMatched = strings.Join(matched, ", ")
+		}
+	}
 }
