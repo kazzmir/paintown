@@ -58,6 +58,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **AI plans for charged chords and strict command steps**
 - [x] **Authored victory background clear color**
 - [ ] **Recovery constant dimensions across borrowed and redirected states**: Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. Batch acceptance pending.
+- [ ] **First character storyboards and portrait sprites**: Selection now retains first character Arcade fields across repeated groups, including explicit blanks, and first duplicate portrait sprites, matching normal archive lookups. The existing packed/legacy asset lifecycle contains ignored later missing stories and a later duplicate large portrait, followed by intro/VS/fight/reset/ending and pack retirement. Batch acceptance pending.
 
 ## Completed scenario coverage
 

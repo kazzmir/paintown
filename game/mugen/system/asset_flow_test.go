@@ -442,7 +442,7 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 	copy(archive, "ElecbyteSpr\x00")
 	archive[13], archive[15] = 1, 1
 	binary.LittleEndian.PutUint32(archive[16:], 2)
-	binary.LittleEndian.PutUint32(archive[20:], 5)
+	binary.LittleEndian.PutUint32(archive[20:], 6)
 	binary.LittleEndian.PutUint32(archive[28:], 32)
 	binary.LittleEndian.PutUint32(archive[24:], 512)
 	for index, node := range []struct {
@@ -450,7 +450,7 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 		shared, linked bool
 		c              color.NRGBA
 	}{
-		{9000, 1, false, false, blue}, {0, 0, false, false, green}, {0, 1, true, false, green}, {9000, 0, true, true, green}, {0, 2, true, true, green},
+		{9000, 1, false, false, blue}, {0, 0, false, false, green}, {0, 1, true, false, green}, {9000, 0, true, true, green}, {0, 2, true, true, green}, {9000, 1, false, false, gold},
 	} {
 		data := pcx(node.c)
 		if node.group == 0 && node.item == 1 {
@@ -469,7 +469,7 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 			data = nil
 		}
 		header := make([]byte, 32)
-		if index < 4 {
+		if index < 5 {
 			binary.LittleEndian.PutUint32(header, uint32(len(archive)+32+len(data)))
 		}
 		binary.LittleEndian.PutUint32(header[4:], uint32(len(data)))
@@ -1000,7 +1000,7 @@ func packedCharacterAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image, dir
 	if err != nil || portraits.Sprites[2].Image != nil || portraits.Sprites[3].Image == nil || !portraits.Sprites[3].Linked {
 		t.Fatal("portrait loading decoded fight frames or lost a linked portrait", err)
 	}
-	definition += "[Arcade]\nintro.storyboard=Story\\Ending.def\nending.storyboard=Story\\Ending.def\n"
+	definition += "[Arcade]\nintro.storyboard=Story\\Ending.def\nintro.storyboard=missing-intro.def\nending.storyboard=Story\\Ending.def\n[Arcade]\nending.storyboard=missing-ending.def\n"
 	files["Outfits pack.def"] = []byte(definition)
 	files["Alternate.def"] = []byte(strings.Replace(definition, "Legacy outfits", "Packed alternate", 1))
 	files["Story/Ending.def"] = []byte(`[SceneDef]

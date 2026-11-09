@@ -126,17 +126,18 @@ func loadCharacterPortraitLanguage(defPath, language string, extra ...[2]int) (*
 	dir := filepath.Dir(cp.DefPath)
 	// Selection resolves these paths when it needs story playback. VS only
 	// consumes portrait assets, including for rematches of temporary DEFs.
+	var arcadeGroups []*parsers.Section
 	for _, section := range ast.Sections {
-		if !strings.EqualFold(section.Name, "arcade") {
-			continue
+		if strings.EqualFold(section.Name, "arcade") {
+			arcadeGroups = append(arcadeGroups, section)
 		}
-		for _, a := range section.Attributes {
-			if strings.EqualFold(a.ID.String(), "ending.storyboard") {
-				cp.EndingStoryboard = background.GetString(a.Value)
-			}
-			if strings.EqualFold(a.ID.String(), "intro.storyboard") {
-				cp.IntroStoryboard = background.GetString(a.Value)
-			}
+	}
+	for _, a := range parsers.FirstAttributes(arcadeGroups...) {
+		switch strings.ToLower(a.ID.String()) {
+		case "ending.storyboard":
+			cp.EndingStoryboard = background.GetString(a.Value)
+		case "intro.storyboard":
+			cp.IntroStoryboard = background.GetString(a.Value)
 		}
 	}
 
@@ -156,6 +157,10 @@ func loadCharacterPortraitLanguage(defPath, language string, extra ...[2]int) (*
 	for _, sprite := range archive.Sprites {
 		if sprite.Image != nil {
 			pair := [2]int{int(sprite.GroupNumber), int(sprite.ImageNumber)}
+			// Match the archive's first sprite lookup used during fights.
+			if _, exists := cp.Portraits[pair]; exists {
+				continue
+			}
 			cp.Portraits[pair] = portraitImage{ebiten.NewImageFromImage(sff.UploadPixels(sprite.Image)), [2]int16{sprite.XAxis, sprite.YAxis}}
 		}
 		if sprite.GroupNumber == 9000 && sprite.Image != nil {
