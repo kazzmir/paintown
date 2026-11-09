@@ -7,6 +7,12 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Variable register/range destinations admit value evaluation. Invalid IDs,
+  invalid ranges and reversed ranges skip the value and continue. Valid ranges
+  evaluate once and use ordinary-bottom zero fallback; genuine admitted VM
+  errors stay fatal. The connected runtime flow and rebuilt Linux match twelve
+  native observations; all five segments pass with races. Scratch removed.
+
 - AI plans use timed input steps, including long charges, without allocating
   one input array per tick. The connected command flow now completes a remapped
   300-tick AI charge, attack/damage/recovery and a fresh stock AI fight. Four

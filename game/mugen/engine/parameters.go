@@ -418,7 +418,9 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 				return nil
 			}
 		}
-		values, err := evaluateArgumentsWithBottom(args, env, true)
+		// Invalid destinations skip the value expression, rather than ending
+		// the state pass or consuming its variable/random side effects.
+		values, err := evaluateArgumentsWithBottom(args[:1], env, true)
 		if err != nil {
 			return err
 		}
@@ -431,7 +433,11 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 			limit = 5
 		}
 		if idx < 0 || idx >= limit {
-			return fmt.Errorf("%s index %d outside 0..%d", kind, idx, limit-1)
+			return nil
+		}
+		values, err = evaluateArgumentsWithBottom(args[1:], env, true)
+		if err != nil {
+			return err
 		}
 		v := values["value"]
 		switch kind {
@@ -484,7 +490,7 @@ func compileVariableRange(ctrl *cns.StateController) (ControllerFunc, bool, erro
 		return nil, true, err
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		v, err := evaluateArguments(args, env)
+		v, err := evaluateArgumentsWithBottom(args[:len(args)-1], env, true)
 		if err != nil {
 			return err
 		}
@@ -495,8 +501,12 @@ func compileVariableRange(ctrl *cns.StateController) (ControllerFunc, bool, erro
 		if value, ok := v["last"]; ok {
 			end = int(value.Number())
 		}
-		if first < 0 || end > last {
-			return fmt.Errorf("variable range %d..%d outside 0..%d", first, end, last)
+		if first < 0 || first > last || end < first || end > last {
+			return nil
+		}
+		v, err = evaluateArgumentsWithBottom(args[len(args)-1:], env, true)
+		if err != nil {
+			return err
 		}
 		value := v[key]
 		for i := first; i <= end; i++ {

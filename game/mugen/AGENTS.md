@@ -429,3 +429,9 @@ cutoff without per-tick plan allocation. Preserve remapping and incremental
 playback through the ordinary CMD/CNS path. The connected flow completes a
 300-tick AI charge, contact/recovery and fresh stock combat; four affected
 segments pass with races and Linux rebuilt. Native AI policy remains partial.
+
+Variable writes admit destinations before values: invalid register IDs and
+invalid/reversed ranges are no-ops, including unused side effects/VM errors.
+Valid ranges evaluate once and coerce ordinary bottom to zero; genuine admitted
+VM failures stay fatal. The connected runtime recovery and rebuilt Linux match
+twelve native observations; all five segments pass with races. Scratch removed.

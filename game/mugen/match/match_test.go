@@ -705,6 +705,12 @@ velset=~(1/0),2
 [State fatal entry]
 type=Null
 trigger1=1
+[Statedef 9722]
+[State fatal admitted variable]
+type=VarSet
+trigger1=1
+v=5
+value=~(1/0)
 `)
 	states, err := cns.ParseNamed(strings.NewReader(script.String()), "runtime-fallback.cns")
 	if err != nil {
@@ -728,12 +734,66 @@ trigger1=1
 	if c.StateNo != 0 || !c.Ctrl || c.Y != 0 || c.VelX != 0 || c.VelY != 0 || c.Life != 1 || !c.IsAlive() || c.GetVar(58) != 10 {
 		t.Fatal("runtime fallback did not preserve evaluation or recover", c.StateNo, c.Ctrl, c.Y, c.VelX, c.VelY, c.Life, c.IsAlive(), c.GetVar(58))
 	}
+	// Continue the same runtime recovery through invalid register/range
+	// admission, valid writes, zero fallback and a second own-state return.
+	var variables strings.Builder
+	variables.WriteString("[Statedef 9720]\ntype=S\nmovetype=I\nphysics=N\nctrl=0\nanim=0\n")
+	write := func(tick int, kind, params string) {
+		fmt.Fprintf(&variables, "[State variable continuation]\ntype=%s\ntrigger1=Time=%d\n%s\n", kind, tick, params)
+	}
+	write(0, "VarRangeSet", "first=40\nlast=51\nvalue=0")
+	write(0, "VarSet", "v=58\nvalue=60")
+	write(0, "VarSet", "v=var(58)\nvalue=(var(40):=7)")
+	write(1, "VarSet", "v=58\nvalue=-1")
+	write(1, "VarAdd", "v=var(58)\nvalue=(var(41):=8)")
+	write(2, "VarSet", "fv=var(58)+41\nvalue=(var(42):=9)")
+	write(2, "VarSet", "v=var(58)\nvalue=~(1/0)")
+	write(3, "VarSet", "v=(var(43):=5)\nvalue=(var(44):=11)")
+	write(4, "VarSet", "v=45\nvalue=var(5)")
+	write(5, "ChangeState", "value=9721\nctrl=1")
+	variables.WriteString("[Statedef 9721]\ntype=S\nmovetype=I\nphysics=N\nctrl=1\nanim=0\n")
+	write(0, "VarSet", "v=46\nvalue=Ctrl")
+	write(1, "VarRangeSet", "first=-2\nlast=2\nvalue=(var(47):=13)")
+	write(1, "VarRangeSet", "first=58\nlast=100\nvalue=19")
+	write(1, "VarRangeSet", "first=-2\nlast=2\nfvalue=17")
+	write(1, "VarRangeSet", "first=-2\nlast=2\nvalue=~(1/0)")
+	write(2, "VarSet", "v=48\nvalue=var(58)")
+	write(3, "VarRangeSet", "first=11\nlast=10\nvalue=(var(47):=33)")
+	write(3, "VarRangeSet", "first=10\nlast=11\nvalue=(var(49):=var(49)+1)")
+	write(3, "VarSet", "v=3\nvalue=9")
+	write(3, "VarSet", "fv=3\nvalue=9")
+	write(4, "VarRangeSet", "first=3\nlast=3\nvalue=1/0")
+	write(4, "VarRangeSet", "first=3\nlast=3\nfvalue=1/0")
+	write(5, "VarSet", "v=50\nvalue=var(3)")
+	write(5, "VarSet", "v=51\nvalue=fvar(3)")
+	write(6, "SelfState", "value=0\nctrl=1")
+	registers, err := cns.ParseNamed(strings.NewReader(variables.String()), "variable-registers.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for number, state := range registers.States {
+		c.StateFile.States[number] = state
+	}
+	c.ChangeState(9720, 0, -1)
+	for tick := 0; tick < 16; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("variable admission/recovery", err)
+		}
+	}
+	for index, expected := range []int{0, 0, 0, 5, 11, 11, 1, 0, -1, 1, 0, 0} {
+		if c.GetVar(40+index) != expected {
+			t.Fatal("native variable register observation", index, c.GetVar(40+index), expected)
+		}
+	}
+	if c.StateNo != 0 || !c.Ctrl || c.GetVar(10) != 1 || c.GetVar(11) != 1 || c.GetFVar(3) != 0 {
+		t.Fatal("variable writes did not complete and recover", c.StateNo, c.Ctrl)
+	}
 	// Genuine VM failures remain terminal and cannot partly apply a vector.
-	for _, number := range []int{9703, 9704} {
+	for _, number := range []int{9703, 9704, 9722} {
 		fatal := character.NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 		fatal.X, fatal.VelX, fatal.VelY = 37, 4, 5
 		var err error
-		if number == 9703 {
+		if number != 9704 {
 			_, err = fatal.SM.ExecuteState(states.States[number], fatal)
 		} else {
 			err = fatal.SM.EnterState(states.States[number], fatal, engine.EntryOverrides{})
