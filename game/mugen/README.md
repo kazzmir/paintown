@@ -106,6 +106,9 @@ game/mugen/mugen.sh --game \
   --stage stages/kfm.def
 ```
 
+When `--stage` is omitted, quick matches use `[Debug] StartStage` from the
+selected `mugen.cfg`. An explicit `--stage` takes precedence.
+
 For a reproducible initial match, add `--match-seed 16807` to the launch command.
 The game logs the actual seed. Omit the option for normal clock-based startup;
 later matches advance the independent session sequence.
@@ -120,6 +123,20 @@ match or reserve loads to rotate the remaining roster; Up swaps halves when
 four members remain. Defeated members stay out. Team Arcade and Team Co-op ask
 P1 for the opponent's team type after the human selections. In Watch, P1 selects
 each team's mode and roster in sequence, then both sides use AI.
+
+Idle titles now enter the motif's `[Demo Mode]` sequence, including optional
+selection/VS previews, AI combat, return time and intro cycling. Either player's
+input returns to the title. The motif controls demo music, lifebars and debug
+text. Title background controllers also advance.
+
+`fontN.height` overrides TrueType size in motifs, fight HUDs and storyboards;
+bitmap fonts keep their atlas cell sizes. `[Config] DrawShadows` controls floor
+rendering. `[Misc] PauseOnDefocus`, `SFXBackgroundMode` and `BGMBackgroundMode`
+control background simulation and audio. BGM `Pause` preserves the track cursor;
+`Mute` advances it silently; `Play` continues normally.
+
+Input is currently keyboard only. Legacy joystick sections are parsed, but
+physical gamepad input still needs an adapter and Linux hardware verification.
 
 AI executes authored CMD motions/chords through the same state controllers as
 human input, with difficulty-dependent reaction and defence. Arcade/team-arcade/co-op progress through ordered opponents, victory, continue
@@ -317,8 +334,10 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The checklist replaces test counts and typed-routing percentages as the progress
-view. The current checklist has32/34 implemented items (94% of checklist items, not
-native conformance or remaining effort); see the explicit partial rows.
+view. The current checklist has32/35 implemented items (91% of checklist items, not
+native conformance or remaining effort); see the explicit partial rows. The
+audit added a separate input-device row for the gamepad gap, expanding the
+previous 34-item checklist rather than reopening completed state mechanics.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains

@@ -425,6 +425,20 @@
       "validation": "Camera return matches eleven beta samples. A bounded beta rendering scene establishes fixed 3/8 game-pixel indexed calibration, unsnapped source addressing and delta-first, ties-to-even byte interpolation. Rotated indexed sprite/shadow and overlapping RGBA RGB crops match exactly. The connected stage/asset lifecycle covers finite AIR alpha entries, overlap, pause, expiry, foreground over HUD, projected letterboxing and final AllPalFX. All five segments are checked with race detection; existing renderer color regressions also pass with race detection. Prior PNG32/raw RGBA background coverage retains its 40 fixed native samples. This closes the documented rendering discrepancies, not arbitrary renderer/asset compatibility. Rebuilt Linux application matches all four target native RGB regions exactly (indexed sprite, true-color sprite, shadows, overlap). Native and Go ordinary KO playback both pass the original seven-segment reference with unchanged amplitude8/time 0.35s criteria. Go amplitude error is 0 and maximum relative-start difference 0.05s. The old missing quiet interval does not reproduce; sample-exact device synchronization is not inferred."
     },
     {
+      "id": "player-input-devices",
+      "name": "Player input devices and configuration",
+      "group": "Modes and platforms",
+      "status": "partial",
+      "gap": "Keyboard bindings and alternatives work across menus and combat. Gamepad IDs are enumerated but device inputs and legacy joystick configuration are not consumed; this is an implementation gap, not merely unverified hardware fidelity. Controller models/connection types requested for the next Linux implementation and verification pass.",
+      "allocation": "item4",
+      "sources": [
+        "input/manager.go:matchAction",
+        "character/commands.go:GetRawInputs",
+        "config/config.go:parseKeys"
+      ],
+      "validation": "The existing full title/selection/VS/input/KO/rematch scenario retains keyboard alternatives, disabled bindings, shared-key ownership and SDL key conversion. No gamepad completion is claimed."
+    },
+    {
       "id": "ai",
       "name": "Opponent AI and authored CMD command flow",
       "group": "Modes and platforms",
@@ -446,7 +460,7 @@
     },
     {
       "id": "modes",
-      "name": "Arcade/survival progression, continue/ending and training/watch rules",
+      "name": "Arcade/survival/demo progression, continue/ending and training/watch rules",
       "group": "Modes and platforms",
       "status": "implemented",
       "gap": "",
@@ -457,9 +471,11 @@
         "system/mode_screens.go",
         "match/round_carry.go:SnapshotRound",
         "match/round_carry.go:initialCarry",
-        "character/world.go:RestoreRandom"
+        "character/world.go:RestoreRandom",
+        "system/demo.go:beginDemo",
+        "system/demo.go:endDemo"
       ],
-      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered."
+      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered. Idle title demo now spans optional selection/VS, AI combat, timed return, intro cycling and input interruption. Its music/bar/debug consumers run through existing production mode/media scenarios and the rebuilt Linux window."
     },
     {
       "id": "teams",
@@ -765,7 +781,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "33c5597960cc8761127e3651ad2f4a7fe7260418b53109575a99ba23b285593e"
+      "passed_source": "c1f7a915e757a2020e6978fa712a291149828e900e9676f9948ec06fb2e6cafa"
     }
   ],
   "presentation_followups": [
@@ -1051,32 +1067,32 @@
     {
       "id": "title-attract-mode",
       "name": "Idle title demo and intro cycling",
-      "completed": false,
-      "validation": "Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Batch acceptance pending."
+      "completed": true,
+      "validation": "Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked. Rebuilt Linux reaches visible AI combat without bars and returns to title on Enter, matching the bounded native flow."
     },
     {
       "id": "authored-font-height",
       "name": "Authored TrueType font height overrides",
-      "completed": false,
+      "completed": true,
       "validation": "Motif, fight HUD and storyboard font loading accept first fontN.height values for TrueType rasterization. Bitmap atlases retain authored cell sizes. The shared font loader preserves resource/fallback behavior and bounded height diagnostics. Existing scene/localized-selection/VS/HUD/fight lifecycle now includes independent height overrides and ignored later duplicates; batch acceptance pending. The supplied Japanese motif actively declares font6.height=13."
     },
     {
       "id": "configuration-first-fields",
       "name": "Legacy configuration first-field admission before YAML overrides",
-      "completed": false,
-      "validation": "Legacy mugen.cfg singleton groups merge first fields before the independent explicit YAML layer. Native retains initial320x240 game resolution with a later Config640x480 group. The existing complete title/selection/VS/input/fight/KO/rematch scenario uses later invalid dimensions/motif/rules while retaining YAML key alternatives. No local user configuration changed. Batch acceptance pending."
+      "completed": true,
+      "validation": "Legacy mugen.cfg singleton groups merge first fields before the independent explicit YAML layer. Native retains initial320x240 game resolution with a later Config640x480 group. The existing complete title/selection/VS/input/fight/KO/rematch scenario uses later invalid dimensions/motif/rules while retaining YAML key alternatives. No local user configuration changed. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked."
     },
     {
       "id": "configuration-runtime-consumers",
       "name": "Shadow and quick-versus configuration consumers",
-      "completed": false,
-      "validation": "DrawShadows now gates fighter/effect floor rendering; explicit --stage retains precedence, while omitted quick-versus stage uses the documented Debug.StartStage with a conventional fallback. The connected zoom/reflection/foreground/reset lifecycle checks the disabled renderer. Supplied mugen.cfg/readme document these options. Batch acceptance pending."
+      "completed": true,
+      "validation": "DrawShadows now gates fighter/effect floor rendering; explicit --stage retains precedence, while omitted quick-versus stage uses the documented Debug.StartStage with a conventional fallback. The connected zoom/reflection/foreground/reset lifecycle checks the disabled renderer. Supplied mugen.cfg/readme document these options. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked. Rebuilt Linux quick match without --stage loads the configured stage0-720 grid stage."
     },
     {
       "id": "background-runtime-policy",
       "name": "Background simulation and audio policy",
-      "completed": false,
-      "validation": "Documented Misc.PauseOnDefocus reaches the Linux runtime scheduler. Background SFX Mute changes gain without retiring voices; BGM Pause preserves its consumed cursor, Mute advances silently, and Play continues. Unfocused fullscreen BGM uses Pause as documented. The existing music/NoMusic/SFX/story/rematch/codec lifecycle now includes focus loss, silent advance, focus recovery and demo music handoff. Host-device scheduling precision remains partial. Batch acceptance pending."
+      "completed": true,
+      "validation": "Documented Misc.PauseOnDefocus reaches the Linux runtime scheduler. Background SFX Mute changes gain without retiring voices; BGM Pause preserves its consumed cursor, Mute advances silently, and Play continues. Unfocused fullscreen BGM uses Pause as documented. The existing music/NoMusic/SFX/story/rematch/codec lifecycle now includes focus loss, silent advance, focus recovery and demo music handoff. Host-device scheduling precision remains partial. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked."
     }
   ]
 }

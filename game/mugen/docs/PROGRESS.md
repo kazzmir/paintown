@@ -7,7 +7,7 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 32 implemented, 2 partial, 0 missing.
+- Project items: 32 implemented, 3 partial, 0 missing.
 
 ## Known difference checkpoints
 
@@ -61,11 +61,11 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **First character storyboards and portrait sprites**
 - [x] **Roster entry presentation through selection handoff**
 - [x] **Localized roster limits through Arcade scheduling**
-- [ ] **Idle title demo and intro cycling**: Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Batch acceptance pending.
-- [ ] **Authored TrueType font height overrides**: Motif, fight HUD and storyboard font loading accept first fontN.height values for TrueType rasterization. Bitmap atlases retain authored cell sizes. The shared font loader preserves resource/fallback behavior and bounded height diagnostics. Existing scene/localized-selection/VS/HUD/fight lifecycle now includes independent height overrides and ignored later duplicates; batch acceptance pending. The supplied Japanese motif actively declares font6.height=13.
-- [ ] **Legacy configuration first-field admission before YAML overrides**: Legacy mugen.cfg singleton groups merge first fields before the independent explicit YAML layer. Native retains initial320x240 game resolution with a later Config640x480 group. The existing complete title/selection/VS/input/fight/KO/rematch scenario uses later invalid dimensions/motif/rules while retaining YAML key alternatives. No local user configuration changed. Batch acceptance pending.
-- [ ] **Shadow and quick-versus configuration consumers**: DrawShadows now gates fighter/effect floor rendering; explicit --stage retains precedence, while omitted quick-versus stage uses the documented Debug.StartStage with a conventional fallback. The connected zoom/reflection/foreground/reset lifecycle checks the disabled renderer. Supplied mugen.cfg/readme document these options. Batch acceptance pending.
-- [ ] **Background simulation and audio policy**: Documented Misc.PauseOnDefocus reaches the Linux runtime scheduler. Background SFX Mute changes gain without retiring voices; BGM Pause preserves its consumed cursor, Mute advances silently, and Play continues. Unfocused fullscreen BGM uses Pause as documented. The existing music/NoMusic/SFX/story/rematch/codec lifecycle now includes focus loss, silent advance, focus recovery and demo music handoff. Host-device scheduling precision remains partial. Batch acceptance pending.
+- [x] **Idle title demo and intro cycling**
+- [x] **Authored TrueType font height overrides**
+- [x] **Legacy configuration first-field admission before YAML overrides**
+- [x] **Shadow and quick-versus configuration consumers**
+- [x] **Background simulation and audio policy**
 
 ## Completed scenario coverage
 
@@ -78,7 +78,7 @@ source changes reopen only the affected segments.
 - [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 
@@ -129,8 +129,9 @@ source changes reopen only the affected segments.
 
 ### Modes and platforms
 
+- [ ] Player input devices and configuration. **partial** — Keyboard bindings and alternatives work across menus and combat. Gamepad IDs are enumerated but device inputs and legacy joystick configuration are not consumed; this is an implementation gap, not merely unverified hardware fidelity. Controller models/connection types requested for the next Linux implementation and verification pass. (item4)
 - [x] Opponent AI and authored CMD command flow. (item4)
-- [x] Arcade/survival progression, continue/ending and training/watch rules. (item4)
+- [x] Arcade/survival/demo progression, continue/ending and training/watch rules. (item4)
 - [x] Team/simul/turns lifecycle, partner context and recovery. (item4)
 - [x] Linux build and final playable acceptance. (Linux now; other targets deferred (user 2026-11-07))
 

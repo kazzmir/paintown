@@ -74,11 +74,11 @@ artifact-dependent tests now require unavailable captures.
 
 ## Current state and boundaries
 
-The ledger has 89 controller routes, 127 trigger routes and 32/34 implemented
+The ledger has 89 controller routes, 127 trigger routes and 32/35 implemented
 project rows. All five connected segments are checked with race detection;
 Linux is rebuilt. These are scoped checks, not arbitrary native conformance.
-The two partial rows cover broader asset/font/media acceptance and native AI/
-rules/fidelity combinations. Physical CD audio, absent licensed/CJK fonts and
+The three partial rows cover the missing gamepad adapter, broader asset/font/
+media acceptance and native AI/rules/fidelity combinations. Physical CD audio, absent licensed/CJK fonts and
 other platforms are deferred. Standalone music-file CLI playback was deferred
 by the user. Do not turn unknown permutations into mandatory test matrices.
 
@@ -185,6 +185,12 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   premultiplication, nearest indexed/linear true-color sampling and delta-first
   round-to-even interpolation. Keep AfterImage AIR clocks and saved mappings.
   Existing bounded RGB/KO-echo acceptance is not whole-renderer/audio parity.
+- Idle demos retain their own sequence/AI requests and consume interruption
+  input before the returned title can act on it. Preserve demo bar/debug/music
+  policy without changing user configuration. Title BG controllers advance.
+- Font height overrides apply only to TrueType rasterization, keeping bitmap
+  cells and source precedence. CFG first fields precede explicit YAML overrides.
+  Preserve background Pause versus Mute cursor semantics and quick-stage defaults.
 - Audio uses consumed cursors, shared WAV decoding and reusable Linux codec
   buffers. Retain SFX two-stage quantization and existing KO-echo scheduling.
 

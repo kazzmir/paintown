@@ -5,21 +5,33 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch: four functional checkpoints plus combined acceptance. Recovery
-constants retain dimensions across borrowed/redirected states; native mixed
-320/1280 observations distinguish unitless .5/.2/.85 from scaled vectors.
-Character story/portrait fields retain first lookups. Confirmed roster metadata
-survives handoff independently of duplicate DEF rows. Arcade uses localized
-first Options limits without deduplicating ordered roster entries.
+Latest continuing batch: ten functional/acceptance commits before this handoff.
 
-All five connected segments passed with races in one end-state run. Linux
-rebuild is deferred to the end of the continuing batch. Native scratch under
-temp/_tmp/compat-continue is owned by this task and must be removed when done.
+- Mixed-coordinate recovery constants, first character story/portrait fields,
+  confirmed roster metadata and localized Arcade limits are corrected.
+- Idle title demo now runs selection/VS previews, AI combat, end-time/intro
+  cycling and input interruption with real music/bar/debug consumers. Title BG
+  controllers advance. Native and rebuilt Linux show AI combat without bars
+  and return to title on Enter.
+- TrueType fontN.height reaches motif/story/HUD rasterization; bitmap cells
+  remain unchanged. Legacy CFG fields retain first values before YAML overrides.
+- DrawShadows, Debug.StartStage and Misc background simulation/audio policies
+  have runtime consumers. Linux quick match without --stage uses stage0-720.
 
-Next concrete gap found: Demo Mode settings in supplied system.def currently
-have no runtime consumer; title BG controllers also do not advance. Implement
-idle selection/VS/AI fight/return, audio/HUD options and intro cycling. Recaps
-are progress updates, not stop points (user 2026-11-09).
+All five segments are checked with races; only changed source was rerun after
+coherent batches. Linux is rebuilt. Root modules and local YAML are unchanged;
+owned overlays, captures and drivers were removed.
+
+Newly recorded concrete gap: input/manager.go enumerates gamepad IDs but never
+consumes them; legacy joystick settings/YAML joy are not connected. Added a
+separate partial project row (32/35), rather than hiding this inside unknown
+native fidelity. Asked the user for controller models/connection types for the
+next Linux adapter/verification pass; answer pending at handoff. No physical
+controller support is claimed. Do not infer native raw joystick code mappings
+or declare hardware acceptance from keyboard/fake-device tests alone.
+
+Recaps are progress updates, not stop points (user 2026-11-09). Continue larger
+batches without per-commit approval, stopping only for actual completion/input.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 
@@ -30,7 +42,7 @@ Preserve the implementation invariants in AGENTS.md, especially:
   hit-paused bindings, combat stat scaling and borrowed Explod ownership.
 - Resource/palette/font bounds, native raster calibration and audio cursors.
 
-Remaining: broader font/media/pack acceptance, native AI policy and unverified
+Remaining: gamepad implementation, broader font/media/pack acceptance, native AI policy and unverified
 rules/fidelity combinations. Physical CD, absent licensed/CJK fonts and other
 platforms are deferred; Linux is the selected target. Do not regenerate matrices
 or call unknown combinations new implementation gaps without evidence.
