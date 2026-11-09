@@ -432,9 +432,10 @@
         "cmd/remap.go:RemapInputs",
         "cmd/remap.go:PhysicalInputs",
         "character/character.go:Command",
-        "character/commands.go:reserveCommands"
+        "character/commands.go:reserveCommands",
+        "match/ai.go:nextInput"
       ],
-      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree."
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree. AI uses timed input steps so long charges no longer fail the old planner cutoff or allocate per charge tick. The connected scenario completes a 300-tick authored AI charge, contact and control recovery before fresh stock AI combat. Native decision-policy equivalence remains unverified."
     },
     {
       "id": "modes",
@@ -610,7 +611,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6eaea4102839d1dc21b98aa45e803b346be1cccc5c8743400650fd5738db5601"
+      "passed_source": "761897eaffb78b63e2a898150862a56f21697cf7920329db525df319070eca79"
     },
     {
       "id": "entities",
@@ -643,7 +644,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d4da089bd1c7c5d97d1589ba5666bd7042bdf761003633d21f36b48a07ffcb68"
+      "passed_source": "4984f4fec155763efb27a2194fda6ac1ea615ad1946468fdcd0fe584b8307091"
     },
     {
       "id": "effects-pause",
@@ -678,7 +679,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "690d998940daf09179741485a76436d8419bef3c1b59a90a6b2edaabbf2c9803"
+      "passed_source": "14b23a40caedd0854c43be18dc67c5260237dbe2824ec025397dbafb5924f4aa"
     },
     {
       "id": "match-flow",
@@ -757,7 +758,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "bf2b1ddcb00f3223341137b3e9f21fccfae956a034a88eb35038cf6d6527081e"
+      "passed_source": "52e23d21e9281861c5128de1c86064e385e2523ea3f34f7b56593615f3bab0a7"
     }
   ],
   "presentation_followups": [
@@ -913,6 +914,12 @@
       "name": "Borrowed helper context through deferred admission",
       "completed": true,
       "validation": "Deferred helper admission forwards the existing active-state position adapter, converting offsets exactly once after the capacity gate. Native mixed 320/1280 observations confirm helper size overrides remain in helper units, and helpers retain the issuer profile, state programs and sprite bank. The existing borrowed effect/entity scenario now spans two helper creations, Pause, parent SelfState, retained helper ownership, retirement and round reset. Four affected segments pass with races; state-flow stays checked. Rebuilt Linux matches all twelve native context observations. Diagnostic overlays/captures/helpers removed; canonical assets reused."
+    },
+    {
+      "id": "ai-long-command-plans",
+      "name": "Timed AI plans for authored long commands",
+      "completed": true,
+      "validation": "AI command plans now store input snapshots with durations instead of one array per simulated tick. The old 120-frame planner rejection is removed; charge playback remains incremental and uses normal remapping, CMD matching and CNS. The connected human/helper command lifecycle continues into a fresh AI match whose only move is a remapped 300-tick charge, then attack/contact/damage/control recovery and fresh stock AI combat. Four affected segments pass with races; state-flow stays checked. Linux rebuilt. This closes authored command availability, not parity with the native AI decision policy."
     }
   ]
 }

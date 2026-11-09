@@ -121,6 +121,11 @@ type=ChangeState
 triggerall=StateNo=0 && Var(59)=1
 trigger1=command="x"
 value=8003
+[State -1, planned long-charge attack]
+type=ChangeState
+triggerall=StateNo=0 && Var(59)=2
+trigger1=command="long-charge-motion"
+value=8004
 [Statedef 0]
 type=S
 movetype=I
@@ -221,6 +226,31 @@ value=1
 [State 8003, recover]
 type=ChangeState
 trigger1=Time>=3
+value=0
+[Statedef 8004]
+type=S
+movetype=A
+physics=N
+ctrl=0
+anim=200
+[State 8004, count]
+type=VarAdd
+trigger1=Time=0
+v=44
+value=1
+[State 8004, contact]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+damage=30,0
+pausetime=0,0
+ground.type=High
+ground.hittime=10
+ground.velocity=0,0
+[State 8004, recover]
+type=ChangeState
+trigger1=Time>=12
 value=0
 `), "connected-commands.cns")
 	if err != nil {
@@ -382,6 +412,32 @@ value=0
 		if actor.StateNo != 0 || !actor.Ctrl || actor.Command("held-x") || actor.Command("held-chord") {
 			t.Fatal("long input lifecycle did not return to controllable idle")
 		}
+	}
+	// Continue into a fresh AI match whose only planned attack is the same
+	// remapped 300-tick charge. The authored CNS must receive it, hit and
+	// recover; the planner stores timed input steps rather than 300 frames.
+	request.Players[0].AILevel = 8
+	longAI, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState = longAI
+	longAI.match.Phase = match.Active
+	aiRoot := longAI.match.Players[0].Character
+	aiRoot.StateFile = file
+	aiRoot.CmdFile = &cmd.Data{Remap: commands.Remap, Commands: map[string][]cmd.Command{"long-charge-motion": commands.Commands["long-charge-motion"]}}
+	aiRoot.SetVar(59, 2)
+	aiRoot.X = 0
+	aiRoot.ChangeState(0, 1, -1)
+	aiVictim := longAI.match.Players[1].Character
+	aiVictim.X = 20
+	for frame := 0; frame < 700 && !(aiRoot.GetVar(44) > 0 && aiVictim.Life < aiVictim.MaxLife && aiRoot.StateNo == 0 && aiRoot.Ctrl); frame++ {
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if aiRoot.GetVar(44) != 1 || aiVictim.Life >= aiVictim.MaxLife || aiRoot.StateNo != 0 || !aiRoot.Ctrl {
+		t.Fatal("planned long charge failed attack/contact/recovery", aiRoot.GetVar(44), aiVictim.Life, aiRoot.StateNo, aiRoot.Ctrl)
 	}
 	for side := range request.Players {
 		request.Players[side].AILevel = 8

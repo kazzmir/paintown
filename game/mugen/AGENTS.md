@@ -423,3 +423,9 @@ survive long charges/motions and are discarded on fresh matches. The existing
 human/helper/recovery/AI scenario passes; native/Linux counts agree for long and
 short charge, expired/delayed motion and fresh presses. Four affected segments
 pass with races; state-flow stays checked. Command probe scratch was removed.
+
+AI command plans store timed input steps, removing the old 120-frame planner
+cutoff without per-tick plan allocation. Preserve remapping and incremental
+playback through the ordinary CMD/CNS path. The connected flow completes a
+300-tick AI charge, contact/recovery and fresh stock combat; four affected
+segments pass with races and Linux rebuilt. Native AI policy remains partial.

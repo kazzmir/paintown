@@ -5,10 +5,17 @@ import (
 	"strings"
 )
 
-// CommandInputs produces logical frames for authored CMD symbols. AI therefore
-// uses the same matcher and CNS as humans, including chords/charge/held keys.
-func CommandInputs(sequence string) [][]string {
-	var frames [][]string
+// CommandInput holds one input snapshot for a duration, without allocating a
+// separate frame for each tick of an authored charge.
+type CommandInput struct {
+	Keys []string
+	Time int
+}
+
+// CommandInputs plans logical CMD input. AI uses the same matcher and CNS as
+// humans; long charges take constant plan storage and play one tick at a time.
+func CommandInputs(sequence string) []CommandInput {
+	var steps []CommandInput
 	var held []string
 	for _, raw := range strings.Split(sequence, ",") {
 		symbol := strings.TrimSpace(raw)
@@ -26,7 +33,7 @@ func CommandInputs(sequence string) [][]string {
 			}
 			if n > 0 {
 				value, err := strconv.Atoi(s[:n])
-				if err != nil || value > 120 {
+				if err != nil {
 					return nil
 				}
 				count = max(1, value)
@@ -35,15 +42,10 @@ func CommandInputs(sequence string) [][]string {
 		if isHold {
 			held = append(held, keys...)
 		}
-		for n := 0; n < count; n++ {
-			frames = append(frames, append(append([]string(nil), held...), keys...))
-		}
+		steps = append(steps, CommandInput{Keys: append(append([]string(nil), held...), keys...), Time: count})
 		if release || !isHold {
-			frames = append(frames, append([]string(nil), held...))
-		}
-		if len(frames) > 120 {
-			return nil
+			steps = append(steps, CommandInput{Keys: append([]string(nil), held...), Time: 1})
 		}
 	}
-	return frames
+	return steps
 }

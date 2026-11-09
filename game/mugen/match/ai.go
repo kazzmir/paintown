@@ -9,8 +9,10 @@ import (
 
 type aiBrain struct {
 	random       *engine.RandomStream
-	commands     [][][]string
-	queue        [][]string
+	commands     [][]character.CommandInput
+	queue        []character.CommandInput
+	held         []string
+	remaining    int
 	nextDecision int
 	frame        int
 	inputs       []string
@@ -32,24 +34,24 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 		sort.Strings(names)
 		for _, name := range names {
 			for _, command := range c.CmdFile.Commands[name] {
-				frames := character.CommandInputs(command.Sequence)
+				steps := character.CommandInputs(command.Sequence)
 				button := false
-				for _, frame := range frames {
-					for _, key := range frame {
+				for _, step := range steps {
+					for _, key := range step.Keys {
 						button = button || (strings.HasPrefix(key, "Button") && key != "ButtonStart")
 					}
 				}
-				if button && len(frames) > 0 {
-					for index, frame := range frames {
-						physical, reachable := c.CmdFile.PhysicalInputs(frame)
+				if button && len(steps) > 0 {
+					for index, step := range steps {
+						physical, reachable := c.CmdFile.PhysicalInputs(step.Keys)
 						if !reachable {
-							frames = nil
+							steps = nil
 							break
 						}
-						frames[index] = physical
+						steps[index].Keys = physical
 					}
-					if len(frames) > 0 {
-						b.commands = append(b.commands, frames)
+					if len(steps) > 0 {
+						b.commands = append(b.commands, steps)
 					}
 				}
 			}
@@ -57,6 +59,16 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 	}
 	m.aiBrains[c.EntityID] = b
 	return b
+}
+
+func (b *aiBrain) nextInput() []string {
+	if b.remaining == 0 {
+		step := b.queue[0]
+		b.queue = b.queue[1:]
+		b.held, b.remaining = step.Keys, step.Time
+	}
+	b.remaining--
+	return b.held
 }
 
 // BasicAIInput retains the adapter name but plans authored CMD sequences.
@@ -76,8 +88,8 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		return b.inputs
 	}
 	b.frame, b.inputs = m.Tick, nil
-	if len(b.queue) > 0 {
-		b.inputs, b.queue = b.queue[0], b.queue[1:]
+	if b.remaining > 0 || len(b.queue) > 0 {
+		b.inputs = b.nextInput()
 		return b.inputs
 	}
 	if !c.Ctrl && !(c.MoveType == "A" && c.MoveContact > 0) {
@@ -119,7 +131,7 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	}
 	if len(b.commands) > 0 {
 		b.queue = b.commands[int(b.random.Next()%int64(len(b.commands)))]
-		b.inputs, b.queue = b.queue[0], b.queue[1:]
+		b.inputs = b.nextInput()
 	} else {
 		b.inputs, _ = c.CmdFile.PhysicalInputs([]string{"ButtonX"})
 	}

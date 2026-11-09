@@ -7,6 +7,12 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- AI plans use timed input steps, including long charges, without allocating
+  one input array per tick. The connected command flow now completes a remapped
+  300-tick AI charge, attack/damage/recovery and a fresh stock AI fight. Four
+  affected segments pass with races; state-flow stays checked. Linux rebuilt.
+  This covers authored command availability, not native AI decision parity.
+
 - Command history reserves the loaded CMD motion, charge and buffer window
   before input is recorded. Keep sizing overflow-safe and allocation lazy;
   player/helper buffers remain independent and fresh matches discard history.
