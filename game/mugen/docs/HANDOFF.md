@@ -16,7 +16,11 @@ Latest compatibility checkpoints:
 
 - Helper-bank capacity is checked before any Helper parameter expression.
   CreateHelperEvaluated preserves this gate; direct creation retains its own
-  capacity check. The entity flow covers full-bank rejection, skipped failures,
+  capacity check. Borrowed contexts must forward CreateHelperEvaluated through
+  the state adapter: convert positions once after admission, retain helper-unit
+  size overrides and issuer banks/profile/programs. Native/Linux mixed-profile
+  context observations agree through parent SelfState and helper retirement.
+  The entity flow covers full-bank rejection, skipped failures,
   retirement/vacancy reuse, parent confirmation and round reset. All five
   segments pass with races; rebuilt Linux matches twelve native slots.
 

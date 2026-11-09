@@ -150,6 +150,16 @@ func (s *stateEnvironment) CreateHelper(p engine.HelperParameters) error {
 	p.X, p.Y = s.storageVector(p.X, p.Y)
 	return s.Character.CreateHelper(p)
 }
+func (s *stateEnvironment) CreateHelperEvaluated(evaluate func() (engine.HelperParameters, error)) error {
+	return s.Character.CreateHelperEvaluated(func() (engine.HelperParameters, error) {
+		p, err := evaluate()
+		if err != nil {
+			return engine.HelperParameters{}, err
+		}
+		p.X, p.Y = s.storageVector(p.X, p.Y)
+		return p, nil
+	})
+}
 func (s *stateEnvironment) Redirect(name string, id evaluator.Value, hasID bool) evaluator.EvaluatorEnvironment {
 	destination := s.Character.Redirect(name, id, hasID)
 	if proxy, ok := destination.(*redirectEnvironment); ok {

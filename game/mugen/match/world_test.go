@@ -313,6 +313,21 @@ pos=Const240p(16),Const240p(-32)
 vel=Const240p(2),Const240p(-1)
 accel=0,Const240p(.5)
 removetime=30
+[State 760, helper in borrowed position units]
+type=Helper
+trigger1=Time=0
+id=88
+stateno=861
+pos=12,-24
+size.height=40
+[State 760, another helper retains own size units]
+type=Helper
+trigger1=Time=3
+id=89
+stateno=862
+pos=20,-40
+size.xscale=2
+size.head.pos=10,-20
 [State 760, freeze the effect and receiver together]
 type=Pause
 trigger1=Time=3
@@ -326,6 +341,19 @@ ctrl=1
 `
 	program += targetAdmissionProgram
 	program += helperAdmissionProgram
+	for _, phase := range []struct {
+		state, slot int
+		expressions []string
+	}{
+		{861, 40, []string{"Pos X-(Parent,Pos X)", "Pos Y-(Parent,Pos Y)", "Const(size.height)", "Const240p(320)", "Const(size.xscale)*100", "NumHelper"}},
+		{862, 46, []string{"Pos X-(Parent,Pos X)", "Pos Y-(Parent,Pos Y)", "Const(size.head.pos.x)", "Const(size.head.pos.y)", "Const(size.xscale)*100", "Const240p(320)"}},
+	} {
+		program += fmt.Sprintf("[Statedef %d]\ntype=S\nmovetype=I\nphysics=N\nctrl=0\nanim=9990\n", phase.state)
+		for index, expression := range phase.expressions {
+			program += fmt.Sprintf("[State helper observation]\ntype=ParentVarSet\ntrigger1=Time=0\nv=%d\nvalue=%s\n", phase.slot+index, expression)
+		}
+		program += "[State helper retirement]\ntype=DestroySelf\ntrigger1=Time=25\n"
+	}
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-helper-pause-bind.cns")
 		if err != nil {
@@ -704,6 +732,7 @@ func borrowedEffectRecoveryFlow(t *testing.T, m *Match) {
 	receiver.ChangeState(701, 0, -1)
 	var explod *character.ExplodData
 	paused, recovered := 0, false
+	helperRecovered := false
 	wasFrozen, age, x, y := false, 0, 0.0, 0.0
 	for tick := 0; tick < 70; tick++ {
 		if err := m.Update(); err != nil {
@@ -742,9 +771,30 @@ func borrowedEffectRecoveryFlow(t *testing.T, m *Match) {
 				t.Fatal("SelfState changed a live effect's creation profile")
 			}
 			recovered = true
+			helpers := 0
+			for _, helper := range m.World.Helpers {
+				if helper.Parent != receiver || (helper.HelperID != 88 && helper.HelperID != 89) {
+					continue
+				}
+				helpers++
+				if helper.LocalCoordinateWidth() != receiver.LocalCoordinateWidth() || helper.Palettes.Archive != m.Players[1].SFF || helper.StateFile.States[helper.StateNo] != receiver.StateFile.States[helper.StateNo] {
+					t.Fatal("borrowed helper lost issuer banks/profile/states after parent recovery")
+				}
+			}
+			helperRecovered = helperRecovered || helpers == 2
 		}
 	}
-	if explod == nil || paused < 2 || !recovered || explod.Visual.Active || len(receiver.Explods) != 0 || receiver.IntVars[56] != 0 {
+	for index, expected := range []int{-48, -96, 40, 1280, 100, 1, -80, -160, 10, -20, 200, 1280} {
+		if receiver.GetVar(40+index) != expected {
+			t.Fatal("native borrowed helper context", index, receiver.GetVar(40+index), expected)
+		}
+	}
+	for _, helper := range m.World.Helpers {
+		if helper.Parent == receiver && (helper.HelperID == 88 || helper.HelperID == 89) {
+			t.Fatal("borrowed helper survived retirement")
+		}
+	}
+	if explod == nil || paused < 2 || !recovered || !helperRecovered || explod.Visual.Active || len(receiver.Explods) != 0 || receiver.IntVars[56] != 0 {
 		t.Fatal("borrowed effect/pause/recovery/retirement incomplete", explod != nil, paused, recovered, len(receiver.Explods), receiver.IntVars[56])
 	}
 }

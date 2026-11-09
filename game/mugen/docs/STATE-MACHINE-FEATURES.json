@@ -119,9 +119,10 @@
       "sources": [
         "character/helper.go:CreateHelper",
         "character/retire.go:DestroyHelper",
-        "character/helper.go:CreateHelperEvaluated"
+        "character/helper.go:CreateHelperEvaluated",
+        "character/ownership.go:CreateHelperEvaluated"
       ],
-      "validation": "The connected entity lifecycle includes helper-bank admission before expressions, full-bank rejection without side effects/VM failures, retirement, vacancy reuse, parent confirmation and fresh round identities. All five segments pass with races; rebuilt Linux matches twelve native helper-bank observations."
+      "validation": "The connected entity lifecycle includes helper-bank admission before expressions, full-bank rejection without side effects/VM failures, retirement, vacancy reuse, parent confirmation and fresh round identities. All five segments pass with races; rebuilt Linux matches twelve native helper-bank observations. Deferred admission also retains borrowed-state position conversion while leaving size overrides in helper units. The existing mixed-profile lifecycle covers helper ownership through parent SelfState, Pause and retirement. Native and rebuilt Linux match all twelve context observations."
     },
     {
       "id": "bindings",
@@ -609,7 +610,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6f97b3bc98616d1155048c9bc54eb568767dab0bea652868d168e6f2be74ad8b"
+      "passed_source": "6eaea4102839d1dc21b98aa45e803b346be1cccc5c8743400650fd5738db5601"
     },
     {
       "id": "entities",
@@ -642,7 +643,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "02d95f8ef2e8d74bbb88a79b0ccb04d059eedeabae8ebee19768ac4df635ea6b"
+      "passed_source": "d4da089bd1c7c5d97d1589ba5666bd7042bdf761003633d21f36b48a07ffcb68"
     },
     {
       "id": "effects-pause",
@@ -677,7 +678,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "62b14865accf47228bf1897b283895b8da71a62d44ea9af82bd8ca09e99cce5a"
+      "passed_source": "690d998940daf09179741485a76436d8419bef3c1b59a90a6b2edaabbf2c9803"
     },
     {
       "id": "match-flow",
@@ -756,7 +757,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ace0e10767f4b6fd7269756e19e2fbd09b38b06eb019872201450d25af4048a8"
+      "passed_source": "bf2b1ddcb00f3223341137b3e9f21fccfae956a034a88eb35038cf6d6527081e"
     }
   ],
   "presentation_followups": [
@@ -906,6 +907,12 @@
       "name": "Authored long charge and motion history",
       "completed": true,
       "validation": "Command history now retains the loaded CMD motion window, release-charge duration and completion buffer instead of a fixed 120-tick cutoff. Ordinary commands keep their small history; larger budgets grow only as input arrives, with overflow-safe sizing. Player and key-controlled helper share this policy without sharing history. The connected human/helper/recovery/fresh-match/AI scenario spans a 300-tick charge, expired motion, later delayed motion and rejected short charge. Four changed-source segments pass with races; state-flow stays checked. Rebuilt Linux matches native: one long charge, one charged motion, two valid delayed motions and three fresh presses. Diagnostic overlay/capture removed; shared sprites reused."
+    },
+    {
+      "id": "borrowed-helper-admission-context",
+      "name": "Borrowed helper context through deferred admission",
+      "completed": true,
+      "validation": "Deferred helper admission forwards the existing active-state position adapter, converting offsets exactly once after the capacity gate. Native mixed 320/1280 observations confirm helper size overrides remain in helper units, and helpers retain the issuer profile, state programs and sprite bank. The existing borrowed effect/entity scenario now spans two helper creations, Pause, parent SelfState, retained helper ownership, retirement and round reset. Four affected segments pass with races; state-flow stays checked. Rebuilt Linux matches all twelve native context observations. Diagnostic overlays/captures/helpers removed; canonical assets reused."
     }
   ]
 }

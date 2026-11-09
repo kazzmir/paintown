@@ -409,6 +409,10 @@ rebuilt Linux matches twelve native slots. Diagnostic scratch was removed.
 
 Helper admission uses CreateHelperEvaluated so a full bank skips every parameter
 expression. Keep direct creation capacity checks and compile-time validation.
+In borrowed contexts, forward CreateHelperEvaluated through the state adapter:
+convert admitted positions once, retain helper-unit size overrides and issuer
+banks/profile/programs. The connected Pause/SelfState/retirement flow and rebuilt
+Linux match twelve native mixed-profile context observations.
 The connected entity flow covers rejection, unused errors, retirement/vacancy
 reuse, parent confirmation and reset. All five segments pass with races; rebuilt
 Linux matches twelve native slots. The helper probe overlay/capture was removed.
