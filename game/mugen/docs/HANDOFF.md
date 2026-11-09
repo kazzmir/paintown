@@ -5,32 +5,12 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (four local checkpoints):
-
-- Legacy and v2 font fields retain first values. Native loads duplicate bitmap
-  metadata with later invalid fields; rebuilt Linux loads the same v2 font.
-  The storyboard asset lifecycle spans bitmap/TrueType/legacy text, banks,
-  primary-resource errors and corrected reloads without copied fixture banks.
-
-- Stage resources/metadata and fight layouts keep first fields. BG/controller
-  fields keep first values per instance; repeated BG names stay distinct.
-  Native and Linux render the same combined duplicate-setting stage/HUD flow.
-  Connected camera/linked-parallax/reset and round/combo/expiry flows pass.
-
-- Motif/storyboard fields retain first declarations, including music/resources,
-  scene/layer/sound settings and source-context errors for authored blank BG
-  banks. The connected storyboard/pack lifecycle passes with races; native and
-  Linux complete the same intro-to-title flow.
-
-- Storyboards retain motif-aspect presentation, centered layer/window origins
-  and visible side margins. Omitted windows do not crop the viewport. Native
-  also clips BGs with the scene window, contrary to its manual. Native/Linux
-  frame, sprite and clipped-region geometry agree for the checked 4:3-to-16:9
-  flow; small font/edge raster differences remain in the fidelity backlog.
-
-All five segments are checked with races; Linux is rebuilt. Owned temporary
-captures/overlays/drivers were removed. Keep arbitrary source-aspect, BG mask,
-font/filtering and device/native-AI combinations partial; do not start matrices.
+Latest checkpoint: escaped quotes in CNS clipboard formats pass container
+admission and reach display/append/debug drawing through the existing combat
+feedback lifecycle. Native and rebuilt Linux load the same single-quote format.
+The checked escaped-quote/semicolon combination also fails in native, so retain
+comment handling. Combined affected segments passed with races. AI chord-plan
+and victory-background checkpoints are the next parts of this batch.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

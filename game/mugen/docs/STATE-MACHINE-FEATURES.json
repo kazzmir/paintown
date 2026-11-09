@@ -1005,6 +1005,12 @@
       "name": "Storyboard presentation inside a widescreen motif",
       "completed": true,
       "validation": "Storyboard playback keeps the motif-aspect game frame at configured game width. Layers and authored windows use a top-middle origin; a viewport-sized retained surface permits artwork beyond nominal storyboard side bounds. Omitted scene/BG windows no longer introduce masking; authored scene windows carry forward. Native also clips BGs with the scene window, contrary to its manual; separate BG definitions confirm this. Native/Linux comparisons agree on frame extent, sprite/side-margin placement and clipped regions for a 320x240 storyboard inside a 16:9 motif/window flow. Caption/edge raster samples differ by about one pixel; arbitrary source-aspect/filtering parity is not established. The existing asset lifecycle covers configured/motif aspect mismatch, timed art/text/audio, clipping, retention, repeated draws, margin art and exit. All five segments are checked with race detection, Linux rebuilt, and owned captures/overlays/drivers removed."
+    },
+    {
+      "id": "clipboard-escaped-quote-admission",
+      "name": "Escaped quote admission in state debug text",
+      "completed": true,
+      "validation": "The container accepts a single escaped quote in a CNS format string and retains literal Windows-path admission. Native beta loads the same escaped-quote text; rebuilt Linux starts that match. Native rejects the checked escaped-quote/semicolon combination, so existing comment handling remains unchanged. The existing feedback lifecycle passes with races through formatted display/append, debug drawing, contact, Pause, clear and helper retirement. Other affected segments also pass in the combined batch."
     }
   ]
 }

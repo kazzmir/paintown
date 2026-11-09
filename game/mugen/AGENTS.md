@@ -102,6 +102,8 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   stable scene order. Commands/states and individual BG elements are exempt.
   Standalone AIR stays undecorated; preserve runtime victory-quote banks.
   Motif-relative select.def precedes shared data.
+- Accept escaped quotes in CNS debug formats without changing literal Windows
+  resource names or native semicolon comment admission.
 - CMD defaults apply globally; first settings/remaps/command attributes win.
   Keep time >=1, buffer 1–30, nonempty full-character command sets and original
   resource context. A disabled remap stays disabled; remaps read simultaneous

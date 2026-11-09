@@ -30,7 +30,7 @@ func Parse(r io.Reader) (*File, error) {
 		if len(line) >= 3 && strings.Trim(line, "=") == "" {
 			continue // legacy CMD decorative separators are not assignments
 		}
-		if strings.Count(line, "\"")%2 != 0 {
+		if strings.Count(line, "\"")%2 != 0 && !closedEscapedStrings(line) {
 			return nil, fmt.Errorf("line %d:%d: unterminated string", lineNo, column)
 		}
 		if line[0] == '[' {
@@ -74,6 +74,23 @@ func Parse(r io.Reader) (*File, error) {
 		return nil, fmt.Errorf("line %d: %w", lineNo+1, err)
 	}
 	return file, nil
+}
+
+// CNS format strings support escaped quotes. Retain the legacy balanced-quote
+// admission too: ordinary resource names use literal Windows backslashes.
+// Comment stripping remains separate, matching the beta's semicolon handling.
+func closedEscapedStrings(line string) bool {
+	quoted := false
+	for i := 0; i < len(line); i++ {
+		if quoted && line[i] == '\\' && i+1 < len(line) {
+			i++
+			continue
+		}
+		if line[i] == '"' {
+			quoted = !quoted
+		}
+	}
+	return !quoted
 }
 
 func containerAttribute(line string) (key, value string, assigned bool) {

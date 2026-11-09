@@ -100,7 +100,7 @@ params=7,1.25
 type=AppendToClipboard
 trigger1=MoveHit=1
 ignorehitpause=1
-text="\"quoted\" \\ %g"
+text="\"quoted, \\ %g"
 params=1.23456789
 [State 0, clear]
 type=ClearClipboard
@@ -195,7 +195,7 @@ trigger1=Time=20
 		if frame == 0 && (root.Clipboard != "start 1 0.25 %\nappend\t2" || root.IntVars[10] != 2) {
 			t.Fatal("ordered formatting/append", root.Clipboard, root.IntVars[10])
 		}
-		if strings.Contains(root.Clipboard, "i=7 f=1.250000%\n\"quoted\" \\ 1.23457") {
+		if strings.Contains(root.Clipboard, "i=7 f=1.250000%\n\"quoted, \\ 1.23457") {
 			seenFormatting = true
 		}
 		if root.Clipboard == "cleared" {
