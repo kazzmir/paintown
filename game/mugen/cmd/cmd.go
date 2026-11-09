@@ -45,6 +45,27 @@ func Parse(r io.Reader, languages ...string) (*Data, error) {
 	// [Defaults] section values
 	defaultTime := 15
 	defaultBufferTime := 1
+	seenDefaults := map[string]bool{}
+	// Defaults apply to every command regardless of section order. Like
+	// ordinary definition lookup, the first authored setting wins.
+	for _, section := range ast.Sections {
+		if !strings.EqualFold(strings.TrimSpace(section.Name), "defaults") {
+			continue
+		}
+		for _, attr := range section.Attributes {
+			key := strings.ToLower(attr.ID.String())
+			if seenDefaults[key] {
+				continue
+			}
+			seenDefaults[key] = true
+			switch key {
+			case "command.time":
+				defaultTime = max(1, getAsInt(attr.Value))
+			case "command.buffer.time":
+				defaultBufferTime = max(1, min(30, getAsInt(attr.Value)))
+			}
+		}
+	}
 
 	for _, section := range ast.Sections {
 		secName := strings.ToLower(strings.TrimSpace(section.Name))
@@ -53,6 +74,9 @@ func Parse(r io.Reader, languages ...string) (*Data, error) {
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
 				if buttonKey(key) == "" {
+					continue
+				}
+				if _, exists := data.Remap[key]; exists {
 					continue
 				}
 				physical := strings.ToLower(getAsString(attr.Value))
@@ -64,23 +88,19 @@ func Parse(r io.Reader, languages ...string) (*Data, error) {
 				}
 				data.Remap[key] = physical
 			}
-		} else if secName == "defaults" {
-			for _, attr := range section.Attributes {
-				key := strings.ToLower(attr.ID.String())
-				if key == "command.time" {
-					defaultTime = getAsInt(attr.Value)
-				} else if key == "command.buffer.time" {
-					defaultBufferTime = getAsInt(attr.Value)
-				}
-			}
 		} else if secName == "command" {
 			cmd := Command{
 				Time:       defaultTime,
 				BufferTime: defaultBufferTime,
 			}
 
+			seen := map[string]bool{}
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
+				if seen[key] {
+					continue
+				}
+				seen[key] = true
 
 				if key == "name" {
 					// Names are quoted inside strings usually, so we must unwrap StringValue
@@ -100,6 +120,8 @@ func Parse(r io.Reader, languages ...string) (*Data, error) {
 				}
 			}
 
+			cmd.Time = max(1, cmd.Time)
+			cmd.BufferTime = max(1, min(30, cmd.BufferTime))
 			if cmd.Name != "" && cmd.Sequence != "" {
 				data.Commands[cmd.Name] = append(data.Commands[cmd.Name], cmd)
 			}

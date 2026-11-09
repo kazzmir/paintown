@@ -252,6 +252,10 @@ physical key to both players activates both mappings.
 Character CMD definitions control attack timing. A plain button command such as
 `x` matches a new press; `/x` matches holding and `~x` matches release. Authored
 `buffer.time` keeps a matched command active for that window.
+CMD `[Defaults]` apply throughout the file, regardless of placement. The first
+duplicate command setting or remap wins. `command.time` has a minimum of 1 tick;
+`buffer.time` is limited to 1–30 ticks. Every character CMD must contain at least
+one named, nonempty `[Command]` definition.
 
 The first valid override file wins. Search order is the data root's `mugen.yaml`,
 its `data/mugen.yaml`, `~/.paintown/mugen.yaml`, the working directory's

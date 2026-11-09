@@ -454,7 +454,8 @@ pal1=pal/green.act
 pal2=Pal\Gold.ACT
 `
 	write("outfits.def", []byte(definition))
-	write("outfits.cmd", []byte("[Defaults]\ncommand.time=15\ncommand.buffer.time=1\n"))
+	commandSource := "[Defaults]\ncommand.time=15\ncommand.buffer.time=1\n[Command]\nname=\"x\"\ncommand=x\ntime=1\n"
+	write("outfits.cmd", []byte(commandSource))
 	write("outfits.air", []byte("[Begin Action 0]\n0,0,0,0,-1\n"))
 	write("outfits.cns", []byte(`[Data]
 life=1000
@@ -633,6 +634,13 @@ trigger1=1
 	e.Draw(canvas)
 	packedCharacterAssetFlow(t, e, canvas, dir, definition)
 	localizedAssetFlow(t, e, canvas, dir, definition)
+	// Full character loading, unlike a partial parser view, requires a usable
+	// command set. Keep its source path and allow corrected content to reload.
+	write("outfits.cmd", []byte("[Defaults]\ncommand.time=15\n"))
+	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "outfits.cmd") || !strings.Contains(err.Error(), "at least one [Command]") {
+		t.Fatal("empty character command set lost its diagnostic", err)
+	}
+	write("outfits.cmd", []byte(commandSource))
 	// Missing declared ACTs retain the DEF key/location; no directory fallback.
 	write("outfits.def", []byte(strings.Replace(definition, `Pal\Gold.ACT`, `Pal\missing.act`, 1)))
 	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "pal2") {

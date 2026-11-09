@@ -140,6 +140,9 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, context("cmd", fmt.Errorf("%s: %w", cmdPath, err))
 	}
+	if len(commandData.Commands) == 0 {
+		return nil, context("cmd", fmt.Errorf("%s: at least one [Command] is required", cmdPath))
+	}
 	commandStates, err := cns.ParseNamed(bytes.NewReader(commands), cmdPath, options.Language)
 	if err != nil {
 		return nil, context("cmd", err)

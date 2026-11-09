@@ -33,8 +33,10 @@ func TestAuthoredCommandsAndAICombatFlow(t *testing.T) {
 	f.match.Phase = match.Active
 	commands, err := cmd.Parse(strings.NewReader(`[Remap]
 x=a
+x=x
 y=a
 a=
+a=x
 z=s
 s=z
 [Command]
@@ -43,7 +45,9 @@ command=~6$B,x+y
 time=15
 [Command]
 name="qcf"
+name="ignored duplicate"
 command=~D,DF,F,x
+command=a
 time=15
 [Command]
 name="double"
@@ -91,11 +95,19 @@ time=30
 [Command]
 name="long-motion"
 command=x,b
-time=240
 [Command]
 name="long-press"
 command=x
 time=1
+[Command]
+name="wide-buffer"
+command=x
+buffer.time=100
+[Defaults]
+command.time=240
+command.time=1
+command.buffer.time=1
+command.buffer.time=30
 `))
 	if err != nil {
 		t.Fatal(err)
@@ -336,7 +348,7 @@ value=0
 		for frame := 0; frame < 32; frame++ {
 			step("ButtonA")
 			for _, actor := range []*character.Character{root, helper} {
-				if actor.Command("x") != (frame == 0) || !actor.Command("held-x") || !actor.Command("held-chord") || actor.Command("buffered-x") != (frame < 3) {
+				if actor.Command("x") != (frame == 0) || !actor.Command("held-x") || !actor.Command("held-chord") || actor.Command("buffered-x") != (frame < 3) || actor.Command("wide-buffer") != (frame < 30) {
 					t.Fatal("declared press/hold/buffer semantics were bypassed", press, frame, actor.InputSlot, actor.ActiveCommands)
 				}
 			}

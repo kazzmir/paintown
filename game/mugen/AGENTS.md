@@ -441,3 +441,9 @@ continue later arguments, including zero-duration power updates. True VM errors
 stay fatal before applying effects. The shared-clock lifecycle and rebuilt Linux
 match twelve native observations; all five segments pass with races. Native
 DestroySelf evaluates parameters even for roots; do not generalize helper gates.
+
+CMD defaults are global before command parsing; first values/remaps/attributes
+win, including disabled slots. Keep command time >=1, buffer time 1–30 and the
+full-character nonempty-command requirement with source context. Existing human/
+helper/long-charge AI and asset reload scenarios pass; native/Linux windows are
+5/30/1. Four affected segments pass with races; state-flow stays checked.

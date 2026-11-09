@@ -7,6 +7,13 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- CMD defaults apply before commands regardless of placement. Keep first
+  settings/remaps/attributes, disabled mappings and buffer bounds 1–30. Full
+  character loads require a nonempty command set with resource context; fixed
+  content reloads. Human/helper/long-charge AI and asset/ZIP scenarios pass.
+  Native/Linux window counts agree at 5/30/1; four affected segments pass with
+  races, state-flow stays checked. Linux rebuilt; diagnostic scratch removed.
+
 - Pause/SuperPause ordinary numeric bottom uses zero; omitted values retain
   defaults and later arguments run. Zero-duration SuperPause still changes
   power. True VM errors remain fatal before applying effects. The shared-clock

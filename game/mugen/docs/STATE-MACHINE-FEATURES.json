@@ -438,9 +438,10 @@
         "cmd/remap.go:PhysicalInputs",
         "character/character.go:Command",
         "character/commands.go:reserveCommands",
-        "match/ai.go:nextInput"
+        "match/ai.go:nextInput",
+        "cmd/cmd.go:Parse"
       ],
-      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree. AI uses timed input steps so long charges no longer fail the old planner cutoff or allocate per charge tick. The connected scenario completes a 300-tick authored AI charge, contact and control recovery before fresh stock AI combat. Native decision-policy equivalence remains unverified."
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree. AI uses timed input steps so long charges no longer fail the old planner cutoff or allocate per charge tick. The connected scenario completes a 300-tick authored AI charge, contact and control recovery before fresh stock AI combat. Native decision-policy equivalence remains unverified. Global CMD defaults, first-value remaps/attributes and bounded buffers now match the native 5/30/1 command episode. The existing human/helper/AI and corrected-content asset flows pass with races."
     },
     {
       "id": "modes",
@@ -616,7 +617,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8205c940aadaa9fc1e5fb3d9f89b2189d00709a1dc71e4317bd69faa55a0d2af"
+      "passed_source": "1a9fb64183a9cd8ddbd7b39614daab131c22ee159cb57aebbf0776aef1cef81a"
     },
     {
       "id": "entities",
@@ -649,7 +650,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "99495e66f0b5a5483e21f2f17e1abc96a64820ed7de48986fd137cb163b846d6"
+      "passed_source": "ac7c0af580101e0b7e4cc4e4bbda37fcb953bc3ae407a9ca3b8b7eb027eee5c8"
     },
     {
       "id": "effects-pause",
@@ -684,7 +685,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a75fd673e6e4ad86ab13453b61274432b184fa82c5cbdc9dc5fb741b7f99bd4e"
+      "passed_source": "2bab5a364441b5512155411b99123766ef32e2a34d08a5440349022a718e13b1"
     },
     {
       "id": "match-flow",
@@ -763,7 +764,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "94e18e47be8b80610b962e6c0f04fe9038e75f244e31cfa6407d89b60e8b86db"
+      "passed_source": "d630afe5381655b61fc9f5e474cc353477d6bb771c21e04b3e92186eea9d4dfc"
     }
   ],
   "presentation_followups": [
@@ -937,6 +938,12 @@
       "name": "Pause and SuperPause numeric fallback through recovery",
       "completed": true,
       "validation": "Ordinary bottom-valued Pause/SuperPause parameters coerce to zero; omitted fields retain defaults and later arguments still run. A zero-duration SuperPause still applies its power change. Genuine VM failures remain fatal before applying power or pause requests. The existing shared-clock/background/effect/reset scenario continues through invalid numeric results, argument side effects, zero-duration power updates, real Pause/SuperPause and own-state recovery. All five segments pass with races. Rebuilt Linux matches all twelve native observations. Diagnostic overlay/capture removed. Separately confirmed that native DestroySelf evaluates parameters even on nonhelpers; existing behavior was retained."
+    },
+    {
+      "id": "cmd-defaults-and-loading",
+      "name": "CMD defaults, duplicate settings and loading contract",
+      "completed": true,
+      "validation": "CMD defaults are resolved before commands regardless of section order. First duplicate defaults, remaps and command attributes win, including disabled mappings. Command time is at least one tick and buffer time is limited to 1\u201330. Full character loading rejects empty command sets with the CMD path and DEF context, and corrected content reloads. Existing human/helper/long-charge AI and asset/ZIP/reload scenarios cover these consumers. Four affected segments pass with races; state-flow stays checked. Rebuilt Linux matches native command-window counts 5/30/1. Diagnostic overlay/capture removed; shared assets reused."
     }
   ]
 }
