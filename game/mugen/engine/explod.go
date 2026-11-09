@@ -124,6 +124,10 @@ func compileExplod(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	args = append(args, scalars...)
 	for _, key := range []string{"pos", "random", "vel", "accel", "scale"} {
 		raw, present := ctrl.Params[key]
+		if key == "vel" && !present {
+			// The shipped KFM intro uses this legacy spelling for its wood.
+			raw, present = ctrl.Params["velocity"]
+		}
 		if key == "random" && !present {
 			// Both zero-width components still draw from the match stream.
 			raw, present = "0,0", true

@@ -274,11 +274,37 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if f.match.World.RandomSeed() != 16807 {
 		t.Fatal("session seed was not handed to production match")
 	}
+	incoming, broken := false, false
 	for i := 0; i < 600 && f.match.Phase != match.Active; i++ {
 		step()
+		for _, explod := range f.match.Players[0].Character.Explods {
+			broken = broken || explod.Anim == 192
+			if explod.Anim != 191 || explod.CurrentTime != 12 {
+				continue
+			}
+			if explod.VelX >= -4 || explod.X >= f.match.Players[0].Character.StartX+260 {
+				t.Fatal("incoming intro block ignored legacy velocity", explod.VelX, explod.X)
+			}
+			// Check the real stage/actor/effect composition before the kick,
+			// rather than merely checking that the Explod was allocated.
+			canvas := ebiten.NewImage(e.logicalWidth, e.logicalHeight)
+			f.Draw(canvas)
+			visible := make([]byte, e.logicalWidth*e.logicalHeight*4)
+			canvas.ReadPixels(visible)
+			explod.Visual.Active = false
+			f.Draw(canvas)
+			without := make([]byte, len(visible))
+			canvas.ReadPixels(without)
+			explod.Visual.Active = true
+			canvas.Deallocate()
+			if bytes.Equal(visible, without) {
+				t.Fatal("incoming intro block was offscreen or covered before impact")
+			}
+			incoming = true
+		}
 	}
-	if f.match.Phase != match.Active {
-		t.Fatal("fight did not grant control")
+	if f.match.Phase != match.Active || !incoming || !broken {
+		t.Fatal("intro flight/break/control handoff incomplete", f.match.Phase, incoming, broken)
 	}
 	if !audible || !f.hud.played["round1"] || !f.hud.played["fight"] {
 		t.Fatal("menu/round/fight sound did not reach production PCM", audible, f.hud.played)

@@ -54,8 +54,8 @@ entries compile; full gameplay across every character remains unverified. The
 original motif displays eight normal portraits and places four boss slots below
 the visible screen, including in the bundled native engine.
 
-Ryu and Dhalsim's supplied scripts also stall on round two in the native engine:
-their initialization state only exits on round one. Create a corrected working
+Several supplied SF2 character scripts omit a later-round initialization exit;
+the original beta also stalls with this pattern. Create a corrected working
 copy once, then use it for play:
 
 ```bash
@@ -63,8 +63,15 @@ python3 game/mugen/tools/sf2_playable.py
 game/mugen/mugen.sh --game --data-dir game/mugen/temp/sf2_mugen_playable
 ```
 
-This leaves the original pack intact, links its media assets, and copies two
-repaired character scripts plus the small writable configuration/log files.
+The tool discovers all matching scripts (ten in the supplied pack), links media,
+and copies the repaired scripts plus small writable configuration/log files.
+For a working copy made by an earlier version, extend its repairs with:
+
+```bash
+python3 game/mugen/tools/sf2_playable.py --update
+```
+
+Updates preserve configuration and refuse to overwrite locally edited scripts.
 Keep the original pack available. Neither pack nor local YAML belongs in Git.
 
 Stages belong under the selected data root's `stages/` directory, but the menu

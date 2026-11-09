@@ -267,9 +267,12 @@ segments pass with races; stock/SF2 screens and 60-second Honda/Dhalsim inspecte
 
 The Ryu/Dhalsim round-two state5900 stall also reproduces in native. Do not add
 an engine timeout or automatic state exit to hide that content bug. Preserve
-the original pack. tools/sf2_playable.py creates temp/sf2_mugen_playable with two
-repaired initialization scripts and small writable config/log copies; all media
-is shared by links. Both characters move/attack and complete round two there.
+the original pack. tools/sf2_playable.py creates temp/sf2_mugen_playable with all
+matching initialization repairs (ten scripts) and small writable config/log
+copies; all media is shared by links. --update extends older copies, preserving
+configuration and refusing local script edits. The retained copy is updated.
+All ten initialization programs exit on round two; Guile/Chun-Li also completed
+intro, KO/reset, round-two control and movement in the full match adapter.
 RETAIN this ignored working copy for user play, the original pack and shared
 cache/single executable. Diagnostic overlays/captures/PCM/helpers were removed.
 Broader roster behavior and nonfatal AnimElem/resource warnings remain open.
@@ -295,3 +298,10 @@ and up-back jump available. The connected stock input/contact scenario now
 continues through held high/low guard, blocked punch/recovery, release, re-guard
 and jump/landing. Changed-source segments pass with races; Linux rebuilt and
 visible guard flow inspected. Diagnostic scratch removed.
+
+Explod creation accepts the legacy velocity spelling when vel is absent. The
+shipped KFM intro uses it for both incoming wood and broken pieces; ignoring it
+left the incoming block stationary offscreen. Native beta and rebuilt Go show
+the pre-impact wood in the same observed scene. The existing title-to-match flow
+checks actual incoming-block pixels before the kick, break, control and rounds.
+All five segments pass with races; Linux rebuilt; diagnostic scratch removed.

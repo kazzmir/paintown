@@ -549,7 +549,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a46811655d5d5f18a68de0d1b4e7d69947e5cebc4739f947e90636e16846146e"
+      "passed_source": "9f211c6eec63a114b5e2fd47b36377d63cfc153a5b0bd6e9fea910905b342321"
     },
     {
       "id": "combat",
@@ -593,7 +593,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4209be838a11965dbba8265cbf4c88b8770270cdf7727d0e6457f0a9774ef17d"
+      "passed_source": "ac3d8c8bb2a745c5154d8a4dade23f27e46d3385463385cc7a7705b069892e2c"
     },
     {
       "id": "entities",
@@ -626,7 +626,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "038782aae5583744f44f349856de67fb7ff687536157f87d55c6f1589d80afad"
+      "passed_source": "cfb67ba72c19ffe6d4af356656a1366ac080876edfe8b07e54c5f0a9acc108e7"
     },
     {
       "id": "effects-pause",
@@ -661,7 +661,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ac414e2fe6d75936fc6c33788daa5754a542ef449307d9309e92754fd849bbbb"
+      "passed_source": "f214dab047e478ea4383fa9a4853f63034f1f7fcb3effc9b2e8fc3748eea228c"
     },
     {
       "id": "match-flow",
@@ -740,7 +740,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b113f2842fced9a2181824b49e93e79e8ddbfc28a84fd9d54c87fe597cb96cef"
+      "passed_source": "06db3c66557e293ee086a62c5b44bd9e3a812d0d1443a6fa0c07b32471bba286"
     }
   ],
   "presentation_followups": [
@@ -791,9 +791,9 @@
     },
     {
       "id": "sf2-round-two",
-      "name": "SF2 Ryu/Dhalsim round-two script repair",
+      "name": "SF2 later-round initialization script repairs",
       "completed": true,
-      "validation": "The native beta also stays in state5900 because both supplied scripts only exit on round one. tools/sf2_playable.py creates a separate ignored working copy sharing assets and adding the two later-round exits. The repaired copy completes round two with movement and attacks from both characters; original pack and engine state semantics are preserved."
+      "validation": "The native beta also stalls with the supplied scripts that omit later-round state5900 exits. The playable-copy tool now discovers all ten matching scripts instead of repairing only Ryu/Dhalsim. --update extends existing copies while preserving configuration and local edits. All ten initialization programs exit on round two; full Guile/Chun-Li intro \u2192 KO/reset \u2192 round-two control \u2192 walking passed. The retained working copy is updated; original pack and engine state semantics are preserved."
     },
     {
       "id": "crossover-turning",
@@ -806,6 +806,12 @@
       "name": "Stable held guard and movement exits",
       "completed": true,
       "validation": "Held guard retains its state clock instead of falling through into ordinary walking/crouching. Native beta confirms Ctrl=1 during standing/crouching guard, immediate forward movement on release and up-back jumping. The existing mixed-coordinate combat scenario continues through posture changes, a real blocked punch/recovery, re-guard, release and jump/landing. Four changed-source segments pass with races; state-flow stays checked. Linux rebuilt and visible guard/posture/release inspected; diagnostic scratch removed."
+    },
+    {
+      "id": "intro-explod-motion",
+      "name": "Visible incoming character-intro effects",
+      "completed": true,
+      "validation": "Explod creation accepts the legacy velocity spelling used by stock KFM. The incoming block now moves onscreen before impact, followed by the broken pieces. Native beta and rebuilt Linux pre-impact scenes were inspected. The existing title-to-match scenario checks actual incoming-block pixels, break, control and complete rounds; all five connected segments pass with races. Diagnostic scratch removed."
     }
   ]
 }

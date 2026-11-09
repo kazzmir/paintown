@@ -10,6 +10,16 @@ The prior known-difference batch is complete. The user then supplied sf2_mugen
 for the first compatibility assessment; its executable matches the beta reference.
 
 Current SF2 checkpoint:
+- Extended the playable-copy repair across all ten matching state5900 scripts;
+  the earlier Ryu/Dhalsim-only list missed other opponents. The retained copy
+  is updated. --update preserves configuration, shares media and refuses local
+  script edits. All ten exit on round two; full Guile/Chun-Li intro/KO/reset/
+  round-two control/walking passed. Original scripts and user YAML unchanged.
+- KFM's incoming intro wood used Explod velocity, while only vel was consumed.
+  Creation now accepts that legacy alias. The connected title-to-match flow
+  checks visible incoming wood before impact, then break/control and rounds.
+  Native beta and rebuilt Linux pre-impact scenes were inspected. All five
+  segments pass with races; diagnostic scratch removed.
 - Fixed the reported rapid guard release/re-entry: held guard no longer falls
   through into general walking/crouch transitions. Beta guard retains Ctrl=1;
   common CNS owns posture, while release-forward and up-back jump stay usable.
@@ -56,7 +66,7 @@ Current SF2 checkpoint:
 - Ryu/Dhalsim's second-round stall also occurs in native: both custom state5900
   scripts only exit when RoundNo=1. Preserve engine semantics and the original
   pack. tools/sf2_playable.py makes temp/sf2_mugen_playable, sharing assets and
-  copying two repaired scripts plus writable config/log files. This retained
+  copying all matching repaired scripts plus writable config/log files. This retained
   ignored working copy is for the user's play, not disposable test scratch.
   Round two completes with movement and attacks from both characters there.
 - Full move/round compatibility across the roster remains unverified. Nonfatal
