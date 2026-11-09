@@ -22,6 +22,7 @@ Broader compatibility and deferred capabilities remain listed below.
 - [x] **Rendered selection/VS and legacy bounce recovery**: Corrected character-to-motif portrait scaling and authored VS portraits, windows, names and artwork. Connected checks now inspect pixels and cover omitted-constant bounce → lying down → get-up → control. All five segments pass with races; Linux stock/SF2 screens and a 60-second Honda/Dhalsim run were inspected.
 - [x] **SF2 Ryu/Dhalsim round-two script repair**: The native beta also stays in state5900 because both supplied scripts only exit on round one. tools/sf2_playable.py creates a separate ignored working copy sharing assets and adding the two later-round exits. The repaired copy completes round two with movement and attacks from both characters; original pack and engine state semantics are preserved.
 - [x] **Crossover command and walking turns**: Matched supplied Elecbyte behavior: command evaluation sees the old heading, controlled ground state entry sees the opponent-facing heading and authored velocity, and walking uses turn action 5 without resetting its state clock. The connected flow covers NoAutoTurn release, physical input and stage-disabled turning. Locked attacks retain facing. Linux Ryu/Dhalsim jump-over and continued input were inspected; all segments are checked with races.
+- [x] **Stable held guard and movement exits**: Held guard retains its state clock instead of falling through into ordinary walking/crouching. Native beta confirms Ctrl=1 during standing/crouching guard, immediate forward movement on release and up-back jumping. The existing mixed-coordinate combat scenario continues through posture changes, a real blocked punch/recovery, re-guard, release and jump/landing. Four changed-source segments pass with races; state-flow stays checked. Linux rebuilt and visible guard/posture/release inspected; diagnostic scratch removed.
 
 ## Completed scenario coverage
 
@@ -31,7 +32,7 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [x] **combat**: logical input → attack/contact → damage/state continuation; jump/landing → sweep → legacy bounce/recovery.
+- [x] **combat**: logical input → attack/contact → damage/state continuation → held guard/posture/contact/release/jump; sweep → legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
 - [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.

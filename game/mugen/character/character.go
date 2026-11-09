@@ -1737,7 +1737,8 @@ func (c *Character) HandleBuiltinTransitions() {
 	guardDisabled := c.StateType == "S" && c.Specials["nostandguard"] ||
 		c.StateType == "C" && c.Specials["nocrouchguard"] ||
 		c.StateType == "A" && c.Specials["noairguard"]
-	if c.Ctrl && !guardDisabled && c.GetInGuardDist() && c.Command("holdback") {
+	holdGuard := c.Ctrl && !guardDisabled && c.GetInGuardDist() && c.Command("holdback") && !c.Command("holdup")
+	if holdGuard {
 		if c.StateNo < 120 || c.StateNo > 155 {
 			c.ChangeState(120, -1, -1)
 			return
@@ -1754,6 +1755,12 @@ func (c *Character) HandleBuiltinTransitions() {
 			state = 51
 		}
 		c.ChangeState(state, -1, -1)
+		return
+	}
+	// Guard CNS retains control and owns high/low posture changes. Falling
+	// through would walk out of guard every other tick while back is held.
+	// Up-back remains available to the ordinary jump rule, as in the beta.
+	if holdGuard {
 		return
 	}
 

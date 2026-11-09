@@ -10,6 +10,13 @@ The prior known-difference batch is complete. The user then supplied sf2_mugen
 for the first compatibility assessment; its executable matches the beta reference.
 
 Current SF2 checkpoint:
+- Fixed the reported rapid guard release/re-entry: held guard no longer falls
+  through into general walking/crouch transitions. Beta guard retains Ctrl=1;
+  common CNS owns posture, while release-forward and up-back jump stay usable.
+  The existing mixed-coordinate input/contact flow now spans held high/low guard,
+  blocked punch/recovery, release, re-guard and jump/landing. Four changed-source
+  segments pass with races; state-flow stays checked. Linux rebuilt and the
+  visible guard flow inspected. Scratch removed; shared assets/YAML preserved.
 - Crossover facing now follows the native beta command/state boundary. Command
   expressions see the old heading, then controlled ground moves turn before
   destination entry/velset. Walking turns play action5 and rematch the current

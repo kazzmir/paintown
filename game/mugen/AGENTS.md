@@ -288,3 +288,10 @@ mixed-coordinate crossover/landing/attack/walk lifecycle with native heading,
 animation and velocity observations. All segments pass with races. Linux
 Ryu/Dhalsim jump-over and continued input were inspected; scratch removed.
 Other air-cancel, binding/hitpause and charge-history combinations remain open.
+
+Held guard must not fall through into automatic walking/crouch transitions: the
+beta retains Ctrl=1 while common CNS owns guard posture. Keep forward release
+and up-back jump available. The connected stock input/contact scenario now
+continues through held high/low guard, blocked punch/recovery, release, re-guard
+and jump/landing. Changed-source segments pass with races; Linux rebuilt and
+visible guard flow inspected. Diagnostic scratch removed.

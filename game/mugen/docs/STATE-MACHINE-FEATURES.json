@@ -553,7 +553,7 @@
     },
     {
       "id": "combat",
-      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation; jump/landing \u2192 sweep \u2192 legacy bounce/recovery",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/state continuation \u2192 held guard/posture/contact/release/jump; sweep \u2192 legacy bounce/recovery",
       "source_dirs": [
         "air",
         "background",
@@ -593,7 +593,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "853e1a45ca2b8730ec77f1417424142d26078d3da3ae5ff2df06ead0f351ed20"
+      "passed_source": "4209be838a11965dbba8265cbf4c88b8770270cdf7727d0e6457f0a9774ef17d"
     },
     {
       "id": "entities",
@@ -626,7 +626,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "00dc788437fe47451e3901a8eccd5310f1c88178c2a0fa5d04fe4a92fc7be9e0"
+      "passed_source": "038782aae5583744f44f349856de67fb7ff687536157f87d55c6f1589d80afad"
     },
     {
       "id": "effects-pause",
@@ -661,7 +661,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "983b589473c0a64e59c8d92e56fb7c0d4b0d0d1e735714d985d0c579472d21d2"
+      "passed_source": "ac414e2fe6d75936fc6c33788daa5754a542ef449307d9309e92754fd849bbbb"
     },
     {
       "id": "match-flow",
@@ -740,7 +740,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "20083aca28158ccd2308899e17f70f3644a05e16503bbd9938a3023d7628e0f7"
+      "passed_source": "b113f2842fced9a2181824b49e93e79e8ddbfc28a84fd9d54c87fe597cb96cef"
     }
   ],
   "presentation_followups": [
@@ -800,6 +800,12 @@
       "name": "Crossover command and walking turns",
       "completed": true,
       "validation": "Matched supplied Elecbyte behavior: command evaluation sees the old heading, controlled ground state entry sees the opponent-facing heading and authored velocity, and walking uses turn action 5 without resetting its state clock. The connected flow covers NoAutoTurn release, physical input and stage-disabled turning. Locked attacks retain facing. Linux Ryu/Dhalsim jump-over and continued input were inspected; all segments are checked with races."
+    },
+    {
+      "id": "held-guard",
+      "name": "Stable held guard and movement exits",
+      "completed": true,
+      "validation": "Held guard retains its state clock instead of falling through into ordinary walking/crouching. Native beta confirms Ctrl=1 during standing/crouching guard, immediate forward movement on release and up-back jumping. The existing mixed-coordinate combat scenario continues through posture changes, a real blocked punch/recovery, re-guard, release and jump/landing. Four changed-source segments pass with races; state-flow stays checked. Linux rebuilt and visible guard/posture/release inspected; diagnostic scratch removed."
     }
   ]
 }

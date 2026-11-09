@@ -187,10 +187,108 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			if !sawContactCue || !audible || !sawSpark {
 				t.Fatal("real KFM contact did not reach shared sound/effect playback", sawContactCue, audible, sawSpark)
 			}
+			heldGuardFlow(t, m)
 			return
 		}
 	}
 	t.Fatalf("logical walk/punch/hit/recovery incomplete: attack=%v hit=%v life=%d state=%d ctrl=%v", sawAttack, sawHit, m.Players[1].Character.Life, m.Players[1].Character.StateNo, m.Players[1].Character.Ctrl)
+}
+
+// Continue the real mixed-coordinate fight through held guard, posture changes,
+// a blocked punch, release and jumping out. Native beta keeps Ctrl=1 throughout
+// ordinary guard: it must not let the movement adapter restart walking/crouch.
+func heldGuardFlow(t *testing.T, m *Match) {
+	t.Helper()
+	defender, attacker := m.Players[0].Character, m.Players[1].Character
+	threat, err := cns.Parse(strings.NewReader(`[Statedef 9000]
+type=S
+physics=N
+movetype=A
+ctrl=0
+anim=0
+velset=0,0
+[State 9000, stationary threat without a contact box]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+guard.dist=Const240p(180)
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	attacker.StateFile.States[9000] = threat.States[9000]
+	keys := []string{"DirBack"}
+	defender.InputSource = func(int, int) []string { return keys }
+	attacker.InputSource = func(int, int) []string { return nil }
+	for slot, player := range m.Players {
+		c := player.Character
+		c.X, c.Y = float64(-30+60*slot)*float64(c.LocalCoordinateWidth())/320, 0
+		c.HitPauseTime, c.ShakeTime, c.HitTime = 0, 0, -1
+		c.ChangeState(0, 1, -1)
+	}
+	attacker.ChangeState(9000, -1, -1)
+	step := func(ticks int) {
+		t.Helper()
+		for tick := 0; tick < ticks; tick++ {
+			if err := m.Update(); err != nil {
+				t.Fatal("held guard lifecycle", err)
+			}
+		}
+	}
+	hold := func(state int) {
+		t.Helper()
+		step(8)
+		previous := defender.Time
+		for tick := 0; tick < 25; tick++ {
+			step(1)
+			if defender.StateNo != state || !defender.Ctrl || !defender.GetInGuardDist() || defender.Time != previous+1 {
+				t.Fatalf("held guard restarted: state=%d time=%d previous=%d ctrl=%v distance=%v, want state %d", defender.StateNo, defender.Time, previous, defender.Ctrl, defender.GetInGuardDist(), state)
+			}
+			previous = defender.Time
+		}
+	}
+	hold(130)
+	keys = []string{"DirBack", "DirDown"}
+	hold(131)
+	keys = []string{"DirBack"}
+	hold(130)
+
+	// Contact uses the real punch, collision, guard shake/slide and recovery.
+	life := defender.Life
+	attacker.ChangeState(200, 0, -1)
+	blocked, recovered := false, false
+	for tick := 0; tick < 100; tick++ {
+		step(1)
+		blocked = blocked || defender.GetHitGuarded && defender.MoveType == "H"
+		if blocked && defender.MoveType != "H" && defender.Ctrl {
+			recovered = true
+			break
+		}
+	}
+	if !blocked || !recovered || defender.Life != life {
+		t.Fatal("blocked punch did not restore control", blocked, recovered, defender.StateNo, defender.Life, life)
+	}
+	attacker.ChangeState(9000, -1, -1)
+	hold(130)
+
+	// Native cancels guard-end into forward walking immediately.
+	keys = []string{"DirForward"}
+	step(2)
+	if defender.StateNo != 20 || !defender.Ctrl {
+		t.Fatal("guard release prevented forward movement", defender.StateNo, defender.Time)
+	}
+	keys = []string{"DirBack"}
+	hold(130)
+	keys = []string{"DirBack", "DirUp"}
+	step(24)
+	if defender.StateNo != 50 || defender.StateType != "A" || defender.Y >= 0 {
+		t.Fatal("up-back did not jump out of guard", defender.StateNo, defender.StateType, defender.Y)
+	}
+	keys = nil
+	step(90)
+	if defender.StateNo != 0 || !defender.Ctrl || defender.Y != 0 {
+		t.Fatal("guard/jump lifecycle did not return to idle", defender.StateNo, defender.Time, defender.Y)
+	}
 }
 
 func TestStockMixedMatchJumpAndCNSLandingRecovery(t *testing.T) {
