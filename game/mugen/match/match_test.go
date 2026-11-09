@@ -724,6 +724,30 @@ type=PlaySnd
 trigger1=1
 value=0,0
 volume=~(1/0)
+[Statedef 9734]
+[State fatal selector]
+type=PosSet
+trigger1=1
+x=4
+y=EnemyNear(~(1/0)),ID
+[Statedef 9736]
+[State fatal assignment index]
+type=PosSet
+trigger1=1
+x=4
+y=(var(~(1/0)):=(var(57):=1))
+[Statedef 9737]
+[State fatal interval bound]
+type=PosSet
+trigger1=1
+x=4
+y=(1=[~(1/0),(var(57):=1)])
+[Statedef 9739]
+[State fatal selector trigger]
+type=PosSet
+trigger1=EnemyNear(~(1/0)),ID
+x=4
+y=9
 [Statedef 9733]
 [State fatal palette]
 type=RemapPal
@@ -816,7 +840,7 @@ value=~(1/0)
 	scalarRuntimeRecoveryFlow(t, m)
 	protectionMediaRecoveryFlow(t, m)
 	// Genuine VM failures remain terminal and cannot partly apply a vector.
-	for _, number := range []int{9703, 9704, 9722, 9730, 9731, 9732, 9733} {
+	for _, number := range []int{9703, 9704, 9722, 9730, 9731, 9732, 9733, 9734, 9736, 9737, 9739} {
 		fatal := character.NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 		fatal.X, fatal.VelX, fatal.VelY = 37, 4, 5
 		var err error
@@ -825,7 +849,7 @@ value=~(1/0)
 		} else {
 			err = fatal.SM.EnterState(states.States[number], fatal, engine.EntryOverrides{})
 		}
-		if err == nil || !strings.Contains(err.Error(), "bitwise not of bottom") || !strings.Contains(err.Error(), "runtime-fallback.cns") || fatal.X != 37 || fatal.VelX != 4 || fatal.VelY != 5 {
+		if err == nil || !strings.Contains(err.Error(), "bitwise not of bottom") || !strings.Contains(err.Error(), "runtime-fallback.cns") || fatal.X != 37 || fatal.VelX != 4 || fatal.VelY != 5 || fatal.GetVar(57) != 0 {
 			t.Fatal("fatal VM error was hidden or partly applied", number, err, fatal.X, fatal.VelX, fatal.VelY)
 		}
 	}
@@ -966,6 +990,70 @@ func protectionMediaRecoveryFlow(t *testing.T, m *Match) {
 	if c.StateNo != 0 || other.StateNo != 0 || !c.Ctrl || !other.Ctrl || other.Life != 990 {
 		t.Fatal("protection/media flow did not recover", c.StateNo, other.StateNo, other.Life)
 	}
+	// Continue through successive override reactions, explicit clearing, a
+	// negative invalid timer and final own-state/control restoration.
+	script.Reset()
+	for _, actor := range []*character.Character{c, other} {
+		actor.SetLife(1000)
+	}
+	state(700, "S", "A", 0)
+	step(0, "ChangeAnim", "value=9970")
+	step(0, "VarRangeSet", "first=40\nlast=51\nvalue=0")
+	fmt.Fprint(&script, "[State successive hits]\ntype=HitDef\ntrigger1=Time=1 || Time=8 || Time=15 || Time=22\nattr=S,NA\ndamage=10,0\npausetime=0,0\nsparkno=-1\nguard.sparkno=-1\nhitsound=-1\nguardsound=-1\np2getp1state=0\n")
+	for index, tick := range []int{5, 12, 19, 26} {
+		step(tick, "VarSet", fmt.Sprintf("v=%d\nvalue=EnemyNear,Var(55)", 40+2*index))
+		step(tick, "VarSet", fmt.Sprintf("v=%d\nvalue=EnemyNear,Life", 41+2*index))
+	}
+	for index, expr := range []string{"EnemyNear,Var(56)", "EnemyNear,Var(57)", "EnemyNear,Ctrl"} {
+		step(28, "VarSet", fmt.Sprintf("v=%d\nvalue=%s", 48+index, expr))
+	}
+	step(30, "SelfState", "value=740\nctrl=1")
+	state(701, "S", "I", 0)
+	step(0, "VarRangeSet", "first=55\nlast=57\nvalue=0")
+	step(0, "HitOverride", "attr=S,NA\nslot=99\nstateno=(var(56):=711)\ntime=20\nforceair=0")
+	for _, number := range []int{711, 5000} {
+		state(number, "S", "H", 0)
+		step(0, "VarSet", "v=55\nvalue=StateNo")
+		step(0, "VarAdd", "v=57\nvalue=1")
+		step(1, "SelfState", "value=712\nctrl=1")
+	}
+	state(712, "S", "I", 1)
+	for index, params := range []string{"slot=0\ntime=0", "slot=-99\ntime=20", "slot=0\ntime=-2"} {
+		fmt.Fprintf(&script, "[State override continuation]\ntype=HitOverride\ntrigger1=Time=0 && var(57)=%d\nattr=S,NA\nstateno=711\n%s\n", index+1, params)
+	}
+	step(10, "SelfState", "value=740\nctrl=1")
+	state(740, "S", "I", 1)
+	step(1, "SelfState", "value=0\nctrl=1")
+	ranges, err := cns.ParseNamed(strings.NewReader(script.String()), "override-recovery.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, actor := range []*character.Character{c, other} {
+		for number, state := range ranges.States {
+			actor.StateFile.States[number] = state
+		}
+	}
+	c.ChangeState(700, 0, -1)
+	other.ChangeState(701, 0, -1)
+	for tick := 0; tick < 44; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("override range/reaction/clearing/recovery", err)
+		}
+	}
+	for index, expected := range []int{711, 990, 5000, 980, 711, 970, 5000, 960, 711, 4, 1, 0} {
+		if got := c.GetVar(40 + index); got != expected {
+			t.Fatal("native override range observation", index, got, expected)
+		}
+	}
+	if c.StateNo != 0 || other.StateNo != 0 || !c.Ctrl || !other.Ctrl || other.Life != 960 {
+		t.Fatal("override sequence did not recover", c.StateNo, other.StateNo, other.Life)
+	}
+	for _, override := range other.HitOverrides {
+		if override.Time != 0 {
+			t.Fatal("override survived clearing", override)
+		}
+	}
+
 }
 
 // Continue through duplicate AIR definitions, animation changes with invalid

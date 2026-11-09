@@ -1,8 +1,6 @@
 package character
 
 import (
-	"fmt"
-
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/combat"
 )
@@ -16,9 +14,7 @@ func (c *Character) excludesCustomHit(hit cns.HitDef) bool {
 }
 
 func (c *Character) SetHitOverride(override combat.HitOverride) error {
-	if override.Slot < 0 || override.Slot >= len(c.HitOverrides) || override.Time < -1 {
-		return fmt.Errorf("invalid HitOverride slot/time")
-	}
+	override = override.Normalized()
 	if override.Time == 0 || override.StateNo < 0 || override.Attributes.Empty() {
 		c.HitOverrides[override.Slot] = combat.HitOverride{}
 	} else {

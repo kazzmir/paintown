@@ -86,3 +86,15 @@ type HitOverride struct {
 	StateNo, Time, Slot int
 	ForceAir            bool
 }
+
+// Normalized matches beta runtime admission: invalid slots select slot zero;
+// negative durations other than the indefinite sentinel clear that slot.
+func (h HitOverride) Normalized() HitOverride {
+	if h.Slot < 0 || h.Slot > 7 {
+		h.Slot = 0
+	}
+	if h.Time < -1 {
+		h.Time = 0
+	}
+	return h
+}

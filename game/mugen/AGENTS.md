@@ -123,6 +123,9 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   omitted defaults and later argument evaluation. Real VM failures remain fatal
   with source context and no partly applied vector/power/pause effects. Other
   parameter policies require evidence; do not blanket-convert controller values.
+- Invalid HitOverride slots select zero; durations below -1 clear that slot.
+  Keep compiler/direct adapter normalization consistent. Nested fatal VM errors
+  retain their identity and stop before later selector/bound/index expressions.
 - Command reads see the old heading; controlled ground destination entry sees
   corrected facing/velocity. Walk/crouch turns use action5/6 without resetting
   Time. Preserve locked attack/air headings, NoAutoTurn, stage disable and paused

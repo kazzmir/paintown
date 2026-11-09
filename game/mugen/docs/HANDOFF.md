@@ -5,7 +5,7 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (two local checkpoints):
+Latest batch (three local checkpoints):
 
 - Target controllers preserve numeric fallback after relationship/ID admission.
   The mixed-coordinate lifecycle covers suppressed unused expressions, matched
@@ -18,9 +18,15 @@ Latest batch (two local checkpoints):
   later media arguments still run. Genuine VM errors stop before application,
   including deprecated PlaySnd volume. All twelve native slots match Linux.
 
+- HitOverride invalid slots select zero; timers below -1 clear it. The same
+  fight spans four contacts through override/normal reactions, clearing and
+  recovery; all twelve native observations match rebuilt Linux. Nested fatal
+  redirect/index/bound errors retain their identity and stop later evaluation.
+  Terminal scenario branches preserve source context and prevent partial writes.
+
 All five connected segments pass with race detection. Linux is rebuilt; owned
-captures/overlays were inspected and removed. Next: override range admission
-and expression failure propagation, using existing connected scenarios.
+captures/overlays/helpers were inspected and removed. Broader content/rules/AI
+compatibility remains partial; no new fixture banks or per-piece documents.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

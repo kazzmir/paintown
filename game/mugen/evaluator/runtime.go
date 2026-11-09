@@ -119,6 +119,9 @@ func EvaluateValue(expr Expression, env EvaluatorEnvironment) Value {
 			}
 			hasID = true
 			id = EvaluateValue(s.Arguments[0], env)
+			if id.RuntimeError() != nil {
+				return id
+			}
 			n, err := CoerceInt(id, env, name+" redirection ID")
 			if err != nil {
 				return failure(env, "%v", err)
@@ -204,10 +207,10 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 	}
 	if interval, ok := e.Right.(*Interval); ok {
 		low := EvaluateValue(interval.Left, env)
-		high := EvaluateValue(interval.Right, env)
 		if low.RuntimeError() != nil {
 			return low
 		}
+		high := EvaluateValue(interval.Right, env)
 		if high.RuntimeError() != nil {
 			return high
 		}
@@ -359,10 +362,10 @@ func assignment(e *Binary, env EvaluatorEnvironment) Value {
 		return failure(env, "invalid assignment destination")
 	}
 	index := EvaluateValue(variable.Arguments[0], env)
-	value := EvaluateValue(e.Right, env)
 	if index.RuntimeError() != nil {
 		return index
 	}
+	value := EvaluateValue(e.Right, env)
 	if value.RuntimeError() != nil {
 		return value
 	}

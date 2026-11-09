@@ -30,15 +30,12 @@ func compileHitOverride(ctrl *cns.StateController) (ControllerFunc, bool, error)
 		if value, ok := values["forceair"]; ok {
 			override.ForceAir = value.Bool()
 		}
-		if override.Slot < 0 || override.Slot > 7 || override.Time < -1 {
-			return fmt.Errorf("invalid HitOverride slot/time")
-		}
 		context, ok := env.(interface {
 			SetHitOverride(combat.HitOverride) error
 		})
 		if !ok {
 			return fmt.Errorf("HitOverride context is unavailable")
 		}
-		return context.SetHitOverride(override)
+		return context.SetHitOverride(override.Normalized())
 	})
 }

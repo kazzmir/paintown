@@ -574,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7567b78b03881cdebf85249ba4e52708490b8dfbeae3ae7f689527e8007404c3"
+      "passed_source": "2d2a33183afa6d0ffa5182c8cc6e1f6c38664a15c73031ad382fcdcde0bbffc3"
     },
     {
       "id": "combat",
@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "398c05213b141c95af3630c523e99ad3ab501083803c72fed58c13bfb0cc1205"
+      "passed_source": "472e67b587f865d02e8a5d6578672f5369febfdbf93ba05be7879f26ace03b88"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d7cae8ed3d04e5b5a11b53eda072eb828c1630b4de32e3370db779accbe77163"
+      "passed_source": "f6ebeba47f97680a991dd63b21b45be1c67099235892d0a5153ff44974a34eb5"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f973862cedeba5b937ebe178c2c4618301f706454a6efb8aaba1b4647febe57f"
+      "passed_source": "26fbef88d768d1fcd0aa207f2ab55113bec41eb206410b411986ec2024375f2c"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c8d0e10c1ed2a04add4c142adecac11bc26a9f9d60e92e3400cfac6be420b9f6"
+      "passed_source": "f77d8759faa721d06e20941a27c5d34b524cd8f6d8266b2c15011248fdc8cf7e"
     }
   ],
   "presentation_followups": [
@@ -968,7 +968,19 @@
       "id": "protection-media-fallback",
       "name": "Protection, sound and palette fallback through contact recovery",
       "completed": true,
-      "validation": "HitBy/NotHitBy timers and HitOverride state/slot/time/forceair accept ordinary-bottom zero fallback; the connected mixed-coordinate fight clears active protection/override, takes a normal ten-point contact and recovers both actors. PlaySnd/SndPan/StopSnd and RemapPal likewise retain later argument evaluation after ordinary bottom; omitted defaults stay intact. Real VM errors remain fatal before application, including deprecated volume. All twelve native observations match rebuilt Linux. All five changed-source segments pass with races; owned overlay/captures removed. Out-of-range override slot/time admission is a separate remaining audit."
+      "validation": "HitBy/NotHitBy timers and HitOverride state/slot/time/forceair accept ordinary-bottom zero fallback; the connected mixed-coordinate fight clears active protection/override, takes a normal ten-point contact and recovers both actors. PlaySnd/SndPan/StopSnd and RemapPal likewise retain later argument evaluation after ordinary bottom; omitted defaults stay intact. Real VM errors remain fatal before application, including deprecated volume. All twelve native observations match rebuilt Linux. All five changed-source segments pass with races; owned overlay/captures removed. Override range admission is covered by the following checkpoint."
+    },
+    {
+      "id": "override-range-admission",
+      "name": "HitOverride slot admission, clearing and reaction recovery",
+      "completed": true,
+      "validation": "Out-of-range positive/negative HitOverride slots select slot zero rather than aborting or clamping to slot seven. Durations below -1 clear that slot; -1 remains indefinite. A shared normalization consumer keeps compiled controllers and direct character adapters consistent. The existing mixed-coordinate combat flow continues through four contacts: override reaction, explicit clearing/normal reaction, another invalid-slot override, invalid-duration clearing/normal reaction and own-state/control recovery, with all overrides retired. All twelve native observations match rebuilt Linux. All five changed-source segments pass with races; owned scratch removed."
+    },
+    {
+      "id": "nested-vm-failure-propagation",
+      "name": "Nested VM failures stop evaluation before partial writes",
+      "completed": true,
+      "validation": "A fatal error in a redirect ID retains its runtime error through coercion rather than becoming ordinary bottom. Fatal assignment indices and interval lower bounds stop before evaluating later expressions. Ordinary bottom and valid eager evaluation retain their policies. The existing runtime recovery scenario includes terminal branches covering parameters and trigger conditions, source-context errors, unchanged position/velocity and suppressed later assignment side effects. All five changed-source segments pass with race detection. This closes the source-audited error propagation paths; it does not claim arbitrary expression conformance."
     }
   ]
 }

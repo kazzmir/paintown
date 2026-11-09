@@ -204,7 +204,7 @@ func TestCompiledPaletteParameters(t *testing.T) {
 	if h.paletteSource != [2]int{-1, 0} || h.paletteDest != [2]int{-1, 0} {
 		t.Fatal("palette omission defaults")
 	}
-	for _, params := range []string{"source=1\ndest=1,2", "source=1,2,3", "dest=1,1/0"} {
+	for _, params := range []string{"source=1\ndest=1,2", "source=1,2,3", "dest=1,~(1/0)"} {
 		state := stateSource(t, "[State 7, bad palette]\ntype=RemapPal\ntrigger1=1\n"+params+"\n")
 		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
 			t.Fatal("bad palette parameter accepted", params)
@@ -228,7 +228,7 @@ func TestCompiledHitOverrideParameters(t *testing.T) {
 		t.Fatal("override defaults", h.override)
 	}
 	before := h.override
-	for _, params := range []string{"attr=S,XX\nstateno=710", "attr=S,NA\nstateno=~(1/0)", "attr=S,NA\nstateno=710\nslot=8"} {
+	for _, params := range []string{"attr=S,XX\nstateno=710", "attr=S,NA\nstateno=~(1/0)", "attr=S,NA\nstateno=710\nslot=~(1/0)"} {
 		state := stateSource(t, "[State 7, invalid override]\ntype=HitOverride\ntrigger1=1\n"+params+"\n")
 		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
 			t.Fatal("invalid override accepted", params)
