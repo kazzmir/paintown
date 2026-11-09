@@ -16,7 +16,7 @@ func compileHitOverride(ctrl *cns.StateController) (ControllerFunc, bool, error)
 	if err != nil {
 		return nil, true, err
 	}
-	return typedHandler(ctrl, []argumentSpec{{"stateno", true, false}, {"slot", true, false}, {"time", true, false}, {"forceair", true, false}}, func(env Environment, values map[string]evaluator.Value) error {
+	return typedHandlerWithBottom(ctrl, []argumentSpec{{"stateno", true, false}, {"slot", true, false}, {"time", true, false}, {"forceair", true, false}}, true, func(env Environment, values map[string]evaluator.Value) error {
 		override := combat.HitOverride{Attributes: attributes, StateNo: -1, Time: 1}
 		if value, ok := values["stateno"]; ok {
 			override.StateNo = int(value.Number())

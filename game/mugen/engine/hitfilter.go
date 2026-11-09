@@ -26,7 +26,7 @@ func compileHitFilter(ctrl *cns.StateController, exclude bool) (ControllerFunc, 
 	if exclude {
 		attributes = attributes.Complement()
 	}
-	return typedHandler(ctrl, []argumentSpec{{"time", true, false}}, func(env Environment, values map[string]evaluator.Value) error {
+	return typedHandlerWithBottom(ctrl, []argumentSpec{{"time", true, false}}, true, func(env Environment, values map[string]evaluator.Value) error {
 		time := 1
 		if value, ok := values["time"]; ok {
 			time = int(value.Number())

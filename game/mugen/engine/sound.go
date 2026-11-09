@@ -80,10 +80,13 @@ func compileSound(ctrl *cns.StateController, name string) (ControllerFunc, bool,
 			if arg.name == "volume" {
 				// The beta evaluates deprecated volume (including assignments
 				// and bottom) but discards its result. It never changes gain.
-				evaluator.EvaluateValue(arg.expr, env)
+				value := evaluator.EvaluateValue(arg.expr, env)
+				if err := value.RuntimeError(); err != nil {
+					return err
+				}
 				continue
 			}
-			value, err := evaluateArguments([]argument{arg}, env)
+			value, err := evaluateArgumentsWithBottom([]argument{arg}, env, true)
 			if err != nil {
 				return err
 			}

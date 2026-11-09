@@ -118,8 +118,8 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   in helper units, and retain issuer profile/banks/state programs. DestroySelf
   parameters still evaluate for roots in native; do not generalize no-op gates.
 - Confirmed ordinary-bottom zero fallback covers movement, life/control/power,
-  transitions/entry, animations, variables/ranges, Pause/SuperPause and the
-  calibrated control/effect/combat scalars. Preserve
+  transitions/entry, animations, variables/ranges, Pause/SuperPause, protection,
+  sound/palette commands and calibrated control/effect/combat scalars. Preserve
   omitted defaults and later argument evaluation. Real VM failures remain fatal
   with source context and no partly applied vector/power/pause effects. Other
   parameter policies require evidence; do not blanket-convert controller values.

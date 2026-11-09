@@ -228,7 +228,7 @@ func TestCompiledHitOverrideParameters(t *testing.T) {
 		t.Fatal("override defaults", h.override)
 	}
 	before := h.override
-	for _, params := range []string{"attr=S,XX\nstateno=710", "attr=S,NA\nstateno=1/0", "attr=S,NA\nstateno=710\nslot=8"} {
+	for _, params := range []string{"attr=S,XX\nstateno=710", "attr=S,NA\nstateno=~(1/0)", "attr=S,NA\nstateno=710\nslot=8"} {
 		state := stateSource(t, "[State 7, invalid override]\ntype=HitOverride\ntrigger1=1\n"+params+"\n")
 		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
 			t.Fatal("invalid override accepted", params)
@@ -253,7 +253,7 @@ func TestProtectionCompilationIsTypedAndAtomic(t *testing.T) {
 		t.Fatal("value precedence/default time", h.filterSlot, h.filter)
 	}
 	before := h.filter
-	for _, params := range []string{"time=2", "value=S,XX", "value=S,NA\ntime=1/0"} {
+	for _, params := range []string{"time=2", "value=S,XX", "value=S,NA\ntime=~(1/0)"} {
 		state := stateSource(t, "[State 7, invalid protection]\ntype=HitBy\ntrigger1=1\n"+params+"\n")
 		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
 			t.Fatal("invalid protection accepted", params)

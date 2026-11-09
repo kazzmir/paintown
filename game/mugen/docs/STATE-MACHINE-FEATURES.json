@@ -574,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "10743f5804ff2cdd9253ee1fd9fc1a9de5a909079271b46a961a64d9d9d5198a"
+      "passed_source": "7567b78b03881cdebf85249ba4e52708490b8dfbeae3ae7f689527e8007404c3"
     },
     {
       "id": "combat",
@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "eee4d625802195f93a9dbf6393c0a0a41e92483d54650417c204aa87ccb793ad"
+      "passed_source": "398c05213b141c95af3630c523e99ad3ab501083803c72fed58c13bfb0cc1205"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "afca962d0b9645e1ae408270096a42a159e8348ffe61f77deac2bc7b8111d5b2"
+      "passed_source": "d7cae8ed3d04e5b5a11b53eda072eb828c1630b4de32e3370db779accbe77163"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1ab27e6ee0d506ad865a8d3177038adfe9ef94770bc1ce9b784b1cb571581140"
+      "passed_source": "f973862cedeba5b937ebe178c2c4618301f706454a6efb8aaba1b4647febe57f"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7d70dbaf5b2cd3a3d025e6f6545411b318d8cbb0a726e46652b5a501fdda8e97"
+      "passed_source": "c8d0e10c1ed2a04add4c142adecac11bc26a9f9d60e92e3400cfac6be420b9f6"
     }
   ],
   "presentation_followups": [
@@ -963,6 +963,12 @@
       "name": "Target numeric fallback after relationship and ID admission",
       "completed": true,
       "validation": "The mixed-coordinate entity lifecycle now spans unmatched bottom IDs (skipping side effects and unused VM failures), matched numeric fallback for life/power/velocity/facing/state, target retention/drop and own-state recovery followed by round reset. All twelve native observations match rebuilt Linux; all five connected segments pass with race detection. Ordinary bottom becomes zero only after relationship/ID admission; admitted real VM failures remain fatal. Owned overlay and captures removed."
+    },
+    {
+      "id": "protection-media-fallback",
+      "name": "Protection, sound and palette fallback through contact recovery",
+      "completed": true,
+      "validation": "HitBy/NotHitBy timers and HitOverride state/slot/time/forceair accept ordinary-bottom zero fallback; the connected mixed-coordinate fight clears active protection/override, takes a normal ten-point contact and recovers both actors. PlaySnd/SndPan/StopSnd and RemapPal likewise retain later argument evaluation after ordinary bottom; omitted defaults stay intact. Real VM errors remain fatal before application, including deprecated volume. All twelve native observations match rebuilt Linux. All five changed-source segments pass with races; owned overlay/captures removed. Out-of-range override slot/time admission is a separate remaining audit."
     }
   ]
 }

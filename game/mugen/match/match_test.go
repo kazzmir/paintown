@@ -705,6 +705,31 @@ velset=~(1/0),2
 [State fatal entry]
 type=Null
 trigger1=1
+[Statedef 9730]
+[State fatal shield]
+type=HitBy
+trigger1=1
+value=S,NA
+time=~(1/0)
+[Statedef 9731]
+[State fatal override]
+type=HitOverride
+trigger1=1
+attr=S,NA
+stateno=0
+time=~(1/0)
+[Statedef 9732]
+[State fatal sound]
+type=PlaySnd
+trigger1=1
+value=0,0
+volume=~(1/0)
+[Statedef 9733]
+[State fatal palette]
+type=RemapPal
+trigger1=1
+source=1,1
+dest=1,~(1/0)
 [Statedef 9722]
 [State fatal admitted variable]
 type=VarSet
@@ -789,8 +814,9 @@ value=~(1/0)
 		t.Fatal("variable writes did not complete and recover", c.StateNo, c.Ctrl)
 	}
 	scalarRuntimeRecoveryFlow(t, m)
+	protectionMediaRecoveryFlow(t, m)
 	// Genuine VM failures remain terminal and cannot partly apply a vector.
-	for _, number := range []int{9703, 9704, 9722} {
+	for _, number := range []int{9703, 9704, 9722, 9730, 9731, 9732, 9733} {
 		fatal := character.NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 		fatal.X, fatal.VelX, fatal.VelY = 37, 4, 5
 		var err error
@@ -866,6 +892,79 @@ func scalarRuntimeRecoveryFlow(t *testing.T, m *Match) {
 	}
 	if c.StateNo != 0 || other.StateNo != 0 || !c.Ctrl || !other.Ctrl || len(c.Explods) != 0 || !c.IsAlive() || !other.IsAlive() {
 		t.Fatal("scalar lifecycle did not recover/retire effects", c.StateNo, other.StateNo)
+	}
+}
+
+// Continue the same fight through shield/override clearing, contact and recovery,
+// with numeric sound/palette commands sharing the normal effect queues/banks.
+func protectionMediaRecoveryFlow(t *testing.T, m *Match) {
+	t.Helper()
+	c, other := m.Players[0].Character, m.Players[1].Character
+	for _, actor := range []*character.Character{c, other} {
+		actor.StateFile.Data.Attack, actor.StateFile.Data.Defence = 100, 100
+		actor.SetLife(1000)
+		actor.SetAttackMul(1)
+		actor.SetDefenceMul(1)
+		actor.X, actor.Y, actor.VelX, actor.VelY = 0, 0, 0, 0
+	}
+	c.X, other.X = -70, 70*float64(other.LocalCoordinateWidth())/320
+	var script strings.Builder
+	state := func(number int, kind, move string, control int) {
+		fmt.Fprintf(&script, "[Statedef %d]\ntype=%s\nmovetype=%s\nphysics=N\nctrl=%d\nanim=0\n", number, kind, move, control)
+	}
+	step := func(tick int, kind, params string) {
+		fmt.Fprintf(&script, "[State protection/media continuation]\ntype=%s\ntrigger1=Time=%d\n%s\n", kind, tick, params)
+	}
+	state(700, "S", "A", 0)
+	step(0, "ChangeAnim", "value=9970")
+	step(0, "VarRangeSet", "first=40\nlast=51\nvalue=0")
+	step(1, "HitDef", "attr=S,NA\ndamage=10,0\npausetime=0,0\nsparkno=-1\nguard.sparkno=-1\nhitsound=-1\nguardsound=-1\np1stateno=702\np2stateno=710\np2getp1state=1\nid=1")
+	state(702, "S", "I", 0)
+	step(0, "PlaySnd", "value=1/0,(var(48):=0)\nchannel=1/0\npan=1/0\nvolumescale=1/0\nfreqmul=1/0\nloop=1/0\nlowpriority=1/0\nvolume=(var(49):=9)")
+	step(0, "SndPan", "channel=1/0\npan=(var(50):=1)")
+	step(0, "StopSnd", "channel=1/0")
+	step(0, "RemapPal", "source=1/0,(var(51):=1)\ndest=1,1/0")
+	step(1, "VarSet", "v=40\nvalue=EnemyNear,Life")
+	step(1, "VarSet", "v=41\nvalue=EnemyNear,StateNo")
+	step(1, "VarSet", "v=42\nvalue=EnemyNear,StateType=A")
+	step(10, "VarSet", "v=43\nvalue=EnemyNear,StateNo")
+	step(10, "VarSet", "v=44\nvalue=EnemyNear,Ctrl")
+	step(11, "SelfState", "value=0\nctrl=1")
+	state(701, "S", "I", 0)
+	step(0, "NotHitBy", "value=S,NA\ntime=20")
+	step(0, "HitOverride", "attr=S,NA\nstateno=711\nslot=0\ntime=20\nforceair=1")
+	step(1, "NotHitBy", "value=S,NA\ntime=1/0")
+	step(1, "HitBy", "value2=S,NA\ntime=1/0")
+	step(1, "HitOverride", "attr=S,NA\nstateno=1/0\nslot=1/0\ntime=1/0\nforceair=1/0")
+	state(710, "S", "H", 0)
+	step(3, "SelfState", "value=712\nctrl=1")
+	state(711, "A", "H", 0)
+	step(0, "Null", "")
+	state(712, "S", "I", 1)
+	step(12, "SelfState", "value=0\nctrl=1")
+	states, err := cns.ParseNamed(strings.NewReader(script.String()), "protection-media.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, actor := range []*character.Character{c, other} {
+		for number, state := range states.States {
+			actor.StateFile.States[number] = state
+		}
+	}
+	c.ChangeState(700, 0, -1)
+	other.ChangeState(701, 0, -1)
+	for tick := 0; tick < 32; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("protection/media/contact/recovery", err)
+		}
+	}
+	for index, expected := range []int{990, 710, 0, 712, 1, 0, 0, 0, 0, 9, 1, 1} {
+		if got := c.GetVar(40 + index); got != expected {
+			t.Fatal("native protection/media observation", index, got, expected)
+		}
+	}
+	if c.StateNo != 0 || other.StateNo != 0 || !c.Ctrl || !other.Ctrl || other.Life != 990 {
+		t.Fatal("protection/media flow did not recover", c.StateNo, other.StateNo, other.Life)
 	}
 }
 
