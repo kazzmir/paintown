@@ -35,17 +35,26 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 		secName := strings.ToLower(strings.TrimSpace(sec.Name))
 		if secName == "info" {
 			for _, attr := range sec.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if _, exists := data.Info[key]; exists {
+					continue
+				}
 				text := strings.TrimSpace(attr.RawValue)
 				if value, ok := attr.Value.(StringValue); ok {
 					text = value.Val
 				}
-				data.Info[strings.ToLower(attr.ID.String())] = text
-				data.InfoLines[strings.ToLower(attr.ID.String())] = attr.Line
+				data.Info[key] = text
+				data.InfoLines[key] = attr.Line
 			}
 		}
 		if secName == "files" {
 			for _, attr := range sec.Attributes {
 				key := strings.ToLower(attr.ID.String())
+				// Native DEF lookup keeps the first value, including an
+				// explicit blank, and diagnostics belong to that source line.
+				if _, exists := data.Files[key]; exists {
+					continue
+				}
 				val := strings.TrimSpace(attr.RawValue)
 				if quoted, ok := attr.Value.(StringValue); ok {
 					val = quoted.Val

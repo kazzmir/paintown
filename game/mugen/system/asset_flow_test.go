@@ -430,15 +430,25 @@ func legacyPaletteAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image) {
 	write("outfits.sff", archive)
 	definition := `[Info]
 name="Legacy outfits"
+name="Ignored duplicate"
 mugenversion=2002.04.14
+mugenversion=1.1
+localcoord=320,240
+localcoord=1280,720
 pal.defaults=2,1
 [Files]
 sprite=outfits.sff
+sprite=missing.sff
 anim=outfits.air
+anim=missing.air
 cns=outfits.cns
+cns=missing.cns
 st=outfits.cns
+st=missing.cns
 cmd=outfits.cmd
+cmd=missing.cmd
 stcommon=
+stcommon=missing.cns
 pal1=pal/green.act
 pal2=Pal\Gold.ACT
 `
@@ -523,6 +533,12 @@ trigger1=1
 	}
 	reach(match.Active)
 	p1, p2 := fight.match.Players[0], fight.match.Players[1]
+	if p1.Definition.Info["name"] != "Legacy outfits" || p1.LocalCoord.Width != 320 || p1.Definition.Files["sprite"] != "outfits.sff" || p1.Definition.Files["stcommon"] != "" {
+		t.Fatal("first character DEF values were replaced", p1.Definition, p1.LocalCoord)
+	}
+	if line := p1.Definition.FileLines["sprite"]; strings.Split(definition, "\n")[line-1] != "sprite=outfits.sff" {
+		t.Fatal("DEF source context followed an ignored duplicate", line)
+	}
 	sharedPixels := p1.SFF.Sprites[2].Image.(*image.Paletted)
 	if sharedPixels.Bounds() != image.Rect(0, 0, 32, 32) || sharedPixels.ColorIndexAt(31, 7) != 12 || sharedPixels.ColorIndexAt(31, 31) != 1 || pixel(p1.Character, 2) != gold {
 		t.Fatal("shared-palette PCX pixels were mistaken for a palette trailer")
@@ -620,6 +636,10 @@ trigger1=1
 	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "pal2") {
 		t.Fatal("missing ACT lost resource context", err)
 	}
+	write("outfits.def", []byte(strings.Replace(definition, "sprite=outfits.sff", "sprite=missing-primary.sff", 1)))
+	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "missing-primary.sff") || !strings.Contains(err.Error(), fmt.Sprintf("line %d", p1.Definition.FileLines["sprite"])) {
+		t.Fatal("primary DEF resource error was replaced by a duplicate", err)
+	}
 }
 
 // Continue the same authored asset lifecycle through the beta's ZIP selection
@@ -688,9 +708,15 @@ layer0.offset=80,80
 	// below it, and interpret startcell as row,column.
 	motifPath := filepath.Join(dir, "packed motif.def")
 	motifSource := fmt.Sprintf(`[Info]
+name="First motif"
+name="Ignored motif"
 localcoord=320,240
+localcoord=invalid
 [Files]
 spr=%s
+spr=missing-duplicate.sff
+font1=f-4x6.def
+font1=missing-duplicate.def
 select=%s
 fight=%s
 [Select Info]
@@ -715,6 +741,9 @@ pos=0,0
 		t.Fatal(err)
 	}
 	defer func() { e.motif = previousMotif }()
+	if e.motif.Info.Name != "First motif" || e.motif.Info.LocalCoord.Width != 320 || e.motif.Fonts[1] == nil {
+		t.Fatal("motif loading replaced first metadata/resources", e.motif.Info, e.motif.Files)
+	}
 	selection := NewSelectState(e, "Arcade Mode")
 	if selection.loadError != nil || len(selection.chars) != 5 || len(selection.stages) != 2 || selection.stages[1] != stagePath {
 		t.Fatal("packed character/stage filenames did not reach selection", selection.loadError, selection.stages)

@@ -7,6 +7,11 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Character DEF and motif Info/Files use first values, including blanks and
+  original source lines. Ignored bad duplicates cannot replace sprites, fonts,
+  coordinate profiles or legacy palette policy. The existing asset/ZIP/menu/
+  fight/reload lifecycle passes; rebuilt Linux agrees with native loading and
+  metadata. Other completed segments stayed checked.
 - Hold-only commands ignore buffer.time; /x+y holds the entire chord. Held
   sequence endings complete on their down edge and use the ordinary buffer.
   Simultaneous-press chords keep per-button edges. The connected human/helper/

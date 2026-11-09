@@ -385,3 +385,10 @@ Preserve human/helper remapping, recovery and subsequent AI in the existing
 connected command scenario. Rebuilt Linux matches twelve native keyboard
 observations; four affected segments pass with races, state-flow stays checked.
 Probe overlays/captures removed; shared assets reused.
+
+Character DEF metadata/resources and motif Info/Files retain first definitions,
+including blank stcommon and original source lines. Later bad duplicates are
+ignored; a bad primary reference must still report its own path/line. Preserve
+the existing legacy-palette/ZIP-selection/fight/reload asset scenario. Native
+and rebuilt Linux duplicate-definition loading agree. Affected match-flow passes
+with races; other completed segments stay checked. Probe overlays/captures removed.

@@ -748,7 +748,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f299e2cbf54319118880e2a9f8b2518672cc538e18f1a2500415f11d77eaf287"
+      "passed_source": "d7b3e56567d7b3a6ac624b37438b3614be6e2fe5a264ffe6ce7b66f93fbc1233"
     }
   ],
   "presentation_followups": [
@@ -868,6 +868,12 @@
       "name": "Held chords, release and command-buffer compatibility",
       "completed": true,
       "validation": "Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused."
+    },
+    {
+      "id": "definition-first-values",
+      "name": "Character and motif definition precedence",
+      "completed": true,
+      "validation": "Character DEF metadata/resources and motif Info/Files retain first definitions, including explicit blanks, with their original source lines. Later bad duplicates cannot replace coordinate profiles, palette policy, sprites or fonts; a bad primary reference still reports its own path and line. The connected asset/ZIP-selection/fight/reload flow passes with races; other completed segments remain checked. Native and rebuilt Linux both load the duplicate-containing character/motif and agree on the metadata observations. Probe overlays/captures removed; shared assets reused."
     }
   ]
 }

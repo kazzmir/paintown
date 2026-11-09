@@ -191,6 +191,9 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		switch strings.ToLower(sec.Name) {
 		case "info":
 			for _, attr := range sec.Attributes {
+				if defData.InfoLines[strings.ToLower(attr.ID.String())] != attr.Line {
+					continue
+				}
 				switch strings.ToLower(attr.ID.String()) {
 				case "name":
 					motif.Info.Name = getString(attr.Value)
@@ -201,6 +204,9 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		case "files":
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
+				if defData.FileLines[id] != attr.Line {
+					continue
+				}
 				fileLines[id] = attr.Line
 				val := getString(attr.Value)
 				switch id {
