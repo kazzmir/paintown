@@ -574,7 +574,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2d2a33183afa6d0ffa5182c8cc6e1f6c38664a15c73031ad382fcdcde0bbffc3"
+      "passed_source": "a1ef26d1abd87e457ca2b703db9c6ba75baead9ac2026952db63fbcd35b8665c"
     },
     {
       "id": "combat",
@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "bcb730c118078f3a24a75e61d6dbb641555f9a241d4c6d64fda527e468008f21"
+      "passed_source": "f192901c695f49b711c7f267e99d57a18620a9777bfdd65c3785c1c7e83c2b0c"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "599478d9165d8909cdd3ab0e05e9b60ca68c4d76c736e89b79a1932ee56367f7"
+      "passed_source": "fea3ee1000bc8865666786eab838e9fbaddf2d70a33e327e6b829c8e610f61ad"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3db1fedcb6bf63eb280d88f143fea016a40ddb5cea522154569408685efb73ac"
+      "passed_source": "d5c8a9a941a71be81f46de7d824d376700d99f58b0b9815fdeec320c1d889145"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5df36e4141ab4e4b24251b91c87ed2d9b9fd4164bdf63b9b201555e22e3c6d07"
+      "passed_source": "20fed4f36a20a9d21e5983f19ae94ad08dcf640d44a68343572ffee298e7b366"
     }
   ],
   "presentation_followups": [
@@ -1027,26 +1027,32 @@
     {
       "id": "redirected-constant-dimensions",
       "name": "Recovery constant dimensions across borrowed and redirected states",
-      "completed": false,
-      "validation": "Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. Batch acceptance pending."
+      "completed": true,
+      "validation": "Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. All five connected segments pass with race detection in one batch acceptance run."
     },
     {
       "id": "character-presentation-precedence",
       "name": "First character storyboards and portrait sprites",
-      "completed": false,
-      "validation": "Selection now retains first character Arcade fields across repeated groups, including explicit blanks, and first duplicate portrait sprites, matching normal archive lookups. The existing packed/legacy asset lifecycle contains ignored later missing stories and a later duplicate large portrait, followed by intro/VS/fight/reset/ending and pack retirement. Batch acceptance pending."
+      "completed": true,
+      "validation": "Selection now retains first character Arcade fields across repeated groups, including explicit blanks, and first duplicate portrait sprites, matching normal archive lookups. The existing packed/legacy asset lifecycle contains ignored later missing stories and a later duplicate large portrait, followed by intro/VS/fight/reset/ending and pack retirement. All five connected segments pass with race detection in one batch acceptance run."
     },
     {
       "id": "selected-entry-presentation-snapshot",
       "name": "Roster entry presentation through selection handoff",
-      "completed": false,
-      "validation": "Confirmed selections retain value snapshots of their portrait/story/entry metadata alongside match rosters. Handoff no longer finds the first same-DEF row and substitutes its music or intro; backing out clears both snapshots and rosters. Existing packed intro-to-fight and team selection/VS/HUD/exit lifecycles exercise metadata changes after confirmation. Batch acceptance pending."
+      "completed": true,
+      "validation": "Confirmed selections retain value snapshots of their portrait/story/entry metadata alongside match rosters. Handoff no longer finds the first same-DEF row and substitutes its music or intro; backing out clears both snapshots and rosters. Existing packed intro-to-fight and team selection/VS/HUD/exit lifecycles exercise metadata changes after confirmation. All five connected segments pass with race detection in one batch acceptance run."
     },
     {
       "id": "localized-opponent-schedule",
       "name": "Localized roster limits through Arcade scheduling",
+      "completed": true,
+      "validation": "Arcade parses select.def limits with the same configured language as roster selection. Singleton Options fields keep first values across groups without deduplicating character/stage rows. The existing localized asset/selection/VS/fight/rematch lifecycle now schedules an order-two entry using localized limits and an ignored later duplicate. All five connected segments pass with race detection in one batch acceptance run."
+    },
+    {
+      "id": "title-attract-mode",
+      "name": "Idle title demo and intro cycling",
       "completed": false,
-      "validation": "Arcade parses select.def limits with the same configured language as roster selection. Singleton Options fields keep first values across groups without deduplicating character/stage rows. The existing localized asset/selection/VS/fight/rematch lifecycle now schedules an order-two entry using localized limits and an ignored later duplicate. Batch acceptance pending."
+      "validation": "Source audit found the supplied motif Demo Mode group has no runtime consumer, and TitleState updates BG elements without their controllers. Implement the documented idle selection/VS/AI-fight/return lifecycle, audio/HUD options and intro cycling next; supplied system.def defines the functional contract."
     }
   ]
 }

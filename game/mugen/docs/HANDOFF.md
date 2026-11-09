@@ -5,25 +5,21 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (three local checkpoints):
+Latest batch: four functional checkpoints plus combined acceptance. Recovery
+constants retain dimensions across borrowed/redirected states; native mixed
+320/1280 observations distinguish unitless .5/.2/.85 from scaled vectors.
+Character story/portrait fields retain first lookups. Confirmed roster metadata
+survives handoff independently of duplicate DEF rows. Arcade uses localized
+first Options limits without deduplicating ordered roster entries.
 
-- Single escaped quotes in CNS clipboard formats now reach display/append
-  and debug drawing. Native and rebuilt Linux load the same quoted format.
-  Native also rejects the checked escaped-quote/semicolon combination; existing
-  comment handling and literal Windows-path admission remain unchanged.
-- AI timed plans handle charged chord components, mixed release/press and
-  strict steps. The existing command lifecycle continues through a fresh
-  composite-command AI attack, contact, damage and recovery before stock AI
-  combat. Long charges retain bounded storage; native policy remains partial.
-- All five motif BGDef groups share first-field color/resource loading.
-  Victory drawing now uses authored clear color. The real Arcade/continue/
-  victory/ending/Survival/training lifecycle checks the rendered consumer.
+All five connected segments passed with races in one end-state run. Linux
+rebuild is deferred to the end of the continuing batch. Native scratch under
+temp/_tmp/compat-continue is owned by this task and must be removed when done.
 
-Four changed-source segments pass with races; unchanged state-flow stays
-checked. Linux rebuilt and its quoted-text match inspected. Owned diagnostic
-scratch removed; canonical banks reused. Counts remain89 controllers,
-127 triggers and32/34 project rows. Broader content/native-fidelity acceptance
-remains partial; unknown combinations are not mandatory test matrices.
+Next concrete gap found: Demo Mode settings in supplied system.def currently
+have no runtime consumer; title BG controllers also do not advance. Implement
+idle selection/VS/AI fight/return, audio/HUD options and intro cycling. Recaps
+are progress updates, not stop points (user 2026-11-09).
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

@@ -57,10 +57,11 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Escaped quote admission in state debug text**
 - [x] **AI plans for charged chords and strict command steps**
 - [x] **Authored victory background clear color**
-- [ ] **Recovery constant dimensions across borrowed and redirected states**: Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. Batch acceptance pending.
-- [ ] **First character storyboards and portrait sprites**: Selection now retains first character Arcade fields across repeated groups, including explicit blanks, and first duplicate portrait sprites, matching normal archive lookups. The existing packed/legacy asset lifecycle contains ignored later missing stories and a later duplicate large portrait, followed by intro/VS/fight/reset/ending and pack retirement. Batch acceptance pending.
-- [ ] **Roster entry presentation through selection handoff**: Confirmed selections retain value snapshots of their portrait/story/entry metadata alongside match rosters. Handoff no longer finds the first same-DEF row and substitutes its music or intro; backing out clears both snapshots and rosters. Existing packed intro-to-fight and team selection/VS/HUD/exit lifecycles exercise metadata changes after confirmation. Batch acceptance pending.
-- [ ] **Localized roster limits through Arcade scheduling**: Arcade parses select.def limits with the same configured language as roster selection. Singleton Options fields keep first values across groups without deduplicating character/stage rows. The existing localized asset/selection/VS/fight/rematch lifecycle now schedules an order-two entry using localized limits and an ignored later duplicate. Batch acceptance pending.
+- [x] **Recovery constant dimensions across borrowed and redirected states**
+- [x] **First character storyboards and portrait sprites**
+- [x] **Roster entry presentation through selection handoff**
+- [x] **Localized roster limits through Arcade scheduling**
+- [ ] **Idle title demo and intro cycling**: Source audit found the supplied motif Demo Mode group has no runtime consumer, and TitleState updates BG elements without their controllers. Implement the documented idle selection/VS/AI-fight/return lifecycle, audio/HUD options and intro cycling next; supplied system.def defines the functional contract.
 
 ## Completed scenario coverage
 
@@ -69,11 +70,11 @@ covered source, a reported regression, or an explicit rerun reopens them.
 Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
-- [ ] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
-- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
-- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
+- [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
+- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
+- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 

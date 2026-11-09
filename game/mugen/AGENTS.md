@@ -39,7 +39,9 @@ No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
 The user renewed autonomous local commit authorization on 2026-11-07. Continue
 through coherent checkpoints without individual commit approval; give a recap
 about every five commits, or sooner for a blocker needing user input. This
-supersedes the earlier pre-commit approval rule. Do not add user configuration
+supersedes the earlier pre-commit approval rule. On 2026-11-09 the user clarified
+that recaps are progress updates, never automatic stopping points. Continue
+through larger batches until work is complete or input is actually needed. Do not add user configuration
 files to Git. Keep mugen.yaml local and ignored; document examples in README.md.
 
 On 2026-11-08 the user redirected work back to engine state-machine coverage
@@ -99,11 +101,16 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   the same policy while scenes/AIR remain ordered. An authored blank private
   motif BG sprite is a resource error. All motif BGDef groups share first-field
   color/resource loading; victory drawing applies its clear color before art.
+  Character Arcade fields and portrait sprites also retain first lookups.
   Retain primary-error locations.
+- Preserve dimensional constants across redirects/borrowed states: recovery
+  multipliers, friction and counters are unitless; velocities/offsets scale.
 - Localize complete groups with English fallback, original source lines and
   stable scene order. Commands/states and individual BG elements are exempt.
   Standalone AIR stays undecorated; preserve runtime victory-quote banks.
-  Motif-relative select.def precedes shared data.
+  Motif-relative select.def precedes shared data; Arcade uses the same selected
+  language and first Options fields. Confirmed roster entries retain their own
+  presentation snapshots rather than being reselected by DEF identity.
 - Accept escaped quotes in CNS debug formats without changing literal Windows
   resource names or native semicolon comment admission.
 - CMD defaults apply globally; first settings/remaps/command attributes win.
