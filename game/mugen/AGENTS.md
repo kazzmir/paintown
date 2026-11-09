@@ -399,3 +399,10 @@ lines, scene order and exemptions. Keep standalone AIR undecorated and preserve
 quote banks for the runtime selector. Motif-relative rosters precede shared data.
 All five segments pass with races; rebuilt Linux matches the twelve native
 observation slots. The diagnostic overlay/captures were inspected and removed.
+
+Target parameter admission now follows target existence, then ID selection.
+TargetBind checks ID before time/position; ParentVarSet/Add require a live parent
+before evaluating index/value. Keep compile-time and admitted VM errors strict.
+The connected entity flow spans grab/drop, skipped effects/errors, actual parent
+writes, helper retirement and recovery/reset. All five segments pass with races;
+rebuilt Linux matches twelve native slots. Diagnostic scratch was removed.

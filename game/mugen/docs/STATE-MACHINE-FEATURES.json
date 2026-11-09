@@ -130,9 +130,12 @@
       "allocation": "item3",
       "sources": [
         "character/binding.go:BindSelf",
-        "character/binding.go:BindCallerToTarget"
+        "character/binding.go:BindCallerToTarget",
+        "engine/target.go:evaluateTargetArguments",
+        "engine/parameters.go:compileVariable",
+        "character/targets.go:HasTargets"
       ],
-      "validation": "Connected mixed-coordinate entity lifecycle covers moving-owner self binding, cumulative Pause allowances, bound body contact, retirement and reset. Asymmetric throw (pausetime 8,2) matches beta at elapsed passes 3/7/10: (attacker Time,target Time,target VelX,deltaX)=(0,3,0,30)/(0,7,0,30)/(2,10,0,26). A hit-paused anchor places targets but transfers zero velocity; expiry does not start victim drift. Scenario ends with own-state recovery/control and fresh helper identities/budgets after reset. Changed-source segments pass with race detection; native scratch removed. Other binding/pause combinations remain unverified."
+      "validation": "Connected mixed-coordinate entity lifecycle covers moving-owner self binding, cumulative Pause allowances, bound body contact, retirement and reset. Asymmetric throw (pausetime 8,2) matches beta at elapsed passes 3/7/10: (attacker Time,target Time,target VelX,deltaX)=(0,3,0,30)/(0,7,0,30)/(2,10,0,26). A hit-paused anchor places targets but transfers zero velocity; expiry does not start victim drift. Scenario ends with own-state recovery/control and fresh helper identities/budgets after reset. Changed-source segments pass with race detection; native scratch removed. Other binding/pause combinations remain unverified. Target/parent admission now matches beta: absent relationships suppress expressions, unmatched target IDs suppress remaining fields, and TargetBind checks ID before time/position. The same lifecycle continues through grab, drop, helper-parent writes, retirement and recovery; all twelve native slots match rebuilt Linux."
     },
     {
       "id": "combat",
@@ -559,7 +562,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "38631def29c9befd0e64c973fde55bb75b23ea1c67723907c17ba7ac5e5d2992"
+      "passed_source": "4d2edcb853315a85e9fa45f4bbc50a98c368cea14079a6c16ccca21c26601877"
     },
     {
       "id": "combat",
@@ -603,7 +606,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "22f4f9a18a1a4957bcb8f66afd9da95e80a1da3806f5ce9d42f5588d1646889a"
+      "passed_source": "72251b9b1bba4fb2c4660a1c9e5cc5358f51f0f5be59cfed6ad99ba5abf67e26"
     },
     {
       "id": "entities",
@@ -636,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "955fcc810b0ae5dc3de6240cc879ffcdd11ed9c920ea83739d315d78f88fdc57"
+      "passed_source": "7333c096a9ffc596b731e37aaf89a8641d128dc43df23e9c1852c836bc60784b"
     },
     {
       "id": "effects-pause",
@@ -671,7 +674,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d415a218f04d8391539e81a96837e134c938dddb53a10149287d29651e47d798"
+      "passed_source": "4c433990b9d7e442c1918cb96c6d208f409e845645d3b76cbc939cecb96c2cab"
     },
     {
       "id": "match-flow",
@@ -750,7 +753,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "02b7d86b9766e196c532691d2456ceb4ba9114c1616b27f8ba83c5cbf734e9da"
+      "passed_source": "4442ad6f0d15ceaded90c9a8493bf512fc7d75fa3b2406831175f9196a504465"
     }
   ],
   "presentation_followups": [
@@ -882,6 +885,12 @@
       "name": "Language selection across definition assets",
       "completed": true,
       "validation": "The configured language reaches character/CNS/CMD, stage, motif/roster/VS, HUD, storyboard and definition-font loaders. Localized groups replace whole English groups while preserving source lines and scene order; missing groups fall back. Commands/states and individual background elements are exempt; quote banks remain available to their runtime selector. Standalone AIR remains undecorated, as observed in beta. The existing asset lifecycle covers localized scenes/fonts, English fallback, motif-relative roster, portraits, input/remap, constants, KO and rematch. All five segments are checked with races. Rebuilt Linux matches all twelve native observation slots; the fight capture was inspected. Shared assets reused; diagnostic scratch removed."
+    },
+    {
+      "id": "target-parent-admission",
+      "name": "Target selection and parent-variable expression admission",
+      "completed": true,
+      "validation": "Target controllers skip all parameters when no acquired target exists. With targets, ID is evaluated first; an unmatched ID skips remaining values, including TargetBind time/position. ParentVarSet/Add skip index/value evaluation without a live parent. Compilation and admitted VM errors retain their existing checks. The connected mixed-coordinate entity lifecycle spans absent relationships, grab, ID rejection/admission, velocity, TargetDrop, unused fatal expressions, actual helper-parent writes, retirement and own-state recovery/reset. All five segments pass with race detection. Rebuilt Linux matches all twelve native observation slots; the capture was inspected. Shared assets reused; diagnostic overlays/captures/helpers removed."
     }
   ]
 }

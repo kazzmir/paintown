@@ -28,7 +28,7 @@ func integerFieldFloatLiteral(expr evaluator.Expression) bool {
 }
 
 func compileTargetBind(ctrl *cns.StateController) (ControllerFunc, bool, error) {
-	args, err := compileArguments(ctrl, []argumentSpec{{"time", true, false}, {"id", true, false}})
+	args, err := compileArguments(ctrl, []argumentSpec{{"id", true, false}, {"time", true, false}})
 	if err != nil {
 		return nil, true, err
 	}
@@ -58,8 +58,8 @@ func compileTargetBind(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		}
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		values, err := evaluateArgumentsWithBottom(args, env, true)
-		if err != nil {
+		values, err := evaluateTargetArguments(args, env, true)
+		if err != nil || values == nil {
 			return err
 		}
 		context, ok := env.(interface {

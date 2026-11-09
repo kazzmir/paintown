@@ -324,6 +324,7 @@ trigger1=Time=8
 value=740
 ctrl=1
 `
+	program += targetAdmissionProgram
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-helper-pause-bind.cns")
 		if err != nil {
@@ -415,6 +416,29 @@ ctrl=1
 	if target.StateNo != 740 || !target.Ctrl || target.VelX != 0 || target.HitPauseTime != 0 {
 		t.Fatal("throw did not release into the receiver's own recovery", target.StateNo, target.Ctrl, target.VelX, target.HitPauseTime)
 	}
+	// Continue through absent targets, a new grab, unmatched/matched IDs,
+	// TargetDrop and helper-parent writes before recovering both actors.
+	root.X, target.X = 0, 20*float64(target.LocalCoordinateWidth())/320
+	target.ChangeState(701, -1, -1)
+	root.ChangeState(810, -1, -1)
+	for tick := 0; tick < 28; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for index, expected := range []int{0, 0, 0, 0, 0, 9999, 0, 9999, 0, 1234, 2, 2} {
+		if got := root.GetVar(40 + index); got != expected {
+			t.Fatalf("native target/parent admission slot %d: got %d want %d", index, got, expected)
+		}
+	}
+	if root.GetVar(52) != 15 || root.StateNo != 740 || target.StateNo != 740 || !root.Ctrl || !target.Ctrl || root.HasTargets(-1) {
+		t.Fatal("target/parent lifecycle did not recover or release its relationships", root.StateNo, target.StateNo, root.GetVar(52))
+	}
+	for _, helper := range m.World.Helpers {
+		if helper.HelperID == 77 {
+			t.Fatal("parent-write helper survived retirement")
+		}
+	}
 	borrowedEffectRecoveryFlow(t, m)
 	m.Round++
 	if err := m.resetRound(); err != nil {
@@ -439,6 +463,136 @@ ctrl=1
 		}
 	}
 }
+
+// Native skips all expressions without a target/parent. With targets, it
+// evaluates ID before admitting the remaining fields, including TargetBind.
+const targetAdmissionProgram = `
+[Statedef 810]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+velset=0,0
+[State clear observations]
+type=VarRangeSet
+trigger1=Time=0
+first=40
+last=52
+value=0
+[State no parent]
+type=ParentVarSet
+trigger1=Time=0
+v=(var(40):=7)
+value=(var(41):=8)
+[State no target]
+type=TargetLifeAdd
+trigger1=Time=0 || Time=10
+id=(var(42):=7)
+value=(var(43):=8)
+[State no target binding]
+type=TargetBind
+trigger1=Time=0
+time=(var(44):=2)
+id=(var(45):=7)
+pos=(var(46):=4),0
+[State grab]
+type=HitDef
+trigger1=Time=1
+attr=S,NT
+hitflag=MAF
+damage=0,0
+pausetime=0,0
+ground.type=High
+ground.hittime=1000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+getpower=0,0
+givepower=0,0
+id=1234
+p2stateno=812
+[State unmatched target]
+type=TargetLifeAdd
+trigger1=Time=4
+id=(var(47):=9999)
+value=(var(48):=8)
+[State matched target]
+type=TargetVelSet
+trigger1=Time=5
+id=(var(49):=1234)
+x=Const240p(var(50):=2)
+y=0
+[State applied velocity in 320p]
+type=VarSet
+trigger1=Time=6
+v=51
+value=(Target,Vel X)*320/(Target,Const240p(320))
+[State unmatched binding]
+type=TargetBind
+trigger1=Time=7
+time=(var(44):=2)
+id=(var(45):=9999)
+pos=(var(46):=4),0
+[State drop]
+type=TargetDrop
+trigger1=Time=9
+excludeid=-1
+keepone=0
+[State unused target expression is not a VM failure]
+type=TargetBind
+trigger1=Time=11
+id=1234
+time=~(1/0)
+pos=~(1/0),0
+[State unused parent expression is not a VM failure]
+type=ParentVarAdd
+trigger1=Time=11
+v=~(1/0)
+value=~(1/0)
+[State create parent writer]
+type=Helper
+trigger1=Time=12
+id=77
+stateno=814
+postype=p1
+[State recover]
+type=ChangeState
+trigger1=Time=16
+value=740
+ctrl=1
+[Statedef 812]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State recover]
+type=SelfState
+trigger1=Time=12
+value=740
+ctrl=1
+[Statedef 814]
+type=S
+movetype=I
+physics=N
+anim=9990
+[State actual parent]
+type=ParentVarSet
+trigger1=Time=0
+v=52
+value=(var(0):=13)
+[State add to actual parent]
+type=ParentVarAdd
+trigger1=Time=0
+v=52
+value=var(0)-11
+[State retire]
+type=DestroySelf
+trigger1=Time=1
+`
 
 // Continue the same entity lifecycle through a differently scaled borrowed
 // state, private effect creation, a real Pause, SelfState and effect retirement.

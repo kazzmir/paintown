@@ -407,6 +407,17 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 		return nil, true, err
 	}
 	return func(_ *cns.StateController, env Environment) error {
+		dest := env
+		if parent {
+			owner, ok := env.(parentEnvironment)
+			if !ok {
+				return nil
+			}
+			dest = owner.ParentEnvironment()
+			if dest == nil {
+				return nil
+			}
+		}
 		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
 			return err
@@ -421,14 +432,6 @@ func compileVariable(ctrl *cns.StateController, add, parent bool) (ControllerFun
 		}
 		if idx < 0 || idx >= limit {
 			return fmt.Errorf("%s index %d outside 0..%d", kind, idx, limit-1)
-		}
-		dest := env
-		if parent {
-			owner, ok := env.(parentEnvironment)
-			if !ok || owner.ParentEnvironment() == nil {
-				return nil
-			}
-			dest = owner.ParentEnvironment()
 		}
 		v := values["value"]
 		switch kind {

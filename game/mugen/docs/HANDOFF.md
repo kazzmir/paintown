@@ -7,6 +7,13 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Target controllers admit expressions only after target existence and ID
+  selection. TargetBind checks ID before time/position. ParentVarSet/Add skip
+  their expressions without a live parent. Keep compilation and admitted VM
+  failures strict. The same entity lifecycle now covers grab/drop, skipped
+  effects/errors, actual helper-parent writes, retirement and recovery. All
+  five segments pass with races; rebuilt Linux matches twelve native slots.
+
 - Config.Language now reaches all definition asset consumers. Localized groups
   replace whole sections; missing sections fall back to English. Keep source
   lines, scene order, command/state/BG exemptions and runtime quote banks.

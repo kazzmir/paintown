@@ -2,6 +2,11 @@ package character
 
 import "github.com/kazzmir/paintown/game/mugen/engine"
 
+// HasTargets uses the same generation/retirement filter as target consumers.
+func (c *Character) HasTargets(id int) bool {
+	return len(c.acquiredTargets(id, true)) != 0
+}
+
 func (c *Character) interruptTargets() error {
 	for _, target := range c.targetOrder {
 		if target.binding != nil && !target.binding.self && target.binding.anchor == c {

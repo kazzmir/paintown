@@ -21,6 +21,45 @@ type TargetVelocityParameters struct {
 	HasX, HasY, Add bool
 }
 
+// Admission precedes expressions: no targets means no parameter evaluation;
+// an unmatched ID suppresses the remaining arguments. Keep ID first in specs.
+func evaluateTargetArguments(args []argument, env Environment, zeroBottom bool) (map[string]evaluator.Value, error) {
+	context, selectsTargets := env.(interface{ HasTargets(int) bool })
+	if selectsTargets && !context.HasTargets(-1) {
+		return nil, nil
+	}
+	if selectsTargets && len(args) > 0 && args[0].name == "id" {
+		selection, err := evaluateArgumentsWithBottom(args[:1], env, zeroBottom)
+		if err != nil {
+			return nil, err
+		}
+		if !context.HasTargets(int(selection["id"].Number())) {
+			return nil, nil
+		}
+		values, err := evaluateArgumentsWithBottom(args[1:], env, zeroBottom)
+		if err != nil {
+			return nil, err
+		}
+		values["id"] = selection["id"]
+		return values, nil
+	}
+	return evaluateArgumentsWithBottom(args, env, zeroBottom)
+}
+
+func targetHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(Environment, map[string]evaluator.Value) error) (ControllerFunc, bool, error) {
+	args, err := compileArguments(ctrl, specs)
+	if err != nil {
+		return nil, true, err
+	}
+	return func(_ *cns.StateController, env Environment) error {
+		values, err := evaluateTargetArguments(args, env, false)
+		if err != nil || values == nil {
+			return err
+		}
+		return apply(env, values)
+	}, true, nil
+}
+
 func compileTarget(ctrl *cns.StateController, name string) (ControllerFunc, bool, error) {
 	idOf := func(v map[string]evaluator.Value) int {
 		if value, ok := v["id"]; ok {
@@ -30,7 +69,7 @@ func compileTarget(ctrl *cns.StateController, name string) (ControllerFunc, bool
 	}
 	switch name {
 	case "targetdrop":
-		return typedHandler(ctrl, []argumentSpec{{"excludeid", true, false}, {"keepone", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return targetHandler(ctrl, []argumentSpec{{"excludeid", true, false}, {"keepone", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
 			context, ok := env.(interface {
 				DropTargets(TargetDropParameters) error
 			})
@@ -47,7 +86,7 @@ func compileTarget(ctrl *cns.StateController, name string) (ControllerFunc, bool
 			return context.DropTargets(p)
 		})
 	case "targetfacing", "targetpoweradd", "targetstate":
-		return typedHandler(ctrl, []argumentSpec{{"id", true, false}, {"value", true, name != "targetfacing"}}, func(env Environment, v map[string]evaluator.Value) error {
+		return targetHandler(ctrl, []argumentSpec{{"id", true, false}, {"value", true, name != "targetfacing"}}, func(env Environment, v map[string]evaluator.Value) error {
 			id, value := idOf(v), int(v["value"].Number())
 			if name == "targetfacing" {
 				env.TargetFacing(id, value)
@@ -59,7 +98,7 @@ func compileTarget(ctrl *cns.StateController, name string) (ControllerFunc, bool
 			return nil
 		})
 	case "targetlifeadd":
-		return typedHandler(ctrl, []argumentSpec{{"id", true, false}, {"value", true, true}, {"kill", true, false}, {"absolute", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return targetHandler(ctrl, []argumentSpec{{"id", true, false}, {"value", true, true}, {"kill", true, false}, {"absolute", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
 			context, ok := env.(interface {
 				AddTargetLife(TargetLifeParameters) error
 			})
@@ -76,7 +115,7 @@ func compileTarget(ctrl *cns.StateController, name string) (ControllerFunc, bool
 			return context.AddTargetLife(p)
 		})
 	case "targetvelset", "targetveladd":
-		return typedHandler(ctrl, []argumentSpec{{"id", true, false}, {"x", false, false}, {"y", false, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return targetHandler(ctrl, []argumentSpec{{"id", true, false}, {"x", false, false}, {"y", false, false}}, func(env Environment, v map[string]evaluator.Value) error {
 			context, ok := env.(interface {
 				SetTargetVelocity(TargetVelocityParameters) error
 			})
