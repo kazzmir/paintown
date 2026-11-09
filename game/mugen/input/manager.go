@@ -74,6 +74,7 @@ func (a Action) String() string {
 }
 
 type InputManager struct {
+	KeyboardDisabled               [2]bool
 	Keyboard                       KeyboardSource
 	Gamepads                       GamepadSource
 	P1Gamepad, P2Gamepad           config.GamepadConfig
@@ -116,13 +117,28 @@ func (im *InputManager) DebugCyclePressed() bool {
 	return source.IsJustPressed(ebiten.KeyD) && (source.IsPressed(ebiten.KeyControlLeft) || source.IsPressed(ebiten.KeyControlRight))
 }
 
+// Runtime keys are independent of per-player keyboard enable settings.
+func (im *InputManager) KeyJustPressed(key ebiten.Key) bool {
+	return im.keyboard().IsJustPressed(key)
+}
+
+func (im *InputManager) AnyKeyJustPressed() bool {
+	for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
+		if im.KeyJustPressed(key) {
+			return true
+		}
+	}
+	return false
+}
+
 func NewInputManager(cfg *config.MugenConfig) *InputManager {
 	return &InputManager{
-		P1Keyboard: cfg.Input.Player1Keyboard,
-		P2Keyboard: cfg.Input.Player2Keyboard,
-		P1Joystick: cfg.Input.Player1Joystick,
-		P2Joystick: cfg.Input.Player2Joystick,
-		P1Gamepad:  cfg.Input.Gamepads[0], P2Gamepad: cfg.Input.Gamepads[1],
+		KeyboardDisabled: cfg.Input.KeyboardDisabled,
+		P1Keyboard:       cfg.Input.Player1Keyboard,
+		P2Keyboard:       cfg.Input.Player2Keyboard,
+		P1Joystick:       cfg.Input.Player1Joystick,
+		P2Joystick:       cfg.Input.Player2Joystick,
+		P1Gamepad:        cfg.Input.Gamepads[0], P2Gamepad: cfg.Input.Gamepads[1],
 	}
 }
 
@@ -163,6 +179,11 @@ func (im *InputManager) IsJustPressed(player int, action Action) bool {
 }
 
 func (im *InputManager) matchAction(player int, action Action, query func(ebiten.Key) bool) bool {
+	// Escape and runtime hotkeys remain available independently of a player's
+	// game controls, including when that player uses a controller exclusively.
+	if player >= 1 && player <= 2 && im.KeyboardDisabled[player-1] && action != ActionEscape {
+		return false
+	}
 	keys := &im.P1Keyboard
 	if player == 2 {
 		keys = &im.P2Keyboard

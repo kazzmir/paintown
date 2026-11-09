@@ -36,6 +36,8 @@ type FightState struct {
 	renderError                        error
 	debugSelection                     int
 	debugFont                          *font.Font
+	userPaused, simulationHeld         bool
+	training                           *trainingControls
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
@@ -83,11 +85,17 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	}
 	fmt.Printf("Match RNG seed: %d\n", game.World.RandomSeed())
 	s := &FightState{engine: engine, match: game, debugSelection: -1}
+	if game.Request.Mode == "Training" {
+		s.training = &trainingControls{}
+	}
 	if engine.cfg.Debug.Debug {
 		s.debugSelection = 0
 	}
 	for slot, p := range game.Actors() {
 		p.Character.InputSource = func(playerID, facing int) []string {
+			if playerID == 2 && s.training != nil {
+				return s.trainingInput(facing)
+			}
 			selected, _ := game.SelectionForPlayer(playerID)
 			if selected.AILevel > 0 {
 				return game.BasicAIInput(playerID)
@@ -107,14 +115,9 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 }
 
 func (s *FightState) Update() (State, error) {
+	s.simulationHeld = false
 	if s.renderError != nil {
 		return s, s.renderError
-	}
-	if d := s.engine.demo; d != nil {
-		d.fightTicks++
-		if d.fightTicks >= max(1, s.engine.themeNumber("Demo Mode", "fight.endtime", 1500)) || s.match.Phase == match.Finished {
-			return s.engine.endDemo(true)
-		}
 	}
 	s.updateDebugSelection()
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
@@ -129,6 +132,16 @@ func (s *FightState) Update() (State, error) {
 	}
 	if s.match.Phase == match.Finished && input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		return NewFightState(s.engine, s.match.Request)
+	}
+	if s.holdForUserPause() {
+		s.simulationHeld = true
+		return s, nil
+	}
+	if d := s.engine.demo; d != nil {
+		d.fightTicks++
+		if d.fightTicks >= max(1, s.engine.themeNumber("Demo Mode", "fight.endtime", 1500)) || s.match.Phase == match.Finished {
+			return s.engine.endDemo(true)
+		}
 	}
 	previousPhase := s.match.Phase
 	previousRound := s.match.Round
@@ -350,6 +363,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	if err := s.drawDebugClipboard(screen); err != nil {
 		s.renderError = err
 	}
+	s.drawTrainingMenu(screen)
 }
 
 func subtractRectangle(rect, covered image.Rectangle) []image.Rectangle {

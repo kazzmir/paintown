@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -387,6 +388,7 @@ trigger1=1
 	if f.match.TimeLeft != -1 || f.match.Phase != match.Active || !root.IsAlive() || root.Life != root.MaxLife || root.GetPower() != root.MaxPower {
 		t.Fatal("training timer/KO/refill rules missing")
 	}
+	trainingPauseAndDummyFlow(t, e, f, keyboard, step, canvas)
 	step(ebiten.KeyEscape)
 	step()
 	f = selectMode("Watch Mode")
@@ -397,6 +399,100 @@ trigger1=1
 	}
 	step(ebiten.KeyEscape)
 	demoAttractModeFlow(t, e, step, canvas)
+}
+
+// Continue the existing training lifecycle through menu ownership, frozen
+// clocks, manual/controller input, cooperative CNS behavior and authored AI.
+func trainingPauseAndDummyFlow(t *testing.T, e *Engine, f *FightState, keyboard *flowKeyboard, step func(...ebiten.Key), canvas *ebiten.Image) {
+	t.Helper()
+	defer func() { keyboard.previous = nil }()
+	run := func(keys ...ebiten.Key) {
+		t.Helper()
+		keyboard.previous = keyboard.keys
+		step(keys...)
+	}
+	press := func(key ebiten.Key) { t.Helper(); run(key); run() }
+	tick, gameTime := f.match.Tick, e.gameTime
+	press(ebiten.KeyPause)
+	if !f.userPaused || f.training == nil || f.match.Tick != tick || e.gameTime != gameTime {
+		t.Fatal("training pause did not hold the complete match")
+	}
+	// Inspect the actual composed menu, without retaining a capture bank.
+	e.Draw(canvas)
+	menu := make([]byte, canvas.Bounds().Dx()*canvas.Bounds().Dy()*4)
+	canvas.ReadPixels(menu)
+	f.userPaused = false
+	e.Draw(canvas)
+	plain := make([]byte, len(menu))
+	canvas.ReadPixels(plain)
+	f.userPaused = true
+	if bytes.Equal(menu, plain) {
+		t.Fatal("training menu was absent from the composed fight")
+	}
+	press(ebiten.KeyArrowRight)
+	press(ebiten.KeyArrowRight) // Cooperative -> AI -> Manual.
+	press(ebiten.KeyPause)
+	run(ebiten.KeyF)
+	if f.training.control != 2 || f.match.Players[1].Character.AILevel != 0 || !slices.Contains(f.match.Options.Input(2, -1), "ButtonA") {
+		t.Fatal("manual training dummy did not read the second human")
+	}
+	press(ebiten.KeyPause)
+	press(ebiten.KeyArrowRight) // Manual -> Cooperative.
+	press(ebiten.KeyArrowDown)
+	press(ebiten.KeyArrowRight) // Auto guard.
+	press(ebiten.KeyArrowDown)
+	press(ebiten.KeyArrowRight) // Crouch.
+	press(ebiten.KeyArrowDown)
+	press(ebiten.KeyArrowRight)
+	press(ebiten.KeyArrowRight) // Medium spacing.
+	press(ebiten.KeyArrowDown)
+	for n := 0; n < 4; n++ {
+		press(ebiten.KeyArrowRight)
+	} // Jam X.
+	press(ebiten.KeyM)
+	if !f.training.minimized {
+		t.Fatal("training minimize was ignored")
+	}
+	press(ebiten.KeyM)
+	if f.training.minimized {
+		t.Fatal("training menu did not restore")
+	}
+	e.cfg.Input.AnyKeyUnpauses = true
+	press(ebiten.KeyF9)
+	if !f.userPaused {
+		t.Fatal("AnyKeyUnpauses dismissed the active training menu")
+	}
+	tick, gameTime = f.match.Tick, e.gameTime
+	press(ebiten.KeyScrollLock)
+	if !f.userPaused || f.match.Tick != tick+1 || e.gameTime != gameTime+1 {
+		t.Fatal("training frame-step did not retain pause/menu ownership")
+	}
+	press(ebiten.KeyComma) // Attack also closes the training menu.
+	seenCrouch, seenJam, seenSpacing := false, false, false
+	for n := 0; n < 120; n++ {
+		run()
+		dummy := f.match.Players[1].Character
+		raw := f.match.Options.Input(2, dummy.Facing)
+		seenCrouch = seenCrouch || dummy.StateType == "C"
+		seenJam = seenJam || slices.Contains(raw, "ButtonX")
+		seenSpacing = seenSpacing || slices.Contains(raw, "DirForward") || slices.Contains(raw, "DirBack")
+	}
+	if f.userPaused || !seenCrouch || !seenJam || !seenSpacing || f.training.guard != 1 || f.match.Phase != match.Active {
+		t.Fatal("cooperative dummy settings did not reach CNS", seenCrouch, seenJam, seenSpacing)
+	}
+	press(ebiten.KeyPause)
+	press(ebiten.KeyArrowDown)  // Wrap Button jam -> Dummy control.
+	press(ebiten.KeyArrowRight) // Cooperative -> AI.
+	press(ebiten.KeyPause)
+	if f.userPaused || f.match.Players[1].Character.AILevel < 1 {
+		t.Fatal("training AI ownership did not reach authored CNS")
+	}
+	for n := 0; n < 30; n++ {
+		run()
+	}
+	if f.match.Phase != match.Active || f.match.TimeLeft != -1 {
+		t.Fatal("training controls lost unlimited-time/KO protection")
+	}
 }
 
 // Continue the real mode lifecycle through idle title, automatic previews,

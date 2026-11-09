@@ -259,4 +259,48 @@ trigger1=Time=20
 	if victim.Life != victim.MaxLife-20 || root.ComboCount != 0 || f.hud.combos[0].active || len(f.match.World.Helpers) != 0 {
 		t.Fatal("contact/recovery/expiry/retirement", victim.Life, root.ComboCount, f.hud.combos[0], len(f.match.World.Helpers))
 	}
+	// User pause is outside CNS Pause: complete simulation/HUD/GameTime hold,
+	// but key edges continue so Scroll Lock can advance one connected pass.
+	step := func(pressed ...ebiten.Key) {
+		t.Helper()
+		keys.previous, keys.keys = keys.keys, map[ebiten.Key]bool{}
+		for _, key := range pressed {
+			keys.keys[key] = true
+		}
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	tick, gameTime, stateTime := f.match.Tick, e.gameTime, root.Time
+	step(ebiten.KeyPause)
+	step(ebiten.KeyPause)
+	step()
+	step(ebiten.KeyF9)
+	if !f.userPaused || f.match.Tick != tick || e.gameTime != gameTime || root.Time != stateTime {
+		t.Fatal("user pause advanced simulation or held Pause toggled it again")
+	}
+	step(ebiten.KeyScrollLock)
+	step(ebiten.KeyScrollLock)
+	if !f.userPaused || f.match.Tick != tick+1 || e.gameTime != gameTime+1 || root.Time != stateTime+1 {
+		t.Fatal("held frame-step did not advance exactly one simulation pass")
+	}
+	step()
+	step(ebiten.KeyPause)
+	if f.userPaused || f.match.Tick != tick+2 || e.gameTime != gameTime+2 {
+		t.Fatal("Pause did not resume the held fight")
+	}
+	e.cfg.Input.AnyKeyUnpauses = true
+	step()
+	step(ebiten.KeyPause)
+	step()
+	tick, gameTime = f.match.Tick, e.gameTime
+	step(ebiten.KeyScrollLock)
+	if !f.userPaused || f.match.Tick != tick+1 {
+		t.Fatal("AnyKeyUnpauses swallowed frame-step")
+	}
+	step()
+	step(ebiten.KeyF10)
+	if f.userPaused || f.match.Tick != tick+2 || e.gameTime != gameTime+2 {
+		t.Fatal("AnyKeyUnpauses did not resume on a fresh runtime key")
+	}
 }

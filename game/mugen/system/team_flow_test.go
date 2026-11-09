@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 )
@@ -128,6 +129,19 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 		if !slices.Contains(read(3, 1), "DirForward") || slices.Contains(read(1, 1), "DirForward") {
 			t.Fatal("second human input did not reach only the co-op partner slot")
 		}
+		pad := &flowPad{standard: true}
+		pad.release()
+		pad.axes[ebiten.StandardGamepadAxisLeftStickHorizontal] = 0.9
+		manager := input.GlobalManager
+		manager.P2Gamepad = config.DefaultGamepadConfig()
+		manager.P2Gamepad.Enabled = true
+		manager.KeyboardDisabled[1] = true
+		manager.Gamepads = flowGamepads{2: pad}
+		step()
+		if !slices.Contains(read(3, 1), "DirForward") || slices.Contains(read(1, 1), "DirForward") || slices.Contains(read(3, -1), "DirForward") {
+			t.Fatal("controller-only second human lost co-op slot/facing ownership")
+		}
+		manager.KeyboardDisabled[1], manager.P2Gamepad.Enabled = false, false
 	}
 	checkCoopInput()
 	e.Draw(canvas)

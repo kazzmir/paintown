@@ -134,6 +134,11 @@ func (e *Engine) Update() error {
 			return err
 		}
 	}
+	// User pause holds the complete simulation, including CNS GameTime. The
+	// input adapter and audio service still run so resume/frame-step can work.
+	if fight, ok := e.currentState.(*FightState); ok && fight.simulationHeld {
+		return nil
+	}
 	e.gameTime++
 	// A transition may have constructed a fresh match during this update.
 	// Its first pass belongs to the next process tick, without reusing pauses.

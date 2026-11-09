@@ -436,9 +436,10 @@
         "input/manager.go:IsJustPressed",
         "config/gamepad.go:ParseGamepadBindings",
         "config/config.go:mergeExtendedConfig",
-        "character/commands.go:GetRawInputs"
+        "character/commands.go:GetRawInputs",
+        "input/manager.go:matchAction"
       ],
-      "validation": "The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers keyboard alternatives plus injected standard/raw gamepads, analog deadzones, held menu edges, disabled/list bindings, value-copy isolation, per-player ownership and hotplug. Physical hardware/native joystick numbering is not inferred from the injected backend. Affected combat and match-flow segments pass with race detection; the other three completed segments stay checked."
+      "validation": "The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers keyboard alternatives plus injected standard/raw gamepads, analog deadzones, held menu edges, disabled/list bindings, value-copy isolation, per-player ownership and hotplug. Physical hardware/native joystick numbering is not inferred from the injected backend. Affected combat and match-flow segments pass with race detection; the other three completed segments stay checked. First cfg UseKeyboard flags precede explicit YAML keyboard_enabled overrides; disabled keyboard controls retain gamepad input, Escape and runtime hotkeys. Team/co-op coverage confirms the second controller reaches the human partner slot with the correct facing."
     },
     {
       "id": "ai",
@@ -475,9 +476,12 @@
         "match/round_carry.go:initialCarry",
         "character/world.go:RestoreRandom",
         "system/demo.go:beginDemo",
-        "system/demo.go:endDemo"
+        "system/demo.go:endDemo",
+        "system/fight_controls.go:holdForUserPause",
+        "system/fight_controls.go:trainingInput",
+        "system/fight_controls.go:drawTrainingMenu"
       ],
-      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered. Idle title demo now spans optional selection/VS, AI combat, timed return, intro cycling and input interruption. Its music/bar/debug consumers run through existing production mode/media scenarios and the rebuilt Linux window."
+      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered. Idle title demo now spans optional selection/VS, AI combat, timed return, intro cycling and input interruption. Its music/bar/debug consumers run through existing production mode/media scenarios and the rebuilt Linux window. Supplied readme/CFG runtime controls now reach their consumers: Pause holds match/HUD/GameTime while input/audio continue; fresh Scroll Lock advances one pass; AnyKeyUnpauses applies outside training menus. Training exposes manual/AI/cooperative dummy control, guard/stance/jumps/spacing/button jam and minimize/resume. Existing connected mode/feedback/co-op flows pass with races and the rebuilt Linux menu was inspected. Exact native dummy spacing/jam/AI timing and menu parity remain unverified; the bounded native UI review stayed at the beta welcome overlay despite synthetic F1, so it is not acceptance evidence."
     },
     {
       "id": "teams",
@@ -636,7 +640,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a0792cedd598bb7552ed5ac4e39750622ca09eceb0e2d366c94d89c33fdca320"
+      "passed_source": "4c342e918ab8b33c4b15fa4813ab0be2eb7aa95d164a649a3389726df3887917"
     },
     {
       "id": "entities",
@@ -783,7 +787,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2940ea984784f93cb53bf42672a882a46b91f2779bed26452cb2f6a3fc3e2723"
+      "passed_source": "7f34371b0fa33d886c5ed93295fca5b0ed922bfde6c55dbffbe73ed739185c7b"
     }
   ],
   "presentation_followups": [
@@ -1101,6 +1105,18 @@
       "name": "Portable gamepad input through menus and combat",
       "completed": true,
       "validation": "Opt-in SDK adapter connects standard/raw buttons and axes, YAML alternatives/deadzones, stable two-player seats/hotplug and non-consuming logical press edges through menus and stock CNS. The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers the lifecycle with injected devices. Affected combat and match-flow segments pass with race detection; other completed segments stay checked. Physical hardware/native legacy numbering remain partial."
+    },
+    {
+      "id": "keyboard-enable-consumers",
+      "name": "Player keyboard enable settings and controller-only co-op",
+      "completed": true,
+      "validation": "First cfg P1.UseKeyboard/P2.UseKeyboard flags reach logical input, explicit YAML keyboard_enabled overrides them, and runtime keys/Escape remain available. Existing selection/stock combat/co-op scenarios cover disabled keyboard input, preserved gamepads and the second human partner slot. Affected combat/match-flow pass with races; other segments remain checked."
+    },
+    {
+      "id": "runtime-pause-training",
+      "name": "User pause, frame-step and training dummy controls",
+      "completed": true,
+      "validation": "Documented runtime Pause/Scroll Lock/AnyKeyUnpauses now hold and advance the complete fight independently of CNS Pause/SuperPause. Training controls feed human/AI/cooperative inputs through existing CNS and expose guard/stance/jump/spacing/jam settings with minimize/resume. Existing feedback/mode lifecycle passes with races, all five segments are checked. Rebuilt Linux title-to-Training menu/minimize was inspected; exact native menu/dummy policy remains partial, and the native welcome-overlay probe was inconclusive."
     }
   ]
 }

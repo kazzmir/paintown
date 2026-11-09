@@ -69,6 +69,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	override := filepath.Join(t.TempDir(), "mugen.yaml")
 	if err := os.WriteFile(override, []byte(`input:
   p1:
+    keyboard_enabled: true
     gamepad:
       enabled: true
       deadzone: 0.4
@@ -86,8 +87,6 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
       y: [KeyF9, not-a-key]
       z: none
   p2:
-    gamepad:
-      enabled: true
     joy:
       right: "axis:0+"
       b: "button:0"
@@ -108,7 +107,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	configText = append(configText, []byte("\n[Config]\nGameWidth=0\nGameHeight=0\n[Options]\nMotif=missing-later.def\nLife=1\nTime=0\n")...)
+	configText = []byte(strings.ReplaceAll(string(configText), "UseKeyboard = 1", "UseKeyboard = 0"))
+	configText = append(configText, []byte("\n[Config]\nGameWidth=0\nGameHeight=0\n[Options]\nMotif=missing-later.def\nLife=1\nTime=0\n[Input]\nP1.UseKeyboard=1\nP2.UseKeyboard=1\n")...)
 	if err := os.WriteFile(filepath.Join(configRoot, "data/mugen.cfg"), configText, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -118,6 +118,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	}
 	if cfg.Config.GameWidth <= 0 || cfg.Config.GameHeight <= 0 || cfg.Options.Motif == "missing-later.def" {
 		t.Fatal("later configuration groups replaced first fields")
+	}
+	if cfg.Input.KeyboardDisabled != ([2]bool{false, true}) {
+		t.Fatal("first cfg keyboard-enable settings or explicit YAML override were ignored", cfg.Input.KeyboardDisabled)
 	}
 	bindings, _ := cfg.Input.Player1Keyboard.Bindings("x")
 	if !slices.Equal(bindings, []ebiten.Key{ebiten.KeyL, ebiten.KeyF7}) || cfg.Input.Player1Keyboard.Y != ebiten.KeySemicolon {
@@ -140,7 +143,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	padOriginal, _ := cfg.Input.Gamepads[0].Bindings("x")
 	padReplaced, _ := padCopy.Bindings("x")
 	padY, _ := cfg.Input.Gamepads[0].Bindings("y")
-	if len(padOriginal) != 2 || padOriginal[0].Index != int(ebiten.StandardGamepadButtonRightLeft) || len(padReplaced) != 0 || len(padY) != 1 || !cfg.Input.Gamepads[0].Enabled || cfg.Input.Gamepads[0].Deadzone != 0.4 {
+	if len(padOriginal) != 2 || padOriginal[0].Index != int(ebiten.StandardGamepadButtonRightLeft) || len(padReplaced) != 0 || len(padY) != 1 || !cfg.Input.Gamepads[0].Enabled || !cfg.Input.Gamepads[1].Enabled || cfg.Input.Gamepads[0].Deadzone != 0.4 {
 		t.Fatal("gamepad configuration lost replacement/isolation or malformed-list admission", padOriginal, padReplaced, padY)
 	}
 	m, err := motif.LoadMotif("data/mugen1/system.def", root)
@@ -162,6 +165,10 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("disabled scalar/list bindings fell back to legacy controls")
 	}
 	keyboard.keys = map[ebiten.Key]bool{ebiten.KeyF: true, ebiten.KeyNumpad1: true}
+	if input.GlobalManager.IsPressed(2, input.ActionA) {
+		t.Fatal("disabled player keyboard reached logical input")
+	}
+	input.GlobalManager.KeyboardDisabled[1] = false
 	if !input.GlobalManager.IsPressed(2, input.ActionA) {
 		t.Fatal("both alternatives did not activate the same logical action")
 	}
@@ -173,6 +180,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if input.GlobalManager.IsPressed(2, input.ActionA) {
 		t.Fatal("logical action remained held after both alternatives released")
 	}
+	input.GlobalManager.KeyboardDisabled[1] = true
 	e := &Engine{dataDir: root, cfg: cfg, motif: m, logicalWidth: m.Info.LocalCoord.Width, logicalHeight: m.Info.LocalCoord.Height}
 	e.random = engine.NewRandomStream(1)
 	t.Cleanup(func() {

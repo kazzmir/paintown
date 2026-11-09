@@ -190,6 +190,10 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   premultiplication, nearest indexed/linear true-color sampling and delta-first
   round-to-even interpolation. Keep AfterImage AIR clocks and saved mappings.
   Existing bounded RGB/KO-echo acceptance is not whole-renderer/audio parity.
+- User Pause holds match/HUD/CNS GameTime while input/audio service continues.
+  Fresh Scroll Lock advances one pass; AnyKeyUnpauses does not dismiss training
+  menus. Keep manual/AI/cooperative dummy ownership through the shared input
+  consumer. Native dummy spacing/jam timing and menu parity remain partial.
 - Idle demos retain their own sequence/AI requests and consume interruption
   input before the returned title can act on it. Preserve demo bar/debug/music
   policy without changing user configuration. Title BG controllers advance.

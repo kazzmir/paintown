@@ -164,6 +164,19 @@ at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 Options changes apply to the current session. Game Speed updates the live
 scheduler immediately, and subsequent matches inherit that clock rate.
 
+At the fight screen, Pause freezes the complete simulation; Scroll Lock advances
+one tick while paused. Holding either key does not repeat. Escape still exits.
+`[Input] AnyKeyUnpauses=1` lets another fresh keyboard press resume an ordinary
+paused fight. Music playback continues independently of the held simulation.
+
+In Training, Pause opens the dummy menu: choose Cooperative, AI or Manual
+control, automatic guarding, stance/jumps, spacing and repeated buttons. Manual
+uses P2 input; Cooperative applies the selected dummy settings; AI uses authored
+CMD plans. Move with P1 directions, change values with left/right, and resume
+with an attack button or Pause. M minimizes/restores the paused menu. Scroll
+Lock still advances one tick. Exact native dummy movement/attack timing remains
+part of fidelity work.
+
 Body collisions use CNS ground/air widths and temporary `Width` values when
 the fighters' hurtboxes overlap vertically, including air/ground and air/air
 contact. Fighters separated vertically can pass each other. Projectile hits
@@ -261,6 +274,11 @@ binding; omitted actions retain `mugen.cfg` settings or their built-in defaults.
 unknown key name reports a warning and leaves the entire binding unchanged.
 Restart the game after editing. Startup output lists the active keys.
 
+`[Input] P1.UseKeyboard` / `P2.UseKeyboard` in `mugen.cfg` enable each player's
+keyboard controls. YAML `input.p1.keyboard_enabled: true` (or P2/false) explicitly
+overrides that setting. Omitted cfg fields enable keyboards. Escape and runtime
+hotkeys remain available when a player's keyboard controls are disabled.
+
 Supported actions are `jump` (`up`), `crouch` (`down`), `left`, `right`, `a`, `b`,
 `c`, `x`, `y`, `z`, `start` and `escape`. Direction bindings also move menu cursors;
 `start` also confirms selections. Names are case insensitive, and the `Key`
@@ -299,7 +317,7 @@ input:
       enabled: true
 ```
 
-Controllers are disabled by default. A `joy` binding also enables that player
+Controllers are disabled by default. A valid `joy` binding also enables that player
 unless `gamepad.enabled: false` is explicit. The first available controllers
 fill enabled P1/P2 seats in SDK ID order. A connected controller keeps its seat
 when the other disconnects; a newly connected device fills the free seat.

@@ -33,9 +33,10 @@ func (binding *KeyBinding) UnmarshalYAML(node *yaml.Node) error {
 
 // PlayerConfig holds both keyboard and joystick settings for a player.
 type PlayerConfig struct {
-	Keyboard map[string]KeyBinding `yaml:"keyboard"`
-	Joy      map[string]KeyBinding `yaml:"joy"`
-	Gamepad  *GamepadOptions       `yaml:"gamepad"`
+	KeyboardEnabled *bool                 `yaml:"keyboard_enabled"`
+	Keyboard        map[string]KeyBinding `yaml:"keyboard"`
+	Joy             map[string]KeyBinding `yaml:"joy"`
+	Gamepad         *GamepadOptions       `yaml:"gamepad"`
 }
 
 type GamepadOptions struct {

@@ -5,25 +5,31 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest checkpoint: opt-in portable gamepads now feed the same logical actions as
-keyboard input. YAML standard/raw controls, deadzones, alternatives/disable,
-two-player seat ownership, hotplug and held menu edges are implemented. Existing
-title/options/selection/VS/stock two-round fight/rematch/exit coverage uses injected
-devices. Affected combat and match-flow pass with races; other segments remain
-checked. Linux rebuild is due at the end of this continuing batch.
+Latest batch connects opt-in standard/raw gamepads, YAML alternatives/deadzones,
+stable two-player seats/hotplug and logical edges through menus/CNS. CFG
+UseKeyboard/YAML keyboard_enabled now gate each player's controls, retaining
+Escape/runtime keys and controller-only co-op input ownership.
 
-No physical joystick is visible here. Controller model/connection question is
+User Pause holds the full fight/HUD/GameTime; input/audio still run. Scroll Lock
+advances one pass; AnyKeyUnpauses applies outside training menus. Training now
+has manual/AI/cooperative dummy control, guard/stance/jumps/spacing/jam and a
+minimize/resume menu. Existing title/fight/co-op/feedback/mode scenarios pass
+with races; all five segments are checked. Linux Training/menu/minimize was
+inspected, including the corrected compact minimized panel. Final Linux binary
+is rebuilt; owned review scratch was removed. Root modules/local YAML remain
+unchanged.
+
+No physical joystick is visible. The controller model/connection question is
 pending; do not repeat it or infer hardware/native numeric acceptance. Native
-legacy joystick cfg numbers remain parsed separately. The input row stays
-partial (32/35 project rows), alongside broader assets and native fidelity.
+joystick cfg numbers remain separate. Input stays partial (32/35 project rows),
+alongside broader assets and native fidelity. Dummy spacing/jam/AI policy and
+native menu parity remain unverified. A bounded native menu review stayed at
+the beta welcome overlay despite synthetic F1; it is not training acceptance.
+Do not repeat that UI loop or build a parameter matrix to work around it.
 
 Keep the corrected storyboard fitted top-left layer/window origin; authored
 layerall.pos already centers stock KFM. BG projection has a separate center.
 Prior native canonical1280x720 ->640x480 and Go center stock art at x320.
-
-Next concrete audit finding: cfg P1.UseKeyboard/P2.UseKeyboard currently have no
-consumer. Continue connecting player device configuration and broader documented
-runtime controls; no need for another button parameter matrix.
 
 Recaps are progress updates, not stop points (user 2026-11-09). Continue larger
 batches without per-commit approval, stopping only for actual completion/input.

@@ -95,11 +95,13 @@ type MugenConfig struct {
 		SFXBackgroundMode, BGMBackgroundMode string
 	}
 	Input struct {
-		Player1Keyboard Keys
-		Player2Keyboard Keys
-		Player1Joystick Keys
-		Player2Joystick Keys
-		Gamepads        [2]GamepadConfig
+		Player1Keyboard  Keys
+		Player2Keyboard  Keys
+		Player1Joystick  Keys
+		Player2Joystick  Keys
+		Gamepads         [2]GamepadConfig
+		KeyboardDisabled [2]bool // omitted cfg fields retain keyboard support
+		AnyKeyUnpauses   bool
 	}
 }
 
@@ -363,6 +365,17 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					cfg.Arcade.SurvivalRamp.End = getIntArray(attr.Value)
 				}
 			}
+		case name == "input":
+			for _, attr := range sec.Attributes {
+				switch strings.ToLower(attr.ID.String()) {
+				case "p1.usekeyboard":
+					cfg.Input.KeyboardDisabled[0] = !getBool(attr.Value)
+				case "p2.usekeyboard":
+					cfg.Input.KeyboardDisabled[1] = !getBool(attr.Value)
+				case "anykeyunpauses":
+					cfg.Input.AnyKeyUnpauses = getBool(attr.Value)
+				}
+			}
 		case name == "p1 keys":
 			parseKeys(sec, &cfg.Input.Player1Keyboard, true)
 		case name == "p2 keys":
@@ -505,6 +518,12 @@ func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
 
 	applyKeys(&cfg.Input.Player1Keyboard, ext.Input.P1.Keyboard)
 	applyKeys(&cfg.Input.Player2Keyboard, ext.Input.P2.Keyboard)
+	if enabled := ext.Input.P1.KeyboardEnabled; enabled != nil {
+		cfg.Input.KeyboardDisabled[0] = !*enabled
+	}
+	if enabled := ext.Input.P2.KeyboardEnabled; enabled != nil {
+		cfg.Input.KeyboardDisabled[1] = !*enabled
+	}
 
 	mergeGamepad(&cfg.Input.Gamepads[0], ext.Input.P1.Gamepad, ext.Input.P1.Joy)
 	mergeGamepad(&cfg.Input.Gamepads[1], ext.Input.P2.Gamepad, ext.Input.P2.Joy)

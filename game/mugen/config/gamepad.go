@@ -171,13 +171,7 @@ func DefaultGamepadConfig() GamepadConfig {
 }
 
 func mergeGamepad(c *GamepadConfig, options *GamepadOptions, bindings map[string]KeyBinding) {
-	if len(bindings) > 0 {
-		c.Enabled = true
-	}
 	if options != nil {
-		if options.Enabled != nil {
-			c.Enabled = *options.Enabled
-		}
 		if options.Deadzone != nil {
 			value := *options.Deadzone
 			if !math.IsNaN(value) && value >= 0 && value < 1 {
@@ -195,6 +189,13 @@ func mergeGamepad(c *GamepadConfig, options *GamepadOptions, bindings map[string
 		}
 		if !c.SetBindings(action, controls...) {
 			fmt.Printf("YAML gamepad: unknown action %q\n", action)
+		} else {
+			c.Enabled = true
 		}
+	}
+	// Invalid/legacy numeric names must not silently opt into a different
+	// default mapping. An explicit device switch wins over valid bindings.
+	if options != nil && options.Enabled != nil {
+		c.Enabled = *options.Enabled
 	}
 }

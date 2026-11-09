@@ -67,6 +67,8 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Shadow and quick-versus configuration consumers**
 - [x] **Background simulation and audio policy**
 - [x] **Portable gamepad input through menus and combat**
+- [x] **Player keyboard enable settings and controller-only co-op**
+- [x] **User pause, frame-step and training dummy controls**
 
 ## Completed scenario coverage
 
