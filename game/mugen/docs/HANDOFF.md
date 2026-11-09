@@ -9,8 +9,10 @@ Latest checkpoint: escaped quotes in CNS clipboard formats pass container
 admission and reach display/append/debug drawing through the existing combat
 feedback lifecycle. Native and rebuilt Linux load the same single-quote format.
 The checked escaped-quote/semicolon combination also fails in native, so retain
-comment handling. Combined affected segments passed with races. AI chord-plan
-and victory-background checkpoints are the next parts of this batch.
+comment handling. Combined affected segments passed with races. AI now plans charged chord components, mixed release/press and strict steps
+through the actual CMD/CNS attack/contact/recovery lifecycle. Timed long charges
+remain bounded in storage; native AI policy is still partial. Victory-background
+presentation is the remaining checkpoint in this batch.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

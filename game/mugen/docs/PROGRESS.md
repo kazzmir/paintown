@@ -55,6 +55,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Motif and storyboard declaration admission**
 - [x] **Storyboard presentation inside a widescreen motif**
 - [x] **Escaped quote admission in state debug text**
+- [x] **AI plans for charged chords and strict command steps**
 
 ## Completed scenario coverage
 

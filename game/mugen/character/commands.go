@@ -195,9 +195,10 @@ func (cb *CommandBuffer) uninterrupted(first, last int, target string) bool {
 }
 
 func commandKeys(symbol string) []string {
-	symbol = strings.TrimLeft(symbol, ">/~$0123456789")
+	symbol = strings.TrimPrefix(strings.TrimSpace(symbol), ">")
 	var keys []string
 	for _, part := range strings.Split(symbol, "+") {
+		part = strings.TrimLeft(strings.TrimSpace(part), ">/~$0123456789")
 		switch part {
 		case "F":
 			keys = append(keys, "DirForward")

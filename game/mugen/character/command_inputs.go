@@ -1,6 +1,7 @@
 package character
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -16,36 +17,76 @@ type CommandInput struct {
 // humans; long charges take constant plan storage and play one tick at a time.
 func CommandInputs(sequence string) []CommandInput {
 	var steps []CommandInput
-	var held []string
+	var held, current []string
+	add := func(keys []string, extra ...string) []string {
+		out := append([]string(nil), keys...)
+		for _, key := range extra {
+			if !slices.Contains(out, key) {
+				out = append(out, key)
+			}
+		}
+		return out
+	}
+	remove := func(keys, unwanted []string) []string {
+		var out []string
+		for _, key := range keys {
+			if !slices.Contains(unwanted, key) {
+				out = append(out, key)
+			}
+		}
+		return out
+	}
 	for _, raw := range strings.Split(sequence, ",") {
 		symbol := strings.TrimSpace(raw)
-		keys := commandKeys(symbol)
-		if len(keys) == 0 {
-			return nil
+		strict := strings.HasPrefix(symbol, ">")
+		symbol = strings.TrimPrefix(symbol, ">")
+		heldChord := strings.HasPrefix(symbol, "/")
+		if heldChord {
+			symbol = strings.TrimPrefix(symbol, "/")
 		}
-		isHold, release := strings.Contains(symbol, "/"), strings.Contains(symbol, "~")
-		count := 1
-		if release {
-			s := strings.TrimLeft(symbol, ">/~$")
-			n := 0
-			for n < len(s) && s[n] >= '0' && s[n] <= '9' {
-				n++
+		var pressed, released, holding []string
+		charge := 1
+		for _, rawPart := range strings.Split(symbol, "+") {
+			part := strings.TrimSpace(rawPart)
+			keys := commandKeys(part)
+			if len(keys) == 0 {
+				return nil
 			}
-			if n > 0 {
-				value, err := strconv.Atoi(s[:n])
-				if err != nil {
-					return nil
+			switch {
+			case heldChord || strings.HasPrefix(part, "/"):
+				holding = add(holding, keys...)
+			case strings.HasPrefix(part, "~"):
+				released = add(released, keys...)
+				digits := strings.TrimPrefix(part, "~")
+				n := 0
+				for n < len(digits) && digits[n] >= '0' && digits[n] <= '9' {
+					n++
 				}
-				count = max(1, value)
+				if n > 0 {
+					value, err := strconv.Atoi(digits[:n])
+					if err != nil {
+						return nil
+					}
+					charge = max(charge, value)
+				}
+			default:
+				pressed = add(pressed, keys...)
 			}
 		}
-		if isHold {
-			held = append(held, keys...)
+		// Prepare release components independently; ordinary presses occur only
+		// on the completion frame. Strict steps retain unrelated previous inputs.
+		base := held
+		if strict {
+			base = current
 		}
-		steps = append(steps, CommandInput{Keys: append(append([]string(nil), held...), keys...), Time: count})
-		if release || !isHold {
-			steps = append(steps, CommandInput{Keys: append([]string(nil), held...), Time: 1})
-		}
+		preparation := add(remove(base, pressed), holding...)
+		preparation = add(preparation, released...)
+		steps = append(steps, CommandInput{Keys: preparation, Time: charge})
+		current = add(remove(preparation, released), pressed...)
+		held = add(held, holding...)
+		steps = append(steps, CommandInput{Keys: current, Time: 1})
 	}
+	// Release transient keys before a future plan; persistent holds remain live.
+	steps = append(steps, CommandInput{Keys: held, Time: 1})
 	return steps
 }

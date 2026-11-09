@@ -1011,6 +1011,12 @@
       "name": "Escaped quote admission in state debug text",
       "completed": true,
       "validation": "The container accepts a single escaped quote in a CNS format string and retains literal Windows-path admission. Native beta loads the same escaped-quote text; rebuilt Linux starts that match. Native rejects the checked escaped-quote/semicolon combination, so existing comment handling remains unchanged. The existing feedback lifecycle passes with races through formatted display/append, debug drawing, contact, Pause, clear and helper retirement. Other affected segments also pass in the combined batch."
+    },
+    {
+      "id": "ai-composite-command-plans",
+      "name": "AI plans for charged chords and strict command steps",
+      "completed": true,
+      "validation": "Timed plans charge each release component, emit ordinary presses on the release/completion frame and retain unrelated inputs across strict steps. Command-key extraction recognizes modifiers on every chord component. The existing human/helper command lifecycle continues through a fresh AI-only composite command, actual CMD/CNS admission, attack/contact/damage and control recovery, followed by fresh stock AI combat. The affected connected segments pass with races. Long charges retain constant plan storage. Native AI decision probabilities remain partial."
     }
   ]
 }

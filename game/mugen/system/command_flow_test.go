@@ -137,6 +137,7 @@ value=8003
 type=ChangeState
 triggerall=StateNo=0 && Var(59)=2
 trigger1=command="long-charge-motion"
+trigger2=command="composite-plan"
 value=8004
 [Statedef 0]
 type=S
@@ -171,6 +172,7 @@ value=1
 [State 0, long charge motion]
 type=VarAdd
 trigger1=command="long-charge-motion"
+trigger2=command="composite-plan"
 v=41
 value=1
 [State 0, long motion]
@@ -450,6 +452,36 @@ value=0
 	}
 	if aiRoot.GetVar(44) != 1 || aiVictim.Life >= aiVictim.MaxLife || aiRoot.StateNo != 0 || !aiRoot.Ctrl {
 		t.Fatal("planned long charge failed attack/contact/recovery", aiRoot.GetVar(44), aiVictim.Life, aiRoot.StateNo, aiRoot.Ctrl)
+	}
+	// A fresh AI lifecycle combines per-component charges, simultaneous
+	// press/release and strict continuity through the actual CMD/CNS consumer.
+	composite, err := cmd.Parse(strings.NewReader(`[Command]
+name="composite-plan"
+command=~3x+~6y,z+~2a,>b
+time=20
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	compositeAI, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState, compositeAI.match.Phase = compositeAI, match.Active
+	aiRoot = compositeAI.match.Players[0].Character
+	aiRoot.StateFile, aiRoot.CmdFile = file, composite
+	aiRoot.SetVar(59, 2)
+	aiRoot.X = 0
+	aiRoot.ChangeState(0, 1, -1)
+	aiVictim = compositeAI.match.Players[1].Character
+	aiVictim.X = 20
+	for frame := 0; frame < 400 && !(aiRoot.GetVar(44) > 0 && aiVictim.Life < aiVictim.MaxLife && aiRoot.StateNo == 0 && aiRoot.Ctrl); frame++ {
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if aiRoot.GetVar(44) != 1 || aiVictim.Life >= aiVictim.MaxLife || aiRoot.StateNo != 0 || !aiRoot.Ctrl {
+		t.Fatal("composite AI plan failed attack/contact/recovery", aiRoot.GetVar(44), aiVictim.Life, aiRoot.StateNo, aiRoot.Ctrl)
 	}
 	for side := range request.Players {
 		request.Players[side].AILevel = 8

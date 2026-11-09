@@ -111,7 +111,8 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
 - /x+y holds the entire chord; normal chords require button press edges. Held
   sequence endings complete on a fresh edge. Preserve release/charge windows.
   Histories size lazily from CMD durations; AI uses timed input steps, not one
-  allocated frame per charge tick. Player/helper buffers remain independent.
+  allocated frame per charge tick. Charge chord components before simultaneous
+  release/press completion; strict steps retain unrelated preceding inputs. Player/helper buffers remain independent.
 - YAML key alternatives apply to menus and gameplay; omitted actions inherit,
   lists replace, and none/disabled/[] disable. Keep KeyA(0), shared-key ownership
   and value-copy isolation. User YAML remains ignored and untouched.
