@@ -271,14 +271,12 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 }
 
 func (s *Scene) drawContent(screen *ebiten.Image) {
-	s.drawContentAt(screen, 0)
+	s.drawContentAt(screen, 0, 0)
 }
 
-// Layers and their authored window use a top-middle origin, like native
-// backgrounds. Overscan belongs to the visible viewport, not the nominal
-// storyboard width; the fitted vertical margin remains part of the origin.
-func (s *Scene) drawContentAt(screen *ebiten.Image, top float64) {
-	originX := float64(screen.Bounds().Dx()) / 2
+// Layers and their authored window use the fitted storyboard's top-left.
+// Backgrounds retain their own centered origin across the visible viewport.
+func (s *Scene) drawContentAt(screen *ebiten.Image, left, top float64) {
 	if s.ClearColorSet {
 		screen.Fill(s.ClearColor)
 	}
@@ -287,7 +285,7 @@ func (s *Scene) drawContentAt(screen *ebiten.Image, top float64) {
 	// manual's exemption. Preserve the full viewport origin while clipping.
 	target := screen
 	if s.WindowSet {
-		window := s.Window.Add(image.Pt(int(originX), int(top))).Intersect(screen.Bounds())
+		window := s.Window.Add(image.Pt(int(left), int(top))).Intersect(screen.Bounds())
 		if window.Empty() {
 			target = nil
 		} else {
@@ -307,7 +305,7 @@ func (s *Scene) drawContentAt(screen *ebiten.Image, top float64) {
 	}
 	backgroundLayer(0)
 	for _, l := range s.Layers {
-		l.Draw(target, originX+s.DefaultPosition[0], top+s.DefaultPosition[1])
+		l.Draw(target, left+s.DefaultPosition[0], top+s.DefaultPosition[1])
 	}
 	backgroundLayer(1)
 
@@ -526,6 +524,7 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 	height := int(math.Ceil(float64(game.Height) / storyTransform.ScaleY))
 	x := (float64(game.Width) - float64(width)*storyTransform.ScaleX) / 2
 	y := (float64(game.Height) - float64(height)*storyTransform.ScaleY) / 2
+	left := (storyTransform.X - x) / storyTransform.ScaleX
 	top := (storyTransform.Y - y) / storyTransform.ScaleY
 	storyTransform.X, storyTransform.Y = x, y
 	if p.canvas == nil || p.canvas.Bounds().Dx() != width || p.canvas.Bounds().Dy() != height {
@@ -553,7 +552,7 @@ func (p *Player) DrawToWindow(screen *ebiten.Image, game coord.Space, keepAspect
 	// A display can draw the same simulation tick more than once. Retained
 	// scenes must not blend their layers again on each presentation refresh.
 	if p.contentScene != scene || p.contentTick != scene.ticker {
-		scene.drawContentAt(p.canvas, top)
+		scene.drawContentAt(p.canvas, left, top)
 		p.contentScene, p.contentTick = scene, scene.ticker
 	}
 	for _, layer := range scene.Layers {

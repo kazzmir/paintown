@@ -177,8 +177,9 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
 - Retain linked/animated BG clocks and geometry, moving floors/reflections and
   camera return based on the unclipped participant midpoint. Storyboards retain
   clearcolor=-1 canvases and compose once per tick. Keep motif-aspect presentation,
-  centered layer/window origins and viewport-sized surfaces without implicit BG
-  masking. Native scene windows clip BGs too, despite the manual; preserve window
+  fitted top-left layer/window origins and viewport-sized surfaces without
+  implicit BG masking. layerall.pos already supplies an authored center; do not
+  add a BG-style half-width to layers. BG projection keeps its separate center. Native scene windows clip BGs too, despite the manual; preserve window
   inheritance. OnTop/HUD/global PalFX order
   and window/subimage origins stay intact.
 - Preserve indexed 3/8 game-pixel calibration without grid snapping, byte

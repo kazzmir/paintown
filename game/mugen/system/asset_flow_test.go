@@ -51,6 +51,37 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Stock KFM authors its own center with layerall.pos=160,0. Its native
+	// first-scene art occupies x=140..500 in this 640x480 widescreen-motif
+	// presentation; adding another viewport half-width shifts/crops it.
+	stockStory, err := sb.Load(filepath.Join(root, "chars/kfm/intro.def"), root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stockPlayer := sb.NewPlayer(stockStory)
+	for tick := 0; tick < 61; tick++ {
+		stockPlayer.Update(sb.InputState{})
+	}
+	stockCanvas := ebiten.NewImage(640, 480)
+	defer stockCanvas.Deallocate()
+	stockState := &StoryboardState{engine: e, loaded: true, player: stockPlayer}
+	stockState.Draw(stockCanvas)
+	stockPixels := make([]byte, 640*480*4)
+	stockCanvas.ReadPixels(stockPixels)
+	art := image.Rectangle{Min: image.Pt(640, 480)}
+	for y := 0; y < 480; y++ {
+		for x := 0; x < 640; x++ {
+			i := (y*640 + x) * 4
+			r, g, b := stockPixels[i], stockPixels[i+1], stockPixels[i+2]
+			if max(r, g, b)-min(r, g, b) > 20 {
+				art.Min.X, art.Min.Y = min(art.Min.X, x), min(art.Min.Y, y)
+				art.Max.X, art.Max.Y = max(art.Max.X, x+1), max(art.Max.Y, y+1)
+			}
+		}
+	}
+	if art.Min.X < 139 || art.Min.X > 141 || art.Max.X < 499 || art.Max.X > 501 || art.Min.Y != 108 || art.Max.Y != 288 {
+		t.Fatal("stock storyboard lost its authored horizontal origin", art)
+	}
 	// Exercise authored font paths through the storyboard consumer. Nested
 	// Windows spellings and absolute paths must load the supplied face rather
 	// than silently selecting the missing-font fallback.
@@ -258,7 +289,7 @@ Interpolate Blend
 		t.Fatal(err)
 	}
 	legacyPixel := func() color.NRGBA {
-		x := (float64(gameSpace.Width)/2+100.5*storyToGame.ScaleX)*gameToWindow.ScaleX + gameToWindow.X
+		x := (storyToGame.X+100.5*storyToGame.ScaleX)*gameToWindow.ScaleX + gameToWindow.X
 		y := (97.5*storyToGame.ScaleY+storyToGame.Y)*gameToWindow.ScaleY + gameToWindow.Y
 		return color.NRGBAModel.Convert(canvas.At(int(x), int(y))).(color.NRGBA)
 	}
@@ -337,8 +368,16 @@ Interpolate Blend
 			cleared = true
 			if story.Scenes[2].Layers[0].Enabled {
 				sawMargin = true
-				if got := color.NRGBAModel.Convert(canvas.At(600, 310)).(color.NRGBA); got == (color.NRGBA{12, 24, 36, 255}) || got.A != 255 {
-					t.Fatal("wide storyboard viewport clipped side-margin layer", got)
+				canvas.ReadPixels(retained)
+				marginArt := false
+				for y := 60; y < 420; y++ {
+					for x := 560; x < 640; x++ {
+						i := (y*640 + x) * 4
+						marginArt = marginArt || retained[i] != 12 || retained[i+1] != 24 || retained[i+2] != 36
+					}
+				}
+				if !marginArt {
+					t.Fatal("wide storyboard viewport clipped side-margin layer")
 				}
 			}
 			if got := color.NRGBAModel.Convert(canvas.At(320, 240)).(color.NRGBA); got != (color.NRGBA{12, 24, 36, 255}) {

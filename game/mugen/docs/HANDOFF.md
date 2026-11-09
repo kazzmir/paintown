@@ -5,22 +5,19 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest continuing batch: ten functional/acceptance commits before this handoff.
+Latest fix: corrected the reported right-shifted storyboards. The viewport
+change added a BG-style half-width to layers/windows, even though stock KFM
+already authors layerall.pos=160,0. Layers/windows now use the fitted top-left;
+BG centering, widescreen overflow, clipping and retained canvases are preserved.
+Native canonical1280x720 ->640x480 and rebuilt Linux both center stock KFM art
+at x320 (edge bounds140..500 versus141..499). Small raster differences remain
+partial. Existing asset lifecycle now includes that actual stock intro; affected
+match-flow passes with races, other segments stay checked. Linux rebuilt and
+inspected; owned scratch removed. Root modules/local YAML remain unchanged.
 
-- Mixed-coordinate recovery constants, first character story/portrait fields,
-  confirmed roster metadata and localized Arcade limits are corrected.
-- Idle title demo now runs selection/VS previews, AI combat, end-time/intro
-  cycling and input interruption with real music/bar/debug consumers. Title BG
-  controllers advance. Native and rebuilt Linux show AI combat without bars
-  and return to title on Enter.
-- TrueType fontN.height reaches motif/story/HUD rasterization; bitmap cells
-  remain unchanged. Legacy CFG fields retain first values before YAML overrides.
-- DrawShadows, Debug.StartStage and Misc background simulation/audio policies
-  have runtime consumers. Linux quick match without --stage uses stage0-720.
-
-All five segments are checked with races; only changed source was rerun after
-coherent batches. Linux is rebuilt. Root modules and local YAML are unchanged;
-owned overlays, captures and drivers were removed.
+Previous continuing batch committed coordinate/metadata/schedule fixes, idle
+demo cycling, TrueType height overrides and configuration/runtime consumers.
+All five segments remain checked. See PROGRESS.md and Git history for scope.
 
 Newly recorded concrete gap: input/manager.go enumerates gamepad IDs but never
 consumes them; legacy joystick settings/YAML joy are not connected. Added a

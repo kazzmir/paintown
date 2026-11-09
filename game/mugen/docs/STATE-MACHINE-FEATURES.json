@@ -781,7 +781,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c1f7a915e757a2020e6978fa712a291149828e900e9676f9948ec06fb2e6cafa"
+      "passed_source": "54712459a9574ec19eb178d20d4996ecbf688c623c5c598b4cdebe60843909ea"
     }
   ],
   "presentation_followups": [
@@ -1020,7 +1020,7 @@
       "id": "motif-storyboard-presentation",
       "name": "Storyboard presentation inside a widescreen motif",
       "completed": true,
-      "validation": "Storyboard playback keeps the motif-aspect game frame at configured game width. Layers and authored windows use a top-middle origin; a viewport-sized retained surface permits artwork beyond nominal storyboard side bounds. Omitted scene/BG windows no longer introduce masking; authored scene windows carry forward. Native also clips BGs with the scene window, contrary to its manual; separate BG definitions confirm this. Native/Linux comparisons agree on frame extent, sprite/side-margin placement and clipped regions for a 320x240 storyboard inside a 16:9 motif/window flow. Caption/edge raster samples differ by about one pixel; arbitrary source-aspect/filtering parity is not established. The existing asset lifecycle covers configured/motif aspect mismatch, timed art/text/audio, clipping, retention, repeated draws, margin art and exit. All five segments are checked with race detection, Linux rebuilt, and owned captures/overlays/drivers removed."
+      "validation": "Storyboard playback keeps the motif-aspect game frame and a viewport-sized retained surface for side overflow. Layers and scene windows start at the fitted storyboard top-left; centered BG projection remains separate. The previous viewport change incorrectly added a half-width to layerall.pos and shifted stock KFM right. The reported regression is corrected without changing assets. With canonical native1280x720 game space and a640x480 window, first-scene colored art bounds are native x140..500 and rebuilt Linux x141..499, both centered at320; small edge raster differences remain deferred. The existing connected asset lifecycle now includes stock KFM authored layerall.pos=160,0 alongside timed art/text/audio, clipping, retention, repeated draws, side-margin art and exit. Affected match-flow passes with races; other completed segments stay checked. Linux rebuilt and visually inspected. Omitted windows remain unmasked; authored scene windows still carry forward and clip BGs. Arbitrary source-aspect/common-resolution/filtering parity is not established. Owned scratch removed."
     },
     {
       "id": "clipboard-escaped-quote-admission",

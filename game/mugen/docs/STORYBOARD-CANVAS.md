@@ -1,5 +1,12 @@
 # Storyboard canvas and output scaling
 
+Current origin rule: layers and scene windows start at the fitted storyboard's
+top-left. `layerall.pos` supplies authored placement (stock KFM uses160,0); a
+background's centered origin must not be added again. The connected asset
+scenario includes stock KFM to catch the reported right-shift regression while
+retaining side overflow and uncleared scenes. Current status is in
+[PROGRESS.md](PROGRESS.md); the measurements below are historical background.
+
 M4bf fixes the small top-left KFM intro reported by the user. The loader ignored
 `[Info] localcoord`, and playback drew 320x240 coordinates directly into the
 1280x720 motif surface. Storyboards now retain their own canvas, defaulting to
