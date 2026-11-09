@@ -152,8 +152,23 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	cfg.Config.GameSpeed = 60
 	cfg.Config.DrawShadows = true
 
+	// Native configuration lookup keeps first fields across repeated groups.
+	// YAML overrides are a separate, explicit layer applied after this pass.
+	groups := make(map[string][]*parsers.Section)
 	for _, sec := range ast.Sections {
 		name := strings.ToLower(strings.TrimSpace(sec.Name))
+		groups[name] = append(groups[name], sec)
+	}
+	readGroups := make(map[string]bool)
+	for _, original := range ast.Sections {
+		name := strings.ToLower(strings.TrimSpace(original.Name))
+		if readGroups[name] {
+			continue
+		}
+		readGroups[name] = true
+		section := *original
+		section.Attributes = parsers.FirstAttributes(groups[name]...)
+		sec := &section
 		switch {
 		case name == "options":
 			for _, attr := range sec.Attributes {

@@ -1059,6 +1059,12 @@
       "name": "Authored TrueType font height overrides",
       "completed": false,
       "validation": "Motif, fight HUD and storyboard font loading accept first fontN.height values for TrueType rasterization. Bitmap atlases retain authored cell sizes. The shared font loader preserves resource/fallback behavior and bounded height diagnostics. Existing scene/localized-selection/VS/HUD/fight lifecycle now includes independent height overrides and ignored later duplicates; batch acceptance pending. The supplied Japanese motif actively declares font6.height=13."
+    },
+    {
+      "id": "configuration-first-fields",
+      "name": "Legacy configuration first-field admission before YAML overrides",
+      "completed": false,
+      "validation": "Legacy mugen.cfg singleton groups merge first fields before the independent explicit YAML layer. Native retains initial320x240 game resolution with a later Config640x480 group. The existing complete title/selection/VS/input/fight/KO/rematch scenario uses later invalid dimensions/motif/rules while retaining YAML key alternatives. No local user configuration changed. Batch acceptance pending."
     }
   ]
 }

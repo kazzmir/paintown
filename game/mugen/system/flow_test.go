@@ -47,9 +47,26 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 `), 0600); err != nil {
 		t.Fatal(err)
 	}
-	cfg, err := config.LoadConfigWithOverrides(root, override)
+	// Native first-value cfg admission is independent of explicit YAML
+	// overrides. Reuse the actual configuration text, without copying assets.
+	configRoot := t.TempDir()
+	if err := os.Mkdir(filepath.Join(configRoot, "data"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	configText, err := os.ReadFile(filepath.Join(root, "data/mugen.cfg"))
 	if err != nil {
 		t.Fatal(err)
+	}
+	configText = append(configText, []byte("\n[Config]\nGameWidth=0\nGameHeight=0\n[Options]\nMotif=missing-later.def\nLife=1\nTime=0\n")...)
+	if err := os.WriteFile(filepath.Join(configRoot, "data/mugen.cfg"), configText, 0600); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := config.LoadConfigWithOverrides(configRoot, override)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Config.GameWidth <= 0 || cfg.Config.GameHeight <= 0 || cfg.Options.Motif == "missing-later.def" {
+		t.Fatal("later configuration groups replaced first fields")
 	}
 	bindings, _ := cfg.Input.Player1Keyboard.Bindings("x")
 	if !slices.Equal(bindings, []ebiten.Key{ebiten.KeyL, ebiten.KeyF7}) || cfg.Input.Player1Keyboard.Y != ebiten.KeySemicolon {
