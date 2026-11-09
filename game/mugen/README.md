@@ -135,8 +135,9 @@ rendering. `[Misc] PauseOnDefocus`, `SFXBackgroundMode` and `BGMBackgroundMode`
 control background simulation and audio. BGM `Pause` preserves the track cursor;
 `Mute` advances it silently; `Play` continues normally.
 
-Input is currently keyboard only. Legacy joystick sections are parsed, but
-physical gamepad input still needs an adapter and Linux hardware verification.
+Keyboard input and opt-in gamepad input share menus and gameplay. Gamepads use
+portable layout names or explicit raw controls in YAML; see below. Linux
+physical-controller acceptance and native joystick-number mappings remain open.
 
 AI executes authored CMD motions/chords through the same state controllers as
 human input, with difficulty-dependent reaction and defence. Arcade/team-arcade/co-op progress through ordered opponents, victory, continue
@@ -278,6 +279,54 @@ The first valid override file wins. Search order is the data root's `mugen.yaml`
 its `data/mugen.yaml`, `~/.paintown/mugen.yaml`, the working directory's
 `mugen.yaml`, `game/mugen/mugen.yaml`, then `mugen.yaml` beside the executable.
 Only that file is overlaid on `mugen.cfg`; YAML files are not combined.
+
+### Gamepad overrides in mugen.yaml
+
+Enable a controller for either player in the same local override file:
+
+```yaml
+input:
+  p1:
+    gamepad:
+      enabled: true
+      deadzone: 0.5
+    joy:
+      a: south
+      x: [west, "button:2"]
+      z: none
+  p2:
+    gamepad:
+      enabled: true
+```
+
+Controllers are disabled by default. A `joy` binding also enables that player
+unless `gamepad.enabled: false` is explicit. The first available controllers
+fill enabled P1/P2 seats in SDK ID order. A connected controller keeps its seat
+when the other disconnects; a newly connected device fills the free seat.
+Assignments are session-local, so reconnecting both can change their order.
+Keyboard controls remain usable alongside controllers.
+
+Defaults are D-pad/left stick for directions, `south`/`east`/`r1` for a/b/c,
+`west`/`north`/`l1` for x/y/z, `start` for confirm and `back` for escape.
+Names describe button positions, independent of printed Xbox/PlayStation labels.
+Other names are `l2`, `r2`, `left_stick`, `right_stick`, and
+`dpad_up`/`dpad_down`/`dpad_left`/`dpad_right`. Axes require a polarity:
+`left_x-`, `left_x+`, `left_y-`, `left_y+` or the corresponding `right_x`/`right_y`.
+Vertical negative points up. `deadzone` must be at least 0 and less than 1;
+an axis activates only beyond that magnitude.
+
+For a device without a standard layout, use `"button:0"` or `"axis:0+"` /
+`"axis:0-"` with zero-based **Ebitengine raw** indices. Standard names require
+an SDK layout mapping. Lists replace an action's defaults, omitted actions
+inherit, and `none`, `disabled` or `[]` disable it. Invalid lists warn and keep
+the previous binding. Holding a button keeps gameplay input active and produces
+one menu press until released. Adding another bound control to an already held
+action does not create a fresh press.
+
+Legacy `[P1 Joystick]` / `[P2 Joystick]` numbers are retained when parsing cfg,
+but are not translated to this SDK's raw indices. The adapter has connected
+scenario coverage with injected devices; physical Linux controllers still need
+acceptance testing. Your existing local YAML is never rewritten.
 
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic

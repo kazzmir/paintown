@@ -429,14 +429,16 @@
       "name": "Player input devices and configuration",
       "group": "Modes and platforms",
       "status": "partial",
-      "gap": "Keyboard bindings and alternatives work across menus and combat. Gamepad IDs are enumerated but device inputs and legacy joystick configuration are not consumed; this is an implementation gap, not merely unverified hardware fidelity. Controller models/connection types requested for the next Linux implementation and verification pass.",
+      "gap": "Portable gamepad buttons, axes and YAML alternatives now feed menus and combat. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; controller models/connection types requested. Keyboard configuration and gamepad software flow are implemented, but this row stays partial until device acceptance.",
       "allocation": "item4",
       "sources": [
-        "input/manager.go:matchAction",
-        "character/commands.go:GetRawInputs",
-        "config/config.go:parseKeys"
+        "input/gamepad.go:updateGamepads",
+        "input/manager.go:IsJustPressed",
+        "config/gamepad.go:ParseGamepadBindings",
+        "config/config.go:mergeExtendedConfig",
+        "character/commands.go:GetRawInputs"
       ],
-      "validation": "The existing full title/selection/VS/input/KO/rematch scenario retains keyboard alternatives, disabled bindings, shared-key ownership and SDL key conversion. No gamepad completion is claimed."
+      "validation": "The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers keyboard alternatives plus injected standard/raw gamepads, analog deadzones, held menu edges, disabled/list bindings, value-copy isolation, per-player ownership and hotplug. Physical hardware/native joystick numbering is not inferred from the injected backend. Affected combat and match-flow segments pass with race detection; the other three completed segments stay checked."
     },
     {
       "id": "ai",
@@ -634,7 +636,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f192901c695f49b711c7f267e99d57a18620a9777bfdd65c3785c1c7e83c2b0c"
+      "passed_source": "a0792cedd598bb7552ed5ac4e39750622ca09eceb0e2d366c94d89c33fdca320"
     },
     {
       "id": "entities",
@@ -781,7 +783,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "54712459a9574ec19eb178d20d4996ecbf688c623c5c598b4cdebe60843909ea"
+      "passed_source": "2940ea984784f93cb53bf42672a882a46b91f2779bed26452cb2f6a3fc3e2723"
     }
   ],
   "presentation_followups": [
@@ -1093,6 +1095,12 @@
       "name": "Background simulation and audio policy",
       "completed": true,
       "validation": "Documented Misc.PauseOnDefocus reaches the Linux runtime scheduler. Background SFX Mute changes gain without retiring voices; BGM Pause preserves its consumed cursor, Mute advances silently, and Play continues. Unfocused fullscreen BGM uses Pause as documented. The existing music/NoMusic/SFX/story/rematch/codec lifecycle now includes focus loss, silent advance, focus recovery and demo music handoff. Host-device scheduling precision remains partial. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked."
+    },
+    {
+      "id": "portable-gamepad-input",
+      "name": "Portable gamepad input through menus and combat",
+      "completed": true,
+      "validation": "Opt-in SDK adapter connects standard/raw buttons and axes, YAML alternatives/deadzones, stable two-player seats/hotplug and non-consuming logical press edges through menus and stock CNS. The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers the lifecycle with injected devices. Affected combat and match-flow segments pass with race detection; other completed segments stay checked. Physical hardware/native legacy numbering remain partial."
     }
   ]
 }

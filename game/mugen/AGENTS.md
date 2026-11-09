@@ -77,8 +77,8 @@ artifact-dependent tests now require unavailable captures.
 The ledger has 89 controller routes, 127 trigger routes and 32/35 implemented
 project rows. All five connected segments are checked with race detection;
 Linux is rebuilt. These are scoped checks, not arbitrary native conformance.
-The three partial rows cover the missing gamepad adapter, broader asset/font/
-media acceptance and native AI/rules/fidelity combinations. Physical CD audio, absent licensed/CJK fonts and
+The three partial rows cover physical gamepad/native joystick acceptance, broader
+asset/font/media acceptance and native AI/rules/fidelity combinations. Physical CD audio, absent licensed/CJK fonts and
 other platforms are deferred. Standalone music-file CLI playback was deferred
 by the user. Do not turn unknown permutations into mandatory test matrices.
 
@@ -122,6 +122,10 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   Histories size lazily from CMD durations; AI uses timed input steps, not one
   allocated frame per charge tick. Charge chord components before simultaneous
   release/press completion; strict steps retain unrelated preceding inputs. Player/helper buffers remain independent.
+- Gamepads are opt-in through YAML standard-layout or explicit SDK raw controls.
+  Keep two-player seat ownership across hotplug and non-consuming held/edge
+  snapshots through menus/CNS. Native joystick numbers are not SDK raw indices;
+  physical/native acceptance remains partial until verified on hardware.
 - YAML key alternatives apply to menus and gameplay; omitted actions inherit,
   lists replace, and none/disabled/[] disable. Keep KeyA(0), shared-key ownership
   and value-copy isolation. User YAML remains ignored and untouched.

@@ -99,6 +99,7 @@ type MugenConfig struct {
 		Player2Keyboard Keys
 		Player1Joystick Keys
 		Player2Joystick Keys
+		Gamepads        [2]GamepadConfig
 	}
 }
 
@@ -147,6 +148,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 
 	cfg := &MugenConfig{}
 	cfg.Sound = DefaultSoundConfig()
+	cfg.Input.Gamepads = [2]GamepadConfig{DefaultGamepadConfig(), DefaultGamepadConfig()}
 	cfg.Misc.SFXBackgroundMode, cfg.Misc.BGMBackgroundMode = "play", "play"
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
 	cfg.Config.HelperMax = 56
@@ -504,9 +506,8 @@ func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
 	applyKeys(&cfg.Input.Player1Keyboard, ext.Input.P1.Keyboard)
 	applyKeys(&cfg.Input.Player2Keyboard, ext.Input.P2.Keyboard)
 
-	// Future: handle Joystick merging
-	// applyKeys(&cfg.Input.Player1Joystick, ext.Input.P1.Joy)
-	// applyKeys(&cfg.Input.Player2Joystick, ext.Input.P2.Joy)
+	mergeGamepad(&cfg.Input.Gamepads[0], ext.Input.P1.Gamepad, ext.Input.P1.Joy)
+	mergeGamepad(&cfg.Input.Gamepads[1], ext.Input.P2.Gamepad, ext.Input.P2.Joy)
 }
 
 func getIntArray(v parsers.Value) []int {

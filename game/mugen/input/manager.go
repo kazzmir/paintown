@@ -74,11 +74,16 @@ func (a Action) String() string {
 }
 
 type InputManager struct {
-	Keyboard   KeyboardSource
-	P1Keyboard config.Keys
-	P2Keyboard config.Keys
-	P1Joystick config.Keys
-	P2Joystick config.Keys
+	Keyboard                       KeyboardSource
+	Gamepads                       GamepadSource
+	P1Gamepad, P2Gamepad           config.GamepadConfig
+	padSlots                       [2]gamepadSlot
+	padHeld, padPrevious           [2]uint32
+	keyboardHeld, keyboardPrevious [2]uint32
+	P1Keyboard                     config.Keys
+	P2Keyboard                     config.Keys
+	P1Joystick                     config.Keys
+	P2Joystick                     config.Keys
 
 	// Specific for Ebiten Gamepad support
 	GamepadIDs []ebiten.GamepadID
@@ -117,11 +122,12 @@ func NewInputManager(cfg *config.MugenConfig) *InputManager {
 		P2Keyboard: cfg.Input.Player2Keyboard,
 		P1Joystick: cfg.Input.Player1Joystick,
 		P2Joystick: cfg.Input.Player2Joystick,
+		P1Gamepad:  cfg.Input.Gamepads[0], P2Gamepad: cfg.Input.Gamepads[1],
 	}
 }
 
 func (im *InputManager) Update() {
-	im.GamepadIDs = ebiten.AppendGamepadIDs(im.GamepadIDs[:0])
+	im.updateGamepads()
 
 	// Reset action log each frame
 	im.LastActionEvent = ""
@@ -136,7 +142,7 @@ func (im *InputManager) Update() {
 }
 
 func (im *InputManager) IsPressed(player int, action Action) bool {
-	if im.matchAction(player, action, im.keyboard().IsPressed) {
+	if im.matchAction(player, action, im.keyboard().IsPressed) || im.gamepadPressed(player, action, false) {
 		sep := ""
 		if im.LastActionEvent != "" {
 			sep = ", "
@@ -145,12 +151,15 @@ func (im *InputManager) IsPressed(player int, action Action) bool {
 		return true
 	}
 
-	// Check Gamepad IDs if lenient joystick support is needed later
 	return false
 }
 
 func (im *InputManager) IsJustPressed(player int, action Action) bool {
-	return im.matchAction(player, action, im.keyboard().IsJustPressed)
+	if player < 1 || player > 2 || action < ActionJump || action > ActionSpace {
+		return false
+	}
+	keyboardEdge := im.matchAction(player, action, im.keyboard().IsJustPressed)
+	return keyboardEdge && im.padPrevious[player-1]&(1<<action) == 0 || im.gamepadPressed(player, action, true)
 }
 
 func (im *InputManager) matchAction(player int, action Action, query func(ebiten.Key) bool) bool {

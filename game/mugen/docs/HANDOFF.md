@@ -5,27 +5,25 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest fix: corrected the reported right-shifted storyboards. The viewport
-change added a BG-style half-width to layers/windows, even though stock KFM
-already authors layerall.pos=160,0. Layers/windows now use the fitted top-left;
-BG centering, widescreen overflow, clipping and retained canvases are preserved.
-Native canonical1280x720 ->640x480 and rebuilt Linux both center stock KFM art
-at x320 (edge bounds140..500 versus141..499). Small raster differences remain
-partial. Existing asset lifecycle now includes that actual stock intro; affected
-match-flow passes with races, other segments stay checked. Linux rebuilt and
-inspected; owned scratch removed. Root modules/local YAML remain unchanged.
+Latest checkpoint: opt-in portable gamepads now feed the same logical actions as
+keyboard input. YAML standard/raw controls, deadzones, alternatives/disable,
+two-player seat ownership, hotplug and held menu edges are implemented. Existing
+title/options/selection/VS/stock two-round fight/rematch/exit coverage uses injected
+devices. Affected combat and match-flow pass with races; other segments remain
+checked. Linux rebuild is due at the end of this continuing batch.
 
-Previous continuing batch committed coordinate/metadata/schedule fixes, idle
-demo cycling, TrueType height overrides and configuration/runtime consumers.
-All five segments remain checked. See PROGRESS.md and Git history for scope.
+No physical joystick is visible here. Controller model/connection question is
+pending; do not repeat it or infer hardware/native numeric acceptance. Native
+legacy joystick cfg numbers remain parsed separately. The input row stays
+partial (32/35 project rows), alongside broader assets and native fidelity.
 
-Newly recorded concrete gap: input/manager.go enumerates gamepad IDs but never
-consumes them; legacy joystick settings/YAML joy are not connected. Added a
-separate partial project row (32/35), rather than hiding this inside unknown
-native fidelity. Asked the user for controller models/connection types for the
-next Linux adapter/verification pass; answer pending at handoff. No physical
-controller support is claimed. Do not infer native raw joystick code mappings
-or declare hardware acceptance from keyboard/fake-device tests alone.
+Keep the corrected storyboard fitted top-left layer/window origin; authored
+layerall.pos already centers stock KFM. BG projection has a separate center.
+Prior native canonical1280x720 ->640x480 and Go center stock art at x320.
+
+Next concrete audit finding: cfg P1.UseKeyboard/P2.UseKeyboard currently have no
+consumer. Continue connecting player device configuration and broader documented
+runtime controls; no need for another button parameter matrix.
 
 Recaps are progress updates, not stop points (user 2026-11-09). Continue larger
 batches without per-commit approval, stopping only for actual completion/input.
@@ -39,7 +37,7 @@ Preserve the implementation invariants in AGENTS.md, especially:
   hit-paused bindings, combat stat scaling and borrowed Explod ownership.
 - Resource/palette/font bounds, native raster calibration and audio cursors.
 
-Remaining: gamepad implementation, broader font/media/pack acceptance, native AI policy and unverified
+Remaining: physical gamepad/native numbering, broader font/media/pack acceptance, native AI policy and unverified
 rules/fidelity combinations. Physical CD, absent licensed/CJK fonts and other
 platforms are deferred; Linux is the selected target. Do not regenerate matrices
 or call unknown combinations new implementation gaps without evidence.

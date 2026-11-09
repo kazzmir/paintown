@@ -17,10 +17,49 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/motif"
 )
 
-type flowKeyboard struct{ keys map[ebiten.Key]bool }
+type flowKeyboard struct{ keys, previous map[ebiten.Key]bool }
 
 func (k *flowKeyboard) IsPressed(key ebiten.Key) bool     { return k.keys[key] }
-func (k *flowKeyboard) IsJustPressed(key ebiten.Key) bool { return k.keys[key] }
+func (k *flowKeyboard) IsJustPressed(key ebiten.Key) bool { return k.keys[key] && !k.previous[key] }
+
+// Replaces only the hardware boundary. Configuration, manager snapshots,
+// screens, CMD input and combat still run through their real consumers.
+type flowPad struct {
+	standard   bool
+	buttons    map[ebiten.StandardGamepadButton]bool
+	axes       map[ebiten.StandardGamepadAxis]float64
+	rawButtons map[ebiten.GamepadButton]bool
+	rawAxes    map[int]float64
+}
+
+func (p *flowPad) release() {
+	p.buttons = map[ebiten.StandardGamepadButton]bool{}
+	p.axes = map[ebiten.StandardGamepadAxis]float64{}
+	p.rawButtons = map[ebiten.GamepadButton]bool{}
+	p.rawAxes = map[int]float64{}
+}
+
+type flowGamepads map[ebiten.GamepadID]*flowPad
+
+func (p flowGamepads) AppendIDs(ids []ebiten.GamepadID) []ebiten.GamepadID {
+	for id := range p {
+		ids = append(ids, id)
+	}
+	return ids
+}
+func (p flowGamepads) StandardLayout(id ebiten.GamepadID) bool { return p[id].standard }
+func (p flowGamepads) StandardButton(id ebiten.GamepadID, b ebiten.StandardGamepadButton) bool {
+	return p[id].buttons[b]
+}
+func (p flowGamepads) StandardAxis(id ebiten.GamepadID, a ebiten.StandardGamepadAxis) float64 {
+	return p[id].axes[a]
+}
+func (p flowGamepads) ButtonCount(id ebiten.GamepadID) int { return 4 }
+func (p flowGamepads) Button(id ebiten.GamepadID, b ebiten.GamepadButton) bool {
+	return p[id].rawButtons[b]
+}
+func (p flowGamepads) AxisCount(id ebiten.GamepadID) int       { return 2 }
+func (p flowGamepads) Axis(id ebiten.GamepadID, a int) float64 { return p[id].rawAxes[a] }
 
 func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	root, err := filepath.Abs("../temp/mugen-1.1b1")
@@ -30,6 +69,13 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	override := filepath.Join(t.TempDir(), "mugen.yaml")
 	if err := os.WriteFile(override, []byte(`input:
   p1:
+    gamepad:
+      enabled: true
+      deadzone: 0.4
+    joy:
+      x: [west, "button:2", west]
+      y: [north, not-a-control]
+      z: disabled
     keyboard:
       right: [KeyArrowRight, KeyNumpad6]
       left: [KeyArrowLeft, KeyNumpad4]
@@ -40,6 +86,11 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
       y: [KeyF9, not-a-key]
       z: none
   p2:
+    gamepad:
+      enabled: true
+    joy:
+      right: "axis:0+"
+      b: "button:0"
     keyboard:
       a: [KeyF, KeyNumpad1]
       b: KeyG
@@ -82,6 +133,16 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !slices.Equal(original, []ebiten.Key{ebiten.KeyL, ebiten.KeyF7}) || !slices.Equal(replaced, []ebiten.Key{ebiten.KeyF10}) {
 		t.Fatal("keyboard binding snapshots/setters shared mutable aliases")
 	}
+	padBindings, _ := cfg.Input.Gamepads[0].Bindings("x")
+	padCopy := cfg.Input.Gamepads[0]
+	padCopy.SetBindings("x")
+	padBindings[0].Index = -1
+	padOriginal, _ := cfg.Input.Gamepads[0].Bindings("x")
+	padReplaced, _ := padCopy.Bindings("x")
+	padY, _ := cfg.Input.Gamepads[0].Bindings("y")
+	if len(padOriginal) != 2 || padOriginal[0].Index != int(ebiten.StandardGamepadButtonRightLeft) || len(padReplaced) != 0 || len(padY) != 1 || !cfg.Input.Gamepads[0].Enabled || cfg.Input.Gamepads[0].Deadzone != 0.4 {
+		t.Fatal("gamepad configuration lost replacement/isolation or malformed-list admission", padOriginal, padReplaced, padY)
+	}
 	m, err := motif.LoadMotif("data/mugen1/system.def", root)
 	if err != nil {
 		t.Fatal(err)
@@ -91,6 +152,11 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	input.GlobalManager = input.NewInputManager(cfg)
 	keyboard := &flowKeyboard{}
 	input.GlobalManager.Keyboard = keyboard
+	pad1, pad2 := &flowPad{standard: true}, &flowPad{}
+	pad1.release()
+	pad2.release()
+	pads := flowGamepads{8: pad1, 23: pad2}
+	input.GlobalManager.Gamepads = pads
 	keyboard.keys = map[ebiten.Key]bool{ebiten.KeyQuote: true, ebiten.KeyY: true}
 	if input.GlobalManager.IsPressed(1, input.ActionZ) || input.GlobalManager.IsJustPressed(2, input.ActionZ) {
 		t.Fatal("disabled scalar/list bindings fell back to legacy controls")
@@ -121,6 +187,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	var ticks int32
 	step := func(keys ...ebiten.Key) {
 		t.Helper()
+		keyboard.previous = keyboard.keys
 		keyboard.keys = map[ebiten.Key]bool{}
 		for _, key := range keys {
 			keyboard.keys[key] = true
@@ -168,18 +235,34 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			break
 		}
 	}
-	step(ebiten.KeyEnter)
+	pad1.buttons[ebiten.StandardGamepadButtonCenterRight] = true
+	step()
 	options, ok := e.currentState.(*OptionsState)
 	if !ok {
 		t.Fatalf("title did not open options: %T", e.currentState)
 	}
+	if !input.GlobalManager.IsJustPressed(1, input.ActionEnter) || !input.GlobalManager.IsJustPressed(1, input.ActionStart) {
+		t.Fatal("controller edge was consumed by another screen/action query")
+	}
+	step() // Held start must not confirm again in the destination screen.
+	if input.GlobalManager.IsJustPressed(1, input.ActionStart) {
+		t.Fatal("held controller button generated another menu edge")
+	}
+	pad1.release()
 	for index, item := range options.items {
 		if item.label == "Game Speed" {
 			options.cursor = index
 			break
 		}
 	}
-	step(ebiten.KeyArrowRight)
+	pad1.axes[ebiten.StandardGamepadAxisLeftStickHorizontal] = 0.3
+	step()
+	if ebiten.TPS() != previousTPS {
+		t.Fatal("analog noise crossed the configured deadzone")
+	}
+	pad1.axes[ebiten.StandardGamepadAxisLeftStickHorizontal] = 0.8
+	step()
+	pad1.release()
 	if ebiten.TPS() != e.ticksPerSecond() || ebiten.TPS() == previousTPS {
 		t.Fatal("Game Speed option did not update the live scheduler", ebiten.TPS(), e.ticksPerSecond())
 	}
@@ -190,8 +273,12 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	for i := 0; i < 37; i++ {
 		step()
 	}
-	step(ebiten.KeyArrowDown)
-	step(ebiten.KeyNumpadEnter)
+	pad1.buttons[ebiten.StandardGamepadButtonLeftBottom] = true
+	step()
+	pad1.release()
+	pad1.buttons[ebiten.StandardGamepadButtonCenterRight] = true
+	step()
+	pad1.release()
 	s, ok := e.currentState.(*SelectState)
 	if !ok {
 		t.Fatalf("title did not open selection: %T", e.currentState)
@@ -217,14 +304,24 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			t.Fatal("mixed-coordinate selection portrait shrank", portrait.Name, left, right)
 		}
 	}
-	// Start both on the first stock cell, then move P2 with the stock D key.
+	// Start both on the first stock cell. Raw controls work on a device without
+	// a standard mapping; a disabled P1 action must not activate its default.
 	s.p1CursorX, s.p1CursorY, s.p2CursorX, s.p2CursorY = 0, 0, 0, 0
-	step(ebiten.KeyD)
+	pad1.buttons[ebiten.StandardGamepadButtonFrontTopLeft] = true
+	pad2.rawAxes[0] = 0.9
+	step()
+	if input.GlobalManager.IsPressed(1, input.ActionZ) || s.p1Done || s.p2Done {
+		t.Fatal("disabled controller binding confirmed a selection")
+	}
+	pad1.release()
+	pad2.release()
 	step(ebiten.KeyF6)
 	if s.p2Done {
 		t.Fatal("P1 confirmation also confirmed P2")
 	}
-	step(ebiten.KeyG)
+	pad2.rawButtons[0] = true
+	step()
+	pad2.release()
 	if !s.choosingStage {
 		t.Fatal("confirmed players did not reach stage selection")
 	}
@@ -279,7 +376,10 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if backgroundPixels < 50000 || changed[0] < 1000 || changed[1] < 1000 {
 		t.Fatal("VS background or portraits missing", backgroundPixels, changed)
 	}
-	step(ebiten.KeyNumpadEnter)
+	step() // Release keyboard Start before pressing its controller alternative.
+	pad1.buttons[ebiten.StandardGamepadButtonCenterRight] = true
+	step()
+	pad1.release()
 	f, ok := e.currentState.(*FightState)
 	if !ok {
 		t.Fatalf("versus did not enter fight: %T", e.currentState)
@@ -331,10 +431,12 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			t.Fatal("match sound resources were lost")
 		}
 	}
-	// Win both rounds through the configured keyboard adapter and stock CNS.
+	// Win one round with keyboard alternatives, then one with controller input
+	// through the same stock CNS, contact, recovery and round-reset lifecycle.
 	// Keep initial positions, states, life, timer and round timing intact.
 	damagedRounds := map[int]bool{}
 	for tick := 0; tick < 12000 && f.match.Phase != match.Finished; tick++ {
+		pad1.release()
 		if f.match.Phase != match.Active {
 			step()
 			continue
@@ -342,7 +444,10 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		c := f.match.Players[0].Character
 		distance, _ := c.GetOpponentBodyDistance()
 		if distance > 16*float64(c.LocalCoordinateWidth())/320 {
-			if c.Facing == 1 {
+			if f.match.Round == 2 {
+				pad1.axes[ebiten.StandardGamepadAxisLeftStickHorizontal] = float64(c.Facing)
+				step()
+			} else if c.Facing == 1 {
 				step(ebiten.KeyNumpad6)
 			} else {
 				step(ebiten.KeyNumpad4)
@@ -351,7 +456,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			if f.match.Round == 1 {
 				step(ebiten.KeyF7) // Alternative P1 X through stock CNS.
 			} else {
-				step(ebiten.KeyL) // Existing single-key path remains usable.
+				pad1.rawButtons[2] = true
+				step()
 			}
 		} else {
 			step()
@@ -362,8 +468,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		}
 	}
 	if !damagedRounds[1] || !damagedRounds[2] || f.match.Wins != [2]int{2, 0} {
-		t.Fatal("configured keyboard did not win both rounds", damagedRounds, f.match.Wins)
+		t.Fatal("keyboard/controller input did not win both rounds", damagedRounds, f.match.Wins)
 	}
+	pad1.release()
 	if f.match.World.RandomSeed() != 16807 {
 		t.Fatal("round reset reseeded the match")
 	}
@@ -398,6 +505,30 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	for i := 0; i < 41; i++ {
 		step()
 	}
+	// Hotplug keeps a connected P2 in its seat, then fills the vacant P1 seat.
+	delete(pads, 8)
+	pad2.rawButtons[0] = true
+	step()
+	if !input.GlobalManager.IsPressed(2, input.ActionB) || input.GlobalManager.IsPressed(1, input.ActionB) {
+		t.Fatal("disconnect reassigned the remaining player's controller")
+	}
+	pad1.release()
+	pads[30] = pad1
+	pad1.buttons[ebiten.StandardGamepadButtonRightLeft] = true
+	step()
+	if !input.GlobalManager.IsPressed(1, input.ActionX) || input.GlobalManager.IsJustPressed(2, input.ActionB) {
+		t.Fatal("hotplug did not fill the free seat or repeated a held P2 edge")
+	}
+	pad2.release()
+	pad1.release()
+	step(ebiten.KeyF7)
+	pad1.buttons[ebiten.StandardGamepadButtonRightLeft] = true
+	step(ebiten.KeyF7)
+	if !input.GlobalManager.IsPressed(1, input.ActionX) || input.GlobalManager.IsJustPressed(1, input.ActionX) {
+		t.Fatal("adding a controller to a held keyboard action created a new edge")
+	}
+	pad1.release()
+	step()
 }
 
 func TestSelectionReportsRosterFailure(t *testing.T) {

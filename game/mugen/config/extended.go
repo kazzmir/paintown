@@ -27,14 +27,20 @@ func (binding *KeyBinding) UnmarshalYAML(node *yaml.Node) error {
 		*binding = names
 		return nil
 	default:
-		return fmt.Errorf("line %d: keyboard binding must be a key name or a list of key names", node.Line)
+		return fmt.Errorf("line %d: input binding must be a control name or a list of control names", node.Line)
 	}
 }
 
 // PlayerConfig holds both keyboard and joystick settings for a player.
 type PlayerConfig struct {
 	Keyboard map[string]KeyBinding `yaml:"keyboard"`
-	Joy      map[string]string     `yaml:"joy"`
+	Joy      map[string]KeyBinding `yaml:"joy"`
+	Gamepad  *GamepadOptions       `yaml:"gamepad"`
+}
+
+type GamepadOptions struct {
+	Enabled  *bool    `yaml:"enabled"`
+	Deadzone *float64 `yaml:"deadzone"`
 }
 
 // ExtendedConfig provides modern overrides for MUGEN settings.

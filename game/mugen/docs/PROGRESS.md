@@ -66,6 +66,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Legacy configuration first-field admission before YAML overrides**
 - [x] **Shadow and quick-versus configuration consumers**
 - [x] **Background simulation and audio policy**
+- [x] **Portable gamepad input through menus and combat**
 
 ## Completed scenario coverage
 
@@ -129,7 +130,7 @@ source changes reopen only the affected segments.
 
 ### Modes and platforms
 
-- [ ] Player input devices and configuration. **partial** — Keyboard bindings and alternatives work across menus and combat. Gamepad IDs are enumerated but device inputs and legacy joystick configuration are not consumed; this is an implementation gap, not merely unverified hardware fidelity. Controller models/connection types requested for the next Linux implementation and verification pass. (item4)
+- [ ] Player input devices and configuration. **partial** — Portable gamepad buttons, axes and YAML alternatives now feed menus and combat. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; controller models/connection types requested. Keyboard configuration and gamepad software flow are implemented, but this row stays partial until device acceptance. (item4)
 - [x] Opponent AI and authored CMD command flow. (item4)
 - [x] Arcade/survival/demo progression, continue/ending and training/watch rules. (item4)
 - [x] Team/simul/turns lifecycle, partner context and recovery. (item4)
