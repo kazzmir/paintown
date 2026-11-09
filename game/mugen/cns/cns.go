@@ -269,7 +269,7 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 	ast = filtered
 	cns := &CNS{
 		States: make(map[int]*StateDef),
-		Data:   Data{Power: 3000},
+		Data:   Data{Power: 3000, Attack: 100, Defence: 100},
 		Movement: Movement{
 			StandFriction:  0.85,
 			CrouchFriction: 0.82,

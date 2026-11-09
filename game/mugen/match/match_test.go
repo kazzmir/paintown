@@ -188,6 +188,7 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 				t.Fatal("real KFM contact did not reach shared sound/effect playback", sawContactCue, audible, sawSpark)
 			}
 			heldGuardFlow(t, m)
+			combatScalingFlow(t, m)
 			return
 		}
 	}
@@ -288,6 +289,192 @@ guard.dist=Const240p(180)
 	step(90)
 	if defender.StateNo != 0 || !defender.Ctrl || defender.Y != 0 {
 		t.Fatal("guard/jump lifecycle did not return to idle", defender.StateNo, defender.Time, defender.Y)
+	}
+}
+
+// Continue the stock input/contact flow through one native-calibrated damage
+// sequence, own-state recovery and a fresh round. Stats are dimensionless even
+// with the existing 320p/1280p players. The beta observations below use attack150,
+// defence200, AttackMulSet2, DefenceMulSet.5 and a brief p2defmul2 SuperPause.
+func combatScalingFlow(t *testing.T, m *Match) {
+	t.Helper()
+	// Stock CMD rewrites var(1) every tick; keep instrumentation in unused slots.
+	var script strings.Builder
+	script.WriteString(`[Data]
+attack=150
+defence=200
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+ctrl=0
+anim=9991
+[State hold]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State attack multiplier]
+type=AttackMulSet
+trigger1=Time=6
+value=2
+[State hit]
+type=HitDef
+trigger1=Time=0 || Time=10 || Time=50
+attr=S,NA
+hitflag=MAF
+damage=100,20
+pausetime=0,0
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+hitsound=-1
+id=1234
+[State brief super pause]
+type=SuperPause
+trigger1=Time=20
+time=1
+movetime=1
+anim=-1
+sound=-1
+p2defmul=2
+`)
+	for _, row := range []struct {
+		index, tick int
+		expression  string
+	}{
+		{0, 3, "Target,Life"}, {1, 1, "Target,GetHitVar(damage)"},
+		{2, 13, "Target,Life"}, {3, 11, "Target,GetHitVar(damage)"},
+		{4, 15, "Target,Life"}, {5, 17, "Target,Life"}, {6, 19, "Target,Life"},
+		{7, 48, "EnemyNear,Var(53)"}, {8, 48, "EnemyNear,Var(54)"}, {9, 48, "EnemyNear,Var(55)"},
+		{10, 53, "Target,Life"}, {11, 51, "Target,GetHitVar(damage)"},
+	} {
+		fmt.Fprintf(&script, "[State snapshot]\ntype=VarSet\ntrigger1=Time=%d\nv=%d\nvalue=%s\n", row.tick, 40+row.index, row.expression)
+	}
+	for _, row := range []struct{ tick, value, absolute int }{{14, -100, 0}, {16, -100, 1}, {18, 100, 0}} {
+		fmt.Fprintf(&script, "[State target life]\ntype=TargetLifeAdd\ntrigger1=Time=%d\nvalue=%d\nabsolute=%d\n", row.tick, row.value, row.absolute)
+	}
+	script.WriteString(`[Statedef 701]
+type=S
+movetype=I
+physics=N
+ctrl=0
+anim=9990
+[State wait]
+type=Null
+trigger1=1
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+ctrl=0
+anim=9990
+[State hit defence]
+type=DefenceMulSet
+trigger1=Time=0
+value=.5
+[State self damage]
+type=LifeAdd
+trigger1=Time=25
+value=-100
+[State absolute self damage]
+type=LifeAdd
+trigger1=Time=27
+value=-100
+absolute=1
+[State heal]
+type=LifeAdd
+trigger1=Time=29
+value=100
+[State recovered]
+type=VarSet
+trigger1=Time=33
+v=59
+value=1
+[State recover]
+type=SelfState
+trigger1=Time=34
+value=0
+ctrl=1
+[State life snapshot]
+type=VarSet
+trigger1=Time=26
+v=53
+value=Life
+[State life snapshot]
+type=VarSet
+trigger1=Time=28
+v=54
+value=Life
+[State life snapshot]
+type=VarSet
+trigger1=Time=30
+v=55
+value=Life
+`)
+	states, err := cns.Parse(strings.NewReader(script.String()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	poses, err := air.Parse(strings.NewReader(`[Begin Action 9990]
+Clsn2Default: 1
+Clsn2[0]=-30,-100,30,0
+0,0,0,0,-1
+[Begin Action 9991]
+Clsn1Default: 1
+Clsn1[0]=-1000,-1000,1000,1000
+0,0,0,0,-1
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	attacker, receiver := m.Players[0].Character, m.Players[1].Character
+	for slot, player := range m.Players {
+		c := player.Character
+		c.StateFile.Data.Attack, c.StateFile.Data.Defence = states.Data.Attack, states.Data.Defence
+		for _, key := range []string{"data.attack", "data.defence"} {
+			c.StateFile.ConstantFields[key] = states.ConstantFields[key]
+		}
+		for number, state := range states.States {
+			c.StateFile.States[number] = state
+		}
+		for number, action := range poses.Actions {
+			c.AirFile.Actions[number] = action
+		}
+		c.X, c.Y, c.VelX, c.VelY = float64(-20+40*slot)*float64(c.LocalCoordinateWidth())/320, 0, 0, 0
+		c.HitPauseTime, c.ShakeTime, c.HitTime = 0, 0, -1
+		c.SetLife(c.MaxLife)
+		c.Facing = 1 - 2*slot
+		c.InputSource = func(int, int) []string { return nil }
+		c.ChangeState(700+slot, 0, -1)
+	}
+	for tick := 0; tick < 100; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("scaled combat lifecycle", err)
+		}
+	}
+	for index, expected := range []int{925, 75, 850, 75, 825, 725, 825, 812, 712, 812, 662, 150} {
+		if got := attacker.GetVar(40 + index); got != expected {
+			t.Fatalf("native damage sequence observation %d: got %d want %d (receiver life/state/time %d/%d/%d)", index, got, expected, receiver.Life, receiver.StateNo, receiver.Time)
+		}
+	}
+	if receiver.StateNo != 0 || !receiver.Ctrl || receiver.Life != 637 {
+		t.Fatal("scaled damage sequence did not recover", receiver.StateNo, receiver.Time, receiver.Life)
+	}
+	attacker.ChangeState(0, 1, -1)
+	receiver.SetLife(0)
+	receiver.ChangeState(5150, 0, -1)
+	advanceUntil(t, m, PreOver, 2)
+	advanceUntil(t, m, Over, 300)
+	advanceUntil(t, m, PreIntro, 500)
+	advanceUntil(t, m, Active, 600)
+	for _, player := range m.Players {
+		c := player.Character
+		if c.Life != c.MaxLife || c.AttackMul != 1 || c.DefenceMul != 1 || c.GetDefenceDamageMultiplier() != .5 || c.StateFile.Data.Attack != 150 {
+			t.Fatal("round reset lost base stats or retained temporary damage adjustments", c.Life, c.AttackMul, c.DefenceMul, c.GetDefenceDamageMultiplier())
+		}
 	}
 }
 

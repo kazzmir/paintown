@@ -1914,14 +1914,6 @@ func (c *Character) ParentEnvironment() engine.Environment {
 	return c.Parent
 }
 
-func (c *Character) GetDefenceMultiplier() float64 {
-	base := 100
-	if c.StateFile != nil && c.StateFile.Data.Defence > 0 {
-		base = c.StateFile.Data.Defence
-	}
-	return float64(base) / 100 * c.DefenceMul
-}
-
 func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {
 	c.changeStateWithEntry(stateNo, overrides, false)
 }

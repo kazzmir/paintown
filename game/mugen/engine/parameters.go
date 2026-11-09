@@ -22,7 +22,7 @@ type transitionEnvironment interface {
 	Transition(int, EntryOverrides, bool) error
 }
 type parentEnvironment interface{ ParentEnvironment() Environment }
-type defenceEnvironment interface{ GetDefenceMultiplier() float64 }
+type defenceEnvironment interface{ GetDefenceDamageMultiplier() float64 }
 
 func compileArguments(ctrl *cns.StateController, specs []argumentSpec) ([]argument, error) {
 	var args []argument
@@ -284,13 +284,13 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"kill", true, false}, {"absolute", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
 			amount := int(v["value"].Number())
 			absolute, hasAbsolute := v["absolute"]
-			if !hasAbsolute || !absolute.Bool() {
+			if amount < 0 && (!hasAbsolute || !absolute.Bool()) {
 				if defence, ok := env.(defenceEnvironment); ok {
-					mul := defence.GetDefenceMultiplier()
-					if mul <= 0 || math.IsNaN(mul) || math.IsInf(mul, 0) {
+					mul := defence.GetDefenceDamageMultiplier()
+					if mul < 0 || math.IsNaN(mul) || math.IsInf(mul, 0) {
 						return fmt.Errorf("invalid defence multiplier %g", mul)
 					}
-					amount = int(float64(amount) / mul)
+					amount = -int(float64(-amount)*mul + .5)
 				}
 			}
 			if kill, present := v["kill"]; present && !kill.Bool() && env.GetLife()+amount < 1 {

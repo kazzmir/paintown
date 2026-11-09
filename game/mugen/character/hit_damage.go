@@ -6,6 +6,31 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cns"
 )
 
+func (c *Character) attackDamageMultiplier() float64 {
+	base := c.StateFile.Data.Attack
+	// Hand-built state files also retain the ordinary omitted-stat default.
+	// An authored attack=0 is distinct from an absent value.
+	if base == 0 && len(c.StateFile.ConstantFields["data.attack"]) == 0 {
+		base = 100
+	}
+	return float64(base) / 100 * c.AttackMul
+}
+
+// GetDefenceDamageMultiplier is the fraction of incoming damage retained,
+// combining the character's own base stat with the active get-hit adjustments.
+// It is shared by contact damage and negative, nonabsolute life additions.
+func (c *Character) GetDefenceDamageMultiplier() float64 {
+	base := 100
+	if c.StateFile != nil && c.StateFile.Data.Defence > 0 {
+		base = c.StateFile.Data.Defence
+	}
+	superDefence := c.superDefenceMul
+	if superDefence <= 0 {
+		superDefence = 1
+	}
+	return 100 / float64(base) * c.DefenceMul / superDefence
+}
+
 func (c *Character) contactDamage(attacker *Character, hit cns.HitDef, guarded bool) (int, bool) {
 	damage := 0
 	index, kill := 0, hit.Kill
@@ -20,11 +45,7 @@ func (c *Character) contactDamage(attacker *Character, hit cns.HitDef, guarded b
 	if c.MoveType != "H" {
 		c.DefenceMul = 1
 	}
-	superDefence := c.superDefenceMul
-	if superDefence <= 0 {
-		superDefence = 1
-	}
-	damage = int(float64(damage)*attacker.AttackMul*c.DefenceMul/superDefence + .5)
+	damage = int(float64(damage)*attacker.attackDamageMultiplier()*c.GetDefenceDamageMultiplier() + .5)
 	life := max(0, min(c.MaxLife, c.Life-c.pendingHitDamage))
 	minimum := 0
 	if kill != nil && !*kill {

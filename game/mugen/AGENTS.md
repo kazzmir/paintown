@@ -343,3 +343,12 @@ now spans two held attack/recovery cycles, release/repress and those modifiers.
 Four affected segments pass with races; state-flow stays checked. Native and
 rebuilt Linux stock KFM each attack once while held, then again after repress.
 Diagnostic scratch removed; user configuration and mod scripts unchanged.
+
+Base attack/defence must reach contact damage, including guard and the shared
+projectile/helper path. Negative nonabsolute TargetLifeAdd/LifeAdd use the
+receiver’s base/runtime/SuperPause damage factor; positive and absolute additions
+stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual.
+The existing connected combat flow retains twelve beta observations, recovery
+and fresh-round reset; stock CMD rewrites var(1), so instrumentation uses unused
+slots. All segments are checked with races; rebuilt Linux observations match.
+Diagnostic scratch removed; no mod or user configuration changes.

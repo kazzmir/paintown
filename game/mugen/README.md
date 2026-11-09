@@ -12,6 +12,8 @@ walking uses the authored turning animation and preserves physical direction
 after a crossover. Ongoing locked attacks retain their facing.
 Air jumps honor each character's height and per-flight count settings: release
 and press jump again in midair. Landing restores the available air jumps.
+Combat damage now uses the character’s base attack/defence stats along with
+authored damage adjustments; healing and absolute life additions stay unscaled.
 
 ## Requirements and data
 

@@ -41,27 +41,27 @@ func (h *parameterHost) ExplodRandomOffset(size int) (int, error) {
 func newParameterHost() *parameterHost {
 	return &parameterHost{host: newHost(), defence: 1, x: 2, y: -3, px: 30, py: -10}
 }
-func (h *parameterHost) GetFVar(i int) float64          { return h.floats[i] }
-func (h *parameterHost) SetFVar(i int, n float64)       { h.floats[i] = n }
-func (h *parameterHost) GetSysVar(i int) int            { return h.sys[i] }
-func (h *parameterHost) SetSysVar(i, n int)             { h.sys[i] = n }
-func (h *parameterHost) GetSysFVar(i int) float64       { return h.sysFloats[i] }
-func (h *parameterHost) SetSysFVar(i int, n float64)    { h.sysFloats[i] = n }
-func (h *parameterHost) EvaluationWarning(s string)     { h.warnings = append(h.warnings, s) }
-func (h *parameterHost) GetVel() (float64, float64)     { return h.x, h.y }
-func (h *parameterHost) SetVelocity(x, y float64)       { h.x, h.y = x, y }
-func (h *parameterHost) AddVelocity(x, y float64)       { h.x += x; h.y += y }
-func (h *parameterHost) VelMul(x, y float64)            { h.x *= x; h.y *= y }
-func (h *parameterHost) GetPos() (float64, float64)     { return h.px, h.py }
-func (h *parameterHost) SetPosition(x, y float64)       { h.px, h.py = x, y }
-func (h *parameterHost) AddPosition(x, y float64)       { h.px += x; h.py += y }
-func (h *parameterHost) GetFacing() int                 { return -1 }
-func (h *parameterHost) GetLife() int                   { return h.life }
-func (h *parameterHost) GetDefenceMultiplier() float64  { return h.defence }
-func (h *parameterHost) ParentEnvironment() Environment { return h.parent }
-func (h *parameterHost) VictoryQuote(n int)             { h.quote = n }
-func (h *parameterHost) RemoveExplod(n int)             { h.removed = n }
-func (h *parameterHost) HitAdd(n int)                   { h.combo += n }
+func (h *parameterHost) GetFVar(i int) float64               { return h.floats[i] }
+func (h *parameterHost) SetFVar(i int, n float64)            { h.floats[i] = n }
+func (h *parameterHost) GetSysVar(i int) int                 { return h.sys[i] }
+func (h *parameterHost) SetSysVar(i, n int)                  { h.sys[i] = n }
+func (h *parameterHost) GetSysFVar(i int) float64            { return h.sysFloats[i] }
+func (h *parameterHost) SetSysFVar(i int, n float64)         { h.sysFloats[i] = n }
+func (h *parameterHost) EvaluationWarning(s string)          { h.warnings = append(h.warnings, s) }
+func (h *parameterHost) GetVel() (float64, float64)          { return h.x, h.y }
+func (h *parameterHost) SetVelocity(x, y float64)            { h.x, h.y = x, y }
+func (h *parameterHost) AddVelocity(x, y float64)            { h.x += x; h.y += y }
+func (h *parameterHost) VelMul(x, y float64)                 { h.x *= x; h.y *= y }
+func (h *parameterHost) GetPos() (float64, float64)          { return h.px, h.py }
+func (h *parameterHost) SetPosition(x, y float64)            { h.px, h.py = x, y }
+func (h *parameterHost) AddPosition(x, y float64)            { h.px += x; h.py += y }
+func (h *parameterHost) GetFacing() int                      { return -1 }
+func (h *parameterHost) GetLife() int                        { return h.life }
+func (h *parameterHost) GetDefenceDamageMultiplier() float64 { return h.defence }
+func (h *parameterHost) ParentEnvironment() Environment      { return h.parent }
+func (h *parameterHost) VictoryQuote(n int)                  { h.quote = n }
+func (h *parameterHost) RemoveExplod(n int)                  { h.removed = n }
+func (h *parameterHost) HitAdd(n int)                        { h.combo += n }
 func (h *parameterHost) SetPaletteMapping(source, dest [2]int) error {
 	h.paletteSource, h.paletteDest = source, dest
 	return nil
@@ -337,7 +337,7 @@ func TestVectorExpressionsAndOmittedAxes(t *testing.T) {
 
 func TestLifeAddDefenceAndKill(t *testing.T) {
 	h := newParameterHost()
-	h.life, h.defence = 20, 2
+	h.life, h.defence = 20, .5
 	runController(t, h, "LifeAdd", "value=-10")
 	if h.life != 15 {
 		t.Fatal(h.life)

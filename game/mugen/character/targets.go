@@ -1,10 +1,6 @@
 package character
 
-import (
-	"math"
-
-	"github.com/kazzmir/paintown/game/mugen/engine"
-)
+import "github.com/kazzmir/paintown/game/mugen/engine"
 
 func (c *Character) interruptTargets() error {
 	for _, target := range c.targetOrder {
@@ -48,11 +44,9 @@ func (c *Character) AddTargetLife(p engine.TargetLifeParameters) error {
 	for _, target := range c.acquiredTargets(p.ID, true) {
 		amount := p.Value
 		if !p.Absolute && amount < 0 {
-			factor := target.DefenceMul
-			if target.superDefenceMul > 0 {
-				factor /= target.superDefenceMul
-			}
-			amount = int(math.Round(float64(p.Value) * factor))
+			// Unlike HitDef, the beta does not apply the issuer's attack stat
+			// or AttackMulSet here, despite the controller documentation.
+			amount = -int(float64(-amount)*target.GetDefenceDamageMultiplier() + .5)
 		}
 		life := target.Life + amount
 		if !p.Kill {

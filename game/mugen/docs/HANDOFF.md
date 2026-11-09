@@ -7,6 +7,12 @@ beta are content findings. Keep the existing optional SF2 playable copy intact.
 
 Latest engine checkpoints:
 
+- Base attack/defence now reach live contact damage. Negative nonabsolute
+  TargetLifeAdd/LifeAdd share base, runtime and SuperPause defence reductions.
+  Healing/absolute additions stay unscaled; the beta ignores issuer attack for
+  TargetLifeAdd despite its documentation. Twelve native clipboard observations
+  match rebuilt Linux exactly. The existing stock/mixed-coordinate combat flow
+  continues through those operations, recovery, KO and a fresh-round reset.
 - Declared CMD labels now use their matched press/hold/release/buffer rules.
   Raw fallback cannot reactivate an inactive declared button while it stays
   held. The connected player/helper attack/recovery flow preserves explicit
@@ -25,8 +31,9 @@ Latest engine checkpoints:
 - Guard-distance behavior in the related native observation matched the current
   implementation. Preserve it rather than applying uniform controller scaling.
 
-All five connected segments are checked with race detection. The latest four
-changed-source segments passed; state-flow stayed checked. Linux is rebuilt.
+All five connected segments are checked with race detection. The damage batch
+changed covered source for all five; completed segments remain checked after
+validation. Linux is rebuilt.
 Native and Linux keyboard flows each accepted two air jumps across two flights
 and returned to idle. The latest held-button flows also agree: one attack while
 held, then a second after release/repress. Current diagnostic scratch/captures/
