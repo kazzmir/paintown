@@ -108,6 +108,9 @@ func (s *WinScreenState) Update() (State, error) {
 func (s *WinScreenState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	if bg := s.engine.motif.VictoryBG; bg != nil {
+		if bg.BGClearColor != nil {
+			screen.Fill(bg.BGClearColor)
+		}
 		bg.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)
 	}
 	name := "Winner"

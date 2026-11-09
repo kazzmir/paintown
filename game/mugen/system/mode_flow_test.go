@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -10,6 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/motif"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 )
 
@@ -17,6 +19,36 @@ import (
 // ending, then survival carry/recovery/results and training/watch mode rules.
 func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	e := soundTestEngine(t)
+	// Reuse the stock motif's resources without copying banks. Expose the
+	// victory canvas so its authored BGDef color must reach the real screen.
+	themeDir := t.TempDir()
+	sourceDir := filepath.Dir(e.motif.Source)
+	entries, err := os.ReadDir(sourceDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, entry := range entries {
+		if entry.Name() == filepath.Base(e.motif.Source) {
+			continue
+		}
+		if err := os.Symlink(filepath.Join(sourceDir, entry.Name()), filepath.Join(themeDir, entry.Name())); err != nil {
+			t.Fatal(err)
+		}
+	}
+	themeSource, err := os.ReadFile(e.motif.Source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	themeText := regexp.MustCompile(`(?im)^\[VictoryBG[ \t]+`).ReplaceAllString(string(themeSource), "[UnusedVictoryBG ")
+	themeText = regexp.MustCompile(`(?im)^\[VictoryBGdef\][ \t]*`).ReplaceAllString(themeText, "[VictoryBGdef]\nbgclearcolor=17,34,51\nbgclearcolor=255,255,255")
+	themePath := filepath.Join(themeDir, "system.def")
+	if err := os.WriteFile(themePath, []byte(themeText), 0600); err != nil {
+		t.Fatal(err)
+	}
+	e.motif, err = motif.LoadMotif(themePath, e.dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 	e.pendingMatchSeed = 16807
 	oldInput := input.GlobalManager
 	t.Cleanup(func() { input.GlobalManager = oldInput })
@@ -123,6 +155,9 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		t.Fatal("authored localized VictoryQuote did not reach presentation", quote)
 	}
 	e.Draw(canvas)
+	if got := color.RGBAModel.Convert(canvas.At(0, 0)).(color.RGBA); got != (color.RGBA{17, 34, 51, 255}) {
+		t.Fatal("victory BGDef clear color did not reach the screen", got)
+	}
 	step(ebiten.KeyEnter)
 	f = enterFight()
 	if f.match.Request.MatchNo != 2 || f.match.World.MatchNo != 2 || r.index != 1 {

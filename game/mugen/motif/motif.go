@@ -505,52 +505,6 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 					motif.OptionInfo.CancelSnd = [2]int{int(v[0]), int(v[1])}
 				}
 			}
-		default:
-			lowerName := strings.ToLower(sec.Name)
-			if strings.HasPrefix(lowerName, "titlebgdef") {
-				// Title background definition (bgclearcolor)
-				if motif.TitleBG == nil {
-					motif.TitleBG = &background.Background{}
-				}
-				for _, attr := range sec.Attributes {
-					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
-						v := getVector3(attr.Value)
-						motif.TitleBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
-					}
-				}
-			} else if strings.HasPrefix(lowerName, "titlebg ") || lowerName == "titlebg" {
-				// Individual title bg elements are handled via LoadFromAST
-			} else if strings.HasPrefix(lowerName, "selectbgdef") {
-				if motif.SelectBG == nil {
-					motif.SelectBG = &background.Background{}
-				}
-				for _, attr := range sec.Attributes {
-					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
-						v := getVector3(attr.Value)
-						motif.SelectBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
-					}
-				}
-			} else if strings.HasPrefix(lowerName, "versusbgdef") {
-				if motif.VsBG == nil {
-					motif.VsBG = &background.Background{}
-				}
-				for _, attr := range sec.Attributes {
-					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
-						v := getVector3(attr.Value)
-						motif.VsBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
-					}
-				}
-			} else if strings.HasPrefix(lowerName, "optionbgdef") {
-				if motif.OptionBG == nil {
-					motif.OptionBG = &background.Background{}
-				}
-				for _, attr := range sec.Attributes {
-					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
-						v := getVector3(attr.Value)
-						motif.OptionBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
-					}
-				}
-			}
 		}
 	}
 
@@ -664,8 +618,12 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 		var line int
 		declared := false
 		for _, attr := range parsers.FirstAttributes(groups[spec.prefix+"def"]...) {
-			if strings.EqualFold(attr.ID.String(), "spr") {
+			switch strings.ToLower(attr.ID.String()) {
+			case "spr":
 				filename, line, declared = getString(attr.Value), attr.Line, true
+			case "bgclearcolor":
+				v := getVector3(attr.Value)
+				bg.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
 			}
 		}
 		if declared {

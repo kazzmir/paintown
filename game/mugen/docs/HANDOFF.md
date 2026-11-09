@@ -5,14 +5,25 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest checkpoint: escaped quotes in CNS clipboard formats pass container
-admission and reach display/append/debug drawing through the existing combat
-feedback lifecycle. Native and rebuilt Linux load the same single-quote format.
-The checked escaped-quote/semicolon combination also fails in native, so retain
-comment handling. Combined affected segments passed with races. AI now plans charged chord components, mixed release/press and strict steps
-through the actual CMD/CNS attack/contact/recovery lifecycle. Timed long charges
-remain bounded in storage; native AI policy is still partial. Victory-background
-presentation is the remaining checkpoint in this batch.
+Latest batch (three local checkpoints):
+
+- Single escaped quotes in CNS clipboard formats now reach display/append
+  and debug drawing. Native and rebuilt Linux load the same quoted format.
+  Native also rejects the checked escaped-quote/semicolon combination; existing
+  comment handling and literal Windows-path admission remain unchanged.
+- AI timed plans handle charged chord components, mixed release/press and
+  strict steps. The existing command lifecycle continues through a fresh
+  composite-command AI attack, contact, damage and recovery before stock AI
+  combat. Long charges retain bounded storage; native policy remains partial.
+- All five motif BGDef groups share first-field color/resource loading.
+  Victory drawing now uses authored clear color. The real Arcade/continue/
+  victory/ending/Survival/training lifecycle checks the rendered consumer.
+
+Four changed-source segments pass with races; unchanged state-flow stays
+checked. Linux rebuilt and its quoted-text match inspected. Owned diagnostic
+scratch removed; canonical banks reused. Counts remain89 controllers,
+127 triggers and32/34 project rows. Broader content/native-fidelity acceptance
+remains partial; unknown combinations are not mandatory test matrices.
 
 Preserve the implementation invariants in AGENTS.md, especially:
 

@@ -618,7 +618,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "3653dcae085e6456cbc51dd662ffcce1ef91732854586fa6b0076c29b16db4f1"
+      "passed_source": "bcb730c118078f3a24a75e61d6dbb641555f9a241d4c6d64fda527e468008f21"
     },
     {
       "id": "entities",
@@ -651,7 +651,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b291a6cec3d7e7610e7b1eab76d0277be037311e58d7c9a0610d75d67bfc378b"
+      "passed_source": "599478d9165d8909cdd3ab0e05e9b60ca68c4d76c736e89b79a1932ee56367f7"
     },
     {
       "id": "effects-pause",
@@ -686,7 +686,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "e6f49aa0bec699cdd3664d226875274cf421587133d4863e1e5659431f99205b"
+      "passed_source": "3db1fedcb6bf63eb280d88f143fea016a40ddb5cea522154569408685efb73ac"
     },
     {
       "id": "match-flow",
@@ -765,7 +765,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5c79f958fe20f50e1bbc51b28a2c4f7c0ac708c1833a75474ae9be55395c8cf6"
+      "passed_source": "5df36e4141ab4e4b24251b91c87ed2d9b9fd4164bdf63b9b201555e22e3c6d07"
     }
   ],
   "presentation_followups": [
@@ -1017,6 +1017,12 @@
       "name": "AI plans for charged chords and strict command steps",
       "completed": true,
       "validation": "Timed plans charge each release component, emit ordinary presses on the release/completion frame and retain unrelated inputs across strict steps. Command-key extraction recognizes modifiers on every chord component. The existing human/helper command lifecycle continues through a fresh AI-only composite command, actual CMD/CNS admission, attack/contact/damage and control recovery, followed by fresh stock AI combat. The affected connected segments pass with races. Long charges retain constant plan storage. Native AI decision probabilities remain partial."
+    },
+    {
+      "id": "victory-background-clear-color",
+      "name": "Authored victory background clear color",
+      "completed": true,
+      "validation": "All five motif BGDef groups use the same first-field metadata/resource path. Victory drawing applies the authored clear color before background layers, portraits and text. The existing real-mode lifecycle loads a stock-resource motif with a first color and an ignored duplicate, completes loss/continue/retry and Arcade victory, checks the exposed victory canvas, then continues through ending, Survival and training/watch. The connected match-flow segment and other affected batch segments pass with races. This is a functional metadata-to-screen fix; it does not claim arbitrary native screen/raster parity."
     }
   ]
 }

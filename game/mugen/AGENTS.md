@@ -97,7 +97,9 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   also keep first fields. BG/controller fields are first within each instance;
   repeated BG names remain separate objects. Motif/storyboard metadata follows
   the same policy while scenes/AIR remain ordered. An authored blank private
-  motif BG sprite is a resource error. Retain primary-error locations.
+  motif BG sprite is a resource error. All motif BGDef groups share first-field
+  color/resource loading; victory drawing applies its clear color before art.
+  Retain primary-error locations.
 - Localize complete groups with English fallback, original source lines and
   stable scene order. Commands/states and individual BG elements are exempt.
   Standalone AIR stays undecorated; preserve runtime victory-quote banks.
