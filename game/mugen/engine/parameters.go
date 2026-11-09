@@ -154,7 +154,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 	case "playsnd", "sndpan", "stopsnd":
 		return compileSound(ctrl, name)
 	case "playerpush":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, values map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}}, true, func(env Environment, values map[string]evaluator.Value) error {
 			context, ok := env.(interface{ SetPlayerPush(bool) })
 			if !ok {
 				return fmt.Errorf("PlayerPush context is unavailable")
@@ -163,7 +163,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "attackdist":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, values map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}}, true, func(env Environment, values map[string]evaluator.Value) error {
 			context, ok := env.(interface{ SetAttackDistance(int) })
 			if !ok {
 				return fmt.Errorf("AttackDist context is unavailable")
@@ -290,7 +290,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 					if mul < 0 || math.IsNaN(mul) || math.IsInf(mul, 0) {
 						return fmt.Errorf("invalid defence multiplier %g", mul)
 					}
-					amount = -int(float64(-amount)*mul + .5)
+					amount = -max(1, int(float64(-amount)*mul+.5))
 				}
 			}
 			if kill, present := v["kill"]; present && !kill.Bool() && env.GetLife()+amount < 1 {
@@ -302,8 +302,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 	case "sprpriority":
 		return compileSprPriority(ctrl)
 	case "ctrlset", "lifeset", "powerset", "poweradd", "hitadd":
-		zeroBottom := name != "hitadd"
-		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}}, zeroBottom, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, true}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			n := int(v["value"].Number())
 			switch name {
 			case "ctrlset":
@@ -320,7 +319,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "victoryquote":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			quote := -1
 			if value, present := v["value"]; present {
 				quote = int(value.Number())
@@ -329,7 +328,7 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "attackmulset", "defencemulset":
-		return typedHandler(ctrl, []argumentSpec{{"value", false, true}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", false, true}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			n := v["value"].Number()
 			switch name {
 			case "attackmulset":
@@ -340,13 +339,13 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 			return nil
 		})
 	case "posfreeze":
-		return typedHandler(ctrl, []argumentSpec{{"value", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"value", true, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			value, present := v["value"]
 			env.PosFreeze(!present || value.Bool())
 			return nil
 		})
 	case "removeexplod":
-		return typedHandler(ctrl, []argumentSpec{{"id", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+		return typedHandlerWithBottom(ctrl, []argumentSpec{{"id", true, false}}, true, func(env Environment, v map[string]evaluator.Value) error {
 			id := -1
 			if value, present := v["id"]; present {
 				id = int(value.Number())

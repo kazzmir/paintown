@@ -45,6 +45,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Pause and SuperPause numeric fallback through recovery**
 - [x] **CMD defaults, duplicate settings and loading contract**
 - [x] **State entry and persistence first-value precedence**
+- [x] **Scalar control/effect fallback and minimum life adjustments**
 
 ## Completed scenario coverage
 

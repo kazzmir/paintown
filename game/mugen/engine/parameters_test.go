@@ -272,8 +272,8 @@ func TestAttackDistanceEvaluatesBeforeMutation(t *testing.T) {
 		t.Fatal("AttackDist expression", h.attackDistance)
 	}
 	state := stateSource(t, "[State 7, invalid distance]\ntype=AttackDist\ntrigger1=1\nvalue=1/0\n")
-	if _, err := NewStateMachine().ExecuteState(state, h); err == nil || h.attackDistance != 141 {
-		t.Fatal("invalid distance mutated range", h.attackDistance, err)
+	if _, err := NewStateMachine().ExecuteState(state, h); err != nil || h.attackDistance != 0 {
+		t.Fatal("ordinary bottom distance did not use native zero fallback", h.attackDistance, err)
 	}
 }
 

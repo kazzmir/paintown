@@ -5,7 +5,7 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch (five local checkpoints):
+Latest batch (six local checkpoints):
 
 - AI command plans use timed steps. A remapped 300-tick charge now completes
   through CMD, attack/contact/damage/recovery, followed by fresh stock AI combat.
@@ -18,10 +18,14 @@ Latest batch (five local checkpoints):
   1–30 ticks. Full characters need a nonempty command set with resource context.
 - Statedef/persistent settings keep first values while repeated triggers remain
   separate conditions. Entry/control/motion/power and recovery match native.
+- Scalar controls/effects/stats accept ordinary-bottom fallback. Nonzero negative
+  scaled LifeAdd/TargetLifeAdd have a one-point minimum; explicit zero stays
+  zero and a zero attack still makes zero-damage contact. Both actors recover
+  and effect art retires in the connected combat flow.
 
 All five connected segments pass with race detection against current source.
 Linux is rebuilt. Bounded native comparisons agree for variables, pause clocks,
-command windows (5/30/1) and state entry/persistence; AI command availability is
+command windows (5/30/1), state entry/persistence and scalar/life adjustments; AI command availability is
 covered by the connected scenario, not a claim of native AI decision parity.
 Current diagnostic scratch/captures were inspected and removed. The progress
 page now lists short completion checkmarks; detailed scope/evidence is in its

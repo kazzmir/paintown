@@ -51,7 +51,7 @@ func (c *Character) AddTargetLife(p engine.TargetLifeParameters) error {
 		if !p.Absolute && amount < 0 {
 			// Unlike HitDef, the beta does not apply the issuer's attack stat
 			// or AttackMulSet here, despite the controller documentation.
-			amount = -int(float64(-amount)*target.GetDefenceDamageMultiplier() + .5)
+			amount = -max(1, int(float64(-amount)*target.GetDefenceDamageMultiplier()+.5))
 		}
 		life := target.Life + amount
 		if !p.Kill {

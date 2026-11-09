@@ -788,6 +788,7 @@ value=~(1/0)
 	if c.StateNo != 0 || !c.Ctrl || c.GetVar(10) != 1 || c.GetVar(11) != 1 || c.GetFVar(3) != 0 {
 		t.Fatal("variable writes did not complete and recover", c.StateNo, c.Ctrl)
 	}
+	scalarRuntimeRecoveryFlow(t, m)
 	// Genuine VM failures remain terminal and cannot partly apply a vector.
 	for _, number := range []int{9703, 9704, 9722} {
 		fatal := character.NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
@@ -801,6 +802,70 @@ value=~(1/0)
 		if err == nil || !strings.Contains(err.Error(), "bitwise not of bottom") || !strings.Contains(err.Error(), "runtime-fallback.cns") || fatal.X != 37 || fatal.VelX != 4 || fatal.VelY != 5 {
 			t.Fatal("fatal VM error was hidden or partly applied", number, err, fatal.X, fatal.VelX, fatal.VelY)
 		}
+	}
+}
+
+// Continue through control/effect/stat fallbacks, a zero-damage contact and the
+// minimum nonabsolute life adjustments, then recover both sides and retire art.
+func scalarRuntimeRecoveryFlow(t *testing.T, m *Match) {
+	t.Helper()
+	c, other := m.Players[0].Character, m.Players[1].Character
+	c.SetLife(1000)
+	other.SetLife(1000)
+	c.X, c.Y, other.X, other.Y = -70, 0, 70*float64(other.LocalCoordinateWidth())/320, 0
+	c.RemoveExplod(-1)
+	other.ChangeState(0, 0, -1)
+	c.AirFile.Actions[9970] = &air.Action{ID: 9970, LoopStart: -1, Elements: []air.Element{{Group: 0, Image: 0, Time: -1, Clsn1: []air.Box{{X1: -500, Y1: -100, X2: 500, Y2: 0}}, Clsn2: []air.Box{{X1: -10, Y1: -100, X2: 10, Y2: 0}}}}}
+	t.Cleanup(func() { delete(c.AirFile.Actions, 9970) })
+	var script strings.Builder
+	script.WriteString("[Statedef 9880]\ntype=S\nmovetype=A\nphysics=N\nctrl=0\nanim=9970\nvelset=2,0\n")
+	for _, step := range []struct {
+		kind   string
+		tick   int
+		params string
+	}{
+		{"VarRangeSet", 0, "first=40\nlast=51\nvalue=0"}, {"VarSet", 0, "v=58\nvalue=Pos X"},
+		{"PlayerPush", 0, "value=1/0"}, {"PlayerPush", 1, "value=1/0"},
+		{"AttackDist", 0, "value=200"}, {"AttackDist", 1, "value=200"}, {"AttackDist", 2, "value=1/0"}, {"AttackDist", 3, "value=1/0"},
+		{"PosFreeze", 0, "value=1"}, {"PosFreeze", 1, "value=1/0"},
+		{"AttackMulSet", 0, "value=2"}, {"AttackMulSet", 0, "value=1/0"},
+		{"DefenceMulSet", 0, "value=2"}, {"DefenceMulSet", 0, "value=1/0"}, {"LifeAdd", 0, "value=-20"},
+		{"HitAdd", 0, "value=3"}, {"HitAdd", 0, "value=1/0"}, {"VictoryQuote", 0, "value=1/0"},
+		{"Explod", 0, "anim=9970\nid=0\nremovetime=-1"}, {"Explod", 0, "anim=9970\nid=1\nremovetime=-1"},
+		{"RemoveExplod", 1, "id=1/0"},
+		{"VarSet", 1, "v=40\nvalue=EnemyNear,InGuardDist"}, {"VarSet", 3, "v=41\nvalue=EnemyNear,InGuardDist"},
+		{"VarSet", 2, "v=42\nvalue=Pos X-var(58)"}, {"VarSet", 0, "v=43\nvalue=Life"},
+		{"VarSet", 2, "v=44\nvalue=NumExplod(0)"}, {"VarSet", 2, "v=45\nvalue=NumExplod(1)"},
+		{"HitDef", 4, "attr=S,NA\nhitflag=MAF\ndamage=40,0\npausetime=0,0\nground.type=High\nground.hittime=1000\nground.velocity=0,0\nsparkno=-1\nguard.sparkno=-1\nhitsound=-1\nguardsound=-1\np2stateno=9881"},
+		{"VarSet", 6, "v=46\nvalue=NumTarget"}, {"VarSet", 6, "v=47\nvalue=EnemyNear,Life"},
+		{"TargetLifeAdd", 6, "value=-20"}, {"VarSet", 6, "v=49\nvalue=EnemyNear,Life"},
+		{"LifeAdd", 6, "value=0"}, {"VarSet", 6, "v=50\nvalue=Life"},
+		{"TargetLifeAdd", 6, "value=0"}, {"VarSet", 6, "v=51\nvalue=EnemyNear,Life"},
+		{"ChangeState", 7, "value=9882\nctrl=1"},
+	} {
+		fmt.Fprintf(&script, "[State scalar continuation]\ntype=%s\ntrigger1=Time=%d\n%s\n", step.kind, step.tick, step.params)
+	}
+	script.WriteString("[Statedef 9881]\ntype=S\nmovetype=H\nphysics=N\nanim=0\nctrl=0\n[State zero defence]\ntype=DefenceMulSet\ntrigger1=Time=0\nvalue=0\n[State recover own state]\ntype=SelfState\ntrigger1=Time=10\nvalue=0\nctrl=1\n[Statedef 9882]\ntype=S\nmovetype=I\nphysics=N\nanim=0\nctrl=1\nvelset=0,0\n[State control]\ntype=VarSet\ntrigger1=Time=0\nv=48\nvalue=Ctrl\n[State retire art]\ntype=RemoveExplod\ntrigger1=Time=0\nid=1\n[State recover]\ntype=SelfState\ntrigger1=Time=1\nvalue=0\nctrl=1\n")
+	states, err := cns.ParseNamed(strings.NewReader(script.String()), "scalar-runtime.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for number, state := range states.States {
+		c.StateFile.States[number] = state
+	}
+	c.ChangeState(9880, 0, -1)
+	for tick := 0; tick < 24; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("scalar/contact/recovery lifecycle", err)
+		}
+	}
+	for index, expected := range []int{1, 0, 2, 999, 0, 1, 1, 1000, 1, 999, 999, 999} {
+		if c.GetVar(40+index) != expected {
+			t.Fatal("native scalar runtime observation", index, c.GetVar(40+index), expected)
+		}
+	}
+	if c.StateNo != 0 || other.StateNo != 0 || !c.Ctrl || !other.Ctrl || len(c.Explods) != 0 || !c.IsAlive() || !other.IsAlive() {
+		t.Fatal("scalar lifecycle did not recover/retire effects", c.StateNo, other.StateNo)
 	}
 }
 
