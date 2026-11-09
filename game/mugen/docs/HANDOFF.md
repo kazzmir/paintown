@@ -7,6 +7,12 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Helper-bank capacity is checked before any Helper parameter expression.
+  CreateHelperEvaluated preserves this gate; direct creation retains its own
+  capacity check. The entity flow covers full-bank rejection, skipped failures,
+  retirement/vacancy reuse, parent confirmation and round reset. All five
+  segments pass with races; rebuilt Linux matches twelve native slots.
+
 - Target controllers admit expressions only after target existence and ID
   selection. TargetBind checks ID before time/position. ParentVarSet/Add skip
   their expressions without a live parent. Keep compilation and admitted VM

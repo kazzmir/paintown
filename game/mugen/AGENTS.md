@@ -406,3 +406,9 @@ before evaluating index/value. Keep compile-time and admitted VM errors strict.
 The connected entity flow spans grab/drop, skipped effects/errors, actual parent
 writes, helper retirement and recovery/reset. All five segments pass with races;
 rebuilt Linux matches twelve native slots. Diagnostic scratch was removed.
+
+Helper admission uses CreateHelperEvaluated so a full bank skips every parameter
+expression. Keep direct creation capacity checks and compile-time validation.
+The connected entity flow covers rejection, unused errors, retirement/vacancy
+reuse, parent confirmation and reset. All five segments pass with races; rebuilt
+Linux matches twelve native slots. The helper probe overlay/capture was removed.

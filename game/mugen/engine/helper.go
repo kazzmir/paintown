@@ -119,28 +119,40 @@ func compileHelper(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		}
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		values, err := evaluateArgumentsWithBottom(args, env, true)
-		if err != nil {
-			return err
+		evaluate := func() (HelperParameters, error) {
+			values, err := evaluateArgumentsWithBottom(args, env, true)
+			if err != nil {
+				return HelperParameters{}, err
+			}
+			integer := func(key string, fallback int) int {
+				if value, present := values[key]; present {
+					return int(value.Number())
+				}
+				return fallback
+			}
+			p := HelperParameters{ID: integer("id", 0), StateNo: integer("stateno", 0), Facing: integer("facing", 1), KeyControl: integer("keyctrl", 0) != 0, OwnPalette: integer("ownpal", 0) != 0, PauseMoveTime: integer("pausemovetime", 0), SuperMoveTime: integer("supermovetime", 0), X: values["pos0"].Number(), Y: values["pos1"].Number(), Type: helperType, PosType: posType, Name: name, Named: named, RemapPalette: [2]int{integer("remappal0", -1), integer("remappal1", 0)}, Size: map[string][]float64{}}
+			for _, field := range helperSizeFields {
+				if _, present := ctrl.Params[field.name]; !present {
+					continue
+				}
+				for i := 0; i < field.count; i++ {
+					p.Size[field.name] = append(p.Size[field.name], values[fmt.Sprintf("%s%d", field.name, i)].Number())
+				}
+			}
+			return p, nil
 		}
-		integer := func(key string, fallback int) int {
-			if value, present := values[key]; present {
-				return int(value.Number())
-			}
-			return fallback
-		}
-		p := HelperParameters{ID: integer("id", 0), StateNo: integer("stateno", 0), Facing: integer("facing", 1), KeyControl: integer("keyctrl", 0) != 0, OwnPalette: integer("ownpal", 0) != 0, PauseMoveTime: integer("pausemovetime", 0), SuperMoveTime: integer("supermovetime", 0), X: values["pos0"].Number(), Y: values["pos1"].Number(), Type: helperType, PosType: posType, Name: name, Named: named, RemapPalette: [2]int{integer("remappal0", -1), integer("remappal1", 0)}, Size: map[string][]float64{}}
-		for _, field := range helperSizeFields {
-			if _, present := ctrl.Params[field.name]; !present {
-				continue
-			}
-			for i := 0; i < field.count; i++ {
-				p.Size[field.name] = append(p.Size[field.name], values[fmt.Sprintf("%s%d", field.name, i)].Number())
-			}
+		if context, ok := env.(interface {
+			CreateHelperEvaluated(func() (HelperParameters, error)) error
+		}); ok {
+			return context.CreateHelperEvaluated(evaluate)
 		}
 		context, ok := env.(interface{ CreateHelper(HelperParameters) error })
 		if !ok {
 			return fmt.Errorf("Helper context is unavailable")
+		}
+		p, err := evaluate()
+		if err != nil {
+			return err
 		}
 		return context.CreateHelper(p)
 	}, true, nil

@@ -325,6 +325,7 @@ value=740
 ctrl=1
 `
 	program += targetAdmissionProgram
+	program += helperAdmissionProgram
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-helper-pause-bind.cns")
 		if err != nil {
@@ -440,6 +441,30 @@ ctrl=1
 		}
 	}
 	borrowedEffectRecoveryFlow(t, m)
+	// Retire the earlier helpers, fill the bank, reject a request without
+	// running its expressions, then reuse a vacancy and reset the round.
+	for _, helper := range append([]*character.Character(nil), m.World.Helpers...) {
+		if err := helper.DestroyHelper(engine.DestroySelfParameters{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	oldLimit := m.World.HelperMax
+	m.World.HelperMax = 4
+	root.ChangeState(820, -1, -1)
+	for tick := 0; tick < 20; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for index, expected := range []int{0, 0, 0, 0, 4, 8, 822, 12, 1, 1, root.StateFile.Size.Height, 4} {
+		if root.GetVar(40+index) != expected {
+			t.Fatal("helper admission/retirement phase", index, root.GetVar(40+index), expected)
+		}
+	}
+	if root.StateNo != 740 || !root.Ctrl || len(m.World.Helpers) != 4 {
+		t.Fatal("helper bank vacancy did not recover", root.StateNo, len(m.World.Helpers))
+	}
+	m.World.HelperMax = oldLimit
 	m.Round++
 	if err := m.resetRound(); err != nil {
 		t.Fatal(err)
@@ -463,6 +488,79 @@ ctrl=1
 		}
 	}
 }
+
+const helperAdmissionProgram = `
+[Statedef 820]
+type=S
+movetype=I
+physics=N
+ctrl=0
+anim=9990
+[State clear observations]
+type=VarRangeSet
+trigger1=Time=0
+first=40
+last=51
+value=0
+[State fill bank]
+type=Helper
+trigger1=Time=[0,3]
+id=Time+1
+stateno=821
+[State rejected request]
+type=Helper
+trigger1=Time=4
+id=(var(40):=9)
+stateno=(var(41):=822)
+pos=(var(42):=12),0
+ownpal=(var(43):=1)
+[State unused expressions do not fail]
+type=Helper
+trigger1=Time=5
+id=~(1/0)
+pos=~(1/0),0
+[State full count]
+type=VarSet
+trigger1=Time=6
+v=44
+value=NumHelper
+[State reuse vacancy]
+type=Helper
+trigger1=Time=10
+id=(var(45):=8)
+stateno=(var(46):=822)
+pos=(var(47):=12),0
+keyctrl=(var(48):=1)
+ownpal=(var(49):=1)
+[State restored count]
+type=VarSet
+trigger1=Time=14
+v=51
+value=NumHelper
+[State recover]
+type=ChangeState
+trigger1=Time=15
+value=740
+ctrl=1
+[Statedef 821]
+type=S
+movetype=I
+physics=N
+anim=9990
+[State retire one]
+type=DestroySelf
+trigger1=IsHelper(1) && Time=8
+[Statedef 822]
+type=S
+movetype=I
+physics=N
+anim=9990
+[State parent confirmation]
+type=ParentVarSet
+trigger1=Time=0
+v=50
+value=Const(size.height)
+`
 
 // Native skips all expressions without a target/parent. With targets, it
 // evaluates ID before admitting the remaining fields, including TargetBind.

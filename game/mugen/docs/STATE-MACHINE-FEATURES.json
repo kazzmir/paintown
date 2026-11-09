@@ -118,8 +118,10 @@
       "allocation": "item3",
       "sources": [
         "character/helper.go:CreateHelper",
-        "character/retire.go:DestroyHelper"
-      ]
+        "character/retire.go:DestroyHelper",
+        "character/helper.go:CreateHelperEvaluated"
+      ],
+      "validation": "The connected entity lifecycle includes helper-bank admission before expressions, full-bank rejection without side effects/VM failures, retirement, vacancy reuse, parent confirmation and fresh round identities. All five segments pass with races; rebuilt Linux matches twelve native helper-bank observations."
     },
     {
       "id": "bindings",
@@ -562,7 +564,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4d2edcb853315a85e9fa45f4bbc50a98c368cea14079a6c16ccca21c26601877"
+      "passed_source": "a6e50ce3b14db30f8ceab11fc27fc6358db39fc537c7f3e34486ef504b33e370"
     },
     {
       "id": "combat",
@@ -606,7 +608,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "72251b9b1bba4fb2c4660a1c9e5cc5358f51f0f5be59cfed6ad99ba5abf67e26"
+      "passed_source": "b1ffb7c32fbb7b6f67543c83a3b5ef6f0a4b349a351fd8f790a71ae132a28698"
     },
     {
       "id": "entities",
@@ -639,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7333c096a9ffc596b731e37aaf89a8641d128dc43df23e9c1852c836bc60784b"
+      "passed_source": "82363be369eb3e867d0cf0172a797b96df52bb2edce4de80542cd369678fcb77"
     },
     {
       "id": "effects-pause",
@@ -674,7 +676,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4c433990b9d7e442c1918cb96c6d208f409e845645d3b76cbc939cecb96c2cab"
+      "passed_source": "1a235752052a05637c22c2921fc2faf342cd599e32cc5c6a51763b7d1ba5e9f5"
     },
     {
       "id": "match-flow",
@@ -753,7 +755,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4442ad6f0d15ceaded90c9a8493bf512fc7d75fa3b2406831175f9196a504465"
+      "passed_source": "019b92ed6c868cab9547d7f25d51aa5f091998ccf70ac893571e3b65182819a4"
     }
   ],
   "presentation_followups": [
@@ -891,6 +893,12 @@
       "name": "Target selection and parent-variable expression admission",
       "completed": true,
       "validation": "Target controllers skip all parameters when no acquired target exists. With targets, ID is evaluated first; an unmatched ID skips remaining values, including TargetBind time/position. ParentVarSet/Add skip index/value evaluation without a live parent. Compilation and admitted VM errors retain their existing checks. The connected mixed-coordinate entity lifecycle spans absent relationships, grab, ID rejection/admission, velocity, TargetDrop, unused fatal expressions, actual helper-parent writes, retirement and own-state recovery/reset. All five segments pass with race detection. Rebuilt Linux matches all twelve native observation slots; the capture was inspected. Shared assets reused; diagnostic overlays/captures/helpers removed."
+    },
+    {
+      "id": "helper-bank-admission",
+      "name": "Helper-bank admission before parameter evaluation",
+      "completed": true,
+      "validation": "A full helper bank suppresses all controller expressions, including unused VM errors. Compilation stays strict. Retirement makes the next request eligible again; ID/state/position/key control/palette and child-to-parent confirmation then evaluate normally. The existing entity lifecycle continues through bank fill, rejection, vacancy reuse, recovery and round reset. All five connected segments pass with races. Rebuilt Linux matches all twelve native observation slots. Shared sprites were linked; diagnostic overlay/capture removed."
     }
   ]
 }

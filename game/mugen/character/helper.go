@@ -6,6 +6,22 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 )
 
+// The helper bank admits a request before any controller expressions run.
+func (c *Character) CreateHelperEvaluated(evaluate func() (engine.HelperParameters, error)) error {
+	if err := c.ensureWorld(); err != nil {
+		return err
+	}
+	if len(c.World.Helpers) >= c.World.HelperMax {
+		c.EvaluationWarning("Helper limit reached")
+		return nil
+	}
+	p, err := evaluate()
+	if err != nil {
+		return err
+	}
+	return c.CreateHelper(p)
+}
+
 func (c *Character) CreateHelper(p engine.HelperParameters) error {
 	if err := c.ensureWorld(); err != nil {
 		return err
