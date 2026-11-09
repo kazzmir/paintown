@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"image/color"
 	"os"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
@@ -394,4 +396,113 @@ trigger1=1
 		}
 	}
 	step(ebiten.KeyEscape)
+	demoAttractModeFlow(t, e, step, canvas)
+}
+
+// Continue the real mode lifecycle through idle title, automatic previews,
+// authored AI combat, intro cycling and input interruption back to the menu.
+func demoAttractModeFlow(t *testing.T, e *Engine, step func(...ebiten.Key), canvas *ebiten.Image) {
+	t.Helper()
+	settings, err := parsers.Parse(strings.NewReader(`[Demo Mode]
+enabled=1
+title.waittime=3
+select.enabled=1
+vsscreen.enabled=1
+fight.endtime=650
+fight.playbgm=0
+fight.stopbgm=1
+fight.bars.display=0
+debuginfo=0
+intro.waitcycles=1
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.motif.AST.Sections = append(settings.Sections, e.motif.AST.Sections...)
+	introPath := filepath.Join(t.TempDir(), "attract intro.def")
+	source := "[SceneDef]\nspr=" + filepath.Join(e.dataDir, "data/mugen1/system.sff") + "\n[Scene 0]\nend.time=2\nclearcolor=11,22,33\n"
+	if err := os.WriteFile(introPath, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
+	e.motif.Files.IntroStoryboard = introPath
+	bg := e.motif.TitleBG
+	element := bg.Elements[0]
+	bg.Controllers = append([]*background.BGCtrlDef{{Ctrls: []*background.BGCtrl{{Type: "velset", Time: [2]int{0, 0}, CtrlIDs: []int{element.GetID()}, Params: map[string]parsers.Value{"x": parsers.NumberValue{Val: .25}}}}}}, bg.Controllers...)
+	e.currentState = NewTitleState(e)
+	step()
+	step()
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatal("demo ignored title wait")
+	}
+	if x, _ := element.GetVelocity(); x != .25 || bg.Controllers[0].Time != 2 {
+		t.Fatal("title BG controllers did not advance")
+	}
+	step()
+	if _, ok := e.currentState.(*SelectState); !ok {
+		t.Fatalf("idle title did not enter automatic selection: %T", e.currentState)
+	}
+	seenVS, seenFight, seenIntro := false, false, false
+	for tick := 0; tick < 1100; tick++ {
+		step()
+		switch state := e.currentState.(type) {
+		case *VersusState:
+			seenVS = true
+		case *FightState:
+			if state.match.Phase != match.Active || seenFight {
+				continue
+			}
+			seenFight = true
+			for _, player := range state.match.Actors() {
+				if player.Character.AILevel <= 0 {
+					t.Fatal("demo left human input on a fighter")
+				}
+			}
+			if e.demoShowsBars() || e.demoShowsDebug() {
+				t.Fatal("demo presentation flags ignored")
+			}
+			e.Draw(canvas)
+			hidden := make([]byte, canvas.Bounds().Dx()*canvas.Bounds().Dy()*4)
+			canvas.ReadPixels(hidden)
+			demo := e.demo
+			e.demo = nil
+			e.Draw(canvas)
+			visible := make([]byte, len(hidden))
+			canvas.ReadPixels(visible)
+			e.demo = demo
+			if bytes.Equal(hidden, visible) {
+				t.Fatal("demo bar suppression did not reach production drawing")
+			}
+		case *StoryboardState:
+			seenIntro = true
+			if e.demo != nil {
+				t.Fatal("completed demo still owns intro state")
+			}
+			e.Draw(canvas)
+		case *TitleState:
+			if !seenVS || !seenFight || !seenIntro || e.demo != nil {
+				t.Fatal("demo/intro/return lifecycle incomplete", seenVS, seenFight, seenIntro)
+			}
+			// A second idle cycle is interrupted while its selection preview owns
+			// the state; the same Enter must not activate the returned title too.
+			step()
+			step()
+			step()
+			if e.demo == nil {
+				t.Fatal("second idle demo did not begin")
+			}
+			step(ebiten.KeyEnter)
+			if _, ok := e.currentState.(*TitleState); !ok || e.demo != nil || e.demoCycles != 0 {
+				t.Fatal("demo input did not return cleanly to title")
+			}
+			e.themeAttribute("Demo Mode", "enabled").Value = parsers.NumberValue{Val: 0}
+			for n := 0; n < 5; n++ {
+				step()
+			}
+			if _, ok := e.currentState.(*TitleState); !ok || e.demo != nil {
+				t.Fatal("disabled demo restarted")
+			}
+			return
+		}
+	}
+	t.Fatal("demo did not complete its authored end time")
 }

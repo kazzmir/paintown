@@ -110,6 +110,12 @@ func (s *FightState) Update() (State, error) {
 	if s.renderError != nil {
 		return s, s.renderError
 	}
+	if d := s.engine.demo; d != nil {
+		d.fightTicks++
+		if d.fightTicks >= max(1, s.engine.themeNumber("Demo Mode", "fight.endtime", 1500)) || s.match.Phase == match.Finished {
+			return s.engine.endDemo(true)
+		}
+	}
 	s.updateDebugSelection()
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		if err := s.match.ClearSounds(); err != nil {

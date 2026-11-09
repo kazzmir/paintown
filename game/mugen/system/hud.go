@@ -351,7 +351,7 @@ func (h *FightHUD) drawBars(screen *ebiten.Image) {
 
 func (h *FightHUD) Draw(screen *ebiten.Image) {
 	m := h.match
-	if !m.Timeline.NoBarDisplay {
+	if !m.Timeline.NoBarDisplay && (h.engine == nil || h.engine.demoShowsBars()) {
 		h.drawBars(screen)
 		h.drawCombos(screen)
 	}

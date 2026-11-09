@@ -61,7 +61,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **First character storyboards and portrait sprites**
 - [x] **Roster entry presentation through selection handoff**
 - [x] **Localized roster limits through Arcade scheduling**
-- [ ] **Idle title demo and intro cycling**: Source audit found the supplied motif Demo Mode group has no runtime consumer, and TitleState updates BG elements without their controllers. Implement the documented idle selection/VS/AI-fight/return lifecycle, audio/HUD options and intro cycling next; supplied system.def defines the functional contract.
+- [ ] **Idle title demo and intro cycling**: Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Batch acceptance pending.
 
 ## Completed scenario coverage
 
@@ -74,7 +74,7 @@ source changes reopen only the affected segments.
 - [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 

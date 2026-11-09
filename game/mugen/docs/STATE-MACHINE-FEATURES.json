@@ -1052,7 +1052,7 @@
       "id": "title-attract-mode",
       "name": "Idle title demo and intro cycling",
       "completed": false,
-      "validation": "Source audit found the supplied motif Demo Mode group has no runtime consumer, and TitleState updates BG elements without their controllers. Implement the documented idle selection/VS/AI-fight/return lifecycle, audio/HUD options and intro cycling next; supplied system.def defines the functional contract."
+      "validation": "Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Batch acceptance pending."
     }
   ]
 }

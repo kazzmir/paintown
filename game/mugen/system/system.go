@@ -21,6 +21,7 @@ type TitleState struct {
 	items          []string
 	cursorAlpha    float64
 	cursorAlphaMod float64
+	idleTicks      int
 }
 
 func NewTitleState(engine *Engine) *TitleState {
@@ -53,9 +54,17 @@ func (s *TitleState) Update() (State, error) {
 		s.cursorAlphaMod = 2.0 / 255.0
 	}
 	if s.engine.motif.TitleBG != nil {
-		for _, el := range s.engine.motif.TitleBG.Elements {
-			el.Update()
-		}
+		s.engine.motif.TitleBG.Update()
+	}
+
+	if demoInputPressed() {
+		s.idleTicks = 0
+		s.engine.demoCycles = 0
+	} else {
+		s.idleTicks++
+	}
+	if s.engine.themeNumber("Demo Mode", "enabled", 0) != 0 && s.idleTicks >= max(1, s.engine.themeNumber("Demo Mode", "title.waittime", 600)) {
+		return s.engine.beginDemo()
 	}
 
 	if len(s.items) == 0 {

@@ -61,6 +61,9 @@ func (s *VersusState) Update() (State, error) {
 		s.engine.motif.VsBG.Update()
 	}
 	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || s.ticks >= s.engine.motif.VSScreen.Time {
+		if s.engine.demo != nil {
+			return s.engine.nextDemoScreen()
+		}
 		return NewFightState(s.engine, s.request)
 	}
 	return s, nil

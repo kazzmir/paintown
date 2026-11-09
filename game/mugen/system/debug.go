@@ -30,7 +30,7 @@ func (s *FightState) updateDebugSelection() {
 }
 
 func (s *FightState) drawDebugClipboard(screen *ebiten.Image) error {
-	if s.debugSelection < 0 {
+	if s.debugSelection < 0 || !s.engine.demoShowsDebug() {
 		return nil
 	}
 	actors := s.debugActors()

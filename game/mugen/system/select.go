@@ -157,6 +157,13 @@ func (s *SelectState) Update() (State, error) {
 		s.engine.motif.SelectBG.Update()
 	}
 
+	if s.engine.demo != nil {
+		// The preview runs the real selection background and cursor animations.
+		if s.ticks >= 60 {
+			return s.engine.nextDemoScreen()
+		}
+		return s, nil
+	}
 	snd := s.engine.motif.SelectInfo
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		if s.choosingStage {

@@ -40,6 +40,8 @@ type Engine struct {
 	random           *engine.RandomStream
 	pendingMatchSeed int64
 	modeRun          *modeRun
+	demo             *demoRun
+	demoCycles       int
 	nextCampaign     uint64
 	characterPacks   resource.CharacterPacks
 	stop             <-chan struct{}
@@ -90,11 +92,19 @@ func (e *Engine) Update() error {
 	if input.GlobalManager != nil {
 		input.GlobalManager.Update()
 	}
+	interruptedDemo := e.demo != nil && demoInputPressed()
+	if interruptedDemo {
+		next, err := e.endDemo(false)
+		if err != nil {
+			return err
+		}
+		e.currentState = next
+	}
 	if err := e.syncMusic(); err != nil {
 		return err
 	}
 
-	if e.currentState != nil {
+	if e.currentState != nil && !interruptedDemo {
 		next, err := e.currentState.Update()
 		if err != nil {
 			return err

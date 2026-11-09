@@ -46,17 +46,23 @@ func (e *Engine) syncMusic() error {
 			case *GameOverScreenState:
 				key = "gameover"
 			}
-			if key != "" {
+			if key != "" && e.demo == nil {
 				track := e.motif.Music[key]
 				e.playMusic(track, e.motif.Source, false)
 			}
 		}
 		if fight, ok := e.currentState.(*FightState); ok && fight.match != nil {
-			track := fight.match.Stage.Music
-			if fight.match.Request.Music != "" {
-				track.File = fight.match.Request.Music
+			if e.demo != nil && e.themeNumber("Demo Mode", "fight.playbgm", 0) == 0 {
+				if e.themeNumber("Demo Mode", "fight.stopbgm", 1) != 0 {
+					bus.Stop()
+				}
+			} else {
+				track := fight.match.Stage.Music
+				if fight.match.Request.Music != "" {
+					track.File = fight.match.Request.Music
+				}
+				e.playMusic(track, fight.match.Stage.Source, true)
 			}
-			e.playMusic(track, fight.match.Stage.Source, true)
 		}
 		if e.currentState == nil {
 			bus.Stop()
