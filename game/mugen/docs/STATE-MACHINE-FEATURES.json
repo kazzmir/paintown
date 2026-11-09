@@ -193,8 +193,11 @@
       "allocation": "item3",
       "sources": [
         "engine/timeline.go:BeginFrame",
-        "engine/timeline.go:RequestSuperPause"
-      ]
+        "engine/timeline.go:RequestSuperPause",
+        "engine/pause.go:compilePause",
+        "engine/superpause.go:compileSuperPause"
+      ],
+      "validation": " The connected shared-clock lifecycle now includes ordinary-bottom numeric fallback, zero-duration power updates, later argument side effects and real pause/recovery. Admitted VM errors remain fatal. All twelve bounded native observations match rebuilt Linux; all segments pass with races."
     },
     {
       "id": "effects",
@@ -569,7 +572,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "9c42717039921347511238ad2fe28d9299af07dfe39906d4e09f2790bc19870f"
+      "passed_source": "f9f3326aab934628c68d76802da064bc38811503fef1afa612e75a107a7b3f5a"
     },
     {
       "id": "combat",
@@ -613,7 +616,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "799d148509497a033396741131c57762b855597136299d3e678416e38ed97556"
+      "passed_source": "8205c940aadaa9fc1e5fb3d9f89b2189d00709a1dc71e4317bd69faa55a0d2af"
     },
     {
       "id": "entities",
@@ -646,7 +649,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "76a0ef9d409788490b9206ad50022a148f72a59919c18ab09f9fb2ee92df9b88"
+      "passed_source": "99495e66f0b5a5483e21f2f17e1abc96a64820ed7de48986fd137cb163b846d6"
     },
     {
       "id": "effects-pause",
@@ -681,7 +684,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "9ef81ca4084b18b842e23fb9e7737e31570e3258d077568536ad32ab67389da6"
+      "passed_source": "a75fd673e6e4ad86ab13453b61274432b184fa82c5cbdc9dc5fb741b7f99bd4e"
     },
     {
       "id": "match-flow",
@@ -760,7 +763,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "917d81189d522d15edddd02ae890a93c2ce55bd07adbd6e2397f68f3ba2a4a62"
+      "passed_source": "94e18e47be8b80610b962e6c0f04fe9038e75f244e31cfa6407d89b60e8b86db"
     }
   ],
   "presentation_followups": [
@@ -928,6 +931,12 @@
       "name": "Variable register and range write admission",
       "completed": true,
       "validation": "Variable and parent-variable writes validate their destination before evaluating the value. Invalid register IDs, out-of-bounds ranges and reversed ranges are no-ops without value side effects or unused VM failures. Valid ranges evaluate the value once; ordinary bottom becomes zero for integer/float writes. Admitted VM errors remain fatal with source context. The existing runtime lifecycle continues through invalid writes, valid scalar/range updates, numeric fallback and own-state recovery. All five connected segments pass with races. Rebuilt Linux matches all twelve native observations; diagnostic overlay/capture removed."
+    },
+    {
+      "id": "pause-numeric-fallback",
+      "name": "Pause and SuperPause numeric fallback through recovery",
+      "completed": true,
+      "validation": "Ordinary bottom-valued Pause/SuperPause parameters coerce to zero; omitted fields retain defaults and later arguments still run. A zero-duration SuperPause still applies its power change. Genuine VM failures remain fatal before applying power or pause requests. The existing shared-clock/background/effect/reset scenario continues through invalid numeric results, argument side effects, zero-duration power updates, real Pause/SuperPause and own-state recovery. All five segments pass with races. Rebuilt Linux matches all twelve native observations. Diagnostic overlay/capture removed. Separately confirmed that native DestroySelf evaluates parameters even on nonhelpers; existing behavior was retained."
     }
   ]
 }

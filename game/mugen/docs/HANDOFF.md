@@ -7,6 +7,13 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Pause/SuperPause ordinary numeric bottom uses zero; omitted values retain
+  defaults and later arguments run. Zero-duration SuperPause still changes
+  power. True VM errors remain fatal before applying effects. The shared-clock
+  lifecycle and rebuilt Linux match twelve native observations; all five
+  segments pass with races. DestroySelf on a root still evaluates parameters
+  in native; preserve that existing behavior rather than generalizing gates.
+
 - Variable register/range destinations admit value evaluation. Invalid IDs,
   invalid ranges and reversed ranges skip the value and continue. Valid ranges
   evaluate once and use ordinary-bottom zero fallback; genuine admitted VM

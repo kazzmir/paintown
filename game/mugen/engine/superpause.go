@@ -64,7 +64,7 @@ func compileSuperPause(ctrl *cns.StateController) (ControllerFunc, bool, error) 
 		}
 	}
 	return func(_ *cns.StateController, env Environment) error {
-		values, err := evaluateArguments(args, env)
+		values, err := evaluateArgumentsWithBottom(args, env, true)
 		if err != nil {
 			return err
 		}

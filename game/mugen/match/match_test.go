@@ -1155,6 +1155,68 @@ func TestPauseMatchClockBackgroundEffectsAndRoundReset(t *testing.T) {
 		if m.Timeline.Paused() || m.Timeline.GameTime != gameTime || m.Players[0].Character.Timeline != m.Timeline {
 			t.Fatal("round reset retained pause or detached the world clock")
 		}
+		if pauseBackground {
+			pauseRuntimeRecoveryFlow(t, m)
+		}
+	}
+}
+
+// Continue the shared clock scenario through numeric fallback, argument side
+// effects, zero-duration power updates, real pauses and own-state recovery.
+func pauseRuntimeRecoveryFlow(t *testing.T, m *Match) {
+	t.Helper()
+	advanceUntil(t, m, Active, 600)
+	var script strings.Builder
+	script.WriteString("[Statedef 9750]\ntype=S\nmovetype=I\nphysics=N\nctrl=0\nanim=0\n")
+	for _, step := range []struct {
+		kind   string
+		tick   int
+		params string
+	}{
+		{"VarRangeSet", 0, "first=40\nlast=51\nvalue=0"},
+		{"VarSet", 0, "v=58\nvalue=GameTime"}, {"PowerSet", 0, "value=0"},
+		{"Pause", 0, "time=1/0\nmovetime=(var(40):=2)\nendcmdbuftime=(var(41):=3)\npausebg=(var(42):=0)"},
+		{"VarSet", 1, "v=43\nvalue=GameTime-var(58)"},
+		{"SuperPause", 1, "time=1/0\nmovetime=(var(44):=2)\nanim=-1\nsound=-1\npoweradd=(var(45):=100)\ndarken=1/0\nunhittable=1/0"},
+		{"VarSet", 2, "v=46\nvalue=GameTime-var(58)"}, {"VarSet", 2, "v=47\nvalue=Power"},
+		{"Pause", 2, "time=3\nmovetime=1\nendcmdbuftime=3"},
+		{"VarSet", 3, "v=48\nvalue=GameTime-var(58)"}, {"VarSet", 4, "v=49\nvalue=GameTime-var(58)"},
+		{"SuperPause", 4, "time=3\nmovetime=3\nanim=-1\nsound=-1\npoweradd=50\ndarken=0"},
+		{"VarSet", 7, "v=50\nvalue=Power"}, {"VarSet", 7, "v=51\nvalue=GameTime-var(58)"},
+		{"SelfState", 7, "value=0\nctrl=1"},
+	} {
+		fmt.Fprintf(&script, "[State pause continuation]\ntype=%s\ntrigger1=Time=%d\n%s\n", step.kind, step.tick, step.params)
+	}
+	script.WriteString("[Statedef 9751]\n[State fatal pause]\ntype=Pause\ntrigger1=1\ntime=1/0\nmovetime=~(1/0)\n[Statedef 9752]\n[State fatal superpause]\ntype=SuperPause\ntrigger1=1\ntime=0\npoweradd=100\np2defmul=~(1/0)\n")
+	states, err := cns.ParseNamed(strings.NewReader(script.String()), "pause-runtime.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := m.Players[0].Character
+	for number, state := range states.States {
+		c.StateFile.States[number] = state
+	}
+	c.ChangeState(9750, 0, -1)
+	for tick := 0; tick < 16; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal("pause numeric/recovery lifecycle", err)
+		}
+	}
+	for index, expected := range []int{2, 3, 0, 1, 2, 100, 2, 100, 3, 6, 150, 9} {
+		if c.GetVar(40+index) != expected {
+			t.Fatal("native pause numeric observation", index, c.GetVar(40+index), expected)
+		}
+	}
+	if c.StateNo != 0 || !c.Ctrl || m.Timeline.Paused() || c.Power != 150 {
+		t.Fatal("pause lifecycle did not recover", c.StateNo, c.Power)
+	}
+	for _, number := range []int{9751, 9752} {
+		fatal := character.NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+		fatal.SetPower(31)
+		_, err := fatal.SM.ExecuteState(states.States[number], fatal)
+		if err == nil || !strings.Contains(err.Error(), "bitwise not of bottom") || !strings.Contains(err.Error(), "pause-runtime.cns") || fatal.Power != 31 || fatal.Timeline.Paused() {
+			t.Fatal("pause VM failure was hidden or partly applied", number, err)
+		}
 	}
 }
 
