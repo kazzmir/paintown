@@ -418,9 +418,10 @@
         "character/commands.go:Match",
         "character/command_inputs.go:CommandInputs",
         "cmd/remap.go:RemapInputs",
-        "cmd/remap.go:PhysicalInputs"
+        "cmd/remap.go:PhysicalInputs",
+        "character/character.go:Command"
       ],
-      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open."
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races."
     },
     {
       "id": "modes",
@@ -596,7 +597,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f88bf0268cf11860931bbbb9c6be830a1d7412b4e83f2501ba63d2d28670553a"
+      "passed_source": "82274899ec2425ce2f0960f406068ee201311cf29fa8eb8ce6c847614fd1ab2d"
     },
     {
       "id": "entities",
@@ -629,7 +630,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "87fd5733408198cdbcaf08fae7a7e12fa526fbb1315efb2cfa7060d3f8ab0ca9"
+      "passed_source": "09a9bdbcd696cb1a401467b4236c8be6b0849fbe12c09c4cea121090a7ded778"
     },
     {
       "id": "effects-pause",
@@ -664,7 +665,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4e5338def86c0f62df2af9abdb596227d1c63b2e85113911e75d781e41696906"
+      "passed_source": "14572e02d255d61f94be4af09bfbebb04e2128699c560d076fbac277fd16a096"
     },
     {
       "id": "match-flow",
@@ -743,7 +744,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d65e975425289f0aa38c688d7158d34b0cc26d1a59f7b20c960e76503d831fc9"
+      "passed_source": "70669092bad2180676b6dc8c6c570f2edb055231ac2630f5f3fe2e0ebf9d7285"
     }
   ],
   "presentation_followups": [
@@ -827,6 +828,12 @@
       "name": "Automatic air-jump state entry and budget",
       "completed": true,
       "validation": "The engine now selects common state45 from fresh airborne up input, honoring control, minimum height and the per-flight limit. Low/held input cannot activate later at height. Common CNS owns directional velocity and animation; grounded S/C restores the budget before guard can return early. The mixed-coordinate jump/body/Pause/reset scenario spans two flights. Four changed-source segments pass with races; state-flow stays checked. Native and rebuilt Linux keyboard flows each accepted two air jumps and returned to idle. Scratch removed."
+    },
+    {
+      "id": "declared-command-button-hold",
+      "name": "Declared button commands do not auto-repeat through raw fallback",
+      "completed": true,
+      "validation": "Character.Command now honors a declared label\u2019s matched window and cannot reactivate it from a held raw button. The existing player/helper command lifecycle covers attack/recovery, release/repress, explicit held/released input and authored buffering before stock AI combat. Four affected segments pass with races; state-flow stays checked. Native beta and rebuilt Linux stock KFM each attack once while held and a second time after repress. Scratch removed; no user configuration or mod scripts changed."
     }
   ]
 }

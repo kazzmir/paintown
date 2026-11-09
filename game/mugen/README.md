@@ -223,6 +223,10 @@ Supported actions are `jump` (`up`), `crouch` (`down`), `left`, `right`, `a`, `b
 prefix is optional. Both players can have their own lists; assigning the same
 physical key to both players activates both mappings.
 
+Character CMD definitions control attack timing. A plain button command such as
+`x` matches a new press; `/x` matches holding and `~x` matches release. Authored
+`buffer.time` keeps a matched command active for that window.
+
 The first valid override file wins. Search order is the data root's `mugen.yaml`,
 its `data/mugen.yaml`, `~/.paintown/mugen.yaml`, the working directory's
 `mugen.yaml`, `game/mugen/mugen.yaml`, then `mugen.yaml` beside the executable.

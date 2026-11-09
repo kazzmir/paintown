@@ -7,6 +7,10 @@ beta are content findings. Keep the existing optional SF2 playable copy intact.
 
 Latest engine checkpoints:
 
+- Declared CMD labels now use their matched press/hold/release/buffer rules.
+  Raw fallback cannot reactivate an inactive declared button while it stays
+  held. The connected player/helper attack/recovery flow preserves explicit
+  held input, charged release and buffer windows, then continues into stock AI.
 - Air jumps now enter common state45 on a fresh up edge, with control, height
   and per-flight limits. CNS owns velocity/animation. Grounded S/C restores the
   budget before held guard can return early. The mixed 320p/1280p jump flow now
@@ -24,7 +28,9 @@ Latest engine checkpoints:
 All five connected segments are checked with race detection. The latest four
 changed-source segments passed; state-flow stayed checked. Linux is rebuilt.
 Native and Linux keyboard flows each accepted two air jumps across two flights
-and returned to idle. Current diagnostic scratch/captures/overlays were removed.
+and returned to idle. The latest held-button flows also agree: one attack while
+held, then a second after release/repress. Current diagnostic scratch/captures/
+overlays were removed.
 
 The ledger remains 32/34 implemented items, with 89 controller and 127 trigger
 routes. These are scoped functional checkmarks, not arbitrary native conformance

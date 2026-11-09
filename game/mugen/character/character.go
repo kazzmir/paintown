@@ -2488,6 +2488,13 @@ func (c *Character) Command(name string) bool {
 			return true
 		}
 	}
+	// A declared command owns its press/release/hold and buffer semantics.
+	// Raw input must not reactivate it after its matched window has expired.
+	if c.CmdFile != nil {
+		if _, declared := c.CmdFile.Commands[name]; declared {
+			return false
+		}
+	}
 
 	// 2. Fallback: Check current raw input buffer for simple button/direction names
 	if c.Commands != nil && len(c.Commands.History) > 0 {

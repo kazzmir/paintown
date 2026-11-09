@@ -58,6 +58,16 @@ command=a
 [Command]
 name="start"
 command=s
+[Command]
+name="x"
+command=x
+[Command]
+name="held-x"
+command=/x
+[Command]
+name="buffered-x"
+command=x
+buffer.time=3
 `))
 	if err != nil {
 		t.Fatal(err)
@@ -78,6 +88,11 @@ type=ChangeState
 triggerall=StateNo=0
 trigger1=command="double"
 value=8002
+[State -1, ordinary button attack]
+type=ChangeState
+triggerall=StateNo=0 && Var(59)=1
+trigger1=command="x"
+value=8003
 [Statedef 0]
 type=S
 movetype=I
@@ -142,6 +157,20 @@ trigger1=Time=0
 v=52
 value=1
 [State 8002, recover]
+type=ChangeState
+trigger1=Time>=3
+value=0
+[Statedef 8003]
+type=S
+movetype=A
+physics=N
+ctrl=0
+[State 8003, count ordinary presses]
+type=VarAdd
+trigger1=Time=0
+v=56
+value=1
+[State 8003, recover]
 type=ChangeState
 trigger1=Time>=3
 value=0
@@ -220,6 +249,29 @@ value=0
 	step()
 	if root.IntVars[53] != 0 || root.IntVars[54] != 1 || root.IntVars[55] != 1 || helper.IntVars[53] != 0 || helper.IntVars[54] != 1 || helper.IntVars[55] != 1 {
 		t.Fatal("root/helper remap, disabled slot, Start or charged release", root.IntVars[53:56], helper.IntVars[53:56])
+	}
+	// Follow both actors through attack/recovery while one physical button
+	// stays down. The bare x command fires once; /x remains held and the
+	// explicitly buffered alias retains exactly its authored window.
+	root.IntVars[59], helper.IntVars[59] = 1, 1
+	for press := 1; press <= 2; press++ {
+		for frame := 0; frame < 12; frame++ {
+			step("ButtonA")
+			for _, actor := range []*character.Character{root, helper} {
+				if actor.Command("x") != (frame == 0) || !actor.Command("held-x") || actor.Command("buffered-x") != (frame < 3) {
+					t.Fatal("declared press/hold/buffer semantics were bypassed", press, frame, actor.InputSlot, actor.ActiveCommands)
+				}
+			}
+		}
+		for _, actor := range []*character.Character{root, helper} {
+			if actor.IntVars[56] != press || actor.StateNo != 0 || !actor.Ctrl {
+				t.Fatal("held button repeated through recovery", press, actor.IntVars[56], actor.StateNo)
+			}
+		}
+		step()
+		if root.Command("held-x") || helper.Command("held-x") || !root.Command("released-x") || !helper.Command("released-x") {
+			t.Fatal("held-button release did not reach the authored release command")
+		}
 	}
 	for side := range request.Players {
 		request.Players[side].AILevel = 8

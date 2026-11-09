@@ -334,3 +334,12 @@ budget, landing and a second flight, then its prior body/pause/reset lifecycle.
 Four changed-source segments pass with races; state-flow stays checked. Native
 and rebuilt Linux input flows finish with two accepted jumps across two flights.
 All diagnostic scratch removed. No mod scripts or user configuration changed.
+
+Declared CMD labels are authoritative in Character.Command: after checking
+ActiveCommands, return false for a declared but inactive label. Do not let raw
+button fallback reactivate a normal press throughout a hold. Preserve explicit
+/held, ~release and authored buffer windows. The connected human/helper/AI flow
+now spans two held attack/recovery cycles, release/repress and those modifiers.
+Four affected segments pass with races; state-flow stays checked. Native and
+rebuilt Linux stock KFM each attack once while held, then again after repress.
+Diagnostic scratch removed; user configuration and mod scripts unchanged.
