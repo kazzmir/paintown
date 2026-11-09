@@ -194,6 +194,28 @@ load time. The port limits declarations and per-element collision-box copies to
 1,048,576 allocations per AIR file; this is a port resource ceiling, not a claim
 about the beta's exact rejection rules.
 
+### Language selection
+
+Set the two-letter language code in your data root's `data/mugen.cfg`, then
+restart the game:
+
+```ini
+[Config]
+Language = "ja"
+```
+
+Localized groups such as `[ja.Files]`, `[ja.Info]` and `[ja.Scene 0 hello]`
+replace their complete English groups. Omitted keys use their defaults; they
+do not inherit English values. If a localized group is absent, the undecorated
+group supplies English fallback. This applies to characters, stages, motifs,
+storyboards and definition fonts, including selection and VS portraits.
+Motif `select` paths resolve beside the motif before the shared data directory.
+
+Character commands/states and individual background elements stay undecorated.
+Standalone AIR banks also stay unchanged; use localized `[Files]` to select
+another animation file. Victory quotes retain their language banks. Fonts must
+provide the desired glyphs; the embedded fallback does not cover full CJK text.
+
 ### Keyboard overrides in mugen.yaml
 
 Place `mugen.yaml` in your selected `--data-dir`, alongside `data/`, `chars/` and

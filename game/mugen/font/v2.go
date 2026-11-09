@@ -14,11 +14,12 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
-func loadV2(path string, data []byte) (*Font, error) {
+func loadV2(path string, data []byte, languages ...string) (*Font, error) {
 	ast, err := parsers.Parse(bytes.NewReader(data))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
+	ast = parsers.Localize(ast, languages...)
 	values := make(map[string]string)
 	version := ""
 	for _, section := range ast.Sections {

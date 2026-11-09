@@ -145,7 +145,7 @@ type Motif struct {
 	VictoryBG *background.Background
 }
 
-func LoadMotif(path string, dataDir string) (*Motif, error) {
+func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error) {
 	absPath, err := resource.Resolve(path, dataDir, filepath.Join(dataDir, "data"), ".")
 	if err != nil {
 		return nil, fmt.Errorf("motif DEF: %w", err)
@@ -160,6 +160,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", absPath, err)
 	}
+	ast = parsers.Localize(ast, languages...)
 	fileLines := make(map[string]int)
 	defData, err := parsers.ParseDefFromAST(ast)
 	if err != nil {
@@ -604,7 +605,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		if err != nil {
 			return nil, err
 		}
-		loaded, err := font.LoadFont(fontPath)
+		loaded, err := font.LoadFont(fontPath, languages...)
 		if err != nil {
 			return nil, assetError(key, fmt.Errorf("%s: %w", fontPath, err))
 		}

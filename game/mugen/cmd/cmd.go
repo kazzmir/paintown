@@ -30,12 +30,13 @@ type Data struct {
 }
 
 // Parse extracts [Command] definitions and [State -1, x] controllers from a M.U.G.E.N .cmd file.
-func Parse(r io.Reader) (*Data, error) {
+func Parse(r io.Reader, languages ...string) (*Data, error) {
 	ast, err := parsers.Parse(r)
 	if err != nil {
 		return nil, err
 	}
 
+	ast = parsers.Localize(ast, languages...)
 	data := &Data{
 		Commands:         make(map[string][]Command),
 		StateControllers: make([]StateController, 0),

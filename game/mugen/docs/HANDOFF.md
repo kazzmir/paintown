@@ -7,6 +7,14 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Config.Language now reaches all definition asset consumers. Localized groups
+  replace whole sections; missing sections fall back to English. Keep source
+  lines, scene order, command/state/BG exemptions and runtime quote banks.
+  Standalone AIR stays undecorated; localized Files can choose another bank.
+  Motif-local select.def resolves before shared data. The connected asset
+  lifecycle and all five segments pass with races; rebuilt Linux matches the
+  twelve native observation slots. Font glyph availability remains partial.
+
 - Character DEF and motif Info/Files use first values, including blanks and
   original source lines. Ignored bad duplicates cannot replace sprites, fonts,
   coordinate profiles or legacy palette policy. The existing asset/ZIP/menu/

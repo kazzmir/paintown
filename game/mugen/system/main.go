@@ -185,7 +185,7 @@ func run() (runErr error) {
 	input.GlobalManager = input.NewInputManager(cfg)
 
 	// Load motif
-	m, err := motif.LoadMotif(cfg.Options.Motif, *dataDir)
+	m, err := motif.LoadMotif(cfg.Options.Motif, *dataDir, cfg.Config.Language)
 	if err != nil {
 		return fmt.Errorf("load motif %s: %w", cfg.Options.Motif, err)
 	}

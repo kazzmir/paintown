@@ -27,6 +27,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/stage"
@@ -631,6 +632,7 @@ trigger1=1
 	}
 	e.Draw(canvas)
 	packedCharacterAssetFlow(t, e, canvas, dir, definition)
+	localizedAssetFlow(t, e, canvas, dir, definition)
 	// Missing declared ACTs retain the DEF key/location; no directory fallback.
 	write("outfits.def", []byte(strings.Replace(definition, `Pal\Gold.ACT`, `Pal\missing.act`, 1)))
 	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "pal2") {
@@ -639,6 +641,282 @@ trigger1=1
 	write("outfits.def", []byte(strings.Replace(definition, "sprite=outfits.sff", "sprite=missing-primary.sff", 1)))
 	if _, err := character.LoadPlayer(dir, "outfits.def"); err == nil || !strings.Contains(err.Error(), "missing-primary.sff") || !strings.Contains(err.Error(), fmt.Sprintf("line %d", p1.Definition.FileLines["sprite"])) {
 		t.Fatal("primary DEF resource error was replaced by a duplicate", err)
+	}
+}
+
+// Continue the shared asset lifecycle in a selected language, through scene
+// exit, motif-relative selection, VS, commands, combat and the next round.
+func localizedAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image, dir, definition string) {
+	t.Helper()
+	write := func(name, text string) string {
+		t.Helper()
+		path := filepath.Join(dir, name)
+		if err := os.WriteFile(path, []byte(text), 0600); err != nil {
+			t.Fatal(err)
+		}
+		return path
+	}
+	read := func(path string) string {
+		t.Helper()
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(data)
+	}
+	previousMotif, previousLanguage := e.motif, e.cfg.Config.Language
+	defer func() { e.motif, e.cfg.Config.Language = previousMotif, previousLanguage }()
+	e.cfg.Config.Language = "ja"
+	path := write("locale.def", definition+`[ja.Info]
+name="Localized"
+mugenversion=1.1
+[ja.Files]
+sprite=outfits.sff
+anim=locale.air
+cns=locale.cns
+st=locale.cns
+cmd=locale.cmd
+`)
+	write("locale.air", read(filepath.Join(dir, "outfits.air"))+"\n[ja.Begin Action 0]\n0,0,0,0,1\n")
+	write("locale.cns", read(filepath.Join(dir, "outfits.cns"))+`
+[ja.Data]
+life=500
+power=2000
+attack=110
+defence=100
+[Quotes]
+victory0="English"
+[ja.Quotes]
+victory0="Localized quote"
+`)
+	write("locale.cmd", `[Remap]
+x=x
+[ja.Remap]
+x=a
+[Command]
+name="localized input"
+command=x
+time=1
+[ja.Command]
+name="ignored command"
+command=y
+[Statedef -1]
+[State -1, input]
+type=VarAdd
+trigger1=command="localized input"
+v=40
+value=1
+[ja.Statedef -1]
+[ja.State -1, input]
+type=VarSet
+trigger1=1
+v=40
+value=-100
+`)
+	// Each definition font receives the same selected language as its owner.
+	face := filepath.Join(dir, "locale.ttf")
+	if err := os.WriteFile(face, goregular.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	write("locale font.def", `[FNT v2]
+fntversion=2,00
+[Def]
+type=truetype
+size=0,18
+file=locale.ttf
+[ja.Def]
+type=truetype
+size=0,12
+file=locale.ttf
+`)
+	storyPath := write("locale story.def", `[SceneDef]
+spr=outfits.sff
+font0=locale font.def
+[Scene 0 hello]
+end.time=3
+layer0.text="English"
+layer0.font=0,0,1
+layer1.anim=700
+[Scene 1 finish]
+end.time=2
+[ja.Scene 0 hello]
+end.time=3
+layer0.text="Localized"
+layer0.font=0,0,1
+[Begin Action 700]
+0,0,0,0,-1
+`)
+	story := &StoryboardState{engine: e, storyboard: storyPath, nextState: func() State { return NewTitleState(e) }}
+	story.load()
+	if story.loadError != nil || story.player == nil {
+		t.Fatal("localized storyboard load", story.loadError)
+	}
+	scene := story.player.CurrentScene()
+	if scene.Name != "Scene 0 hello" || len(scene.Layers) != 1 || scene.Layers[0].Text != "Localized" || scene.Layers[0].Font.Height != 12 {
+		t.Fatal("localized scene replaced order/font or inherited an English layer", scene)
+	}
+	for n := 0; n < 10; n++ {
+		next, err := story.Update()
+		if err != nil {
+			t.Fatal(err)
+		}
+		story.Draw(canvas)
+		if next != story {
+			break
+		}
+		if n == 9 {
+			t.Fatal("localized scene failed to exit")
+		}
+	}
+	fallback, err := sb.Load(storyPath, e.dataDir, "fr")
+	if err != nil || fallback.Scenes[0].Layers[0].Text != "English" || len(fallback.Scenes[0].Layers) != 2 || fallback.Fonts[0].Height != 18 {
+		t.Fatal("absent locale did not fall back to English", err)
+	}
+	stagePath := write("locale stage.def", `[Info]
+name="English stage"
+author="English author"
+[ja.Info]
+name="Localized stage"
+[Bound]
+screenleft=15
+screenright=15
+[Camera]
+boundleft=-100
+boundright=100
+boundhigh=0
+boundlow=0
+[PlayerInfo]
+p1startx=-70
+p2startx=70
+p1facing=1
+p2facing=-1
+[StageInfo]
+localcoord=320,240
+zoffset=200
+[BGDef]
+spr=outfits.sff
+[BG 0]
+type=normal
+spriteno=0,0
+[ja.BG 0]
+type=normal
+spriteno=1234,5678
+`)
+	// Share immutable HUD banks and change only its tiny definition text.
+	hudDir := filepath.Join(dir, "locale HUD")
+	if err := os.Mkdir(hudDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	entries, err := os.ReadDir(filepath.Join(e.dataDir, "data/mugen1"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, entry := range entries {
+		if entry.Name() == "fight.def" {
+			continue
+		}
+		if err := os.Symlink(filepath.Join(e.dataDir, "data/mugen1", entry.Name()), filepath.Join(hudDir, entry.Name())); err != nil {
+			t.Fatal(err)
+		}
+	}
+	fightPath := write("locale HUD/fight.def", read(filepath.Join(e.dataDir, "data/mugen1/fight.def"))+"\n[ja.Round]\nmatch.wins=1\n[ja.Time]\npos=15,20\n")
+	write("locale select.def", fmt.Sprintf("[Characters]\n\"%s\", \"%s\"\n", path, stagePath))
+	motifPath := write("locale motif.def", fmt.Sprintf(`[Info]
+name="English motif"
+localcoord=320,240
+[ja.Info]
+name="Localized motif"
+[Files]
+spr=missing-English.sff
+select=missing-English.def
+[ja.Files]
+spr=%s
+select=locale select.def
+fight=%s
+font1=locale font.def
+[Select Info]
+rows=1
+columns=1
+`, filepath.Join(e.dataDir, "data/mugen1/system.sff"), fightPath))
+	e.motif, err = motif.LoadMotif(motifPath, e.dataDir, e.cfg.Config.Language)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selection := NewSelectState(e, "Versus Mode")
+	if selection.loadError != nil || len(selection.chars) != 1 || selection.chars[0].Name != "Localized" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 12 {
+		t.Fatal("localized motif/relative roster/portraits", selection.loadError)
+	}
+	request := match.Request{Mode: "Versus Mode", StagePath: stagePath, Players: [2]match.Selection{{DefPath: path, Palette: 1}, {DefPath: path, Palette: 1}}}
+	vs := NewVersusState(e, request)
+	if vs.loadError != nil || vs.portraits[0].Name != "Localized" {
+		t.Fatal("localized VS", vs.loadError)
+	}
+	vs.Draw(canvas)
+	f, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState = f
+	reach := func(phase match.Phase) {
+		t.Helper()
+		for n := 0; n < 1000 && f.match.Phase != phase; n++ {
+			if err := e.Update(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if f.match.Phase != phase {
+			t.Fatal("localized fight stalled", f.match.Phase, phase)
+		}
+	}
+	reach(match.Active)
+	p := f.match.Players[0]
+	if p.Character.Life != 500 || p.Character.StateFile.Data.Power != 2000 || p.Character.StateFile.Data.Attack != 110 || p.LocalCoord.Width != 320 || p.AIR.Actions[0].Elements[0].Time != -1 || p.Character.StateFile.Quotes["ja"][0] != "Localized quote" || p.Definition.Files["pal2"] != "" || f.match.Stage.Name != "Localized stage" || f.match.Stage.Author != "" || len(f.match.Stage.Background.Elements) != 1 || f.match.Fight.Attribute("Time", "pos").RawValue != "15,20" || f.match.Fight.Attribute("Round", "round.time") != nil {
+		t.Fatal("localized combat metadata/constants/HUD or group replacement", p.Definition, f.match.Stage.Name)
+	}
+	if line := p.Definition.FileLines["sprite"]; strings.Split(read(path), "\n")[line-1] != "sprite=outfits.sff" || line != strings.Count(definition, "\n")+5 {
+		t.Fatal("localized source line", line)
+	}
+	keyboard := input.GlobalManager.Keyboard.(*flowKeyboard)
+	keyboard.keys = map[ebiten.Key]bool{e.cfg.Input.Player1Keyboard.A: true}
+	if err := e.Update(); err != nil {
+		t.Fatal(err)
+	}
+	keyboard.keys = nil
+	if err := e.Update(); err != nil {
+		t.Fatal(err)
+	}
+	if p.Character.GetVar(40) != 1 {
+		t.Fatal("localized remap/exempt command/state", p.Character.GetVar(40))
+	}
+	e.Draw(canvas)
+	f.match.Players[1].Character.SetLife(0)
+	f.match.Players[1].Character.ChangeState(5150, 0, -1)
+	reach(match.Finished)
+	// A fresh load must select the same language without stale scene/input state.
+	f, err = NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState = f
+	reach(match.Active)
+	if f.match.Players[0].Character.Life != 500 || f.match.Players[0].Character.GetVar(40) != 0 {
+		t.Fatal("localized rematch retained prior combat")
+	}
+	// The selected AST retains quote banks for runtime fallback and its source
+	// positions; consumers do not mutate the original parsed definition.
+	ast, err := parsers.Parse(strings.NewReader(read(filepath.Join(dir, "locale.cns"))))
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected := parsers.Localize(ast, "ja")
+	quotes := 0
+	for _, group := range selected.Sections {
+		if strings.HasSuffix(strings.ToLower(group.Name), "quotes") {
+			quotes++
+		}
+	}
+	if quotes != 2 || ast.Sections[0].Name != "Data" {
+		t.Fatal("quote banks or original AST lost")
 	}
 }
 
@@ -731,7 +1009,7 @@ moveoveremptyboxes=0
 rows=1
 columns=1
 pos=0,0
-`, filepath.Join(e.dataDir, "data/mugen1/system.sff"), selectPath, filepath.Join(e.dataDir, "data/mugen1/fight.def"))
+`, filepath.Join(e.dataDir, "data/mugen1/system.sff"), filepath.Base(selectPath), filepath.Join(e.dataDir, "data/mugen1/fight.def"))
 	if err := os.WriteFile(motifPath, []byte(motifSource), 0600); err != nil {
 		t.Fatal(err)
 	}

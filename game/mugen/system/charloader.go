@@ -25,13 +25,13 @@ type CharacterPortrait struct {
 	SmallPortrait, BigPortrait                       *ebiten.Image
 }
 
-func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPacks) ([]*CharacterPortrait, []string, error) {
+func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPacks, languages ...string) ([]*CharacterPortrait, []string, error) {
 	f, err := os.Open(selectDefPath)
 	if err != nil {
 		return nil, nil, err
 	}
 	defer f.Close()
-	sd, err := parsers.ParseSelectDef(f)
+	sd, err := parsers.ParseSelectDef(f, languages...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%s: %w", selectDefPath, err)
 	}
@@ -62,7 +62,11 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s character %q: %w", selectDefPath, entry.Name, err)
 		}
-		loaded, err := loadCharacterPortrait(cp.DefPath)
+		language := ""
+		if len(languages) > 0 {
+			language = languages[0]
+		}
+		loaded, err := loadCharacterPortraitLanguage(cp.DefPath, language)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -93,6 +97,10 @@ type portraitImage struct {
 }
 
 func loadCharacterPortrait(defPath string, extra ...[2]int) (*CharacterPortrait, error) {
+	return loadCharacterPortraitLanguage(defPath, "", extra...)
+}
+
+func loadCharacterPortraitLanguage(defPath, language string, extra ...[2]int) (*CharacterPortrait, error) {
 	cp := &CharacterPortrait{DefPath: defPath, Portraits: map[[2]int]portraitImage{}}
 	file, err := os.Open(cp.DefPath)
 	if err != nil {
@@ -103,6 +111,7 @@ func loadCharacterPortrait(defPath string, extra ...[2]int) (*CharacterPortrait,
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", cp.DefPath, err)
 	}
+	ast = parsers.Localize(ast, language)
 	def, err := parsers.ParseDefFromAST(ast)
 	if err != nil {
 		return nil, err

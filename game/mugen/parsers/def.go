@@ -14,12 +14,12 @@ type DefData struct {
 }
 
 // ParseDef parses a .def file and extracts file mappings.
-func ParseDef(r io.Reader) (*DefData, error) {
+func ParseDef(r io.Reader, languages ...string) (*DefData, error) {
 	file, err := Parse(r)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDefFromAST(file)
+	return ParseDefFromAST(Localize(file, languages...))
 }
 
 // ParseDefFromAST extracts mappings without reparsing an embedded definition.

@@ -19,7 +19,7 @@ import (
 
 // Load builds CPU storyboard resources without starting playback or uploading
 // images. Paths within the DEF are relative to that file, never an ambient CWD.
-func Load(path, root string) (*Storyboard, error) {
+func Load(path, root string, languages ...string) (*Storyboard, error) {
 	source, err := resource.Resolve(path, root, filepath.Join(root, "data"), ".")
 	if err != nil {
 		return nil, fmt.Errorf("storyboard DEF: %w", err)
@@ -32,6 +32,7 @@ func Load(path, root string) (*Storyboard, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", source, err)
 	}
+	ast = parsers.Localize(ast, languages...)
 	definition, err := parsers.ParseStoryboardFromAST(ast)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", source, err)
@@ -86,7 +87,7 @@ func Load(path, root string) (*Storyboard, error) {
 		if err != nil {
 			return nil, context(key, definition.FontLines[i], err)
 		}
-		story.Fonts[i], err = font.LoadFont(fontPath)
+		story.Fonts[i], err = font.LoadFont(fontPath, languages...)
 		if err != nil {
 			return nil, context(key, definition.FontLines[i], fmt.Errorf("%s: %w", fontPath, err))
 		}

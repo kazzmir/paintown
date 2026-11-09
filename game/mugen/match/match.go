@@ -41,6 +41,7 @@ type Request struct {
 
 type Options struct {
 	RootDir, MotifDir, FightPath string
+	Language                     string
 	GameSpace                    coord.Space
 	RoundTime, LifePercent       int
 	GameTime, TicksPerSecond     int32 // context available during state5900 entry
@@ -171,7 +172,7 @@ func New(request Request, options Options) (*Match, error) {
 	if m.SoundQueue == nil {
 		m.SoundQueue = &sound.Queue{}
 	}
-	m.Stage, err = stage.LoadStage(request.StagePath, options.RootDir)
+	m.Stage, err = stage.LoadStage(request.StagePath, options.RootDir, options.Language)
 	if err != nil {
 		return nil, fmt.Errorf("match stage: %w", err)
 	}
@@ -183,7 +184,7 @@ func New(request Request, options Options) (*Match, error) {
 	m.Options = options
 	stageToGame, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(options.GameSpace)
 	m.Viewport.GroundY = m.Stage.GroundLevel() * stageToGame
-	m.Fight, err = fight.Load(options.FightPath, options.RootDir)
+	m.Fight, err = fight.Load(options.FightPath, options.RootDir, options.Language)
 	if err != nil {
 		return nil, fmt.Errorf("match fight screen: %w", err)
 	}
@@ -211,7 +212,7 @@ func New(request Request, options Options) (*Match, error) {
 			if selected.Palette < 1 || selected.Palette > 12 || selected.AILevel < 0 || selected.AILevel > 8 {
 				return nil, fmt.Errorf("team %d member %d: invalid palette/AI level", side+1, index+1)
 			}
-			player, err := character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir})
+			player, err := character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir, Language: options.Language})
 			if err != nil {
 				return nil, fmt.Errorf("team %d member %d: %w", side+1, index+1, err)
 			}

@@ -223,18 +223,18 @@ func (c *CNS) SetLanguageVersion(version string) {
 	}
 }
 
-func Parse(r io.Reader) (*CNS, error) {
+func Parse(r io.Reader, languages ...string) (*CNS, error) {
 	ast, err := parsers.Parse(r)
 	if err != nil {
 		return nil, err
 	}
 
-	return ParseFromAST(ast)
+	return ParseFromAST(parsers.Localize(ast, languages...))
 }
 
 // ParseNamed retains the source filename for later compile/runtime diagnostics.
-func ParseNamed(r io.Reader, name string) (*CNS, error) {
-	parsed, err := Parse(r)
+func ParseNamed(r io.Reader, name string, languages ...string) (*CNS, error) {
+	parsed, err := Parse(r, languages...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", name, err)
 	}

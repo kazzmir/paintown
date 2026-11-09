@@ -73,6 +73,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
 		RosterInput: character.GetRawInputs,
+		Language:    engine.cfg.Config.Language,
 		GameTime:    engine.gameTime, TicksPerSecond: int32(engine.ticksPerSecond()),
 		TeamLoseOnKO: engine.cfg.Options.TeamLoseOnKO, Team1Vs2Life: engine.cfg.Options.Team1Vs2Life,
 		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, ExplodMax: max(8, engine.cfg.Config.ExplodMax), SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul, StageCrop: !engine.cfg.Video.StageFit, HelperMax: max(4, min(56, engine.cfg.Config.HelperMax)),

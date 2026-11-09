@@ -392,3 +392,10 @@ ignored; a bad primary reference must still report its own path/line. Preserve
 the existing legacy-palette/ZIP-selection/fight/reload asset scenario. Native
 and rebuilt Linux duplicate-definition loading agree. Affected match-flow passes
 with races; other completed segments stay checked. Probe overlays/captures removed.
+
+Language selection now reaches definition assets across storyboard/selection/VS/
+fight/KO/rematch. Use parsers.Localize for whole-group selection, retaining source
+lines, scene order and exemptions. Keep standalone AIR undecorated and preserve
+quote banks for the runtime selector. Motif-relative rosters precede shared data.
+All five segments pass with races; rebuilt Linux matches the twelve native
+observation slots. The diagnostic overlay/captures were inspected and removed.

@@ -23,6 +23,7 @@ import (
 type LoadOptions struct {
 	RootDir  string
 	MotifDir string
+	Language string
 }
 
 func LoadPlayer(baseDir, defFile string) (*Player, error) {
@@ -40,7 +41,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, err
 	}
-	def, err := parsers.ParseDef(bytes.NewReader(definition))
+	def, err := parsers.ParseDef(bytes.NewReader(definition), options.Language)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", defPath, err)
 	}
@@ -84,7 +85,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		if err != nil {
 			return nil, context(key, err)
 		}
-		parsed, err := cns.ParseNamed(bytes.NewReader(data), path)
+		parsed, err := cns.ParseNamed(bytes.NewReader(data), path, options.Language)
 		if err != nil {
 			return nil, context(key, err)
 		}
@@ -135,11 +136,11 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, context("cmd", err)
 	}
-	commandData, err := cmd.Parse(bytes.NewReader(commands))
+	commandData, err := cmd.Parse(bytes.NewReader(commands), options.Language)
 	if err != nil {
 		return nil, context("cmd", fmt.Errorf("%s: %w", cmdPath, err))
 	}
-	commandStates, err := cns.ParseNamed(bytes.NewReader(commands), cmdPath)
+	commandStates, err := cns.ParseNamed(bytes.NewReader(commands), cmdPath, options.Language)
 	if err != nil {
 		return nil, context("cmd", err)
 	}

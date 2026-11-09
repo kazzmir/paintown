@@ -27,7 +27,7 @@ func (s *StoryboardState) load() {
 	if s.storyboard == "" {
 		return
 	}
-	story, err := sb.Load(s.storyboard, s.engine.dataDir)
+	story, err := sb.Load(s.storyboard, s.engine.dataDir, s.engine.cfg.Config.Language)
 	if err != nil {
 		s.loadError = err
 		return

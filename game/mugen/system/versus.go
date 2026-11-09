@@ -36,7 +36,7 @@ func NewVersusState(engine *Engine, request match.Request) *VersusState {
 		for index, member := range members {
 			name := member.Name
 			if index == 0 && member.DefPath != "" {
-				portrait, err := loadCharacterPortrait(member.DefPath, spec.Sprite)
+				portrait, err := loadCharacterPortraitLanguage(member.DefPath, engine.cfg.Config.Language, spec.Sprite)
 				if err != nil {
 					s.loadError = err
 					return s

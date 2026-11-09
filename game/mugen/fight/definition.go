@@ -47,7 +47,7 @@ func (d *Definition) Attribute(section, name string) *parsers.Attribute {
 	return found
 }
 
-func Load(path, root string) (*Definition, error) {
+func Load(path, root string, languages ...string) (*Definition, error) {
 	source, err := resource.Resolve(path, root, filepath.Join(root, "data"), ".")
 	if err != nil {
 		return nil, fmt.Errorf("fight DEF: %w", err)
@@ -60,6 +60,7 @@ func Load(path, root string) (*Definition, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", source, err)
 	}
+	ast = parsers.Localize(ast, languages...)
 	files, err := parsers.ParseDefFromAST(ast)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", source, err)
@@ -143,7 +144,7 @@ func Load(path, root string) (*Definition, error) {
 		if err != nil {
 			return nil, err
 		}
-		definition.Fonts[index], err = font.LoadFont(path)
+		definition.Fonts[index], err = font.LoadFont(path, languages...)
 		if err != nil {
 			return nil, context(key, fmt.Errorf("%s: %w", path, err))
 		}

@@ -14,6 +14,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/render"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 )
 
 // SelectState handles character and stage selection.
@@ -56,12 +57,21 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	if selectDefPath == "" {
 		selectDefPath = "select.def"
 	}
-	if !filepath.IsAbs(selectDefPath) {
-		selectDefPath = filepath.Join(engine.dataDir, "data", selectDefPath)
+	motifDir := ""
+	if engine.motif.Source != "" {
+		motifDir = filepath.Dir(engine.motif.Source)
+	}
+	resolved, loadError := resource.Resolve(selectDefPath, motifDir, filepath.Join(engine.dataDir, "data"), engine.dataDir)
+	if loadError == nil {
+		selectDefPath = resolved
 	}
 	charsDir := filepath.Join(engine.dataDir, "chars")
 
-	chars, stages, loadError := loadCharacters(selectDefPath, charsDir, &engine.characterPacks)
+	var chars []*CharacterPortrait
+	var stages []string
+	if loadError == nil {
+		chars, stages, loadError = loadCharacters(selectDefPath, charsDir, &engine.characterPacks, engine.cfg.Config.Language)
+	}
 
 	// Watch selects both rosters with P1; versus/co-op use two humans.
 	p2Modes := map[string]bool{

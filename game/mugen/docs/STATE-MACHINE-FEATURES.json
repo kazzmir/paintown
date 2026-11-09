@@ -305,8 +305,10 @@
       "allocation": "item3",
       "sources": [
         "character/loader.go:LoadPlayerWithOptions",
-        "stage/loader.go:LoadStage"
-      ]
+        "stage/loader.go:LoadStage",
+        "parsers/localization.go:Localize"
+      ],
+      "validation": "Config.Language selects complete localized definition groups throughout the asset lifecycle, with English fallback and original source lines. Native and rebuilt Linux metadata/constants/input observations agree; the connected storyboard/selection/VS/fight/KO/rematch scenario passes with race detection."
     },
     {
       "id": "sound-effects",
@@ -557,7 +559,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "eb748b52c0e40fcd46bbbba2ebcc94ed199b2ac2d2a0135c31d26bf729e521bf"
+      "passed_source": "38631def29c9befd0e64c973fde55bb75b23ea1c67723907c17ba7ac5e5d2992"
     },
     {
       "id": "combat",
@@ -601,7 +603,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "cf6aac4336a011e20b433ec3c81f6fead2bb5ba1808c15b8ba671459aff91549"
+      "passed_source": "22f4f9a18a1a4957bcb8f66afd9da95e80a1da3806f5ce9d42f5588d1646889a"
     },
     {
       "id": "entities",
@@ -634,7 +636,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "64d67be539f4894c1ebff9ce0401edc9e569cef28379039886badbde9b9d0de6"
+      "passed_source": "955fcc810b0ae5dc3de6240cc879ffcdd11ed9c920ea83739d315d78f88fdc57"
     },
     {
       "id": "effects-pause",
@@ -669,7 +671,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fa0dfc2d460642faa816f217b21d2d487627faab838c6d188cf2330844db987f"
+      "passed_source": "d415a218f04d8391539e81a96837e134c938dddb53a10149287d29651e47d798"
     },
     {
       "id": "match-flow",
@@ -748,7 +750,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d7b3e56567d7b3a6ac624b37438b3614be6e2fe5a264ffe6ce7b66f93fbc1233"
+      "passed_source": "02b7d86b9766e196c532691d2456ceb4ba9114c1616b27f8ba83c5cbf734e9da"
     }
   ],
   "presentation_followups": [
@@ -874,6 +876,12 @@
       "name": "Character and motif definition precedence",
       "completed": true,
       "validation": "Character DEF metadata/resources and motif Info/Files retain first definitions, including explicit blanks, with their original source lines. Later bad duplicates cannot replace coordinate profiles, palette policy, sprites or fonts; a bad primary reference still reports its own path and line. The connected asset/ZIP-selection/fight/reload flow passes with races; other completed segments remain checked. Native and rebuilt Linux both load the duplicate-containing character/motif and agree on the metadata observations. Probe overlays/captures removed; shared assets reused."
+    },
+    {
+      "id": "localized-definition-groups",
+      "name": "Language selection across definition assets",
+      "completed": true,
+      "validation": "The configured language reaches character/CNS/CMD, stage, motif/roster/VS, HUD, storyboard and definition-font loaders. Localized groups replace whole English groups while preserving source lines and scene order; missing groups fall back. Commands/states and individual background elements are exempt; quote banks remain available to their runtime selector. Standalone AIR remains undecorated, as observed in beta. The existing asset lifecycle covers localized scenes/fonts, English fallback, motif-relative roster, portraits, input/remap, constants, KO and rematch. All five segments are checked with races. Rebuilt Linux matches all twelve native observation slots; the fight capture was inspected. Shared assets reused; diagnostic scratch removed."
     }
   ]
 }

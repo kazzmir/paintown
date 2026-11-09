@@ -16,7 +16,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
-func LoadStage(path string, dataDir string) (*Stage, error) {
+func LoadStage(path string, dataDir string, languages ...string) (*Stage, error) {
 	absPath, err := resource.Resolve(path, dataDir, filepath.Join(dataDir, "data"), ".")
 	if err != nil {
 		return nil, fmt.Errorf("stage DEF: %w", err)
@@ -32,6 +32,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 		return nil, fmt.Errorf("%s: %w", absPath, err)
 	}
 
+	ast = parsers.Localize(ast, languages...)
 	stage := &Stage{
 		Source:       absPath,
 		Music:        sound.DefaultMusic(true),

@@ -24,12 +24,12 @@ type SelectDef struct {
 }
 
 // ParseSelectDef parses a MUGEN select.def file.
-func ParseSelectDef(r io.Reader) (*SelectDef, error) {
+func ParseSelectDef(r io.Reader, languages ...string) (*SelectDef, error) {
 	ast, err := Parse(r)
 	if err != nil {
 		return nil, err
 	}
-	return ParseSelectDefFromAST(ast)
+	return ParseSelectDefFromAST(Localize(ast, languages...))
 }
 
 // ParseSelectDefFromAST builds a SelectDef from a parsed AST.
