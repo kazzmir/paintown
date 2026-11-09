@@ -7,6 +7,13 @@ Keep the original packs and existing optional SF2 playable copy intact.
 
 Latest compatibility checkpoints:
 
+- Command history reserves the loaded CMD motion, charge and buffer window
+  before input is recorded. Keep sizing overflow-safe and allocation lazy;
+  player/helper buffers remain independent and fresh matches discard history.
+  The connected human/helper/recovery/AI flow covers long and short charges,
+  expired/delayed motions and fresh presses. Native/Linux counts agree; four
+  affected segments pass with races, state-flow stays checked.
+
 - Helper-bank capacity is checked before any Helper parameter expression.
   CreateHelperEvaluated preserves this gate; direct creation retains its own
   capacity check. The entity flow covers full-bank rejection, skipped failures,

@@ -412,3 +412,10 @@ expression. Keep direct creation capacity checks and compile-time validation.
 The connected entity flow covers rejection, unused errors, retirement/vacancy
 reuse, parent confirmation and reset. All five segments pass with races; rebuilt
 Linux matches twelve native slots. The helper probe overlay/capture was removed.
+
+CommandBuffer reserves CMD motion/charge/buffer windows before recording input;
+keep sizing overflow-safe and storage lazy. Independent player/helper histories
+survive long charges/motions and are discarded on fresh matches. The existing
+human/helper/recovery/AI scenario passes; native/Linux counts agree for long and
+short charge, expired/delayed motion and fresh presses. Four affected segments
+pass with races; state-flow stays checked. Command probe scratch was removed.

@@ -80,6 +80,22 @@ command=x+z
 name="buffered-x"
 command=x
 buffer.time=3
+[Command]
+name="long-charge"
+command=~300x
+time=1
+[Command]
+name="long-charge-motion"
+command=~300$B,F,z
+time=30
+[Command]
+name="long-motion"
+command=x,b
+time=240
+[Command]
+name="long-press"
+command=x
+time=1
 `))
 	if err != nil {
 		t.Fatal(err)
@@ -129,6 +145,26 @@ value=1
 type=VarAdd
 trigger1=command="released-x"
 v=55
+value=1
+[State 0, long charge]
+type=VarAdd
+trigger1=command="long-charge"
+v=40
+value=1
+[State 0, long charge motion]
+type=VarAdd
+trigger1=command="long-charge-motion"
+v=41
+value=1
+[State 0, long motion]
+type=VarAdd
+trigger1=command="long-motion"
+v=42
+value=1
+[State 0, fresh press]
+type=VarAdd
+trigger1=command="long-press"
+v=43
 value=1
 [Statedef 8000]
 type=S
@@ -306,6 +342,47 @@ value=0
 			t.Fatal("released holds survived into idle", actor.ActiveCommands)
 		}
 	}
+	// Continue both input consumers beyond the old 120-tick cutoff. The first
+	// press expires from a 240-tick motion while its 300-tick charge succeeds;
+	// a later separated press completes that motion, and a short charge fails.
+	for _, actor := range []*character.Character{root, helper} {
+		for index := 40; index <= 43; index++ {
+			actor.SetVar(index, 0)
+		}
+	}
+	repeat := func(ticks int, keys ...string) {
+		for frame := 0; frame < ticks; frame++ {
+			step(keys...)
+		}
+	}
+	repeat(330, "DirBack", "ButtonA")
+	step()
+	repeat(3, "DirForward")
+	step("DirForward", "ButtonStart")
+	step()
+	step("ButtonB")
+	repeat(20)
+	step("ButtonA")
+	repeat(132)
+	step("ButtonB")
+	repeat(20)
+	repeat(30, "DirBack", "ButtonA")
+	step()
+	repeat(3, "DirForward")
+	step("DirForward", "ButtonStart")
+	step()
+	step("ButtonB")
+	repeat(20)
+	for _, actor := range []*character.Character{root, helper} {
+		for index, expected := range []int{1, 1, 2, 3} {
+			if actor.GetVar(40+index) != expected {
+				t.Fatal("native long command lifecycle", index, actor.GetVar(40+index), expected)
+			}
+		}
+		if actor.StateNo != 0 || !actor.Ctrl || actor.Command("held-x") || actor.Command("held-chord") {
+			t.Fatal("long input lifecycle did not return to controllable idle")
+		}
+	}
 	for side := range request.Players {
 		request.Players[side].AILevel = 8
 	}
@@ -316,6 +393,9 @@ value=0
 	}
 	e.currentState = f
 	for _, player := range f.match.Actors() {
+		if len(player.Character.Commands.History) != 0 || player.Character.GetVar(40) != 0 {
+			t.Fatal("fresh match retained long-command input or observations")
+		}
 		commands := *player.CMD
 		commands.Remap = map[string]string{"x": "a", "a": "x", "y": "b", "b": "y", "z": "c", "c": "z", "s": ""}
 		player.CMD, player.Character.CmdFile = &commands, &commands

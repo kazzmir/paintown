@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
@@ -18,8 +19,9 @@ type Command struct {
 
 // CommandBuffer tracks input history to match commands
 type CommandBuffer struct {
-	History [][]string // Active input names per tick
-	MaxSize int
+	History     [][]string // Active input names per tick
+	MaxSize     int
+	definitions *cmd.Data
 }
 
 func NewCommandBuffer(size int) *CommandBuffer {
@@ -29,9 +31,49 @@ func NewCommandBuffer(size int) *CommandBuffer {
 	}
 }
 
+// Retain the motion window, completion buffer and preceding charge. The old
+// fixed history silently lost otherwise valid long commands. Reserve lazily:
+// a large authored duration does not allocate that many frames at load time.
+func (cb *CommandBuffer) reserveCommands(data *cmd.Data) {
+	if data == nil || data == cb.definitions {
+		return
+	}
+	cb.definitions = data
+	maxInt := int(^uint(0) >> 1)
+	for _, alternatives := range data.Commands {
+		for _, command := range alternatives {
+			charge := 0
+			for i := 0; i < len(command.Sequence); i++ {
+				if command.Sequence[i] != '~' {
+					continue
+				}
+				start := i + 1
+				end := start
+				for end < len(command.Sequence) && command.Sequence[end] >= '0' && command.Sequence[end] <= '9' {
+					end++
+				}
+				if n, err := strconv.Atoi(command.Sequence[start:end]); err == nil {
+					charge = max(charge, n)
+				}
+				i = end - 1
+			}
+			span := max(1, command.Time)
+			for _, extra := range []int{max(1, command.BufferTime), charge, 2} {
+				if extra > maxInt-span {
+					span = maxInt
+					break
+				}
+				span += extra
+			}
+			cb.MaxSize = max(cb.MaxSize, span)
+		}
+	}
+}
+
 func (cb *CommandBuffer) Add(inputs []string) {
 	cb.History = append(cb.History, inputs)
 	if len(cb.History) > cb.MaxSize {
+		cb.History[0] = nil
 		cb.History = cb.History[1:]
 	}
 }
@@ -409,6 +451,7 @@ func (c *Character) updateCommands(isPaused bool) {
 		return
 	}
 	if c.Commands != nil && c.CmdFile != nil {
+		c.Commands.reserveCommands(c.CmdFile)
 		var physicalRaw []string
 		if c.InputSource != nil {
 			physicalRaw = c.InputSource(c.InputSlot, c.Facing)

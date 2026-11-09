@@ -430,9 +430,10 @@
         "character/command_inputs.go:CommandInputs",
         "cmd/remap.go:RemapInputs",
         "cmd/remap.go:PhysicalInputs",
-        "character/character.go:Command"
+        "character/character.go:Command",
+        "character/commands.go:reserveCommands"
       ],
-      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused."
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree."
     },
     {
       "id": "modes",
@@ -608,7 +609,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b1ffb7c32fbb7b6f67543c83a3b5ef6f0a4b349a351fd8f790a71ae132a28698"
+      "passed_source": "6f97b3bc98616d1155048c9bc54eb568767dab0bea652868d168e6f2be74ad8b"
     },
     {
       "id": "entities",
@@ -641,7 +642,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "82363be369eb3e867d0cf0172a797b96df52bb2edce4de80542cd369678fcb77"
+      "passed_source": "02d95f8ef2e8d74bbb88a79b0ccb04d059eedeabae8ebee19768ac4df635ea6b"
     },
     {
       "id": "effects-pause",
@@ -676,7 +677,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1a235752052a05637c22c2921fc2faf342cd599e32cc5c6a51763b7d1ba5e9f5"
+      "passed_source": "62b14865accf47228bf1897b283895b8da71a62d44ea9af82bd8ca09e99cce5a"
     },
     {
       "id": "match-flow",
@@ -755,7 +756,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "019b92ed6c868cab9547d7f25d51aa5f091998ccf70ac893571e3b65182819a4"
+      "passed_source": "ace0e10767f4b6fd7269756e19e2fbd09b38b06eb019872201450d25af4048a8"
     }
   ],
   "presentation_followups": [
@@ -899,6 +900,12 @@
       "name": "Helper-bank admission before parameter evaluation",
       "completed": true,
       "validation": "A full helper bank suppresses all controller expressions, including unused VM errors. Compilation stays strict. Retirement makes the next request eligible again; ID/state/position/key control/palette and child-to-parent confirmation then evaluate normally. The existing entity lifecycle continues through bank fill, rejection, vacancy reuse, recovery and round reset. All five connected segments pass with races. Rebuilt Linux matches all twelve native observation slots. Shared sprites were linked; diagnostic overlay/capture removed."
+    },
+    {
+      "id": "long-command-history",
+      "name": "Authored long charge and motion history",
+      "completed": true,
+      "validation": "Command history now retains the loaded CMD motion window, release-charge duration and completion buffer instead of a fixed 120-tick cutoff. Ordinary commands keep their small history; larger budgets grow only as input arrives, with overflow-safe sizing. Player and key-controlled helper share this policy without sharing history. The connected human/helper/recovery/fresh-match/AI scenario spans a 300-tick charge, expired motion, later delayed motion and rejected short charge. Four changed-source segments pass with races; state-flow stays checked. Rebuilt Linux matches native: one long charge, one charged motion, two valid delayed motions and three fresh presses. Diagnostic overlay/capture removed; shared sprites reused."
     }
   ]
 }
