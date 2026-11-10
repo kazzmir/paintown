@@ -257,6 +257,62 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("held controller button generated another menu edge")
 	}
 	pad1.release()
+	// Rebind in the real Options/Input UI, then carry that new alternative
+	// through the stock match below. Raw navigation also survives disabling P1.
+	step(ebiten.KeyF1)
+	bindingsMenu, ok := e.currentState.(*InputConfigState)
+	if !ok {
+		t.Fatalf("Options F1 did not open input configuration: %T", e.currentState)
+	}
+	step()
+	for n := 0; n < 8; n++ {
+		step(ebiten.KeyArrowDown)
+		step()
+	}
+	step(ebiten.KeyInsert)
+	step()
+	step(ebiten.KeyF10)
+	step()
+	if !slices.Contains(input.GlobalManager.KeyboardBindings(1, input.ActionX), ebiten.KeyF10) {
+		t.Fatal("input editor did not append a keyboard alternative")
+	}
+	for n := 0; n < 8; n++ {
+		step(ebiten.KeyArrowUp)
+		step()
+	}
+	step(ebiten.KeyArrowLeft)
+	step()
+	if !cfg.Input.KeyboardDisabled[0] {
+		t.Fatal("input editor did not disable the player keyboard")
+	}
+	step(ebiten.KeyArrowRight)
+	step()
+	if cfg.Input.KeyboardDisabled[0] {
+		t.Fatal("raw configuration navigation could not restore disabled input")
+	}
+	step(ebiten.KeyTab)
+	step()
+	for n := 0; n < 6; n++ {
+		step(ebiten.KeyArrowDown)
+		step()
+	}
+	step(ebiten.KeyEnter)
+	step()
+	step(ebiten.KeyF11)
+	step()
+	step(ebiten.KeyDelete)
+	step()
+	if bindingsMenu.player != 2 || len(input.GlobalManager.KeyboardBindings(2, input.ActionB)) != 0 {
+		t.Fatal("input editor lost player ownership or disabled binding")
+	}
+	panel := ebiten.NewImage(640, 480)
+	e.Draw(panel)
+	panel.Deallocate()
+	step(ebiten.KeyEscape)
+	step()
+	if e.currentState != options {
+		t.Fatal("input editor did not return to the existing Options state")
+	}
 	for index, item := range options.items {
 		if item.label == "Game Speed" {
 			options.cursor = index
@@ -462,7 +518,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			}
 		} else if f.match.Tick%40 < 2 {
 			if f.match.Round == 1 {
-				step(ebiten.KeyF7) // Alternative P1 X through stock CNS.
+				step(ebiten.KeyF10) // Alternative edited in the Options UI.
 			} else {
 				pad1.rawButtons[2] = true
 				step()

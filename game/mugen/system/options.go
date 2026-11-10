@@ -13,6 +13,7 @@ type optionItem struct {
 	label    string
 	getValue func() int
 	setValue func(int)
+	action   func() State
 	// Display strings for each value, indexed by (value - min)
 	// If nil, just shows the integer.
 	choices   []string
@@ -21,6 +22,9 @@ type optionItem struct {
 }
 
 func (o *optionItem) displayValue() string {
+	if o.getValue == nil {
+		return ""
+	}
 	v := o.getValue()
 	if o.choices != nil {
 		idx := v - o.min
@@ -40,6 +44,9 @@ func (o *optionItem) displayValue() string {
 }
 
 func (o *optionItem) doIncrement() {
+	if o.getValue == nil || o.setValue == nil {
+		return
+	}
 	v := o.getValue()
 	inc := o.increment
 	if inc == 0 {
@@ -54,6 +61,9 @@ func (o *optionItem) doIncrement() {
 }
 
 func (o *optionItem) doDecrement() {
+	if o.getValue == nil || o.setValue == nil {
+		return
+	}
 	v := o.getValue()
 	inc := o.increment
 	if inc == 0 {
@@ -132,16 +142,21 @@ func NewOptionsState(engine *Engine) *OptionsState {
 	}
 
 	_ = cfg
-	return &OptionsState{
+	s := &OptionsState{
 		engine:         engine,
 		items:          items,
 		cursorAlpha:    0,
 		cursorAlphaMod: 2.0 / 255.0,
 	}
+	s.items = append(s.items, &optionItem{label: "Input Configuration", action: func() State { return NewInputConfigState(engine, s) }})
+	return s
 }
 
 func (s *OptionsState) Update() (State, error) {
 	s.ticks++
+	if input.GlobalManager.KeyJustPressed(ebiten.KeyF1) {
+		return NewInputConfigState(s.engine, s), nil
+	}
 
 	if s.engine.motif.OptionBG != nil {
 		s.engine.motif.OptionBG.Update()
@@ -187,7 +202,10 @@ func (s *OptionsState) Update() (State, error) {
 	}
 	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorDoneSnd[0], s.engine.motif.OptionInfo.CursorDoneSnd[1])
-		// "Done" selects back to title
+		if action := s.items[s.cursor].action; action != nil {
+			return action(), nil
+		}
+		// Ordinary values select back to title.
 		return NewTitleState(s.engine), nil
 	}
 
@@ -251,6 +269,9 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 			f.Draw(screen, label, int(startX)-110, int(yPos), fontInfo.Bank, font.AlignLeft)
 			// Draw left arrow, value, right arrow in the right column
 			valDisplay := "< " + valueStr + " >"
+			if item.action != nil {
+				valDisplay = "Enter"
+			}
 			f.Draw(screen, valDisplay, int(startX)+110, int(yPos), fontInfo.Bank, font.AlignRight)
 		}
 	}
@@ -259,7 +280,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if fi.Index >= 1 && fi.Index < len(s.engine.motif.Fonts) {
 		f := s.engine.motif.Fonts[fi.Index]
 		if f != nil {
-			f.Draw(screen, "Left/Right to change  Esc to exit", 160, 220, fi.Bank, font.AlignCenter)
+			f.Draw(screen, "Left/Right to change  F1 input  Esc exit", 160, 220, fi.Bank, font.AlignCenter)
 		}
 	}
 

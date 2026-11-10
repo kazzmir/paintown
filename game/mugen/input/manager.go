@@ -126,6 +126,24 @@ func (im *InputManager) KeyPressed(key ebiten.Key) bool {
 	return im.keyboard().IsPressed(key)
 }
 
+// KeyboardBindings includes runtime fallbacks for omitted fields. Editors can
+// append an alternative without accidentally discarding an inherited Escape.
+func (im *InputManager) KeyboardBindings(player int, action Action) []ebiten.Key {
+	if player < 1 || player > 2 {
+		return nil
+	}
+	keys := im.P1Keyboard
+	if player == 2 {
+		keys = im.P2Keyboard
+	}
+	name, fallback := actionBinding(action)
+	bindings, present := keys.Bindings(name)
+	if !present && fallback >= 0 && fallback <= ebiten.KeyMax {
+		return []ebiten.Key{fallback}
+	}
+	return bindings
+}
+
 func (im *InputManager) AnyKeyJustPressed() bool {
 	for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
 		if im.KeyJustPressed(key) {

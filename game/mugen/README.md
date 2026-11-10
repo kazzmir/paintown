@@ -164,6 +164,12 @@ at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 Options changes apply to the current session. Game Speed updates the live
 scheduler immediately, and subsequent matches inherit that clock rate.
 
+In Options, choose Input Configuration or press F1 to edit keyboard bindings.
+Tab selects the player; Enter replaces a binding, Insert adds an alternative,
+and Delete disables it. The keyboard enable row can be changed with left/right.
+Escape returns to Options. These edits last for the session; use the YAML
+examples below for persistent settings.
+
 At the fight screen, Pause freezes the complete simulation; Scroll Lock advances
 one tick while paused. Holding either key does not repeat. Escape still exits.
 `[Input] AnyKeyUnpauses=1` lets another fresh keyboard press resume an ordinary
