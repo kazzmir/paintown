@@ -205,6 +205,9 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   them and exclude CNS peer queries, contacts, push and camera participation.
   Retain disabled slots through F4/reload; shared clocks/HUD keep running. PNG
   is the native screenshot format since 1.0 RC4; do not reopen a PCX gap for 1.1.
+- Options must remain readable when a motif draws its title labels as art and
+  omits menu fonts. Keep the fitted built-in fallback, authored BG/heading and
+  explicit Back action. Enter adjusts values/opens actions; edits reach gameplay.
 - Options input edits remain session-only. Preserve release admission, inherited
   keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
   Requested F12 captures use exclusive PNG files; never commit generated output.

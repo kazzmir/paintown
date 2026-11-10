@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 )
@@ -88,11 +89,10 @@ type OptionsState struct {
 	cursorAlpha    float64
 	cursorAlphaMod float64
 	cursorImage    *ebiten.Image
+	fallbackCanvas *ebiten.Image
 }
 
 func NewOptionsState(engine *Engine) *OptionsState {
-	cfg := engine.cfg.Options
-
 	diffChoices := []string{"1", "2", "3", "4", "5", "6", "7", "8"}
 	speedChoices := []string{"Slow 2", "Slow 1", "Normal", "Fast 1", "Fast 2"}
 
@@ -144,7 +144,6 @@ func NewOptionsState(engine *Engine) *OptionsState {
 		},
 	}
 
-	_ = cfg
 	s := &OptionsState{
 		engine:         engine,
 		items:          items,
@@ -152,6 +151,7 @@ func NewOptionsState(engine *Engine) *OptionsState {
 		cursorAlphaMod: 2.0 / 255.0,
 	}
 	s.items = append(s.items, &optionItem{label: "Input Configuration", shortLabel: "Input Config", action: func() State { return NewInputConfigState(engine, s) }})
+	s.items = append(s.items, &optionItem{label: "Return to Main Menu", shortLabel: "Back", action: func() State { return NewTitleState(engine) }})
 	return s
 }
 
@@ -208,8 +208,7 @@ func (s *OptionsState) Update() (State, error) {
 		if action := s.items[s.cursor].action; action != nil {
 			return action(), nil
 		}
-		// Ordinary values select back to title.
-		return NewTitleState(s.engine), nil
+		s.items[s.cursor].doIncrement()
 	}
 
 	return s, nil
@@ -237,6 +236,14 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if spacing == 0 {
 		spacing = 15 * sy
 	}
+	// Screenpacks may draw their title-menu labels as background art and
+	// deliberately omit text fonts. Their Options still needs readable rows.
+	fallbackRows := false
+	for _, info := range []struct{ Index, Bank, Align int }{fi, fiActive} {
+		if info.Index < 1 || info.Index >= len(s.engine.motif.Fonts) || s.engine.motif.Fonts[info.Index] == nil || float64(s.engine.motif.Fonts[info.Index].Height) > spacing {
+			fallbackRows = true
+		}
+	}
 
 	// Center the options list
 	startX := float64(width) / 2
@@ -253,7 +260,13 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 		s.engine.motif.Fonts[index].Draw(screen, s.engine.themeText("Option Info", "title.text", "OPTIONS"), int(position[0]), int(position[1]), int(title[1]), align)
 	}
 
+	if fallbackRows {
+		s.drawFallbackRows(screen)
+	}
 	for i, item := range s.items {
+		if fallbackRows {
+			break
+		}
 		fontInfo := fi
 		if i == s.cursor {
 			fontInfo = fiActive
@@ -298,7 +311,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	}
 
 	// Hint text
-	if fi.Index >= 1 && fi.Index < len(s.engine.motif.Fonts) {
+	if !fallbackRows && fi.Index >= 1 && fi.Index < len(s.engine.motif.Fonts) {
 		f := s.engine.motif.Fonts[fi.Index]
 		if f != nil {
 			hint := "LEFT/RIGHT CHANGE   F1 INPUT   ESC EXIT"
@@ -313,4 +326,36 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if s.engine.motif.OptionBG != nil {
 		s.engine.motif.OptionBG.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
 	}
+}
+
+// Use the same portable built-in lettering as Input Configuration when the
+// motif's title font cannot represent an Options list. The motif background
+// and authored heading remain outside this fitted, bounded settings panel.
+func (s *OptionsState) drawFallbackRows(screen *ebiten.Image) {
+	if s.fallbackCanvas == nil {
+		s.fallbackCanvas = ebiten.NewImage(400, 210)
+	}
+	panel := s.fallbackCanvas
+	panel.Fill(color.RGBA{R: 12, G: 18, B: 32, A: 240})
+	for index, item := range s.items {
+		marker := "  "
+		if index == s.cursor {
+			marker = "> "
+		}
+		y := 12 + index*18
+		ebitenutil.DebugPrintAt(panel, marker+strings.ToUpper(item.label), 12, y)
+		value := "< " + strings.ToUpper(item.displayValue()) + " >"
+		if item.action != nil {
+			value = "ENTER"
+		}
+		ebitenutil.DebugPrintAt(panel, value, 388-len(value)*6, y)
+	}
+	ebitenutil.DebugPrintAt(panel, "LEFT/RIGHT ADJUST   ENTER CHANGE/OPEN", 12, 170)
+	ebitenutil.DebugPrintAt(panel, "F1 INPUT   ESC BACK   SESSION SETTINGS", 12, 188)
+	w, h := float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy())
+	scale := min(w/400, h/280)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(scale, scale)
+	op.GeoM.Translate((w-400*scale)/2, min(h/4, h-222*scale))
+	screen.DrawImage(panel, op)
 }

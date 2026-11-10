@@ -4,11 +4,15 @@ Follow AGENTS.md. PROGRESS.md is the single completion ledger. Author only
 game/mugen/; local source/text commits are authorized, no pushes/binaries/user
 configuration. Recap about every 10–15 commits (user 2026-11-09), not after two.
 
-User priority (2026-11-10): close explicit omissions, then content compatibility,
-including the reported broken Options page. Debug activation is now implemented;
-Options currently assumes a title-menu text font, absent in the HD pack because
-its menu labels are background art. Add a readable functional fallback and
-verify settings reach gameplay without writing local YAML.
+User priority (2026-11-10): explicit omissions are closed; continue content
+compatibility. The reported Options problem is fixed: artwork-only title motifs
+receive a fitted built-in settings panel, preserving background/heading. Enter
+changes values or opens actions; explicit Back/Escape exit. Settings stay in
+session and reach subsequent matches. Menu/input/VS/two-round fight/rematch
+acceptance passes with races; Linux rebuilt. Actual HD controls, six changed
+values, Input Configuration and return to title inspected. Source pack/YAML
+untouched; review scratch removed. Next: broader character loading and normal
+round/Arcade progression; compare suspected state5900 stalls against native.
 
 Latest pack check: temp/ssf2-turbo-hd bundles native 1.1 Beta 1 P1, 1280x720.
 Loading/selection fixes include sub/AI AIR flags, blank unavailable roster

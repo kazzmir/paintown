@@ -172,8 +172,12 @@ Escape returns to the title during a fight or result. These are stock bindings;
 configuration overrides can change them. Ctrl-D cycles debug output through
 players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
-Options changes apply to the current session. Game Speed updates the live
-scheduler immediately, and subsequent matches inherit that clock rate.
+In Options, up/down selects a row and left/right adjusts it using the configured
+menu directions. Enter changes a value or opens an action; Return to Main Menu
+and Escape leave the page. Artwork-only menu motifs receive a readable settings
+panel automatically. Changes apply to the session and subsequent matches;
+Game Speed updates the live scheduler immediately. Configuration files remain
+unchanged; use local YAML for persistent settings.
 
 In Options, choose Input Configuration or press F1 to edit keyboard bindings.
 Tab selects the player; Enter replaces a binding, Insert adds an alternative,

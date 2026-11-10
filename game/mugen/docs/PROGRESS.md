@@ -76,6 +76,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **HD screenpack loading, portrait requests and palette alpha**
 - [x] **HD fight backgrounds and native legacy text admission**
 - [x] **Debug player activation and target PNG screenshot format**
+- [x] **Usable Options in artwork-only menu motifs**
 
 ## Completed scenario coverage
 

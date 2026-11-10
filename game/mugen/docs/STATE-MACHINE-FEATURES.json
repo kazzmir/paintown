@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "17d2802819b8bff59e0a7b1f750483d68afe2a1ed8a78f2b212ee75171526c82"
+      "passed_source": "cfed18ae203fdb5d0e46b12552befc5f43627db219e75854451984259ab3faa4"
     }
   ],
   "presentation_followups": [
@@ -1158,6 +1158,12 @@
       "name": "Debug player activation and target PNG screenshot format",
       "completed": true,
       "validation": "Ctrl-Alt-1 through 4 toggle present root slots through the existing debug gate without changing AI ownership or retiring resources/identity. Native KFM observations confirm hidden/frozen actors, continuing HUD/match clocks, NumEnemy=0, PlayerIDExist=0 and unavailable redirects while disabled; reenable restores the same ID. Native F4 retains the disabled slot. Round restart/reload preserve live slot choices, and inactive roots do not attack, reverse, push or follow the camera. Existing debug lifecycle covers gates, rendered removal, query visibility, frozen clocks, both roots disabled, restart/reload and reenabling; affected connected segments pass with races. Independently scheduled child actors retain their own ownership. The supplied history.html Version 1.0 RC4 documents PNG screenshots (2009-10-25), so the earlier PCX gap was a bookkeeping error for the 1.1 target. Existing F12 composition/exclusive-file acceptance already covers PNG output; no obsolete PCX writer is added."
+    },
+    {
+      "id": "options-artwork-motifs",
+      "name": "Usable Options in artwork-only menu motifs",
+      "completed": true,
+      "validation": "The HD motif supplies title labels as background art and omits title-menu text fonts. Options now supplies a bounded, fitted built-in settings panel when those fonts are absent or too tall for the row spacing, retaining the motif background and heading. Enter changes a value or opens an action; explicit Back and Escape return to title. Existing menu/input/VS/two-round combat/rematch flow edits values, checks fontless rendering, live speed/audio configuration and inherited match life/time, then exits through Back. Connected match-flow passes with races; Linux rebuilt and actual HD Options was inspected changing difficulty 1 to 3, life 100 to 110, time 99 to 98, speed Slow2 to Slow1 and both volumes 20 to 15, opening Input Configuration and returning to title. Settings remain session-only; source pack and ignored YAML unchanged. Owned review overlays/captures are removed."
     }
   ]
 }

@@ -257,6 +257,24 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("held controller button generated another menu edge")
 	}
 	pad1.release()
+	step()
+	// Values stay on Options when activated; live settings then reach the
+	// ordinary character/match/audio consumers used by the rest of this flow.
+	difficulty := cfg.Options.Difficulty
+	step(ebiten.KeyEnter)
+	if e.currentState != options || cfg.Options.Difficulty == difficulty {
+		t.Fatal("Options activation closed the page without changing its value")
+	}
+	step()
+	for _, index := range []int{1, 2, 4, 5} {
+		options.cursor = index
+		before := options.items[index].getValue()
+		step(ebiten.KeyArrowLeft)
+		step()
+		if options.items[index].getValue() == before {
+			t.Fatal("Options adjustment had no live consumer", options.items[index].label)
+		}
+	}
 	// Rebind in the real Options/Input UI, then carry that new alternative
 	// through the stock match below. Raw navigation also survives disabling P1.
 	step(ebiten.KeyF1)
@@ -383,6 +401,28 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if rightOption < leftOption || centerOption < e.logicalWidth*4/10 || centerOption > e.logicalWidth*6/10 {
 		t.Fatal("Options rows did not follow motif width", leftOption, rightOption)
 	}
+	// The HD pack authors its title labels as art and supplies no menu font.
+	// Its settings list must remain readable and centered independently.
+	fontIndices := [2]int{e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index}
+	e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index = 0, 0
+	fallback := ebiten.NewImage(e.logicalWidth, e.logicalHeight)
+	e.Draw(fallback)
+	fallback.ReadPixels(optionPixels)
+	options.items = nil
+	e.Draw(fallback)
+	fallback.ReadPixels(optionBase)
+	options.items = items
+	fallback.Deallocate()
+	changedOptions := 0
+	for at := 0; at < len(optionPixels); at += 4 {
+		if !bytes.Equal(optionPixels[at:at+4], optionBase[at:at+4]) {
+			changedOptions++
+		}
+	}
+	e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index = fontIndices[0], fontIndices[1]
+	if changedOptions < 1000 || options.fallbackCanvas == nil {
+		t.Fatal("fontless screenpack left Options rows invisible", changedOptions)
+	}
 	for index, item := range options.items {
 		if item.label == "Game Speed" {
 			options.cursor = index
@@ -400,7 +440,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if ebiten.TPS() != e.ticksPerSecond() || ebiten.TPS() == previousTPS {
 		t.Fatal("Game Speed option did not update the live scheduler", ebiten.TPS(), e.ticksPerSecond())
 	}
-	step(ebiten.KeyEscape)
+	step()
+	options.cursor = len(options.items) - 1
+	step(ebiten.KeyEnter)
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatal("options did not return to title")
 	}
@@ -521,6 +563,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	watchGameTime(t, f)
 	if f.match.Options.TicksPerSecond != int32(ebiten.TPS()) {
 		t.Fatal("match did not inherit the live Game Speed scheduler")
+	}
+	if f.match.Options.LifePercent != cfg.Options.Life || f.match.Options.RoundTime != cfg.Options.Time || f.match.Players[0].Character.MaxLife != f.match.Players[0].Character.StateFile.Data.Life*cfg.Options.Life/100 {
+		t.Fatal("Options life/time changes did not reach the selected match")
 	}
 	if f.match.World.RandomSeed() != 16807 {
 		t.Fatal("session seed was not handed to production match")
