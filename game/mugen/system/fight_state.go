@@ -280,13 +280,6 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		presentation.Clear()
 		finalPalette = palette.Transform{}
 	}
-	fittedBounds := func(surface *ebiten.Image, transform coord.Transform) image.Rectangle {
-		// Raster coverage follows pixel centers after float32 vertex upload.
-		bound := func(v float64) int { return int(math.Ceil(float64(float32(v)) - .5)) }
-		return image.Rect(bound(transform.X), bound(transform.Y),
-			bound(transform.X+float64(surface.Bounds().Dx())*transform.ScaleX),
-			bound(transform.Y+float64(surface.Bounds().Dy())*transform.ScaleY)).Intersect(screen.Bounds())
-	}
 	drawFitted := func(surface *ebiten.Image, transform coord.Transform, err error) {
 		if err != nil {
 			return
@@ -302,7 +295,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 			s.renderError = fmt.Errorf("fight viewport sampler: %w", err)
 		}
 		if onTop {
-			fittedRegions = append(fittedRegions, fittedBounds(surface, transform))
+			fittedRegions = append(fittedRegions, fittedBounds(surface, transform, screen.Bounds()))
 		}
 	}
 	world, err := coord.Project(gameSpace, target, s.engine.cfg.Video.KeepAspect)
@@ -337,7 +330,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		drawFitted(s.hudCanvas, hud, err)
 	}
 	if onTop {
-		clip := fittedBounds(s.gameCanvas, world)
+		clip := fittedBounds(s.gameCanvas, world, screen.Bounds())
 		if !clip.Empty() {
 			s.effectWindowProjection = &world
 			s.drawEffects(presentation.SubImage(clip).(*ebiten.Image), 2)
@@ -373,10 +366,19 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 			}
 		}
 	}
+	s.drawCollisionDebug(screen)
 	if err := s.drawDebugClipboard(screen); err != nil {
 		s.renderError = err
 	}
 	s.drawTrainingMenu(screen)
+}
+
+func fittedBounds(surface *ebiten.Image, transform coord.Transform, target image.Rectangle) image.Rectangle {
+	// Raster coverage follows pixel centers after float32 vertex upload.
+	bound := func(v float64) int { return int(math.Ceil(float64(float32(v)) - .5)) }
+	return image.Rect(bound(transform.X), bound(transform.Y),
+		bound(transform.X+float64(surface.Bounds().Dx())*transform.ScaleX),
+		bound(transform.Y+float64(surface.Bounds().Dy())*transform.ScaleY)).Intersect(target)
 }
 
 func subtractRectangle(rect, covered image.Rectangle) []image.Rectangle {

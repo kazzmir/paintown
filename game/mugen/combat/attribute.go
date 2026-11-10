@@ -11,6 +11,24 @@ type Attributes struct {
 	Attacks uint16
 }
 
+func (a Attributes) String() string {
+	var states string
+	for i, letter := range "SCA" {
+		if a.States&(1<<i) != 0 {
+			states += string(letter)
+		}
+	}
+	parts := []string{states}
+	for level, first := range "NSH" {
+		for kind, last := range "ATP" {
+			if a.Attacks&(1<<uint(level*3+kind)) != 0 {
+				parts = append(parts, string(first)+string(last))
+			}
+		}
+	}
+	return strings.Join(parts, ",")
+}
+
 func ParseAttributes(source string) (Attributes, error) {
 	return parseAttributes(source, false)
 }

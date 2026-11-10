@@ -420,6 +420,14 @@ func debugRuntimeLifecycle(t *testing.T, e *Engine, keys *flowKeyboard, canvas *
 		t.Fatal("debug bar visibility had no rendered consumer")
 	}
 	press(ebiten.KeyControlLeft, ebiten.KeyL)
+	press(ebiten.KeyControlLeft, ebiten.KeyC)
+	e.Draw(canvas)
+	collision := make([]byte, len(visible))
+	canvas.ReadPixels(collision)
+	if !e.showCollisions || bytes.Equal(visible, collision) || len(left.CollisionDebugBoxes()) == 0 {
+		t.Fatal("live collision geometry did not reach debug rendering")
+	}
+	press(ebiten.KeyControlLeft, ebiten.KeyC)
 	profileTPS := f.match.Options.TicksPerSecond
 	press(ebiten.KeyControlLeft, ebiten.KeyS)
 	if ebiten.TPS() != ebiten.SyncWithFPS || f.match.Options.TicksPerSecond != profileTPS {

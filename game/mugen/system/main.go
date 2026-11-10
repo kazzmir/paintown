@@ -47,6 +47,7 @@ type Engine struct {
 	stop             <-chan struct{}
 	focus            func() bool
 	hideFightBars    bool
+	showCollisions   bool
 }
 
 // Close stops streaming readers before removing this engine's expanded packs.

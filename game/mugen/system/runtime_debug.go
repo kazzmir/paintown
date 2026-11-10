@@ -16,6 +16,9 @@ func (s *FightState) updateDebugHotkeys() error {
 	control := im.KeyPressed(ebiten.KeyControlLeft) || im.KeyPressed(ebiten.KeyControlRight)
 	shift := im.KeyPressed(ebiten.KeyShiftLeft) || im.KeyPressed(ebiten.KeyShiftRight)
 	alt := im.KeyPressed(ebiten.KeyAltLeft) || im.KeyPressed(ebiten.KeyAltRight)
+	if control && im.KeyJustPressed(ebiten.KeyC) {
+		s.engine.showCollisions = !s.engine.showCollisions
+	}
 	if control && im.KeyJustPressed(ebiten.KeyL) {
 		s.engine.hideFightBars = !s.engine.hideFightBars
 	}
