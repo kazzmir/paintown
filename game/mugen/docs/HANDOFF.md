@@ -2,6 +2,8 @@
 
 ## Continuing batch (user 2026-11-10): ten checkpoints
 
+- Authored result and campaign font colors: implemented; acceptance pending.
+
 - Victory portrait window in motif coordinates: implemented; acceptance pending.
 
 - Lazy character and campaign storyboard admission: implemented; acceptance pending.

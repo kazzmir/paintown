@@ -1182,6 +1182,12 @@
       "name": "Victory portrait window in motif coordinates",
       "completed": false,
       "validation": "Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected end-state acceptance pending for the ten-checkpoint batch."
+    },
+    {
+      "id": "mode-font-rgb",
+      "name": "Authored result and campaign font colors",
+      "completed": false,
+      "validation": "The supplied beta fight.def specifies optional RGB multipliers with neutral 256,256,256. Result/continue/VS-counter labels now consume those values through shared immutable glyph caches; the existing campaign episode checks tinted and neutral labels using the same glyph. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }

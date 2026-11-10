@@ -386,6 +386,13 @@ func (f *Font) Draw(screen *ebiten.Image, text string, x, y int, bank int, align
 }
 
 func (f *Font) DrawWithPalette(screen *ebiten.Image, text string, x, y int, bank int, align Alignment, transform palette.Transform) error {
+	return f.DrawWithColor(screen, text, x, y, bank, align, [3]float32{256, 256, 256}, transform)
+}
+
+// DrawWithColor applies system.def/fight.def's optional RGB adjustment. Native
+// uses 256 as the neutral multiplier; this does not replace the selected bank
+// or mutate cached glyph pixels shared by differently colored labels.
+func (f *Font) DrawWithColor(screen *ebiten.Image, text string, x, y int, bank int, align Alignment, rgb [3]float32, transform palette.Transform) error {
 	width := f.TextWidthForBank(text, bank)
 	startX := x + f.OffsetX
 	// MUGEN treats Y as the baseline (bottom of the font cell), so we subtract
@@ -417,6 +424,7 @@ func (f *Font) DrawWithPalette(screen *ebiten.Image, text string, x, y int, bank
 
 		if img != nil {
 			op := &ebiten.DrawImageOptions{}
+			op.ColorScale.Scale(max(0, rgb[0])/256, max(0, rgb[1])/256, max(0, rgb[2])/256, 1)
 			op.GeoM.Translate(float64(currentX+glyph.OffsetX), float64(startY+glyph.OffsetY))
 			op.Filter = ebiten.FilterNearest
 			if !transform.Enabled {

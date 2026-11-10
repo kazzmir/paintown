@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"image"
 	"image/color"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
@@ -173,6 +175,28 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		}
 	}
 	portraitWindow.RawValue = savedWindow
+	// Native font tuples carry bank/alignment followed by RGB multipliers.
+	// Reusing the same glyph for tinted and neutral labels must not recolor
+	// its shared cache or override its bank selection.
+	fontSpec := e.themeAttribute("Victory Screen", "p1.name.font")
+	nameOffset := e.themeAttribute("Victory Screen", "p1.name.offset")
+	savedFontSpec, savedNameOffset := fontSpec.RawValue, nameOffset.RawValue
+	savedFont := e.motif.Fonts[3]
+	white := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	white.Set(0, 0, color.White)
+	e.motif.Fonts[3] = &font.Font{Width: 1, Height: 1, Glyphs: map[rune]*font.Glyph{'A': {Width: 1, Image: white}}}
+	fontSpec.RawValue, nameOffset.RawValue = "3,0,1,128,64,0", "0,0"
+	canvas.Clear()
+	e.modeLabel(canvas, "Victory Screen", "p1.name", "A", 0, 1, e.motif.Fonts)
+	if got := color.RGBAModel.Convert(canvas.At(0, 0)); got != (color.RGBA{128, 64, 0, 255}) {
+		t.Fatal("result font RGB adjustment ignored", got)
+	}
+	fontSpec.RawValue = "3,0,1"
+	e.modeLabel(canvas, "Victory Screen", "p1.name", "A", 1, 1, e.motif.Fonts)
+	if got := color.RGBAModel.Convert(canvas.At(1, 0)); got != (color.RGBA{255, 255, 255, 255}) {
+		t.Fatal("font adjustment changed shared glyph pixels", got)
+	}
+	fontSpec.RawValue, nameOffset.RawValue, e.motif.Fonts[3] = savedFontSpec, savedNameOffset, savedFont
 	step(ebiten.KeyEnter)
 	f = enterFight()
 	if f.match.Request.MatchNo != 2 || f.match.World.MatchNo != 2 || r.index != 1 {

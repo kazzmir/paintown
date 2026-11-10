@@ -15,6 +15,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 )
 
@@ -66,7 +67,7 @@ func (e *Engine) themeValues(section, key string, fallback ...float64) []float64
 }
 
 func (e *Engine) modeLabel(screen *ebiten.Image, section, key, text string, x, y int, fonts []*font.Font) {
-	info := e.themeValues(section, key+".font", 1, 0, 0)
+	info := e.themeValues(section, key+".font", 1, 0, 0, 256, 256, 256)
 	index := int(info[0])
 	if index < 1 || index >= len(fonts) || fonts[index] == nil {
 		return
@@ -78,7 +79,7 @@ func (e *Engine) modeLabel(screen *ebiten.Image, section, key, text string, x, y
 	} else if info[2] < 0 {
 		align = font.AlignRight
 	}
-	fonts[index].Draw(screen, text, x+int(offset[0]), y+int(offset[1]), int(info[1]), align)
+	_ = fonts[index].DrawWithColor(screen, text, x+int(offset[0]), y+int(offset[1]), int(info[1]), align, [3]float32{float32(info[3]), float32(info[4]), float32(info[5])}, palette.Transform{})
 }
 
 type WinScreenState struct {
