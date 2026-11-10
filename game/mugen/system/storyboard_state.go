@@ -2,10 +2,12 @@ package main
 
 import (
 	"image/color"
+	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/input"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sound"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
 )
@@ -14,6 +16,7 @@ import (
 type StoryboardState struct {
 	engine     *Engine
 	storyboard string // absolute path to the .def file
+	sourceDir  string // optional base for an unresolved motif reference
 	nextState  func() State
 
 	player     *sb.Player
@@ -27,7 +30,17 @@ func (s *StoryboardState) load() {
 	if s.storyboard == "" {
 		return
 	}
-	story, err := sb.Load(s.storyboard, s.engine.dataDir, s.engine.cfg.Config.Language)
+	path, err := resource.Resolve(s.storyboard, s.sourceDir, s.engine.dataDir, filepath.Join(s.engine.dataDir, "data"))
+	if err != nil {
+		s.loadError = err
+		return
+	}
+	s.storyboard = path
+	language := ""
+	if s.engine.cfg != nil {
+		language = s.engine.cfg.Config.Language
+	}
+	story, err := sb.Load(path, s.engine.dataDir, language)
 	if err != nil {
 		s.loadError = err
 		return

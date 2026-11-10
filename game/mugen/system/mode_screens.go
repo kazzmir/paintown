@@ -16,7 +16,6 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
-	"github.com/kazzmir/paintown/game/mugen/resource"
 )
 
 func (e *Engine) themeAttribute(section, key string) *parsers.Attribute {
@@ -310,11 +309,7 @@ func (e *Engine) configuredStory(section string, next State) (State, error) {
 	if e.themeNumber(section, "enabled", 0) == 0 || name == "" {
 		return next, nil
 	}
-	path, err := resource.Resolve(name, filepath.Dir(e.motif.Source), e.dataDir, filepath.Join(e.dataDir, "data"))
-	if err != nil {
-		return nil, err
-	}
-	return &StoryboardState{engine: e, storyboard: path, nextState: func() State { return next }}, nil
+	return &StoryboardState{engine: e, storyboard: name, sourceDir: filepath.Dir(e.motif.Source), nextState: func() State { return next }}, nil
 }
 
 type completionScreen struct {

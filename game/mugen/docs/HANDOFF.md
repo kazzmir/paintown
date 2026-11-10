@@ -1,5 +1,13 @@
 # Current handoff
 
+## Continuing batch (user 2026-11-10): ten checkpoints
+
+- Lazy character and campaign storyboard admission: implemented; acceptance pending.
+
+Validate the affected connected segments once after the implementation batch;
+unchecked batch entries are implemented but await that acceptance.
+
+
 Follow AGENTS.md. PROGRESS.md is the single completion ledger. Author only
 game/mugen/; autonomous local source/text commits are authorized, no pushes,
 binaries, user configuration, subagents or goals. Recaps about every 10–15

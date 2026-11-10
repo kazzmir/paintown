@@ -1170,6 +1170,12 @@
       "name": "HD projectile syntax and empty effect lifecycle",
       "completed": true,
       "validation": "Parenthesized ProjHit/ProjContact/ProjGuarded IDs now use the existing legacy comparison/time grammar. Native contact observations confirm literal filtering, zero-ID/unfiltered Var(...) arguments and the legacy != rule. This admits Dhalsim: all 19 HD roster characters and 3,118 state programs load without errors. Native empty Explods survive creation and retire on their first end boundary; an effect-only clock now accepts zero-duration placeholders/tails without weakening fighter-loop diagnostics. Existing guard/contact/recovery and pause/effect/expiry/reset scenarios cover both changes. All five connected segments are checked with races; Linux rebuilt. A full-life Ryu/Dhalsim AI match completes two natural-KO rounds and a final 0-2 result at tick7497; a rendered Watch fight runs past the formerly fatal effect. Dhalsim references palette1,22 although its SFF has neither1,21 nor1,22; that diagnostic remains a content finding. Complete roster gameplay/native fidelity remain unverified. Pack/YAML untouched; owned scratch removed."
+    },
+    {
+      "id": "lazy-story-admission",
+      "name": "Lazy character and campaign storyboard admission",
+      "completed": false,
+      "validation": "Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }

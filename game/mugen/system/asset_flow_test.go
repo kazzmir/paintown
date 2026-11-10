@@ -1270,6 +1270,26 @@ bgclearcolor=255,255,255
 		t.Fatal("cursor did not skip empty slots", x, y)
 	}
 	first, alternate := selection.chars[0], selection.chars[1]
+	// An unused character ending must not prevent roster/VS admission. Keep
+	// the original packed definition for the rest of this connected episode.
+	alternateSource, err := os.ReadFile(alternate.DefPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unusedDefinition := regexp.MustCompile(`(?im)^ending\.storyboard\s*=.*$`).ReplaceAllString(string(alternateSource), "ending.storyboard=unused-missing.def")
+	if unusedDefinition == string(alternateSource) {
+		unusedDefinition += "\n[Arcade]\nending.storyboard=unused-missing.def\n"
+	}
+	if err := os.WriteFile(alternate.DefPath, []byte(unusedDefinition), 0600); err != nil {
+		t.Fatal(err)
+	}
+	unusedRoster, _, unusedStoryError := loadCharacters(selection.selectDefPath, filepath.Join(e.dataDir, "chars"), &e.characterPacks, e.cfg.Config.Language)
+	if err := os.WriteFile(alternate.DefPath, alternateSource, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if unusedStoryError != nil || !strings.HasSuffix(unusedRoster[1].EndingStoryboard, "unused-missing.def") {
+		t.Fatal("unused character storyboard blocked selection", unusedStoryError)
+	}
 	if first.SmallPortrait == nil || first.BigPortrait == nil || alternate.Name != "Packed alternate" || filepath.Dir(first.DefPath) != filepath.Dir(alternate.DefPath) || first.IntroStoryboard == "" || first.EndingStoryboard == "" {
 		t.Fatal("ZIP portraits, alternate DEF, cache or storyboard paths were not loaded")
 	}

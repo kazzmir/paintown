@@ -78,6 +78,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Debug player activation and target PNG screenshot format**
 - [x] **Usable Options in artwork-only menu motifs**
 - [x] **HD projectile syntax and empty effect lifecycle**
+- [ ] **Lazy character and campaign storyboard admission**: Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected end-state acceptance pending for the ten-checkpoint batch.
 
 ## Completed scenario coverage
 
@@ -90,7 +91,7 @@ source changes reopen only the affected segments.
 - [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 

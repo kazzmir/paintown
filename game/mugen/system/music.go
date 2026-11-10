@@ -78,12 +78,14 @@ func (e *Engine) syncMusic() error {
 		if entry {
 			bus.Stop()
 		}
-		if scene := story.player.CurrentScene(); scene != e.sound.musicScene {
-			e.sound.musicScene = scene
-			if scene != nil && scene.MusicSet {
-				track := sound.DefaultMusic(scene.MusicLoop)
-				track.File = scene.MusicFile
-				e.playMusic(track, story.storyboard, true)
+		if story.player != nil {
+			if scene := story.player.CurrentScene(); scene != e.sound.musicScene {
+				e.sound.musicScene = scene
+				if scene != nil && scene.MusicSet {
+					track := sound.DefaultMusic(scene.MusicLoop)
+					track.File = scene.MusicFile
+					e.playMusic(track, story.storyboard, true)
+				}
 			}
 		}
 	}

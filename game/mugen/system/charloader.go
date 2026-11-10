@@ -81,14 +81,6 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 		if err != nil {
 			return nil, nil, err
 		}
-		for _, path := range []*string{&loaded.IntroStoryboard, &loaded.EndingStoryboard} {
-			if *path != "" {
-				*path, err = resource.Resolve(*path, filepath.Dir(loaded.DefPath))
-				if err != nil {
-					return nil, nil, fmt.Errorf("%s [Arcade] storyboard: %w", loaded.DefPath, err)
-				}
-			}
-		}
 		loaded.Entry = cp.Entry
 		cp = loaded
 		chars = append(chars, cp)
@@ -149,6 +141,17 @@ func loadCharacterPortraitLanguage(defPath, language string, extra ...[2]int) (*
 			cp.EndingStoryboard = background.GetString(a.Value)
 		case "intro.storyboard":
 			cp.IntroStoryboard = background.GetString(a.Value)
+		}
+	}
+	// A roster preview does not play every character's storyboards. Anchor
+	// references without opening them; the selected playback state resolves
+	// case and reports errors only when that intro/ending is actually needed.
+	for _, path := range []*string{&cp.IntroStoryboard, &cp.EndingStoryboard} {
+		if *path != "" {
+			*path = filepath.FromSlash(strings.ReplaceAll(*path, "\\", "/"))
+			if !filepath.IsAbs(*path) {
+				*path = filepath.Join(dir, *path)
+			}
 		}
 	}
 
