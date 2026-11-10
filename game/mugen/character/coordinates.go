@@ -31,6 +31,9 @@ func (c *Character) PositionOf(other *Character) (float64, float64) {
 }
 
 func (c *Character) hasPushBox() bool {
+	if c.DebugDisabled {
+		return false
+	}
 	element := c.CurrentElement()
 	return element != nil && len(element.Clsn2) > 0
 }

@@ -56,10 +56,11 @@ type Options struct {
 	StageCrop                    bool // false preserves the default StageFit=1
 	HelperMax                    int
 	PowerRules                   *combat.PowerRules
-	RandomSeed                   int64 // zero chooses a fresh session-derived seed
-	PlayerProjectileMax          int   // zero uses the default pool of 32
-	AfterImageMax                int   // zero uses the default global pool of 16
-	ExplodMax                    int   // zero uses MaxEffects, then the default global pool of 256
+	RandomSeed                   int64   // zero chooses a fresh session-derived seed
+	PlayerProjectileMax          int     // zero uses the default pool of 32
+	AfterImageMax                int     // zero uses the default global pool of 16
+	ExplodMax                    int     // zero uses MaxEffects, then the default global pool of 256
+	DisabledPlayers              [4]bool // live debug slots; preserved by round restart/reload
 }
 
 type Phase int
@@ -290,6 +291,7 @@ func (m *Match) resetRound() error {
 		side := slot % 2
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
+		c.DebugDisabled = m.Options.DisabledPlayers[slot]
 		c.Name, c.AuthorName = previous.Name, previous.AuthorName
 		if p.Definition != nil {
 			c.Name, c.AuthorName = p.Definition.Info["name"], p.Definition.Info["author"]
@@ -525,7 +527,7 @@ func (m *Match) Update() error {
 	case Intro:
 		intro := false
 		for _, p := range m.Actors() {
-			intro = intro || p.Character.Specials["intro"]
+			intro = intro || !p.Character.DebugDisabled && p.Character.Specials["intro"]
 		}
 		if intro {
 			m.introClearTicks = 0

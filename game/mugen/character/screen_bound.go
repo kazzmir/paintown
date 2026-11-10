@@ -9,7 +9,7 @@ func (c *Character) SetScreenBound(p engine.ScreenBoundParameters) error {
 }
 
 func (c *Character) CameraMovementEnabled(axis int) bool {
-	return !c.destroyed && axis >= 0 && axis < 2 && !c.cameraDisabled[axis]
+	return !c.destroyed && !c.DebugDisabled && axis >= 0 && axis < 2 && !c.cameraDisabled[axis]
 }
 
 func (c *Character) constrainPosition() {

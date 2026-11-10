@@ -14,6 +14,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/engine"
+	"github.com/kazzmir/paintown/game/mugen/evaluator"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
@@ -508,6 +509,55 @@ func debugRuntimeLifecycle(t *testing.T, e *Engine, keys *flowKeyboard, canvas *
 	entries, err := os.ReadDir(e.screenshotDir)
 	if err != nil || len(entries) != 1 {
 		t.Fatal("one screenshot press generated repeated output", len(entries), err)
+	}
+	// Continue the debug episode through native player disable/reenable.
+	// The actor disappears from simulation/queries, retaining its slot/ID,
+	// while the HUD and shared clock survive even with both roots disabled.
+	right = f.match.Players[1].Character
+	id, suspendedTime, suspendedX, ownership := right.EntityID, right.Time, right.X, right.AILevel
+	e.Draw(canvas)
+	canvas.ReadPixels(visible)
+	press(ebiten.KeyControlLeft, ebiten.KeyAltLeft, ebiten.KeyDigit2)
+	e.Draw(canvas)
+	canvas.ReadPixels(hidden)
+	exists, _ := left.LookupFunction("playeridexist", []evaluator.Value{evaluator.Int(id)})
+	enemies, _ := left.LookupIdentifier("numenemy")
+	if !right.DebugDisabled || right.AILevel != ownership || exists.Number() != 0 || enemies.Number() != 0 || left.Redirect("playerid", evaluator.Int(id), true) != nil || bytes.Equal(visible, hidden) {
+		t.Fatal("disabled fighter remained visible/available or changed AI ownership")
+	}
+	press(ebiten.KeyPause)
+	active()
+	for n := 0; n < 12; n++ {
+		step()
+	}
+	if right.Time != suspendedTime || right.X != suspendedX {
+		t.Fatal("disabled root advanced its state or physics", right.Time, right.X)
+	}
+	press(ebiten.KeyControlLeft, ebiten.KeyAltLeft, ebiten.KeyDigit1)
+	clock := e.gameTime
+	for n := 0; n < 3; n++ {
+		step()
+	}
+	if e.gameTime != clock+3 || f.match.Phase != match.Active {
+		t.Fatal("disabling all fighters stopped the shared clock or caused a KO", clock, e.gameTime, f.match.Phase, f.userPaused)
+	}
+	press(ebiten.KeyControlLeft, ebiten.KeyAltLeft, ebiten.KeyDigit1)
+	press(ebiten.KeyF4)
+	active()
+	right = f.match.Players[1].Character
+	if !right.DebugDisabled || right.EntityID != id {
+		t.Fatal("round restart lost the native disabled slot/identity")
+	}
+	press(ebiten.KeyShiftLeft, ebiten.KeyF4)
+	right = f.match.Players[1].Character
+	if !right.DebugDisabled || right.AILevel != ownership {
+		t.Fatal("resource reload lost the live disabled slot/ownership")
+	}
+	active()
+	press(ebiten.KeyControlLeft, ebiten.KeyAltLeft, ebiten.KeyDigit2)
+	exists, _ = f.match.Players[0].Character.LookupFunction("playeridexist", []evaluator.Value{evaluator.Int(id)})
+	if right.DebugDisabled || exists.Number() != 1 || right.Time <= 0 || right.AILevel != ownership {
+		t.Fatal("reenabling did not restore the actor's normal state flow")
 	}
 	press(ebiten.KeyEscape)
 	if _, ok := e.currentState.(*TitleState); !ok {

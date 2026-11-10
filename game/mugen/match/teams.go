@@ -195,14 +195,19 @@ func (m *Match) rotateNextMembers(initial bool) {
 
 func (m *Match) teamKO(side int) bool {
 	allDead := true
+	participating := false
 	for _, p := range m.SidePlayers(side) {
+		if p.Character.DebugDisabled {
+			continue
+		}
+		participating = true
 		dead := !p.Character.IsAlive()
 		if dead && m.Options.TeamLoseOnKO {
 			return true
 		}
 		allDead = allDead && dead
 	}
-	return allDead
+	return participating && allDead
 }
 
 func (m *Match) teamLife(side int) (life, maximum int64) {

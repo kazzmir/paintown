@@ -14,6 +14,9 @@ type redirectEnvironment struct {
 }
 
 func (c *Character) redirectEnvironment(target *Character) evaluator.EvaluatorEnvironment {
+	if target.DebugDisabled {
+		return nil
+	}
 	return &redirectEnvironment{Character: target, width: c.LocalCoordinateWidth()}
 }
 

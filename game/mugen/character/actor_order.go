@@ -40,7 +40,7 @@ func OrderedActors(players []*Player) []Actor {
 			continue
 		}
 		appendActor := func(c *Character) {
-			if c != nil && !c.destroyed {
+			if c != nil && !c.destroyed && !c.DebugDisabled {
 				actors = append(actors, Actor{p, c})
 			}
 		}

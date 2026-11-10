@@ -195,7 +195,7 @@ func (w *World) addHelper(c *Character) error {
 func (w *World) enemies(c *Character, nearest bool) []*Character {
 	var result []*Character
 	for _, root := range w.Roots {
-		if root.TeamSide != c.TeamSide {
+		if root.TeamSide != c.TeamSide && !root.DebugDisabled {
 			result = append(result, root)
 		}
 	}
@@ -216,7 +216,7 @@ func (w *World) enemies(c *Character, nearest bool) []*Character {
 // queries. Enemy roots precede friendly roots, then helpers follow creation.
 func (w *World) contactCandidates(c *Character, team string) []*Character {
 	eligible := func(other *Character) bool {
-		if other == c || other.destroyed {
+		if other == c || other.destroyed || other.DebugDisabled {
 			return false
 		}
 		switch team {
@@ -294,7 +294,7 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 		return evaluator.Bool(c.TeamSide == c.World.HomeTeam), true
 	case "p3name":
 		for _, root := range c.World.Roots {
-			if root != c.rootPlayer() && root.TeamSide == c.TeamSide {
+			if root != c.rootPlayer() && root.TeamSide == c.TeamSide && !root.DebugDisabled {
 				return evaluator.Text(root.Name), true
 			}
 		}
@@ -311,7 +311,7 @@ func (c *Character) lookupEntity(name string) (evaluator.Value, bool) {
 	case "numpartner":
 		count := 0
 		for _, root := range c.World.Roots {
-			if root != c.rootPlayer() && root.TeamSide == c.TeamSide {
+			if root != c.rootPlayer() && root.TeamSide == c.TeamSide && !root.DebugDisabled {
 				count++
 			}
 		}
@@ -368,6 +368,9 @@ func (c *Character) acquiredTargets(id int, filter bool) []*Character {
 			continue
 		}
 		active = append(active, target)
+		if target.DebugDisabled {
+			continue
+		}
 		if filter && id >= 0 && record.id != id {
 			continue
 		}
@@ -413,7 +416,7 @@ func (c *Character) Redirect(name string, id evaluator.Value, hasID bool) evalua
 			}
 		}
 	case "playerid":
-		if who, ok := c.World.Registry.Lookup(int32(n)); ok && !who.destroyed {
+		if who, ok := c.World.Registry.Lookup(int32(n)); ok && !who.destroyed && !who.DebugDisabled {
 			return c.redirectEnvironment(who)
 		}
 	}
@@ -480,6 +483,6 @@ func (c *Character) LookupFunction(name string, args []evaluator.Value) (evaluat
 		return evaluator.Int(int32(c.numExplods(id, len(args) > 0))), true
 	default:
 		who, ok := c.World.Registry.Lookup(int32(id))
-		return evaluator.Bool(ok && !who.destroyed), true
+		return evaluator.Bool(ok && !who.destroyed && !who.DebugDisabled), true
 	}
 }

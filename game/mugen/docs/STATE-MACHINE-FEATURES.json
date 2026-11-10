@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Ctrl-Alt player enable/disable and native PCX screenshot output remain unimplemented; F12 uses PNG.",
+      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "8dd0fce3454180b1d09b7f39b5fd29b75d3e91b031f40e7172f0dc7db1b8a5c5"
+      "passed_source": "dcb4bff68f26fa804c8b2f2d3b30cb3f36254be7a506fd5b660826f28ed6908f"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7efc31f3a6b1a93092ce205c8d35e400f30a485857b63ece8ee8268b8c7f5d20"
+      "passed_source": "723b12a8e5c8be754cb7e1a6aba324ea2efd5ba79ebe82d2ab1e0a24a4078ea0"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "14e3aa2911f6156cad19e1d7610f934b66271fc50b36ba2bff67e32d94b6ed35"
+      "passed_source": "7e85560604cdf039d70fc08a49b29f1995e251a1b1b3c1498b61797f1aa62ce5"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "bc2b22877983b8046fefb0acd5904291791c8eec1333c7cd1cc3432a49f85981"
+      "passed_source": "17d2802819b8bff59e0a7b1f750483d68afe2a1ed8a78f2b212ee75171526c82"
     }
   ],
   "presentation_followups": [
@@ -1152,6 +1152,12 @@
       "name": "HD fight backgrounds and native legacy text admission",
       "completed": true,
       "validation": "Numbered HUD backgrounds now include sparse higher indices in numeric order, cached per fight rather than limited to bg0/bg1. The first scalar animation ID in p2.front.anim=14,0 restores the right lifebar; bg2 restores the central KO artwork. Native accepts Ken's loose pausetime label before the first CNS section; Go ignores unassigned preamble labels while retaining source lines and assignment errors. A disposable native Ryu idle animation confirms AI is ordinary additive blending (256/256); Go now admits that spelling. Existing connected asset/team scenarios cover these consumers and all segments are checked with races. Rebuilt 1280x720 Go Ryu/Ken rendering, movement/attacks, stage audio and a natural KO/win icon/victory pose were inspected; the natural-KO run used temporary 2% life and one-win settings. Normal-length, repeated-round and complete-roster acceptance remain unverified. A debug-forced KO was still falling after its observation interval; this is not evidence of normal KO failure. Bundled native Ken loading failed at SFF under Wine without a specific cause, although its PNGs validate and Go now loads/renders him. No pack scripts, assets or user settings were changed; scratch is removed."
+    },
+    {
+      "id": "debug-player-activation",
+      "name": "Debug player activation and target PNG screenshot format",
+      "completed": true,
+      "validation": "Ctrl-Alt-1 through 4 toggle present root slots through the existing debug gate without changing AI ownership or retiring resources/identity. Native KFM observations confirm hidden/frozen actors, continuing HUD/match clocks, NumEnemy=0, PlayerIDExist=0 and unavailable redirects while disabled; reenable restores the same ID. Native F4 retains the disabled slot. Round restart/reload preserve live slot choices, and inactive roots do not attack, reverse, push or follow the camera. Existing debug lifecycle covers gates, rendered removal, query visibility, frozen clocks, both roots disabled, restart/reload and reenabling; affected connected segments pass with races. Independently scheduled child actors retain their own ownership. The supplied history.html Version 1.0 RC4 documents PNG screenshots (2009-10-25), so the earlier PCX gap was a bookkeeping error for the 1.1 target. Existing F12 composition/exclusive-file acceptance already covers PNG output; no obsolete PCX writer is added."
     }
   ]
 }

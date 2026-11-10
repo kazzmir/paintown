@@ -201,6 +201,10 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   effect/voice cleanup, stable round counters and continuing process time/RNG.
   Reload banks and presentation caches together; keep current input/AI ownership
   in copied live rosters and leave campaign templates/archive ownership intact.
+- Debug-disabled roots retain identity/resources and AI ownership; hide/freeze
+  them and exclude CNS peer queries, contacts, push and camera participation.
+  Retain disabled slots through F4/reload; shared clocks/HUD keep running. PNG
+  is the native screenshot format since 1.0 RC4; do not reopen a PCX gap for 1.1.
 - Options input edits remain session-only. Preserve release admission, inherited
   keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
   Requested F12 captures use exclusive PNG files; never commit generated output.

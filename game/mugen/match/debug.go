@@ -113,6 +113,22 @@ func (m *Match) SetAILevel(playerID, level int) bool {
 	return true
 }
 
+// SetPlayerEnabled preserves the actor's clocks, identity and resources while
+// removing it from simulation, rendering and CNS peer queries. This is a debug
+// slot choice, so F4 and resource reload retain it without changing the roster.
+func (m *Match) SetPlayerEnabled(playerID int, enabled bool) bool {
+	if playerID < 1 || playerID > 4 {
+		return false
+	}
+	p := m.ActivePlayers()[playerID-1]
+	if p == nil {
+		return false
+	}
+	m.Options.DisabledPlayers[playerID-1] = !enabled
+	p.Character.DebugDisabled = !enabled
+	return true
+}
+
 // ForceTimeOver uses the ordinary result pipeline, including team life fractions,
 // announcements, pose entry and result commitment. It cannot end a second round
 // while the previous result is already being displayed.

@@ -111,6 +111,9 @@ func TickCharacters(players []*Character) error {
 	for _, c := range players {
 		attackers := append([]*Character{c}, c.Projectiles...)
 		for _, attacker := range attackers {
+			if attacker.DebugDisabled {
+				continue
+			}
 			if attacker.isProjectile && !attacker.projectileCanHit() {
 				continue
 			}
@@ -255,7 +258,7 @@ func TickCharacters(players []*Character) error {
 	})
 	for index := 0; index < len(ordered); index++ {
 		c := ordered[index]
-		if c.destroyed {
+		if c.destroyed || c.DebugDisabled {
 			continue
 		}
 		if !c.worldFrozen {

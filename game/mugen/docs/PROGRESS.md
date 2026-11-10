@@ -75,6 +75,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Direct training, watch and partner match entry**
 - [x] **HD screenpack loading, portrait requests and palette alpha**
 - [x] **HD fight backgrounds and native legacy text admission**
+- [x] **Debug player activation and target PNG screenshot format**
 
 ## Completed scenario coverage
 
@@ -134,7 +135,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; no further SF2 mod repairs are planned. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Ctrl-Alt player enable/disable and native PCX screenshot output remain unimplemented; F12 uses PNG. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 

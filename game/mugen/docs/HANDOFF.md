@@ -4,6 +4,12 @@ Follow AGENTS.md. PROGRESS.md is the single completion ledger. Author only
 game/mugen/; local source/text commits are authorized, no pushes/binaries/user
 configuration. Recap about every 10–15 commits (user 2026-11-09), not after two.
 
+User priority (2026-11-10): close explicit omissions, then content compatibility,
+including the reported broken Options page. Debug activation is now implemented;
+Options currently assumes a title-menu text font, absent in the HD pack because
+its menu labels are background art. Add a readable functional fallback and
+verify settings reach gameplay without writing local YAML.
+
 Latest pack check: temp/ssf2-turbo-hd bundles native 1.1 Beta 1 P1, 1280x720.
 Loading/selection fixes include sub/AI AIR flags, blank unavailable roster
 cells, requested portrait sprites, EOF loopend=-1, F-prefixed Data spark zero
@@ -47,8 +53,11 @@ rows. Partial: physical gamepad/native joystick numbering, broader assets/fonts/
 media and native runtime/render/audio/AI fidelity. Controller model/connection
 question remains pending; no physical joystick is attached here. Do not repeat
 it or infer hardware acceptance from injected sources. Native dummy/AI/cheat
-policy and exact menu parity remain unverified. Ctrl-Alt player enable/disable
-and native PCX output remain unimplemented; F12 intentionally writes PNG.
+policy and exact menu parity remain unverified. Ctrl-Alt-1..4 now disable/enable root slots, preserving identity, frozen state
+and AI ownership across F4/reload. Native observes NumEnemy/PlayerIDExist=0 and
+hides the root while HUD/global clocks continue. Connected acceptance passes
+with races. The old PCX gap was incorrect: supplied history documents PNG since
+1.0 RC4; the existing F12 PNG path matches the 1.1 target.
 Physical CD, absent licensed/CJK fonts and other platforms remain deferred.
 
 No further SF2 mod-script repairs. Original later-round stalls reproduce in

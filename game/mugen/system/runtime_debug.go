@@ -34,9 +34,15 @@ func (s *FightState) updateDebugHotkeys() error {
 		s.engine.cfg.Video.VRetrace = true
 		s.engine.applyScheduler()
 	}
-	if control && !alt {
+	if control {
 		for slot, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3, ebiten.KeyDigit4} {
 			if !im.KeyJustPressed(key) {
+				continue
+			}
+			if alt {
+				if player := s.match.ActivePlayers()[slot]; player != nil {
+					s.match.SetPlayerEnabled(slot+1, player.Character.DebugDisabled)
+				}
 				continue
 			}
 			selected, present := s.match.SelectionForPlayer(slot + 1)

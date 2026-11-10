@@ -12,6 +12,9 @@ type reversalState struct {
 }
 
 func reversalCollision(reverser, attacker *Character) bool {
+	if reverser.DebugDisabled || attacker.DebugDisabled {
+		return false
+	}
 	if reverser.reversal == nil || attacker.isProjectile || !attacker.HitDefActive || attacker.MoveType != "A" || attacker.destroyed || reverser.destroyed || !reverser.IsAlive() || reverser.TeamSide == attacker.TeamSide || reverser.worldFrozen && attacker.worldFrozen {
 		return false
 	}

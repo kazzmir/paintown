@@ -24,6 +24,9 @@ import (
 // Character represents a MUGEN entity running through the State Machine.
 // It implements the Environment interface so the state machine can execute controllers against it.
 type Character struct {
+	// DebugDisabled suspends this actor without retiring its identity/resources.
+	// Helpers and projectiles remain separate world actors.
+	DebugDisabled    bool
 	Name, AuthorName string
 	RuntimeError     error
 	afterImages      *afterImageHistory
@@ -373,6 +376,10 @@ func (c *Character) Update() {
 }
 
 func (c *Character) startTick() bool {
+	if c.DebugDisabled {
+		c.worldFrozen, c.updateActive = true, false
+		return true
+	}
 	c.initializeLifeState()
 	c.aliveAtTickStart = c.IsAlive()
 	c.boundThisTick = false

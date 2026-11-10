@@ -209,6 +209,7 @@ keys work while the Ctrl-D debug display is active.
 | F4 / Shift-F4 | Restart the current round / reload character, stage and fight files |
 | F5 | Force time-over through the normal result flow |
 | Ctrl-1 through Ctrl-4 | Toggle the corresponding active fighter's AI |
+| Ctrl-Alt-1 through Ctrl-Alt-4 | Disable/enable the corresponding fighter; retain state and AI ownership |
 | Ctrl-C / Ctrl-D | Collision/target/protection overlay / cycle actor debug display |
 | Ctrl-L | Toggle fight bars |
 | Ctrl-S / Ctrl-V | Toggle maximum-speed pacing / restore normal pacing with vsync |
@@ -218,7 +219,8 @@ Restart/reload retain the current round, score and starting carry. Reload uses
 new presentation caches; replacing an expanded character ZIP requires returning
 to title first. Screenshots use numbered files in `DATA_DIR/screenshots`, or
 the directory passed with `--screenshot-dir`; existing files are preserved.
-This portable screenshot output is PNG; native PCX output is not implemented.
+Screenshot output is PNG, matching the 1.1 target. The supplied engine history
+records the switch to PNG in MUGEN 1.0 RC4.
 
 In Training, Pause opens the dummy menu: choose Cooperative, AI or Manual
 control, automatic guarding, stance/jumps, spacing and repeated buttons. Manual
