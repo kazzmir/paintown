@@ -1206,6 +1206,12 @@
       "name": "Menu selection and versus font color consumers",
       "completed": false,
       "validation": "Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected end-state acceptance pending for the ten-checkpoint batch."
+    },
+    {
+      "id": "hud-font-rgb",
+      "name": "HUD font color and optional tuple components",
+      "completed": false,
+      "validation": "Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }

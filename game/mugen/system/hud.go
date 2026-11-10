@@ -53,6 +53,9 @@ func (h *FightHUD) values(section, key string, fallback ...float64) []float64 {
 	result := append([]float64(nil), fallback...)
 	// Layout attributes are literal tuples, rather than CNS expressions.
 	for index, part := range strings.Split(a.RawValue, ",") {
+		if strings.TrimSpace(part) == "" {
+			continue // optional tuple components retain their own defaults
+		}
 		var value float64
 		if _, err := fmt.Sscanf(strings.TrimSpace(part), "%f", &value); err != nil {
 			return fallback
@@ -222,7 +225,7 @@ func (h *FightHUD) component(screen *ebiten.Image, section, key string, x, y flo
 }
 
 func (h *FightHUD) label(screen *ebiten.Image, section, key, text string, x, y float64) {
-	info := h.values(section, key+".font", 0, 0, 0)
+	info := h.values(section, key+".font", 0, 0, 0, 256, 256, 256)
 	index := int(info[0])
 	if index < 1 || index >= len(h.match.Fight.Fonts) || h.match.Fight.Fonts[index] == nil {
 		return
@@ -234,7 +237,7 @@ func (h *FightHUD) label(screen *ebiten.Image, section, key, text string, x, y f
 	} else if info[2] < 0 {
 		align = font.AlignRight
 	}
-	if err := h.match.Fight.Fonts[index].DrawWithPalette(screen, text, int(x+offset[0]), int(y+offset[1]), int(info[1]), align, h.match.Timeline.AllPalette.Transform()); err != nil {
+	if err := h.match.Fight.Fonts[index].DrawWithColor(screen, text, int(x+offset[0]), int(y+offset[1]), int(info[1]), align, [3]float32{float32(info[3]), float32(info[4]), float32(info[5])}, h.match.Timeline.AllPalette.Transform()); err != nil {
 		h.renderError = err
 	}
 }

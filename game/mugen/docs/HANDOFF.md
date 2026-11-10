@@ -2,6 +2,8 @@
 
 ## Continuing batch (user 2026-11-10): ten checkpoints
 
+- HUD font color and optional tuple components: implemented; acceptance pending.
+
 - Menu selection and versus font color consumers: implemented; acceptance pending.
 
 - Victory fades through campaign handoff: implemented; acceptance pending.

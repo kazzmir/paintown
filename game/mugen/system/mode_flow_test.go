@@ -232,6 +232,19 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		t.Fatal("title menu discarded the font tuple color channels", got)
 	}
 	e.motif.TitleInfo, e.motif.TitleBG, activeSpec.RawValue = savedTitleInfo, savedTitleBG, savedActiveSpec
+	savedFightFont, savedFightLayout := f.match.Fight.Fonts[1], f.match.Fight.AST.Sections
+	f.match.Fight.Fonts[1] = e.motif.Fonts[3]
+	coloredHUD, err := parsers.Parse(strings.NewReader("[Name]\np1.name.font=1,,1,0,128,64\np1.name.offset=0,0\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.match.Fight.AST.Sections = append(coloredHUD.Sections, savedFightLayout...)
+	canvas.Clear()
+	f.hud.label(canvas, "Name", "p1.name", "A", 0, 1)
+	if got := color.RGBAModel.Convert(canvas.At(0, 0)); got != (color.RGBA{0, 128, 64, 255}) {
+		t.Fatal("HUD font color or omitted bank default was lost", got)
+	}
+	f.match.Fight.Fonts[1], f.match.Fight.AST.Sections = savedFightFont, savedFightLayout
 	fontSpec.RawValue, nameOffset.RawValue, e.motif.Fonts[3] = savedFontSpec, savedNameOffset, savedFont
 	step(ebiten.KeyEnter)
 	if e.currentState != win || !win.transition.leaving {
