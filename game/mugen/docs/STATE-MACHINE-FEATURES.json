@@ -1122,7 +1122,7 @@
       "id": "documented-fight-runtime-controls",
       "name": "Documented debug and fight runtime controls",
       "completed": false,
-      "validation": "Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key."
+      "validation": "Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key. AI toggles now change copied live roster ownership, active roots/helpers and future resets without rewriting campaign templates; charged AI plans are retired on ownership changes. Training menu ownership uses the same setter."
     }
   ]
 }

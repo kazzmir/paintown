@@ -85,11 +85,11 @@ func (s *FightState) updateTrainingMenu() bool {
 		*value = (*value + change + len(trainingChoices[controls.cursor])) % len(trainingChoices[controls.cursor])
 		// AILevel must reach authored CNS as well as the input adapter. Other
 		// modes keep the dummy human-owned, including its helpers on creation.
-		dummy := s.match.Players[1].Character
-		dummy.AILevel = 0
+		level := 0
 		if controls.control == 1 {
-			dummy.AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))
+			level = max(1, min(8, s.engine.cfg.Options.Difficulty))
 		}
+		s.match.SetAILevel(2, level)
 	}
 	return false
 }

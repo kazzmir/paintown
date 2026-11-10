@@ -15,6 +15,28 @@ func (s *FightState) updateDebugHotkeys() error {
 	}
 	control := im.KeyPressed(ebiten.KeyControlLeft) || im.KeyPressed(ebiten.KeyControlRight)
 	shift := im.KeyPressed(ebiten.KeyShiftLeft) || im.KeyPressed(ebiten.KeyShiftRight)
+	alt := im.KeyPressed(ebiten.KeyAltLeft) || im.KeyPressed(ebiten.KeyAltRight)
+	if control && !alt {
+		for slot, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3, ebiten.KeyDigit4} {
+			if !im.KeyJustPressed(key) {
+				continue
+			}
+			selected, present := s.match.SelectionForPlayer(slot + 1)
+			if !present {
+				continue
+			}
+			level := 0
+			if selected.AILevel == 0 {
+				level = max(1, min(8, s.engine.cfg.Options.Difficulty))
+			}
+			if s.match.SetAILevel(slot+1, level) && slot == 1 && s.training != nil {
+				s.training.control = 2
+				if level > 0 {
+					s.training.control = 1
+				}
+			}
+		}
+	}
 	if im.KeyJustPressed(ebiten.KeyF1) {
 		side := 1
 		if control {
