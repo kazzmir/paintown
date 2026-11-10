@@ -85,8 +85,17 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	}
 	selectMode := func(name string) *FightState {
 		t.Helper()
-		e.currentState = NewSelectState(e, name)
+		selection := NewSelectState(e, name)
+		if name == "Arcade Mode" {
+			// Campaign stages remain usable when includestage=0 leaves no
+			// manual stage pool. No extra stage-confirm screen is involved.
+			selection.stages = nil
+		}
+		e.currentState = selection
 		step(ebiten.KeyEnter)
+		if name == "Arcade Mode" && e.currentState == selection {
+			t.Fatal("Arcade waited for a manual stage instead of its assigned opponent stage")
+		}
 		step(ebiten.KeyEnter)
 		return enterFight()
 	}
@@ -268,6 +277,44 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		t.Fatalf("ending did not return to title: %T", e.currentState)
 	}
 	step() // Releases the completed campaign.
+	// A character without an ending reaches Win Screen, then title. Reuse
+	// the same stock character/media and one scheduled opponent for this
+	// completion branch rather than introducing a separate content fixture.
+	noEnding := NewSelectState(e, "Arcade Mode")
+	for _, portrait := range noEnding.chars {
+		portrait.EndingStoryboard = ""
+	}
+	e.currentState = noEnding
+	step(ebiten.KeyEnter)
+	f = enterFight()
+	e.modeRun.opponents = e.modeRun.opponents[:1]
+	complete(f, 0)
+	completion, ok := e.currentState.(*completionScreen)
+	if !ok {
+		t.Fatalf("no-ending Arcade completion omitted Win Screen: %T", e.currentState)
+	}
+	completedTime, completedWins := f.match.Players[0].Character.Time, f.match.Wins
+	for n := 0; n < 3; n++ {
+		step()
+	}
+	e.Draw(canvas)
+	if f.match.Players[0].Character.Time <= completedTime || f.match.Wins != completedWins || f.match.Phase != match.Finished {
+		t.Fatal("Win Screen froze its pose or changed the committed result")
+	}
+	step(ebiten.KeyEnter)
+	if e.currentState != completion || !completion.transition.leaving {
+		t.Fatal("Win Screen bypassed its configured exit fade")
+	}
+	for n := 0; n < 100; n++ {
+		if _, ok := e.currentState.(*TitleState); ok {
+			break
+		}
+		step()
+	}
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatal("Win Screen fade did not hand off to title")
+	}
+	step()
 	f = selectMode("Survival")
 	f.match.Players[0].Character.SetLife(400)
 	f.match.Players[0].Character.SetPower(500)

@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified.",
+      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Concrete remaining result consumers include wintext/winstext.layerno and Survival roundstowin pose policy.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f98547e16507247339965f4329d50169cda87f8ac9a735463f6e7992fc8fb609"
+      "passed_source": "4c305f6dc515b2ac5e215f14fbbe7b6b4b9116683cf0132aebb2bdc067278a42"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "dfcf00b6f3a2c7ff8475b71ff73f0563352b675afdef95034b176bb2deb2bb70"
+      "passed_source": "962a4bd6b9f7111762a2790970a41ee655500b5f845f1a6dfad38d82a51145ce"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a2bb1c0d95b9cab73f3772039caaa47f7270e1eed79ff8b02dadc73cbafd5f4c"
+      "passed_source": "2b53d3d00c3762f45d7d05b2b7d1aaa581cedffe99bfc563ad0fc4c7831d3429"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "90619e9b702339defb7a7f4807efcf1087c7de2cc92ef276033227ada3cc3206"
+      "passed_source": "6c041756c031b967af0ead0fe79f4561476bc38bd33da1a2e8327f90036cc616"
     }
   ],
   "presentation_followups": [
@@ -1174,56 +1174,62 @@
     {
       "id": "lazy-story-admission",
       "name": "Lazy character and campaign storyboard admission",
-      "completed": false,
-      "validation": "Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "victory-portrait-window",
       "name": "Victory portrait window in motif coordinates",
-      "completed": false,
-      "validation": "Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "mode-font-rgb",
       "name": "Authored result and campaign font colors",
-      "completed": false,
-      "validation": "The supplied beta fight.def specifies optional RGB multipliers with neutral 256,256,256. Result/continue/VS-counter labels now consume those values through shared immutable glyph caches; the existing campaign episode checks tinted and neutral labels using the same glyph. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "The supplied beta fight.def specifies optional RGB multipliers with neutral 256,256,256. Result/continue/VS-counter labels now consume those values through shared immutable glyph caches; the existing campaign episode checks tinted and neutral labels using the same glyph. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "inset-victory-quotes",
       "name": "Victory quote wrapping within its authored anchor",
-      "completed": false,
-      "validation": "Victory word wrapping measures usable width from the authored offset and alignment inside its inclusive clipping window. Long words split without losing Unicode code points; explicit paragraphs and glyph-bank metrics remain intact. The campaign flow renders an inset multi-line quote. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Victory word wrapping measures usable width from the authored offset and alignment inside its inclusive clipping window. Long words split without losing Unicode code points; explicit paragraphs and glyph-bank metrics remain intact. The campaign flow renders an inset multi-line quote. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "victory-fade-flow",
       "name": "Victory fades through campaign handoff",
-      "completed": false,
-      "validation": "Victory screens consume authored fade-in/out times. Timed holds include fade-out; early Enter/Escape dismissal runs the fade while the background continues, then hands off once. The connected Arcade episode observes initial black, the authored canvas and deferred next-match entry. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Victory screens consume authored fade-in/out times. Timed holds include fade-out; early Enter/Escape dismissal runs the fade while the background continues, then hands off once. The connected Arcade episode observes initial black, the authored canvas and deferred next-match entry. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "menu-font-rgb",
       "name": "Menu selection and versus font color consumers",
-      "completed": false,
-      "validation": "Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "hud-font-rgb",
       "name": "HUD font color and optional tuple components",
-      "completed": false,
-      "validation": "Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "campaign-result-policy",
       "name": "Configured campaign and survival result screens",
-      "completed": false,
-      "validation": "Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     },
     {
       "id": "completed-result-clocks",
       "name": "Live completed-fight poses behind result overlays",
-      "completed": false,
-      "validation": "Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected end-state acceptance pending for the ten-checkpoint batch."
+      "completed": true,
+      "validation": "Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "campaign-stage-admission",
+      "name": "Automatic campaign stages without a manual stage pool",
+      "completed": true,
+      "validation": "Arcade, Team Arcade/co-op and Survival use the scheduled opponent stage directly after roster selection. includestage=0 no longer makes assigned campaign stages unavailable. A random-stage request without a pool reports its opponent/match context instead of dividing by zero. The campaign flow starts and advances with no manual stage list. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     }
   ]
 }

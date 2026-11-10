@@ -213,8 +213,8 @@ p2.teammate.bg3.anim=51
 	e.currentState = s
 	step(ebiten.KeyEnter)
 	step(ebiten.KeyU)
-	if s.teamMenu || !s.choosingStage {
-		t.Fatal("Survival co-op unexpectedly asks for an opponent type")
+	if _, ok := e.currentState.(*VersusState); !ok || s.teamMenu || s.choosingStage {
+		t.Fatal("Survival co-op did not enter its automatically assigned stage")
 	}
 	f = enterFight()
 	if f.match.Teams[0].Mode != match.Simul || f.match.Teams[1].Mode != match.Single || len(f.match.World.Roots) != 3 {

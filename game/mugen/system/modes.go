@@ -96,7 +96,7 @@ func (s *SelectState) prepareMode(request match.Request) (match.Request, error) 
 		}
 	}
 	s.engine.modeRun = r
-	return r.request(), nil
+	return r.request()
 }
 
 func rampDifficulty(base, won int, ramp config.AIRamp) int {
@@ -112,7 +112,7 @@ func rampDifficulty(base, won int, ramp config.AIRamp) int {
 	return max(1, min(8, base+offset))
 }
 
-func (r *modeRun) request() match.Request {
+func (r *modeRun) request() (match.Request, error) {
 	request := r.template
 	request.Campaign, request.MatchNo = r.id, r.index+1
 	if r.survival {
@@ -123,6 +123,9 @@ func (r *modeRun) request() match.Request {
 	leader := r.opponents[r.index%len(r.opponents)]
 	stage := leader.Entry.Stage
 	if stage == "" || strings.EqualFold(stage, "random") {
+		if len(r.stages) == 0 {
+			return request, fmt.Errorf("campaign match %d opponent %q has no assigned or selectable stage", r.index+1, leader.Name)
+		}
 		stage = r.stages[int(r.random.Next()%int64(len(r.stages)))]
 	}
 	request.StagePath, request.Music = stage, leader.Entry.Music
@@ -146,7 +149,7 @@ func (r *modeRun) request() match.Request {
 		request.Teams[1].Members[index] = match.Selection{DefPath: ch.DefPath, Name: ch.Name, Palette: palette, AILevel: level}
 	}
 	request.Players[0], request.Players[1] = request.Teams[0].Members[request.Teams[0].StartMember], request.Teams[1].Members[0]
-	return request
+	return request, nil
 }
 
 func (r *modeRun) result(f *FightState) (State, error) {
@@ -180,12 +183,20 @@ func (r *modeRun) result(f *FightState) (State, error) {
 		random := f.match.World.RandomState()
 		r.nextRandom = &random
 		r.index++
-		return NewVersusState(r.engine, r.request()), nil
+		request, err := r.request()
+		if err != nil {
+			return nil, err
+		}
+		return NewVersusState(r.engine, request), nil
 	}
 	r.index++
 	next := func() (State, error) {
 		if r.index < len(r.opponents) {
-			return NewVersusState(r.engine, r.request()), nil
+			request, err := r.request()
+			if err != nil {
+				return nil, err
+			}
+			return NewVersusState(r.engine, request), nil
 		}
 		credits, err := r.engine.configuredStory("End Credits", NewTitleState(r.engine))
 		if err != nil {

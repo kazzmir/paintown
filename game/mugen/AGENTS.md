@@ -212,6 +212,14 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
 - Options must remain readable when a motif draws its title labels as art and
   omits menu fonts. Keep the fitted built-in fallback, authored BG/heading and
   explicit Back action. Enter adjusts values/opens actions; edits reach gameplay.
+- Keep native font tuples' optional RGB multipliers (neutral 256) separate from
+  bank selection and immutable glyph caches across menus, HUD and result text.
+  Victory portrait windows clip after full-canvas scaling; inset quote wrapping
+  uses the remaining aligned space. Screen holds include their exit fades.
+- Campaigns use opponent stages without requiring a manual stage pool; a missing
+  random pool is contextual failure. Resolve unused character/chained storyboards
+  only on playback. Win/Survival result poses advance clocks without committing
+  another result, decreasing the timer or starting a round.
 - Options input edits remain session-only. Preserve release admission, inherited
   keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
   Requested F12 captures use exclusive PNG files; never commit generated output.

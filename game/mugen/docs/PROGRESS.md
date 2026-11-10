@@ -78,15 +78,16 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Debug player activation and target PNG screenshot format**
 - [x] **Usable Options in artwork-only menu motifs**
 - [x] **HD projectile syntax and empty effect lifecycle**
-- [ ] **Lazy character and campaign storyboard admission**: Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Victory portrait window in motif coordinates**: Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Authored result and campaign font colors**: The supplied beta fight.def specifies optional RGB multipliers with neutral 256,256,256. Result/continue/VS-counter labels now consume those values through shared immutable glyph caches; the existing campaign episode checks tinted and neutral labels using the same glyph. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Victory quote wrapping within its authored anchor**: Victory word wrapping measures usable width from the authored offset and alignment inside its inclusive clipping window. Long words split without losing Unicode code points; explicit paragraphs and glyph-bank metrics remain intact. The campaign flow renders an inset multi-line quote. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Victory fades through campaign handoff**: Victory screens consume authored fade-in/out times. Timed holds include fade-out; early Enter/Escape dismissal runs the fade while the background continues, then hands off once. The connected Arcade episode observes initial black, the authored canvas and deferred next-match entry. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Menu selection and versus font color consumers**: Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **HUD font color and optional tuple components**: Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Configured campaign and survival result screens**: Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected end-state acceptance pending for the ten-checkpoint batch.
-- [ ] **Live completed-fight poses behind result overlays**: Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected end-state acceptance pending for the ten-checkpoint batch.
+- [x] **Lazy character and campaign storyboard admission**
+- [x] **Victory portrait window in motif coordinates**
+- [x] **Authored result and campaign font colors**
+- [x] **Victory quote wrapping within its authored anchor**
+- [x] **Victory fades through campaign handoff**
+- [x] **Menu selection and versus font color consumers**
+- [x] **HUD font color and optional tuple components**
+- [x] **Configured campaign and survival result screens**
+- [x] **Live completed-fight poses behind result overlays**
+- [x] **Automatic campaign stages without a manual stage pool**
 
 ## Completed scenario coverage
 
@@ -96,10 +97,10 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
-- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
-- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
+- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
+- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 
@@ -146,7 +147,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; no further SF2 mod repairs are planned. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Concrete remaining result consumers include wintext/winstext.layerno and Survival roundstowin pose policy. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 

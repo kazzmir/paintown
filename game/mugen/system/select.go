@@ -264,6 +264,9 @@ func (s *SelectState) Update() (State, error) {
 	}
 	// Transition to stage selection when all manually selected rosters are done.
 	if s.p1Done && (!s.showP2 || s.p2Done) {
+		if s.automaticStage() {
+			return s.startMatch()
+		}
 		if len(s.stages) == 0 {
 			return s, fmt.Errorf("selection contains no available stages")
 		}
@@ -271,6 +274,14 @@ func (s *SelectState) Update() (State, error) {
 	}
 
 	return s, nil
+}
+
+func (s *SelectState) automaticStage() bool {
+	switch s.title {
+	case "Arcade Mode", "Team Arcade", "Team Co-op", "Survival", "Survival Co-op":
+		return true
+	}
+	return false
 }
 
 func (s *SelectState) confirm(slot int) (int, bool) {
@@ -341,7 +352,13 @@ func (s *SelectState) startMatch() (State, error) {
 	if p1 == nil || p2 == nil {
 		return s, fmt.Errorf("selection has no playable characters")
 	}
-	request := match.Request{Teams: s.selectedTeams(p1, p2), Mode: s.title, StagePath: s.stages[s.stageIndex], Music: p2.Entry.Music,
+	stagePath := ""
+	if len(s.stages) > 0 {
+		stagePath = s.stages[max(0, min(s.stageIndex, len(s.stages)-1))]
+	} else if !s.automaticStage() {
+		return s, fmt.Errorf("selection contains no available stages")
+	}
+	request := match.Request{Teams: s.selectedTeams(p1, p2), Mode: s.title, StagePath: stagePath, Music: p2.Entry.Music,
 		Players: [2]match.Selection{{DefPath: p1.DefPath, Name: p1.Name, Palette: s.palettes[0]}, {DefPath: p2.DefPath, Name: p2.Name, Palette: s.palettes[1]}}}
 	if !s.showP2 && s.title != "Training" {
 		request.Players[1].AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))

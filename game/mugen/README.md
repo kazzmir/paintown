@@ -73,6 +73,13 @@ game also runs their rendered fight. Ryu/Ken rendering, input and stage audio
 were checked earlier. Gameplay across the complete roster remains unverified.
 The pack and executable stay local and are not committed.
 
+Arcade, Team Arcade/co-op and Survival choose each scheduled opponent's assigned
+stage automatically. `includestage=0` hides that stage from the manual pool while
+keeping the campaign assignment usable. Versus, Watch and Training retain stage
+selection. Unused character intro/ending files are opened only when played.
+Victory and result screens now retain portrait windows, font colors, wrapped
+quotes and fades; Win/Survival result poses continue animating behind the text.
+
 Several supplied SF2 character scripts omit a later-round initialization exit;
 the original beta also stalls with this pattern. Create a corrected working
 copy once, then use it for play:
