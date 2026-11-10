@@ -234,6 +234,7 @@ Interpolate Angle
 Interpolate Blend
 0,0,40,20,4,,AS128D128,2,0.5,90
 [Begin Action 701]
+0,0,0,0,1,,AI
 0,0,0,0,-1,,sub
 `, filepath.Join(root, "data/kfm/intro.sff"), filepath.Join(root, "chars/kfm/kfm.snd"), bitmapPath)
 	path := filepath.Join(dir, "scene.def")
@@ -262,8 +263,11 @@ Interpolate Blend
 	action := story.AIR.Actions[700]
 	// HD screenpacks also spell the native subtractive AIR flag "sub".
 	// Carry it through the ending scene's normal layer renderer.
-	if visual := story.AIR.Actions[701].Sample(0, 0); visual.Element.Blend != "sub" || visual.AlphaSrc != 256 || visual.AlphaDst != 256 {
+	if visual := story.AIR.Actions[701].Sample(1, 0); visual.Element.Blend != "sub" || visual.AlphaSrc != 256 || visual.AlphaDst != 256 {
 		t.Fatal("long subtractive AIR flag did not reach the scene", visual)
+	}
+	if visual := story.AIR.Actions[701].Sample(0, 0); visual.Element.Blend != "alpha" || visual.AlphaSrc != 256 || visual.AlphaDst != 256 {
+		t.Fatal("legacy AI AIR flag did not retain native additive blending", visual)
 	}
 	visual := action.Sample(0, 2)
 	if visual.X != 20 || visual.Y != 10 || visual.ScaleX != 1.5 || visual.ScaleY != 0.75 || visual.Angle != 45 || visual.AlphaSrc != 192 || visual.AlphaDst != 64 {
@@ -563,7 +567,8 @@ pal2=Pal\Gold.ACT
 	commandSource := "[Defaults]\ncommand.time=15\ncommand.buffer.time=1\n[Command]\nname=\"x\"\ncommand=x\ntime=1\n"
 	write("outfits.cmd", []byte(commandSource))
 	write("outfits.air", []byte("[Begin Action 0]\n0,0,0,0,-1\n"))
-	write("outfits.cns", []byte(`[Data]
+	write("outfits.cns", []byte(`pausetime
+[Data]
 life=1000
 power=3000
 attack=100

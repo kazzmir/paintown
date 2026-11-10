@@ -74,6 +74,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Options layout and font consumers in HD motifs**
 - [x] **Direct training, watch and partner match entry**
 - [x] **HD screenpack loading, portrait requests and palette alpha**
+- [x] **HD fight backgrounds and native legacy text admission**
 
 ## Completed scenario coverage
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
-	"github.com/kazzmir/paintown/game/mugen/background"
 )
 
 type announcementClock int
@@ -51,8 +50,8 @@ func (h *FightHUD) announcementTime(timer announcementClock) int {
 
 func (h *FightHUD) newMessage(group, key string, timer announcementClock, delay int) {
 	message := &hudMessage{key: key, timer: timer, delay: max(0, delay), duration: 1}
-	if attribute := h.match.Fight.Attribute("Round", key+".anim"); attribute != nil {
-		id := int(background.GetFloat(attribute.Value))
+	if h.match.Fight.Attribute("Round", key+".anim") != nil {
+		id := int(h.values("Round", key+".anim", 0)[0])
 		if action := h.match.Fight.Animations.Actions[id]; action != nil {
 			message.clock = air.NewPlayer(action)
 			message.duration = 0

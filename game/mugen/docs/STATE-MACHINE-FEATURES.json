@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "213a6c64000644609285ad34df7a98d4a5f24b490f80d2051d052debc92cc9fd"
+      "passed_source": "8dd0fce3454180b1d09b7f39b5fd29b75d3e91b031f40e7172f0dc7db1b8a5c5"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "158594b29109dac880dfb85056197967a589c3767d26c6482c9989b6f5beebd3"
+      "passed_source": "7efc31f3a6b1a93092ce205c8d35e400f30a485857b63ece8ee8268b8c7f5d20"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d61f95e210db22a4fde07e8da335c01db55f4e9a694d5d97ba4678b2d7ba8f6e"
+      "passed_source": "14e3aa2911f6156cad19e1d7610f934b66271fc50b36ba2bff67e32d94b6ed35"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "229c84daf9901d180f1f57b6704e5de81559c8335769eee324e5fc9e7ef82bcf"
+      "passed_source": "bc2b22877983b8046fefb0acd5904291791c8eec1333c7cd1cc3432a49f85981"
     }
   ],
   "presentation_followups": [
@@ -1145,7 +1145,13 @@
       "id": "hd-pack-admission",
       "name": "HD screenpack loading, portrait requests and palette alpha",
       "completed": true,
-      "validation": "The supplied ssf2-turbo-hd pack bundles MUGEN 1.1 Beta 1 P1 and targets 1280x720. Native loads its sub AIR flags and keeps unavailable -/ roster definitions as empty cells; Go now retains those cells and honors the requested cell/P1/P2 portrait sprites without substituting missing portraits. The beta loop guide documents loopend=-1 as EOF. Native Ryu reports zero for Data sparkno=F2 and guard.sparkno=F3; those defaults now retain integer zero coercion. Projectile accepts the pack's three-component projshadow spelling as a scalar flag. SFF 2.01 retains palette alpha through sprite/palette links and remaps, including opaque index zero, while 2.00 retains its reserved-byte/index-zero policy. All five connected segments pass with races. A Go Ryu mirror reaches live combat with recorded audio; native selection/idle combat were inspected. The subsequent final visual pass remains open for numbered HUD backgrounds and a surplus component on p2.front.anim. Full roster/matchup acceptance is unverified; no pack files are repaired."
+      "validation": "The supplied ssf2-turbo-hd pack bundles MUGEN 1.1 Beta 1 P1 and targets 1280x720. Native loads its sub AIR flags and keeps unavailable -/ roster definitions as empty cells; Go now retains those cells and honors the requested cell/P1/P2 portrait sprites without substituting missing portraits. The beta loop guide documents loopend=-1 as EOF. Native Ryu reports zero for Data sparkno=F2 and guard.sparkno=F3; those defaults now retain integer zero coercion. Projectile accepts the pack's three-component projshadow spelling as a scalar flag. SFF 2.01 retains palette alpha through sprite/palette links and remaps, including opaque index zero, while 2.00 retains its reserved-byte/index-zero policy. All five connected segments pass with races. A Go Ryu mirror reaches live combat with recorded audio; native selection/idle combat were inspected. The follow-up HD HUD/admission checkpoint closes numbered backgrounds and surplus animation components. Full roster/matchup acceptance is unverified; no pack files are repaired."
+    },
+    {
+      "id": "hd-hud-text-admission",
+      "name": "HD fight backgrounds and native legacy text admission",
+      "completed": true,
+      "validation": "Numbered HUD backgrounds now include sparse higher indices in numeric order, cached per fight rather than limited to bg0/bg1. The first scalar animation ID in p2.front.anim=14,0 restores the right lifebar; bg2 restores the central KO artwork. Native accepts Ken's loose pausetime label before the first CNS section; Go ignores unassigned preamble labels while retaining source lines and assignment errors. A disposable native Ryu idle animation confirms AI is ordinary additive blending (256/256); Go now admits that spelling. Existing connected asset/team scenarios cover these consumers and all segments are checked with races. Rebuilt 1280x720 Go Ryu/Ken rendering, movement/attacks, stage audio and a natural KO/win icon/victory pose were inspected; the natural-KO run used temporary 2% life and one-win settings. Normal-length, repeated-round and complete-roster acceptance remain unverified. A debug-forced KO was still falling after its observation interval; this is not evidence of normal KO failure. Bundled native Ken loading failed at SFF under Wine without a specific cause, although its PNGs validate and Go now loads/renders him. No pack scripts, assets or user settings were changed; scratch is removed."
     }
   ]
 }

@@ -4,16 +4,21 @@ Follow AGENTS.md. PROGRESS.md is the single completion ledger. Author only
 game/mugen/; local source/text commits are authorized, no pushes/binaries/user
 configuration. Recap about every 10–15 commits (user 2026-11-09), not after two.
 
-New supplied pack: temp/ssf2-turbo-hd (native 1.1 Beta 1 P1, 1280x720).
-Engine now accepts sub AIR, unavailable roster cells, requested selection
-portrait sprites, EOF music loopend=-1, F-prefixed Data spark zero coercion,
-padded scalar projshadow and SFF 2.01 palette alpha through links/remaps.
-All five connected segments pass with races. Go Ryu mirror combat/audio and
-native selection/idle combat inspected; pack files/YAML remain untouched.
-Final visual pass still needs numbered HUD background components and the
-native first scalar in p2.front.anim=14,0. Complete roster acceptance remains
-unverified. One native Ken load failed at SFF; embedded PNGs validate, so do
-not label it corrupt or repair content without a specific cause.
+Latest pack check: temp/ssf2-turbo-hd bundles native 1.1 Beta 1 P1, 1280x720.
+Loading/selection fixes include sub/AI AIR flags, blank unavailable roster
+cells, requested portrait sprites, EOF loopend=-1, F-prefixed Data spark zero
+coercion, padded scalar projshadow and loose CNS preamble labels. SFF 2.01
+retains palette alpha through links/remaps, including opaque index zero;
+2.00 keeps its reserved-byte/index-zero policy. HUD now draws sparse numbered
+backgrounds in numeric order and uses the first animation component (14,0).
+All five connected segments are checked with races; Linux rebuilt. Ryu/Ken
+visuals, movement/attacks, stage audio and natural KO/win icon/victory pose
+inspected (temporary 2% life/one-win Watch run). Normal-length, repeated-round
+and full-roster acceptance remain unverified. Debug-forced KO was still falling
+after its observation interval; do not infer a normal KO defect from that.
+Native Ken failed at SFF under Wine without a specific cause; PNGs validate
+and Go loads/renders him. No content repair or corrupt-file verdict is justified.
+Pack/YAML untouched; owned run overlays/captures removed. Ledger has details.
 
 Latest continuing batch connects documented fight life/power/stand/time-over,
 AI ownership, current-round restart/reload, pacing/vsync, bar visibility,

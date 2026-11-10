@@ -186,6 +186,13 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   add a BG-style half-width to layers. BG projection keeps its separate center. Native scene windows clip BGs too, despite the manual; preserve window
   inheritance. OnTop/HUD/global PalFX order
   and window/subimage origins stay intact.
+- HD selection honors portrait.spr and both face.spr requests, including absent
+  sprites; do not substitute defaults over authored screenpack art. Missing
+  roster DEFs retain empty grid cells; corrupt present assets remain errors.
+  SFF 2.01 retains authored palette alpha, including opaque index zero, through
+  links/remaps. SFF 2.00 ignores its reserved alpha byte and masks index zero.
+  AIR AI is native additive 256/256; sub is subtractive. HUD numbered backgrounds
+  may be sparse; draw them numerically and retain first animation components.
 - Preserve indexed 3/8 game-pixel calibration without grid snapping, byte
   premultiplication, nearest indexed/linear true-color sampling and delta-first
   round-to-even interpolation. Keep AfterImage AIR clocks and saved mappings.

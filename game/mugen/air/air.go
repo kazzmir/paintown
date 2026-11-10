@@ -294,7 +294,7 @@ func parseElement(groupID string, list parsers.ValueList) (Element, error) {
 		draw := strings.ToUpper(getAsString(list.Values[5]))
 		el.Interpolate = draw == "INTERPOLATE"
 		switch draw {
-		case "A":
+		case "A", "AI":
 			el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", 256, 256
 		case "A1":
 			el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", 256, 128

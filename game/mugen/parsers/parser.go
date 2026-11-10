@@ -54,6 +54,12 @@ func Parse(r io.Reader) (*File, error) {
 			continue
 		}
 		if section == nil {
+			if _, _, assigned := containerAttribute(line); !assigned {
+				// Native ignores loose preamble labels before the first
+				// section (some character CNS files contain "pausetime").
+				// Preserve line numbers and diagnose actual assignments.
+				continue
+			}
 			return nil, fmt.Errorf("line %d:%d: attribute outside section", lineNo, column)
 		}
 		attr := &Attribute{Line: lineNo, Column: column}

@@ -3,12 +3,14 @@ package main
 import (
 	"path/filepath"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
 )
 
 func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
@@ -102,6 +104,20 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 	if len(f.match.World.Roots) != 3 || f.match.Teams[0].Mode != match.Simul || f.match.Teams[1].Mode != match.Turns {
 		t.Fatal("selected rosters did not reach production match")
 	}
+	// The HD pack uses bg2 for central art and spells an animation ID as
+	// "14,0". Continue the team HUD scenario through sparse higher layers
+	// and the native first-scalar animation consumer.
+	layout, err := parsers.Parse(strings.NewReader(`[Simul Lifebar]
+p1.bg12.anim=10
+p1.bg2.anim=10
+p1.front.anim=43,0
+[Turns Face]
+p2.teammate.bg3.anim=51
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.match.Fight.AST.Sections = append(f.match.Fight.AST.Sections, layout.Sections...)
 	canvas := ebiten.NewImage(1280, 720)
 	defer canvas.Deallocate()
 	e.Draw(canvas)
@@ -110,6 +126,15 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 	}
 	if f.hud.clocks["Simul Face/p3.bg1"] == nil || f.hud.clocks["Turns Face/p2.teammate.bg1"] == nil {
 		t.Fatal("partner/benched portrait consumers were not drawn")
+	}
+	if f.hud.clocks["Simul Lifebar/p1.bg2"] == nil || f.hud.clocks["Simul Lifebar/p1.bg12"] == nil || f.hud.clocks["Turns Face/p2.teammate.bg3"] == nil || f.hud.clocks["Simul Lifebar/p1.front"] == nil {
+		t.Fatal("higher numbered HUD layers or first-scalar animation ID were skipped")
+	}
+	if f.hud.clocks["Simul Lifebar/p1.front"].Action != f.match.Fight.Animations.Actions[43] {
+		t.Fatal("HUD animation did not use its first numeric component")
+	}
+	if keys := f.hud.backgrounds["Simul Lifebar/p1"]; slices.Index(keys, "p1.bg2") >= slices.Index(keys, "p1.bg12") {
+		t.Fatal("HUD backgrounds lost numeric drawing order", keys)
 	}
 	step(ebiten.KeyEscape)
 	if _, ok := e.currentState.(*TitleState); !ok {

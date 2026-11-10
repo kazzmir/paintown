@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"image"
 	"math"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -22,6 +24,7 @@ type FightHUD struct {
 	engine        *Engine
 	images        map[*sff.Sprite]*ebiten.Image
 	clocks        map[string]*air.Player
+	backgrounds   map[string][]string
 	messages      map[string]*hudMessage
 	audioOwner    uint64
 	played        map[string]bool
@@ -178,8 +181,8 @@ func (h *FightHUD) component(screen *ebiten.Image, section, key string, x, y flo
 	var blend string
 	var alphaSrc, alphaDst int
 	var angle float64
-	if a := h.match.Fight.Attribute(section, key+".anim"); a != nil {
-		id := int(background.GetFloat(a.Value))
+	if h.match.Fight.Attribute(section, key+".anim") != nil {
+		id := int(h.values(section, key+".anim", 0)[0])
 		clockKey := section + "/" + key
 		clock := h.clocks[clockKey]
 		if clock == nil {
@@ -236,10 +239,54 @@ func (h *FightHUD) label(screen *ebiten.Image, section, key, text string, x, y f
 	}
 }
 
+// Numbered backgrounds may be sparse and extend beyond bg1. Cache authored
+// component names once per HUD, preserving numeric order without scanning an
+// arbitrary maximum on every draw. Attribute lookup keeps first-field policy.
+func (h *FightHUD) numberedBackgrounds(screen *ebiten.Image, section, prefix string, x, y float64) {
+	if h.backgrounds == nil {
+		h.backgrounds = map[string][]string{}
+	}
+	cacheKey := section + "/" + prefix
+	keys, ready := h.backgrounds[cacheKey]
+	if !ready {
+		seen := map[int]bool{}
+		start := strings.ToLower(prefix) + ".bg"
+		for _, group := range h.match.Fight.AST.Sections {
+			if !strings.EqualFold(strings.TrimSpace(group.Name), section) {
+				continue
+			}
+			for _, attribute := range group.Attributes {
+				name := strings.ToLower(attribute.ID.String())
+				if !strings.HasPrefix(name, start) {
+					continue
+				}
+				number, field, found := strings.Cut(strings.TrimPrefix(name, start), ".")
+				if !found || field != "anim" && field != "spr" {
+					continue
+				}
+				if index, err := strconv.Atoi(number); err == nil && index >= 0 {
+					seen[index] = true
+				}
+			}
+		}
+		indices := make([]int, 0, len(seen))
+		for index := range seen {
+			indices = append(indices, index)
+		}
+		sort.Ints(indices)
+		for _, index := range indices {
+			keys = append(keys, fmt.Sprintf("%s.bg%d", prefix, index))
+		}
+		h.backgrounds[cacheKey] = keys
+	}
+	for _, key := range keys {
+		h.component(screen, section, key, x, y)
+	}
+}
+
 func (h *FightHUD) bar(screen *ebiten.Image, section, prefix string, fraction float64) {
 	pos := h.values(section, prefix+".pos", 0, 0)
-	h.component(screen, section, prefix+".bg0", pos[0], pos[1])
-	h.component(screen, section, prefix+".bg1", pos[0], pos[1])
+	h.numberedBackgrounds(screen, section, prefix, pos[0], pos[1])
 	rangeX := h.values(section, prefix+".range.x", 0, 0)
 	fraction = math.Max(0, math.Min(1, fraction))
 	start, end := pos[0]+rangeX[0], pos[0]+rangeX[0]+(rangeX[1]-rangeX[0])*fraction
@@ -297,8 +344,7 @@ func (h *FightHUD) drawBars(screen *ebiten.Image) {
 		}
 		pos := h.values(section, prefix+".pos", 0, 0)
 		h.component(screen, section, prefix+".bg", pos[0], pos[1])
-		h.component(screen, section, prefix+".bg0", pos[0], pos[1])
-		h.component(screen, section, prefix+".bg1", pos[0], pos[1])
+		h.numberedBackgrounds(screen, section, prefix, pos[0], pos[1])
 		h.portrait(screen, p, section, prefix+".face", pos[0], pos[1])
 		section = h.teamSection(side, "Name")
 		if m.Fight.Attribute(section, prefix+".pos") == nil {
@@ -331,8 +377,7 @@ func (h *FightHUD) drawBars(screen *ebiten.Image) {
 				continue
 			}
 			x, y := pos[0]+float64(display)*spacing[0], pos[1]+float64(display)*spacing[1]
-			h.component(screen, "Turns Face", prefix+".bg0", x, y)
-			h.component(screen, "Turns Face", prefix+".bg1", x, y)
+			h.numberedBackgrounds(screen, "Turns Face", prefix, x, y)
 			h.portrait(screen, player, "Turns Face", prefix+".face", x, y)
 			if index < team.Active {
 				h.component(screen, "Turns Face", prefix+".ko", x, y)
