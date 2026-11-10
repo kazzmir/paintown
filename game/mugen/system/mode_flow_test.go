@@ -161,6 +161,18 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if got := color.RGBAModel.Convert(canvas.At(0, 0)).(color.RGBA); got != (color.RGBA{17, 34, 51, 255}) {
 		t.Fatal("victory BGDef clear color did not reach the screen", got)
 	}
+	portraitWindow := e.themeAttribute("Victory Screen", "p1.window")
+	savedWindow := portraitWindow.RawValue
+	portraitWindow.RawValue = "0,0,0,0"
+	e.Draw(canvas)
+	for y := 5; y < 500; y += 10 {
+		for x := 5; x < 1280; x += 10 {
+			if got := color.RGBAModel.Convert(canvas.At(x, y)); got != (color.RGBA{17, 34, 51, 255}) {
+				t.Fatal("victory portrait escaped its authored window", x, y, got)
+			}
+		}
+	}
+	portraitWindow.RawValue = savedWindow
 	step(ebiten.KeyEnter)
 	f = enterFight()
 	if f.match.Request.MatchNo != 2 || f.match.World.MatchNo != 2 || r.index != 1 {

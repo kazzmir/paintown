@@ -1176,6 +1176,12 @@
       "name": "Lazy character and campaign storyboard admission",
       "completed": false,
       "validation": "Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected end-state acceptance pending for the ten-checkpoint batch."
+    },
+    {
+      "id": "victory-portrait-window",
+      "name": "Victory portrait window in motif coordinates",
+      "completed": false,
+      "validation": "Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }

@@ -79,6 +79,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Usable Options in artwork-only menu motifs**
 - [x] **HD projectile syntax and empty effect lifecycle**
 - [ ] **Lazy character and campaign storyboard admission**: Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected end-state acceptance pending for the ten-checkpoint batch.
+- [ ] **Victory portrait window in motif coordinates**: Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected end-state acceptance pending for the ten-checkpoint batch.
 
 ## Completed scenario coverage
 

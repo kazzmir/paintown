@@ -122,7 +122,21 @@ func (s *WinScreenState) Draw(screen *ebiten.Image) {
 			ids = []float64{9000, 1}
 		}
 		ratio := float64(screen.Bounds().Dx()) / float64(p.LocalCoord.Width)
-		p.DrawSprite(screen, p.Character, int(ids[0]), int(ids[1]), pos[0], pos[1], scale[0]*ratio*s.engine.themeValues("Victory Screen", "p1.facing", 1)[0], scale[1]*ratio)
+		target := screen
+		if s.engine.themeAttribute("Victory Screen", "p1.window") != nil {
+			box := s.engine.themeValues("Victory Screen", "p1.window", 0, 0, float64(screen.Bounds().Max.X-1), float64(screen.Bounds().Max.Y-1))
+			bounds := image.Rect(int(box[0]), int(box[1]), int(box[2])+1, int(box[3])+1).Intersect(screen.Bounds())
+			if bounds.Empty() {
+				target = nil
+			} else {
+				target = screen.SubImage(bounds).(*ebiten.Image)
+			}
+		}
+		if target != nil {
+			// Clip in motif coordinates after deriving the scale from the full
+			// canvas. A narrow portrait window must not shrink/recenter the art.
+			p.DrawSprite(target, p.Character, int(ids[0]), int(ids[1]), pos[0], pos[1], scale[0]*ratio*s.engine.themeValues("Victory Screen", "p1.facing", 1)[0], scale[1]*ratio)
+		}
 	}
 	s.engine.modeLabel(screen, "Victory Screen", "p1.name", name, 0, 0, s.engine.motif.Fonts)
 	if !s.quoteSet {
