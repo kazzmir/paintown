@@ -86,6 +86,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [ ] **Menu selection and versus font color consumers**: Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected end-state acceptance pending for the ten-checkpoint batch.
 - [ ] **HUD font color and optional tuple components**: Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected end-state acceptance pending for the ten-checkpoint batch.
 - [ ] **Configured campaign and survival result screens**: Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected end-state acceptance pending for the ten-checkpoint batch.
+- [ ] **Live completed-fight poses behind result overlays**: Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected end-state acceptance pending for the ten-checkpoint batch.
 
 ## Completed scenario coverage
 
@@ -95,9 +96,9 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
-- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
-- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
+- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
+- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
 - [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown

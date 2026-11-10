@@ -321,6 +321,11 @@ func (s *GameOverScreenState) Update() (State, error) {
 	if s.survival && s.engine.themeNumber("Survival Results Screen", "enabled", 1) == 0 {
 		return NewTitleState(s.engine), nil
 	}
+	if s.survival && s.fight != nil {
+		if err := s.fight.updateResultPose(); err != nil {
+			return s, err
+		}
+	}
 	if !s.survival && s.engine.themeNumber("Game Over Screen", "enabled", 0) == 0 {
 		return NewTitleState(s.engine), nil
 	}
@@ -372,6 +377,11 @@ type completionScreen struct {
 
 func (s *completionScreen) Update() (State, error) {
 	s.ticks++
+	if s.fight != nil {
+		if err := s.fight.updateResultPose(); err != nil {
+			return s, err
+		}
+	}
 	dismiss := input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape)
 	if s.transition.update(s.ticks, s.engine.themeNumber("Win Screen", "pose.time", 300), s.engine.themeNumber("Win Screen", "fadeout.time", 0), dismiss) {
 		return s.next, nil
@@ -393,4 +403,15 @@ func (s *completionScreen) Draw(screen *ebiten.Image) {
 func (e *Engine) resultTextVisible(section, key string, tick int) bool {
 	duration := e.themeNumber(section, key+".displaytime", -1)
 	return duration < 0 || tick < duration
+}
+
+func (s *FightState) updateResultPose() error {
+	if s.renderError != nil {
+		return s.renderError
+	}
+	s.match.Timeline.GameTime = s.engine.gameTime
+	if err := s.match.AdvanceResultPose(); err != nil {
+		return err
+	}
+	return s.hud.Update(s.match.Phase, s.match.Round)
 }

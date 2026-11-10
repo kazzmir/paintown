@@ -287,6 +287,14 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if result.fight != f {
 		t.Fatal("survival results lost the completed fight presentation")
 	}
+	resultTick, resultTime := f.match.Tick, f.match.Players[0].Character.Time
+	resultRound, resultWins, resultTimer := f.match.Round, f.match.Wins, f.match.TimeLeft
+	for n := 0; n < 3; n++ {
+		step()
+	}
+	if f.match.Tick != resultTick+3 || f.match.Players[0].Character.Time <= resultTime || f.match.Phase != match.Finished || f.match.Round != resultRound || f.match.Wins != resultWins || f.match.TimeLeft != resultTimer {
+		t.Fatal("result poses froze or replayed completed-match scheduling")
+	}
 	e.Draw(canvas)
 	step(ebiten.KeyEnter)
 	if e.currentState != result || !result.transition.leaving {

@@ -2,6 +2,8 @@
 
 ## Continuing batch (user 2026-11-10): ten checkpoints
 
+- Live completed-fight poses behind result overlays: implemented; acceptance pending.
+
 - Configured campaign and survival result screens: implemented; acceptance pending.
 
 - HUD font color and optional tuple components: implemented; acceptance pending.

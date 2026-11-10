@@ -1218,6 +1218,12 @@
       "name": "Configured campaign and survival result screens",
       "completed": false,
       "validation": "Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected end-state acceptance pending for the ten-checkpoint batch."
+    },
+    {
+      "id": "completed-result-clocks",
+      "name": "Live completed-fight poses behind result overlays",
+      "completed": false,
+      "validation": "Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }
