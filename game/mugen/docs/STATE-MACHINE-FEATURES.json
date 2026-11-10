@@ -640,7 +640,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4c342e918ab8b33c4b15fa4813ab0be2eb7aa95d164a649a3389726df3887917"
+      "passed_source": "05182d0e52de122c3a35c2db14bdcfa59b22841b657d556ccc1d2632ebba2dee"
     },
     {
       "id": "entities",
@@ -673,7 +673,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fea3ee1000bc8865666786eab838e9fbaddf2d70a33e327e6b829c8e610f61ad"
+      "passed_source": "ca36d4e9ea94a45bd2fc074e832f08f716068981e039abfae2550aa26c7b308f"
     },
     {
       "id": "effects-pause",
@@ -708,7 +708,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d5c8a9a941a71be81f46de7d824d376700d99f58b0b9815fdeec320c1d889145"
+      "passed_source": "433de1e567d2ca91c0ad2378eafb4e7c90cd05783ba4e6b16eccd8106cd0f0ed"
     },
     {
       "id": "match-flow",
@@ -785,9 +785,9 @@
           "name": "TestStageZoomCameraRenderingAndResetFlow"
         }
       ],
-      "completed": true,
-      "validation": "consolidated segment run",
-      "passed_source": "7f34371b0fa33d886c5ed93295fca5b0ed922bfde6c55dbffbe73ed739185c7b"
+      "completed": false,
+      "validation": "segment run failed or incomplete",
+      "passed_source": ""
     }
   ],
   "presentation_followups": [
@@ -1122,7 +1122,7 @@
       "id": "documented-fight-runtime-controls",
       "name": "Documented debug and fight runtime controls",
       "completed": false,
-      "validation": "Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key. AI toggles now change copied live roster ownership, active roots/helpers and future resets without rewriting campaign templates; charged AI plans are retired on ownership changes. Training menu ownership uses the same setter. CFG AllowDebugKeys=0 now admits hotkeys only while debug mode is visible, as documented by the supplied CFG. Speedup/VRetrace and Ctrl-S/Ctrl-V reach the runtime scheduler without changing CNS tick units; Ctrl-L gates bars independently of announcements. F4 now restarts the current round through normal entity/effect/sound cleanup. A pre-state5900 carry/score snapshot avoids repeated entry side effects, double RoundsExisted increments, spent Turns members and already-committed result leakage; process time/RNG continue. End-state acceptance remains pending for this continuing batch."
+      "validation": "Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key. AI toggles now change copied live roster ownership, active roots and future resets without rewriting campaign templates; charged AI plans are retired on ownership changes. Training menu ownership uses the same setter. CFG AllowDebugKeys=0 now admits hotkeys only while debug mode is visible, as documented by the supplied CFG. Speedup/VRetrace and Ctrl-S/Ctrl-V reach the runtime scheduler without changing CNS tick units; Ctrl-L gates bars independently of announcements. F4 now restarts the current round through normal entity/effect/sound cleanup. A pre-state5900 carry/score snapshot avoids repeated entry side effects, double RoundsExisted increments, spent Turns members and already-committed result leakage; process time/RNG continue. End-state acceptance remains pending for this continuing batch. Shift-F4 reloads character/stage/fight banks into fresh presentation caches while retaining the current round/score, starting carry, AI ownership, process clock and continuing RNG. Loading-time roster rotation is suppressed on reload; archive ownership and campaign templates remain intact. Replacing an expanded ZIP still requires returning to title to retire its expansion. The existing clipboard/combat/debug scenario now continues through key gates, life/power/stand, AI/pacing/HUD, time-over, paused restart, actual KO into round two, helper retirement, preserved score and on-disk character reload. That full connected episode passes with race detection; broader match-flow completion remains pending until the continuing presentation/input batch ends."
     }
   ]
 }

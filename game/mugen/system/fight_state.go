@@ -92,27 +92,31 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	if engine.cfg.Debug.Debug {
 		s.debugSelection = 0
 	}
-	for slot, p := range game.Actors() {
-		p.Character.InputSource = func(playerID, facing int) []string {
-			if playerID == 2 && s.training != nil {
-				return s.trainingInput(facing)
-			}
-			selected, _ := game.SelectionForPlayer(playerID)
-			if selected.AILevel > 0 {
-				return game.BasicAIInput(playerID)
-			}
-			if playerID == 3 && (game.Request.Mode == "Team Co-op" || game.Request.Mode == "Survival Co-op") {
-				playerID = 2
-			}
-			return character.GetRawInputs(playerID, facing)
-		}
-		// Keep the adapter on reset characters as well.
-		if slot == 0 {
-			game.Options.Input = p.Character.InputSource
-		}
-	}
+	s.bindMatchInputs()
 	s.hud = NewFightHUD(game, engine)
 	return s, nil
+}
+
+func (s *FightState) matchInputs(playerID, facing int) []string {
+	game := s.match
+	if playerID == 2 && s.training != nil {
+		return s.trainingInput(facing)
+	}
+	selected, _ := game.SelectionForPlayer(playerID)
+	if selected.AILevel > 0 {
+		return game.BasicAIInput(playerID)
+	}
+	if playerID == 3 && (game.Request.Mode == "Team Co-op" || game.Request.Mode == "Survival Co-op") {
+		playerID = 2
+	}
+	return character.GetRawInputs(playerID, facing)
+}
+
+func (s *FightState) bindMatchInputs() {
+	s.match.Options.Input = s.matchInputs
+	for _, p := range s.match.Actors() {
+		p.Character.InputSource = s.matchInputs
+	}
 }
 
 func (s *FightState) Update() (State, error) {

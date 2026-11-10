@@ -47,6 +47,45 @@ func (m *Match) RestartRound() error {
 	return m.resetRound()
 }
 
+// Reload reconstructs stage/fight/character banks but keeps this round's roster,
+// starting carry, score and live ownership. The old match remains owned by the
+// caller until the replacement loads; no archive is unlinked here.
+func (m *Match) Reload() (*Match, error) {
+	snapshot := m.roundRestart
+	if snapshot == nil {
+		return nil, nil
+	}
+	request, options := m.Request, m.Options
+	options.GameTime = m.Timeline.GameTime
+	request.RoundStart = snapshot.round
+	random := m.World.RandomState()
+	request.RandomState = &random
+	for side := range request.Teams {
+		request.Teams[side].StartMember = snapshot.active[side]
+		request.Carry[side] = nil
+		for _, entry := range snapshot.members[side] {
+			carry := entry
+			// New's campaign carry counts a newly loaded round. Reload stays
+			// in the existing round and must publish the same counter at entry.
+			carry.RoundsExisted--
+			request.Carry[side] = append(request.Carry[side], &carry)
+		}
+	}
+	rosterInput := options.RosterInput
+	options.RosterInput = func(int, int) []string { return nil } // no second loading-time roster rotation
+	fresh, err := New(request, options)
+	if err != nil {
+		return nil, err
+	}
+	fresh.Options.RosterInput = rosterInput
+	fresh.Wins, fresh.Draws = snapshot.wins, snapshot.draws
+	fresh.roundRestart.wins, fresh.roundRestart.draws = snapshot.wins, snapshot.draws
+	for side := range fresh.Teams {
+		fresh.Teams[side].exhausted = snapshot.exhausted[side]
+	}
+	return fresh, nil
+}
+
 // SetAILevel changes only this match's copied roster. Campaign templates keep
 // their ownership, while round resets/rematches retain the live debug choice.
 func (m *Match) SetAILevel(playerID, level int) bool {
@@ -71,15 +110,6 @@ func (m *Match) SetAILevel(playerID, level int) bool {
 	root := p.Character
 	root.AILevel = level
 	delete(m.aiBrains, root.EntityID)
-	for _, helper := range m.World.Helpers {
-		owner := helper
-		for owner.Parent != nil {
-			owner = owner.Parent
-		}
-		if owner == root {
-			helper.AILevel = level
-		}
-	}
 	return true
 }
 

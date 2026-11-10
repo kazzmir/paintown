@@ -69,7 +69,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Portable gamepad input through menus and combat**
 - [x] **Player keyboard enable settings and controller-only co-op**
 - [x] **User pause, frame-step and training dummy controls**
-- [ ] **Documented debug and fight runtime controls**: Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key.
+- [ ] **Documented debug and fight runtime controls**: Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key. AI toggles now change copied live roster ownership, active roots and future resets without rewriting campaign templates; charged AI plans are retired on ownership changes. Training menu ownership uses the same setter. CFG AllowDebugKeys=0 now admits hotkeys only while debug mode is visible, as documented by the supplied CFG. Speedup/VRetrace and Ctrl-S/Ctrl-V reach the runtime scheduler without changing CNS tick units; Ctrl-L gates bars independently of announcements. F4 now restarts the current round through normal entity/effect/sound cleanup. A pre-state5900 carry/score snapshot avoids repeated entry side effects, double RoundsExisted increments, spent Turns members and already-committed result leakage; process time/RNG continue. End-state acceptance remains pending for this continuing batch. Shift-F4 reloads character/stage/fight banks into fresh presentation caches while retaining the current round/score, starting carry, AI ownership, process clock and continuing RNG. Loading-time roster rotation is suppressed on reload; archive ownership and campaign templates remain intact. Replacing an expanded ZIP still requires returning to title to retire its expansion. The existing clipboard/combat/debug scenario now continues through key gates, life/power/stand, AI/pacing/HUD, time-over, paused restart, actual KO into round two, helper retirement, preserved score and on-disk character reload. That full connected episode passes with race detection; broader match-flow completion remains pending until the continuing presentation/input batch ends.
 
 ## Completed scenario coverage
 
@@ -79,9 +79,9 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
-- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
-- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
+- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
+- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
 - [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown

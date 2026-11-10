@@ -1,16 +1,22 @@
 package main
 
 import (
+	"bytes"
+	"fmt"
+	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 )
 
 func TestCombatClipboardComboAndDebugFlow(t *testing.T) {
@@ -302,5 +308,182 @@ trigger1=Time=20
 	step(ebiten.KeyF10)
 	if f.userPaused || f.match.Tick != tick+2 || e.gameTime != gameTime+2 {
 		t.Fatal("AnyKeyUnpauses did not resume on a fresh runtime key")
+	}
+	debugRuntimeLifecycle(t, e, keys, canvas)
+}
+
+// One runtime episode spans key gates, ownership/pacing, time-over, cleanup,
+// multi-round score retention and corrected on-disk content reload. All sprite,
+// sound, animation and command banks are shared from the supplied character.
+func debugRuntimeLifecycle(t *testing.T, e *Engine, keys *flowKeyboard, canvas *ebiten.Image) {
+	t.Helper()
+	oldTPS, oldVsync := ebiten.TPS(), ebiten.IsVsyncEnabled()
+	t.Cleanup(func() { ebiten.SetTPS(oldTPS); ebiten.SetVsyncEnabled(oldVsync) })
+	directory := t.TempDir()
+	fightPath, err := resource.Resolve(e.motif.Files.Fight, filepath.Dir(e.motif.Source), filepath.Join(e.dataDir, "data"), e.dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fightText, err := os.ReadFile(fightPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fightText = regexp.MustCompile(`(?im)^(\s*match\.wins\s*=\s*)\d+`).ReplaceAll(fightText, []byte("${1}2"))
+	e.motif.Files.Fight = filepath.Join(directory, "fight.def")
+	if err := os.WriteFile(e.motif.Files.Fight, fightText, 0600); err != nil {
+		t.Fatal(err)
+	}
+	stock := filepath.Join(e.dataDir, "chars/kfm")
+	constants, err := os.ReadFile(filepath.Join(stock, "kfm.cns"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	constantsPath := filepath.Join(directory, "runtime.cns")
+	if err := os.WriteFile(constantsPath, constants, 0600); err != nil {
+		t.Fatal(err)
+	}
+	definition := fmt.Sprintf("[Info]\nname=Runtime KFM\nmugenversion=1.1\nlocalcoord=320,240\n[Files]\ncns=%s\nst=%s\nstcommon=common1.cns\ncmd=%s\nsprite=%s\nanim=%s\nsound=%s\n", constantsPath, constantsPath, filepath.Join(stock, "kfm.cmd"), filepath.Join(stock, "kfm.sff"), filepath.Join(stock, "kfm.air"), filepath.Join(stock, "kfm.snd"))
+	defPath := filepath.Join(directory, "runtime.def")
+	if err := os.WriteFile(defPath, []byte(definition), 0600); err != nil {
+		t.Fatal(err)
+	}
+	request := match.Request{Mode: "Versus Mode", StagePath: "stages/kfm.def"}
+	request.Players = [2]match.Selection{{DefPath: defPath, Palette: 1}, {DefPath: filepath.Join(stock, "kfm.def"), Palette: 2}}
+	f, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState = f
+	e.cfg.Debug.AllowDebugKeys = false
+	e.cfg.Input.AnyKeyUnpauses = false
+	step := func(pressed ...ebiten.Key) {
+		t.Helper()
+		keys.previous, keys.keys = keys.keys, map[ebiten.Key]bool{}
+		for _, key := range pressed {
+			keys.keys[key] = true
+		}
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	press := func(pressed ...ebiten.Key) { t.Helper(); step(pressed...); step() }
+	active := func() {
+		t.Helper()
+		for n := 0; n < 700 && f.match.Phase != match.Active; n++ {
+			step()
+		}
+		if f.match.Phase != match.Active {
+			t.Fatal("runtime flow did not reach active fight")
+		}
+	}
+	active()
+	press(ebiten.KeyPause)
+	left, right := f.match.Players[0].Character, f.match.Players[1].Character
+	press(ebiten.KeyF2)
+	if left.Life != left.MaxLife || right.Life != right.MaxLife {
+		t.Fatal("disabled debug keys changed life")
+	}
+	press(ebiten.KeyControlLeft, ebiten.KeyD)
+	press(ebiten.KeyF2)
+	press(ebiten.KeyF3)
+	if left.Life != 1 || right.Life != 1 || left.GetPower() != left.MaxPower || right.GetPower() != right.MaxPower {
+		t.Fatal("debug-mode life/power controls did not reach characters")
+	}
+	press(ebiten.KeySpace)
+	press(ebiten.KeyControlLeft, ebiten.KeyF2)
+	if left.Life != 1 || right.Life != right.MaxLife {
+		t.Fatal("Ctrl-F2 lost player ownership")
+	}
+	press(ebiten.KeySpace)
+	press(ebiten.KeyShiftLeft, ebiten.KeyF2)
+	if right.Life != 1 || left.Life != left.MaxLife {
+		t.Fatal("Shift-F2 lost player ownership")
+	}
+	press(ebiten.KeySpace)
+	press(ebiten.KeyControlLeft, ebiten.KeyDigit2)
+	if right.AILevel < 1 || request.Players[1].AILevel != 0 {
+		t.Fatal("AI toggle did not reach live roster or changed request template")
+	}
+	left.VelX, left.VelY = 3, -2
+	press(ebiten.KeyControlLeft, ebiten.KeyI)
+	if left.StateNo != 0 || left.VelX != 0 || left.VelY != 0 {
+		t.Fatal("force stand missed the ordinary state consumer")
+	}
+	e.Draw(canvas)
+	visible := make([]byte, 1280*720*4)
+	canvas.ReadPixels(visible)
+	press(ebiten.KeyControlLeft, ebiten.KeyL)
+	e.Draw(canvas)
+	hidden := make([]byte, len(visible))
+	canvas.ReadPixels(hidden)
+	if !e.hideFightBars || bytes.Equal(visible, hidden) {
+		t.Fatal("debug bar visibility had no rendered consumer")
+	}
+	press(ebiten.KeyControlLeft, ebiten.KeyL)
+	profileTPS := f.match.Options.TicksPerSecond
+	press(ebiten.KeyControlLeft, ebiten.KeyS)
+	if ebiten.TPS() != ebiten.SyncWithFPS || f.match.Options.TicksPerSecond != profileTPS {
+		t.Fatal("fast debug pacing changed script tick units")
+	}
+	press(ebiten.KeyControlLeft, ebiten.KeyV)
+	if ebiten.TPS() != e.ticksPerSecond() || !ebiten.IsVsyncEnabled() {
+		t.Fatal("debug vsync did not restore normal scheduling")
+	}
+	press(ebiten.KeyF5)
+	if f.match.Phase != match.PreOver || !f.match.TimeOver || f.match.TimeLeft != 0 {
+		t.Fatal("debug time-over bypassed the result lifecycle")
+	}
+	previous, processTime := left, e.gameTime
+	press(ebiten.KeyF4)
+	left = f.match.Players[0].Character
+	if !f.userPaused || f.match.Phase != match.PreIntro || left == previous || left.RoundsExisted != 0 || f.match.Wins != ([2]int{}) || e.gameTime != processTime {
+		t.Fatal("paused round restart leaked identity/score/time")
+	}
+	press(ebiten.KeyPause)
+	active()
+	press(ebiten.KeyF1)
+	// Include the documented 900-pass readiness fallback plus KO slowdown,
+	// victory pose and over.time; debug KO need not resemble contact damage.
+	for n := 0; n < 1800 && f.match.Round == 1; n++ {
+		step()
+	}
+	if f.match.Round != 2 || f.match.Wins != ([2]int{1, 0}) {
+		t.Fatal("debug KO did not complete the ordinary round", f.match.Round, f.match.Wins, f.match.Phase, f.match.PhaseTime, f.match.Players[0].Character.StateNo, f.match.Players[1].Character.StateNo)
+	}
+	press(ebiten.KeyPause)
+	left = f.match.Players[0].Character
+	if err := left.CreateHelper(engine.HelperParameters{StateNo: 0, ID: 77, PosType: "p1", Type: "normal"}); err != nil {
+		t.Fatal(err)
+	}
+	helperID := f.match.World.Helpers[0].EntityID
+	left.IntVars[58] = 77
+	left.SetLife(9)
+	press(ebiten.KeyF4)
+	left = f.match.Players[0].Character
+	_, oldHelperAlive := f.match.World.Registry.Lookup(helperID)
+	if left.RoundsExisted != 1 || left.Life != left.MaxLife || left.IntVars[58] != 0 || oldHelperAlive || len(f.match.World.Helpers) != 0 || f.match.Wins != ([2]int{1, 0}) {
+		t.Fatal("round-two restart leaked transient state/counters/score")
+	}
+	before, oldSprites, oldStage := f.match, f.match.Players[0].SFF, f.match.Stage
+	updated := regexp.MustCompile(`(?im)^(life\s*=\s*)1000\b`).ReplaceAllString(string(constants), "${1}1100")
+	if updated == string(constants) {
+		t.Fatal("runtime overlay did not change the source life constant")
+	}
+	updated += fmt.Sprintf("\n[Statedef 5900]\ntype=S\nmovetype=I\nphysics=N\nanim=ifelse(GameTime >= %d && RoundNo=2 && RoundsExisted=1,0,5)\n[State 5900, ready]\ntype=ChangeState\ntrigger1=Time=0\nvalue=0\n", e.gameTime)
+	if err := os.WriteFile(constantsPath, []byte(updated), 0600); err != nil {
+		t.Fatal(err)
+	}
+	press(ebiten.KeyShiftLeft, ebiten.KeyF4)
+	left = f.match.Players[0].Character
+	if f.match == before || f.match.Stage == oldStage || f.match.Players[0].SFF == oldSprites || left.MaxLife != 1100 || left.GetAnim() != 0 || f.match.Round != 2 || left.RoundsExisted != 1 || f.match.Wins != ([2]int{1, 0}) || f.match.Players[1].Character.AILevel < 1 || !f.userPaused {
+		t.Fatal("reload missed changed banks or lost the current round context")
+	}
+	e.Draw(canvas)
+	if f.renderError != nil || f.hud.renderError != nil {
+		t.Fatal("reloaded presentation retained retired resources", f.renderError, f.hud.renderError)
+	}
+	press(ebiten.KeyEscape)
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatal("runtime episode did not return to title")
 	}
 }

@@ -78,7 +78,7 @@ func (s *FightState) updateDebugHotkeys() error {
 			c := player.Character
 			// SelfState restores the fighter's own state bank after a throw.
 			c.SelfState(0, 1, -1)
-			c.XVel, c.YVel = 0, 0
+			c.VelX, c.VelY = 0, 0
 			if c.RuntimeError != nil {
 				return c.RuntimeError
 			}
@@ -87,8 +87,21 @@ func (s *FightState) updateDebugHotkeys() error {
 	if im.KeyJustPressed(ebiten.KeyF5) {
 		s.match.ForceTimeOver()
 	}
-	if im.KeyJustPressed(ebiten.KeyF4) && !shift {
-		if err := s.match.RestartRound(); err != nil {
+	if im.KeyJustPressed(ebiten.KeyF4) {
+		if shift {
+			fresh, err := s.match.Reload()
+			if err != nil {
+				return err
+			}
+			if fresh == nil {
+				return nil
+			}
+			s.match.Effects.Clear()
+			// New presentation caches must reference the newly loaded banks,
+			// geometry and voices. Keep only session/menu choices.
+			*s = FightState{engine: s.engine, match: fresh, debugSelection: s.debugSelection, userPaused: s.userPaused, training: s.training}
+			s.bindMatchInputs()
+		} else if err := s.match.RestartRound(); err != nil {
 			return err
 		}
 		s.hud = NewFightHUD(s.match, s.engine)
