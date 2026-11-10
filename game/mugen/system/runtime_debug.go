@@ -10,12 +10,24 @@ import (
 // combat implementation, and remain available during a user pause.
 func (s *FightState) updateDebugHotkeys() error {
 	im := input.GlobalManager
-	if im == nil || !s.engine.cfg.Debug.AllowDebugKeys {
+	if im == nil || !s.debugKeysAllowed() {
 		return nil
 	}
 	control := im.KeyPressed(ebiten.KeyControlLeft) || im.KeyPressed(ebiten.KeyControlRight)
 	shift := im.KeyPressed(ebiten.KeyShiftLeft) || im.KeyPressed(ebiten.KeyShiftRight)
 	alt := im.KeyPressed(ebiten.KeyAltLeft) || im.KeyPressed(ebiten.KeyAltRight)
+	if control && im.KeyJustPressed(ebiten.KeyL) {
+		s.engine.hideFightBars = !s.engine.hideFightBars
+	}
+	if control && im.KeyJustPressed(ebiten.KeyS) {
+		s.engine.cfg.Debug.Speedup = !s.engine.cfg.Debug.Speedup
+		s.engine.applyScheduler()
+	}
+	if control && im.KeyJustPressed(ebiten.KeyV) {
+		s.engine.cfg.Debug.Speedup = false
+		s.engine.cfg.Video.VRetrace = true
+		s.engine.applyScheduler()
+	}
 	if control && !alt {
 		for slot, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3, ebiten.KeyDigit4} {
 			if !im.KeyJustPressed(key) {
@@ -76,4 +88,9 @@ func (s *FightState) updateDebugHotkeys() error {
 		s.match.ForceTimeOver()
 	}
 	return nil
+}
+
+func (s *FightState) debugKeysAllowed() bool {
+	// mugen.cfg allows keys only in debug mode when AllowDebugKeys is zero.
+	return s.engine.cfg.Debug.AllowDebugKeys || s.debugSelection >= 0
 }

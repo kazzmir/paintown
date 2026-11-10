@@ -46,6 +46,7 @@ type Engine struct {
 	characterPacks   resource.CharacterPacks
 	stop             <-chan struct{}
 	focus            func() bool
+	hideFightBars    bool
 }
 
 // Close stops streaming readers before removing this engine's expanded packs.
@@ -82,6 +83,18 @@ func (e *Engine) ticksPerSecond() int {
 		speed = e.cfg.Options.GameSpeed
 	}
 	return max(1, base+5*speed)
+}
+
+// Script tick rates stay in game units even when debug speed removes the
+// wall-clock cap. Options changes use this same scheduler consumer.
+func (e *Engine) applyScheduler() {
+	if e.cfg.Debug.Speedup {
+		ebiten.SetTPS(ebiten.SyncWithFPS)
+		ebiten.SetVsyncEnabled(false)
+	} else {
+		ebiten.SetTPS(e.ticksPerSecond())
+		ebiten.SetVsyncEnabled(e.cfg.Video.VRetrace)
+	}
 }
 
 func (e *Engine) Update() error {
@@ -297,7 +310,7 @@ func run() (runErr error) {
 	ebiten.SetWindowTitle("MUGEN Engine")
 
 	// Set TPS based on GameSpeed config
-	ebiten.SetTPS(engine.ticksPerSecond())
+	engine.applyScheduler()
 	ebiten.SetRunnableOnUnfocused(!cfg.Misc.PauseOnDefocus)
 
 	return ebiten.RunGame(engine)

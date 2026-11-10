@@ -112,7 +112,7 @@ func NewOptionsState(engine *Engine) *OptionsState {
 			getValue: func() int { return engine.cfg.Options.GameSpeed },
 			setValue: func(v int) {
 				engine.cfg.Options.GameSpeed = v
-				ebiten.SetTPS(engine.ticksPerSecond())
+				engine.applyScheduler()
 			},
 			choices: speedChoices,
 			min:     -2, max: 2,
