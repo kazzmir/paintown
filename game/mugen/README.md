@@ -173,6 +173,15 @@ bindings; standard-layout names are preferred, with raw controls as fallback.
 Escape returns to Options. These edits last for the session; use the YAML
 examples below for persistent settings.
 
+Direct matches accept `--mode versus` (default), `watch`, `training` or `coop`.
+For example, add `--mode training` to an existing `--quick-match` command to
+practice those selected fighters immediately; Pause opens the dummy menu.
+`--p3 chars/name/name.def` adds a left-side simul partner and `--p4` adds a
+right-side partner. Partners use AI in versus/watch. In direct co-op, `--p3`
+is required and uses the second human's controls; the opposing side uses AI.
+Direct Training uses one fighter per side. Explicit `--stage` takes precedence
+over the configured `Debug.StartStage`.
+
 At the fight screen, Pause freezes the complete simulation; Scroll Lock advances
 one tick while paused. Holding either key does not repeat. Escape still exits.
 `[Input] AnyKeyUnpauses=1` lets another fresh keyboard press resume an ordinary

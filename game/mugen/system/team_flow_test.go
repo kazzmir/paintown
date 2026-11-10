@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path/filepath"
 	"slices"
 	"testing"
 
@@ -17,6 +18,38 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 	input.GlobalManager = input.NewInputManager(e.cfg)
 	keyboard := &flowKeyboard{}
 	input.GlobalManager.Keyboard = keyboard
+	// Command-line partners use the same simul roster/AI/HUD consumers as the
+	// selection flow below, including Debug.StartStage when --stage is absent.
+	direct, err := quickMatchRequest("chars/kfm/kfm.def,chars/kfm720/kfm720.def", "watch", "", "chars/kfm/kfm.def", "chars/kfm720/kfm720.def", e.cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for side := range direct.Teams {
+		for index := range direct.Teams[side].Members {
+			direct.Teams[side].Members[index].DefPath = filepath.Join(e.dataDir, direct.Teams[side].Members[index].DefPath)
+		}
+	}
+	for side := range direct.Players {
+		direct.Players[side].DefPath = filepath.Join(e.dataDir, direct.Players[side].DefPath)
+	}
+	preview, err := NewFightState(e, direct)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(preview.match.Actors()) != 4 || preview.match.Request.StagePath != e.cfg.Debug.StartStage {
+		t.Fatal("direct partner roster/stage handoff was lost")
+	}
+	for _, p := range preview.match.Actors() {
+		if p.Character.AILevel < 1 {
+			t.Fatal("direct watch left a human-owned participant")
+		}
+	}
+	previewCanvas := ebiten.NewImage(1280, 720)
+	preview.Draw(previewCanvas)
+	previewCanvas.Deallocate()
+	if preview.renderError != nil || preview.hud.renderError != nil {
+		t.Fatal("direct simul preview lost presentation", preview.renderError, preview.hud.renderError)
+	}
 	s := NewSelectState(e, "Team Versus")
 	e.currentState = s
 	step := func(keys ...ebiten.Key) {

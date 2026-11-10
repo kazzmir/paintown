@@ -1135,6 +1135,12 @@
       "name": "Options layout and font consumers in HD motifs",
       "completed": false,
       "validation": "Options rows/columns/cursor/footer now follow motif dimensions, authored Option Info title offset/font/text reach drawing, and fixed English labels use uppercase for bitmap banks without lowercase glyphs. A reusable cursor pixel replaces per-draw GPU allocation. The connected Options/input/gameplay episode checks actual centered row pixels; combined acceptance pending."
+    },
+    {
+      "id": "direct-mode-entry",
+      "name": "Direct training, watch and partner match entry",
+      "completed": false,
+      "validation": "CLI --mode selects versus/watch/training/coop on the existing quick-match path; --p3/--p4 use normal simul rosters. Watch/partners get CPU ownership, while co-op P3 maps the second human through the existing adapter. Debug.StartStage remains the omitted-stage default. The existing team/selection/HUD/co-op episode now loads and renders a direct four-participant watch request; final acceptance pending."
     }
   ]
 }

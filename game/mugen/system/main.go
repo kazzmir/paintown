@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 
@@ -19,9 +18,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
-	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
-	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 )
 
@@ -186,10 +183,16 @@ func run() (runErr error) {
 	log.SetFlags(log.Lshortfile | log.Ldate | log.Lmicroseconds)
 
 	dataDir := flag.String("data-dir", "data-new/mugen", "Path to the MUGEN data directory")
-	quickMatch := flag.String("quick-match", "", "Start a versus match with two character directories, DEFs or ZIP[:DEF] entries, separated by a comma")
+	quickMatch := flag.String("quick-match", "", "Start a direct match with two character directories, DEFs or ZIP[:DEF] entries, separated by a comma")
+	quickMode := flag.String("mode", "versus", "Direct --quick-match mode: versus, watch, training or coop")
+	partner3 := flag.String("p3", "", "Optional left-side simul partner for --quick-match")
+	partner4 := flag.String("p4", "", "Optional right-side simul partner for --quick-match")
 	quickStage := flag.String("stage", "", "Stage DEF for --quick-match (defaults to Debug.StartStage)")
 	matchSeed := flag.Int64("match-seed", 0, "Initial match RNG seed for reproducible runs (1..2147483646; zero uses the clock)")
 	flag.Parse()
+	if *quickMatch == "" && (*quickMode != "versus" || *partner3 != "" || *partner4 != "") {
+		return fmt.Errorf("--mode/--p3/--p4 require --quick-match")
+	}
 	if *matchSeed < 0 || *matchSeed >= 2147483647 {
 		return fmt.Errorf("match-seed must be zero or between 1 and 2147483646")
 	}
@@ -283,20 +286,9 @@ func run() (runErr error) {
 
 	engine.currentState = logoState
 	if *quickMatch != "" {
-		paths := parsers.SplitList(*quickMatch)
-		if len(paths) != 2 {
-			return fmt.Errorf("--quick-match requires two character entries")
-		}
-		stage := strings.TrimSpace(*quickStage)
-		if stage == "" {
-			stage = cfg.Debug.StartStage
-		}
-		if stage == "" {
-			stage = "stages/kfm.def"
-		}
-		request := match.Request{Mode: "Versus Mode", StagePath: stage}
-		for slot, path := range paths {
-			request.Players[slot] = match.Selection{DefPath: strings.Trim(strings.TrimSpace(path), "\""), Palette: slot + 1}
+		request, err := quickMatchRequest(*quickMatch, *quickMode, *quickStage, *partner3, *partner4, cfg)
+		if err != nil {
+			return err
 		}
 		engine.currentState, err = NewFightState(engine, request)
 		if err != nil {
