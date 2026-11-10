@@ -305,6 +305,51 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if bindingsMenu.player != 2 || len(input.GlobalManager.KeyboardBindings(2, input.ActionB)) != 0 {
 		t.Fatal("input editor lost player ownership or disabled binding")
 	}
+	step(ebiten.KeyTab)
+	step()
+	step(ebiten.KeyF2)
+	step()
+	step(ebiten.KeyArrowLeft)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyArrowDown)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	if !cfg.Input.Gamepads[0].Enabled || cfg.Input.Gamepads[0].Deadzone != 0.45 {
+		t.Fatal("gamepad pane did not apply device/deadzone settings")
+	}
+	for n := 0; n < 8; n++ {
+		step(ebiten.KeyArrowDown)
+		step()
+	}
+	step(ebiten.KeyInsert)
+	step()
+	pad1.rawButtons[1] = true
+	step()
+	pad1.release()
+	step()
+	controls, _ := cfg.Input.Gamepads[0].Bindings("x")
+	if !slices.Contains(controls, config.GamepadControl{Kind: config.PadButton, Index: 1}) {
+		t.Fatal("gamepad editor could not capture an unbound raw control")
+	}
+	// A nonstandard trigger may rest at -1. Capture learns that neutral value
+	// and stores the positive press direction, rather than binding the rest.
+	pad2.rawAxes[1] = -1
+	step(ebiten.KeyTab)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	pad2.rawAxes[1] = 1
+	step()
+	pad2.rawAxes[1] = -1
+	step()
+	controls, _ = cfg.Input.Gamepads[1].Bindings("x")
+	if !slices.Equal(controls, []config.GamepadControl{{Kind: config.PadAxis, Index: 1, Positive: true}}) || bindingsMenu.waiting || bindingsMenu.settle {
+		t.Fatal("raw-axis capture mistook its neutral baseline for a held control", controls)
+	}
+	pad2.release()
 	panel := ebiten.NewImage(640, 480)
 	e.Draw(panel)
 	panel.Deallocate()
@@ -520,7 +565,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			if f.match.Round == 1 {
 				step(ebiten.KeyF10) // Alternative edited in the Options UI.
 			} else {
-				pad1.rawButtons[2] = true
+				pad1.rawButtons[1] = true // Alternative edited in the Options UI.
 				step()
 			}
 		} else {

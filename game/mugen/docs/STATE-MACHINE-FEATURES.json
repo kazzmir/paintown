@@ -1128,7 +1128,7 @@
       "id": "session-input-configuration",
       "name": "Options input configuration through gameplay",
       "completed": false,
-      "validation": "Options/F1 now opens a session keyboard editor with per-player enable, replace/add/disable bindings, raw navigation while disabled and return to the same Options state. It shares YAML binding setters/fallbacks and does not write local configuration. Existing title/options/selection/two-round match flow edits an attack alternative and uses it through stock CNS; full end-state acceptance pending for this continuing batch."
+      "validation": "Options/F1 now opens a session keyboard editor with per-player enable, replace/add/disable bindings, raw navigation while disabled and return to the same Options state. It shares YAML binding setters/fallbacks and does not write local configuration. Existing title/options/selection/two-round match flow edits an attack alternative and uses it through stock CNS; full end-state acceptance pending for this continuing batch. F2 now exposes per-player gamepad assignment/name/layout, enable/deadzone and replacement/alternative/disabled bindings. Capture sees unbound standard/raw buttons and axes; release admission prevents the activation key or a newly bound held control from operating the menu again. The title-to-match episode captures an unbound raw attack alternative and uses it in round two. Physical device acceptance remains partial. Raw-axis capture records the released baseline (including -1 trigger rests) and chooses the movement polarity. Device/layout changes rearm capture; standard layouts use normalized sticks and named buttons. The same connected Options/gameplay episode includes a raw trigger baseline and release."
     }
   ]
 }

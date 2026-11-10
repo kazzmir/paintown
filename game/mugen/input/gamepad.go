@@ -23,6 +23,8 @@ type GamepadSource interface {
 
 type physicalGamepads struct{}
 
+func (physicalGamepads) Name(id ebiten.GamepadID) string { return ebiten.GamepadName(id) }
+
 func (physicalGamepads) AppendIDs(ids []ebiten.GamepadID) []ebiten.GamepadID {
 	return ebiten.AppendGamepadIDs(ids)
 }
@@ -49,11 +51,105 @@ type gamepadSlot struct {
 	assigned bool
 }
 
-func (im *InputManager) updateGamepads() {
-	source := im.Gamepads
-	if source == nil {
-		source = physicalGamepads{}
+func (im *InputManager) gamepadSource() GamepadSource {
+	if im.Gamepads != nil {
+		return im.Gamepads
 	}
+	return physicalGamepads{}
+}
+
+func (im *InputManager) GamepadInfo(player int) (id ebiten.GamepadID, name string, standard, connected bool) {
+	if player < 1 || player > 2 {
+		return
+	}
+	slot := im.padSlots[player-1]
+	settings := im.P1Gamepad
+	if player == 2 {
+		settings = im.P2Gamepad
+	}
+	if !settings.Enabled || !slot.assigned {
+		return
+	}
+	id, connected = slot.id, true
+	source := im.gamepadSource()
+	standard = source.StandardLayout(id)
+	name = fmt.Sprintf("Gamepad %d", id)
+	if named, ok := source.(interface{ Name(ebiten.GamepadID) string }); ok {
+		if label := named.Name(id); label != "" {
+			name = label
+		}
+	}
+	return
+}
+
+// GamepadSnapshot is a configuration-only view of the assigned SDK device.
+// Unknown raw axes retain their neutral baseline instead of assuming zero;
+// standard layouts already normalize their stick axes.
+type GamepadSnapshot struct {
+	ID                  ebiten.GamepadID
+	Connected, Standard bool
+	Buttons             []config.GamepadControl
+	Axes                []float64
+}
+
+func (im *InputManager) GamepadSnapshot(player int) GamepadSnapshot {
+	id, _, standard, connected := im.GamepadInfo(player)
+	state := GamepadSnapshot{ID: id, Connected: connected, Standard: standard}
+	if !connected {
+		return state
+	}
+	source := im.gamepadSource()
+	if standard {
+		for button := ebiten.StandardGamepadButton(0); button <= ebiten.StandardGamepadButtonMax; button++ {
+			if source.StandardButton(id, button) {
+				state.Buttons = append(state.Buttons, config.GamepadControl{Kind: config.PadStandardButton, Index: int(button)})
+			}
+		}
+		for axis := ebiten.StandardGamepadAxis(0); axis <= ebiten.StandardGamepadAxisRightStickVertical; axis++ {
+			state.Axes = append(state.Axes, source.StandardAxis(id, axis))
+		}
+	} else {
+		for axis := 0; axis < min(source.AxisCount(id), 256); axis++ {
+			state.Axes = append(state.Axes, source.Axis(id, axis))
+		}
+	}
+	if len(state.Buttons) == 0 {
+		for button := 0; button < min(source.ButtonCount(id), int(ebiten.GamepadButtonMax)+1); button++ {
+			if source.Button(id, ebiten.GamepadButton(button)) {
+				state.Buttons = append(state.Buttons, config.GamepadControl{Kind: config.PadButton, Index: button})
+			}
+		}
+	}
+	return state
+}
+func (s GamepadSnapshot) Changes(previous GamepadSnapshot, deadzone float64) []config.GamepadControl {
+	if !s.Connected || !previous.Connected || s.ID != previous.ID || s.Standard != previous.Standard {
+		return nil
+	}
+	var controls []config.GamepadControl
+	for _, button := range s.Buttons {
+		if !slices.Contains(previous.Buttons, button) {
+			controls = append(controls, button)
+		}
+	}
+	kind := config.PadAxis
+	if s.Standard {
+		kind = config.PadStandardAxis
+	}
+	for axis, value := range s.Axes {
+		if axis >= len(previous.Axes) {
+			continue
+		}
+		delta := value - previous.Axes[axis]
+		if delta > deadzone || delta < -deadzone {
+			controls = append(controls, config.GamepadControl{Kind: kind, Index: axis, Positive: delta > 0})
+		}
+	}
+	return controls
+}
+
+func (im *InputManager) updateGamepads() {
+	source := im.gamepadSource()
 	im.GamepadIDs = source.AppendIDs(im.GamepadIDs[:0])
 	slices.Sort(im.GamepadIDs)
 	settings := [2]*config.GamepadConfig{&im.P1Gamepad, &im.P2Gamepad}

@@ -27,6 +27,32 @@ type GamepadControl struct {
 	Positive bool
 }
 
+func (c GamepadControl) String() string {
+	sign := "-"
+	if c.Positive {
+		sign = "+"
+	}
+	switch c.Kind {
+	case PadStandardButton:
+		for name, index := range standardGamepadButtons {
+			if int(index) == c.Index {
+				return name
+			}
+		}
+	case PadStandardAxis:
+		for name, index := range standardGamepadAxes {
+			if int(index) == c.Index {
+				return name + sign
+			}
+		}
+	case PadButton:
+		return fmt.Sprintf("button:%d", c.Index)
+	case PadAxis:
+		return fmt.Sprintf("axis:%d%s", c.Index, sign)
+	}
+	return "unknown"
+}
+
 type GamepadConfig struct {
 	Enabled    bool
 	Deadzone   float64
@@ -109,16 +135,7 @@ func ParseGamepadBindings(names []string) ([]GamepadControl, error) {
 			continue
 		}
 		var control GamepadControl
-		if index, ok := map[string]ebiten.StandardGamepadButton{
-			"south": ebiten.StandardGamepadButtonRightBottom, "east": ebiten.StandardGamepadButtonRightRight,
-			"west": ebiten.StandardGamepadButtonRightLeft, "north": ebiten.StandardGamepadButtonRightTop,
-			"l1": ebiten.StandardGamepadButtonFrontTopLeft, "r1": ebiten.StandardGamepadButtonFrontTopRight,
-			"l2": ebiten.StandardGamepadButtonFrontBottomLeft, "r2": ebiten.StandardGamepadButtonFrontBottomRight,
-			"back": ebiten.StandardGamepadButtonCenterLeft, "start": ebiten.StandardGamepadButtonCenterRight,
-			"left_stick": ebiten.StandardGamepadButtonLeftStick, "right_stick": ebiten.StandardGamepadButtonRightStick,
-			"dpad_up": ebiten.StandardGamepadButtonLeftTop, "dpad_down": ebiten.StandardGamepadButtonLeftBottom,
-			"dpad_left": ebiten.StandardGamepadButtonLeftLeft, "dpad_right": ebiten.StandardGamepadButtonLeftRight,
-		}[name]; ok {
+		if index, ok := standardGamepadButtons[name]; ok {
 			control = GamepadControl{Kind: PadStandardButton, Index: int(index)}
 		} else {
 			positive := strings.HasSuffix(name, "+")
@@ -126,10 +143,7 @@ func ParseGamepadBindings(names []string) ([]GamepadControl, error) {
 			if positive || strings.HasSuffix(name, "-") {
 				axisName = name[:len(name)-1]
 			}
-			index, standard := map[string]ebiten.StandardGamepadAxis{
-				"left_x": ebiten.StandardGamepadAxisLeftStickHorizontal, "left_y": ebiten.StandardGamepadAxisLeftStickVertical,
-				"right_x": ebiten.StandardGamepadAxisRightStickHorizontal, "right_y": ebiten.StandardGamepadAxisRightStickVertical,
-			}[axisName]
+			index, standard := standardGamepadAxes[axisName]
 			switch {
 			case standard && (positive || strings.HasSuffix(name, "-")):
 				control = GamepadControl{Kind: PadStandardAxis, Index: int(index), Positive: positive}
@@ -198,4 +212,22 @@ func mergeGamepad(c *GamepadConfig, options *GamepadOptions, bindings map[string
 	if options != nil && options.Enabled != nil {
 		c.Enabled = *options.Enabled
 	}
+}
+
+var standardGamepadButtons = map[string]ebiten.StandardGamepadButton{
+	"south": ebiten.StandardGamepadButtonRightBottom, "east": ebiten.StandardGamepadButtonRightRight,
+	"west": ebiten.StandardGamepadButtonRightLeft, "north": ebiten.StandardGamepadButtonRightTop,
+	"l1": ebiten.StandardGamepadButtonFrontTopLeft, "r1": ebiten.StandardGamepadButtonFrontTopRight,
+	"l2": ebiten.StandardGamepadButtonFrontBottomLeft, "r2": ebiten.StandardGamepadButtonFrontBottomRight,
+	"back": ebiten.StandardGamepadButtonCenterLeft, "start": ebiten.StandardGamepadButtonCenterRight,
+	"left_stick": ebiten.StandardGamepadButtonLeftStick, "right_stick": ebiten.StandardGamepadButtonRightStick,
+	"dpad_up": ebiten.StandardGamepadButtonLeftTop, "dpad_down": ebiten.StandardGamepadButtonLeftBottom,
+	"dpad_left": ebiten.StandardGamepadButtonLeftLeft, "dpad_right": ebiten.StandardGamepadButtonLeftRight,
+
+	"guide": ebiten.StandardGamepadButtonCenterCenter,
+}
+
+var standardGamepadAxes = map[string]ebiten.StandardGamepadAxis{
+	"left_x": ebiten.StandardGamepadAxisLeftStickHorizontal, "left_y": ebiten.StandardGamepadAxisLeftStickVertical,
+	"right_x": ebiten.StandardGamepadAxisRightStickHorizontal, "right_y": ebiten.StandardGamepadAxisRightStickVertical,
 }

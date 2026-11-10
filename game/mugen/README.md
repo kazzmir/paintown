@@ -167,6 +167,9 @@ scheduler immediately, and subsequent matches inherit that clock rate.
 In Options, choose Input Configuration or press F1 to edit keyboard bindings.
 Tab selects the player; Enter replaces a binding, Insert adds an alternative,
 and Delete disables it. The keyboard enable row can be changed with left/right.
+F2 switches to the gamepad pane, which shows the assigned device and offers
+enable/deadzone controls plus button/axis capture. Release controls between
+bindings; standard-layout names are preferred, with raw controls as fallback.
 Escape returns to Options. These edits last for the session; use the YAML
 examples below for persistent settings.
 
@@ -333,7 +336,7 @@ Keyboard controls remain usable alongside controllers.
 Defaults are D-pad/left stick for directions, `south`/`east`/`r1` for a/b/c,
 `west`/`north`/`l1` for x/y/z, `start` for confirm and `back` for escape.
 Names describe button positions, independent of printed Xbox/PlayStation labels.
-Other names are `l2`, `r2`, `left_stick`, `right_stick`, and
+Other names are `l2`, `r2`, `left_stick`, `right_stick`, `guide`, and
 `dpad_up`/`dpad_down`/`dpad_left`/`dpad_right`. Axes require a polarity:
 `left_x-`, `left_x+`, `left_y-`, `left_y+` or the corresponding `right_x`/`right_y`.
 Vertical negative points up. `deadzone` must be at least 0 and less than 1;
