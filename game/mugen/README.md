@@ -67,9 +67,11 @@ game/mugen/mugen.sh --game --data-dir game/mugen/temp/ssf2-turbo-hd
 ```
 
 Its loading, selection, palette and HUD fixes are tracked in the same ledger.
-Ryu/Ken rendering, input, audio and a natural KO/victory were checked with a
-shortened match. Normal-length matches, repeated rounds and its full roster
-remain unverified. The pack and executable stay local and are not committed.
+All 19 characters load and compile (3,118 state programs). Ryu/Dhalsim completes
+a full-life, two-round AI match with natural KOs and a final result; the rebuilt
+game also runs their rendered fight. Ryu/Ken rendering, input and stage audio
+were checked earlier. Gameplay across the complete roster remains unverified.
+The pack and executable stay local and are not committed.
 
 Several supplied SF2 character scripts omit a later-round initialization exit;
 the original beta also stalls with this pattern. Create a corrected working

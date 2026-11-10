@@ -366,6 +366,12 @@ guardsound=-1
 	} {
 		fmt.Fprintf(&script, "[State snapshot]\ntype=VarSet\ntrigger1=Time=%d\nv=%d\nvalue=%s\n", row.tick, 40+index, row.expression)
 	}
+	// Parenthesized IDs use the same native legacy contact query. They do not
+	// turn the contents into an evaluated expression or ordinary != operator.
+	for index, expression := range []string{"ProjGuarded(22)=1", "ProjContact(22)=1", "ProjContact(9999)=1", "ProjContact(Var(37))=1", "ProjHit(22)=1"} {
+		fmt.Fprintf(&script, "[State call-style contact]\ntype=VarSet\ntrigger1=%s\nv=%d\nvalue=1\n", expression, 30+index)
+	}
+	script.WriteString("[State call-style inequality]\ntype=VarSet\ntrigger1=Time=190\nv=35\nvalue=ProjContact(22)!=1\n")
 	script.WriteString(`[Statedef 9002]
 type=S
 movetype=I
@@ -414,6 +420,10 @@ Clsn1[0]=-6,-70,6,-40
 		t.Fatal(err)
 	}
 	caster, receiver := m.Players[0].Character, m.Players[1].Character
+	for variable := 30; variable <= 35; variable++ {
+		caster.IntVars[variable] = 0
+	}
+	caster.IntVars[37] = 9999
 	for slot, player := range m.Players {
 		c := player.Character
 		for number, state := range states.States {
@@ -443,6 +453,11 @@ Clsn1[0]=-6,-70,6,-40
 	for index, expected := range []int{0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 995, 1, 0, 0, 1, 1} {
 		if got := caster.GetVar(40 + index); got != expected {
 			t.Fatalf("native guard lifecycle observation %d: got %d want %d (receiver state/time/life %d/%d/%d)", index, got, expected, receiver.StateNo, receiver.Time, receiver.Life)
+		}
+	}
+	for index, expected := range []int{1, 1, 0, 1, 0, 0} {
+		if got := caster.GetVar(30 + index); got != expected {
+			t.Fatal("parenthesized projectile contact lost native semantics", index, got, expected)
 		}
 	}
 	if caster.MoveType != "I" || len(caster.Projectiles) != 0 || len(m.World.Helpers) != 0 || receiver.Life != 995 || receiver.GetInGuardDist() || receiver.StateNo != 0 || !receiver.Ctrl {
@@ -1424,12 +1439,41 @@ func TestPauseMatchClockBackgroundEffectsAndRoundReset(t *testing.T) {
 		advanceUntil(t, m, Active, 600)
 		marker := &background.NormalElement{CommonElement: background.CommonElement{Enabled: true, Velocity: [2]float64{1, 0}}}
 		m.Stage.Background.Elements = append(m.Stage.Background.Elements, marker)
-		actions := &air.Data{Actions: map[int]*air.Action{9999: {ID: 9999, Elements: []air.Element{{Group: -1, Time: 100}}}}}
+		actions := &air.Data{Actions: map[int]*air.Action{
+			9999: {ID: 9999, Elements: []air.Element{{Group: -1, Time: 100}}},
+			9997: {ID: 9997, LoopStart: -1, Elements: []air.Element{{Group: -1, Time: 0}}},
+			9998: {ID: 9998, LoopStart: 1, Elements: []air.Element{{Group: -1, Time: 2}, {Group: -1, Time: 0}}},
+		}}
 		if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: m.Fight.EffectSprites, Animations: actions, Scale: 1}, Action: 9999, Facing: 1}); err != nil {
 			t.Fatal(err)
 		}
 		if err := m.Effects.Flush(); err != nil {
 			t.Fatal(err)
+		}
+		// HD common effects use zero-duration empty actions. Cover both the
+		// scene-owned spark and owned Explod through pause, expiry and reset.
+		actor := m.Players[0].Character
+		for _, number := range []int{9997, 9998} {
+			actor.AirFile.Actions[number] = actions.Actions[number]
+			if err := engine.ExecuteExplodParameters(map[string]string{"anim": fmt.Sprint(number), "id": fmt.Sprint(number)}, actor, "empty-effect"); err != nil {
+				t.Fatal(err)
+			}
+			if err := m.Effects.Queue.Push(effect.Request{Source: effect.Source{Sprites: m.Fight.EffectSprites, Animations: actions, Scale: 1}, Action: number, Facing: 1}); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := m.Effects.Flush(); err != nil {
+			t.Fatal(err)
+		}
+		empty, tail := actor.Explods[0].Visual, actor.Explods[1].Visual
+		liveEffects := func() int {
+			count := 0
+			for _, instance := range m.Effects.Active {
+				if instance.Active {
+					count++
+				}
+			}
+			return count
 		}
 		m.Timeline.BeginFrame()
 		if err := m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 3, PauseBackground: pauseBackground}); err != nil {
@@ -1460,6 +1504,15 @@ func TestPauseMatchClockBackgroundEffectsAndRoundReset(t *testing.T) {
 		}
 		if m.PhaseTime != phaseTime+1 || m.timeTicks != timer+1 || m.Effects.Active[0].Clock.Elapsed != 1 {
 			t.Fatal("match clocks failed to resume")
+		}
+		if empty.Active || !tail.Active || liveEffects() != 3 {
+			t.Fatal("empty effect did not retire at its first native boundary", empty.Active, tail.Active, liveEffects())
+		}
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		if tail.Active || len(actor.Explods) != 0 || liveEffects() != 1 {
+			t.Fatal("zero-duration loop tail retained an effect past its first pass")
 		}
 		m.Timeline.BeginFrame()
 		_ = m.Players[0].Character.PauseGame(engine.PauseParameters{Time: 3})

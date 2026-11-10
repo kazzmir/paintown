@@ -193,6 +193,10 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   links/remaps. SFF 2.00 ignores its reserved alpha byte and masks index zero.
   AIR AI is native additive 256/256; sub is subtractive. HUD numbered backgrounds
   may be sparse; draw them numerically and retain first animation components.
+- Parenthesized projectile contact IDs retain the legacy comparison/time
+  grammar and != behavior; native Var(...) IDs select the unfiltered zero ID.
+  Empty effect animations may have a zero-duration cycle: use the effect clock
+  and retire at its first pass. Preserve strict fighter-loop diagnostics.
 - Preserve indexed 3/8 game-pixel calibration without grid snapping, byte
   premultiplication, nearest indexed/linear true-color sampling and delta-first
   round-to-even interpolation. Keep AfterImage AIR clocks and saved mappings.

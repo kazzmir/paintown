@@ -240,7 +240,7 @@ func (s *Scene) Flush() error {
 			return fmt.Errorf("effect action %d is unavailable", request.Action)
 		}
 		if instance == nil {
-			clock := air.NewPlayer(action)
+			clock := air.NewEffectPlayer(action)
 			if clock.Error != nil {
 				return clock.Error
 			}

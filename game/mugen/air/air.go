@@ -344,10 +344,20 @@ type Player struct {
 	total, loopTime  int64
 	boundary         bool
 	nonfinalInfinite bool
+	emptyEffectLoop  bool
 }
 
 func NewPlayer(action *Action) *Player {
 	p := &Player{Action: action}
+	p.Reset(1)
+	return p
+}
+
+// NewEffectPlayer permits the zero-length placeholder actions used by native
+// fight effects. Their end boundary lets the one-pass owner retire them; fighter
+// animation clocks continue to reject schedules without a progressing loop.
+func NewEffectPlayer(action *Action) *Player {
+	p := &Player{Action: action, emptyEffectLoop: true}
 	p.Reset(1)
 	return p
 }

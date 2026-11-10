@@ -595,7 +595,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c38241eed7345f0e68ddf0036b2d15138093e189a2ceb6c8e23cfe704794f402"
+      "passed_source": "c587dfbbd14dae8dbece1f075511959d45ef36797d25b55ca6a520b4a5de4c17"
     },
     {
       "id": "combat",
@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "dcb4bff68f26fa804c8b2f2d3b30cb3f36254be7a506fd5b660826f28ed6908f"
+      "passed_source": "f98547e16507247339965f4329d50169cda87f8ac9a735463f6e7992fc8fb609"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "723b12a8e5c8be754cb7e1a6aba324ea2efd5ba79ebe82d2ab1e0a24a4078ea0"
+      "passed_source": "dfcf00b6f3a2c7ff8475b71ff73f0563352b675afdef95034b176bb2deb2bb70"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7e85560604cdf039d70fc08a49b29f1995e251a1b1b3c1498b61797f1aa62ce5"
+      "passed_source": "a2bb1c0d95b9cab73f3772039caaa47f7270e1eed79ff8b02dadc73cbafd5f4c"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "cfed18ae203fdb5d0e46b12552befc5f43627db219e75854451984259ab3faa4"
+      "passed_source": "90619e9b702339defb7a7f4807efcf1087c7de2cc92ef276033227ada3cc3206"
     }
   ],
   "presentation_followups": [
@@ -1151,7 +1151,7 @@
       "id": "hd-hud-text-admission",
       "name": "HD fight backgrounds and native legacy text admission",
       "completed": true,
-      "validation": "Numbered HUD backgrounds now include sparse higher indices in numeric order, cached per fight rather than limited to bg0/bg1. The first scalar animation ID in p2.front.anim=14,0 restores the right lifebar; bg2 restores the central KO artwork. Native accepts Ken's loose pausetime label before the first CNS section; Go ignores unassigned preamble labels while retaining source lines and assignment errors. A disposable native Ryu idle animation confirms AI is ordinary additive blending (256/256); Go now admits that spelling. Existing connected asset/team scenarios cover these consumers and all segments are checked with races. Rebuilt 1280x720 Go Ryu/Ken rendering, movement/attacks, stage audio and a natural KO/win icon/victory pose were inspected; the natural-KO run used temporary 2% life and one-win settings. Normal-length, repeated-round and complete-roster acceptance remain unverified. A debug-forced KO was still falling after its observation interval; this is not evidence of normal KO failure. Bundled native Ken loading failed at SFF under Wine without a specific cause, although its PNGs validate and Go now loads/renders him. No pack scripts, assets or user settings were changed; scratch is removed."
+      "validation": "Numbered HUD backgrounds now include sparse higher indices in numeric order, cached per fight rather than limited to bg0/bg1. The first scalar animation ID in p2.front.anim=14,0 restores the right lifebar; bg2 restores the central KO artwork. Native accepts Ken's loose pausetime label before the first CNS section; Go ignores unassigned preamble labels while retaining source lines and assignment errors. A disposable native Ryu idle animation confirms AI is ordinary additive blending (256/256); Go now admits that spelling. Existing connected asset/team scenarios cover these consumers and all segments are checked with races. Rebuilt 1280x720 Go Ryu/Ken rendering, movement/attacks, stage audio and a natural KO/win icon/victory pose were inspected; the natural-KO run used temporary 2% life and one-win settings. Subsequent full-life Ryu/Dhalsim round acceptance is recorded in the projectile/empty-effect checkpoint; complete roster gameplay remains unverified. A debug-forced KO was still falling after its observation interval; this is not evidence of normal KO failure. Bundled native Ken loading failed at SFF under Wine without a specific cause, although its PNGs validate and Go now loads/renders him. No pack scripts, assets or user settings were changed; scratch is removed."
     },
     {
       "id": "debug-player-activation",
@@ -1164,6 +1164,12 @@
       "name": "Usable Options in artwork-only menu motifs",
       "completed": true,
       "validation": "The HD motif supplies title labels as background art and omits title-menu text fonts. Options now supplies a bounded, fitted built-in settings panel when those fonts are absent or too tall for the row spacing, retaining the motif background and heading. Enter changes a value or opens an action; explicit Back and Escape return to title. Existing menu/input/VS/two-round combat/rematch flow edits values, checks fontless rendering, live speed/audio configuration and inherited match life/time, then exits through Back. Connected match-flow passes with races; Linux rebuilt and actual HD Options was inspected changing difficulty 1 to 3, life 100 to 110, time 99 to 98, speed Slow2 to Slow1 and both volumes 20 to 15, opening Input Configuration and returning to title. Settings remain session-only; source pack and ignored YAML unchanged. Owned review overlays/captures are removed."
+    },
+    {
+      "id": "hd-projectile-empty-effects",
+      "name": "HD projectile syntax and empty effect lifecycle",
+      "completed": true,
+      "validation": "Parenthesized ProjHit/ProjContact/ProjGuarded IDs now use the existing legacy comparison/time grammar. Native contact observations confirm literal filtering, zero-ID/unfiltered Var(...) arguments and the legacy != rule. This admits Dhalsim: all 19 HD roster characters and 3,118 state programs load without errors. Native empty Explods survive creation and retire on their first end boundary; an effect-only clock now accepts zero-duration placeholders/tails without weakening fighter-loop diagnostics. Existing guard/contact/recovery and pause/effect/expiry/reset scenarios cover both changes. All five connected segments are checked with races; Linux rebuilt. A full-life Ryu/Dhalsim AI match completes two natural-KO rounds and a final 0-2 result at tick7497; a rendered Watch fight runs past the formerly fatal effect. Dhalsim references palette1,22 although its SFF has neither1,21 nor1,22; that diagnostic remains a content finding. Complete roster gameplay/native fidelity remain unverified. Pack/YAML untouched; owned scratch removed."
     }
   ]
 }

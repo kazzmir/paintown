@@ -316,6 +316,17 @@ func (p *Parser) parsePrimary() (Expression, error) {
 				return nil, p.errorf("expected ')' after %s arguments", tok.lit)
 			}
 			p.advance()
+			if (name == "projhit" || name == "projcontact" || name == "projguarded") && len(args) == 1 && p.peek().typ == tokOperator {
+				// Native also accepts parenthesized projectile IDs, retaining
+				// the legacy boolean/time comparison (including its != rule).
+				// This is not an evaluated ID expression: Var(...) selects the
+				// unfiltered zero-ID query, as observed in the beta.
+				id := 0
+				if literal, ok := args[0].(*Number); ok && literal.Value >= 0 && literal.Value <= 2147483647 {
+					id = int(literal.Value)
+				}
+				return p.legacy(name + strconv.Itoa(id))
+			}
 			expr = &Call{Name: tok.lit, Arguments: args}
 		}
 		if redirectName(name) && p.peek().typ == tokComma {

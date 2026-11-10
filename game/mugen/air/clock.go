@@ -45,7 +45,7 @@ func (p *Player) Reset(element int) {
 	p.loopTime = -1
 	if total >= 0 {
 		p.loopTime = total - p.starts[p.loopStart()]
-		if p.loopTime <= 0 {
+		if p.loopTime < 0 || p.loopTime == 0 && !p.emptyEffectLoop {
 			p.Error = fmt.Errorf("AIR action %d: loop has no positive-duration element", p.Action.ID)
 			return
 		}
@@ -95,11 +95,24 @@ func (p *Player) skipZero() {
 			p.boundary = true
 		}
 	}
+	if p.emptyEffectLoop && p.loopTime == 0 {
+		// Native empty effects reach the end boundary without trying to
+		// traverse an endless zero-time cycle. Keep the last placeholder;
+		// automatic removal observes AnimTime == 0 on the next update.
+		p.CurrentIdx = len(p.Action.Elements) - 1
+		p.time = p.total
+		p.boundary = false
+		return
+	}
 	p.Error = fmt.Errorf("AIR action %d: zero-duration cycle", p.Action.ID)
 }
 
 func (p *Player) advance() {
 	if p.Error != nil || p.CurrentElement() == nil {
+		return
+	}
+	if p.emptyEffectLoop && p.loopTime == 0 && p.time >= p.total {
+		p.Elapsed++
 		return
 	}
 	if p.boundary {
@@ -151,9 +164,12 @@ func (p *Player) ElemNo(offset int) (int, bool) {
 	}
 	t := p.time + int64(offset)
 	loop := p.loopStart()
+	if p.loopTime == 0 && t >= p.total {
+		return 0, false
+	}
 	// Once the current display lies in a finite looping portion, historical
 	// queries assume that portion extends indefinitely into the past.
-	if p.total >= 0 && (t >= p.total || (p.CurrentIdx >= loop && t < p.starts[loop])) {
+	if p.total >= 0 && p.loopTime > 0 && (t >= p.total || (p.CurrentIdx >= loop && t < p.starts[loop])) {
 		start := p.starts[loop]
 		t = start + ((t-start)%p.loopTime+p.loopTime)%p.loopTime
 	}

@@ -93,7 +93,7 @@ func (c *Character) CreateExplod(p engine.ExplodParameters) error {
 		c.EvaluationWarning(fmt.Sprintf("Explod action %d is unavailable", p.Action))
 		return nil
 	}
-	clock := air.NewPlayer(source.Animations.Actions[p.Action])
+	clock := air.NewEffectPlayer(source.Animations.Actions[p.Action])
 	if clock.Error != nil {
 		return clock.Error
 	}
