@@ -303,26 +303,36 @@ func (s *ContinueScreenState) Draw(screen *ebiten.Image) {
 	} else {
 		yes = "yes.active"
 	}
-	s.engine.modeLabel(screen, "Continue Screen", yes, "YES", int(pos[0]), int(pos[1]), fonts)
-	s.engine.modeLabel(screen, "Continue Screen", no, "NO", int(pos[0]), int(pos[1]), fonts)
+	s.engine.modeLabel(screen, "Continue Screen", yes, s.engine.themeText("Continue Screen", yes+".text", s.engine.themeText("Continue Screen", "yes.text", "YES")), int(pos[0]), int(pos[1]), fonts)
+	s.engine.modeLabel(screen, "Continue Screen", no, s.engine.themeText("Continue Screen", no+".text", s.engine.themeText("Continue Screen", "no.text", "NO")), int(pos[0]), int(pos[1]), fonts)
 }
 
 type GameOverScreenState struct {
 	engine       *Engine
 	ticks, score int
 	survival     bool
+	fight        *FightState
+	transition   screenTransition
 }
 
 func NewGameOverScreenState(e *Engine) *GameOverScreenState { return &GameOverScreenState{engine: e} }
 func (s *GameOverScreenState) Update() (State, error) {
 	s.ticks++
+	if s.survival && s.engine.themeNumber("Survival Results Screen", "enabled", 1) == 0 {
+		return NewTitleState(s.engine), nil
+	}
 	if !s.survival && s.engine.themeNumber("Game Over Screen", "enabled", 0) == 0 {
 		return NewTitleState(s.engine), nil
 	}
 	if !s.survival && s.ticks == 1 && s.engine.themeText("Game Over Screen", "storyboard", "") != "" {
 		return s.engine.configuredStory("Game Over Screen", NewTitleState(s.engine))
 	}
-	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape) || s.ticks >= s.engine.themeNumber("Survival Results Screen", "show.time", 300) {
+	section := "Game Over Screen"
+	if s.survival {
+		section = "Survival Results Screen"
+	}
+	dismiss := input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape)
+	if s.transition.update(s.ticks, s.engine.themeNumber(section, "show.time", 300), s.engine.themeNumber(section, "fadeout.time", 0), dismiss) {
 		return NewTitleState(s.engine), nil
 	}
 	return s, nil
@@ -331,8 +341,14 @@ func (s *GameOverScreenState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	text := "Game Over"
 	if s.survival {
+		if s.fight != nil {
+			s.fight.Draw(screen)
+		}
 		text = strings.ReplaceAll(s.engine.themeText("Survival Results Screen", "winstext.text", "Rounds survived: %i"), "%i", fmt.Sprint(s.score))
-		s.engine.modeLabel(screen, "Survival Results Screen", "winstext", text, 0, 0, s.engine.motif.Fonts)
+		if s.engine.resultTextVisible("Survival Results Screen", "winstext", s.ticks) {
+			s.engine.modeLabel(screen, "Survival Results Screen", "winstext", text, 0, 0, s.engine.motif.Fonts)
+		}
+		s.transition.draw(screen, s.ticks, s.engine.themeNumber("Survival Results Screen", "fadein.time", 0), s.engine.themeNumber("Survival Results Screen", "fadeout.time", 0))
 		return
 	}
 	s.engine.modeLabel(screen, "Continue Screen", "continue", text, screen.Bounds().Dx()/2, screen.Bounds().Dy()/2, s.engine.motif.Fonts)
@@ -347,15 +363,17 @@ func (e *Engine) configuredStory(section string, next State) (State, error) {
 }
 
 type completionScreen struct {
-	engine *Engine
-	fight  *FightState
-	ticks  int
-	next   State
+	engine     *Engine
+	fight      *FightState
+	ticks      int
+	next       State
+	transition screenTransition
 }
 
 func (s *completionScreen) Update() (State, error) {
 	s.ticks++
-	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape) || s.ticks >= s.engine.themeNumber("Win Screen", "pose.time", 300) {
+	dismiss := input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape)
+	if s.transition.update(s.ticks, s.engine.themeNumber("Win Screen", "pose.time", 300), s.engine.themeNumber("Win Screen", "fadeout.time", 0), dismiss) {
 		return s.next, nil
 	}
 	return s, nil
@@ -366,5 +384,13 @@ func (s *completionScreen) Draw(screen *ebiten.Image) {
 	} else {
 		screen.Fill(color.Black)
 	}
-	s.engine.modeLabel(screen, "Win Screen", "wintext", s.engine.themeText("Win Screen", "wintext.text", "Congratulations!"), 0, 0, s.engine.motif.Fonts)
+	if s.engine.resultTextVisible("Win Screen", "wintext", s.ticks) {
+		s.engine.modeLabel(screen, "Win Screen", "wintext", s.engine.themeText("Win Screen", "wintext.text", "Congratulations!"), 0, 0, s.engine.motif.Fonts)
+	}
+	s.transition.draw(screen, s.ticks, s.engine.themeNumber("Win Screen", "fadein.time", 0), s.engine.themeNumber("Win Screen", "fadeout.time", 0))
+}
+
+func (e *Engine) resultTextVisible(section, key string, tick int) bool {
+	duration := e.themeNumber(section, key+".displaytime", -1)
+	return duration < 0 || tick < duration
 }

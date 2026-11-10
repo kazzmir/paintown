@@ -2,6 +2,8 @@
 
 ## Continuing batch (user 2026-11-10): ten checkpoints
 
+- Configured campaign and survival result screens: implemented; acceptance pending.
+
 - HUD font color and optional tuple components: implemented; acceptance pending.
 
 - Menu selection and versus font color consumers: implemented; acceptance pending.

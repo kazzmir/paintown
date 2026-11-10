@@ -427,7 +427,7 @@ func (h *FightHUD) Draw(screen *ebiten.Image) {
 		}
 		h.drawMessage(screen, message, text, pos[0], pos[1])
 	}
-	if m.Phase == match.Finished && h.engine != nil {
+	if m.Phase == match.Finished && m.Request.Campaign == 0 && h.engine != nil {
 		info := h.engine.motif.SelectInfo.TitleFont
 		if info[0] > 0 && info[0] < len(h.engine.motif.Fonts) && h.engine.motif.Fonts[info[0]] != nil {
 			h.engine.motif.Fonts[info[0]].Draw(screen, "Start: rematch   Esc: menu", screen.Bounds().Dx()/2, screen.Bounds().Dy()-12, info[1], font.AlignCenter)

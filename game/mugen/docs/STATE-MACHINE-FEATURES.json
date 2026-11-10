@@ -1212,6 +1212,12 @@
       "name": "HUD font color and optional tuple components",
       "completed": false,
       "validation": "Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected end-state acceptance pending for the ten-checkpoint batch."
+    },
+    {
+      "id": "campaign-result-policy",
+      "name": "Configured campaign and survival result screens",
+      "completed": false,
+      "validation": "Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }

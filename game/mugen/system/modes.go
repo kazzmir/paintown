@@ -156,7 +156,7 @@ func (r *modeRun) result(f *FightState) (State, error) {
 	}
 	if f.match.Winner != 0 {
 		if r.survival {
-			return &GameOverScreenState{engine: r.engine, score: r.index, survival: true}, nil
+			return &GameOverScreenState{engine: r.engine, score: r.index, survival: true, fight: f}, nil
 		}
 		if r.engine.themeNumber("Continue Screen", "enabled", 1) == 0 {
 			return NewGameOverScreenState(r.engine), nil

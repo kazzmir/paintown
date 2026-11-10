@@ -284,8 +284,23 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if !ok || !result.survival || result.score != 1 {
 		t.Fatalf("survival loss did not show the actual streak: %T", e.currentState)
 	}
+	if result.fight != f {
+		t.Fatal("survival results lost the completed fight presentation")
+	}
 	e.Draw(canvas)
 	step(ebiten.KeyEnter)
+	if e.currentState != result || !result.transition.leaving {
+		t.Fatal("survival result dismissal bypassed its fade")
+	}
+	for n := 0; n < 100; n++ {
+		if _, ok := e.currentState.(*TitleState); ok {
+			break
+		}
+		step()
+	}
+	if _, ok := e.currentState.(*TitleState); !ok {
+		t.Fatal("survival result fade did not finish")
+	}
 	step()
 	// The same campaign path now carries a Turns reserve's original roster
 	// position. Losing the first fighter must not respawn him next opponent.
