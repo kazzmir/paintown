@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/font"
@@ -85,6 +86,7 @@ type OptionsState struct {
 	ticks          int
 	cursorAlpha    float64
 	cursorAlphaMod float64
+	cursorImage    *ebiten.Image
 }
 
 func NewOptionsState(engine *Engine) *OptionsState {
@@ -229,13 +231,26 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	fi := s.engine.motif.TitleInfo.ItemFont
 	fiActive := s.engine.motif.TitleInfo.ItemActiveFont
 	spacing := s.engine.motif.TitleInfo.MenuSpacing[1]
+	width, height := s.engine.logicalWidth, s.engine.logicalHeight
+	sx, sy := float64(width)/320, float64(height)/240
 	if spacing == 0 {
-		spacing = 15
+		spacing = int(15 * sy)
 	}
 
 	// Center the options list
-	startX := 160.0
-	startY := 60.0
+	startX := float64(width) / 2
+	startY := float64(height) / 4
+	title := s.engine.themeValues("Option Info", "title.font", float64(fi.Index), float64(fi.Bank), 0)
+	position := s.engine.themeValues("Option Info", "title.offset", startX, 36*sy)
+	if index := int(title[0]); index >= 1 && index < len(s.engine.motif.Fonts) && s.engine.motif.Fonts[index] != nil {
+		align := font.AlignCenter
+		if title[2] > 0 {
+			align = font.AlignLeft
+		} else if title[2] < 0 {
+			align = font.AlignRight
+		}
+		s.engine.motif.Fonts[index].Draw(screen, s.engine.themeText("Option Info", "title.text", "OPTIONS"), int(position[0]), int(position[1]), int(title[1]), align)
+	}
 
 	for i, item := range s.items {
 		fontInfo := fi
@@ -251,28 +266,32 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 		}
 
 		if f != nil {
-			label := item.label
-			valueStr := item.displayValue()
+			// Title bitmap banks can contain uppercase glyphs only.
+			label := strings.ToUpper(item.label)
+			valueStr := strings.ToUpper(item.displayValue())
 
 			// Cursor highlight: draw a faint box behind the active row
 			if i == s.cursor && s.engine.motif.TitleInfo.BoxCursorVisible {
-				cursorImg := ebiten.NewImage(240, int(spacing)+2)
-				cursorImg.Fill(color.RGBA{R: 128, G: 200, B: 255, A: 255})
+				if s.cursorImage == nil {
+					s.cursorImage = ebiten.NewImage(1, 1)
+					s.cursorImage.Fill(color.RGBA{R: 128, G: 200, B: 255, A: 255})
+				}
 				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Translate(startX-120, yPos-spacing)
+				op.GeoM.Scale(240*sx, spacing+2*sy)
+				op.GeoM.Translate(startX-120*sx, yPos-spacing)
 				op.Blend = ebiten.BlendSourceOver
 				op.ColorScale.ScaleAlpha(float32(s.cursorAlpha))
-				screen.DrawImage(cursorImg, op)
+				screen.DrawImage(s.cursorImage, op)
 			}
 
 			// Draw "Label   < Value >"
-			f.Draw(screen, label, int(startX)-110, int(yPos), fontInfo.Bank, font.AlignLeft)
+			f.Draw(screen, label, int(startX-110*sx), int(yPos), fontInfo.Bank, font.AlignLeft)
 			// Draw left arrow, value, right arrow in the right column
 			valDisplay := "< " + valueStr + " >"
 			if item.action != nil {
-				valDisplay = "Enter"
+				valDisplay = "ENTER"
 			}
-			f.Draw(screen, valDisplay, int(startX)+110, int(yPos), fontInfo.Bank, font.AlignRight)
+			f.Draw(screen, valDisplay, int(startX+110*sx), int(yPos), fontInfo.Bank, font.AlignRight)
 		}
 	}
 
@@ -280,7 +299,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if fi.Index >= 1 && fi.Index < len(s.engine.motif.Fonts) {
 		f := s.engine.motif.Fonts[fi.Index]
 		if f != nil {
-			f.Draw(screen, "Left/Right to change  F1 input  Esc exit", 160, 220, fi.Bank, font.AlignCenter)
+			f.Draw(screen, "LEFT/RIGHT CHANGE   F1 INPUT   ESC EXIT", int(startX), int(220*sy), fi.Bank, font.AlignCenter)
 		}
 	}
 

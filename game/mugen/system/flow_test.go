@@ -358,6 +358,31 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if e.currentState != options {
 		t.Fatal("input editor did not return to the existing Options state")
 	}
+	// HD motif options use their authored space, including the title font and
+	// uppercase-only menu bank, rather than a 320px fixed left-hand anchor.
+	optionCanvas := ebiten.NewImage(e.logicalWidth, e.logicalHeight)
+	e.Draw(optionCanvas)
+	optionPixels := make([]byte, e.logicalWidth*e.logicalHeight*4)
+	optionCanvas.ReadPixels(optionPixels)
+	items := options.items
+	options.items = nil
+	e.Draw(optionCanvas)
+	optionBase := make([]byte, len(optionPixels))
+	optionCanvas.ReadPixels(optionBase)
+	options.items = items
+	optionCanvas.Deallocate()
+	leftOption, rightOption := e.logicalWidth, -1
+	for at := 0; at < len(optionPixels); at += 4 {
+		if !bytes.Equal(optionPixels[at:at+4], optionBase[at:at+4]) {
+			x := (at / 4) % e.logicalWidth
+			leftOption = min(leftOption, x)
+			rightOption = max(rightOption, x)
+		}
+	}
+	centerOption := (leftOption + rightOption) / 2
+	if rightOption < leftOption || centerOption < e.logicalWidth*4/10 || centerOption > e.logicalWidth*6/10 {
+		t.Fatal("Options rows did not follow motif width", leftOption, rightOption)
+	}
 	for index, item := range options.items {
 		if item.label == "Game Speed" {
 			options.cursor = index
