@@ -76,42 +76,43 @@ const (
 )
 
 type Match struct {
-	Request                 Request
-	Options                 Options
-	Players                 [2]*character.Player
-	Teams                   [2]Team
-	Stage                   *stage.Stage
-	Fight                   *fight.Definition
-	Phase                   Phase
-	Announcements           AnnouncementTimes
-	SimulationSkipped       bool // KO skips and the reset initialization tick
-	PhaseTime, Tick, Round  int
-	Wins                    [2]int
-	Draws                   int // draw rounds, including draws converted to wins
-	Winner                  int // 0/1, or -1 for a draw
-	TimeOver                bool
-	TimeLeft                int     // counts; -1 means unlimited
-	CameraX, CameraY        float64 // common game-space units
-	SoundQueue              *sound.Queue
-	Effects                 *effect.Scene
-	Viewport                *coord.Viewport
-	Timeline                *engine.Timeline
-	World                   *character.World
-	commonEffects           effect.Source
-	timeTicks               int
-	matchDone               bool
-	resultCommitted         bool
-	roundEndDeadline        int
-	cameraGoalX             float64
-	cameraLeft, cameraRight float32
-	introClearTicks         int
-	winPoseStarted          bool
-	initializingRound       bool
-	pendingRoundOver        bool
-	slowdown                engine.RoundSlowdown
-	aiBrains                map[int32]*aiBrain
-	elapsedFightTicks       int
-	startingLife            [2]float32 // mean fraction before this round's CNS
+	Request                  Request
+	Options                  Options
+	Players                  [2]*character.Player
+	Teams                    [2]Team
+	Stage                    *stage.Stage
+	Fight                    *fight.Definition
+	Phase                    Phase
+	Announcements            AnnouncementTimes
+	SimulationSkipped        bool // KO skips and the reset initialization tick
+	PhaseTime, Tick, Round   int
+	Wins                     [2]int
+	Draws                    int // draw rounds, including draws converted to wins
+	Winner                   int // 0/1, or -1 for a draw
+	TimeOver                 bool
+	TimeLeft                 int     // counts; -1 means unlimited
+	CameraX, CameraY         float64 // common game-space units
+	SoundQueue               *sound.Queue
+	Effects                  *effect.Scene
+	Viewport                 *coord.Viewport
+	Timeline                 *engine.Timeline
+	World                    *character.World
+	commonEffects            effect.Source
+	timeTicks                int
+	matchDone                bool
+	resultCommitted          bool
+	roundEndDeadline         int
+	cameraGoalX              float64
+	cameraLeft, cameraRight  float32
+	introClearTicks          int
+	winPoseStarted           bool
+	initializingRound        bool
+	pendingRoundOver         bool
+	slowdown                 engine.RoundSlowdown
+	aiBrains                 map[int32]*aiBrain
+	elapsedFightTicks        int
+	startingLife             [2]float32 // mean fraction before this round's CNS
+	roundRestart, restarting *roundRestartSnapshot
 }
 
 func New(request Request, options Options) (*Match, error) {
@@ -331,6 +332,16 @@ func (m *Match) resetRound() error {
 			c.RoundsExisted = carry.RoundsExisted + 1
 			copyPersistentVariables(c, carry.IntVars, carry.FloatVars)
 		}
+		if restart := m.restarting; restart != nil {
+			member := m.Teams[side].Active
+			if slot > 1 {
+				member = 1
+			}
+			carry := restart.members[side][member]
+			c.SetLife(carry.Life)
+			c.SetPower(carry.Power)
+			c.RoundsExisted, c.IntVars, c.FloatVars = carry.RoundsExisted, carry.IntVars, carry.FloatVars
+		}
 		x, y, z, facing := s.PlayerInfo.P1StartX, s.PlayerInfo.P1StartY, s.PlayerInfo.P1StartZ, s.PlayerInfo.P1Facing
 		if side == 1 {
 			x, y, z, facing = s.PlayerInfo.P2StartX, s.PlayerInfo.P2StartY, s.PlayerInfo.P2StartZ, s.PlayerInfo.P2Facing
@@ -369,6 +380,7 @@ func (m *Match) resetRound() error {
 	if err := m.World.ResetRoots(m.activeRoots()...); err != nil {
 		return err
 	}
+	m.captureRoundRestart()
 	for _, p := range m.Actors() {
 		state := 5900
 		if !p.Character.IsAlive() {

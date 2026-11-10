@@ -87,6 +87,13 @@ func (s *FightState) updateDebugHotkeys() error {
 	if im.KeyJustPressed(ebiten.KeyF5) {
 		s.match.ForceTimeOver()
 	}
+	if im.KeyJustPressed(ebiten.KeyF4) && !shift {
+		if err := s.match.RestartRound(); err != nil {
+			return err
+		}
+		s.hud = NewFightHUD(s.match, s.engine)
+		s.debugResetHandoff = true
+	}
 	return nil
 }
 

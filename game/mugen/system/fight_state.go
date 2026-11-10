@@ -38,6 +38,7 @@ type FightState struct {
 	debugFont                          *font.Font
 	userPaused, simulationHeld         bool
 	training                           *trainingControls
+	debugResetHandoff                  bool
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
@@ -116,12 +117,17 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 
 func (s *FightState) Update() (State, error) {
 	s.simulationHeld = false
+	s.debugResetHandoff = false
 	if s.renderError != nil {
 		return s, s.renderError
 	}
 	s.updateDebugSelection()
 	if err := s.updateDebugHotkeys(); err != nil {
 		return s, err
+	}
+	if s.debugResetHandoff {
+		s.simulationHeld = s.userPaused
+		return s, nil
 	}
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		if err := s.match.ClearSounds(); err != nil {
