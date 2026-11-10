@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"image/png"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -489,6 +490,24 @@ func debugRuntimeLifecycle(t *testing.T, e *Engine, keys *flowKeyboard, canvas *
 	e.Draw(canvas)
 	if f.renderError != nil || f.hud.renderError != nil {
 		t.Fatal("reloaded presentation retained retired resources", f.renderError, f.hud.renderError)
+	}
+	e.screenshotDir = t.TempDir()
+	press(ebiten.KeyF12)
+	e.Draw(canvas)
+	saved, err := os.Open(filepath.Join(e.screenshotDir, "mugen000000.png"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	size, err := png.DecodeConfig(saved)
+	saved.Close()
+	if err != nil || size.Width != 1280 || size.Height != 720 || e.capturePending {
+		t.Fatal("F12 missed the final composed frame", size, err)
+	}
+	// Subsequent draws do not consume the same capture request twice.
+	e.Draw(canvas)
+	entries, err := os.ReadDir(e.screenshotDir)
+	if err != nil || len(entries) != 1 {
+		t.Fatal("one screenshot press generated repeated output", len(entries), err)
 	}
 	press(ebiten.KeyEscape)
 	if _, ok := e.currentState.(*TitleState); !ok {

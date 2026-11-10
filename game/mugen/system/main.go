@@ -45,6 +45,8 @@ type Engine struct {
 	focus            func() bool
 	hideFightBars    bool
 	showCollisions   bool
+	capturePending   bool
+	screenshotDir    string
 }
 
 // Close stops streaming readers before removing this engine's expanded packs.
@@ -167,6 +169,7 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 			e.dataDir, e.cfg.Options.Motif, e.cfg.Config.GameSpeed, e.cfg.Config.DrawShadows)
 		ebitenutil.DebugPrint(screen, msg)
 	}
+	e.captureFrame(screen)
 }
 
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -187,6 +190,7 @@ func run() (runErr error) {
 	quickMode := flag.String("mode", "versus", "Direct --quick-match mode: versus, watch, training or coop")
 	partner3 := flag.String("p3", "", "Optional left-side simul partner for --quick-match")
 	partner4 := flag.String("p4", "", "Optional right-side simul partner for --quick-match")
+	screenshotDir := flag.String("screenshot-dir", "", "F12 PNG output directory (defaults to DATA_DIR/screenshots)")
 	quickStage := flag.String("stage", "", "Stage DEF for --quick-match (defaults to Debug.StartStage)")
 	matchSeed := flag.Int64("match-seed", 0, "Initial match RNG seed for reproducible runs (1..2147483646; zero uses the clock)")
 	flag.Parse()
@@ -231,6 +235,7 @@ func run() (runErr error) {
 	}
 
 	engine := &Engine{
+		screenshotDir:    *screenshotDir,
 		pendingMatchSeed: *matchSeed,
 		random:           engine.NewRandomStream(time.Now().Unix()),
 		cfg:              cfg,
