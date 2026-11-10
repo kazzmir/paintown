@@ -196,6 +196,21 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if got := color.RGBAModel.Convert(canvas.At(1, 0)); got != (color.RGBA{255, 255, 255, 255}) {
 		t.Fatal("font adjustment changed shared glyph pixels", got)
 	}
+	quoteFont := e.themeAttribute("Victory Screen", "winquote.font")
+	quoteOffset := e.themeAttribute("Victory Screen", "winquote.offset")
+	quoteWindow := e.themeAttribute("Victory Screen", "winquote.window")
+	savedQuoteFont, savedQuoteOffset, savedQuoteWindow, savedQuote := quoteFont.RawValue, quoteOffset.RawValue, quoteWindow.RawValue, win.quote
+	quoteFont.RawValue, quoteOffset.RawValue, quoteWindow.RawValue = "3,0,1", "2,1", "0,0,4,5"
+	win.quote = "AA AA AAAA"
+	canvas.Clear()
+	win.drawQuote(canvas)
+	if got := color.RGBAModel.Convert(canvas.At(2, 3)); got != (color.RGBA{255, 255, 255, 255}) {
+		t.Fatal("quote wrapping used clipped-away space instead of its inset anchor", got)
+	}
+	if got := color.RGBAModel.Convert(canvas.At(1, 3)); got != (color.RGBA{}) {
+		t.Fatal("wrapped quote shifted its authored anchor", got)
+	}
+	quoteFont.RawValue, quoteOffset.RawValue, quoteWindow.RawValue, win.quote = savedQuoteFont, savedQuoteOffset, savedQuoteWindow, savedQuote
 	fontSpec.RawValue, nameOffset.RawValue, e.motif.Fonts[3] = savedFontSpec, savedNameOffset, savedFont
 	step(ebiten.KeyEnter)
 	f = enterFight()

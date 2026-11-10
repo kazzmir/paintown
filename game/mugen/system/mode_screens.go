@@ -166,7 +166,23 @@ func (s *WinScreenState) drawQuote(screen *ebiten.Image) {
 	}
 	target := screen.SubImage(rect).(*ebiten.Image)
 	text := s.quote
-	if e.themeText("Victory Screen", "winquote.textwrap", "") != "" {
+	if strings.EqualFold(e.themeText("Victory Screen", "winquote.textwrap", ""), "w") {
+		// The quote anchor can sit well inside its clipping window (the HD
+		// motif starts at x200 in a window beginning at x38). Wrap against
+		// the remaining space in its alignment direction, not the full box.
+		anchor := int(e.themeValues("Victory Screen", "winquote.offset", 0, 0)[0]) + f.OffsetX
+		width := rect.Dx()
+		switch {
+		case spec[2] > 0:
+			width = rect.Max.X - max(rect.Min.X, anchor)
+		case spec[2] < 0:
+			width = min(rect.Max.X, anchor) - rect.Min.X
+		default:
+			width = 2 * min(anchor-rect.Min.X, rect.Max.X-anchor)
+		}
+		if width <= 0 {
+			return
+		}
 		var lines []string
 		for _, paragraph := range strings.Split(text, "\n") {
 			line := ""
@@ -175,7 +191,7 @@ func (s *WinScreenState) drawQuote(screen *ebiten.Image) {
 				if line != "" {
 					candidate = line + " " + word
 				}
-				if f.TextWidthForBank(candidate, bank) <= rect.Dx() {
+				if f.TextWidthForBank(candidate, bank) <= width {
 					line = candidate
 					continue
 				}
@@ -185,7 +201,7 @@ func (s *WinScreenState) drawQuote(screen *ebiten.Image) {
 				}
 				for _, r := range word {
 					candidate = line + string(r)
-					if line != "" && f.TextWidthForBank(candidate, bank) > rect.Dx() {
+					if line != "" && f.TextWidthForBank(candidate, bank) > width {
 						lines = append(lines, line)
 						line = ""
 					}

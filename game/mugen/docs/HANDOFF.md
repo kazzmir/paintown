@@ -2,6 +2,8 @@
 
 ## Continuing batch (user 2026-11-10): ten checkpoints
 
+- Victory quote wrapping within its authored anchor: implemented; acceptance pending.
+
 - Authored result and campaign font colors: implemented; acceptance pending.
 
 - Victory portrait window in motif coordinates: implemented; acceptance pending.
