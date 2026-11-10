@@ -74,7 +74,7 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	defer canvas.Deallocate()
 	enterFight := func() *FightState {
 		t.Helper()
-		for n := 0; n < 64; n++ {
+		for n := 0; n < 400; n++ {
 			if f, ok := e.currentState.(*FightState); ok {
 				return f
 			}
@@ -159,6 +159,12 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if quote := win.victoryQuote(); quote != "十年早いんだぞ" {
 		t.Fatal("authored localized VictoryQuote did not reach presentation", quote)
 	}
+	win.ticks = 0
+	e.Draw(canvas)
+	if got := color.RGBAModel.Convert(canvas.At(0, 0)); got != (color.RGBA{0, 0, 0, 255}) {
+		t.Fatal("victory fade-in was omitted", got)
+	}
+	win.ticks = e.themeNumber("Victory Screen", "fadein.time", 0)
 	e.Draw(canvas)
 	if got := color.RGBAModel.Convert(canvas.At(0, 0)).(color.RGBA); got != (color.RGBA{17, 34, 51, 255}) {
 		t.Fatal("victory BGDef clear color did not reach the screen", got)
@@ -213,6 +219,9 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	quoteFont.RawValue, quoteOffset.RawValue, quoteWindow.RawValue, win.quote = savedQuoteFont, savedQuoteOffset, savedQuoteWindow, savedQuote
 	fontSpec.RawValue, nameOffset.RawValue, e.motif.Fonts[3] = savedFontSpec, savedNameOffset, savedFont
 	step(ebiten.KeyEnter)
+	if e.currentState != win || !win.transition.leaving {
+		t.Fatal("victory dismissal bypassed its authored fade-out")
+	}
 	f = enterFight()
 	if f.match.Request.MatchNo != 2 || f.match.World.MatchNo != 2 || r.index != 1 {
 		t.Fatal("arcade did not advance MatchNo/opponent schedule")

@@ -83,12 +83,13 @@ func (e *Engine) modeLabel(screen *ebiten.Image, section, key, text string, x, y
 }
 
 type WinScreenState struct {
-	engine   *Engine
-	winner   *character.Player
-	quote    string
-	quoteSet bool
-	ticks    int
-	next     func() (State, error)
+	engine     *Engine
+	winner     *character.Player
+	quote      string
+	quoteSet   bool
+	ticks      int
+	next       func() (State, error)
+	transition screenTransition
 }
 
 func NewWinScreenState(e *Engine) *WinScreenState { return &WinScreenState{engine: e} }
@@ -97,7 +98,8 @@ func (s *WinScreenState) Update() (State, error) {
 	if s.engine.motif.VictoryBG != nil {
 		s.engine.motif.VictoryBG.Update()
 	}
-	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || s.ticks >= s.engine.themeNumber("Victory Screen", "time", 300) {
+	dismiss := input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape)
+	if s.transition.update(s.ticks, s.engine.themeNumber("Victory Screen", "time", 300), s.engine.themeNumber("Victory Screen", "fadeout.time", 0), dismiss) {
 		if s.next != nil {
 			return s.next()
 		}
@@ -148,6 +150,7 @@ func (s *WinScreenState) Draw(screen *ebiten.Image) {
 	if bg := s.engine.motif.VictoryBG; bg != nil {
 		bg.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
 	}
+	s.transition.draw(screen, s.ticks, s.engine.themeNumber("Victory Screen", "fadein.time", 0), s.engine.themeNumber("Victory Screen", "fadeout.time", 0))
 }
 
 func (s *WinScreenState) drawQuote(screen *ebiten.Image) {
