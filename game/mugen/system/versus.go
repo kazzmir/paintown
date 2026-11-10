@@ -136,6 +136,6 @@ func (s *VersusState) drawSide(screen *ebiten.Image, side int, spec motif.Portra
 		align = font.AlignRight
 	}
 	for index, name := range s.names[side] {
-		f.Draw(screen, name, position[0]+index*spacing[0], position[1]+index*spacing[1], info[1], align)
+		s.engine.drawMotifFont(screen, f, name, position[0]+index*spacing[0], position[1]+index*spacing[1], info[1], align, "VS Screen", fmt.Sprintf("p%d.name.font", side+1))
 	}
 }

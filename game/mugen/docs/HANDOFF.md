@@ -2,6 +2,8 @@
 
 ## Continuing batch (user 2026-11-10): ten checkpoints
 
+- Menu selection and versus font color consumers: implemented; acceptance pending.
+
 - Victory fades through campaign handoff: implemented; acceptance pending.
 
 - Victory quote wrapping within its authored anchor: implemented; acceptance pending.

@@ -217,6 +217,21 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		t.Fatal("wrapped quote shifted its authored anchor", got)
 	}
 	quoteFont.RawValue, quoteOffset.RawValue, quoteWindow.RawValue, win.quote = savedQuoteFont, savedQuoteOffset, savedQuoteWindow, savedQuote
+	savedTitleInfo, savedTitleBG := e.motif.TitleInfo, e.motif.TitleBG
+	activeSpec := e.themeAttribute("Title Info", "menu.item.active.font")
+	savedActiveSpec := activeSpec.RawValue
+	e.motif.TitleBG = nil
+	e.motif.TitleInfo.ItemNames = map[string]string{"arcade": "A"}
+	e.motif.TitleInfo.MenuPos = [2]float64{0, 1}
+	e.motif.TitleInfo.VisibleMargins = [2]int{}
+	e.motif.TitleInfo.BoxCursorVisible = false
+	e.motif.TitleInfo.ItemActiveFont.Index, e.motif.TitleInfo.ItemActiveFont.Align = 3, 1
+	activeSpec.RawValue = "3,0,1,128,0,256"
+	NewTitleState(e).Draw(canvas)
+	if got := color.RGBAModel.Convert(canvas.At(0, 0)); got != (color.RGBA{128, 0, 255, 255}) {
+		t.Fatal("title menu discarded the font tuple color channels", got)
+	}
+	e.motif.TitleInfo, e.motif.TitleBG, activeSpec.RawValue = savedTitleInfo, savedTitleBG, savedActiveSpec
 	fontSpec.RawValue, nameOffset.RawValue, e.motif.Fonts[3] = savedFontSpec, savedNameOffset, savedFont
 	step(ebiten.KeyEnter)
 	if e.currentState != win || !win.transition.leaving {

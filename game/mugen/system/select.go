@@ -418,11 +418,11 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 	// Big portrait panels — P1 left, P2 right
 	s.drawFacePanel(screen, s.p1CursorX, s.p1CursorY,
 		si.P1FaceSpr, si.P1FaceOffset, si.P1FaceScale, si.P1FaceFacing, si.P1FaceWindow,
-		si.P1NameOffset, si.P1NameFont)
+		si.P1NameOffset, si.P1NameFont, "p1.name.font")
 	if s.showP2 {
 		s.drawFacePanel(screen, s.p2CursorX, s.p2CursorY,
 			si.P2FaceSpr, si.P2FaceOffset, si.P2FaceScale, si.P2FaceFacing, si.P2FaceWindow,
-			si.P2NameOffset, si.P2NameFont)
+			si.P2NameOffset, si.P2NameFont, "p2.name.font")
 	}
 
 	// Mode title (e.g. "Arcade Mode")
@@ -438,7 +438,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 				case -1:
 					align = font.AlignRight
 				}
-				f.Draw(screen, s.title, si.TitleOffset[0], si.TitleOffset[1], tFont[1], align)
+				s.engine.drawMotifFont(screen, f, s.title, si.TitleOffset[0], si.TitleOffset[1], tFont[1], align, "Select Info", "title.font")
 			}
 		}
 	}
@@ -450,7 +450,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 	if s.choosingStage {
 		info := si.TitleFont
 		if info[0] > 0 && info[0] < len(s.engine.motif.Fonts) && s.engine.motif.Fonts[info[0]] != nil {
-			s.engine.motif.Fonts[info[0]].Draw(screen, "Stage: "+filepath.Base(s.stages[s.stageIndex]), s.engine.logicalWidth/2, s.engine.logicalHeight-12, info[1], font.AlignCenter)
+			s.engine.drawMotifFont(screen, s.engine.motif.Fonts[info[0]], "Stage: "+filepath.Base(s.stages[s.stageIndex]), s.engine.logicalWidth/2, s.engine.logicalHeight-12, info[1], font.AlignCenter, "Select Info", "title.font")
 		}
 	}
 }
@@ -460,7 +460,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 // nameOff and nameFont are the position+font for the character name.
 func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
 	pair [2]int, faceOff [2]float64, faceScale [2]float64, facing int, window *[4]int,
-	nameOff [2]int, nameFont [3]int) {
+	nameOff [2]int, nameFont [3]int, fontKey string) {
 
 	ch := s.charAt(col, row)
 	if ch == nil {
@@ -480,7 +480,7 @@ func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
 			case -1:
 				align = font.AlignRight
 			}
-			f.Draw(screen, ch.Name, nameOff[0], nameOff[1], nameFont[1], align)
+			s.engine.drawMotifFont(screen, f, ch.Name, nameOff[0], nameOff[1], nameFont[1], align, "Select Info", fontKey)
 		}
 	}
 }

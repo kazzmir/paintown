@@ -257,7 +257,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 		} else if title[2] < 0 {
 			align = font.AlignRight
 		}
-		s.engine.motif.Fonts[index].Draw(screen, s.engine.themeText("Option Info", "title.text", "OPTIONS"), int(position[0]), int(position[1]), int(title[1]), align)
+		s.engine.drawMotifFont(screen, s.engine.motif.Fonts[index], s.engine.themeText("Option Info", "title.text", "OPTIONS"), int(position[0]), int(position[1]), int(title[1]), align, "Option Info", "title.font")
 	}
 
 	if fallbackRows {
@@ -268,8 +268,10 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 			break
 		}
 		fontInfo := fi
+		fontKey := "menu.item.font"
 		if i == s.cursor {
 			fontInfo = fiActive
+			fontKey = "menu.item.active.font"
 		}
 
 		yPos := startY + float64(i)*spacing
@@ -305,8 +307,8 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 			if item.shortLabel != "" && float64(f.TextWidthForBank(label, fontInfo.Bank)+f.TextWidthForBank(valDisplay, fontInfo.Bank)) > 210*sx {
 				label = strings.ToUpper(item.shortLabel)
 			}
-			f.Draw(screen, label, int(startX-110*sx), int(yPos), fontInfo.Bank, font.AlignLeft)
-			f.Draw(screen, valDisplay, int(startX+110*sx), int(yPos), fontInfo.Bank, font.AlignRight)
+			s.engine.drawMotifFont(screen, f, label, int(startX-110*sx), int(yPos), fontInfo.Bank, font.AlignLeft, "Title Info", fontKey)
+			s.engine.drawMotifFont(screen, f, valDisplay, int(startX+110*sx), int(yPos), fontInfo.Bank, font.AlignRight, "Title Info", fontKey)
 		}
 	}
 
@@ -318,7 +320,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 			if float64(f.TextWidthForBank(hint, fi.Bank)) > float64(width)-16*sx {
 				hint = "F1 INPUT   ESC EXIT"
 			}
-			f.Draw(screen, hint, int(startX), int(220*sy), fi.Bank, font.AlignCenter)
+			s.engine.drawMotifFont(screen, f, hint, int(startX), int(220*sy), fi.Bank, font.AlignCenter, "Title Info", "menu.item.font")
 		}
 	}
 

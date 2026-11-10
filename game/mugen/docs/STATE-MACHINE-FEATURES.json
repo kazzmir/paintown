@@ -1200,6 +1200,12 @@
       "name": "Victory fades through campaign handoff",
       "completed": false,
       "validation": "Victory screens consume authored fade-in/out times. Timed holds include fade-out; early Enter/Escape dismissal runs the fade while the background continues, then hands off once. The connected Arcade episode observes initial black, the authored canvas and deferred next-match entry. Connected end-state acceptance pending for the ten-checkpoint batch."
+    },
+    {
+      "id": "menu-font-rgb",
+      "name": "Menu selection and versus font color consumers",
+      "completed": false,
+      "validation": "Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected end-state acceptance pending for the ten-checkpoint batch."
     }
   ]
 }

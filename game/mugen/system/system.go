@@ -205,8 +205,10 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 		name := s.engine.motif.TitleInfo.ItemNames[id]
 
 		fontInfo := s.engine.motif.TitleInfo.ItemFont
+		fontKey := "menu.item.font"
 		if idx == s.selectIndex {
 			fontInfo = s.engine.motif.TitleInfo.ItemActiveFont
+			fontKey = "menu.item.active.font"
 		}
 
 		if fontInfo.Index >= 1 && fontInfo.Index < len(s.engine.motif.Fonts) {
@@ -220,7 +222,7 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 				}
 
 				// Y is now the baseline — draw directly at the motif-specified position
-				f.Draw(menuTarget, name, int(menuX), int(menuY+float64(idx-s.topIndex)*spacingY), fontInfo.Bank, align)
+				s.engine.drawMotifFont(menuTarget, f, name, int(menuX), int(menuY+float64(idx-s.topIndex)*spacingY), fontInfo.Bank, align, "Title Info", fontKey)
 			}
 		}
 	}

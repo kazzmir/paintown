@@ -139,7 +139,7 @@ func (s *SelectState) drawTeamSelection(screen *ebiten.Image) {
 			if side == 1 && (!s.showP2 || s.title == "Team Co-op") {
 				title = "OPPONENT TEAM"
 			}
-			f.Draw(screen, title, x, h/3, info[1], font.AlignCenter)
+			s.engine.drawMotifFont(screen, f, title, x, h/3, info[1], font.AlignCenter, "Select Info", "title.font")
 			for index, name := range []string{"Single", "Simul", "Turns"} {
 				text := name
 				if index == s.teamCursor[side] {
@@ -151,14 +151,14 @@ func (s *SelectState) drawTeamSelection(screen *ebiten.Image) {
 				if s.teamReady[side] && index == s.teamCursor[side] {
 					text += " OK"
 				}
-				f.Draw(screen, text, x, h/3+(index+1)*(f.Height+4), info[1], font.AlignCenter)
+				s.engine.drawMotifFont(screen, f, text, x, h/3+(index+1)*(f.Height+4), info[1], font.AlignCenter, "Select Info", "title.font")
 			}
 		} else if s.teamCounts[side] > 1 {
 			text := fmt.Sprintf("P%d: %s %d/%d", side+1, s.teamModes[side], min(len(s.rosters[side])+1, s.teamCounts[side]), s.teamCounts[side])
-			f.Draw(screen, text, x, h-f.Height*2, info[1], font.AlignCenter)
+			s.engine.drawMotifFont(screen, f, text, x, h-f.Height*2, info[1], font.AlignCenter, "Select Info", "title.font")
 		}
 	}
 	if s.teamMenu {
-		f.Draw(screen, "Up/Down: mode   Left/Right: turns   Attack/Start: confirm", w/2, h-f.Height*2, info[1], font.AlignCenter)
+		s.engine.drawMotifFont(screen, f, "Up/Down: mode   Left/Right: turns   Attack/Start: confirm", w/2, h-f.Height*2, info[1], font.AlignCenter, "Select Info", "title.font")
 	}
 }
