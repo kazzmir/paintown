@@ -38,7 +38,7 @@ Continue autonomously with local source/text checkpoints. Author only game/mugen
 No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
 The user renewed autonomous local commit authorization on 2026-11-07. Continue
 through coherent checkpoints without individual commit approval; give a recap
-about every five commits, or sooner for a blocker needing user input. This
+about every 10–15 commits (user 2026-11-09), or sooner for a blocker needing input. This
 supersedes the earlier pre-commit approval rule. On 2026-11-09 the user clarified
 that recaps are progress updates, never automatic stopping points. Continue
 through larger batches until work is complete or input is actually needed. Do not add user configuration

@@ -120,6 +120,9 @@ func (s *FightState) Update() (State, error) {
 		return s, s.renderError
 	}
 	s.updateDebugSelection()
+	if err := s.updateDebugHotkeys(); err != nil {
+		return s, err
+	}
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		if err := s.match.ClearSounds(); err != nil {
 			return s, err

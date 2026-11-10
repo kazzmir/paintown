@@ -1,0 +1,57 @@
+package main
+
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/input"
+)
+
+// Debug hotkeys are separate from player bindings and the AllowDebugMode gate
+// for Ctrl-D. They use the ordinary character/match consumers, not a second
+// combat implementation, and remain available during a user pause.
+func (s *FightState) updateDebugHotkeys() error {
+	im := input.GlobalManager
+	if im == nil || !s.engine.cfg.Debug.AllowDebugKeys {
+		return nil
+	}
+	control := im.KeyPressed(ebiten.KeyControlLeft) || im.KeyPressed(ebiten.KeyControlRight)
+	shift := im.KeyPressed(ebiten.KeyShiftLeft) || im.KeyPressed(ebiten.KeyShiftRight)
+	if im.KeyJustPressed(ebiten.KeyF1) {
+		side := 1
+		if control {
+			side = 0
+		}
+		s.match.Players[side].Character.SetLife(0)
+	}
+	if im.KeyJustPressed(ebiten.KeyF2) {
+		for side, player := range s.match.Players {
+			if control && side != 0 || !control && shift && side != 1 {
+				continue
+			}
+			player.Character.SetLife(1)
+		}
+	}
+	if im.KeyJustPressed(ebiten.KeyF3) || im.KeyJustPressed(ebiten.KeySpace) {
+		for _, player := range s.match.Actors() {
+			c := player.Character
+			c.SetPower(c.MaxPower)
+			if im.KeyJustPressed(ebiten.KeySpace) {
+				c.SetLife(c.MaxLife)
+			}
+		}
+	}
+	if control && im.KeyJustPressed(ebiten.KeyI) {
+		for _, player := range s.match.Actors() {
+			c := player.Character
+			// SelfState restores the fighter's own state bank after a throw.
+			c.SelfState(0, 1, -1)
+			c.XVel, c.YVel = 0, 0
+			if c.RuntimeError != nil {
+				return c.RuntimeError
+			}
+		}
+	}
+	if im.KeyJustPressed(ebiten.KeyF5) {
+		s.match.ForceTimeOver()
+	}
+	return nil
+}

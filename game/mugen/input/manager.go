@@ -122,6 +122,10 @@ func (im *InputManager) KeyJustPressed(key ebiten.Key) bool {
 	return im.keyboard().IsJustPressed(key)
 }
 
+func (im *InputManager) KeyPressed(key ebiten.Key) bool {
+	return im.keyboard().IsPressed(key)
+}
+
 func (im *InputManager) AnyKeyJustPressed() bool {
 	for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
 		if im.KeyJustPressed(key) {

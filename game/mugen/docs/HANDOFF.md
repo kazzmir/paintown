@@ -5,19 +5,11 @@ compatibility using supplied beta content; no further mod-script repairs.
 Defects reproducing in native are content findings. Native AI policy and
 arbitrary content compatibility remain partial, even when routes are present.
 
-Latest batch connects opt-in standard/raw gamepads, YAML alternatives/deadzones,
-stable two-player seats/hotplug and logical edges through menus/CNS. CFG
-UseKeyboard/YAML keyboard_enabled now gate each player's controls, retaining
-Escape/runtime keys and controller-only co-op input ownership.
-
-User Pause holds the full fight/HUD/GameTime; input/audio still run. Scroll Lock
-advances one pass; AnyKeyUnpauses applies outside training menus. Training now
-has manual/AI/cooperative dummy control, guard/stance/jumps/spacing/jam and a
-minimize/resume menu. Existing title/fight/co-op/feedback/mode scenarios pass
-with races; all five segments are checked. Linux Training/menu/minimize was
-inspected, including the corrected compact minimized panel. Final Linux binary
-is rebuilt; owned review scratch was removed. Root modules/local YAML remain
-unchanged.
+Current continuing batch: connect the supplied beta readme/CFG runtime controls,
+then input configuration/presentation consumers. Local checkpoints are authorized;
+recap at about 10–15 commits, not after two. Runtime controls use ordinary CNS,
+match/result/reset and input consumers. Acceptance is pending for changed source;
+run affected connected segments after coherent batches, not per hotkey.
 
 No physical joystick is visible. The controller model/connection question is
 pending; do not repeat it or infer hardware/native numeric acceptance. Native

@@ -69,6 +69,7 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Portable gamepad input through menus and combat**
 - [x] **Player keyboard enable settings and controller-only co-op**
 - [x] **User pause, frame-step and training dummy controls**
+- [ ] **Documented debug and fight runtime controls**: Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key.
 
 ## Completed scenario coverage
 
@@ -78,10 +79,10 @@ Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
 - [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
-- [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
-- [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
-- [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
+- [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
+- [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
+- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 

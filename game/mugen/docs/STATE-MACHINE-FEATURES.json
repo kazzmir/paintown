@@ -1117,6 +1117,12 @@
       "name": "User pause, frame-step and training dummy controls",
       "completed": true,
       "validation": "Documented runtime Pause/Scroll Lock/AnyKeyUnpauses now hold and advance the complete fight independently of CNS Pause/SuperPause. Training controls feed human/AI/cooperative inputs through existing CNS and expose guard/stance/jump/spacing/jam settings with minimize/resume. Existing feedback/mode lifecycle passes with races, all five segments are checked. Rebuilt Linux title-to-Training menu/minimize was inspected; exact native menu/dummy policy remains partial, and the native welcome-overlay probe was inconclusive."
+    },
+    {
+      "id": "documented-fight-runtime-controls",
+      "name": "Documented debug and fight runtime controls",
+      "completed": false,
+      "validation": "Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key."
     }
   ]
 }
