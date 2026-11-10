@@ -60,6 +60,16 @@ entries compile; full gameplay across every character remains unverified. The
 original motif displays eight normal portraits and places four boss slots below
 the visible screen, including in the bundled native engine.
 
+The supplied HD Remix pack bundles MUGEN 1.1 Beta 1 and targets 1280×720:
+
+```bash
+game/mugen/mugen.sh --game --data-dir game/mugen/temp/ssf2-turbo-hd
+```
+
+Its engine loading, selection and palette fixes are tracked in the same ledger.
+Full gameplay across its roster remains unverified. The pack and its executable
+stay local; neither is included in engine checkpoints.
+
 Several supplied SF2 character scripts omit a later-round initialization exit;
 the original beta also stalls with this pattern. Create a corrected working
 copy once, then use it for play:

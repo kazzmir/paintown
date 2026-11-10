@@ -31,7 +31,7 @@ func (s *SFF) SpriteImage(spriteIndex, paletteIndex int, masked bool) (image.Ima
 		}
 		return sprite.Image, nil
 	}
-	img, opaque, err := indexedImages(indexed.Pix, indexed.Bounds().Dx(), indexed.Bounds().Dy(), s.Palettes[paletteIndex].Colors)
+	img, opaque, err := indexedImages(indexed.Pix, indexed.Bounds().Dx(), indexed.Bounds().Dy(), s.Palettes[paletteIndex].Colors, s.paletteAlpha())
 	if err != nil {
 		return nil, err
 	}

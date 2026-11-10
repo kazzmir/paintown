@@ -17,8 +17,8 @@ import (
 )
 
 // MusicSpec loop points count source sample frames, before device resampling.
-// An end of zero selects the file's end. Volume is a percentage, independent
-// of the master/BGM settings and of SFX channel volume/panning.
+// An end of zero or the native -1 sentinel selects the file's end. Volume is a
+// percentage, independent of master/BGM settings and SFX channel volume/panning.
 type MusicSpec struct {
 	File               string
 	Loop               bool
@@ -52,7 +52,10 @@ func (s *MusicSpec) SetParameter(key, raw string) error {
 		}
 		s.Volume = int(n)
 	case "loopstart", "loopend":
-		if n < 0 {
+		if key == "loopend" && n < -1 {
+			return fmt.Errorf("music loopend must be -1 (end of file) or nonnegative")
+		}
+		if key == "loopstart" && n < 0 {
 			return fmt.Errorf("music %s must be nonnegative", key)
 		}
 		if key == "loopstart" {

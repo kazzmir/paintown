@@ -595,7 +595,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a1ef26d1abd87e457ca2b703db9c6ba75baead9ac2026952db63fbcd35b8665c"
+      "passed_source": "c38241eed7345f0e68ddf0036b2d15138093e189a2ceb6c8e23cfe704794f402"
     },
     {
       "id": "combat",
@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ad53dc172be391839f524be927e07fd7669a62b0d100e78fce660eb63ad40586"
+      "passed_source": "213a6c64000644609285ad34df7a98d4a5f24b490f80d2051d052debc92cc9fd"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1c071cc24bfe4053c2dcd340015f68588644e93fca65ef41b1f938055e116fdd"
+      "passed_source": "158594b29109dac880dfb85056197967a589c3767d26c6482c9989b6f5beebd3"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "82f816a6615c5b0bd4e4dfe727989962867c477609540c70ca00ad58bbfa5217"
+      "passed_source": "d61f95e210db22a4fde07e8da335c01db55f4e9a694d5d97ba4678b2d7ba8f6e"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2f1abb50036390b715a821853e3e57b9862aa1d03e0ee14f62c8759d148e1f6c"
+      "passed_source": "229c84daf9901d180f1f57b6704e5de81559c8335769eee324e5fc9e7ef82bcf"
     }
   ],
   "presentation_followups": [
@@ -1140,6 +1140,12 @@
       "name": "Direct training, watch and partner match entry",
       "completed": true,
       "validation": "CLI --mode selects versus/watch/training/coop through the existing quick-match request path. --p3/--p4 use normal simul rosters, CPU ownership and HUDs; co-op P3 uses human input 2. Debug.StartStage remains the omitted-stage default. Existing team/selection/HUD/co-op coverage also loads/renders a direct four-participant watch match. Connected acceptance passes with races. Rebuilt Linux --mode training with mixed KFM/KFM720, an explicit stage/seed and requested screenshots was inspected."
+    },
+    {
+      "id": "hd-pack-admission",
+      "name": "HD screenpack loading, portrait requests and palette alpha",
+      "completed": true,
+      "validation": "The supplied ssf2-turbo-hd pack bundles MUGEN 1.1 Beta 1 P1 and targets 1280x720. Native loads its sub AIR flags and keeps unavailable -/ roster definitions as empty cells; Go now retains those cells and honors the requested cell/P1/P2 portrait sprites without substituting missing portraits. The beta loop guide documents loopend=-1 as EOF. Native Ryu reports zero for Data sparkno=F2 and guard.sparkno=F3; those defaults now retain integer zero coercion. Projectile accepts the pack's three-component projshadow spelling as a scalar flag. SFF 2.01 retains palette alpha through sprite/palette links and remaps, including opaque index zero, while 2.00 retains its reserved-byte/index-zero policy. All five connected segments pass with races. A Go Ryu mirror reaches live combat with recorded audio; native selection/idle combat were inspected. The subsequent final visual pass remains open for numbered HUD backgrounds and a surplus component on p2.front.anim. Full roster/matchup acceptance is unverified; no pack files are repaired."
     }
   ]
 }

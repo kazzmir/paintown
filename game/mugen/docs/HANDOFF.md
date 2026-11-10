@@ -4,6 +4,17 @@ Follow AGENTS.md. PROGRESS.md is the single completion ledger. Author only
 game/mugen/; local source/text commits are authorized, no pushes/binaries/user
 configuration. Recap about every 10–15 commits (user 2026-11-09), not after two.
 
+New supplied pack: temp/ssf2-turbo-hd (native 1.1 Beta 1 P1, 1280x720).
+Engine now accepts sub AIR, unavailable roster cells, requested selection
+portrait sprites, EOF music loopend=-1, F-prefixed Data spark zero coercion,
+padded scalar projshadow and SFF 2.01 palette alpha through links/remaps.
+All five connected segments pass with races. Go Ryu mirror combat/audio and
+native selection/idle combat inspected; pack files/YAML remain untouched.
+Final visual pass still needs numbered HUD background components and the
+native first scalar in p2.front.anim=14,0. Complete roster acceptance remains
+unverified. One native Ken load failed at SFF; embedded PNGs validate, so do
+not label it corrupt or repair content without a specific cause.
+
 Latest continuing batch connects documented fight life/power/stand/time-over,
 AI ownership, current-round restart/reload, pacing/vsync, bar visibility,
 collision/target/protection diagnostics and requested PNG capture. Restart

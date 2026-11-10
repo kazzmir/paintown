@@ -234,7 +234,7 @@ Interpolate Angle
 Interpolate Blend
 0,0,40,20,4,,AS128D128,2,0.5,90
 [Begin Action 701]
-0,0,0,0,-1
+0,0,0,0,-1,,sub
 `, filepath.Join(root, "data/kfm/intro.sff"), filepath.Join(root, "chars/kfm/kfm.snd"), bitmapPath)
 	path := filepath.Join(dir, "scene.def")
 	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
@@ -260,6 +260,11 @@ Interpolate Blend
 		t.Fatal("legacy commented metadata, variable widths or map characters were lost")
 	}
 	action := story.AIR.Actions[700]
+	// HD screenpacks also spell the native subtractive AIR flag "sub".
+	// Carry it through the ending scene's normal layer renderer.
+	if visual := story.AIR.Actions[701].Sample(0, 0); visual.Element.Blend != "sub" || visual.AlphaSrc != 256 || visual.AlphaDst != 256 {
+		t.Fatal("long subtractive AIR flag did not reach the scene", visual)
+	}
 	visual := action.Sample(0, 2)
 	if visual.X != 20 || visual.Y != 10 || visual.ScaleX != 1.5 || visual.ScaleY != 0.75 || visual.Angle != 45 || visual.AlphaSrc != 192 || visual.AlphaDst != 64 {
 		t.Fatal("AIR directives did not reach shared visual sampler", visual)
@@ -563,6 +568,8 @@ life=1000
 power=3000
 attack=100
 defence=100
+sparkno=F2
+guard.sparkno=f3
 [Size]
 xscale=1
 yscale=1
@@ -606,6 +613,12 @@ trigger1=1
 	fight, err := NewFightState(e, request)
 	if err != nil {
 		t.Fatal(err)
+	}
+	for _, name := range []string{"data.sparkno", "data.guard.sparkno"} {
+		value, integer, found := fight.match.Players[0].Character.StateFile.LookupConstant(name)
+		if !found || !integer || value != 0 {
+			t.Fatal("prefixed Data spark default did not retain native integer coercion", name, value, integer, found)
+		}
 	}
 	e.currentState = fight
 	step := func() {
@@ -733,6 +746,59 @@ trigger1=1
 		t.Fatal("modern authored remap/portrait consumer")
 	}
 	e.Draw(canvas)
+	// Continue the same resource lifecycle through linked SFF 2.01 sprites
+	// and palette remaps. Its palette alpha can make a nonzero index clear
+	// while leaving index zero opaque; 2.00's reserved byte stays separate.
+	modernPixels := make([]byte, 600)
+	copy(modernPixels, "ElecbyteSpr\x00")
+	modernPixels[13], modernPixels[15] = 1, 2
+	for offset, value := range map[int]uint32{36: 512, 40: 2, 44: 568, 48: 2, 52: 600, 56: 20} {
+		binary.LittleEndian.PutUint32(modernPixels[offset:], value)
+	}
+	for i := 0; i < 2; i++ {
+		node := modernPixels[512+i*28:]
+		binary.LittleEndian.PutUint16(node[2:], uint16(i))
+		binary.LittleEndian.PutUint16(node[4:], 4)
+		binary.LittleEndian.PutUint16(node[6:], 1)
+		node[15] = 8
+		if i == 0 {
+			binary.LittleEndian.PutUint32(node[16:], 16)
+			binary.LittleEndian.PutUint32(node[20:], 4)
+		}
+		pal := modernPixels[568+i*16:]
+		binary.LittleEndian.PutUint16(pal, 1)
+		binary.LittleEndian.PutUint16(pal[2:], uint16(i+1))
+		binary.LittleEndian.PutUint16(pal[4:], 4)
+		if i == 0 {
+			binary.LittleEndian.PutUint32(pal[12:], 16)
+		}
+	}
+	modernPixels = append(modernPixels, 0, 0, 0, 255, 0, 120, 0, 128, 90, 30, 70, 0, 0, 0, 130, 255, 0, 1, 2, 3)
+	modernArchive, err := sff.Parse(bytes.NewReader(modernPixels))
+	if err != nil {
+		t.Fatal(err)
+	}
+	mappedPalettes := palette.New(modernArchive)
+	if err := mappedPalettes.Remap(palette.ID{1, 1}, palette.ID{1, 2}); err != nil {
+		t.Fatal(err)
+	}
+	mapped, err := mappedPalettes.MappedImage(1, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	visible := ebiten.NewImageFromImage(sff.UploadPixels(mapped))
+	defer visible.Deallocate()
+	canvas.Fill(color.NRGBA{R: 200, A: 255})
+	canvas.DrawImage(visible, nil)
+	if got := color.NRGBAModel.Convert(canvas.At(0, 0)); got != (color.NRGBA{0, 0, 0, 255}) {
+		t.Fatal("SFF 2.01 index zero lost its authored opacity", got)
+	}
+	if got := color.NRGBAModel.Convert(canvas.At(2, 0)); got != (color.NRGBA{200, 0, 0, 255}) {
+		t.Fatal("linked/remapped SFF 2.01 transparent index became opaque", got)
+	}
+	if got := color.NRGBAModel.Convert(canvas.At(1, 0)).(color.NRGBA); got.R < 99 || got.R > 100 || got.G < 60 || got.G > 61 {
+		t.Fatal("SFF 2.01 fractional palette alpha did not reach rendering", got)
+	}
 	packedCharacterAssetFlow(t, e, canvas, dir, definition)
 	localizedAssetFlow(t, e, canvas, dir, definition)
 	// Full character loading, unlike a partial parser view, requires a usable
@@ -1108,7 +1174,7 @@ layer0.offset=80,80
 	}
 	stagePath := filepath.Join(stageDir, "kfm.def")
 	selectPath := filepath.Join(dir, "packed select.def")
-	selectText := fmt.Sprintf("[Characters]\n\"%s\", stages/kfm.def\n\"%s:alternate.def\", random\nempty\nEmPtY\nrandomselect\n[ExtraStages]\n\"%s\"\n[Options]\narcade.maxmatches=1\n", pack, pack, stagePath)
+	selectText := fmt.Sprintf("[Characters]\n\"%s\", stages/kfm.def\n\"%s:alternate.def\", random\nempty\n-/, stages/not-a-playable-stage.def\nrandomselect\n[ExtraStages]\n\"%s\"\n[Options]\narcade.maxmatches=1\n", pack, pack, stagePath)
 	if err := os.WriteFile(selectPath, []byte(selectText), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -1133,9 +1199,15 @@ columns=2
 pos=10,20
 p1.cursor.startcell=0,1
 p2.cursor.startcell=0,99
-portrait.scale=.5,.5
+portrait.scale=1,1
 showemptyboxes=0
 moveoveremptyboxes=0
+portrait.spr=9000,1
+portrait.spr=9000,0
+p1.face.spr=0,1
+p1.face.offset=80,100
+p2.face.spr=0,2
+p2.face.offset=120,100
 rows=1
 columns=1
 pos=0,0
@@ -1199,6 +1271,32 @@ bgclearcolor=255,255,255
 	if small, big := color.NRGBAModel.Convert(first.SmallPortrait.At(1, 0)), color.NRGBAModel.Convert(first.BigPortrait.At(1, 0)); small != (color.NRGBA{0, 120, 0, 255}) || big != (color.NRGBA{0, 0, 130, 255}) {
 		t.Fatal("selective portrait decode changed shared/private colors", small, big)
 	}
+	// Authored cell/P1/P2 sprites reach selective decoding and selection.
+	// A missing requested cell sprite leaves the screenpack's own art visible
+	// instead of substituting an oversized 9000,0 portrait.
+	preview := ebiten.NewImage(320, 240)
+	defer preview.Deallocate()
+	previousWidth := e.logicalWidth
+	e.logicalWidth = 320
+	selection.showP2 = true
+	selection.p2CursorX, selection.p2CursorY = 1, 0
+	selection.Draw(preview)
+	for _, point := range []struct {
+		x, y int
+		want color.NRGBA
+	}{{11, 20, color.NRGBA{0, 0, 130, 255}}, {81, 100, color.NRGBA{0, 120, 0, 255}}, {121, 100, color.NRGBA{0, 120, 0, 255}}} {
+		if got := color.NRGBAModel.Convert(preview.At(point.x, point.y)); got != point.want {
+			t.Fatal("authored selection portrait did not reach its panel", point, got)
+		}
+	}
+	e.motif.SelectInfo.PortraitSpr = [2]int{9000, 4}
+	selection.Draw(preview)
+	if got := color.NRGBAModel.Convert(preview.At(11, 20)); got != (color.NRGBA{0, 0, 0, 255}) {
+		t.Fatal("missing requested portrait substituted the default sprite", got)
+	}
+	e.motif.SelectInfo.PortraitSpr = [2]int{9000, 1}
+	e.logicalWidth = previousWidth
+	selection.showP2 = false
 	selection.p1CursorX, selection.p1CursorY, selection.p2CursorX, selection.p2CursorY = 0, 0, 1, 0
 	selection.palettes = [2]int{2, 1}
 	// Arcade has no manually selected opposing cursor. Invalid/empty hidden

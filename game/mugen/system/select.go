@@ -71,7 +71,8 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	var chars []*CharacterPortrait
 	var stages []string
 	if loadError == nil {
-		chars, stages, loadError = loadCharacters(selectDefPath, charsDir, &engine.characterPacks, engine.cfg.Config.Language)
+		chars, stages, loadError = loadCharacters(selectDefPath, charsDir, &engine.characterPacks, engine.cfg.Config.Language,
+			si.PortraitSpr, si.P1FaceSpr, si.P2FaceSpr)
 	}
 
 	// Watch selects both rosters with P1; versus/co-op use two humans.
@@ -397,9 +398,9 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 				s.drawSelectionSprite(screen, si.CellBgSpr, cx, cy, 1, 1, nil)
 			}
 			if ch != nil {
-				if ch.SmallPortrait != nil {
-					ch.drawPortrait(screen, [2]int{9000, 0}, [2]float64{cx + si.PortraitOffset[0], cy + si.PortraitOffset[1]}, si.PortraitScale, 1, s.engine.logicalWidth, nil)
-				} else if ch.DefPath == "" {
+				if ch.DefPath != "" {
+					ch.drawPortrait(screen, si.PortraitSpr, [2]float64{cx + si.PortraitOffset[0], cy + si.PortraitOffset[1]}, si.PortraitScale, 1, s.engine.logicalWidth, nil)
+				} else {
 					s.drawSelectionSprite(screen, si.CellRandSpr, cx, cy, 1, 1, nil)
 				}
 			}
@@ -416,11 +417,11 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 
 	// Big portrait panels — P1 left, P2 right
 	s.drawFacePanel(screen, s.p1CursorX, s.p1CursorY,
-		si.P1FaceOffset, si.P1FaceScale, si.P1FaceFacing, si.P1FaceWindow,
+		si.P1FaceSpr, si.P1FaceOffset, si.P1FaceScale, si.P1FaceFacing, si.P1FaceWindow,
 		si.P1NameOffset, si.P1NameFont)
 	if s.showP2 {
 		s.drawFacePanel(screen, s.p2CursorX, s.p2CursorY,
-			si.P2FaceOffset, si.P2FaceScale, si.P2FaceFacing, si.P2FaceWindow,
+			si.P2FaceSpr, si.P2FaceOffset, si.P2FaceScale, si.P2FaceFacing, si.P2FaceWindow,
 			si.P2NameOffset, si.P2NameFont)
 	}
 
@@ -458,7 +459,7 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 // faceOff is the top-left corner to draw from; faceScale is the (sx, sy) multiplier.
 // nameOff and nameFont are the position+font for the character name.
 func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
-	faceOff [2]float64, faceScale [2]float64, facing int, window *[4]int,
+	pair [2]int, faceOff [2]float64, faceScale [2]float64, facing int, window *[4]int,
 	nameOff [2]int, nameFont [3]int) {
 
 	ch := s.charAt(col, row)
@@ -466,10 +467,6 @@ func (s *SelectState) drawFacePanel(screen *ebiten.Image, col, row int,
 		return
 	}
 
-	pair := [2]int{9000, 1}
-	if ch.BigPortrait == nil {
-		pair[1] = 0
-	}
 	ch.drawPortrait(screen, pair, faceOff, faceScale, facing, s.engine.logicalWidth, window)
 
 	// Character name using per-player font

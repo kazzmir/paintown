@@ -14,7 +14,7 @@ import (
 type Palette struct {
 	GroupNumber, ItemNumber uint16
 	Linked                  bool
-	Colors                  color.Palette // Opaque colors; indexed sprite masking is separate.
+	Colors                  color.Palette // SFF 2.01 retains authored palette alpha.
 }
 
 const maxSpritePixels = 64 << 20
@@ -106,7 +106,11 @@ func parseV2(r io.ReadSeeker, h []byte, selected spriteSelection) (*SFF, error) 
 			}
 			colors := make(color.Palette, n)
 			for c := range colors {
-				colors[c] = color.NRGBA{R: data[c*4], G: data[c*4+1], B: data[c*4+2], A: 255}
+				alpha := uint8(255)
+				if out.paletteAlpha() {
+					alpha = data[c*4+3]
+				}
+				colors[c] = color.NRGBA{R: data[c*4], G: data[c*4+1], B: data[c*4+2], A: alpha}
 			}
 			out.Palettes[idx].Colors = colors
 			palState[idx] = 2
@@ -123,7 +127,10 @@ func parseV2(r io.ReadSeeker, h []byte, selected spriteSelection) (*SFF, error) 
 		}
 	}
 	if len(out.Palettes) > 0 {
-		out.SharedPalette = maskedPalette(out.Palettes[0].Colors)
+		out.SharedPalette = out.Palettes[0].Colors
+		if !out.paletteAlpha() {
+			out.SharedPalette = maskedPalette(out.SharedPalette)
+		}
 	}
 	nodes := make([]v2Sprite, int(count))
 	for i := range nodes {
@@ -180,7 +187,7 @@ func parseV2(r io.ReadSeeker, h []byte, selected spriteSelection) (*SFF, error) 
 			if err != nil {
 				return nil, err
 			}
-			img, opaque, err := decodeV2(n, data, out.Palettes)
+			img, opaque, err := decodeV2(n, data, out.Palettes, out.paletteAlpha())
 			if err != nil {
 				return nil, fmt.Errorf("sprite %d (%d,%d) format %d: %w", idx, n.group, n.item, n.format, err)
 			}
@@ -200,7 +207,7 @@ func parseV2(r io.ReadSeeker, h []byte, selected spriteSelection) (*SFF, error) 
 				if int(nodes[i].palette) >= len(out.Palettes) {
 					return nil, fmt.Errorf("sprite %d: invalid palette %d", i, nodes[i].palette)
 				}
-				img, opaque, err := indexedImages(pixels.Pix, pixels.Bounds().Dx(), pixels.Bounds().Dy(), out.Palettes[nodes[i].palette].Colors)
+				img, opaque, err := indexedImages(pixels.Pix, pixels.Bounds().Dx(), pixels.Bounds().Dy(), out.Palettes[nodes[i].palette].Colors, out.paletteAlpha())
 				if err != nil {
 					return nil, fmt.Errorf("sprite %d: %w", i, err)
 				}
@@ -236,17 +243,21 @@ func opaquePalette(p color.Palette) color.Palette {
 	return opaque
 }
 
-func indexedImages(pixels []byte, w, h int, p color.Palette) (image.Image, image.Image, error) {
+func indexedImages(pixels []byte, w, h int, p color.Palette, paletteAlpha bool) (image.Image, image.Image, error) {
 	for _, index := range pixels {
 		if int(index) >= len(p) {
 			return nil, nil, fmt.Errorf("pixel index %d outside palette of %d colors", index, len(p))
 		}
 	}
 	r := image.Rect(0, 0, w, h)
-	return &image.Paletted{Pix: pixels, Stride: w, Rect: r, Palette: maskedPalette(p)}, &image.Paletted{Pix: pixels, Stride: w, Rect: r, Palette: p}, nil
+	masked, opaque := maskedPalette(p), p
+	if paletteAlpha {
+		masked, opaque = p, opaquePalette(p)
+	}
+	return &image.Paletted{Pix: pixels, Stride: w, Rect: r, Palette: masked}, &image.Paletted{Pix: pixels, Stride: w, Rect: r, Palette: opaque}, nil
 }
 
-func decodeV2(n v2Sprite, data []byte, pals []Palette) (image.Image, image.Image, error) {
+func decodeV2(n v2Sprite, data []byte, pals []Palette, paletteAlpha bool) (image.Image, image.Image, error) {
 	w, h := int(n.width), int(n.height)
 	count := w * h
 	if n.format != 0 {
@@ -326,7 +337,7 @@ func decodeV2(n v2Sprite, data []byte, pals []Palette) (image.Image, image.Image
 	if int(n.palette) >= len(pals) {
 		return nil, nil, fmt.Errorf("palette %d not found", n.palette)
 	}
-	return indexedImages(pixels, w, h, pals[n.palette].Colors)
+	return indexedImages(pixels, w, h, pals[n.palette].Colors, paletteAlpha)
 }
 
 func decodeIndexed(format byte, data []byte, count int) ([]byte, error) {

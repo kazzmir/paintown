@@ -31,6 +31,12 @@ type SFF struct {
 	spriteIndex   map[[2]uint16]int // built once after parsing immutable metadata
 }
 
+// SFF 2.01 assigns meaning to the fourth palette byte. SFF 2.00 keeps it
+// reserved and uses color index zero as its transparent mask instead.
+func (s *SFF) paletteAlpha() bool {
+	return s.Version[0] >= 2 && (s.Version[1] > 0 || s.Version[2] > 0)
+}
+
 // ParseWithPalette is like Parse but uses an initial palette (e.g. from an .act file).
 func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, error) {
 	return parseWithSelection(r, initialPalette, nil)

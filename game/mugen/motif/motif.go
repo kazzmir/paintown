@@ -89,6 +89,8 @@ type Motif struct {
 		CellSpacing                        int
 		CellBgSpr                          [2]int
 		CellRandSpr                        [2]int
+		PortraitSpr                        [2]int
+		P1FaceSpr, P2FaceSpr               [2]int
 		PortraitScale                      [2]float64
 		PortraitOffset                     [2]float64
 		P1FaceWindow, P2FaceWindow         *[4]int
@@ -177,6 +179,8 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 	motif.Fonts = make([]*font.Font, 11)
 	motif.TitleInfo.ItemNames = make(map[string]string)
 	motif.SelectInfo.CellBgSpr, motif.SelectInfo.CellRandSpr = [2]int{-1, -1}, [2]int{-1, -1}
+	motif.SelectInfo.PortraitSpr = [2]int{9000, 0}
+	motif.SelectInfo.P1FaceSpr, motif.SelectInfo.P2FaceSpr = [2]int{9000, 1}, [2]int{9000, 1}
 	motif.SelectInfo.PortraitScale = [2]float64{1, 1}
 	motif.SelectInfo.P1FaceScale, motif.SelectInfo.P2FaceScale = [2]float64{1, 1}, [2]float64{1, 1}
 	motif.SelectInfo.P1FaceFacing, motif.SelectInfo.P2FaceFacing = 1, 1
@@ -352,6 +356,17 @@ func LoadMotif(path string, dataDir string, languages ...string) (*Motif, error)
 				case "cell.random.spr":
 					v := getVector2(attr.Value)
 					motif.SelectInfo.CellRandSpr = [2]int{int(v[0]), int(v[1])}
+				case "portrait.spr", "p1.face.spr", "p2.face.spr":
+					v := getVector2(attr.Value)
+					pair := [2]int{int(v[0]), int(v[1])}
+					switch id {
+					case "portrait.spr":
+						motif.SelectInfo.PortraitSpr = pair
+					case "p1.face.spr":
+						motif.SelectInfo.P1FaceSpr = pair
+					case "p2.face.spr":
+						motif.SelectInfo.P2FaceSpr = pair
+					}
 				case "portrait.scale":
 					motif.SelectInfo.PortraitScale = getVector2(attr.Value)
 				case "portrait.offset":

@@ -333,6 +333,7 @@ projremanim=9991
 projremovetime=%d
 projstagebound=1000
 projedgebound=1000
+projshadow=1,0,0
 offset=Const240p(40),0
 velocity=Const240p(4),0
 attr=S,SP

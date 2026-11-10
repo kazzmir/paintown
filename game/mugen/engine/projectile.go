@@ -76,6 +76,14 @@ func compileProjectileArguments(ctrl *cns.StateController) ([]argument, string, 
 			continue
 		}
 		exprs, err := evaluator.ParseReferenceTupleForVersion(raw, field.count, ctrl.LanguageVersion)
+		if err != nil && field.name == "projshadow" {
+			// Native accepts the three-component spelling used by HD packs,
+			// but projshadow remains a scalar enable flag. Surplus values do
+			// not become colors or execute expressions at runtime.
+			if padded, paddedErr := evaluator.ParseReferenceTupleForVersion(raw, 3, ctrl.LanguageVersion); paddedErr == nil {
+				exprs, err = padded[:1], nil
+			}
+		}
 		if err != nil && field.count == 2 {
 			if one, singleErr := evaluator.ParseReferenceTupleForVersion(raw, 1, ctrl.LanguageVersion); singleErr == nil {
 				if field.name == "projheightbound" {

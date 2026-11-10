@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"image"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,19 +27,20 @@ type CharacterPortrait struct {
 	SmallPortrait, BigPortrait                       *ebiten.Image
 }
 
-func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPacks, languages ...string) ([]*CharacterPortrait, []string, error) {
+func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPacks, language string, portraits ...[2]int) ([]*CharacterPortrait, []string, error) {
 	f, err := os.Open(selectDefPath)
 	if err != nil {
 		return nil, nil, err
 	}
 	defer f.Close()
-	sd, err := parsers.ParseSelectDef(f, languages...)
+	sd, err := parsers.ParseSelectDef(f, language)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%s: %w", selectDefPath, err)
 	}
 	var chars []*CharacterPortrait
 	var stages []string
 	seen := map[string]bool{}
+	missing := map[string]bool{}
 	addStage := func(name string) {
 		if name != "" && !strings.EqualFold(name, "random") && !seen[name] {
 			stages = append(stages, name)
@@ -60,13 +63,21 @@ func loadCharacters(selectDefPath, charsDir string, packs *resource.CharacterPac
 		}
 		cp.DefPath, err = packs.Resolve(entry.Name, charsDir)
 		if err != nil {
-			return nil, nil, fmt.Errorf("%s character %q: %w", selectDefPath, entry.Name, err)
+			if !errors.Is(err, fs.ErrNotExist) {
+				return nil, nil, fmt.Errorf("%s character %q: %w", selectDefPath, entry.Name, err)
+			}
+			// Native select.def rosters use unavailable definitions as blank
+			// cells (HD packs commonly use "-/"). Keep their grid positions
+			// without admitting their stage/music to playable selections.
+			if !missing[entry.Name] {
+				fmt.Fprintf(os.Stderr, "Character select warning: %s character %q: %v; leaving an empty slot\n", selectDefPath, entry.Name, err)
+				missing[entry.Name] = true
+			}
+			cp.Name, cp.Empty = "", true
+			chars = append(chars, cp)
+			continue
 		}
-		language := ""
-		if len(languages) > 0 {
-			language = languages[0]
-		}
-		loaded, err := loadCharacterPortraitLanguage(cp.DefPath, language)
+		loaded, err := loadCharacterPortraitLanguage(cp.DefPath, language, portraits...)
 		if err != nil {
 			return nil, nil, err
 		}

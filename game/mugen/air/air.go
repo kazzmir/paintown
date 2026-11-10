@@ -298,7 +298,7 @@ func parseElement(groupID string, list parsers.ValueList) (Element, error) {
 			el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", 256, 256
 		case "A1":
 			el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", 256, 128
-		case "S":
+		case "S", "SUB":
 			el.Blend, el.AlphaSrc, el.AlphaDst = "sub", 256, 256
 		default:
 			if strings.HasPrefix(draw, "AS") {

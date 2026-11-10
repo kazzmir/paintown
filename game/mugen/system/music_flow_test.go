@@ -281,6 +281,18 @@ flag=nomusic
 	if _, _, playing, _ := bus.Status(); playing {
 		t.Fatal("missing replacement music left the previous track playing")
 	}
+	// The beta loop guide documents -1 as EOF. It must pass the shared
+	// stage/motif parameter admission and loop back to the authored start.
+	eofTrack := track
+	if err := eofTrack.SetParameter("loopend", "-1"); err != nil {
+		t.Fatal(err)
+	}
+	e.motif.Music["title"] = eofTrack
+	e.currentState = NewTitleState(e)
+	step(musicFrames + 4)
+	if position() != 12 {
+		t.Fatal("EOF loop end did not return to the authored start", position())
+	}
 	if runtime.GOOS == "linux" && (runtime.GOARCH == "amd64" || runtime.GOARCH == "arm64") {
 		legacyMusicFlow(t, e)
 	}
