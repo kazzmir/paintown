@@ -187,6 +187,28 @@ one tick while paused. Holding either key does not repeat. Escape still exits.
 `[Input] AnyKeyUnpauses=1` lets another fresh keyboard press resume an ordinary
 paused fight. Music playback continues independently of the held simulation.
 
+Fight debug controls follow `[Debug] AllowDebugKeys`: when it is zero, these
+keys work while the Ctrl-D debug display is active.
+
+| Keys | Action |
+| --- | --- |
+| F1 / Ctrl-F1 | Set P2 / P1 life to zero |
+| F2 / Ctrl-F2 / Shift-F2 | Set both leaders / P1 / P2 life to one |
+| F3 / Space | Full power / restore active fighters' life and power |
+| F4 / Shift-F4 | Restart the current round / reload character, stage and fight files |
+| F5 | Force time-over through the normal result flow |
+| Ctrl-1 through Ctrl-4 | Toggle the corresponding active fighter's AI |
+| Ctrl-C / Ctrl-D | Collision/target/protection overlay / cycle actor debug display |
+| Ctrl-L | Toggle fight bars |
+| Ctrl-S / Ctrl-V | Toggle maximum-speed pacing / restore normal pacing with vsync |
+| F12 | Save one composed PNG frame |
+
+Restart/reload retain the current round, score and starting carry. Reload uses
+new presentation caches; replacing an expanded character ZIP requires returning
+to title first. Screenshots use numbered files in `DATA_DIR/screenshots`, or
+the directory passed with `--screenshot-dir`; existing files are preserved.
+This portable screenshot output is PNG; native PCX output is not implemented.
+
 In Training, Pause opens the dummy menu: choose Cooperative, AI or Manual
 control, automatic guarding, stance/jumps, spacing and repeated buttons. Manual
 uses P2 input; Cooperative applies the selected dummy settings; AI uses authored

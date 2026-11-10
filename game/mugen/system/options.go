@@ -11,10 +11,11 @@ import (
 )
 
 type optionItem struct {
-	label    string
-	getValue func() int
-	setValue func(int)
-	action   func() State
+	label      string
+	shortLabel string
+	getValue   func() int
+	setValue   func(int)
+	action     func() State
 	// Display strings for each value, indexed by (value - min)
 	// If nil, just shows the integer.
 	choices   []string
@@ -150,7 +151,7 @@ func NewOptionsState(engine *Engine) *OptionsState {
 		cursorAlpha:    0,
 		cursorAlphaMod: 2.0 / 255.0,
 	}
-	s.items = append(s.items, &optionItem{label: "Input Configuration", action: func() State { return NewInputConfigState(engine, s) }})
+	s.items = append(s.items, &optionItem{label: "Input Configuration", shortLabel: "Input Config", action: func() State { return NewInputConfigState(engine, s) }})
 	return s
 }
 
@@ -234,7 +235,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	width, height := s.engine.logicalWidth, s.engine.logicalHeight
 	sx, sy := float64(width)/320, float64(height)/240
 	if spacing == 0 {
-		spacing = int(15 * sy)
+		spacing = 15 * sy
 	}
 
 	// Center the options list
@@ -284,13 +285,14 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 				screen.DrawImage(s.cursorImage, op)
 			}
 
-			// Draw "Label   < Value >"
-			f.Draw(screen, label, int(startX-110*sx), int(yPos), fontInfo.Bank, font.AlignLeft)
-			// Draw left arrow, value, right arrow in the right column
 			valDisplay := "< " + valueStr + " >"
 			if item.action != nil {
 				valDisplay = "ENTER"
 			}
+			if item.shortLabel != "" && float64(f.TextWidthForBank(label, fontInfo.Bank)+f.TextWidthForBank(valDisplay, fontInfo.Bank)) > 210*sx {
+				label = strings.ToUpper(item.shortLabel)
+			}
+			f.Draw(screen, label, int(startX-110*sx), int(yPos), fontInfo.Bank, font.AlignLeft)
 			f.Draw(screen, valDisplay, int(startX+110*sx), int(yPos), fontInfo.Bank, font.AlignRight)
 		}
 	}
@@ -299,7 +301,11 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if fi.Index >= 1 && fi.Index < len(s.engine.motif.Fonts) {
 		f := s.engine.motif.Fonts[fi.Index]
 		if f != nil {
-			f.Draw(screen, "LEFT/RIGHT CHANGE   F1 INPUT   ESC EXIT", int(startX), int(220*sy), fi.Bank, font.AlignCenter)
+			hint := "LEFT/RIGHT CHANGE   F1 INPUT   ESC EXIT"
+			if float64(f.TextWidthForBank(hint, fi.Bank)) > float64(width)-16*sx {
+				hint = "F1 INPUT   ESC EXIT"
+			}
+			f.Draw(screen, hint, int(startX), int(220*sy), fi.Bank, font.AlignCenter)
 		}
 	}
 

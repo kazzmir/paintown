@@ -190,6 +190,13 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
   premultiplication, nearest indexed/linear true-color sampling and delta-first
   round-to-even interpolation. Keep AfterImage AIR clocks and saved mappings.
   Existing bounded RGB/KO-echo acceptance is not whole-renderer/audio parity.
+- Debug restart/reload uses pre-state5900 carry/score snapshots, normal entity/
+  effect/voice cleanup, stable round counters and continuing process time/RNG.
+  Reload banks and presentation caches together; keep current input/AI ownership
+  in copied live rosters and leave campaign templates/archive ownership intact.
+- Options input edits remain session-only. Preserve release admission, inherited
+  keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
+  Requested F12 captures use exclusive PNG files; never commit generated output.
 - User Pause holds match/HUD/CNS GameTime while input/audio service continues.
   Fresh Scroll Lock advances one pass; AnyKeyUnpauses does not dismiss training
   menus. Keep manual/AI/cooperative dummy ownership through the shared input

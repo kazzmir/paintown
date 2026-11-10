@@ -1,54 +1,51 @@
 # Current handoff
 
-Follow AGENTS.md. PROGRESS.md is the single completion ledger. Continue engine
-compatibility using supplied beta content; no further mod-script repairs.
-Defects reproducing in native are content findings. Native AI policy and
-arbitrary content compatibility remain partial, even when routes are present.
+Follow AGENTS.md. PROGRESS.md is the single completion ledger. Author only
+game/mugen/; local source/text commits are authorized, no pushes/binaries/user
+configuration. Recap about every 10–15 commits (user 2026-11-09), not after two.
 
-Current continuing batch: connect the supplied beta readme/CFG runtime controls,
-then input configuration/presentation consumers. Local checkpoints are authorized;
-recap at about 10–15 commits, not after two. Runtime controls use ordinary CNS,
-match/result/reset and input consumers. Acceptance is pending for changed source;
-run affected connected segments after coherent batches, not per hotkey.
+Latest continuing batch connects documented fight life/power/stand/time-over,
+AI ownership, current-round restart/reload, pacing/vsync, bar visibility,
+collision/target/protection diagnostics and requested PNG capture. Restart
+snapshots precede state5900; reload retains score/carry/round counters and current
+process time, while creating fresh resource/presentation banks. Campaign
+templates and archive ownership stay intact.
 
-No physical joystick is visible. The controller model/connection question is
-pending; do not repeat it or infer hardware/native numeric acceptance. Native
-joystick cfg numbers remain separate. Input stays partial (32/35 project rows),
-alongside broader assets and native fidelity. Dummy spacing/jam/AI policy and
-native menu parity remain unverified. A bounded native menu review stayed at
-the beta welcome overlay despite synthetic F1; it is not training acceptance.
-Do not repeat that UI loop or build a parameter matrix to work around it.
+Options now has session keyboard/gamepad configuration: enable, deadzone,
+replace/add/disable, assigned device/layout and standard/raw capture. Preserve
+release admission, omitted-key fallbacks, neutral raw-axis baselines and hotplug
+rearming. Edits never write mugen.yaml. HD Options/title/bitmap captions now fit
+motif dimensions. Direct --mode supports versus/watch/training/coop; --p3/--p4
+use normal simul rosters, with P3 as human 2 in co-op.
 
-Keep the corrected storyboard fitted top-left layer/window origin; authored
-layerall.pos already centers stock KFM. BG projection has a separate center.
-Prior native canonical1280x720 ->640x480 and Go center stock art at x320.
+All five connected segments pass with race detection. Existing full menu/
+gameplay, team/co-op and combat/debug episodes were extended, without fixture
+banks or per-key tests. Linux rebuilt; Options/input panes, direct mixed-KFM
+Training, collision overlay and actual F12 frames inspected. Review scratch is
+removed; keep only the ignored temp/bin/mugen-go binary/shared cache. Root module
+files and local YAML remain unchanged. See README for controls and Git history
+for the checkpoints.
 
-Recaps are progress updates, not stop points (user 2026-11-09). Continue larger
-batches without per-commit approval, stopping only for actual completion/input.
+The ledger remains 89 controllers/127 triggers and 32/35 implemented project
+rows. Partial: physical gamepad/native joystick numbering, broader assets/fonts/
+media and native runtime/render/audio/AI fidelity. Controller model/connection
+question remains pending; no physical joystick is attached here. Do not repeat
+it or infer hardware acceptance from injected sources. Native dummy/AI/cheat
+policy and exact menu parity remain unverified. Ctrl-Alt player enable/disable
+and native PCX output remain unimplemented; F12 intentionally writes PNG.
+Physical CD, absent licensed/CJK fonts and other platforms remain deferred.
 
-Preserve the implementation invariants in AGENTS.md, especially:
+No further SF2 mod-script repairs. Original later-round stalls reproduce in
+native; retain original/optional playable packs and their existing tool. A prior
+native menu review stayed at the beta welcome overlay despite synthetic F1;
+do not repeat that loop or build a matrix to bypass it. Keep the corrected
+storyboard fitted top-left layer/window origin: layerall.pos already centers
+KFM; BG projection has a separate center.
 
-- Borrowed helper admission converts position once, retains helper-unit size
-  overrides and issuer banks/profile/programs through parent SelfState.
-- No-op gates differ: native DestroySelf still evaluates parameters on roots.
-- Declared commands, held chords/guard, fresh-edge air jumps, crossover facing,
-  hit-paused bindings, combat stat scaling and borrowed Explod ownership.
-- Resource/palette/font bounds, native raster calibration and audio cursors.
-
-Remaining: physical gamepad/native numbering, broader font/media/pack acceptance, native AI policy and unverified
-rules/fidelity combinations. Physical CD, absent licensed/CJK fonts and other
-platforms are deferred; Linux is the selected target. Do not regenerate matrices
-or call unknown combinations new implementation gaps without evidence.
-
-Author only game/mugen/. Local source/text commits are authorized; no pushes,
-binaries, generated banks or user configuration in Git. Keep ignored mugen.yaml
-and unrelated work, including tests/initial_placement_render_probe.py, untouched.
-Retain canonical temp/mugen-1.1b1, original SF2 pack/ZIP/executable,
-temp/sf2_mugen_playable, shared cache and one ignored temp/bin/mugen-go binary.
-
+Preserve unrelated work, including tests/initial_placement_render_probe.py.
 Use the readonly mugen.mod/mugen.sum overlay with GOTOOLCHAIN=go1.26.9 through
-python3 game/mugen/temp/round-task-env.py. Native/app/Go runs stay serial: await
-exit, then a separate owned-client guard before edits/new runs. Never reset
-shared display/audio/Wine servers or expose cookies/unrelated process args.
-Root modules/user YAML remain unchanged. Root go.sum backup:
+python3 game/mugen/temp/round-task-env.py. Runtime clients stay serial; await exit
+and run the separate owned-client guard before edits/new runs. Never reset
+shared servers or expose cookies/unrelated process arguments. Verify root
+modules with temp/upstream-post-merge-module.sha256. Root go.sum backup remains
 temp/merge-backups/go-rewrite-172d3fb02-yb0ldpwe/go.sum.untracked.

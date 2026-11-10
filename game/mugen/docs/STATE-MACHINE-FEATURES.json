@@ -405,10 +405,10 @@
     },
     {
       "id": "raster-audio",
-      "name": "Remaining native rendering, audio and AI fidelity",
+      "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Documented camera, indexed sprite/shadow, finite/overlap alpha and ordinary KO-echo discrepancies are closed for the checked scope. Broader pause/hitpause, bindings, crop/raster/filtering combinations, device-level sample timing and native AI policy remain unverified compatibility work.",
+      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Ctrl-Alt player enable/disable and native PCX screenshot output remain unimplemented; F12 uses PNG.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -429,17 +429,16 @@
       "name": "Player input devices and configuration",
       "group": "Modes and platforms",
       "status": "partial",
-      "gap": "Portable gamepad buttons, axes and YAML alternatives now feed menus and combat. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; controller models/connection types requested. Keyboard configuration and gamepad software flow are implemented, but this row stays partial until device acceptance.",
+      "gap": "Keyboard/gamepad software input and session configuration are implemented across menus, combat and co-op. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; the controller model/connection question is pending.",
       "allocation": "item4",
       "sources": [
-        "input/gamepad.go:updateGamepads",
-        "input/manager.go:IsJustPressed",
-        "config/gamepad.go:ParseGamepadBindings",
-        "config/config.go:mergeExtendedConfig",
-        "character/commands.go:GetRawInputs",
-        "input/manager.go:matchAction"
+        "input/manager.go",
+        "input/gamepad.go",
+        "config/gamepad.go",
+        "system/input_config.go",
+        "character/commands.go:GetRawInputs"
       ],
-      "validation": "The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers keyboard alternatives plus injected standard/raw gamepads, analog deadzones, held menu edges, disabled/list bindings, value-copy isolation, per-player ownership and hotplug. Physical hardware/native joystick numbering is not inferred from the injected backend. Affected combat and match-flow segments pass with race detection; the other three completed segments stay checked. First cfg UseKeyboard flags precede explicit YAML keyboard_enabled overrides; disabled keyboard controls retain gamepad input, Escape and runtime hotkeys. Team/co-op coverage confirms the second controller reaches the human partner slot with the correct facing."
+      "validation": "Connected title/options/selection/VS/stock two-round fight/rematch/exit uses keyboard alternatives and injected standard/raw gamepads, neutral/deadzone capture, held edges, disabled/list bindings, copy isolation, ownership/hotplug and live session edits. Co-op retains the second human slot/facing. All five segments are checked with races; Linux keyboard/gamepad configuration panes inspected. No physical or native numeric acceptance is inferred."
     },
     {
       "id": "ai",
@@ -640,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "05182d0e52de122c3a35c2db14bdcfa59b22841b657d556ccc1d2632ebba2dee"
+      "passed_source": "ad53dc172be391839f524be927e07fd7669a62b0d100e78fce660eb63ad40586"
     },
     {
       "id": "entities",
@@ -673,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "ca36d4e9ea94a45bd2fc074e832f08f716068981e039abfae2550aa26c7b308f"
+      "passed_source": "1c071cc24bfe4053c2dcd340015f68588644e93fca65ef41b1f938055e116fdd"
     },
     {
       "id": "effects-pause",
@@ -708,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "433de1e567d2ca91c0ad2378eafb4e7c90cd05783ba4e6b16eccd8106cd0f0ed"
+      "passed_source": "82f816a6615c5b0bd4e4dfe727989962867c477609540c70ca00ad58bbfa5217"
     },
     {
       "id": "match-flow",
@@ -785,9 +784,9 @@
           "name": "TestStageZoomCameraRenderingAndResetFlow"
         }
       ],
-      "completed": false,
-      "validation": "segment run failed or incomplete",
-      "passed_source": ""
+      "completed": true,
+      "validation": "consolidated segment run",
+      "passed_source": "2f1abb50036390b715a821853e3e57b9862aa1d03e0ee14f62c8759d148e1f6c"
     }
   ],
   "presentation_followups": [
@@ -1121,26 +1120,26 @@
     {
       "id": "documented-fight-runtime-controls",
       "name": "Fight debug life, AI, restart/reload and presentation controls",
-      "completed": false,
-      "validation": "Continuing batch: supplied readme/CFG identifies unwired life/power/stand/time-over, AI, restart/reload and presentation controls. Life/power/stand/time-over now use character/match consumers with the AllowDebugKeys gate. Connected runtime lifecycle acceptance will run after the coherent batch, not per key. AI toggles now change copied live roster ownership, active roots and future resets without rewriting campaign templates; charged AI plans are retired on ownership changes. Training menu ownership uses the same setter. CFG AllowDebugKeys=0 now admits hotkeys only while debug mode is visible, as documented by the supplied CFG. Speedup/VRetrace and Ctrl-S/Ctrl-V reach the runtime scheduler without changing CNS tick units; Ctrl-L gates bars independently of announcements. F4 now restarts the current round through normal entity/effect/sound cleanup. A pre-state5900 carry/score snapshot avoids repeated entry side effects, double RoundsExisted increments, spent Turns members and already-committed result leakage; process time/RNG continue. End-state acceptance remains pending for this continuing batch. Shift-F4 reloads character/stage/fight banks into fresh presentation caches while retaining the current round/score, starting carry, AI ownership, process clock and continuing RNG. Loading-time roster rotation is suppressed on reload; archive ownership and campaign templates remain intact. Replacing an expanded ZIP still requires returning to title to retire its expansion. The existing clipboard/combat/debug scenario now continues through key gates, life/power/stand, AI/pacing/HUD, time-over, paused restart, actual KO into round two, helper retirement, preserved score and on-disk character reload. That full connected episode passes with race detection; broader match-flow completion remains pending until the continuing presentation/input batch ends. Ctrl-C now draws actual root/helper/projectile collision geometry with the world camera/zoom/window/shake transform and reports live target IDs, remaining juggle and resolved HitBy masks. Draw offsets and sprite rotation stay separate from collision geometry. The existing runtime episode includes the rendered toggle; acceptance awaits the next combined run. F12 now captures the final composed frame as an exclusive numbered PNG under the selected screenshot directory; read/encode failures are nonfatal and generated files are never committed. The existing debug/reload episode decodes that frame and verifies one request is consumed once. PNG is an explicit portable output choice, not native PCX conformance."
+      "completed": true,
+      "validation": "Supplied readme/CFG controls reach ordinary character/match consumers: life/power/stand/time-over, per-slot live AI, round restart, resource reload, bar visibility, pacing/vsync, collision/target/juggle/protection diagnostics and requested PNG capture. Pre-state5900 snapshots retain round/score/carry without duplicate entry effects or RoundsExisted increments; process time/RNG continue. Reload uses fresh banks/caches and current process time. The existing combat/debug episode spans gates, paused control, real KO into round two, helper retirement, edited on-disk CNS reload, score/ownership and decoded frame capture. Connected acceptance passes with races; Linux Training/collision/F12 output inspected. Native Ctrl-Alt player enable/disable and PCX screenshot output remain outside this completed scope."
     },
     {
       "id": "session-input-configuration",
       "name": "Options input configuration through gameplay",
-      "completed": false,
-      "validation": "Options/F1 now opens a session keyboard editor with per-player enable, replace/add/disable bindings, raw navigation while disabled and return to the same Options state. It shares YAML binding setters/fallbacks and does not write local configuration. Existing title/options/selection/two-round match flow edits an attack alternative and uses it through stock CNS; full end-state acceptance pending for this continuing batch. F2 now exposes per-player gamepad assignment/name/layout, enable/deadzone and replacement/alternative/disabled bindings. Capture sees unbound standard/raw buttons and axes; release admission prevents the activation key or a newly bound held control from operating the menu again. The title-to-match episode captures an unbound raw attack alternative and uses it in round two. Physical device acceptance remains partial. Raw-axis capture records the released baseline (including -1 trigger rests) and chooses the movement polarity. Device/layout changes rearm capture; standard layouts use normalized sticks and named buttons. The same connected Options/gameplay episode includes a raw trigger baseline and release."
+      "completed": true,
+      "validation": "Options/F1 opens a session editor sharing YAML binding setters and runtime fallbacks. It supports per-player keyboard/gamepad enable, deadzones, replace/add/disable, raw navigation while disabled, device name/layout and standard/raw capture. Release admission and neutral-axis baselines prevent held activation or -1 trigger rests from becoming unintended bindings. Device/layout changes rearm capture. Existing title/options/selection/VS/two-round fight/rematch coverage edits keyboard/raw gamepad alternatives and uses both through stock CNS; raw-trigger capture is included. Connected acceptance passes with races; rebuilt Linux panes inspected. No user configuration is written; physical/native numeric acceptance remains partial."
     },
     {
       "id": "options-motif-layout",
       "name": "Options layout and font consumers in HD motifs",
-      "completed": false,
-      "validation": "Options rows/columns/cursor/footer now follow motif dimensions, authored Option Info title offset/font/text reach drawing, and fixed English labels use uppercase for bitmap banks without lowercase glyphs. A reusable cursor pixel replaces per-draw GPU allocation. The connected Options/input/gameplay episode checks actual centered row pixels; combined acceptance pending."
+      "completed": true,
+      "validation": "Options uses motif dimensions and authored title offset/font/text, uppercase labels for restricted bitmap banks, measured short captions and a reusable cursor image. Existing full Options/input/gameplay flow checks centered rendered rows. Connected acceptance passes with races; rebuilt stock HD Options title, rows and footer inspected without overlap/clipping."
     },
     {
       "id": "direct-mode-entry",
       "name": "Direct training, watch and partner match entry",
-      "completed": false,
-      "validation": "CLI --mode selects versus/watch/training/coop on the existing quick-match path; --p3/--p4 use normal simul rosters. Watch/partners get CPU ownership, while co-op P3 maps the second human through the existing adapter. Debug.StartStage remains the omitted-stage default. The existing team/selection/HUD/co-op episode now loads and renders a direct four-participant watch request; final acceptance pending."
+      "completed": true,
+      "validation": "CLI --mode selects versus/watch/training/coop through the existing quick-match request path. --p3/--p4 use normal simul rosters, CPU ownership and HUDs; co-op P3 uses human input 2. Debug.StartStage remains the omitted-stage default. Existing team/selection/HUD/co-op coverage also loads/renders a direct four-participant watch match. Connected acceptance passes with races. Rebuilt Linux --mode training with mixed KFM/KFM720, an explicit stage/seed and requested screenshots was inspected."
     }
   ]
 }
