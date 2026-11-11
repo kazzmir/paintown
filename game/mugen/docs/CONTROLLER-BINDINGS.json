@@ -1,7 +1,6 @@
 {
   "target": "Elecbyte M.U.G.E.N 1.1 beta 1",
   "scope": "source routes and audited gaps; not behavioral coverage",
-  "manual_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "source_sha256": {
     "engine/dust.go": "89850174a33a160d632c0fe6a293df0db56bbe363ba51f629e85faed8e44dcdd",
     "character/dust.go": "1f8940618b3b9cd93e6a246414fe173b9e22b2b0e50c63740355b47b3cd490c1",

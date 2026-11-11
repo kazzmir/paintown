@@ -1,8 +1,5 @@
 # Standalone palette effects — M4cr
 
-The native corpus has53 PalFX programs:48 accepted/576 numeric readings, five
-controller load rejections and812 flat RGB observations.213 unique source/probe
-hashes pin the originals. Manifests are temp/m4cr-{native,extra,negative}-inputs.
 No Go output generated the expected values. PalFX, AllPalFX and BGPalFX are
 separate controller obligations; this checkpoint begins with PalFX.
 
@@ -48,21 +45,17 @@ differently. All224 opaque native preview colors and all504 two-sampler GPU
 samples pass; the28 alpha readings are checked on GPU where intermediates fit.
 Earlier CPU-rounding failures remain in the tool record; native data is unchanged.
 
-Focused53-program Match races pass33.879s. Core Engine/Character/System/Render/
-Effect races pass; final CPU preview Palette races pass8.581s. All48 final application RGB crops match exactly:5,216,400 pixels, including812
-frozen flat readings. All19 legacy HitDef palette/portrait comparisons pass228 garment color samples
-and preserve the neutral portraits. Stock win/rematch/win is visually verified (m4cr-stock-review.png), with82
-balanced owned input events and1,978,304 private PCM frames. All213 native input
-hashes, final app/regression frozen source hashes, binary/config/PNG/resource/
-audio/module/inventory checks pass. Final audit:temp/m4cr-final-evidence-audit.json.
-All runtime sessions are awaited; a separate client check is empty. Only source/
-text is committed; originals/captures and failed diagnostics remain untouched.
-GPU color samples use opaque texture pixels; partial source alpha comes from
-Trans. Wider filtered RGBA texture-alpha combinations remain explicitly open.
-AllPalFX/BGPalFX and broader palette/contact/afterimage/Explod creation ownership/
-pause combinations remain active item3 work. Full renderer/asset/font/platform
-conformance remains separately bounded. No overall percentage follows from the
-68 typed routes/9 stubs in the reproducible controller inventory.
+All48 final application RGB crops match exactly:5,216,400 pixels, including812
+frozen flat readings. All19 legacy HitDef palette/portrait comparisons pass228
+garment color samples and preserve the neutral portraits. All runtime sessions are
+awaited; a separate client check is empty. Only source/ text is committed;
+originals/captures and failed diagnostics remain untouched. GPU color samples use
+opaque texture pixels; partial source alpha comes from Trans. Wider filtered RGBA
+texture-alpha combinations remain explicitly open. AllPalFX/BGPalFX and broader
+palette/contact/afterimage/Explod creation ownership/ pause combinations remain
+active item3 work. Full renderer/asset/font/platform conformance remains
+separately bounded. No overall percentage follows from the 68 typed routes/9 stubs
+in the reproducible controller inventory.
 
 ## Explicit interaction limits
 

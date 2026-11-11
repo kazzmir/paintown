@@ -1,10 +1,10 @@
 # Explod binding-time mutation — M4cj
 
 The production dispatcher now compiles and consumes ExplodBindTime. Twenty-eight
-promoted `explodbind-*` programs contain the real controller in state 700:
-24 accepted programs pin 288 numeric slots and 28 isolated effect positions;
-four reject on load. All 112 CNS/CMD/AIR/stage inputs are SHA-256 pinned. A
-separate test asserts parsed controller kinds rather than trusting labels.
+promoted `explodbind-*` programs contain the real controller in state 700: 24
+accepted programs pin 288 numeric slots and 28 isolated effect positions; four
+reject on load. A separate test asserts parsed controller kinds rather than
+trusting labels.
 
 ## Measured behavior
 
@@ -42,17 +42,10 @@ schema gap is in the item 3 audit. No observed source or capture was repaired.
 The upgraded host required task-local 32-bit Wine launcher shims and development
 headers under ignored temp storage. A warm existing calibration reproduced all
 twelve prior values. An initial cold startup capture and failed launcher/build
-attempts are diagnostics. System packages and the reference distribution were
-not changed. The application harness now uses `temp/_tmp`, preventing abandoned
-CGO source from becoming Go packages. Final apps use fresh `m4cj3-*` names.
+attempts are diagnostics. System packages and the reference distribution were not
+changed. Final apps use fresh `m4cj3-*` names.
 
 ## Validation and limits
-
-Focused native-program Match races pass in 17.690s. Full Engine/Effect/Character
-races pass in 1.448s/1.011s/11.333s. Final actual-app and provenance acceptance is
-recorded in HANDOFF.md. Native runs are `temp/reference-runs/m4cj2-explodbind-*`;
-manifests are `m4cj-native-inputs.json` and `m4cj-supp-inputs.json`. Promoted JSONs
-retain original PNG hashes and observations, including genuine load errors.
 
 Helper/root ownership, explicit bindID, destroyed anchors, mixed localcoords,
 dynamic cameras/zoom, hitpause and world pause budgets still need controls in

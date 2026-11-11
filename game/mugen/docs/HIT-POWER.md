@@ -38,12 +38,6 @@ the same native order with forward and reversed source declarations:
 | 24..26 | p1facing, p1getp2facing, p2facing |
 | 27 | ground.velocity X |
 
-The ten vector fields then retain their M4aw measured order. This corrects the
-old cue ordering as well as inserting power. The compiler checks that every
-compiled cue has an evaluation route. Full27-field captures use overlapping
-pages0/12/15; these are independent native launches with pinned source hashes.
-This establishes the current typed fields, not every remaining literal field.
-
 ## Transfer, rules and ownership
 
 Transfer happens at accepted contact, before receiver entry and attackerTime4
@@ -78,23 +72,15 @@ continue to use raw damage, independently of these life adjustments.
 
 ## Corpus and validation
 
-There are66 original programs:804 numeric observations, three expected literal-
-float rejections and264 CNS/CMD/AIR/stage hashes. All66 integrated programs pass
-in the full scoped race suite, temp/m4ba-full-race.log (Match538.364s,
-Character12.143s). The first65 also passed the focused replay in46.014s.
-Ordered/final pure races pass. Original executable/config and root Go module
-integrity checks pass. The full command used --check -race -timeout=20m.
+The first65 also passed the focused replay in46.014s.
 
-All eight actual app runs/eleven captures pass provenance and runtime/resource
-checks in m4ba-final-app-audit.json. Their identical binary is
-554c7ba209dd5fe6c8c08ccec8cbf2526429101ff2d697f3ec179679338f6a4e.
 Seven strict clothing masks match exactly: six have11,181 white pixels and the
 helper-cap scene has16,713. The high-rule native/Go screenshots both show level3
 in both HUD counters; the production configuration path reaches the power pool.
-Viewed stock7s shows two recovered fighters without lingering effects. Four
-fresh native programs/six captures reproduce their original observations,
-including full reverse field order, helper SuperPause, negative rules and signed
-fractional healing. Pipeline m4ba-validation.log/session88607 completed exit0.
+Viewed stock7s shows two recovered fighters without lingering effects. Four fresh
+native programs/six captures reproduce their original observations, including full
+reverse field order, helper SuperPause, negative rules and signed fractional
+healing.
 
 The diagnostic stage exposes a separate rendering gap: native fills uncovered
 areas magenta for BGDef.debugbg=1 while Go fills black and does not parse that

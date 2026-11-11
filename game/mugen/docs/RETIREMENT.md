@@ -5,11 +5,8 @@ independent and voices survive ordinary/recursive DestroySelf. See AUDIO.md.
 This supersedes that narrow open item in the M4ak record below; full sound
 lifecycle/capacity/round/pause combinations remain open.
 
-M4ak compares fourteen helperretire programs: 288 numeric observations, two
-intentional load rejections and 56 authored CNS/AIR/CMD/stage hashes. The native
-engine, source and recipe are pinned by each JSON. Diagnostic authors/runners
-are temp/author-helper-retire*.py, run-helperretire.py and the two case lists.
-This checkpoint closes focused retirement gaps, not the entire helper gate.
+The native engine, source and recipe are pinned by each JSON. This checkpoint
+closes focused retirement gaps, not the entire helper gate.
 
 ## Removal and retained relationships
 
@@ -58,34 +55,23 @@ helpers. Round reset retires outstanding orphan visuals and drops their owners.
 
 ## Validation and limits
 
-Focused native comparisons plus the orphan clock/expiry/binding/reset regression
-pass in temp/m4ak-focused-race.log. The engine race test in m4ak-engine-race.log
-also checks that an invalid later argument cannot execute an earlier variable
-assignment. Pre-fix failures remain in m4ak-before-retirement.log. Final full
-suite, window measurements and fresh replay results belong in CHECKPOINTS.md.
-
 Still open: native bound-target release publication, helper sound channels,
 retired-state assignment and all remaining relationship queries, helper-owned
 projectiles, death/KO removal versus DestroySelf, pause/hitpause/foreign ownership
 combinations, per-owner effect limits and full multi-entity combat. The existing
 helper configuration/phase evidence is in HELPERS.md.
 
-Six final 1280x720 captures under temp/app-runs/helperretire-scene-*-go-final/
-match the native clothing masks exactly. Nonrecursive preserve/remove retain
-two/one effects; recursive preserve/remove retain two/zero. Each visible sprite
-has 8,379 thresholded white pixels, at the same coordinates in both engines.
-The finite recursive orphan shows two sprites at seven seconds and zero at
-fourteen. Native late expiry is the separate m4ak-replay-scene-finite capture;
-clipboard pages restart the native process, so pages alone are not elapsed-time
-samples. Full framebuffer/background/debug/HUD equivalence remains open.
+Nonrecursive preserve/remove retain two/one effects; recursive preserve/remove
+retain two/zero. Each visible sprite has 8,379 thresholded white pixels, at the
+same coordinates in both engines. The finite recursive orphan shows two sprites at
+seven seconds and zero at fourteen. Native late expiry is the separate
+m4ak-replay-scene-finite capture; clipboard pages restart the native process, so
+pages alone are not elapsed-time samples. Full framebuffer/background/debug/HUD
+equivalence remains open.
 
 The first app captures exposed hardcoded linear effect filtering (15,304 white
-pixels versus native 16,758 for two sprites). Nearest-neighbor sampling fixes
-all final masks. Full scoped races pass in temp/m4ak-full-race.log; the final
-renderer change additionally passes m4ak-system-final-race.log. Pre-filter
-captures remain in the corresponding *-go directories. Final capture hashes,
-dimensions/nonblack checks and runtime logs pass; measured masks are recorded
-in temp/m4ak-window-comparison.json.
+pixels versus native 16,758 for two sprites). Nearest-neighbor sampling fixes all
+final masks. Pre-filter captures remain in the corresponding *-go directories.
 
 Fresh recursive-negative/orphan-parent replays and the fourteen-second finite
 scene reproduce all observed variables/input hashes, under m4ak-replay-*.

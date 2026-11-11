@@ -49,17 +49,9 @@ and462,400 stage pixels). The previous67 M4cs passing actor crops retain their
 historical evidence; this checkpoint reruns the four failing scenes on the new
 binary rather than claiming a fresh71-scene matrix.
 
-Core races pass Character11.320s/System9.465s/Effect1.011s;99 native effect/global
-programs pass67.354s and14 actor-order programs pass10.476s. Two local PalFX and
-two indexed/RGB raster regression apps pass. Stock win/rematch/win is visually
-inspected, with82 balanced owned events and1,965,839 private PCM frames. All
-frozen source/native/resource/binary/config/PNG/audio/module/inventory guards
-pass. Final audit:temp/m4ct-final-evidence-audit.json. No clients remain.
-
-The last full scoped suite remains M4cs3,857 results/36 packages; focused tests
-are appropriate for this dependent checkpoint and the full suite was not
-repeated. New app binary SHA-256 is
-3b89418915f793ca92b7a0e253dbdb03a17dcb2ed69e487a8513ef2bd46b1f05.
+Two local PalFX and two indexed/RGB raster regression apps pass. Stock
+win/rematch/win is visually inspected, with82 balanced owned events and1,965,839
+private PCM frames. No clients remain.
 
 The public `tests/effect_order_render_probe.py` is read-only. It checks original
 sources, native executable/capture, prepared assets, application binary/config/

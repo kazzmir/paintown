@@ -68,21 +68,15 @@ absolute device/startup latency is not compared.
 
 ## Reproduction and limits
 
-Use the existing private display/Wine/audio setup from BUILD.md and AUDIO.md.
-Run native captures, Go window captures and audio probes sequentially: other
-OpenGL windows can occlude captured native surfaces, and other private audio can
-mix into the monitor. Earlier overlapping clock captures and *-native audio
-drafts are diagnostic only. Promoted sound captures use audio-runs/*-isolated;
-the final effect-clock capture is reference-runs/superpause-effect-clock-serial.
-The workflow rule is recorded in AGENTS.md.
+Use the existing private display/Wine/audio setup from BUILD.md and AUDIO.md. Run
+native captures, Go window captures and audio probes sequentially: other OpenGL
+windows can occlude captured native surfaces, and other private audio can mix into
+the monitor. Earlier overlapping clock captures and *-native audio drafts are
+diagnostic only. The workflow rule is recorded in AGENTS.md.
 
-Fresh effect-clock and other-pause render replays, plus an isolated sound-own
-replay, match. tests/super_render_probe.py retains source/AIR/original SFF/
-executable hashes and checks the solid marker core/static samples. Its geometry
-is calibrated only for these zero-camera 320-wide KFM scenes. The new optional
-reference_probe.py --clipboard-delay=0 allows observations while P1 stays frozen;
-default timing remains 30. Owned Go captures are app-runs/superpause-*-serial,
-with hashes/samples in superpause-inspection.json under temp/.
+Its geometry is calibrated only for these zero-camera 320-wide KFM scenes. The new
+optional reference_probe.py --clipboard-delay=0 allows observations while P1 stays
+frozen; default timing remains 30.
 
 Full scoped races pass, including a real stock KFM state-3000 super that consumes
 1000 power, freezes for 30 ticks, and uses common action 100 and sound 20,0.

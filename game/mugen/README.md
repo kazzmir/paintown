@@ -19,121 +19,66 @@ their owner, using each attack’s current position and guard range.
 
 ## Requirements and data
 
-- Go **1.26 or newer** and Bash for the [mugen.sh launcher](mugen.sh). Dependencies are pinned in
-  [mugen.mod](mugen.mod) and [mugen.sum](mugen.sum).
-- A graphical desktop with working OpenGL and audio. Linux builds require a C
+- Go **1.26 or newer** and Bash for the [mugen.sh launcher](mugen.sh). Dependencies
+  are pinned in [mugen.mod](mugen.mod) and [mugen.sum](mugen.sum).
+- A graphical desktop with working OpenGL and audio. Linux builds need a C
   toolchain, `pkg-config`, ALSA development files and X11 development libraries
   (X11, Xrandr, Xxf86vm, Xi, Xcursor and Xinerama).
-- The supplied MUGEN 1.1 beta 1 distribution, extracted to
-  `game/mugen/temp/mugen-1.1b1/`. It must contain `data/mugen.cfg`, `chars/`,
-  `stages/`, `font/` and the other stock resources. Use `--data-dir` to run
-  with content elsewhere. The full integration corpus expects the stock copy
-  at the path above.
+- Separately obtained compatible game data containing `data/mugen.cfg`, `chars/`,
+  `stages/`, `font/` and its other referenced resources. Content is not included
+  with the engine. Stock integration scenarios also require external reference
+  data in the fixture layout specified by their test helpers.
 
-The reference distribution and build outputs are ignored by Git; supply the
-data separately after cloning. The Go game runs directly on the host. Wine is
-only needed for optional comparisons against the original Windows executable.
-Linux amd64 standalone build, normal startup, connected gameplay segments and
-windowed keyboard combat with audio have passed. Other platforms are deferred.
+The Go game runs directly on the host. Wine is needed only for optional
+comparisons against a reference Windows runtime. A runtime bundled with a pack
+may differ from the target engine despite a matching version banner; treat
+pack-specific observations separately from verified target behavior.
+Linux build and connected playable acceptance are checked; other-platform
+runtime acceptance remains deferred.
 
-Native comparison baseline: `temp/mugen-1.1b1/mugen.exe`, SHA-256
-`d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e`.
-The supplied `sf2_mugen/mugen.exe` is byte-for-byte identical to that file.
-The HD pack's `StreetFighterHDM.exe` reports 1.1 Beta 1 P1 but differs: SHA-256
-`32f08a81f06fef51255f4338f61e148006a0779cd1958c0c608ed699cae12c48`.
-Its different packaging/content has not been shown to preserve engine behavior.
-Treat bundled-HD observations as pack compatibility evidence; use the supplied
-baseline runtime for authoritative beta comparisons.
-
-**Run every command below from the repository root.**
+**Run commands below from the repository root.** Replace example content paths
+and character/stage names with resources from your own data root.
 
 ## Run
 
-Launch the title/menu and character/stage selection:
-
 ```bash
-game/mugen/mugen.sh --game --data-dir game/mugen/temp/mugen-1.1b1
+MUGEN_DATA_DIR="/path/to/your/content"
+game/mugen/mugen.sh --game --data-dir "$MUGEN_DATA_DIR"
 ```
 
-A complete pack can be used as its own data root. Its `data/mugen.cfg` selects
-the motif, which supplies the character/stage list and presentation assets:
-
-```bash
-game/mugen/mugen.sh --game --data-dir game/mugen/temp/sf2_mugen
-```
-
-Pack defaults and local YAML overrides determine the controls. Compatibility
-findings for the supplied SF2 pack are recorded in the [progress ledger](docs/PROGRESS.md).
-Its selection and legacy loading fixes now reach live fights. All 12 roster
-entries compile; full gameplay across every character remains unverified. The
-original motif displays eight normal portraits and places four boss slots below
-the visible screen, including in the bundled native engine.
-
-The supplied HD Remix pack targets 1280×720 and bundles an executable reporting
-MUGEN 1.1 Beta 1 P1; see the executable distinction above:
-
-```bash
-game/mugen/mugen.sh --game --data-dir game/mugen/temp/ssf2-turbo-hd
-```
-
-Its loading, selection, palette and HUD fixes are tracked in the same ledger.
-All 19 characters load and compile (3,118 state programs). Ryu/Dhalsim completes
-a full-life, two-round AI match with natural KOs and a final result; the rebuilt
-game also runs their rendered fight. Ryu/Ken rendering, input and stage audio
-were checked earlier. Gameplay across the complete roster remains unverified.
-The pack and executable stay local and are not committed.
+A complete pack can be its own data root. Its `data/mugen.cfg` selects the motif,
+which supplies its roster, stage list and presentation resources. Pack defaults
+and optional local YAML determine controls. See the [compatibility notes](docs/COMPATIBILITY.md)
+for general legacy and high-resolution screenpack behavior.
 
 Arcade, Team Arcade/co-op and Survival choose each scheduled opponent's assigned
-stage automatically. `includestage=0` hides that stage from the manual pool while
-keeping the campaign assignment usable. Versus, Watch and Training retain stage
-selection. Unused character intro/ending files are opened only when played.
-Victory and result screens now retain portrait windows, font colors, wrapped
-quotes and fades; Win/Survival result poses continue animating behind the text.
+stage automatically. `includestage=0` hides a stage from the manual pool while
+keeping its campaign assignment usable. Versus, Watch and Training retain stage
+selection. Unused character intro/ending files open only when played. Victory
+and result screens support portrait windows, font colors, wrapped quotes and
+fades; Win/Survival result poses continue animating behind the text.
 
-Several supplied SF2 character scripts omit a later-round initialization exit;
-the original beta also stalls with this pattern. Create a corrected working
-copy once, then use it for play:
-
-```bash
-python3 game/mugen/tools/sf2_playable.py
-game/mugen/mugen.sh --game --data-dir game/mugen/temp/sf2_mugen_playable
-```
-
-The tool discovers all matching scripts (ten in the supplied pack), links media,
-and copies the repaired scripts plus small writable configuration/log files.
-For a working copy made by an earlier version, extend its repairs with:
-
-```bash
-python3 game/mugen/tools/sf2_playable.py --update
-```
-
-Updates preserve configuration and refuse to overwrite locally edited scripts.
-Keep the original pack available. Neither pack nor local YAML belongs in Git.
-
-Stages belong under the selected data root's `stages/` directory, but the menu
-uses a selection list rather than scanning that directory. Add each stage DEF
-under `[ExtraStages]` in the active motif's `select.def`. With the supplied
-`data/mugen1/system.def` motif, that file is `data/select.def`, for example:
+Stages belong under the data root's `stages/` directory. Selection reads the
+active motif's `select.def` rather than scanning directories. Add stage DEFs
+under `[ExtraStages]`, for example:
 
 ```ini
 [ExtraStages]
-stages/venice.def
-stages/deejay.def
+stages/example-stage.def
 ```
 
-Keep each stage's SFF and any music referenced by its DEF at the authored paths.
-Restart the game after editing the list; select a stage after confirming both
-characters. Characters similarly belong under `chars/` and need entries under
-`[Characters]`. A motif can have its own selection file, such as
-`data/kfm/select.def` for the alternate KFM motif.
+Keep SFF and music resources at their authored relative paths. Restart after
+editing the list. Characters similarly belong under `chars/` and need entries
+under `[Characters]`. A motif can use its own selection file instead of the
+shared `data/select.def`.
 
-Start a two-player KFM versus KFM720 match immediately:
+Start a direct match using two character definitions and a stage from your data:
 
 ```bash
 game/mugen/mugen.sh --game \
-  --data-dir game/mugen/temp/mugen-1.1b1 \
-  --quick-match chars/kfm/kfm.def,chars/kfm720/kfm720.def \
-  --stage stages/kfm.def
+  --data-dir "$MUGEN_DATA_DIR" \
+  --quick-match chars/fighter-a/fighter-a.def,chars/fighter-b/fighter-b.def \
+  --stage stages/example-stage.def
 ```
 
 When `--stage` is omitted, quick matches use `[Debug] StartStage` from the
@@ -463,7 +408,7 @@ GOTMPDIR="$PWD/game/mugen/temp/_tmp" \
 go build -modfile=game/mugen/mugen.mod -mod=readonly \
   -o game/mugen/temp/bin/mugen-go ./game/mugen/system
 
-game/mugen/temp/bin/mugen-go --data-dir game/mugen/temp/mugen-1.1b1
+game/mugen/temp/bin/mugen-go --data-dir "$MUGEN_DATA_DIR"
 ```
 
 The executable accepts the same `--quick-match` and `--stage` flags. It loads
@@ -477,7 +422,7 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The checklist replaces test counts and typed-routing percentages as the progress
-view. The current checklist has32/35 implemented items (91% of checklist items, not
+view. The current checklist has 32/35 implemented items (91% of checklist items, not
 native conformance or remaining effort); see the explicit partial rows. The
 audit added a separate input-device row for the gamepad gap, expanding the
 previous 34-item checklist rather than reopening completed state mechanics.

@@ -61,18 +61,14 @@ SuperPause, effects, target, ownership and viewport regression packets pass.
 
 ## Validation and next work
 
-The production Character scheduler replays all three hash-pinned packets through
-the shared native-world fixture helper. Full scoped races pass in
-temp/m4aa-push-draft-race.log. The earlier per-root-push draft is a failed
-diagnostic, not a passing checkpoint. The first root-physics draft also read the
-opponent's intro Time=130; the promoted program samples after both enter their
-authored states, isolating root phases from unfinished intro/match timing.
+The earlier per-root-push draft is a failed diagnostic, not a passing checkpoint.
+The first root-physics draft also read the opponent's intro Time=130; the promoted
+program samples after both enter their authored states, isolating root phases from
+unfinished intro/match timing.
 
-Fresh replays of all three promoted packets match. The real mixed KFM/KFM720
-fight runs in a 1280x720 owned window through seven-second captures at
-temp/app-runs/root-phases-stock-go/. Root module checksums remain unchanged;
-no original reference assets or desktop settings were changed. The window
-inspection does not establish full fight or framebuffer parity.
+Fresh replays of all three promoted packets match. Root module checksums remain
+unchanged; no original reference assets or desktop settings were changed. The
+window inspection does not establish full fight or framebuffer parity.
 
 TargetBind's first native trace queues a constraint rather than moving its
 target immediately. By the target's CNS, the anchor has already completed
@@ -91,13 +87,11 @@ have Clsn2; absent Clsn2 excludes push. CNS widths provide horizontal extents,
 and bound actors can still be displaced by shared late push. See BINDING.md;
 full vertical/frame/helper/width/pause eligibility remains open.
 
-
 M4ac adds measured HitDef custom transitions before these ordered passes, with
 entry deferred until each actor's positive pass. GetHitVar(isbound) publishes
 the subject's last update, so the earlier root sees the previous observation
 until the target's turn. This is separate from the queued constraint and its
 physical expiry. Full helper/projectile/world scheduling remains open.
-
 
 M4ad separates the contact pose from the advanced AIR element: each root saves
 its completed simulation pose before advancing its animation clock. The next
@@ -105,7 +99,6 @@ contact phase uses that pose for both Clsn1 and Clsn2. Independent one-tick
 windows and a stock throw's GameTime stamp distinguish this from checking the
 already-advanced element. Direct CheckCollision uses current frames. Full
 pause/helper/projectile and late-push frame ordering still need their own traces.
-
 
 M4ae publishes owned Explod expiry after all root CNS/physics/shared-push passes.
 A later root can still count the earlier root's expiring object in that tick;

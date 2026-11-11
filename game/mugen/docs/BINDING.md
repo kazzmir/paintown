@@ -88,16 +88,13 @@ retain file/state/controller context, including expected load rejections.
 
 ## Validation and remaining work
 
-Full scoped races pass with all 53 packets in
-temp/m4ab-full-controls-race.log. The initial constant-speed and provisional-H
-interpretations remain documented diagnostic drafts, not accepted explanations.
-Seven representative fresh native replays match drop, mixed coordinates,
-recovery-with-box, float-valued duration, negative fallback and two load-error
-boundaries. The real 1280x720 Go match runs the with-box fixture through
-seven-second captures at temp/app-runs/targetbind-with-box-go/. Sustained scripted
-movement drives the actors to a window edge; this is a process/render smoke,
-not native camera/body-edge or framebuffer parity. Root module hashes are
-unchanged. No whole controller is promoted to Verified.
+The initial constant-speed and provisional-H interpretations remain documented
+diagnostic drafts, not accepted explanations. Seven representative fresh native
+replays match drop, mixed coordinates, recovery-with-box, float-valued duration,
+negative fallback and two load-error boundaries. Sustained scripted movement
+drives the actors to a window edge; this is a process/render smoke, not native
+camera/body-edge or framebuffer parity. No whole controller is promoted to
+Verified.
 
 BindToTarget, BindToParent and BindToRoot still require their own native timing,
 facing, head/mid/foot offsets, helper retirement and pause comparisons. TargetBind
@@ -110,7 +107,6 @@ not a new/cancelled request or the remaining constraint pointer; see CUSTOMHIT.m
 Complete throws remain unfinished. Run all
 native/app/Ebiten/audio clients serially on private :97; do not touch the desktop
 or original distribution. Preserve root modules and scope edits to game/mugen/.
-
 
 M4ad now exercises actual KFM TargetBind/TargetState/TargetLifeAdd controllers
 through normal/forward stock throws and TargetDrop escape. The latter invokes

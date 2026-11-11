@@ -81,13 +81,9 @@ binding does not implement those modes.
 
 Six authored programs provide 84 native observations: two 12-integer process
 snapshots and five 12-value rate controls. The 29 authored CNS/CMD/AIR/recipe/
-stage inputs are frozen before native observation. `engine-gametime.json`
-also pins the capture script, generated preparation and select list. Rate
-goldens pin their exact config, executable, recipe and PNG. Native binary SHA:
-`d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e`.
-These preparations preserve the config's UTF-8 BOM. The provenance audit
-retains it and reverses only native FirstRun startup persistence plus line
-ending normalization; no numeric observations or prepared input bytes change.
+stage inputs are frozen before native observation. `engine-gametime.json` also
+pins the capture script, generated preparation and select list. These preparations
+preserve the config's UTF-8 BOM.
 
 The initial flow witness failed because stock 5900 clears user variables after
 the negative pass. A later exact native-program replay exposed TicksPerSecond

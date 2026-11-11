@@ -62,11 +62,6 @@ then the measured velocity/corner-push fields
 
 ## Capture protocol and remaining work
 
-The final corpus contains 90 programs, 1,080 numeric observations, four expected
-literal-float rejections and 360 authored source hashes. Thirty-eight programs
-isolate KO velocity, including a lying receiver excluded by the hit flags and
-three explicit D-flag contacts.
-
 In receiver-local 240p units, a fatal standing/crouching contact with zero Y
 first multiplies X by float32 `.66`. All nonzero X then gain 2.5 with their
 original sign; zero X remains zero. Airborne contacts skip the `.66` step.
@@ -88,10 +83,8 @@ Statedef parameter precedence are outside these controls.
 KO slowdown makes an absolute tick snapshot unreliable at a short wall-clock
 deadline. The accepted programs latch a positive-state snapshot at relative
 `Time>=8`; a dedicated sentinel proves that the snapshot actually ran. The
-clipboard controller executes in the same positive state. Empty-state and
-unreached-tick pilots remain diagnostic files below `temp/` and are excluded
-from the corpus. Startup/clipboard failures are not accepted as native load
-rejections.
+clipboard controller executes in the same positive state. Startup/clipboard
+failures are not accepted as native load rejections.
 
 Relative CNS observations do not prove absolute KO timing. KO motion controls
 sample the stored and applied velocities at entry and the following tick,
@@ -103,32 +96,22 @@ team/projectile/foreign-state/multiple-contact combinations remain gates.
 
 ## Checkpoint validation
 
-All90 integrated native replays pass with the race detector in
-`temp/m4bb-integrated.log` (Match61.287s). Pure CNS/engine/combat/evaluator races
-pass in `m4bb-precedence-pure.log`. The first expanded replay exposed seven
-last-parameter-wins failures; the ordinary-parameter precedence fix closes them
-without changing accepted source or numeric goldens.
+The first expanded replay exposed seven last-parameter-wins failures; the
+ordinary-parameter precedence fix closes them without changing accepted source or
+numeric goldens.
 
-Thirteen actual app runs produce sixteen captures from one binary,
-`d354737083b645fc513029e69f441268af50869ed14c3dbed067b2d5048185bb`.
-Prepared player/stage/fight inputs, binary/config/capture hashes, dimensions and
-runtime logs pass the audit in `m4bb-final-app-audit.json`. Twelve strict pose
-masks match exactly: 8,728 to 13,923 garment pixels per scene. The mask selects
-native garment RGB247,239,231 in box160,180..1120,650; grayscale announcement
-text is outside this actor-color check. The original airborne native window
-had a K.O. overlay covering1,180 of these pixels. Its failure is retained in
-`*-occluded` diagnostics. An unchanged-source native replay at8s verifies its
-pinned numeric observations and matches all13,923 pose pixels. No source,
-numeric golden or pixel tolerance was changed. The stock throw7s capture was
-inspected: two recovered fighters and no persistent effect clones.
+Twelve strict pose masks match exactly: 8,728 to 13,923 garment pixels per scene.
+The mask selects native garment RGB247,239,231 in box160,180..1120,650; grayscale
+announcement text is outside this actor-color check. The original airborne native
+window had a K.O. overlay covering1,180 of these pixels. Its failure is retained
+in `*-occluded` diagnostics. An unchanged-source native replay at8s verifies its
+pinned numeric observations and matches all13,923 pose pixels. No source, numeric
+golden or pixel tolerance was changed. The stock throw7s capture was inspected:
+two recovered fighters and no persistent effect clones.
 
 Nine fresh native programs reproduce ten numeric captures and one expected
-literal-float rejection, including full-field order, fall outside H/falling,
-fatal guard, mixed coordinates and the unobscured airborne pose. See
-`m4bb-replays.log` and `m4bb-replay-ko-air-up-unoccluded.log`. Final input audit
-checks all360 source hashes. Original reference executable and root module
-hashes remain intact. Full scoped races pass in m4bb-full-race.log
-(Match618.564s, Character11.012s, System5.027s).
+literal-float rejection, including full-field order, fall outside H/falling, fatal
+guard, mixed coordinates and the unobscured airborne pose.
 
 Reversal is M4ba3fa397a9. M4bc subsequently closes the bounded stage debug-fill
 gap (STAGE-CLEAR.md). Absolute KO/announcement timing, M4az's six alpha crops

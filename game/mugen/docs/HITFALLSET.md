@@ -33,29 +33,16 @@ HitDef fall selection into a boolean. No HitDef expression count is added:
 
 ## Evidence and limits
 
-`tests/testdata/reference/fallset-*` contains 22 CNS/AIR/CMD/stage/JSON sets:
-20 accepted programs, 240 numeric observations, two native load rejections and
-88 source hashes. Original inputs were frozen before native execution in
-`temp/m4bl-prepared-inputs.json` and `temp/m4bl-prepared-extra.json`. The two
-additional controls distinguish alternate key spellings and unknown ignored
-expressions. The initial runner expected velocity tuples to fail; the native
-executable accepted them. This changed the acceptance classification, not the
-frozen input or native observation. Do not rerun the author script or derive
-native expectations from Go.
+The two additional controls distinguish alternate key spellings and unknown
+ignored expressions. This changed the acceptance classification, not the frozen
+input or native observation. Do not rerun the author script or derive native
+expectations from Go.
 
-`TestNativeHitFallSetPrograms` checks the exact corpus count, input hashes,
-native load errors and recorded float32 observations in the production Match
-runtime. Core tests check shared-source reuse and rejection before earlier
-controller effects. Focused races pass (Match 17.114s, Character 1.041s);
-core engine/evaluator/CNS/combat races pass 1.435s/1.021s/1.012s/1.011s.
-The broader initial replay matched all numeric observations but two rejection
-checks named the wrong state in metadata (700 rather than native state 5000).
-That metadata is corrected; native inputs and observations are unchanged.
-Two fresh native reproductions and two apps/three captures pass source,
-config, binary, PNG and runtime provenance checks. The stock 7s image was
-visually inspected. Logs/audit are temp/m4bl-validation.log and
-temp/m4bl-evidence-audit.json. The full scoped race run is deliberately deferred
-to M4bm, the second checkpoint's integration boundary.
+Core tests check shared-source reuse and rejection before earlier controller
+effects. The broader initial replay matched all numeric observations but two
+rejection checks named the wrong state in metadata (700 rather than native state
+5000). That metadata is corrected; native inputs and observations are unchanged.
+The stock 7s image was visually inspected.
 
 This is bounded own-state/root evidence. Foreign-state coordinate execution,
 helpers/projectiles/teams, repeated contacts and broad Pause/SuperPause

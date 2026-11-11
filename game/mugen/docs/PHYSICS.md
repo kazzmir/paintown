@@ -56,15 +56,11 @@ the CNS transition count would incorrectly reject valid native behavior.
 
 ## Validation and remaining work
 
-Full scoped races, headless engine races, and fresh frozen-landing/shared-budget
-overflow replays pass. The actual production Match test injects DirUp into both
-KFM and KFM720, requires airborne motion and landing 52, and checks controlled
-idle with Y/VY zero afterward. Existing match combat/resource/clock tests pass.
-Owned production-window captures at temp/app-runs/physics-stock-match/ were
-inspected at 6 and 12 seconds: both mixed-resolution fighters, stage and HUD
-render at the requested 1280x720, with the match timer advancing. Binary/config/
-capture hashes are retained there. That smoke has idle inputs; jump coverage
-comes from the production Match input test, not those images.
+The actual production Match test injects DirUp into both KFM and KFM720, requires
+airborne motion and landing 52, and checks controlled idle with Y/VY zero
+afterward. Existing match combat/resource/clock tests pass. That smoke has idle
+inputs; jump coverage comes from the production Match input test, not those
+images.
 
 Remaining: full root/entity phase scheduling, body/corner/width and binding
 interactions, hitshake/Pause/SuperPause, friction thresholds, all numeric edges,

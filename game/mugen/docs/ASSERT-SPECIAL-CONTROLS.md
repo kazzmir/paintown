@@ -88,15 +88,10 @@ stock win/rematch/win pass. Stock captures at 21/26/45 seconds were reviewed;
 The new fixture application inputs contain 24 balanced key transitions.
 All 22 final gates and outer session 34865 complete/await with exit zero.
 
-A separate elevated guard verifies 19,190 final, 19,189 revision and 19,187 nested
-application frozen paths (57,566 hash checks), with no live clients. The passive
-auditor verifies 19,192 unique final inputs, 3,000 immutable original inputs,
-all 51 exact native configurations, 41 canonical resources, 2,091 native resource
-copies and all 109 manifest files. Records: temp/m4di-final-evidence-audit.json,
-temp/m4di-final-visual-review.json and temp/m4di-final1-separate-guard.json.
-Validated production binary SHA256:
-`50bb38a3e2121ba500250289075dc21a65081ae07456fa39ee64d4adaa4fecbd`.
-Only source/text is included in the local checkpoint.
+The passive auditor verifies 19,192 unique final inputs, 3,000 immutable original
+inputs, all 51 exact native configurations, 41 canonical resources, 2,091 native
+resource copies and all 109 manifest files. Only source/text is included in the
+local checkpoint.
 
 New functional render scope is world[160,140,1120,670], chosen from native-only
 images before Go baseline/promotion. Native debug-warning glyphs are excluded

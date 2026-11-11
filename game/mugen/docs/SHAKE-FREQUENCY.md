@@ -8,14 +8,12 @@ standalone EnvShake policy also applies to contact/fall data.
 
 ## Measured beta behavior
 
-Twelve frozen programs provide144 numeric values and49 unique source/probe
-hashes. All load. The complete native-only table was inspected before promotion
-or implementation:temp/m4cw-native-behavior-table.json. Six controls per source
-cover negative90 with omitted phase, negative/positive30 with phase0,
-positive/negative0.0001 with phase0, and exact zero with phase0. Every request
-lasts8 ticks. Tiny/zero controls magnify displacement with amplitude100000;
-ordinary controls use4. Fall controls expose both stored metadata and eight
-physical ScreenPosY readings. Contact controls expose eight physical readings.
+All load. Six controls per source cover negative90 with omitted phase,
+negative/positive30 with phase0, positive/negative0.0001 with phase0, and exact
+zero with phase0. Every request lasts8 ticks. Tiny/zero controls magnify
+displacement with amplitude100000; ordinary controls use4. Fall controls expose
+both stored metadata and eight physical ScreenPosY readings. Contact controls
+expose eight physical readings.
 
 | Requested frequency | Stored native fall frequency | Default phase when omitted |
 | --- | --- | --- |
@@ -55,17 +53,11 @@ in for a different intended controller.
 
 ## Verification and remaining scope
 
-Core races pass CNS1.011s/Engine1.458s/Character11.376s/System9.431s.
 All145native programs pass152test/subtest results in93.361s. Allfour original
 contact/fall rigid garment masks match exactly, without changing expectations.
 Stockwin/rematch/win is visually inspected;82balanced owned inputevents and
-1,915,680private PCM frames pass. All15,035frozen source/test/fixture/module inputs
-verify; native/resource/binary/config/PNG/audio/inventory guards pass. Final audit:
-temp/m4cw-final-evidence-audit.json. Final app binary SHA-256:
-764e2b505918cee8898ff0ba639beed990bc66a0dfeb73bf9aa888379b112f63.
-The latest full scoped integration remains M4cv4,033results/36packages and
-predates this parser fix. Focused regressions cover this dependency; another
-full suite follows the next substantial consumer boundary.
+1,915,680private PCM frames pass. The latest full scoped integration remains
+M4cv4,033results/36packages and predates this parser fix.
 
 No framebuffer sampler changed. Seven M4cv profile precision failures and12
 M4cq fractional/nonquarter raster failures remain explicit and unwaived. This

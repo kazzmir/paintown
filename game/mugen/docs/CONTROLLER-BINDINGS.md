@@ -68,11 +68,9 @@ variant-incomplete. Registering the last name is not a full coverage claim.
 
 ## M4ci validation
 
-The generator passed write and comparison modes, with all 89 names accounted
-for and source/manual SHA-256 evidence. Root go.mod/go.sum guards pass. No runtime
-Go code changed in this source-only checkpoint, so no full race/native rerun is
-needed here. The last integration is df59235b: 3,169 passing results across 36
-packages. Native/app/display Go work for upcoming features remains serial.
+Root go.mod/go.sum guards pass. The last integration is df59235b: 3,169 passing
+results across 36 packages. Native/app/display Go work for upcoming features
+remains serial.
 
 ## M4cl update
 
@@ -161,7 +159,6 @@ variant-complete.145native programs/fouractualrenderregressions/stock/privateaud
 and allprovenanceguards pass. See SHAKE-FREQUENCY.md. LatestfullM4cv4033/36
 precedes this focused parser fix; all old native expectations remain unchanged.
 
-
 ## M4dl update
 
 GameMakeAnim now routes through its typed compiler and measured common-resource
@@ -173,7 +170,6 @@ stub. New admission/negative-action/sub-game-pixel studies and broader contexts
 remain explicit in [SYSTEM-EFFECTS.md](SYSTEM-EFFECTS.md). Parameterless valid
 fallbacks are distinct from unimplemented behavior; aliases need native proof.
 
-
 ## M4dm update
 
 GameMakeAnim's bounded consumer now separates ordinary Explod admission, resolves
@@ -183,7 +179,6 @@ rows remain variant-incomplete. The JSON's three changed production hashes were
 regenerated after preserving the exact report used by runtime checks; classifications
 are identical.54 new native programs/648values pass;39/54 world crops exact and15
 strict one-level RGB failures remain. See SYSTEM-EFFECTS.md. MakeDust is next.
-
 
 ## M4dn update
 

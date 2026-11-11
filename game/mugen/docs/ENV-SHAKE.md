@@ -7,10 +7,8 @@ stay visible and the original native inputs and expectations remain unchanged.
 
 ## Native controller behavior
 
-The complete 72-case native-only table was inspected before implementation:
-`temp/m4cv-native-behavior-table.json`. Five separately frozen batches contain
-289 unique original/probe hashes. Sixty-six programs load and pin 792 numeric
-readings; six reject. The beta differs from its manual in several cases.
+Sixty-six programs load and pin 792 numeric readings; six reject. The beta differs
+from its manual in several cases.
 
 | Parameter | Measured behavior |
 | --- | --- |
@@ -102,21 +100,12 @@ The pre-existing12 M4cq fractional/nonquarter raster counterexamples also remain
 unwaived. Final viewport/platform conformance remains in the broader renderer
 allocation; controller-specific failures stay tracked here rather than hidden.
 
-Core races pass Engine1.439s, Character11.293s and System9.417s. Selected native
-shake/environment/global/order replay passes201.549s. Revision2 System races
-pass9.461s. Ten EnvColor/contact/fall regression apps pass. Stockwin/rematch/win is visually
-inspected, with82balanced owned events and1,975,603private PCM frames. Full scoped
-races PASS4,033test/subtest results across36packages (25tested/11compiled-only),
-with no failures/individual skips. Match1736.103s;packageelapsedtotal1820.896s.
-All14,998frozen inputs verified at completion. The final audit refreshes only
-the generated inventory's stale system/hud.go source hash; no tested Go/native/
-probe/fixture source changed. This reviewed documentation-only exception is
-recorded in temp/m4cv-inventory-refresh.json; the original full manifest remains
-unchanged. Final audit:temp/m4cv-final-evidence-audit.json. All native/source/
-resource/binary/config/PNG/audio/module/inventory guards pass. The strict image
-matrix remains FALSE for the seven explicitly preserved profiles above.
-Final application binary SHA-256:
-6db23ac1890a44e1aa40781470c71b5f6b30fb81fc0f35eea7716b18721e5c47.
+Selected native shake/environment/global/order replay passes201.549s. Ten
+EnvColor/contact/fall regression apps pass. Stockwin/rematch/win is visually
+inspected, with82balanced owned events and1,975,603private PCM frames.
+Match1736.103s;packageelapsedtotal1820.896s. All14,998frozen inputs verified at
+completion. The strict image matrix remains FALSE for the seven explicitly
+preserved profiles above.
 
 The read-only `tests/env_shake_render_probe.py` verifies authored/native source,
 executable/configuration/assets/capture hashes, every crop pixel and every
@@ -129,6 +118,4 @@ corrects the shared parser's minimum clamp to magnitude/zero-only normalization.
 See [SHAKE-FREQUENCY.md](SHAKE-FREQUENCY.md). No previous HitDef/Fall/EnvShake
 fixture or expected result was changed.
 
-Completed-Go-only storage sharing preserved3,737additional asset paths/hashes/
-permissions and released442,783,495unique inode bytes. Native resources, captures,
-goldens and frozen inputs were excluded. Record:temp/private-go-asset-sharing-m4cv.json.
+Native resources, captures, goldens and frozen inputs were excluded.

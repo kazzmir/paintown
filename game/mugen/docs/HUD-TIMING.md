@@ -61,8 +61,7 @@ every capture/world hash were checked before one-time source/text promotion.
 
 Public recipes and expectations are hudduration-*,hudtail-* and hudstart-* under
 tests/testdata/reference. hudtiming-native-ledger.json pins originals and prepared
-paths; hudtiming-native-config-finalization.json pins all34 configurations. PNGs,
-reference executable, assets and generated outputs remain private under temp/.
+paths; hudtiming-native-config-finalization.json pins all34 configurations.
 
 The strict world region[160,140,1120,640] was selected from native-only evidence
 before any Go baseline. Later Go failures must remain strict, with no golden or
@@ -73,7 +72,6 @@ render controls and stock input/private PCM before claiming implementation closu
 
 Continue all allocated item3 after each local checkpoint without approval pauses.
 Broader modes, teams, AI, BGM and assets remain item4.
-
 
 ## M4dr — timed messages and strict presentation follow-ups
 

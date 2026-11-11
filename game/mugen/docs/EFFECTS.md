@@ -49,13 +49,11 @@ leaves a 23x12 solid RGB core, whose orientation confirms the facing flip. Go
 Character/scene tests compare the measured frame anchors and resource owner;
 they do not assert identical framebuffer framing/filtering.
 
-M4q corrects the measured M4d world framing discrepancy: world and HUD currently fit separately,
-and stage-aspect game dimensions come from native numeric probes. The actual
-1280x720 Go capture temp/app-runs/viewport-spark-hd/ shows the expected margins
-and marker projection. Filter-edge pixels still differ; background rasterization,
-camera/zoom and full-frame image parity remain open. M4v exposes an independent
-HUD fit mismatch; StageFit/SystemFit/KeepAspect still need native comparison.
-See COORDINATES.md.
+M4q corrects the measured M4d world framing discrepancy: world and HUD currently
+fit separately, and stage-aspect game dimensions come from native numeric probes.
+Filter-edge pixels still differ; background rasterization, camera/zoom and
+full-frame image parity remain open. M4v exposes an independent HUD fit mismatch;
+StageFit/SystemFit/KeepAspect still need native comparison. See COORDINATES.md.
 
 M4w now uses the measured shared game viewport for fight HUD/world projection,
 and implements StageFit=0 crop allocation and KeepAspect fitting/stretching.
@@ -77,12 +75,10 @@ cover independent clocks, finite expiry, explicit infinite lifetime, clear,
 resource/position errors, typed expression host isolation, eight native programs
 and real KFM common spark emission during logical walk/punch/hit/recovery.
 
-Owned-window production captures are temp/app-runs/spark-own-production and
-spark-add-production. The original normal marker is visible; adding AIR draw
-type A visibly adds its RGB to the stage. Inspection metadata and pixel samples
-are in temp/app-runs/spark-gpu-inspection.json. They prove the real GPU route
-consumes effect/blend data, not native full-frame/blend fidelity. Display/audio
-stay routed to the existing private Xvfb/Pulse setup; no desktop changes.
+The original normal marker is visible; adding AIR draw type A visibly adds its RGB
+to the stage. They prove the real GPU route consumes effect/blend data, not native
+full-frame/blend fidelity. Display/audio stay routed to the existing private
+Xvfb/Pulse setup; no desktop changes.
 
 Open: exact birth/expiry/hitpause/Pause/SuperPause boundaries, moving camera/zoom,
 mixed-profile/native scaling edges, dynamic Width, behind/equal-axis contacts,
@@ -90,7 +86,6 @@ priority/layers, effect palette/PalFX/custom-state ownership, full Explod family
 and configuration/capacity fallbacks. Scene limit defaults to 256 if not supplied;
 production passes SysExplodMax. Its limit and the 16384 undrained queue bound are
 diagnosed implementation limits, not native fallback claims.
-
 
 M4ae now compiles Explod resource/position/lifetime parameters, shares owned
 instances with the scene, and removes the permanent own-action-0 landing-dust

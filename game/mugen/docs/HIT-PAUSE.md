@@ -63,32 +63,16 @@ normalizes bottom/negative values before the existing literal HitDef consumer.
 Runtime float conversion uses the common int32 coercion path.
 
 The initial host/atomic-compilation checks fail on the old implementation:
-expressions remain raw strings, and invalid pause fields allow a preceding
-VarSet to mutate state. The diagnostic is
-`temp/m4be-before-pause-compilation.log`. New shared-host and early-validation
-checks pass with the implementation; source maps remain unchanged.
+expressions remain raw strings, and invalid pause fields allow a preceding VarSet
+to mutate state. New shared-host and early-validation checks pass with the
+implementation; source maps remain unchanged.
 
-All19 Match replays, including four rejected inputs, pass together with M4bd's
-four fatal/guard pause programs under race checks:
-`temp/m4be-integrated.log` (Match14.466s). Core engine/evaluator/CNS/combat races
-pass in `temp/m4be-pure-race.log`. The native source manifest is
-`temp/m4be-prepared-inputs.json`; sources/goldens are frozen and their authors
-must not be rerun.
+Module/native integrity and documentation links also pass.
 
-Final pipeline `temp/m4be-validation.log` passes: three fresh native default,
-full reverse-order and float-rejection reproductions; three production apps /
-four captures; and one full scoped serial-package race suite. The full log is
-`temp/m4be-full-race.log`: Match607.027s, Character11.118s, System4.730s and
-stock tests6.567s. Module/native integrity and documentation links also pass.
-
-The app audit `temp/m4be-evidence-audit.json` verifies prepared inputs, config,
-binary, PNG dimensions/hashes and runtime logs. All three use binary SHA256
-`0daa6080198b869d3e8d806c8f4646149267a9864c5b6c0566d50030ad179da8`.
 Expression-hit and inherited-guard fixtures reach contact; the mixed stock
 KFM/KFM720 capture at7s was visually inspected with both fighters and intact
-stage/HUD. These are smoke/provenance checks; pause semantics are established
-by the native numeric comparisons, not screenshot timing or whole-frame parity.
-All new committed fixtures are text; compiled outputs/captures remain ignored.
+stage/HUD. All new committed fixtures are text; compiled outputs/captures remain
+ignored.
 
 ## Remaining gate
 

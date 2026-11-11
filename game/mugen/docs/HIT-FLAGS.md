@@ -49,23 +49,14 @@ budgets or alter sprite projection to make the probes pass.
 
 ## Validation
 
-The original 49-program pre-fix run fails 35 cases in
-`temp/m4at-before-flags.log`. Native evidence is recorded in
-`temp/m4at-native-first.log` and `temp/m4at-extension-native.log`. The eighteen
-extensions pin combined modifiers, AF/MF, non-H fall context and ForceNoFall
-typing/precedence. All 67 integrated focused cases pass in
-`temp/m4at-fields-flags.log`; pure schema/engine/evaluator races pass in
-`temp/m4at-final-pure-race.log`.
+The eighteen extensions pin combined modifiers, AF/MF, non-H fall context and
+ForceNoFall typing/precedence.
 
-The full scoped race suite passes in `temp/m4at-full-race.log` (Match 292.855
-seconds). Six fresh native replays pass: MF against falling H, A against idle
-fall metadata, downed 5080, fractional/negative ForceNoFall and literal-float
-rejection. Nine final 1280x720 captures from one identical binary pass prepared
-source/definition, binary/config/PNG/dimension/nonblack/runtime/resource checks.
-All five stable white clothing masks match exactly: 11,181 pixels each. Stock
-throw recovery retains two fighters without persistent dust clones. These
-remain actor-mask and smoke comparisons, not full framebuffer parity. Evidence:
-`temp/m4at-app-checks.json` and `temp/m4at-app-checks.log`.
+Six fresh native replays pass: MF against falling H, A against idle fall metadata,
+downed 5080, fractional/negative ForceNoFall and literal-float rejection. All five
+stable white clothing masks match exactly: 11,181 pixels each. Stock throw
+recovery retains two fighters without persistent dust clones. These remain
+actor-mask and smoke comparisons, not full framebuffer parity.
 
 Full juggle budgets, guard/fall, custom/paused/foreign/simultaneous flag
 combinations, legacy direct HandleHit equivalence and remaining HitDef/schema/

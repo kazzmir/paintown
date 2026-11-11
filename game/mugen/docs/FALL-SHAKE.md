@@ -34,13 +34,10 @@ requests share the rounding, issuing-frame duration, coordinate conversion,
 ScreenPosY, world rendering and round reset documented in [HIT-SHAKE.md](HIT-SHAKE.md).
 Standalone EnvShake remains unfinished and is not promoted by this consumer.
 
-Twenty-two fallshake-* native programs pin 336 observations, three load
-rejections and 88 pre-native CNS/AIR/CMD/stage hashes. Manifests in ignored temp/:
-m4bt-prepared-inputs.json, m4bt-prepared-lifetime.json and
-m4bt-prepared-joint.json. Sixteen static render controls pin exact rigid offsets
-of all 7,935 garment pixels, including finite expiry, negative duration, fall=0,
-guard, mixed profiles and fractional physical amplitude. Native source inputs,
-numeric values and tolerances were never changed or derived from Go.
+Sixteen static render controls pin exact rigid offsets of all 7,935 garment
+pixels, including finite expiry, negative duration, fall=0, guard, mixed profiles
+and fractional physical amplitude. Native source inputs, numeric values and
+tolerances were never changed or derived from Go.
 
 All 81 documented HitDef keys now have typed routing: 72 numeric and nine literal
 schemas. [HITDEF-KEYS.json](HITDEF-KEYS.json) records the source audit against the

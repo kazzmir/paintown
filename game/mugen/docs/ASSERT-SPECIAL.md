@@ -62,16 +62,12 @@ apps, four contact/fall masks and visually inspected stock win/rematch/win pass,
 with **82 balanced inputs / 1,971,877 private PCM frames**. The other 23 final
 gates exit zero; no partial matrix is called exact.
 
-A separate elevated main+nested frozen-input/client guard passes after the
-entire session: 18,846 + 18,843 paths / 37,689 hash checks. Passive audit verifies
-18,847 unique final inputs, 2,464 immutable original inputs, all 48 exact native
-configurations, 41 canonical resources, 1,968 native resource copies and all 109
-manifest files. All 40 pairs/eight sheets, nine older images and three stock
-captures were reviewed. Records: temp/m4dh-final-evidence-audit.json,
-m4dh-final-visual-review.json and m4dh-final1-separate-guard.json. App SHA256:
-`7706d01fed12b03fe3b73dc316cf8c3de5b03a680b0fff11eedb13044a56bed4`.
-Latest full integration remains M4df 4,743 results / 36 packages at its preceding
-source boundary. This checkpoint uses focused acceptance; no full rerun claimed.
+Passive audit verifies 18,847 unique final inputs, 2,464 immutable original
+inputs, all 48 exact native configurations, 41 canonical resources, 1,968 native
+resource copies and all 109 manifest files. All 40 pairs/eight sheets, nine older
+images and three stock captures were reviewed. Latest full integration remains
+M4df 4,743 results / 36 packages at its preceding source boundary. This checkpoint
+uses focused acceptance; no full rerun claimed.
 
 M4di adds dedicated guard posture, unguardable and walk/input controls in
 [ASSERT-SPECIAL-CONTROLS.md](ASSERT-SPECIAL-CONTROLS.md). Wider flag variants,

@@ -125,7 +125,6 @@ def inventory():
                           'missing-dispatcher', 'bounded-native-consumer', 'route-only']}
     return {'target': 'Elecbyte M.U.G.E.N 1.1 beta 1',
             'scope': 'source routes and audited gaps; not behavioral coverage',
-            'manual_sha256': hashlib.sha256(doc.read_bytes()).hexdigest(),
             'source_sha256': {p: hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in SOURCES},
             'summary': {'manual': len(names),
                         'registered': sum(row['registered'] for row in rows),

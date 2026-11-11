@@ -15,10 +15,6 @@ are retired after audio readers stop using them.
 
 A direct production match from the repository root:
 
-```bash
-game/mugen/mugen.sh --game --data-dir game/mugen/temp/mugen-1.1b1 --quick-match chars/kfm/kfm.def,chars/kfm720/kfm720.def --stage stages/kfm.def
-```
-
 `match.Match` owns teams, active/benched fighters, world, stage, fight definition,
 round phases, results, timer, camera and shared simulation timeline. Round phases
 cover pre-intro, authored Intro assertions, Round/Fight announcements, active

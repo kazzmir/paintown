@@ -12,13 +12,10 @@ queries, P2Dist, facing-relative PosAdd, omitted PosSet axes and borrowed states
 Two marker programs compare own/common Explod banks using the stock idiom
 `pos = Pos X + CameraPos X, -30` with explicit stage space.
 
-The bundled [Pos trigger](../temp/mugen-1.1b1/docs/trigger.html#pos) and
-[PosSet controller](../temp/mugen-1.1b1/docs/sctrls.html#posset) describe X as
-relative to the screen center. Native confirms that at CameraPos X=80,
-PosSet X=30 produces Pos X=30, ScreenPos X=190 and absolute stage X=110.
-The former Go getter/setter both used stage X; their errors canceled in a
-Pos-only observation, while ScreenPos was 80 units wrong. The old binary's
-four failing comparisons are preserved in temp/m4af-before-camera.log.
+Native confirms that at CameraPos X=80, PosSet X=30 produces Pos X=30, ScreenPos
+X=190 and absolute stage X=110. The former Go getter/setter both used stage X;
+their errors canceled in a Pos-only observation, while ScreenPos was 80 units
+wrong.
 
 Character storage, collisions, body distances, target constraints and physics
 remain stage-based. GetPos subtracts the camera offset; SetPosition adds it.
@@ -42,30 +39,20 @@ Stage player start X remains an absolute stage coordinate. The first diagnostic
 placed P1 outside the fixed camera's native screen boundary; the final control
 starts both players inside it and does not claim boundary-clamp parity.
 
-Own/common RGB markers both have native screen-relative anchor (30,-10) on
-this camera (80,-20). State/scene tests compare source bank and projected
-position. Real 1280x720 captures at temp/app-runs/cameramark-{own,common}-go/
-were inspected at 2/4/7 seconds. Their PNGs are identical across banks;
-the displayed marker is present and capture hashes/nonblack pixels were checked.
+Own/common RGB markers both have native screen-relative anchor (30,-10) on this
+camera (80,-20). State/scene tests compare source bank and projected position.
 Go's RGB core [708,572,728,580] differs from native [707,570,730,582]. Filter
 edges remain open; the coordinate agreement is not a framebuffer-parity claim.
-Measurements are in temp/m4af-window-marker-inspection.json.
 
-Full scoped races pass in temp/m4af-full-first-race.log, with all previous native
-contact/throw/guard/pause/binding/ownership/effect packets. Pure engine/evaluator/
-effect/coordinate races also pass. Four fresh native negative-camera, borrowed
-state and own/common RGB replays match, including stage/source/core hashes.
-All 25 authored inputs are hash checked. Dynamic camera follow/easing/zoom, screen
-bounds, all fractional precision edges, other controller boundaries, full helper
-and projectile ownership and complete raster/rendering behavior remain open.
+Dynamic camera follow/easing/zoom, screen bounds, all fractional precision edges,
+other controller boundaries, full helper and projectile ownership and complete
+raster/rendering behavior remain open.
 
 ## Profiles and earlier observations
 
-The supplied [coordinate-space specification](../temp/mugen-1.1b1/docs/coordspace.html)
-defines a common game space through Config.GameWidth/GameHeight. Characters and
-motifs use Info.localcoord; stages use StageInfo.localcoord. Vector translation
-uses the ratio of target width to source width for both axes, even when their
-aspect ratios differ. The default local space is 320x240.
+Characters and motifs use Info.localcoord; stages use StageInfo.localcoord. Vector
+translation uses the ratio of target width to source width for both axes, even
+when their aspect ratios differ. The default local space is 320x240.
 
 `coord.Space` retains dimensions and performs width-ratio translations. Loaders
 preserve character, motif, stage and game profiles with contextual errors. Native
@@ -84,7 +71,6 @@ profile; their complete ownership/lifecycle behavior remains separate work.
 Production menus use the motif's declared logical dimensions. Background default
 windows use that profile, and drawing uses the actual logical horizontal center.
 The physical window honors Video.Width/Height without the former implicit x2.
-The high-resolution title was inspected in temp/app-runs/hd-menu-centered/.
 
 Separate-player native probes now pin 1280/320 and 320/1280 pairings. The
 querying player sees its own local units: start -280/-70, P2Dist X 560/140,
@@ -142,16 +128,14 @@ typed parameters, entry expressions and cached triggers enforce those three
 measured gates. Other version rules and legacy parameter handlers remain open.
 
 M4q introduced separate world/HUD fits. M4v identified that the HUD fit remained
-incorrect; M4w below replaces it with the measured shared viewport transform.
-A 320x240 stage at 1280x720 occupies X=160..1120. Actors/effects draw at common
-game resolution, avoiding an intermediate 320-wide actor raster. Backgrounds
-still use the stage raster. The owned-window
-capture temp/app-runs/viewport-spark-hd/ was inspected at the actual requested
-1280x720 size; metadata pins the binary/capture. It confirms corrected framing,
-but spark filter-edge pixels differ from native. The earlier attempt at
-viewport-spark-production/ stayed 320x240 because commented window settings were
-not overridden; it is diagnostic only. The smoke harness now sets explicit YAML
-dimensions and rejects mismatching capture sizes.
+incorrect; M4w below replaces it with the measured shared viewport transform. A
+320x240 stage at 1280x720 occupies X=160..1120. Actors/effects draw at common game
+resolution, avoiding an intermediate 320-wide actor raster. Backgrounds still use
+the stage raster. It confirms corrected framing, but spark filter-edge pixels
+differ from native. The earlier attempt at viewport-spark-production/ stayed
+320x240 because commented window settings were not overridden; it is diagnostic
+only. The smoke harness now sets explicit YAML dimensions and rejects mismatching
+capture sizes.
 
 The M4q native viewport scenes have zero camera displacement and zoom one. Moving
 camera/zoom timing, full screen bounds, stage raster/filter fidelity and complete
@@ -191,19 +175,6 @@ RenderMode is retained; System/DirectX renderer differences, forced fit behavior
 omitted/invalid native defaults, menu/SystemFit projection, tall overdraw,
 different cut guidelines, moving cameras/zoom and full raster/filter parity
 remain open. These ten cases do not establish all video/stage schemas.
-
-Full scoped races and pure coordinate races pass. Fresh crop765/window-stretch
-native replays reproduce packets and marker hashes. Actual Go captures at
-temp/app-runs/video-default-go, video-crop-go and video-stretch-go have identical
-HUD cores and matching world centers. The Go world core is smaller by filtered
-edge pixels: e.g. native [505,450,529,462] versus Go [507,452,527,460]. This is a
-remaining renderer issue, not a reason to change the established projection.
-Inspection hashes/measurements are in temp/app-runs/video-inspection.json.
-The actual mixed KFM/KFM720 stock fight at video-stock-hud-go/ was also inspected;
-portraits now share the stage margins and measured native HUD scale.
-The initial 1280x960 physical-window experiment could not read its clipboard
-completely on the isolated display and is diagnostic only; promoted windows
-fit inside it. Original reference assets and desktop settings remain unchanged.
 
 M4y now compares direct redirected geometry in caller units, eager origin
 arguments and delayed Cond destination units. Geometric Const kinds are

@@ -32,15 +32,14 @@ game/mugen/mugen.sh --check --reopen combat --reason 'sweep recovery regression'
 ```
 
 The small feature catalog maps these suites to their existing test functions;
---plan shows the exact selection. The initial completion carries forward their
-passing M4dr result because production Go source has not changed. This is not a
-claim that the unfinished features in the project ledger have passed.
+--plan shows the exact selection. A checked scenario records acceptance for its covered source version, not
+completion of the broader partial features in the project ledger.
 
 Run affected segments after a coherent implementation batch. A successful run
 updates its checkmark and source fingerprint; failed or incomplete suites remain
 pending. Other completed suites are not rerun. Scratch is removed after success
 and failure; assets are read in place. Full legacy diagnostics are --check-all
-only and may need old private artifacts that were intentionally cleaned up.
+only and may require separately supplied diagnostic inputs.
 
 Future scenario extensions should span a meaningful state path, such as attack
 → hit pause → knockdown → recovery. Fold related assertions into that scenario;

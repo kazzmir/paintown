@@ -71,24 +71,18 @@ remain separate controller obligations.
 
 ## Validation scope
 
-The four stock programs pin 132 observations; the four minimal window programs
-pin another 96. The stock replay runs 240 world ticks with original state/AIR
-hashes checked. The pure simulation does not load sound banks, so stock PlaySnd
+The four stock programs pin 132 observations; the four minimal window programs pin
+another 96. The pure simulation does not load sound banks, so stock PlaySnd
 controllers report unavailable resources there; the production smoke separately
-loads the actual character/common assets. Full scoped races pass in temp/m4ad-full-first-race.log, including all prior
-contact/guard/pause/sound/spark/ownership regressions. Four fresh native replays match start/drop and independent first/second windows,
-including original Files hashes. Production window checks are recorded with the
-checkpoint. Full throws, HitDef hit flags/facing/priority,
-dynamic Width, interrupted bindings, all modes and complete compatibility are
-not declared verified.
+loads the actual character/common assets. Production window checks are recorded
+with the checkpoint. Full throws, HitDef hit flags/facing/priority, dynamic Width,
+interrupted bindings, all modes and complete compatibility are not declared
+verified.
 
-
-The normal, forward and TargetDrop variants also run through real 1280x720 Go
-windows at temp/app-runs/stock-throw-{base,forward,drop}-go/. Captures at 2/3/4/7
-seconds show the stock lift in both directions, released fall and final recovery.
-Original sprite and sound banks load; no runtime errors appear. These are owned
-window/asset smoke checks, not framebuffer or complete audio parity.
-
+Captures at 2/3/4/7 seconds show the stock lift in both directions, released fall
+and final recovery. Original sprite and sound banks load; no runtime errors
+appear. These are owned window/asset smoke checks, not framebuffer or complete
+audio parity.
 
 The final normal/forward captures expose a remaining visual bug: common landing
 Explods using anim=F(expression) fall through the legacy literal parser to own
@@ -98,19 +92,8 @@ yet accepted. Next connect typed Explod resource lookup and lifetime to the shar
 effect scene, then repeat these captures. The dropped variant and the scripted
 state tests do not excuse the normal/forward rendering defect.
 
-
 M4ae repairs that diagnosed dust fallback through typed common resource lookup,
 owned animation/lifetime and shared drawing. Its draft base recovery window
 shows two fighters without permanent clones. Full repaired variants and evidence
 are recorded in the M4ae checkpoint. See EXPLODS.md; a clean frame is not complete
 moving-camera/layer/audio or stock throw parity.
-
-
-All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7
-seconds at temp/app-runs/stock-throw-{base,forward,drop}-effects-go/. They recover
-with two fighters and no permanent dust clones, without missing-effect warnings
-or runtime errors. The ordinary throw was also repeated in
-stock-throw-base-effects-recheck-go/. A black preview was a display artifact:
-the stored original/repeat recovery PNGs have identical hashes and substantial
-nonblack pixels. app_smoke.py now rejects entirely black quick-match captures.
-These remain window/asset smoke checks, not full camera/filter/layer/audio parity.

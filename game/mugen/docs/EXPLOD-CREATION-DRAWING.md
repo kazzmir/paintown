@@ -55,9 +55,9 @@ rotation/projection and blend operations. Focused and final validation is comple
 pixel conformance is not established. Native originals, intermediate captures,
 expectations and strict comparison tolerances remain immutable.
 
-Native ledgers: creationdraw-native-ledger.json and creationextra-native-ledger.json,
-with disjoint configuration-finalization ledgers. Derived trace disambiguation:
-temp/m4de-trace-fvar-rounding-analysis.json. Runtime artifacts remain ignored.
+Native ledgers: creationdraw-native-ledger.json and
+creationextra-native-ledger.json, with disjoint configuration-finalization
+ledgers. Runtime artifacts remain ignored.
 
 ## Renderer boundary and retained experiments
 
@@ -72,16 +72,6 @@ reversal choices, thirteen source precision variants and twelve padded-quad
 layouts fail to improve the complete corpus. A screen-axis sampling-bias model
 improves several cases but still fails strict comparisons and was not adopted.
 All recipes/results and failed diagnostics remain under ignored temp paths.
-
-Ten additional native controls directly capture640×480 and1280×960 surfaces,
-removing viewport scaling. Every native-only numeric/color/full-body row was
-reviewed, but these controls are not yet promoted as regression expectations.
-They establish that45-degree sampling differs before viewport fitting, while
-some one-step errors arise later. Identity Go viewport copies do not change the
-first-stage image. The initial1280capture was clipped by the original virtual
-display; it remains a failed environment diagnostic. Five fresh r2controls use
-a separately named1600×1200 task-owned display and retain complete1280×960 images.
-These controls guide later shared-renderer work; none justifies a parity claim.
 
 The screen-bias experiment's original exec response overflowed before its session
 identifier could be retained. Its complete18-row result exists; elevated host
@@ -111,14 +101,6 @@ Stock win → rematch → win is visually reviewed with 82 balanced input events
 1,973,200 private stereo PCM frames. The latest full scoped race suite remains
 M4da's 4,506 results across 36 packages; it was not rerun for this focused field
 checkpoint. All earlier strict renderer failures remain unwaived.
-
-Provenance audit: 18,222 unique current frozen paths / 72,789 hash checks,
-1,758 original native inputs, 47 exact configuration finalizations, 41 canonical
-archives, 1,927 native resource copies and all 109 original manifest files.
-Validated binary SHA-256:
-17f65bd843a9e238968f8cd47d566857d5e3b7a99883a18748ed220289c4330b.
-Runtime artifacts and the executable remain ignored. Audit and visual records:
-temp/m4de-final-evidence-audit.json and temp/m4de-final-visual-review.json.
 
 Continue the allocated Explod random/capacity work and remaining item 3 groups.
 The 28 new pool/RNG drafts are unobserved preparation, not coverage. Shared

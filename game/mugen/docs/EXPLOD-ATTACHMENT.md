@@ -69,13 +69,12 @@ their prior policy until that native matrix is established.
 
 ## Evidence, acceptance and remaining work
 
-Inputs/intent metadata: temp/m4cn-{native,extra,policy,clock,retarget}-*.json.
-All captures are temp/reference-runs/m4cn-*. Original inputs and images are
-immutable. Three genuine load rejections, actual controller-kind/state/count
-assertions and59 native white masks accompany the scalar comparisons. Some
-screen controls are intentionally offscreen. Only exact whole-pose matches with
-a known profile support the49 promoted positions; a fractional pose can have
-the same pixel count as a mirrored pose and is not treated as proof of facing.
+Original inputs and images are immutable. Three genuine load rejections, actual
+controller-kind/state/count assertions and59 native white masks accompany the
+scalar comparisons. Some screen controls are intentionally offscreen. Only exact
+whole-pose matches with a known profile support the49 promoted positions; a
+fractional pose can have the same pixel count as a mirrored pose and is not
+treated as proof of facing.
 
 Engine/Effect races pass1.425s/1.010s. Focused Match races pass126.003s across236
 new and prior attachment/binding/mutation/alpha programs. All1,480 frozen inputs

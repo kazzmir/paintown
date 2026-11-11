@@ -77,12 +77,7 @@ All four old shake masks pass. Stock captures at 21/26/45 seconds show
 win → rematch → win; 82 balanced window-owned keyboard events and 1,973,562
 private PCM frames pass provenance/audio checks.
 
-The audit verifies 17,312 unique frozen paths, 52,979 hash checks, 1,043 original
-native inputs, all 98 native configurations, 41 canonical resource archives and
-4,018 native resource copies. All 109 original distribution manifest files are
-unchanged. Binary/source/config/capture/audio/module/inventory checks pass.
-Private records: temp/m4da-final-evidence-audit.json and
-temp/m4da-final-visual-resource-review.json. No executable or capture is committed.
+All 109 original distribution manifest files are unchanged.
 
 Wider resource/profile, RGBA, perspective, contact/pause and reflection variants
 remain explicit compatibility work. Earlier angle/EnvShake differences remain

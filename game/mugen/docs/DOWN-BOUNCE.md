@@ -51,37 +51,23 @@ survives entry, then subsequent movement resumes.
 
 ## Evidence, checks and limits
 
-Twenty-one original text CNS/AIR/CMD/stage/JSON sets under
-`tests/testdata/reference/downbounce-*` pin 324 numeric observations, two native
-load rejections and 84 pre-native source hashes. Manifests are ignored
-`temp/m4bm-prepared-inputs.json`, `m4bm-prepared-extra.json`,
-`m4bm-prepared-last.json` and `m4bm-prepared-trace.json`. Additional zero-launch,
-nonfall and phase-trace controls were frozen independently before native runs.
-Do not rerun the author script or derive native expected values from Go.
+Additional zero-launch, nonfall and phase-trace controls were frozen independently
+before native runs. Do not rerun the author script or derive native expected
+values from Go.
 
-`TestNativeDownBouncePrograms` verifies the exact fixture count, source hashes,
-load errors and float32 observations through production Match. A Go source
-overlay using predecessor 8779869a confirms both the default-vector and stock
-no-bounce regressions before the consumer fix (temp/m4bm-before-fix.log).
-The initial focused run exposed bottom handling and the stock bounce timing;
-the refined replay passes all 21 programs and both stock sweep directions
-(Match 16.775s). Separate physics/landing/recovery/SuperPause races pass
-Character 1.450s and Match 1.871s. Core engine/evaluator/CNS/combat races pass
-1.465s/1.025s/1.013s/1.013s. Four fresh native reproductions (including the legacy idle override) match.
-Three final rebuilt apps/six captures pass provenance checks in
-temp/m4bm-final-evidence-audit.json. The stock
-bounce 7s capture was visually inspected: recovered fighters and intact HUD;
-magenta stage diagnostic fill is intentional. Application checks are smoke,
-not complete raster or interactive gameplay parity. See HANDOFF.md for the
+The initial focused run exposed bottom handling and the stock bounce timing; the
+refined replay passes all 21 programs and both stock sweep directions (Match
+16.775s). Four fresh native reproductions (including the legacy idle override)
+match. The stock bounce 7s capture was visually inspected: recovered fighters and
+intact HUD; magenta stage diagnostic fill is intentional. Application checks are
+smoke, not complete raster or interactive gameplay parity. See HANDOFF.md for the
 combined integration result. The full run exposed one earlier idle-HitOverride
 fall-query regression from M4bl; the final contact initialization fix preserves
 both that native zero and M4bl's retained StateTypeSet flag. All other full-run
-checks passed. The initial full log retains the failure; affected Match and
-full Character replays plus rebuilt application checks verify the correction.
-Final affected Match races pass 136.768s (196 native programs plus both stock
-sweeps), full Character races pass 11.907s. The full suite was not repeated
-after this isolated correction. Its initial failure and the final passing
-checks are recorded separately; no full-run success is claimed for that log.
+checks passed. The initial full log retains the failure; affected Match and full
+Character replays plus rebuilt application checks verify the correction. Its
+initial failure and the final passing checks are recorded separately; no full-run
+success is claimed for that log.
 
 A fresh manual/source audit records **54/81 HitDef expression keys (66.7%)**;
 27 remain literal or absent. Other README metrics are unchanged. This is not a

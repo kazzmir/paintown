@@ -24,13 +24,10 @@ this work closes runtime obligations rather than increasing that key count.
 
 ## M4bu: verified KO/time-over clocks
 
-Predecessor/reversal bbba565e. 29 frozen native programs pin 1,740 integer
-observations and 116 pre-native CNS/AIR/CMD/recipe hashes. All source programs
-and numeric goldens remain unchanged. Preparation manifests under ignored temp/:
-m4bu-prepared-{stable,extra,clock-boundaries,integrated-clocks,readiness,single-hit}.json.
-Two unpromoted held-hit prototypes are explicitly excluded; original files and
-observations remain in m4bu-unpromoted-clock-drafts. Initial constant/capture
-experiments remain diagnostic and do not count as acceptance.
+Predecessor/reversal bbba565e. All source programs and numeric goldens remain
+unchanged. Two unpromoted held-hit prototypes are explicitly excluded; original
+files and observations remain in m4bu-unpromoted-clock-drafts. Initial
+constant/capture experiments remain diagnostic and do not count as acceptance.
 
 The native uses an integer KO debt. Step/debt begin at 500 on the first post-KO
 pass. Each outer tick adds the step if debt<=0, otherwise subtracts 100; simulation
@@ -69,16 +66,9 @@ valid dead pose. The old time-over test now observes the native one-pass result
 delay. Full input-driven wins are reserved for M4bw, not inferred from those
 isolated setups.
 
-Final checks pass: 29 native programs plus the time-over regression36.064s,
-previous intro controls 4.719s, Character 11.873s, System 4.773s and core races
-(engine/evaluator/CNS/combat 1.528/1.022/1.015/1.012s). Older lethality/fatal-guard,
-stock sweep/reset and pause cases passed in a run whose sole obsolete time-over
-assertion was subsequently corrected; that failed package log is retained.
-Two fresh native replays and three rebuilt applications/six captures pass
-provenance. Stock and KO captures were visually inspected. Source manifest:
-temp/m4bu-final3-production-inputs.json (274 Go/test/probe hashes). Audit:
-temp/m4bu-final-evidence-audit.json. Binary SHA256:
-5bd9bd3d5ba6527641645d23f4b44e01bb75952e21a52a4ff1a546115b98baef.
+Older lethality/fatal-guard, stock sweep/reset and pause cases passed in a run
+whose sole obsolete time-over assertion was subsequently corrected; that failed
+package log is retained. Stock and KO captures were visually inspected.
 
 Native startup rewrites FirstRun and line endings. The audit reconstructs the
 exact hashed prelaunch recipe and verifies that the preserved postlaunch file

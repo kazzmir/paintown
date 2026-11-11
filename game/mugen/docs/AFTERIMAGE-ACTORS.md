@@ -135,15 +135,10 @@ integrity audit does not convert them into passes. All other cases, including
 both remapping counterexamples, are exact. The nine M4cx load rejections and all
 189 combined native programs pass in the full Go replay suite.
 
-Full scoped races pass 4,243 results across 36 packages (25 tested and 11
-compiled-only), without failures, individual skips or races. Match takes
-1858.841 seconds; summed package time is 1943.381 seconds. Four contact/fall
-rendering regressions pass. Stock win at 21 seconds, rematch at 26 seconds and
-another win at 45 seconds were visually inspected. All 82 owned input events
-balance; private PCM contains 1,920,802 frames. Frozen source/fixture/native/
-driver, binary/resource/config/PNG/audio, module and source-inventory guards
-pass. Audit: `temp/m4cy-final2-evidence-audit.json`. Build SHA:
-`6548ec120ce7aa468440210d091189ea9844e50c4021ca6409716fcfe6ff9104`.
+Match takes 1858.841 seconds; summed package time is 1943.381 seconds. Four
+contact/fall rendering regressions pass. Stock win at 21 seconds, rematch at 26
+seconds and another win at 45 seconds were visually inspected. All 82 owned input
+events balance; private PCM contains 1,920,802 frames.
 
 This checkpoint closes the measured context/lifetime/remapping failures. It
 retains the first failed 43/46 matrix, both initial numeric counterexamples,

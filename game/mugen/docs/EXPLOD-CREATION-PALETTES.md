@@ -55,15 +55,10 @@ paired review sheets were inspected. Five older global-palette/ModifyExplod
 apps, four shake masks and visually reviewed stock win/rematch/win pass, with
 82 balanced input events and 1,973,637 private PCM frames.
 
-The final audit checks 17,727 frozen paths / 70,889 hash comparisons, 1,390
-original native inputs, all 63 configuration recipes, 41 canonical archives,
-2,583 native resource copies and all 109 original manifest files. Binary hash:
-e7c8218bc836a1c464542df09bc63216ef8e34f725e3b425bff01f7ce136b178.
-Records: temp/m4dc-final-evidence-audit.json and m4dc-final-visual-review.json.
 The latest full scoped suite remains M4da 4,506/36. All previous strict shadow,
 angle and EnvShake failures remain unwaived. This bounded checkpoint does not
 close the other Explod fields/pools or all item 3 obligations.
 
 Native ledgers: creationpal-native-ledger.json and
 creationphase-native-ledger.json in tests/testdata/reference, plus their disjoint
-native-config-finalization ledgers. Runtime evidence stays in ignored temp/.
+native-config-finalization ledgers.

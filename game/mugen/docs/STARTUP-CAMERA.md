@@ -72,8 +72,6 @@ selected native regressions pass482 test/subtest results and fail two (the one
 negative-start case and its parent). This is458/459 programs; all166 dust,138 Game,
 53 pool and98 older camera/boundary/width programs pass.
 
-All16 actual applications run with binary
-`96a0047f577b9ce874799d94af0770611be7ab2143a1c7e1a8e459623c221702`.
 The six targeted startup world comparisons remain strict failures. The three
 GameTime-1 cases differ93,069/93,114/93,069 pixels, increased from their earlier
 77,212/77,139/77,212; three GameTime-4 cases retain73,164 differences. Native
@@ -82,13 +80,11 @@ Keep this as a presentation observation; it does not prove that later roots skip
 CNS on the issuing frame. The exact producer/query correction is not full-scene
 conformance and does not justify a sprite-coordinate workaround.
 
-Nine older palette/order/shake controls pass. Stock win/rematch/win passes82
-balanced inputs and1,928,880 stereo44.1kHz PCM frames (SHA
-`161e481f993b79458cdcd41f70c6e50e04f9c5e51008ed74c94072e46b938170`).
-All15 native/Go pairs, five full-scene sheets and three stock captures are viewed.
-The final35 gates preserve eight exit1 results: native, six startup worlds and the
-stale inventory. The other27 pass. Exact old inventory generator/report bytes
-were archived against Git before regeneration; the current check passes.
+Nine older palette/order/shake controls pass. All15 native/Go pairs, five
+full-scene sheets and three stock captures are viewed. The final35 gates preserve
+eight exit1 results: native, six startup worlds and the stale inventory. The
+other27 pass. Exact old inventory generator/report bytes were archived against Git
+before regeneration; the current check passes.
 
 Passive audit verifies155 original native paths,109 canonical resources,656
 application binary-resource copies,18 original application captures, shared binary,

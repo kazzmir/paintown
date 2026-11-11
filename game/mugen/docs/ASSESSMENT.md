@@ -18,9 +18,8 @@ and trigger inventory and stock asset census are in
 ## Evidence and limits
 
 Inspected the Go port, the local reference documentation/content, and selected
-corresponding C++ implementations in `src/mugen/`. The reference distribution is
-`temp/mugen-1.1b1/` from `game/mugen/`, or `../temp/mugen-1.1b1/` from this docs directory.
-Use the links in the compatibility inventory for the exact files.
+corresponding C++ implementations in `src/mugen/`. Use the links in the
+compatibility inventory for the exact files.
 
 Findings below are source-confirmed unless explicitly labeled as a test result
 or a question for reference testing. No new regression tests or engine changes
@@ -30,9 +29,6 @@ ability to run this distribution remains unverified. Existing Go tests run
 against the separate `data-new/mugen/` tree, not the bundled 1.1 distribution.
 
 ## Baseline verification
-
-Commands ran from the repository root with `GOFLAGS=-mod=readonly`,
-`GOPROXY=off`, and a build cache in `game/mugen/temp/go-build`:
 
 | Command | Result | What it establishes |
 | --- | --- | --- |

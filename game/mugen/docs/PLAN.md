@@ -18,11 +18,8 @@ and the asset-format inventory.
 ## Scope and working rules
 
 All project edits, fixtures, copied working data, documentation, and handoffs
-remain under `game/mugen/`. Preserve the supplied reference distribution.
-Use `temp/` for build caches, disposable binaries, Wine prefixes, reference-run
-copies, screenshots, and temporary asset extraction. Do not alter root
-`go.mod`/`go.sum`, the C++ engine, or other data directories. Do not bundle the
-reference executable into a release or commit the temporary distribution.
+remain under `game/mugen/`. Preserve the supplied reference distribution. Do not
+alter root `go.mod`/`go.sum`, the C++ engine, or other data directories.
 
 Keep the existing Go/Ebitengine direction. Reuse parsers/loaders/background/UI
 code where it can meet the target; replace defective abstractions where needed.
@@ -77,11 +74,9 @@ directory from changing test outcomes. Add load/validation diagnostics with
 file, section, state/controller, parameter, and expression context.
 
 Establish a headless fixture runner with fixed input ticks/seeds and trace output.
-Pin the reference corpus using a manifest/hash in documentation or test metadata.
-Attempt the reference executable and sprite extraction tools with an isolated
-Wine prefix and a disposable distribution copy under `temp/`. Preserve the
-original distribution. If Wine cannot run the reference, report the exact issue
-and prepare fixtures/capture instructions for Windows before claiming parity.
+Preserve the original distribution. If Wine cannot run the reference, report the
+exact issue and prepare fixtures/capture instructions for Windows before claiming
+parity.
 
 Gate: the entire Go tree builds/tests with one documented command; baseline
 results and any reference-execution limitations are recorded. No unsupported

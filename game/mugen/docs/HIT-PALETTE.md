@@ -68,11 +68,7 @@ This checkpoint does not promote those controllers from their earlier stubs.
 
 ## Evidence and limits
 
-24 hitpalette-* programs pin 324 numeric observations, three native load
-rejections and 96 pre-native CNS/AIR/CMD/stage hashes. Manifests under ignored
-temp/: m4br-prepared-inputs.json, m4br-prepared-lifetime.json and
-m4br-prepared-negative.json. No source inputs or expected numeric values were
-changed after native capture.
+No source inputs or expected numeric values were changed after native capture.
 
 The effect probe records twelve interior garment color samples for each of
 19 accepted static programs, with source/profile/binary/PNG provenance. These

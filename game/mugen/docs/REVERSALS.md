@@ -74,24 +74,15 @@ It was stopped and preserved, not counted as acceptance. Build trees are now
 kept under underscore-prefixed scratch directories; final full3 preflights all36
 intended packages. No authored source or observed native input was moved.
 
-Final full scoped race suite PASSED:3,169 test/subtest results,24 tested and12
-compiled-only packages (36 full package identities), no failures or individual
-skips. Match1228.212s; total1298.980s. Command:
-`bash game/mugen/mugen.sh --check -race -p 1 -count=1 -timeout=30m -json`.
-All10,831 frozen source/test/probe/fixture/module hashes pass; stderr is empty.
-Session36806 was awaited and a separate process check found no clients. Only
-full3 is acceptance; the two interrupted attempts remain diagnostics. Artifacts:
-temp/m4ch3-final-inputs.json, m4ch3-full-scoped-race{.jsonl,.stderr.log,-result.json}
-and m4ch3-full.log. Final native/stock/provenance checks also pass.
+Match1228.212s; total1298.980s. Session36806 was awaited and a separate process
+check found no clients. Only full3 is acceptance; the two interrupted attempts
+remain diagnostics.
 
 All final gates pass. Fresh genuine projectile and combined-spark captures
 reproduce all original numbers and exact 7,935-pixel masks. Stock captures show
-win/rematch/win at 21/26/45 seconds, visually inspected. All 82 owned key events
-balance; private PCM, source/config/binary/PNG/input/audio provenance, all 10,831
-full-suite hashes, 797 application hashes and root module guards pass. Native
-prepared definitions/config/commands/eight resources pass all 101 authored runs.
-Sessions 36806 and 12654 were awaited; a separate check finds no clients.
-Final audit: temp/m4ch3-final-evidence-audit.json; post logs/results begin
-m4ch3-post; final stock app is app-runs/m4ch2-stock-input. No originals, numerical
-goldens or tolerances changed. No binaries or changes outside game/mugen/ are
-committed. The allocated items 1–2 are complete. Stop before items 3–4.
+win/rematch/win at 21/26/45 seconds, visually inspected. Native prepared
+definitions/config/commands/eight resources pass all 101 authored runs. Sessions
+36806 and 12654 were awaited; a separate check finds no clients. No originals,
+numerical goldens or tolerances changed. No binaries or changes outside
+game/mugen/ are committed. The allocated items 1–2 are complete. Stop before items
+3–4.

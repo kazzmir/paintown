@@ -63,27 +63,17 @@ issued constraint can continue. The latter does not imply a new eligible target.
 
 ## Evidence and limits
 
-Manifests and intent metadata are temp/m4cm-{native,extra,follow}-*.json; native
-runs are temp/reference-runs/m4cm-*. The fresh empty repeat is m4cm2-fresh-empty.
-The reference executable remains unchanged. Read-only disassembly corroborates
-the measured mechanism: controller0x47 dispatches at0x44a64d; defaults at0x446b9d
-use -MaxFloat32 for omitted axes, and runtime branches retain the previous
-record offset for that sentinel. This is supporting evidence, not a replacement
-for the authored native comparisons or a claim about unmeasured interactions.
+The fresh empty repeat is m4cm2-fresh-empty. This is supporting evidence, not a
+replacement for the authored native comparisons or a claim about unmeasured
+interactions.
 
-Focused194-program Match races pass125.315s. Engine/System/CNS races pass
-1.434s/9.260s/1.012s; Character passes11.183s. Its first run found an overly broad
-legacy target*.json glob; selecting the original target-/targets- prefixes
-preserves all49 existing cases and fixes discovery without changing observations.
-Three actual-window white masks below the HUD match8,379/7,455/3,474 native
-pixels exactly. Full-region RGB still differs; this is not framebuffer parity.
-Stock win/rematch/win was visually inspected;82 balanced owned events,1,971,901
-private PCM frames and source/config/binary/PNG/audio checks pass. All293 native
-hashes and1,095 final focused hashes verify; only the legacy test-discovery file
-changed after the focused Match run. All sessions awaited/no clients remain.
-HANDOFF.md and temp/m4cm-final-evidence-audit.json record the final evidence.
-The latest full integration remains M4cl (3,435 results/36 packages); it is not
-rerun for every small checkpoint. Multiple acquisition/overlap, helper retirement,
+Its first run found an overly broad legacy target*.json glob; selecting the
+original target-/targets- prefixes preserves all49 existing cases and fixes
+discovery without changing observations. Three actual-window white masks below the
+HUD match8,379/7,455/3,474 native pixels exactly. Full-region RGB still differs;
+this is not framebuffer parity. All sessions awaited/no clients remain. The latest
+full integration remains M4cl (3,435 results/36 packages); it is not rerun for
+every small checkpoint. Multiple acquisition/overlap, helper retirement,
 foreign-state ownership, incoming-hit and wider pause/hitpause combinations stay
 explicit interaction gates. Remaining Explod/shared effect/controller work is
 still item3; modes/assets/final platform conformance remain item4.

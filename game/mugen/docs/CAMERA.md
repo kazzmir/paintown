@@ -94,24 +94,15 @@ complete frame equivalence remain open.
 
 ## Scope and remaining work
 
-All 20 packets pass through TestNativeCameraFollowing, including their 60
-authored input hashes. Full scoped races pass in temp/m4ag-full-final-race.log,
-retaining all previous contact/throw/guard/pause/binding/ownership/effect and
-fixed-camera regressions. The old averaging implementation's four failing
-programs are preserved in temp/m4ag-before-camera.log. The initial ten static/
-phase programs passed before motion was added; walking then exposed the missing
-speed floor, which the additional speed/one-sided controls distinguish.
+The initial ten static/ phase programs passed before motion was added; walking
+then exposed the missing speed floor, which the additional speed/one-sided
+controls distinguish.
 
-Four fresh native phase/return/slow-motion/stage-limit replays match all pinned
-values and input hashes. Real 1280x720 windows were inspected under
-temp/app-runs/camerafollow-motion-go/ at 2/3/4 seconds and
-temp/app-runs/stock-throw-camera-go/ at 2/3/4/7 seconds. All seven captures have
-checked hashes/nonblack pixels and no runtime/missing-resource errors. The
-stock throw still recovers with two fighters and no permanent landing-dust
-clones. The motion scene uses an intentionally minimal single-image stage;
-its background ends during scrolling, and P2 can be clipped at the right edge.
-Full background/debugbg rendering and native screen boundary margins remain
-open. These windows are smoke checks, not full framebuffer parity.
+The stock throw still recovers with two fighters and no permanent landing-dust
+clones. The motion scene uses an intentionally minimal single-image stage; its
+background ends during scrolling, and P2 can be clipped at the right edge. Full
+background/debugbg rendering and native screen boundary margins remain open. These
+windows are smoke checks, not full framebuffer parity.
 
 The camerapos-* and cameramark-* fixed-camera evidence remains separate; see
 COORDINATES.md. These horizontal comparisons do not establish vertical camera

@@ -52,11 +52,6 @@ review sheets were inspected. Five older palette/order apps, four masks and
 visually reviewed stock21 win/26 FIGHT rematch/45 second win pass, with
 82 balanced input events and 1,971,399 private PCM frames.
 
-The final audit verifies 17,941 frozen paths / 71,745 hash checks, 1,564 original
-native inputs, all 42 configurations, 41 archives, 1,722 native resource copies
-and the original 109-file manifest. Binary SHA-256:
-669d83dc9e1a32ec9948a65b6cf742ed9cc83f32bba165149fe312c90377eaa3.
-Records: temp/m4dd-final-evidence-audit.json and m4dd-final-visual-review.json.
 The latest full scoped run remains M4da 4,506/36. No previous strict renderer
 failure is waived. Remaining Explod fields/pools and other item 3 groups continue.
 

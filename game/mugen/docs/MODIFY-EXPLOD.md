@@ -122,7 +122,5 @@ snapshot; only two test files subsequently added alpha-grid coverage. Details
 are in HANDOFF.md. Full scoped races follow the Explod integration boundary.
 
 Ignored manifests begin `m4ck-{native,supp,sequence,check,policy,alpha}-inputs`.
-Native runs are `reference-runs/m4ck-*`; final comparison windows are
-`app-runs/m4ck3-*`. `m4ck3-app-audit.json` reports all differences and deliberately
-fails its strict alpha assertion. Earlier shader/compile attempts and m4ck4's
-reverted experiment remain diagnostics. Preserve them. No binaries are added.
+Earlier shader/compile attempts and m4ck4's reverted experiment remain
+diagnostics. Preserve them. No binaries are added.

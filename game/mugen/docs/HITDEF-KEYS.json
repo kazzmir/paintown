@@ -1,6 +1,5 @@
 {
   "checkpoint": "M4bt",
-  "reference_sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332",
   "documented": [
     "attr",
     "hitflag",

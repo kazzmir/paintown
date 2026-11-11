@@ -73,46 +73,24 @@ superseded.
 The original first captures sampled pre-round spawn positions because the clock
 seed lacked StateNo=700. That batch was interrupted and cleaned up; its copies
 remain diagnostic under temp. All final base expectations were rerecorded as
-native-controlled. The preserved 22-program pre-fix comparator fails 17 cases in
-`temp/m4ax-before-push.log`.
+native-controlled.
 
-Native logs are `m4ax-controlled-native.log`, `m4ax-math-native.log` and
-`m4ax-integration-native.log`. All 51 corrected integrated cases pass in
-`temp/m4ax-common-push.log`. Full scoped races pass in
-`temp/m4ax-full-race.log` (Match439.097 seconds). Six fresh native replays pass
-in `temp/m4ax-replays.log`, including precision, exact proximity, game640,
-deferred facing, own movement/freeze and the irregular400 profile.
-
-Ten actual 1280x720 captures from one identical binary pass source/binary/config/
-PNG/dimension/runtime checks; stock recovery retains two fighters without
-persistent dust. The five-mask comparison remains a failing render gate:
-stationary proximity-equal matches exactly (11,952 white pixels), while default,
-large, hitflip-left and PosFreeze differ by 567/471/933/567 pixels. Their native/
-Go white counts are 13,284/13,485, 16,443/16,566, 9,615/9,492 and 13,284/13,485.
-The isolated large-impulse fighter has equal horizontal mask bounds but different
-sampling; an integer translation does not resolve it. Do not loosen the checker
-or change correct simulation coordinates to fit these images. Investigate
-fractional sprite rendering next with stationary/moving original marker controls.
-Results and the explicit failing assertion are in `temp/m4ax-app-checks.json`
-and `temp/m4ax-app-checks.log`. The irregular400 window is inspected but has no
-whole-raster claim. This checkpoint closes the measured physics observations,
-not that outstanding renderer gate.
-
-Read-only disassembly corroborates the runtime probes for the pinned beta engine
-SHA-256 d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e:
-0x4342f0 compares absolute distances with the double constant 5 at 0x4fd908;
-0x43ec5d initializes the world impulse using the physical facing;
-0x43cc55 multiplies its double velocity by the float field initialized from
-0x4fda1c (0.699999988079071); 0x43cc8a compares the decayed magnitude with one.
-Disassembly/section tables stay disposable under temp. No executable is patched
-or committed, and executable observations remain the regression expectations.
+The five-mask comparison remains a failing render gate: stationary proximity-equal
+matches exactly (11,952 white pixels), while default, large, hitflip-left and
+PosFreeze differ by 567/471/933/567 pixels. Their native/ Go white counts are
+13,284/13,485, 16,443/16,566, 9,615/9,492 and 13,284/13,485. The isolated
+large-impulse fighter has equal horizontal mask bounds but different sampling; an
+integer translation does not resolve it. Do not loosen the checker or change
+correct simulation coordinates to fit these images. Investigate fractional sprite
+rendering next with stationary/moving original marker controls. The irregular400
+window is inspected but has no whole-raster claim. This checkpoint closes the
+measured physics observations, not that outstanding renderer gate.
 
 Other projectile interactions, helper/mixed-opponent/foreign/binding/multiple-hit/
 incoming-interruption combinations, moving-camera/zoom and all width/stage
 combinations remain open. Full HitDef, juggle/recovery/power/KO, assets, renderer
 and game modes are still tracked in the compatibility inventory. Reversal:
 7af38317 (M4aw). This checkpoint does not declare the port complete.
-
 
 ## Renderer follow-up
 

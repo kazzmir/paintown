@@ -63,7 +63,6 @@ baseline, retain failures, then add typed formatting, measured storage semantics
 and a real production renderer. Validate the new corpus and old effect/stock
 input/private-audio gates; document bounds and commit source/text only.
 
-
 ## Deterministic observer research
 
 The supplied `docs/readme.txt` hotkey table documents Pause and Scroll Lock

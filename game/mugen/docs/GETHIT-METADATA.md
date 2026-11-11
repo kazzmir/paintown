@@ -1,8 +1,5 @@
 # Received hit metadata (M4ca)
 
-Thirteen frozen beta1 programs comprise ten accepted controls / 120 observations
-and three load rejections, with 52 authored CNS/CMD/AIR/stage hashes. Native
-executable SHA256 is d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
 Inputs and exact numeric goldens are tests/testdata/reference/metadata-*;
 `TestNativeGetHitMetadata` replays them through production Match/Character.
 Accepted programs replay 45 active simulation passes, covering their last Time=30
@@ -35,11 +32,9 @@ family routing remains 109/127. These are routing metrics, not behavioral parity
 Native preparation uses reference_probe.py, --bank fvar --pages 0,
 --clipboard-in-cmd --mugenversion 1.1 --fixture-stage --stage probe-stage.
 Ordinary/combo/impact/lifetime/None/guard observations use five-second captures;
-KO acceptance uses ten seconds because five seconds captured before Time=8.
-Those early all-zero KO captures remain diagnostics under temp/reference-runs/.
-The first drafts rejected zoff, then hitid; originals/goldens stay unchanged.
-Unused drafts are retained under ignored temp/m4ca-unobserved-drafts/.
-All generated executables/images remain ignored; only source/text is committed.
+KO acceptance uses ten seconds because five seconds captured before Time=8. The
+first drafts rejected zoff, then hitid; originals/goldens stay unchanged. All
+generated executables/images remain ignored; only source/text is committed.
 
 Full Character/evaluator/engine races pass (12.195/1.021/1.494s). Focused Match
 races, fresh native reproduction and source/module audits are recorded in the

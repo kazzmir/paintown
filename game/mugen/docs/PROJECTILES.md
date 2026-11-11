@@ -67,12 +67,10 @@ each across pages. Twelve isolated sprite controls add native position deltas
 and exact white-body masks. Inputs and numeric goldens remain unchanged.
 
 The initial 15 sprite/fallback drafts used an empty background list, which beta
-rejects. Their 60 original inputs and raw captures are preserved unchanged in
-ignored temp/m4ce-rejected-empty-bg and reference-runs/. They are preparation
-diagnostics, excluded from feature acceptance. New projdraw-* replacements use
-the known-valid stage. The first Go development replay found one implicit
-height-bound default mismatch; its diagnostic log is retained and the corrected
-source passes the original native observation.
+rejects. They are preparation diagnostics, excluded from feature acceptance. New
+projdraw-* replacements use the known-valid stage. The first Go development replay
+found one implicit height-bound default mismatch; its diagnostic log is retained
+and the corrected source passes the original native observation.
 
 Focused Match races PASS 135.338s, including all new programs, 57 historical
 chain/juggle controls, legacy hit-velocity controls/counterexamples, Random and
@@ -89,11 +87,6 @@ private PCM provenance checks (82 balanced events). All 819 frozen source/
 probe/fixture/module hashes and root module guards pass. All sessions were
 awaited and no native/app/test clients remain at the checkpoint.
 
-Artifacts are ignored: m4ce-focused-match.log, m4ce-core.log,
-m4ce-final-inputs.json, m4ce-final-validation.json, m4ce-native-audit.json,
-m4ce-custom-app-audit.json and m4ce-app-evidence-audit.json in temp/.
-The last entire scoped race suite is M4cb; final allocated integration will
-repeat it with a deadline appropriate for the expanded native corpus.
 Source routing is now 112/127 trigger families (88.2%), 15 unbound.
 
 ## Remaining allocated work

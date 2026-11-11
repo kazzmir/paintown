@@ -107,19 +107,14 @@ The corrected customhit-entry-contact-native packet has an explicit hurtbox,
 pinned independent AIR hash and the observed 9200 clock. Other promoted inputs
 and the supplied distribution remain unchanged.
 
-Full scoped races pass in temp/m4ac-full-final-race.log; seven fresh native
-replays match. The production 1280x720 custom-entry smoke renders both actors
-through seven seconds, without runtime errors. Its authored victim uses
-320-resolution art in a 1280 profile and is correspondingly small. This window
-smoke does not establish framebuffer or stock throw parity. Root modules are
-unchanged. See BINDING.md, OWNERSHIP.md and CHECKPOINTS.md.
-The stock KFM/KFM720 regression window also runs at 1280x720 through seven
-seconds at temp/app-runs/customhit-stock-regression-go/, with both full-sized
-actors and no runtime errors. This remains a smoke check, not pixel parity.
+The production 1280x720 custom-entry smoke renders both actors through seven
+seconds, without runtime errors. Its authored victim uses 320-resolution art in a
+1280 profile and is correspondingly small. This window smoke does not establish
+framebuffer or stock throw parity. Root modules are unchanged. See BINDING.md,
+OWNERSHIP.md and CHECKPOINTS.md. This remains a smoke check, not pixel parity.
 
 Full stock throws still need facing/priority/Width and interrupted-binding checks;
 full state-machine and asset compatibility are not declared complete.
-
 
 M4ad subsequently runs the actual stock throw/common states and AIR, adds an
 initial-grab stamp and fixes saved contact poses and omitted fall-X handling.

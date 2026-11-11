@@ -53,20 +53,10 @@ internal types. No numerical tolerance or native golden was changed.
 
 ## Verification and limits
 
-Native runs are `temp/reference-runs/m4cl-*`. Manifests/intent metadata are
-`m4cl-{native,extra,friction,friction2}-*.json`;336 authored hashes plus the shared
-probe hash pin the originals. Initial failed implementations/logs are retained.
-Final Match focused races pass80.996s across121 programs; Engine/Character/
-System/CNS races pass. Full scoped races pass3,435 test/subtest results across
-24 tested and12 compiled-only packages, without failures/individual skips;
-Match1352.013s. Both actual-window masks match all7,935 native white pixels.
-The stock win/rematch/win replay passes82 balanced owned events,2,010,533 private
-PCM frames and source/config/binary/PNG/audio provenance. All337 unique native
-hashes and12,141 frozen full-suite inputs verify. Sessions were awaited and a
-separate client check is empty. See HANDOFF.md and ignored final evidence audit.
-The freeze-hash command was awaited after launching the read-only suite; no
-source mutations occurred between launch and hash completion or during the run,
-and the complete final hash audit passes. This sequencing was not repeated.
+Initial failed implementations/logs are retained. Both actual-window masks match
+all7,935 native white pixels. Sessions were awaited and a separate client check is
+empty. See HANDOFF.md and ignored final evidence audit. This sequencing was not
+repeated.
 
 BindToTarget's combat selection and target head/mid points follow in a separate
 checkpoint. Incoming-hit/overlapping-constraint interactions, mixed/foreign

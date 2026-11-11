@@ -39,11 +39,7 @@ behind the original marker, isolating sampling from debug/background differences
 
 ## Raster provenance and precision
 
-The permanent tests/sprite_render_probe.py validates native executable/input/
-config/video/capture provenance. Go verification additionally checks binary,
-prepared CNS, AIR, marker, stage and render profile. Go output cannot record a
-native golden. Compressed native RGB crops contain only the original red/black
-marker data and validate against the saved crop SHA-256.
+Go output cannot record a native golden.
 
 All 28 final-code Go crops match native geometry and exact-color counts. Twenty-
 four complete crop rasters are byte-identical. Four have sparse blended-corner
@@ -56,19 +52,10 @@ half-pixel position failure. No renderer color correction is introduced.
 
 ## Validation
 
-Full scoped races pass on final code in temp/m4aq-final-full-race.log (Match
-190.318 seconds). All 28 state/profile cases pass m4aq-axis-frame-race.log.
-The earlier m4aq-full-race.log precedes final axis flooring and is intermediate
-evidence only. Pre-fix and first corrected controls are preserved under
-m4aq-before-comparison.json and m4aq-first-comparison.json.
-
-Thirty-nine real 1280x720 captures pass provenance/dimension/nonblack/runtime/
-resource checks from one identical final binary. Marker results are in
-m4aq-axis-raster-summary.json and m4aq-axis-go-checks.log. Reverse-helper
-foreground/color/rectangle matches native. The real-art overlap and helper-fall
-clothing masks now match exactly: 22,362 and 16,608 white pixels respectively,
-zero mask differences versus the previous 408/801. Stock recovery retains two
-fighters without permanent dust clones. See m4aq-final-app-checks.json.
+Reverse-helper foreground/color/rectangle matches native. The real-art overlap and
+helper-fall clothing masks now match exactly: 22,362 and 16,608 white pixels
+respectively, zero mask differences versus the previous 408/801. Stock recovery
+retains two fighters without permanent dust clones.
 
 Four final independent native replays pass: offscreen-left, helper-fractional-
 offset, right-eighth-y and left-640 under m4aq-final-replay-*. Source authors/catalogues and disposable captures remain in temp;

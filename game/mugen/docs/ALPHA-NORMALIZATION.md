@@ -51,13 +51,9 @@ The final frozen source builds26 application windows:
   failed alpha crops. Their original2100-pixel crops and hashes are unchanged.
 - Five representative actor sampling crops remain byte-for-byte exact.
 
-GPU races pass1.809s; System/Character/Background/Effect races pass
-9.239s/10.991s/1.034s/1.010s. App hashes, selected definitions, prepared resources,
-configurations, binaries, PNGs and all frozen inputs verify. Final stock win/rematch/win is visually verified, with82 balanced owned input
+Final stock win/rematch/win is visually verified, with82 balanced owned input
 events and1,987,918 private PCM frames. All frozen source/module/app/inventory
-guards pass; sessions were awaited and a separate client check is empty. Final
-audit is temp/m4co-final-evidence-audit.json; HANDOFF.md records the checkpoint.
-Artifacts begin temp/m4co4; source-only and RGB-half trials use m4co1/m4co2.
+guards pass; sessions were awaited and a separate client check is empty.
 
 Rotation masks from M4ck are still unwaived. All drivers/backends, partial source
 alpha, color-effect composition, whole-frame filtering and the wider asset/

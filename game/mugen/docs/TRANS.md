@@ -52,16 +52,12 @@ No original was changed or overwritten to correct that setup.
 
 ## Verification boundary
 
-Native manifests are temp/m4cp-{native,extra,transition,published}-inputs.json;
-final promoted counts are temp/m4cp-promoted-summary.json. Core/GPU races pass (Engine1.426s/Character11.134s/System9.376s/Render1.666s/
-Effect1.011s), as do56-program Match races29.023s. All41 actual applications
-match native RGB crops exactly:108,675 pixels each/4,455,675 pixels total.
-All630 color samples match too. Stock win/rematch/win is visually inspected,
-with82 balanced events and1,943,231 private PCM frames. All607 final frozen
-source/app hashes,233 original/probe hashes and app/module/inventory guards
-pass. Sessions were awaited; a separate client check is empty. Final audit:
-temp/m4cp-final-evidence-audit.json. HANDOFF.md records continuation details. The existing540-sample GPU corpus verifies the
-shared alpha arithmetic independently of the new controller state/evaluation.
+All41 actual applications match native RGB crops exactly:108,675 pixels
+each/4,455,675 pixels total. All630 color samples match too. Stock win/rematch/win
+is visually inspected, with82 balanced events and1,943,231 private PCM frames.
+Sessions were awaited; a separate client check is empty. HANDOFF.md records
+continuation details. The existing540-sample GPU corpus verifies the shared alpha
+arithmetic independently of the new controller state/evaluation.
 
 These controls cover opaque indexed source sprites and the named AIR/controller
 combinations. Partial RGBA sources, every hitpause/foreign-state combination,

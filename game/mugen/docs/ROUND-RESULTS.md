@@ -36,9 +36,8 @@ allows WinPerfect; life loss before result commitment clears it.
 
 AssertSpecial roundnotover maintains a rolling deadline 19 passes ahead, rather
 than simply blocking a test of over.time. Holds of 5/30 passes with over.time
-10/90 pin both extending and shortening that configured deadline. Local EXE
-inspection corroborates the addition at 41530b..415314; disassembly stays in
-temp/. Final result holds keep native captures reviewable.
+10/90 pin both extending and shortening that configured deadline. Final result
+holds keep native captures reviewable.
 
 ## Late contact and self-KO
 
@@ -93,13 +92,9 @@ under race detection (Match 71.953s). Full Character/System/Stage races pass
 1.452/1.020/1.011/1.012s. The earlier integrated run failed only the subsequently
 corrected idle fall-flag assertion; it remains diagnostic, not a package pass.
 
-Three fresh native reproductions, three rebuilt applications/six captures and
-private stock PCM pass provenance. All three final application captures were
-visually inspected. PCM peak/RMS are 32768/2129.41 over 300,249 stereo frames;
-this proves device output, not native waveform/timing parity. Source manifest:
-temp/m4bv-final-production-inputs.json (277 Go/test/probe hashes). Final audit:
-temp/m4bv-final-evidence-audit.json. Application SHA256:
-f12ca932c50bdc7e4a2b845a26f21b47f0d5038fc1dc74e6e25b9d14a31418a7.
+All three final application captures were visually inspected. PCM peak/RMS are
+32768/2129.41 over 300,249 stereo frames; this proves device output, not native
+waveform/timing parity.
 
 The capture decoder now scans each image once for all rotating pages. All 1,740
 old clock observations and 420 initial Versus observations retain exact decoded
@@ -110,10 +105,8 @@ valid one-/three-win programs were authored and frozen independently. Native
 startup changes only FirstRun and line endings, checked against reconstructed
 prelaunch hashes and preserved postlaunch files.
 
-Original rejected range/empty-helper inputs, nine Quick-VS result programs,
-missing-spawn/held-hit probes and the malformed first-field runs remain in
-ignored temp/ with their preparation manifests and logs. Never rerun authors or
-promote these diagnostic observations into passing evidence.
+Never rerun authors or promote these diagnostic observations into passing
+evidence.
 
 M4bw complete input-driven matches/rematches and the final full scoped race
 suite now pass; see [COMPLETE-MATCHES.md](COMPLETE-MATCHES.md). Exact HUD/fade/audio timing, all pause/assertion interactions,

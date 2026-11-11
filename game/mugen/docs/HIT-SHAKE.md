@@ -37,14 +37,11 @@ the actual camera position. The renderer shifts the complete world surface
 and leaves the separately fitted HUD fixed.
 
 Twenty-six hitshake-* programs pin native numeric/default/error/order, clock,
-profile and guard/None behavior. Pre-native manifests are
-m4bs-prepared-inputs.json, m4bs-prepared-lifetime.json and
-m4bs-prepared-runtime-profile.json under ignored temp/. Inputs and numeric
-expectations remain unchanged. Seventeen static native render measurements
-pin the exact rigid displacement of all 7,935 receiver garment pixels. The
-probe also checks prepared P2 resources when mixed-profile fixtures use a
-separate opponent definition. Reference art/captures remain uncommitted.
-See HANDOFF.md for final validation results.
+profile and guard/None behavior. Inputs and numeric expectations remain unchanged.
+Seventeen static native render measurements pin the exact rigid displacement of
+all 7,935 receiver garment pixels. The probe also checks prepared P2 resources
+when mixed-profile fixtures use a separate opponent definition. Reference
+art/captures remain uncommitted. See HANDOFF.md for final validation results.
 
 The standalone EnvShake controller remains a stub with its own schema and
 interaction work pending. Broad simultaneous-request/helper/foreign/pause,

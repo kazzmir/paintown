@@ -47,15 +47,11 @@ original JSON/capture hashes and empty-world calibration. No original golden,
 region or tolerance was edited. This bounded crop does not claim a full frame
 or every clipped actor pixel. No Go image was used to generate these goldens.
 
-Manifests are temp/m4cq-{native,extra,constants}-inputs.json. Seven initial
-constant-offset fixtures had an incomplete Data block and failed before their
-controllers loaded. They remain unpromoted diagnostics under actordraw-extra-
-constant*. The separate actordraw-constants-* controls use full stock constants
-and all seven capture successfully. That driver's source hash list also included
-stock kfm.cns; after all seven captures it attempted to treat that provenance
-input as another fixture and raised KeyError. Fixture iteration now uses explicit
-metadata; m4cq-constants-audit.json verifies all seven captures and source hashes
-without re-recording them. No original input or native capture was changed.
+Seven initial constant-offset fixtures had an incomplete Data block and failed
+before their controllers loaded. They remain unpromoted diagnostics under
+actordraw-extra- constant*. The separate actordraw-constants-* controls use full
+stock constants and all seven capture successfully. No original input or native
+capture was changed.
 
 Read-only native disassembly corroborates these controls: AngleDraw parser
 4466ce/runtime44a37f, float32 angle storage at14bc and cumulative scale149c/14a0;
@@ -105,10 +101,7 @@ it does not advertise full framebuffer compatibility.
 The full-constant native resources expose a BOM following the preparer's leading
 newline. Go originally rejected that accepted native arrangement. The parser now
 accepts a BOM before its first section after leading blank lines, with a targeted
-regression. The launcher also uses temp/_tmp for disposable Go builds so recursive
-checks cannot discover interrupted ordinary temporary build directories. The committed
-read-only probe verifies crop hashes and source/resource/binary/config/PNG
-provenance without updating goldens:
+regression.
 
 ```bash
 python3 game/mugen/tests/drawing_render_probe.py \
@@ -122,9 +115,6 @@ serial. Final raster conformance, broader foreign-state/helper/pause/RGBA
 combinations and all platform backends retain explicit evidence boundaries.
 
 Final stock win/rematch/win is visually checked;82 balanced owned events and
-1,995,181 private PCM frames pass. All282 native and13,467 full-source inputs,
-application/resource/config/binary/PNG/audio/module/inventory guards verify.
-Sessions were awaited and separate client checks are empty. Final audit:
-temp/m4cq-final-evidence-audit.json, including explicit false for complete app
-RGB conformance. Continue remaining item3; source counts67 typed/22 fallback/
-10 stubs are not an overall engine percentage.
+1,995,181 private PCM frames pass. Sessions were awaited and separate client
+checks are empty. Continue remaining item3; source counts67 typed/22 fallback/ 10
+stubs are not an overall engine percentage.

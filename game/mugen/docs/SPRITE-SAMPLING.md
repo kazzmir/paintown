@@ -111,25 +111,14 @@ strict clothing masks match, including irregular400. Six fresh native replays
 pass, including five strict original crops. Stock throw recovery shows two
 fighters without lingering dust/effect clones.
 
-The67 app runs produced70 captures from one identical binary:
-b0f0dd90433fcc6958594341d9dd37e886f8b394f80e5b579eb5d1d8d0f33d7b.
-All binary/config/capture hashes and runtime/resource checks pass in
-m4ay-final-app-audit.json; detailed phase logs use m4ay-all-raster-final,
-m4ay-legacy-final, m4ay-corner-final-checks and m4ay-final-replays.
+All 37 integrated numeric programs pass. Root module checks pass, and no code/data
+outside game/mugen/ changed.
 
-Full scoped races pass in m4ay-full-race.log: Match 461.719 seconds and
-Character 10.938 seconds. All 37 integrated numeric programs pass. Root module
-checks pass, and no code/data outside game/mugen/ changed.
-
-The additional default HUD/world ramp check FAILS its color hashes while all
-rectangles match. Both288-pixel cores differ at256 pixels, maximum channel
-error22. The pre-M4ay binary and current binary produce the identical core SHA
-3b6d1fda45f45a849ae8a8e0e26db45d0b985d174f23082d1c04f590bde7cf6a,
-versus native 332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8.
-See m4ay-hud-baseline-checks.json. Those HUD/effect files were unchanged by M4ay:
-first-stage RGB images still use nearest filtering there, while native ramps
-are linear. This is an established pre-existing consumer gap, not a passed
-check. The probe stopped at default; stage0/stretch are prepared but unrun.
+Both288-pixel cores differ at256 pixels, maximum channel error22. Those HUD/effect
+files were unchanged by M4ay: first-stage RGB images still use nearest filtering
+there, while native ramps are linear. This is an established pre-existing consumer
+gap, not a passed check. The probe stopped at default; stage0/stretch are prepared
+but unrun.
 
 M4ay was committed as d572399f. M4az subsequently closes the three HUD/world
 ramp filtering profiles with the shared sampler; see RGB-CONSUMERS.md for its
@@ -141,10 +130,9 @@ The earlier48 original crops passed with the corrected RGB sampler; later fine
 controls exposed indexed rules absent from those coarse scenes. Prototype names
 include raw, ceil, filter, triangles, quantized, candidate, precision, centers,
 integer-lerp, even-lerp, local-uv, reverse-index, point4, coverage, padded and
-guard. They retain failed hypotheses and cannot overwrite native expectations.
-The final captures end go-m4ay-final. Earlier go-final/go-verified captures are
+guard. They retain failed hypotheses and cannot overwrite native expectations. The
+final captures end go-m4ay-final. Earlier go-final/go-verified captures are
 intermediate indexed evidence and must not be counted as final validation.
-Pure evaluator/CNS/engine/SFF/palette/coordinate races pass m4ay-pure-race.log.
 
 Full RGBA/alpha, other drivers/renderers, every scale/zoom/rotation/interpolation/
 foreign-resource combination, background rendering, all effects and whole-frame

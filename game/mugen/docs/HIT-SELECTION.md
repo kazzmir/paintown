@@ -41,25 +41,14 @@ distinguish root priority, root team ordering and helper creation order.
 ## Evidence and limits
 
 Original sources/goldens: tests/testdata/reference/hitselect-*.
-The first fifteen-program pre-fix comparison fails twelve cases in
-temp/m4ao-before-selection.log. The first integrated comparison passes 22 of 24
-programs and isolates bottom conversion and root ordering failures in
-m4ao-first-selection-race.log. Headless CNS/engine/evaluator races pass in
-m4ao-pure-race.log. All 28 programs pass in m4ao-second-selection-race.log. The
-full suite passes in m4ao-full-race.log (Match 167.428 seconds). Four fresh native
-replays pass: guard-once, replace-drop, helper-pair-team-order and invalid-team
-under temp/reference-runs/m4ao-replay-*.
 
-Seven real 1280x720 captures under temp/app-runs/hitselect-helper-order-go/
-(3/5/7 seconds) and hitselect-stock-throw-go/ (2/3/4/7) pass provenance,
-dimensions, nonblack and runtime/resource checks. Stock recovery retains two
-fighters without permanent dust clones. The overlapping helper scene's white
-clothing masks contain 22,362 native versus 22,626 Go pixels and differ at
-12,036 pixels. The foreground facing also differs at overlapping actors,
-pointing to a tied sprite-order problem that needs independent controls.
-Existing late clipped placement, native debug magenta versus Go black,
-background filtering and HUD differences remain open. These are smoke checks,
-not framebuffer parity. Measurements: temp/m4ao-app-comparison.json.
+Stock recovery retains two fighters without permanent dust clones. The overlapping
+helper scene's white clothing masks contain 22,362 native versus 22,626 Go pixels
+and differ at 12,036 pixels. The foreground facing also differs at overlapping
+actors, pointing to a tied sprite-order problem that needs independent controls.
+Existing late clipped placement, native debug magenta versus Go black, background
+filtering and HUD differences remain open. These are smoke checks, not framebuffer
+parity.
 
 This is not complete HitDef compatibility. Priority, cancellation, reversal,
 override/foreign/pause combinations, all hitflags/attributes, binding release

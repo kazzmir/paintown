@@ -47,23 +47,12 @@ The receiver snapshots attacker heading for the world-oriented X getter.
 One typed HitVelSet compiler handles flags and the coordinate conversion; the
 old registry adapter delegates to it.
 
-The initial 23-program comparison fails 14 cases in
-`temp/m4au-before-posture.log`. The first prototype's 28-program run preserves
-two parameter-order and two getter-sign failures in `temp/m4au-before-order.log`.
-The expanded native directions/flags are in `temp/m4au-facing-native.log` and
-`temp/m4au-hitvel-native.log`; initial/phase captures are in
-`temp/m4au-native-first.log` and `temp/m4au-extension-native.log`.
-Pure races pass in `temp/m4au-velocity-pure-race.log`. All 38 corrected integrated
-cases pass in `temp/m4au-world-fields.log`. The full scoped race suite passes in
-`temp/m4au-full-race.log` (Match 320.408 seconds). Six fresh native replays pass:
-inherited/explicit entry, parameter order, same-left world/facing velocity,
-computed-zero axis and literal-float rejection. Nine real 1280x720 captures
-from one identical binary pass source/definition/binary/config/PNG/dimension/
-runtime/resource checks. Five stable clothing masks match exactly: 11,181,
-11,181, 11,181, 16,563 and 8,379 white pixels. These include horizontal motion
-to the clipped edge and vertical motion. Stock throw recovery retains two
-fighters without persistent dust clones. Results: `temp/m4au-app-checks.json`
-and `temp/m4au-app-checks.log`. No whole-frame renderer claim is made.
+Six fresh native replays pass: inherited/explicit entry, parameter order,
+same-left world/facing velocity, computed-zero axis and literal-float rejection.
+Five stable clothing masks match exactly: 11,181, 11,181, 11,181, 16,563 and 8,379
+white pixels. These include horizontal motion to the clipped edge and vertical
+motion. Stock throw recovery retains two fighters without persistent dust clones.
+No whole-frame renderer claim is made.
 
 Full air/guard/down velocity schema, arbitrary cross-field side-effect ordering,
 paused/foreign/helper/multiple contact combinations, all recovery/juggle rules

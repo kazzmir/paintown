@@ -34,9 +34,7 @@ durations persist with the distinct beta suppression behavior below.
 
 ## Native layer behavior
 
-All68 accepted native captures are inspected in a native-only consumer table
-before the final rendering revision:temp/m4cu-native-layer-table.json. The
-manual's blanket foreground wording does not describe every measured branch.
+The manual's blanket foreground wording does not describe every measured branch.
 
 | Request | Base stage | Stage foreground | Actors / ordinary owned effects | Sampled HUD |
 | --- | --- | --- | --- | --- |
@@ -74,17 +72,13 @@ actor/stage/HUD/clear/outer samples,2,516 total. No Go output determined expecte
 colors, coordinates or crop hashes. All originals and failed diagnostics remain
 unchanged, with no tolerance adjustments.
 
-Engine1.450s/Character11.338s/System9.430s races and189 selected native programs
-(123.968s) pass. Later revisions change only fight drawing; the audit verifies
-controller/timeline/replay source identity explicitly. Final System races pass
-9.365s. All68 final m4cu4 applications match every crop pixel (31,715,200 pixels)
-and all2,516 color samples. Ten ordering/global-palette regression apps pass.
-Stock win/rematch/win is visually inspected, with82 balanced owned input events
-and1,972,229 private PCM frames. All final source/native/resource/binary/config/
-PNG/audio/module/inventory guards pass. No clients remain. Final audit:
-temp/m4cu-final-evidence-audit.json. Final app binary SHA-256:
-ba9e4b130873405e7ad44bfb4138489c79310a7c24c0eb6c199c6b4a89cf5d31. The latest full integration remains M4cs3,857 results/36 packages; a new
-full integration follows the EnvShake boundary.
+Later revisions change only fight drawing; the audit verifies
+controller/timeline/replay source identity explicitly. All68 final m4cu4
+applications match every crop pixel (31,715,200 pixels) and all2,516 color
+samples. Ten ordering/global-palette regression apps pass. Stock win/rematch/win
+is visually inspected, with82 balanced owned input events and1,972,229 private PCM
+frames. No clients remain. The latest full integration remains M4cs3,857
+results/36 packages; a new full integration follows the EnvShake boundary.
 
 The read-only `tests/env_color_render_probe.py` checks original source/native
 executable/capture, prepared resources, application binary/config/PNG, every
@@ -104,15 +98,11 @@ HUD clock variants and system-spark combinations remain explicit interaction
 gates. Source routing and these scoped observations are not whole-engine or
 platform conformance percentages. Continue EnvShake and all remaining item3.
 
-Completed private Go app stock assets share identical immutable SFF/SND/font
-bytes to conserve storage.43,003 paths released approximately5.06GB of distinct
-inode storage. Paths/content/hash/permissions are preserved; native resources,
-observations, screenshots and goldens are untouched. Private record:
-temp/private-go-asset-sharing.json.
+Completed private Go app stock assets share identical immutable SFF/SND/font bytes
+to conserve storage.43,003 paths released approximately5.06GB of distinct inode
+storage.
 
-The later storage pass shares another6,549 completed Go app asset paths,
-releasing775,967,115 distinct inode bytes with all paths/hashes preserved.
-Record:temp/private-go-asset-sharing-m4cu.json. Native files/captures/goldens
-remain untouched. Earlier verbose agent notes are archived in
-AGENT-STATE-HISTORY-M4CU.md; active AGENTS/HANDOFF now contain only current scope,
-constraints, evidence and next work, reducing repeated historical context reads.
+Native files/captures/goldens remain untouched. Earlier verbose agent notes are
+archived in AGENT-STATE-HISTORY-M4CU.md; active AGENTS/HANDOFF now contain only
+current scope, constraints, evidence and next work, reducing repeated historical
+context reads.

@@ -70,42 +70,29 @@ remaining field grammar/bottom/version cases remain open.
 
 ## Validation and remaining work
 
-The preserved implementation fails the original ten programs in
-temp/m4am-before-binding.log. The first integrated 27-program comparison has
-one flag mismatch in m4am-helper-first-race.log; a helper reading its already
-updated idle victim must see zero until its own completion. All 27 pass focused
-races in m4am-helper-second-race.log. Pure engine/evaluator races pass in
-m4am-pure-race.log. Full regression, window and fresh replay results are recorded
-with the checkpoint when complete.
+Full regression, window and fresh replay results are recorded with the checkpoint
+when complete.
 
-Disposable authors/catalogues: temp/author-helper-bind*.py and
-helperbind-*-cases.json. The first rejected drafts used unsupported IsBound;
-accepted inputs use GetHitVar(isbound). Those rejects remain only under temp,
-not in the passing corpus. The intentional p2facing float rejection identifies
-expected_compile_state=800. Stage camera is fixed at 80; push is disabled in
-the contact programs so it cannot masquerade as binding movement.
+The first rejected drafts used unsupported IsBound; accepted inputs use
+GetHitVar(isbound). Those rejects remain only under temp, not in the passing
+corpus. The intentional p2facing float rejection identifies
+expected_compile_state=800. Stage camera is fixed at 80; push is disabled in the
+contact programs so it cannot masquerade as binding movement.
 
 Still required: BindToParent/Root/Target, paused/frozen/foreign/mixed-unit binding,
 multiple targets, target CNS overrides between different update orders, binding
 cycles, helper/projectile contacts and complete retirement/combat lifecycles.
 
-Seven real 1280x720 app captures pass hashes/dimensions/nonblack/runtime-log
-checks: temp/app-runs/helperbind-idle-fall-go/ (3/5/7 seconds) and
-helperbind-stock-throw-go/ (2/3/4/7). The stock throw recovers with two fighters
-and no permanent dust clones. The helper probe takes the native fall path;
-its source intentionally omits standard state 5000 and retains that native
-warning. The stationary left sprite's clothing mask matches exactly. The late
-clipped right sprite starts at x=1003 in Go versus native 1004, with identical
-vertical bounds; white counts are 8316/8229 and the full mask differs at 801
-pixels. Late numeric position, mirrored placement and clipping still need an
-independent calibration. This is not full framebuffer parity. Native debug
-magenta/Go black and minimal background filtering differences remain open.
-Measurements: temp/m4am-app-comparison.json.
+The stock throw recovers with two fighters and no permanent dust clones. The
+helper probe takes the native fall path; its source intentionally omits standard
+state 5000 and retains that native warning. The stationary left sprite's clothing
+mask matches exactly. The late clipped right sprite starts at x=1003 in Go versus
+native 1004, with identical vertical bounds; white counts are 8316/8229 and the
+full mask differs at 801 pixels. Late numeric position, mirrored placement and
+clipping still need an independent calibration. This is not full framebuffer
+parity. Native debug magenta/Go black and minimal background filtering differences
+remain open.
 
-Full scoped races pass in temp/m4am-full-race.log. Fresh flag-prepost,
-fall-idle-speed, borrowed-unbound and facing-reverse-positive replays match all
-observations/hashes under m4am-replay-*; facing-float is verified separately as
-m4am-replay-facing-float-typed. The first wrapper omitted a required --pages
-value for an empty rejected packet; that argument-only failure remains in the
-log and the saved recipe now supplies page 0. No native discrepancy remains in
-the advertised numeric corpus.
+The first wrapper omitted a required --pages value for an empty rejected packet;
+that argument-only failure remains in the log and the saved recipe now supplies
+page 0. No native discrepancy remains in the advertised numeric corpus.

@@ -7,15 +7,13 @@ foreground/HUD/palette consumers.76 native programs pin816 values/eight rejects/
 31,715,200 crop pixels and2,516 color samples. Read [ENV-COLOR.md](ENV-COLOR.md)
 for native behavior that differs from the manual and preserved diagnostics.
 
-Core and189 selected native-program races pass; final System races9.365s pass.
 Ten strict ordering/palette regression apps and visually inspected stock
 win/rematch/win pass, with82 balanced owned events/1,972,229 private PCM frames.
-All final source/native/resource/binary/config/PNG/audio/module/inventory guards
-pass. Final audit:temp/m4cu-final-evidence-audit.json. Latest full integration
-remains M4cs3,857 results/36 packages; a fresh full boundary follows EnvShake.
-Source71/89 typed routes (79.8%),18 fallbacks,6 stubs,9 partial,14 bounded and60
-route-only families do not establish whole-engine coverage. No family is marked
-variant-complete. Continue EnvShake and ALL remaining item3; item4 is unallocated.
+Latest full integration remains M4cs3,857 results/36 packages; a fresh full
+boundary follows EnvShake. Source71/89 typed routes (79.8%),18 fallbacks,6 stubs,9
+partial,14 bounded and60 route-only families do not establish whole-engine
+coverage. No family is marked variant-complete. Continue EnvShake and ALL
+remaining item3; item4 is unallocated.
 
 M4cq implementation (2026-11-05) adds angle/scale/Offset production consumers,
 persistent native float32 angles, cumulative frame scales, partial offsets and
@@ -89,14 +87,12 @@ Item 4 remains unallocated. See [ITEM-3-PLAN.md](ITEM-3-PLAN.md).
 The full integration baseline is M4ch; older status paragraphs below are
 historical and do not supersede the current item 3 allocation.
 
-
 M4ch implements ReversalDef/MoveReversed with90 frozen programs,948 numeric
 replay readings and four genuine load rejections. All seven corrected actual-app masks match native.
 The seven render probes retain84 additional early clipboard readings. Source
 routes are120/127 (94.5%), seven unbound; no whole-engine percentage is justified.
 Full scoped races pass3,169 results across36 packages; fresh native/stock/provenance checks also pass. Read
 [REVERSALS.md](REVERSALS.md) and [HANDOFF.md](HANDOFF.md). Items3–4 remain unallocated.
-
 
 M4cg binds four typed projectile elapsed-time functions and three legacy indexed
 comparison families.51 frozen native programs pin456 values and13 rejections
@@ -105,7 +101,6 @@ this is not a whole-engine coverage percentage. Native cancellation uses only
 wildcard ID0 and excludes ProjContact; history ages at owner completion. Read
 [PROJECTILE-QUERIES.md](PROJECTILE-QUERIES.md). Reversal implementation follows.
 
-
 M4cf coordinate checkpoint completes foreign-state projectile units and per-actor
 render scaling. Eleven native programs /132 values /44 original hashes, three
 exact actual-app sprite masks, selected Match races192.297s, full core races,
@@ -113,7 +108,6 @@ fresh native payload and stock win/rematch/win/input/private-PCM/provenance chec
 pass. All355 frozen hashes/root module guards pass. Read
 [PROJECTILE-COORDINATES.md](PROJECTILE-COORDINATES.md). Source routes stay112/127;
 queries and reversals follow. No whole-engine percentage is justified.
-
 
 M4cf implements projectile hit/miss/hitpause clocks, active/visual-tail phases,
 Clsn2 cancellation/priority attrition, root capacity/config and helper birth
@@ -150,23 +144,6 @@ nine literal fields. This is 100% of that key inventory, not 100% behavioral
 compatibility or a whole-engine percentage. Broad interactions remain open.
 
 ## Measured progress
-
-| Scope | Current count | What it establishes |
-| --- | ---: | --- |
-| HitDef typed key inventory | 81/81 (100%) | 72 numeric schemas and nine literal schemas, with bounded native defaults/errors/order and consumers. HITDEF-KEYS.json and HITDEF-REMAINING.md. |
-| Controller registration | 89/89 (100%) | Dispatcher names only; 14 stubs and partial implementations remain. Typed routes are61/89; no full variant percentage follows. |
-| Trigger runtime routes | 120/127 (94.5%) | Candidate source handlers; seven absent, no family promoted to full variant conformance. TRIGGER-BINDINGS.md. |
-| Scalar clocks/random | HitPauseTime plus21 RNG controls/192 readings | Own pause clock, shared Park–Miller stream, VarRandom schemas/ranges/order and helper/redirect ownership. |
-| Projectile corpus |257 programs across setup/contact/coordinate/query slices | Typed setup and native lifecycle, cancellation/capacity/ownership/query behavior. Detailed bounded evidence in PROJECTILES.md, PROJECTILE-CONTACTS.md, PROJECTILE-COORDINATES.md and PROJECTILE-QUERIES.md. |
-| Reversal corpus |90 promoted programs, four rejections,948 numeric readings | Character reversals/counters/targets/pause/states, genuine projectile exclusion, four exact spark plus three surviving-projectile app masks.84 early clipboard readings remain separate. REVERSALS.md. |
-| GetHitVar routing | 34/36 manual entries (94.4%) | All 34 beta-accepted entries route; two reject at load. New metadata/liedown consumers have bounded native evidence. |
-| Trigger recognition | 127/127 (100%) | Vocabulary only; bindings/variants are not all complete. |
-| Loaded stock state programs | 216/216 (100%) | Both KFM variants and loaded common states compile; not all execution paths/interactions. |
-| KO/time-over clock corpus |29 programs/1,740 observations | Native slowdown, timer/pause boundaries, readiness and pose/reset clocks; ROUND-LIFECYCLE.md. |
-| Complete stock scenarios | Eight matches/18 rounds | Full-life logical/keyboard attacks, both winners, alternating wins, time draws and three repeated rematches. A separate rendered 2%-life replay reaches two result screens. Full scoped integration passes. COMPLETE-MATCHES.md. |
-| Results/reset corpus | 26 controls/1,560 observations | Native normal-mode results, holds, late damage/DKO, persistence and cleanup; ROUND-RESULTS.md. |
-| Process clocks and rate | Six programs/84 observations | Native same-process menu/match reentry, configured rate and one-on-one MatchNo; production CNS/keyboard handoff and wrap checks. ENGINE-CLOCK.md. |
-| Completed 27-key native corpus | 248 programs/3,144 numeric observations | Includes 36 target load rejections and 992 frozen CNS/AIR/CMD/stage input hashes across seven batches. 19 palette color/portrait, 17 contact-shake and 16 fall-shake render comparisons provide additional bounded evidence. |
 
 The counts have different denominators and must not be averaged. The original
 ASSESSMENT.md and inventory status columns in COMPATIBILITY.md are dated

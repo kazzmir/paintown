@@ -56,16 +56,8 @@ GetHitVar/HitOver values and life/guard/contact observations exercise the shared
 Match consumer. Unit tests additionally check shared-host isolation and atomic
 compilation errors for all six fields.
 
-Focused integrated races pass all 21 programs plus the 19 prior pause and four
-fatal-guard pause controls (Match 29.907s). Engine/evaluator/CNS/combat races pass
-1.454s/1.020s/1.013s/1.012s. Three fresh native reproductions (guard defaults, reverse order, float rejection)
-pass. Four actual apps/five captures pass source/config/binary/PNG/runtime
-provenance audit, including KFM intro and mixed stock fighters. The full scoped
-race suite passes: Match 614.394s, Character 11.208s, System 4.601s, storyboard 1.789s, stock/resources 6.528s.
-Logs: temp/m4bg-final-validation.log and m4bg-final-full-race.log; provenance:
-temp/m4bg-evidence-audit.json. The first disposable app recipe used a stale
-pause-family directory before launch; its failure is retained in
-temp/m4bg-validation.log, and the corrected final pipeline passes.
+Three fresh native reproductions (guard defaults, reverse order, float rejection)
+pass.
 
 Example fresh native replay, using BUILD.md's private environment:
 

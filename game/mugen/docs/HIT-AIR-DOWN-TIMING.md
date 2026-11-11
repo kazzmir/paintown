@@ -43,30 +43,13 @@ default leaks into the immutable source map.
 
 ## Evidence and verification
 
-Twenty-five original `hittiming-flight-*` text programs pin 336 numeric
-observations (overlapping clipboard pages included), three native load
-rejections and 100 authored input hashes. The expected values come from the
-unchanged 1.1b1 executable. Generated runs, captures, binaries and reference data
-stay in ignored temp/. Do not rerun temp/author-m4bh-times.py or derive native
-expectations from Go. Source hashes match temp/m4bh-prepared-inputs.json.
+The first three downed diagnostic runs used MAF without the required D flag: life
+remained 1000 and no contact occurred. The native recorder also checks life 990 (0
+for KO) before accepting a non-order result. The original reference distribution
+was never changed.
 
-The first three downed diagnostic runs used MAF without the required D flag:
-life remained 1000 and no contact occurred. They are excluded from acceptance;
-their sources/goldens are retained in temp/m4bh-before-down-hitflag/. Corrected
-down fixtures have new -contact names and source hashes. The native recorder
-also checks life 990 (0 for KO) before accepting a non-order result. The original
-reference distribution was never changed.
-
-All 25 new Match replays plus 21 ground/guard, 19 pause and four fatal-guard pause
-controls pass under race checks (Match 42.414s). Focused Character reference/
-pause/continuation checks pass 1.585s. Engine/evaluator/CNS/combat races pass
-1.426s/1.021s/1.014s/1.011s. Three fresh native reproductions (default,
-reversed order and float rejection) pass. Three actual apps/four captures pass
-source/config/binary/PNG/runtime provenance audit; the stock 7s image was
-visually inspected. The full scoped race suite passes: Match 648.043s,
-Character 11.516s, System 4.843s, storyboard 1.879s, stock/resources 6.625s.
-Logs: temp/m4bh-validation.log and m4bh-full-race.log. Provenance audit:
-temp/m4bh-evidence-audit.json.
+Focused Character reference/ pause/continuation checks pass 1.585s. Three fresh
+native reproductions (default, reversed order and float rejection) pass.
 
 Example fresh native reproduction using BUILD.md's private environment:
 

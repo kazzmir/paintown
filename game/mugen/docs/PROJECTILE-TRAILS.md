@@ -98,14 +98,6 @@ Fresh validation on the final source:
   native/config/binary/capture/audio provenance. An additional resource audit
   verifies109 original distribution files and6601 native resource copies.
 
-Audit records: temp/m4cz-final-evidence-audit.json,
-m4cz-reference-resource-audit.json and m4cz-final-stock-visual-review.json.
-Final application binary SHA256:
-`2ee879965eedf7ec4230c72c13b8fce8af8103d49bf746611b79bd90e0a69f94`.
-The last full36-package race run remains M4cy; this checkpoint adds focused
-core/native integration. Full scoped races remain required at subsequent shared
-integration boundaries and final item3 closure.
-
 ## Retained counterexamples and remaining work
 
 Initial baselines keep13 base numeric failures/eight app cases and99 additional

@@ -1,10 +1,6 @@
 # Legacy HitVel X/Y
 
-M4bx, predecessor/reversal `218e3106`. Target: the supplied Elecbyte
-M.U.G.E.N 1.1 beta 1 executable, SHA256
-`d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e`.
-The primary documentation is `temp/mugen-1.1b1/docs/trigger.html#hitvel`;
-native numeric controls resolve its ambiguous sign/unit description.
+M4bx, predecessor/reversal `218e3106`.
 
 ## Measured behavior
 
@@ -50,24 +46,20 @@ float32 values exactly. It also replays the three unchanged original projectile
 counterexamples in `known-divergences`, adding 180 original integer observations.
 Their legacy Y is now -24/Var(22)=-2400, without editing their inputs or goldens.
 
-Final validation results are recorded in HANDOFF.md and CHECKPOINTS.md.
-Pre-native manifests are `temp/m4bx-{pre-native,extra-pre-native,
-fraction-pre-native,valid-pre-native}.json`; final source/fixture manifest is
-`temp/m4bx-final4-inputs.json`. Do not rerun the author scripts. Native PNGs,
-prepared distributions, rejected inputs, logs and executables stay ignored.
+Final validation results are recorded in HANDOFF.md and CHECKPOINTS.md. Do not
+rerun the author scripts. Native PNGs, prepared distributions, rejected inputs,
+logs and executables stay ignored.
 
 The first preparation used an empty -1 state. Native's same-character cache
 accepted nine programs but separate-opponent loads rejected two; Go correctly
 rejected the empty state. Nine newly named `*-valid` programs add an inert
-controller and have fresh native observations. The mixed-profile replacements
-and a Turn replacement for the invalid FacingSet draft have distinct `*-v2`
-names. Original inputs/observations remain unchanged in
-`temp/m4bx-empty-negative-diagnostics` and `temp/m4bx-rejected-preparation`.
-The first three Go runs failed and remain diagnostic: the first found empty -1
-and precision issues; the second retained one redirected physical-velocity
-rounding failure; the third showed that reconstructing the physical game vector
-from local values cannot preserve its original precision. None is acceptance,
-and no tolerance was introduced.
+controller and have fresh native observations. The mixed-profile replacements and
+a Turn replacement for the invalid FacingSet draft have distinct `*-v2` names. The
+first three Go runs failed and remain diagnostic: the first found empty -1 and
+precision issues; the second retained one redirected physical-velocity rounding
+failure; the third showed that reconstructing the physical game vector from local
+values cannot preserve its original precision. None is acceptance, and no
+tolerance was introduced.
 
 ## Limits
 

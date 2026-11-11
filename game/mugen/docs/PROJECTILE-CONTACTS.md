@@ -4,14 +4,10 @@ Predecessor/reversal: 4b3ab498. This coherent contact/cancellation checkpoint pa
 through the authorized projectile/query/reversal scope;
 items 3–4 remain deferred. PROJECTILES.md records the completed M4ce boundary.
 
-91 frozen accepted native programs are promoted: projlife (33), projcancel
-(25), projdetail (14), projfollow (7), projphase (3), projclock (6), projend (3). The original
-input manifests and raw runs are ignored temp/m4cf-* / reference-runs/m4cf-*.
-Never edit observed CNS/CMD/AIR/stage files or their numeric outputs. An extra
-eight projspace-* profile/lifetime programs have 32 pre-frozen input hashes but
-are now captured and promoted, outside this commit. Three additional
-projspace-draw-* originals (12 hashes) are frozen but not observed yet. They
-belong to the next dependent coordinate slice.
+91 frozen accepted native programs are promoted: projlife (33), projcancel (25),
+projdetail (14), projfollow (7), projphase (3), projclock (6), projend (3). Never
+edit observed CNS/CMD/AIR/stage files or their numeric outputs. They belong to the
+next dependent coordinate slice.
 
 Native findings implemented in the current draft:
 
@@ -83,12 +79,6 @@ regions. A fresh priority-attrition native run reproduces all 12 values. Stock
 four-PNG win/rematch/win, 82 balanced owned events and private PCM pass source/
 config/binary/PNG/input/audio checks. All 755 frozen source/probe/fixture/module
 hashes and root module guards pass. All sessions were awaited; no clients remain.
-
-Artifacts are ignored temp/m4cf-{focused-match,core,core-all,final}.log,
-m4cf-final-inputs.json, m4cf-final-validation.json, m4cf-native-audit.json,
-m4cf-phase-app-audit.json and m4cf-app-evidence-audit.json. Last complete scoped
-race baseline is M4cb; the final allocated integration will rerun it with a
-longer package deadline for the expanded corpus.
 
 The dependent coordinate slice is now complete; see PROJECTILE-COORDINATES.md.
 Event queries and reversals follow. Broad effects/shadows, mode/team combinations,

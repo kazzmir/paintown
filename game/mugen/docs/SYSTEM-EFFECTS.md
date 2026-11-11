@@ -69,14 +69,10 @@ No controller implementation is chosen from blank captures alone.
 
 Native63922 completes/awaits zero; separate417-original-input/client guard passes.
 R3 full intent55009 passes/separate695-input guard. Earlier preflight44161 stops
-before Go/native/freeze because source mirrors were absent. R2 verifiers31898
-stop before native on an incorrect one-action assumption; canonical AIR has
-9999 and9100. Separate guards and original scripts/logs are retained. New R3
-helpers verify all headers/kinds/parameters/triggers and inherited resources.
-Records under temp: `m4dl-system-native-table.json`, `m4dl-system-native-only-review.json`,
-`m4dl-system-native-separate-guard.json`, six `m4dl-system-native-review-*.png`.
-The full authoring freeze is retained as a hashed JSON with source Gitc88d2a77;
-native-original hashes pin actual native inputs rather than mutable port paths.
+before Go/native/freeze because source mirrors were absent. R2 verifiers31898 stop
+before native on an incorrect one-action assumption; canonical AIR has 9999
+and9100. Separate guards and original scripts/logs are retained. New R3 helpers
+verify all headers/kinds/parameters/triggers and inherited resources.
 
 Earlier strict renderer/HUD/audio failures remain unwaived. This study is
 preparation, not completed controller coverage. Item3 continues autonomously.
@@ -192,10 +188,7 @@ M4dl final integration run; this section is a research queue, not coverage.
 
 ## Read-only executable guidance during final integration
 
-The unmodified supplied executable SHA256 is
-`d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e`.
-Static i386 disassembly provides probe design guidance, not additional observed
-coverage. No production/fixture/probe source was edited during the active run.
+No production/fixture/probe source was edited during the active run.
 
 MakeDust's parser branch at0x4479d6 assigns controller kind0xd7. Its first
 position format at0x4f7ed4 is `ii`; the second at0x4f7cc8 is `ff`. The spacing
@@ -226,7 +219,6 @@ alongside MakeDust, preserving the original84 expectations and the two current
 strict fractional RGB failures. The current bounded checkpoint does not close
 these previously unmeasured variants.
 
-
 Next GameMakeAnim controls should isolate8 live Explods then a common game cue,
 and8 game cues then one real Explod, with the native ExplodMax fixed at8 and RNG
 sentinels retained. Do not infer separate admission from an empty/expired scene.
@@ -241,30 +233,24 @@ consumers before describing their relative order. Preserve all old prototypes
 and misses. Native-side complete intent and all-row/image review still precede
 promotion, implementation and new actual applications.
 
-
 ## Completed acceptance records
 
 Full82340 completed/awaited1; separate20,046/20,043 frozen-input/client guard
 passes. Production Match passes2346.712seconds; all5,028 production results pass
 in36 packages. Archived snapshot diagnostics are independently reviewed:310
 missing resources,182 empty/missing fixture sets,28 propagated parent failures.
-These are validation-selection failures, never substituted for engine results.
-The exact original full-run launcher/inventory/report bytes are retained under
-temp/_tmp/m4dl-full-run-source with m4dl-full-run-source-versions.json; launcher
-bytes also match Gitc88d2a77. No original snapshot is moved or modified.
+These are validation-selection failures, never substituted for engine results. No
+original snapshot is moved or modified.
 
 Scope80797 completes/awaits0; separate20,044 current-input/client guard passes.
-Only package selection and inventory annotation changed after the full run; all
-production Go/test hashes are identical. Fresh launcher check compiles exactly36
-production packages and excludes all private archives. Passive auditor71972
-completes/awaits0, with all native originals, configurations, source versions,
-resources, pixels, app identity, input, PCM and module checks passing. Original
-strict exits remain1. Binaryecfaffcd50f6db11561c8e6285874c4af2bc4713169c85d68aafca87c04a48b1
-is shared by all72 new windows,9 older regressions and stock. No binary is added
-to Git. Final records: m4dl-final-evidence-audit.json, m4dl-final-visual-review.json,
-m4dl-matrix1-results.json, m4dl-archive-failure-final-review.json and both separate
-guards. Unpromoted17Dust,14nokotime,10direct renderer and3invalid walk rawsets
-stay unstaged. Continue the measured system-effect dependencies then all item3.
+Fresh launcher check compiles exactly36 production packages and excludes all
+private archives. Passive auditor71972 completes/awaits0, with all native
+originals, configurations, source versions, resources, pixels, app identity,
+input, PCM and module checks passing. Original strict exits remain1.
+Binaryecfaffcd50f6db11561c8e6285874c4af2bc4713169c85d68aafca87c04a48b1 is shared
+by all72 new windows,9 older regressions and stock.
+Unpromoted17Dust,14nokotime,10direct renderer and3invalid walk rawsets stay
+unstaged. Continue the measured system-effect dependencies then all item3.
 
 ## M4dm — independent game cues and native integer origins
 
@@ -321,12 +307,9 @@ percentage. MakeDust is still the sole source stub.
 
 ### MakeDust follow-up design after M4dm (unmeasured)
 
-Additional read-only disassembly separates the producers further. GameMakeAnim
-reads float presentation positions at character offsets 0x1434/0x1438 and adds its
-native game/stage origins before converting to integer. MakeDust's 0x44b4fa/
-0x44b553 paths instead read double positions at offsets 0x1f8/0x200, add each
-converted requested axis and its independent modulo-three jitter, then integerize.
-The first cloud is allocated through the ordinary pool before the second-cloud
+GameMakeAnim reads float presentation positions at character offsets 0x1434/0x1438
+and adds its native game/stage origins before converting to integer. The first
+cloud is allocated through the ordinary pool before the second-cloud
 presence/position expressions. No Game position helper should be shared with dust
 merely because both produce common sprites. Field identity and observed geometry
 still require separately frozen native controls; these excerpts are guidance.
@@ -346,7 +329,6 @@ actor/palette consumers remain required. These are planned experiments, not new
 coverage. New preparations must pass complete parsed intent and native-only
 all-row/image review before promotion, baseline or implementation.
 
-
 ## M4dm final acceptance and retained strict failures
 
 The complete new corpus has39/54 exact worlds (72.2%,19,843,200 exact RGB pixels).
@@ -361,33 +343,18 @@ fraction/single still fail41/18pixels at maximum one; all earlier obligations st
 UNWAIVED. Every one of56 native/Go pairs and14 full-scene sheets was reviewed.
 
 All five older palette/order applications and four shake-mask checks pass; their
-three full-scene sheets are reviewed. Stock win/rematch/win screenshots are also
-reviewed:82 balanced owned inputs and1,974,462 PCMframes (stereo44.1kHz), PCM SHA256
-4311fee96f646b78d6f2d0f2d39d85ca29a714f9996f4d15b87eaba3cbe60de2.
-All66 final applications share binary6cd51c6be3b39fd8f33f1cd094042adc908756f73b405402841ae97c9c4e4a2d;
-no executable is added to Git. Prior full-suite5,028/36 evidence remains historical;
-new production changes passed focused890core/205native results and all runtime gates
-other than the explicitly retained strict RGB and metadata exits.
+three full-scene sheets are reviewed. Prior full-suite5,028/36 evidence remains
+historical; new production changes passed focused890core/205native results and all
+runtime gates other than the explicitly retained strict RGB and metadata exits.
 
-Inventory precheck differed only in three production source hashes (game animation,
-ordinary pool count and scene admission); classifications stayed76typed/13fallback,
-1stub/9partial/19bounded/60route-only. The original final inventory exit1 is retained.
-After the whole-run guard, exact old report bytes were archived under
-`temp/_tmp/m4dm-final-run-source`, verified against Git1e712788, then regenerated.
-Fresh inventory/current-source checks pass61,128 frozen entries, with NO validated
-Go/test/probe/fixture/module edits. All native ledgers pass6,096 original path checks
-including the existing390-version Git/archive provenance exception. The auditor
-reconstructs all138 configurations,65 AIR appendices,54 full replacements, verifies
-5,658 native binary resource copies/109 canonical manifest files, captures, seeds,
-original programs, actual measured RGB differences and stock keys/PCM/modules.
+The original final inventory exit1 is retained. Fresh inventory/current-source
+checks pass61,128 frozen entries, with NO validated Go/test/probe/fixture/module
+edits.
 
-Private final records: `m4dm-final-evidence-audit.json`, `m4dm-final-visual-review.json`,
-`m4dm-final1-separate-guard.json`, `m4dm-current-metadata-separate-guard.json` and
-`m4dm-final-run-source-versions.json`. Passive audit7609 completed/awaited0. All
-baseline failures and scope corrections are preserved. MakeDust17, nokotime14,
-direct renderer10 and invalid walk3 raw programs remain unpromoted/unstaged.
-Continue MakeDust, clipboard, residual schemas/flags and item3 strict obligations.
-
+Passive audit7609 completed/awaited0. All baseline failures and scope corrections
+are preserved. MakeDust17, nokotime14, direct renderer10 and invalid walk3 raw
+programs remain unpromoted/unstaged. Continue MakeDust, clipboard, residual
+schemas/flags and item3 strict obligations.
 
 ## M4dn native dust research in progress (unpromoted)
 
@@ -424,10 +391,7 @@ The Go Match's internal PhaseTime splits are not automaticallynativeclock resets
 Next independent prime/intro/complete-KO controls will add only inertownAIR0 and
 state5000 toremovefixturewarnings. Resource/facing/profile/geometry/pool/helper/
 slot2/palette/actualoverlap and Pause/SuperPause/realframeclock consumers remain
-required before implementation. Native-only receipts and tables remain under
-`temp/m4dn-dustschema-*` and `temp/m4dn-dustphase-*`; no coverage percentage is
-claimed from preparatory raw files.
-
+required before implementation.
 
 ### M4dn complete native MakeDust corpus and scope corrections
 
@@ -463,7 +427,6 @@ Correction to earlier notes: enlarged KO warning is invalid **5080**, not5000;
 base own AIR actions are9999/9100, while9996 is common. Inert5080+Null in context
 probes removes the warning but does not implement a real death pose. Original
 erroneous interpretations/captures remain preserved with a correction receipt.
-
 
 ## M4dn implementation and final acceptance
 

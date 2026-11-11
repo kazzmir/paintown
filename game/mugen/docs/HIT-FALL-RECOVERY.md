@@ -57,37 +57,16 @@ or HitOver. Implementation follows the measured executable behavior.
 
 ## Evidence and validation
 
-Thirty original `hitfall-recovery-*` text programs pin 372 numeric observations
-(overlapping order pages included), five native load rejections and 120 authored
-input hashes. Expected values are recorded from the immutable 1.1 beta 1
-executable, never generated from Go. Sources are frozen against
-temp/m4bi-prepared-inputs.json. Do not rerun temp/author-m4bi-fall.py. Native
-runs/captures, generated apps and reference assets remain ignored in temp/.
+Three fresh native reproductions cover long shake, reversed order and a float
+rejection. These application checks establish smoke behavior, not full-frame
+native parity.
 
-Focused races pass all 30 new programs, 25 air/down, 21 ground/guard and 38
-forced-standing programs (Match 71.220s), plus recovery-command, Pause and
-SuperPause Character checks (1.386s). Three fresh native reproductions cover
-long shake, reversed order and a float rejection. Three actual apps/four
-captures pass source/config/binary/PNG/runtime provenance checks; the stock
-7s image was visually inspected for intact fighters, stage and HUD. These
-application checks establish smoke behavior, not full-frame native parity.
-Audit: temp/m4bi-evidence-audit.json. Shared application binary SHA256:
-79ea936dec430cfdd4318ca3e7a83543421e56040af6e7e8ac224c7a561bd596.
+The first focused run exposed missing typed trigger selectors, an air.fall order
+transcription error, and a missing Null controller in a unit fixture. No native
+expectations or tolerances changed.
 
-The first focused run exposed missing typed trigger selectors, an air.fall
-order transcription error, and a missing Null controller in a unit fixture.
-Those are corrected; the failed log remains temp/m4bi-initial-focused-race.log.
-The corrected log is temp/m4bi-focused-race.log. No native expectations or
-tolerances changed.
-
-The full scoped serial-package race suite passes in temp/m4bi-full-race.log:
-Match 640.740s, Character 11.000s, System 4.652s, storyboard 1.778s and
-stock/resources 6.510s. Compiler/evaluator/CNS/combat pass
-1.434s/1.020s/1.013s/1.012s. The final pipeline
-(temp/run-m4bi-validation.py, log temp/m4bi-validation.log) exited 0. All 12
-authored Go source hashes match their acceptance snapshot, and the root module
-baseline and original native executable hashes remain unchanged. No test,
-native or app client remains on the private display.
+Compiler/evaluator/CNS/combat pass 1.434s/1.020s/1.013s/1.012s. No test, native or
+app client remains on the private display.
 
 Example fresh native reproduction with BUILD.md's private environment:
 
@@ -97,11 +76,10 @@ python3 game/mugen/tests/reference_probe.py --fixture hitfall-recovery-shake-ins
 
 ## Remaining limits
 
-Expression routing is 50/81 documented HitDef keys (61.7%), with 31 still
-literal or absent. This is a schema metric, not engine completion. The current
-audit is temp/m4bi-hitdef-current-audit.json, freshly derived from the bundled
-manual and source order. Its checkpoint/percentage metadata correct the stale
-M4be metadata in the prior temp audit; the prior 46-key list was accurate.
+Expression routing is 50/81 documented HitDef keys (61.7%), with 31 still literal
+or absent. This is a schema metric, not engine completion. Its
+checkpoint/percentage metadata correct the stale M4be metadata in the prior temp
+audit; the prior 46-key list was accurate.
 
 This checkpoint establishes ordinary root/own-state contact and a bounded
 scripted recovery transition. It does not close full recovery physics, bounce,

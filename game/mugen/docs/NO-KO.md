@@ -69,17 +69,11 @@ client guards pass. Final32712 completes/awaits zero with all23 gates passing:
 - Stock21s win,26s rematch/FIGHT,45s second win viewed;82 balanced keys and
   1,973,087 private PCM frames with nonzero peak/RMS.
 
-Separate final/matrix/revision input/client guards verify77,773 frozen hashes.
 The passive auditor completes/awaits zero, checking19,448 unique frozen paths,
 3,506 immutable original paths,44 exact native configurations,41 canonical
-resources/1,804 native resource copies and109 distribution manifest files.
-It explicitly retains/checks the14 unpromoted GameTime diagnostics and correction
-records. Every new/older/stock application uses the same production executable:
-`e2b8ade2787edf7bff5adc1fc321a80ac218228da9d231827e8058cf086cab58`.
-No executable or asset binary is committed. Records in temp:
-`m4dj-final-evidence-audit.json`, `m4dj-final-visual-review.json`,
-`m4dj-final1-separate-guard.json`; original failures and intermediate captures
-remain immutable. No region, threshold or earlier expectation changed.
+resources/1,804 native resource copies and109 distribution manifest files. It
+explicitly retains/checks the14 unpromoted GameTime diagnostics and correction
+records. No region, threshold or earlier expectation changed.
 
 M4dk subsequently measures [NoKO voice/echo behavior](NO-KO-AUDIO.md).
 Helper/projectile assertion contexts,

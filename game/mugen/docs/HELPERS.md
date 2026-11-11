@@ -92,27 +92,20 @@ establish automatic state 190 entry or complete round/end/skip timing.
 
 ## Evidence and remaining work
 
-Inputs/goldens: tests/testdata/reference/helpercfg-*. Disposable recordings:
-temp/reference-runs/helpercfg-*; corrected pause programs use native-flow-final.
-Authors/catalogues: temp/author-helpercfg*.py and helpercfg-*-cases.json.
-Native CNS -1 shadows CMD -1. The replay runner checks CMD hashes and merges
-sidecars with that same file priority.
+Inputs/goldens: tests/testdata/reference/helpercfg-*. Native CNS -1 shadows CMD
+-1.
 
-Initial failures remain in temp/m4aj-helper-first-race.log and
-m4aj-helper-second-race.log. First 65 corrected programs passed in
-m4aj-helper-third-race.log. Final integration/window/replay results are recorded
-with the checkpoint in CHECKPOINTS.md.
+Final integration/window/replay results are recorded with the checkpoint in
+CHECKPOINTS.md.
 
 Still required: contacts against opposing helpers, multi-contact priority/push,
 recursive/orphan/binding/effect/sound retirement, ownpal/remappal RGB, positive
 input, foreign ownership, paused creation and complete world phases. Projectiles
 remain legacy adapters. No whole helper/controller gate is declared complete.
 
-Real 1280x720 windows at temp/app-runs/helper-size-go/ (2/4/7 seconds) and
-helper-stock-throw-go/ (2/3/4/7) pass all seven capture hash/dimension/nonblack
-checks, with no runtime/missing-resource errors. The scaled helper's white
-clothing occupies exactly [643,401,943,499) in both native and Go, with 10,381
-thresholded pixels in each. This pins the measured 2.5/.5 scale and nonzero Y;
-it is not full framebuffer equivalence. Native debug magenta versus Go black
-outside the minimal stage, background filtering and other rendering rules
-remain open. The inspected stock recovery has two fighters and no dust clones.
+The scaled helper's white clothing occupies exactly [643,401,943,499) in both
+native and Go, with 10,381 thresholded pixels in each. This pins the measured
+2.5/.5 scale and nonzero Y; it is not full framebuffer equivalence. Native debug
+magenta versus Go black outside the minimal stage, background filtering and other
+rendering rules remain open. The inspected stock recovery has two fighters and no
+dust clones.

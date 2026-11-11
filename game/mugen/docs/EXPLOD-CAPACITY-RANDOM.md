@@ -5,14 +5,6 @@ admission and displacement consumers described below. M4de checkpoint: 3649165.
 
 ## First 28 native programs
 
-All 28 complete state/controller/resource intents were verified before recording.
-Original 118 source/recipe hashes and all earlier originals were guarded during
-the native batch. Session 68967 completed with observed exit 0; a separate
-1,875-original-input/client guard passed. Every native-only numeric/color/geometry/
-seed row and all five full-body sheets were reviewed before any promotion/fix.
-There are 25 accepted controls / 300 numeric values and three load rejections.
-These observations were subsequently promoted once with the other groups.
-
 Configured ExplodMax -1, 0, 1 and 8 all admit eight persistent objects from twelve
 requests; 9 admits nine and 16 admits all twelve. Every accepted object has its
 complete portrait visible, with 4,284 foreground pixels each. Animation, ownpal
@@ -42,12 +34,10 @@ facing, helper/opponent sharing, lifetime and saturated draws need follow-ups.
 Nineteen separately authored controls have fully verified state headers, all
 controller kinds/triggers/params, helper/opponent state additions and unchanged
 AIR/CMD/stage resources. The verifier completed with observed exit 0 and a
-separate 431-input/client guard passed. Native session 98018 completed with observed exit 0. Frozen
-original map: temp/m4df-extra-original-inputs.json (82 entries); combined guard:
-temp/m4df-extra-inputs.json (1,955 entries). All observations were reviewed before promotion or changes.
+separate 431-input/client guard passed. Native session 98018 completed with
+observed exit 0. All observations were reviewed before promotion or changes.
 
-Probe recipes, raw captures, seed logs and diagnostics remain ignored under
-temp/. Native originals and comparison tolerances remain immutable. Broader
+Native originals and comparison tolerances remain immutable. Broader
 system/hitspark pool interactions and final shared renderer obligations remain
 open after the first-look probes.
 
@@ -135,13 +125,7 @@ previous shared renderer failures remain unwaived; no sampling code or tolerance
 changed. Stock win → rematch → win is visually reviewed with 82 balanced input
 events and 1,971,594 private stereo PCM frames.
 
-The passive audit verifies 18,498 unique current frozen paths / 73,973 hash
-checks; 2,036 original input paths including unpromoted direct controls; all 53
-configuration finalizations; 41 canonical archives; 2,173 native resource copies;
-and all 109 original manifest files. Validated executable SHA-256:
-22c20d06d6da49c4779e8d193ee98dfc273f7c7790fa554dae6ebd647cba6577.
-Runtime artifacts and executables remain ignored. Records:
-temp/m4df-final-evidence-audit.json and temp/m4df-final-visual-review.json.
+Runtime artifacts and executables remain ignored.
 
 This is bounded Explod/hitspark evidence, not whole-engine compatibility. System/
 motif SysExplodMax behavior, wider resource/profile/foreign-state combinations,

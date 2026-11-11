@@ -51,13 +51,8 @@ entry rule does not establish all fall-defence/state-number behavior.
 
 ## Evidence and limits
 
-Sixty-five hitliteral-* programs freeze 260 CNS/AIR/CMD/stage source hashes
-before native execution. The manifests are retained under ignored temp/ as
-m4bo-prepared-inputs.json, m4bo-prepared-extra.json, m4bo-prepared-last.json,
-m4bo-prepared-clocks.json, m4bo-prepared-none-air.json and
-m4bo-prepared-trip.json. Recorded JSON observations are replayed through the
-production Match/Character runtime. Native expectations and tolerances are
-unchanged. Source, captures and original-executable provenance are checked.
+Recorded JSON observations are replayed through the production Match/Character
+runtime. Native expectations and tolerances are unchanged.
 
 Native records contain684 numeric observations and eight load rejections.
 Focused Match races pass55.619s; broader selection/flag/forced-standing/stock

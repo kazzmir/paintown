@@ -1,10 +1,8 @@
 # HitDef priority, counters and interrupted targets
 
-M4ar uses the supplied beta executable and original `hitclash-*` CNS/AIR/CMD/
-stage programs. The local `docs/sctrls.html` priority table and `trigger.html`
+The local `docs/sctrls.html` priority table and `trigger.html`
 HitCount/UniqHitCount entries are the starting specification; observations pin
 defaults, parser boundaries, tick behavior and target ownership separately.
-Reference binaries and stock art remain under ignored `temp/`.
 
 ## Measured rules
 
@@ -65,32 +63,22 @@ is introduced.
 
 ## Validation
 
-The final corpus contains 63 programs, 996 numeric observations, five native
-load rejections and 252 authored input hashes. The first 52 programs pass race
-comparison in `temp/m4ar-first-clashes.log`; parser/CNS/evaluator races pass in
-`temp/m4ar-first-pure-race.log`. The expanded pre-order comparison has three
-failing programs with target-list differences; no priority winner, damage or
-counter mismatch. `temp/m4ar-expanded-before-order.log` preserves that evidence.
-All 63 programs pass race comparison after receiver ordering in
-`temp/m4ar-ordered-clashes.log`. The full scoped race suite passes in
-`temp/m4ar-full-race.log` (Match 231.848 seconds). Six fresh native replays pass:
-redirect, signed numhits, bound interruption, reverse helper trade, hitonce after
-a lost root clash and literal-float rejection.
+The expanded pre-order comparison has three failing programs with target-list
+differences; no priority winner, damage or counter mismatch. Six fresh native
+replays pass: redirect, signed numhits, bound interruption, reverse helper trade,
+hitonce after a lost root clash and literal-float rejection.
 
-Sixteen real 1280x720 captures from one identical Go binary pass binary/config/
-prepared-source/PNG/dimension/nonblack/runtime/resource checks. Stock throw
-recovery displays two fighters without persistent dust clones. Higher-priority,
-no-hit and helper-trade white clothing masks match exactly (11,181/11,181/19,515
-pixels). Bound release has 12,501 native versus 12,528 Go white pixels and 6,099
-mask differences, with a different foreground facing in the overlap. This is
-recorded in `temp/m4ar-app-checks.json`; it does not invalidate the separate
-state/target observations. At M4ar, HitDef p1sprpriority/p2sprpriority were
-unimplemented. M4as isolates them with original markers and resolves the gap:
-12,501 white pixels in both scenes and zero mask differences, without a
-coordinate change. See CONTACT-DRAW.md. Full framebuffer parity remains open.
-An initial helper diagnostic was mistakenly put in root-only state -3; its
-all-zero helper page is diagnostic only and was replaced by positive-state
-publication. Root results independently distinguish priority outcomes.
+Stock throw recovery displays two fighters without persistent dust clones.
+Higher-priority, no-hit and helper-trade white clothing masks match exactly
+(11,181/11,181/19,515 pixels). Bound release has 12,501 native versus 12,528 Go
+white pixels and 6,099 mask differences, with a different foreground facing in the
+overlap. At M4ar, HitDef p1sprpriority/p2sprpriority were unimplemented. M4as
+isolates them with original markers and resolves the gap: 12,501 white pixels in
+both scenes and zero mask differences, without a coordinate change. See
+CONTACT-DRAW.md. Full framebuffer parity remains open. An initial helper
+diagnostic was mistakenly put in root-only state -3; its all-zero helper page is
+diagnostic only and was replaced by positive-state publication. Root results
+independently distinguish priority outcomes.
 
 | Group | Programs | Numbers | Rejections |
 | --- | ---: | ---: | ---: |
@@ -101,15 +89,6 @@ publication. Root results independently distinguish priority outcomes.
 | Signed/typed numhits, override and bound interruption | 7 | 144 | 1 |
 | Helper/reverse-team and hitonce clashes | 9 | 216 | 0 |
 | State-entry counter persistence | 2 | 48 | 0 |
-
-Replay a program with a fresh run name using `tests/reference_probe.py`,
-`--fixture hitclash-NAME --fixture-stage --bank fvar --mugenversion 1.1
---clipboard-in-cmd --pages ... --seconds 7`. Use each JSON's capture page list;
-the rejected programs use page 0. The helper/reverse-team programs require both
-pages 0 and 12. Normal helper snapshots are published from their positive
-states; root-only negative-state snapshots cannot substitute for that evidence.
-`TestNativeHitClashes` replays all committed observations through the production
-match loop and checks all four authored source hashes per program.
 
 Full priority/protection/custom-state/projectile/pause/team-mode combinations,
 all remaining HitDef schema fields, combo HUD behavior and complete engine/

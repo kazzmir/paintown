@@ -48,12 +48,8 @@ shared with the existing runtime.
 
 ## Evidence and limits
 
-39 hitconstraint-* programs pin 588 observations, seven native load rejections
-and 156 pre-native CNS/AIR/CMD/stage hashes. Ignored manifests:
-m4bq-prepared-inputs.json, m4bq-prepared-extra.json,
-m4bq-prepared-routing.json, m4bq-prepared-offset-profile.json and
-m4bq-prepared-entry-routing.json. Each new input was frozen before native
-execution. Expected values and tolerances were never changed.
+Each new input was frozen before native execution. Expected values and tolerances
+were never changed.
 
 Focused races, related binding/facing/down-hit/sweep regressions, full Character,
 core/native/app provenance results are recorded in HANDOFF.md. The final scoped

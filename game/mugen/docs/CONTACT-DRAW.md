@@ -34,27 +34,15 @@ sprite projection consume those priorities; no renderer offset is added.
 
 ## Validation
 
-The corpus contains 23 programs, 252 numeric observations, two native load
-rejections, 21 native foreground identities and 115 authored input hashes.
-The pre-fix run in `temp/m4as-before-draw.log` fails 14 programs with ignored-
-field/parser differences. All 23 corrected focused cases pass in
-`temp/m4as-fields-draw.log`. The full scoped race suite passes in
-`temp/m4as-full-race.log` (Match 247.463 seconds). Native source
-captures are in `temp/m4as-native-first.log`. Pure races pass in
-`temp/m4as-first-pure-race.log`.
-
 Four fresh native replays pass: helper override, get-hit entry, computed P2 field
 and literal-float rejection. The extended Go marker checker also passes the
-previously verified M4aq reverse-helper capture and rejects Go record mode.
-Twenty-two final 1280x720 app captures from one identical binary pass source/
-binary/config/PNG/dimension/runtime/resource checks. Six accepted marker scenes
-match exact native RGB/ID/count/bounds, including helper override and entry
-precedence. All four real-art clothing masks match exactly: 11,181/11,181/19,515/
-12,501 white pixels. The bound-release gap falls from 6,099 to zero with no
-coordinate/sampling change. Stock throw recovery retains two fighters without
-persistent dust clones. Evidence: `temp/m4as-app-checks.json` and
-`temp/m4as-app-checks.log`. Native debug backgrounds/HUD and complete framebuffer
-parity remain outside these actor-only comparisons.
+previously verified M4aq reverse-helper capture and rejects Go record mode. Six
+accepted marker scenes match exact native RGB/ID/count/bounds, including helper
+override and entry precedence. All four real-art clothing masks match exactly:
+11,181/11,181/19,515/ 12,501 white pixels. The bound-release gap falls from 6,099
+to zero with no coordinate/sampling change. Stock throw recovery retains two
+fighters without persistent dust clones. Native debug backgrounds/HUD and complete
+framebuffer parity remain outside these actor-only comparisons.
 
 `tests/actor_render_probe.py` now accepts hitdraw fixtures and can verify actual
 Go app captures with `--go-run`. It checks original input hashes, prepared CNS/

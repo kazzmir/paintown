@@ -20,9 +20,9 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Indexed sprite and shadow alignment**
 - [x] **Finite and overlapping alpha composition**
 - [x] **Ordinary KO echo playback**
-- [x] **SF2 selection and legacy character loading**
+- [x] **Legacy selection and character loading**
 - [x] **Rendered selection/VS and legacy bounce recovery**
-- [x] **SF2 later-round initialization script repairs**
+- [x] **Legacy later-round initialization diagnosis**
 - [x] **Crossover command and walking turns**
 - [x] **Stable held guard and movement exits**
 - [x] **Visible incoming character-intro effects**
@@ -73,11 +73,11 @@ and Git history; this checklist records completion without repeating run logs.
 - [x] **Options input configuration through gameplay**
 - [x] **Options layout and font consumers in HD motifs**
 - [x] **Direct training, watch and partner match entry**
-- [x] **HD screenpack loading, portrait requests and palette alpha**
-- [x] **HD fight backgrounds and native legacy text admission**
+- [x] **High-resolution screenpack and palette compatibility**
+- [x] **Sparse HUD components and legacy text admission**
 - [x] **Debug player activation and target PNG screenshot format**
 - [x] **Usable Options in artwork-only menu motifs**
-- [x] **HD projectile syntax and empty effect lifecycle**
+- [x] **Legacy projectile syntax and empty effect lifecycle**
 - [x] **Lazy character and campaign storyboard admission**
 - [x] **Victory portrait window in motif coordinates**
 - [x] **Authored result and campaign font colors**
@@ -146,7 +146,7 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; no further SF2 mod repairs are planned. (item4)
+- [ ] Complete font, media and asset compatibility. **partial** — Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; third-party script repair is outside engine implementation. (item4)
 - [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Concrete remaining result consumers include wintext/winstext.layerno and Survival roundstowin pose policy. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms

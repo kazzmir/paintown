@@ -4,13 +4,6 @@ The user authorized all 27 keys remaining after 24b3ebd0, with local checkpoint
 commits and continued iteration until complete or blocked. All authored work
 stays under game/mugen/. No push or new binary file is authorized.
 
-The allocation is complete through M4bt. All 81 documented keys have typed
-schemas: 72 numeric plus nine literal. Final scoped races, native replays and
-production captures pass. Across seven batches: 248 programs, 3,144 numeric
-observations, 36 load rejections and 992 frozen input hashes. See
-[HITDEF-KEYS.json](HITDEF-KEYS.json) and [HANDOFF.md](HANDOFF.md). Broader engine
-and interaction gates remain open. The counts below record checkpoint history.
-
 Initial count: 54 expression keys, 18 remaining numeric keys and nine literal
 keys out of the manual's 81 entries. Literal enum/flag fields need schemas,
 not numeric expression evaluation. Counts do not establish complete behavior

@@ -47,38 +47,24 @@ Fresh native verification also checks the numeric observations. Native width
 and height may be omitted: their documented fallback is the configured game
 size, and the captured window must still be exactly 1280x720.
 
-Two failures were preserved before their fixes. `temp/m4bc-before-fill.json`
-records 8,000 differing pixels (native magenta, Go black). The first float
-boolean implementation passed the seven integer/profile cases but failed the
-`.5` control: all 8,000 pixels were magenta instead of black. That capture and
-`m4bc-half-before-check.log` remain diagnostic evidence. No precision allowance
-or native golden change was used to make Go pass.
+Two failures were preserved before their fixes. The first float boolean
+implementation passed the seven integer/profile cases but failed the `.5` control:
+all 8,000 pixels were magenta instead of black. No precision allowance or native
+golden change was used to make Go pass.
 
-All12 final app runs/15 captures pass input, binary, configuration, PNG and
-runtime checks. Eleven exact color regions (88,000 pixels) and33 viewport
-samples match. Binary48df6ff9c82e06c1f73b459cd3265a0ceaef0edd18ec9310eda8a22e6b2c5548
-is identical across the final runs. Results are in m4bc-final-app-audit.json.
-Four fresh native programs reproduce numeric and pixel observations: half,
-negativehalf,stage0,onehalf (m4bc-replays.log). Sequential scoped races pass
-in m4bc-scoped-race.log: System4.713s, stock tests6.502s; stage builds. Pipeline
-44482 completed exit0, including root module checks. Stock7s was inspected:
-two recovered fighters, no persistent effects. The preceding full M4bb suite
-passed before this isolated stage change (Match618.564s). Reversal is9ef4c313.
-General background controllers, foreground/tint/pause combinations, six M4az
-alpha precision gates, and complete renderer/asset/mode compatibility remain
-open.
+Eleven exact color regions (88,000 pixels) and33 viewport samples match.
+Binary48df6ff9c82e06c1f73b459cd3265a0ceaef0edd18ec9310eda8a22e6b2c5548 is
+identical across the final runs. Pipeline 44482 completed exit0, including root
+module checks. Stock7s was inspected: two recovered fighters, no persistent
+effects. The preceding full M4bb suite passed before this isolated stage change
+(Match618.564s). Reversal is9ef4c313. General background controllers,
+foreground/tint/pause combinations, six M4az alpha precision gates, and complete
+renderer/asset/mode compatibility remain open.
 
 ## Reproduction
 
 From the repository root with the private display/audio environment in BUILD.md,
 use fresh run names. This verifies existing goldens without recording them:
-
-```sh
-python3 game/mugen/tests/reference_probe.py --fixture stageclear-one --name stageclear-one-check --fixture-stage --bank fvar --mugenversion 1.1 --clipboard-delay 0 --pages 0 --seconds 7
-python3 game/mugen/tests/stage_clear_probe.py --fixture stageclear-one --native-run stageclear-one-check
-python3 game/mugen/tests/app_smoke.py --name stageclear-one-go-check --reference game/mugen/temp/reference-runs/stageclear-one-check/stock --match chars/kfm/kfm.def chars/kfm/kfm.def --stage stages/probe-stage.def --motif data/mugen1/system.def --width 1280 --height 720 --seconds 5
-python3 game/mugen/tests/stage_clear_probe.py --fixture stageclear-one --go-run stageclear-one-go-check
-```
 
 Native/app/test clients run sequentially. Explicit video overrides must match
 the pinned profile when reproducing stage0/stretch cases.

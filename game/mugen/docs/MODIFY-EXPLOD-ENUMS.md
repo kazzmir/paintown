@@ -29,16 +29,12 @@ across 9,667,200 RGB pixels (100% of this named corpus). Focused races pass
 apps, four contact/fall masks, and visually reviewed stock win/rematch/win pass,
 with 82 balanced input events and 1,972,972 private PCM frames.
 
-All 24 individual final gates record exit zero. The original outer session
-20518 became unrecoverable across context recovery; its outer exit was not
-observed. A separate elevated guard verifies no clients and 37,195 hashes from
-the 18,599-path main and 18,596-path nested maps. Passive audit passes 18,600
-unique final paths, 2,071 immutable original inputs, all 20 exact configurations,
-41 canonical resources, 820 native resource copies and all 109 manifest files.
-All 19 pairs, nine older images and three stock captures were visually reviewed.
-Records: temp/m4dg-final-evidence-audit.json, m4dg-final-visual-review.json and
-m4dg-final1-separate-guard-recovery.json. Validated app binary SHA256:
-`d7f3eeb193e98d2d9725d5d4c6edea59e5e4af601c470fcc5a9779c6551751b6`.
+All 24 individual final gates record exit zero. The original outer session 20518
+became unrecoverable across context recovery; its outer exit was not observed.
+Passive audit passes 18,600 unique final paths, 2,071 immutable original inputs,
+all 20 exact configurations, 41 canonical resources, 820 native resource copies
+and all 109 manifest files. All 19 pairs, nine older images and three stock
+captures were visually reviewed.
 
 Latest full integration remains M4df: 4,743 results across 36 packages, at the
 preceding source boundary. This narrow token fix uses focused acceptance. All

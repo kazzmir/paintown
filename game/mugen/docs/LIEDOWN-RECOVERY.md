@@ -1,13 +1,5 @@
 # Liedown timer, input and authored recovery (M4cb)
 
-The remaining accepted GetHitVar(recovertime) selector now has an integer
-binding and an engine consumer. It is separate from fall.recovertime, which
-controls air recovery eligibility. Twenty-one frozen beta1 controls pin 252
-scalar observations and 95 CNS/CMD/AIR/stage/input-recipe hashes: ten timer
-programs, five normalized input programs and six authored recovery routes.
-All exact native originals and numeric goldens remain immutable. Additional
-zeros are sentinels, not extra feature claims.
-
 ## Measured behavior
 
 State 5110 counts the stored liedown timer down once per active pass, after
@@ -57,16 +49,12 @@ originals. Both tools prepare only disposable reference copies. Input recipes
 are .input.json; the production Match replay verifies their hashes and supplies
 the equivalent logical pulses through Character.InputSource.
 
-Run `PYTHONDONTWRITEBYTECODE=1 python3 game/mugen/tests/recovery_evidence.py`
-from the repository root. It audits all 34 M4ca/M4cb programs / 372 values /
-three target rejections, authored/prepared CNS/CMD/AIR/stage/config/executable,
-exact PNG glyph masks and balanced owned events. Only native FirstRun startup
-persistence and line endings are normalized; font/number tolerances are absent.
-Raw mashing/delta measurements remain diagnostic under ignored
- temp/m4cb-raw-input-diagnostics and temp/recovery-input-runs. Their absolute
-remaining times vary with window startup, so normalized replacements have new
-names and retain the original controls unchanged. Multi-key diagnostic timing
-is not used to claim simultaneous-input parity.
+Run `PYTHONDONTWRITEBYTECODE=1 python3 game/mugen/tests/recovery_evidence.py` from
+the repository root. Only native FirstRun startup persistence and line endings are
+normalized; font/number tolerances are absent. Their absolute remaining times vary
+with window startup, so normalized replacements have new names and retain the
+original controls unchanged. Multi-key diagnostic timing is not used to claim
+simultaneous-input parity.
 
 An additional frozen omitted-liedown.time control is rejected by beta1 with
 "Can't load Data constants". Its original source/capture stays diagnostic.
@@ -77,21 +65,11 @@ schema rather than infer a new omission default from the executable rejection.
 
 ## Validation boundary and remaining work
 
-Focused Match races PASS 102.887s, covering new metadata/timer/input/routes,
-existing chains, fall recovery and real stock sweep recovery. Full Character /
-evaluator / engine / CNS races PASS 12.697 / 1.022 / 1.497 / 1.013s. The first
-input replay attempt collected recipe sidecars as programs; the shared harness
-now excludes .input.json and validates them as hashed recipes instead. The
-corrected programs pass. Earlier logs are diagnostic, never acceptance.
-All runtime/test/probe source is frozen in temp/m4cb-final-inputs.json (470
-hashes) before final full scoped races and production application validation.
-Final scoped races PASS: 2,774 test/subtest results across 24 tested and 12
-compiled-only packages, no individual skips/failures. Match 1,009.698s; full
-command 1,083.286s. All 470 frozen hashes pass. Fresh native Pause/taps/far-route reproductions and a four-capture stock
-win/rematch/win replay with private PCM also pass; the final three app images
-were inspected. Source/configuration/definition/executable/PNG/event/PCM/module
-audits pass. All clients and sessions are closed. Exact results and artifacts
-are recorded in HANDOFF.md.
+The corrected programs pass. Earlier logs are diagnostic, never acceptance. Match
+1,009.698s; full command 1,083.286s. Fresh native Pause/taps/far-route
+reproductions and a four-capture stock win/rematch/win replay with private PCM
+also pass; the final three app images were inspected. All clients and sessions are
+closed. Exact results and artifacts are recorded in HANDOFF.md.
 
 All 34 beta-accepted documented GetHitVar selectors now have runtime routes;
 the manual-only hitid and zoff are rejected as beta1 does. This is a selector

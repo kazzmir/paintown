@@ -68,21 +68,17 @@ pixels because the HUD overlay remains held. All six revision pairs are viewed.
 These three strict failures remain unwaived; no sampler or tolerance changed.
 
 Final16701 completed and was awaited with exit1; the separate21,476-input/client
-guard passes. All40 applications run with binary
-`8b7cb6ae1a7032d7f229cfee297ca4419f1c091eacecf3175ac4781eb5647d5b`.
-New worlds are16/23 exact (69.6%),7,680,000 RGB pixels. The remaining seven cases
-are six held HUD observers (one also has468 shadow pixels) and one pure shadow
-case of464 pixels/max-one RGB. All seven original early dust/Game worlds are now
-exact across3,561,600 pixels. All39 native/Go pairs,13 full-scene sheets and stock3
-captures are viewed.
+guard passes. New worlds are16/23 exact (69.6%),7,680,000 RGB pixels. The
+remaining seven cases are six held HUD observers (one also has468 shadow pixels)
+and one pure shadow case of464 pixels/max-one RGB. All seven original early
+dust/Game worlds are now exact across3,561,600 pixels. All39 native/Go pairs,13
+full-scene sheets and stock3 captures are viewed.
 
-The combined native gate passes481/482 cases:506pass/twofail results including
-the earlier negative-start constraint case's parent. Additional match tests pass
-16 results. Nine older render controls and stock win/rematch/win pass:82 balanced
-inputs and1,928,719 stereo44.1kHz PCM frames (SHA
-`9fe4a1286f32abe773db6987a95ea7e83583c2dbf2b809a9f8bba40471129df4`).
-Core890 remains passing with all185 production Go files byte-identical through
-the final run. The latest full scoped suite remains historical M4dl5,028/36.
+The combined native gate passes481/482 cases:506pass/twofail results including the
+earlier negative-start constraint case's parent. Additional match tests pass 16
+results. Core890 remains passing with all185 production Go files byte-identical
+through the final run. The latest full scoped suite remains historical
+M4dl5,028/36.
 
 The final82 gates preserve nine exit1 statuses: native, seven new world comparisons
 and stale inventory; the other73 pass. Exact old inventory sources are archived

@@ -76,27 +76,14 @@ yoff are zero. The shared coordinate adapter scales this float field.
 
 ## Evidence and limits
 
-The preserved initial 36-program comparator fails 22 cases in
-`temp/m4aw-before-velocity.log`. Native data is in `m4aw-native-first.log`,
-`m4aw-phase-native.log`, `m4aw-final-native.log`, `m4aw-constants-native.log` and
-`m4aw-offset-native.log`. The initial minimal constant controls omitted the
-required Velocity section and were rejected as invalid probes; repaired original
-numeric prefixes were recorded separately. Those diagnostic copies are retained
-under temp; neither rejection is a final compatibility expectation.
+The initial minimal constant controls omitted the required Velocity section and
+were rejected as invalid probes; repaired original numeric prefixes were recorded
+separately. Those diagnostic copies are retained under temp; neither rejection is
+a final compatibility expectation.
 
-All 63 corrected integrated comparisons pass in `temp/m4aw-offset-velocity.log`.
-Pure CNS/engine/evaluator races pass in `temp/m4aw-final-pure-race.log`.
-The full scoped race suite passes in `temp/m4aw-full-race.log` (Match 395.933
-seconds). Six fresh native replays pass in `temp/m4aw-replays.log`, covering
-default tags, an inherited corner expression, a single-component default, true
-mixed profiles, altered constants and the offset type/consumption. Ten actual
-1280x720 captures from one identical binary pass both-player source/bank,
-stage/binary/config/PNG/dimension/runtime checks. Five stable white masks match
-exactly: 11,181, 14,991 and three at 8,379 pixels. The moving mixed-profile window
-has provenance/runtime checks without an unstable mask claim. Stock throw
-recovery retains two fighters without persistent dust. Results are
-`temp/m4aw-app-checks.json` and `temp/m4aw-app-checks.log`. Background/HUD/debug
-and whole-frame renderer parity remain open.
+Five stable white masks match exactly: 11,181, 14,991 and three at 8,379 pixels.
+Stock throw recovery retains two fighters without persistent dust.
+Background/HUD/debug and whole-frame renderer parity remain open.
 
 Wider corner-push, paused/frozen/bound/foreign/helper/projectile combinations,
 full down/bounce/recovery/juggle/KO behavior, arbitrary parameter grammar and

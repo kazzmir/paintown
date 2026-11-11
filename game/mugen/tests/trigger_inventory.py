@@ -5,7 +5,6 @@ This is a source audit, not a behavioral conformance test. It deliberately
 excludes parser/name-validation switches from runtime evidence.
 """
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -84,7 +83,6 @@ def inventory():
     bound = sorted(fields & supported)
     accepted = cases(function((ROOT/'evaluator/validate.go').read_text(), 'knownGetHitSelector'))
     return {'target': 'M.U.G.E.N 1.1 beta 1', 'kind': 'source-routing-inventory',
-            'manual_sha256': hashlib.sha256(document.read_bytes()).hexdigest(),
             'family_count': len(rows), 'route_present': sum(row['status'] == 'route-present' for row in rows),
             'unbound': [row['name'] for row in rows if row['status'] == 'unbound'],
             'triggers': rows,

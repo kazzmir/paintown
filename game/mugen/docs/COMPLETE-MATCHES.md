@@ -49,12 +49,10 @@ stock character/state/animation resources. Walk pulses end before each attack;
 Start at 23 seconds creates the second match. Full-life conformance remains in
 the deterministic scenarios above.
 
-The accepted run is temp/app-runs/m4bw-stock-input-one-hit. Visually inspected
-captures show the terminal win/rematch prompt at 21s, the fresh fight at 26s,
-and the second terminal win at 45s. Four PNGs, 82 events targeting one PID/window,
-config/fight hashes, binary and private PCM pass provenance. PCM contains
-1,953,229 stereo frames, peak 32767 and RMS 1647.98. These checks prove rendered
-interaction and device output, not native whole-frame or waveform parity.
+Visually inspected captures show the terminal win/rematch prompt at 21s, the fresh
+fight at 26s, and the second terminal win at 45s. PCM contains 1,953,229 stereo
+frames, peak 32767 and RMS 1647.98. These checks prove rendered interaction and
+device output, not native whole-frame or waveform parity.
 
 The initial held-forward replay produced movement without attacks. Releasing
 forward before button pulses produced actual damage but did not finish on the
@@ -62,11 +60,8 @@ fixed 20%-life schedule. Both runs and their snapshots remain diagnostic; they
 are not counted as completed-match captures. The final independently configured
 2%-life run verifies both terminal screens. No numeric golden was changed.
 
-Source manifest: temp/m4bw-final3-production-inputs.json (278 Go/test/probe
-hashes). All 154 production Go files are byte-identical to the M4bv manifest.
-App audit: temp/m4bw-app-evidence-audit.json. Application SHA256:
-8bd3896ddb04b376a4e80ca510a15b51d0320b3ce4b77fce643e32970775f034.
-Earlier source snapshots and diagnostics are retained.
+All 154 production Go files are byte-identical to the M4bv manifest. Earlier
+source snapshots and diagnostics are retained.
 
 Reproduce on a private display/audio server (from the repository root):
 
@@ -79,9 +74,8 @@ python3 game/mugen/tests/app_smoke.py \
 ```
 
 Supply DISPLAY/XAUTHORITY and the private PULSE_SERVER/ALSA_CONFIG_PATH as in
-[BUILD.md](BUILD.md). The tool requires the stock reference resources under temp/;
-compiled binaries, PNGs and PCM remain ignored. Use a fresh run name. For ordinary
-interactive play, use [the README launcher instructions](../README.md).
+[BUILD.md](BUILD.md). Use a fresh run name. For ordinary interactive play, use
+[the README launcher instructions](../README.md).
 
 ## Remaining original-target gates
 
@@ -105,7 +99,5 @@ abbreviated package names and conflated two application names with production
 packages; the final audit uses all 36 full package identities. Numeric test
 results and the successful exit code are unchanged.
 
-Final audit: temp/m4bw-final-evidence-audit.json; full log:
-temp/m4bw-full-scoped-race.jsonl and its result JSON. All 278 source hashes and
-root module checksums pass after the run. No test/application clients remain.
-The local checkpoint contains source/text only; no push or binaries.
+No test/application clients remain. The local checkpoint contains source/text
+only; no push or binaries.

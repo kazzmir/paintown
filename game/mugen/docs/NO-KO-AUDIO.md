@@ -3,7 +3,7 @@
 M4dk measures the supplied beta's KO audio while `noko` retains Life0/Alive1.
 Ten independently authored programs reuse the existing original tone bank:
 441 Hz on channel0,882 Hz on channel1 and3528 Hz for the KO voice. Quiet HUD
-announcements and a private PulseAudio monitor isolate these tones. No binary
+announcements and a isolated audio output isolate these tones. No binary
 asset is added. Complete CNS/header/controller/parameter/trigger/AIR intent is
 verified before observation; every native numeric/audio row and all ten full
 scenes on three sheets are reviewed before promotion or implementation.
@@ -64,12 +64,8 @@ All ten native/Go pairs on five sheets, all nine older scenes and the stock
 1,972,873 private PCM frames. Other42 final gates pass. Separate19,478-input/
 client guard passes. Auditor57293 completes/awaits zero, verifying3,994 original
 paths,390 exact archive/Git source versions,10 exact native configs,41 canonical
-resources/410 native resource copies and109 manifest files. Same validated binary
-for new/older/stock apps:
-`35da5375234acfe098c8f4ef2ecbe0f8ff62cdb2d2781f623c4bef754b6e2220`.
-No binary is committed. Final records in temp: `m4dk-final-evidence-audit.json`,
-`m4dk-final-visual-review.json`, `m4dk-final1-separate-guard.json`. Full4,918/36
-remains M4dj9c35b389's source boundary; focused checks validate this sound change.
+resources/410 native resource copies and109 manifest files. Full4,918/36 remains
+M4dj9c35b389's source boundary; focused checks validate this sound change.
 
 Frozen-owner, helper/projectile, wider echo/restoration cycles and broader
 round/audio profiles remain separate measurements. NoMusic/BGM and the other

@@ -63,14 +63,11 @@ pre-entry damage caps, fatal guard normalization, one-shot raw fall damage and
 measured KO velocity adjustments. These do not establish absolute KO/round
 timing, full fall recovery, or the broad contact combinations listed above.
 
-The refreshed audit is `temp/m4bn-hitdef-current-audit.json`; its input is the
-local reference `temp/mugen-1.1b1/docs/sctrls.html` HitDef definition list.
 It records all 81 documented keys, 55 expression keys and 26 keys that remain
 literal or absent. Those 26 include compile-time enums/attributes as well as
 numeric expressions; they need appropriate schemas rather than being treated
-uniformly as numeric values. The earlier `temp/hitdef-schema-audit.txt` is a
-historical M4aw snapshot, and m4bb-hitdef-current-audit.json records the prior36.
-No original reference files are modified or committed.
+uniformly as numeric values. No original reference files are modified or
+committed.
 
 M4bm's [downed-hit bounce](DOWN-BOUNCE.md) adds expression/coercion/order
 coverage, contact fall-vector selection and stock bounce/get-up phase controls.
@@ -80,26 +77,6 @@ consumer gap and record the beta's ignored documented velocity parameters.
 M4bn's [guard distance](GUARD-DISTANCE.md) closes the bounded integer/range
 schema and consumers. [HITDEF-REMAINING.md](HITDEF-REMAINING.md) tracks the
 user-authorized 27-key allocation, including the nine literal schemas.
-
-M4bo closes the nine literal schemas with 65 native programs, 684 observations,
-eight load rejections and 260 frozen input hashes. The remaining 17 keys are
-numeric fields in the combat, constraint, palette and shake groups above.
-
-M4bp closes the three integer chain/juggle keys and bounded consumers with57
-native programs,660 observations/eight load rejections/228 frozen input hashes.
-Numeric routing58/81 plus nine literals gives67/81 typed schemas; fourteen keys
-remain. See [chain/juggle evidence and limits](HIT-CHAINS-JUGGLE.md).
-
-M4bq adds three constraint schemas and position/offset/timed-binding consumers:
-39 programs,588 observations/seven load rejections/156 frozen source hashes.
-Numeric routing61/81 plus nine literal schemas gives70/81 typed keys; eleven
-palette/shake keys remain. See [distance/snap evidence](HIT-CONSTRAINTS.md).
-
-M4br adds three palette schemas and actual color/clock/cache consumers:
-24 programs/324 observations/three rejections/96 frozen source hashes.19 static
-production programs match228 native color samples and preserve HUD portraits.
-Numeric routing64/81 plus nine literals gives73/81 typed keys; eight shake keys
-remain. See [hit palette evidence and limits](HIT-PALETTE.md).
 
 M4br adds three palette keys; M4bs adds four contact-shake keys. Numeric routing
 is68/81 plus nine literal schemas =77/81 typed keys (95.1%). Four stored-fall

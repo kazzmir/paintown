@@ -75,11 +75,10 @@ and all37 sample points.
 The second supplement covers all98 flat stage source colors across33 profiles,
 3,234 cases. Five full arithmetic models distinguish the paths:normalized gray
 fails6 comparisons; byte-luma fails4 photo comparisons; byte-mix fails6; byte-all
-fails154. Only complete gray from byte luminance with normalized interpolation
-for partial balance passes all gray/local/global/photo controls. The production
-shader uses that measured distinction without epsilon biases or special color
-constants. Every failed log, original input, capture and native golden remains
-unchanged. Private GPU experiments stay below temp/_tmp.
+fails154. Only complete gray from byte luminance with normalized interpolation for
+partial balance passes all gray/local/global/photo controls. The production shader
+uses that measured distinction without epsilon biases or special color constants.
+Every failed log, original input, capture and native golden remains unchanged.
 
 ## Evidence and current verification
 
@@ -105,16 +104,13 @@ Explod; garment masks differ36 pixels. Both palette ownership values and both
 global scopes reproduce it. All sampled object colors are correct. These four
 crops are UNWAIVED; the public probe and complete strict matrix exit1.
 
-All10 regression apps pass (5 local PalFX,3 HitDef colors/neutral portraits,
-2 indexed/RGB raster), and stock win/rematch/win is visually verified with82
-balanced owned input events/1,941,379 private PCM frames. Final full races pass
-3,857 results across25 tested+11 compiled-only packages, no failures/individual
-skips; Match1606.364s, summed1691.569s. All14,164 frozen inputs,333 native hashes
-and final resource/config/binary/PNG/audio/module/inventory guards pass. Final
-audit:temp/m4cs-final-evidence-audit.json. It explicitly records overall
-application RGB conformance FALSE for the4 ordering crops. All runtime sessions
-are awaited and separate clients empty; only Markdown changes after final runs. No full
-application RGB, font, framebuffer-alpha or platform parity is claimed.
+All10 regression apps pass (5 local PalFX,3 HitDef colors/neutral portraits, 2
+indexed/RGB raster), and stock win/rematch/win is visually verified with82
+balanced owned input events/1,941,379 private PCM frames. It explicitly records
+overall application RGB conformance FALSE for the4 ordering crops. All runtime
+sessions are awaited and separate clients empty; only Markdown changes after final
+runs. No full application RGB, font, framebuffer-alpha or platform parity is
+claimed.
 
 ## Reproduce and continue
 
@@ -132,12 +128,7 @@ python3 game/mugen/tests/global_palette_render_probe.py \
   --name my-global-palette-check
 ```
 
-The probe cannot record expectations. It verifies prepared assets, native/source/
-config/binary/capture hashes, actor/stage RGB crops and all color points.
-Manifests are temp/m4cs-{native,extra,boundary,effects}-inputs/metadata.json;
-final applications use m4cs4/m4cs5. Failed m4cs1/2/3 experiments remain history.
-Byte-identical private Go executables are hard-linked with their paths/hashes
-preserved to reduce storage; native files, captures and goldens are untouched.
+The probe cannot record expectations. Failed m4cs1/2/3 experiments remain history.
 
 Next close effect draw ordering before EnvColor layering. Explod palette creation/
 remapping, random/angle/shadow/capacity, contact/helper-birth/pause combinations,

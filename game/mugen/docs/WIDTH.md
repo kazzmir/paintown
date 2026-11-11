@@ -1,11 +1,5 @@
 # Width and horizontal edge queries
 
-M4ai replaces the Width stub with typed expression compilation and separate
-frame-local edge/player offsets. Thirty-one authored native programs pin 336
-numbers, three load rejections and 93 CNS/AIR/stage input hashes. The programs
-run against disposable copies of the supplied 1.1 beta 1; they do not establish
-complete Width, body-push, camera or entity compatibility.
-
 ## Measured offsets and timing
 
 The beta adds Width's edge values to the stage's screen margins. On a fixed
@@ -81,18 +75,10 @@ source/host isolation, compilation before effects, and evaluating shorthand
 components once before copying them into both vectors. Native expression-side-
 effect evaluation order is still a separate comparison obligation.
 
-Full scoped races pass in temp/m4ai-full-race.log; all 31 programs participate.
-Pure engine/evaluator races pass in temp/m4ai-pure-race.log. The initial 26
-programs also pass focused races in temp/m4ai-width-first-race.log.
-
-Four fresh native reset/negative-offset/replacement/mixed-redirect replays
-reproduce their pinned observations and input hashes. Real 1280x720 windows
-at temp/app-runs/width-push-go/ (2/4/7 seconds) and width-stock-throw-go/
-(2/3/4/7) complete without runtime/missing-resource errors. All seven capture
-hash/dimension/nonblack checks pass. The push scene shows the expanded spacing;
-the inspected stock recovery retains two fighters and no permanent dust clones.
-The minimal probe background and full filter/framebuffer equivalence remain
-renderer obligations; these captures are smoke checks.
+The push scene shows the expanded spacing; the inspected stock recovery retains
+two fighters and no permanent dust clones. The minimal probe background and full
+filter/framebuffer equivalence remain renderer obligations; these captures are
+smoke checks.
 
 ## Remaining work
 

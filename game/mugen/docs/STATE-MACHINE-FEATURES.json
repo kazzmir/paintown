@@ -110,7 +110,7 @@
         "character/character.go:HandleBuiltinTransitions",
         "character/commands.go:justPressedUp"
       ],
-      "validation": "Connected jump/body-push lifecycle retains beta interior, wall, vertical, Width and air contact observations. Added PosFreeze on either root, then both, with mixed 320p/1280p coordinates. At stored VelX 2, beta positions are no-freeze(-6,26), first frozen(-7,25), second frozen(-5,27), both frozen(-6,26); velocities 2/2 and CNS times 350/350 continue. PosFreeze suppresses ordinary velocity movement, not late body separation. Scenario also checks release, real Pause and round reset clearing velocity/freeze state. Four changed-source segments pass with race detection; native scratch removed. Crossover follow-up uses the supplied Elecbyte beta and its CNS, rather than Paintown C++ turning behavior. A controlled ground command reads the old heading, then turns before destination entry expressions/velset; locked and airborne moves retain their heading. Common stand/crouch/walk auto-turn runs before the positive pass and plays the authored turn action. The existing contact scenario continues through landing-to-attack, held walking, NoAutoTurn release, mixed-coordinate opponent positions and stage-disabled turning. Current physical direction is rematched without an extra input tick, retaining pause-release commands. Native heading/action observations and entry velocity 4 match; all five segments pass with races. Rebuilt Linux Ryu/Dhalsim jump-over and continued input were inspected with audio; scratch removed. Automatic air jumps now consume the authored count/height settings and select common state45 on a new up edge. The existing mixed-coordinate jump flow rejects low/held input, accepts the directional air jump, rejects the exhausted attempt, lands and restores the next-flight budget. CNS keeps velocity/animation ownership. Native and rebuilt Linux keyboard flows each accepted two air jumps across two flights and returned to idle."
+      "validation": "Connected scenarios cover ordered root/helper updates, collision, physics, clock ownership and recovery. Boundary correction and constrained placement are checked independently from rendered sprite alignment."
     },
     {
       "id": "helper-lifecycle",
@@ -245,7 +245,7 @@
         "system/charloader.go",
         "system/select.go"
       ],
-      "validation": "Connected title/options/selection/match flow covers live Game Speed, YAML alternatives, ownership/release, stock CNS wins, reset/rematch/exit and packed-asset retirement/reload. Legacy empty slots retain their positions and cannot become random picks. The packed selection-to-match lifecycle now covers first-value layout precedence, row,column startcells, blank skipping, saved roster snapshots and an invalid hidden opponent cursor. SF2 native comparison establishes the first layout, authored cell/cursor sprites and scaled portraits; first private SFF portraits can seed later shared palettes without replacing an established combat/ACT palette. Linux Arcade now reaches Ryu versus Dhalsim with input, AI, HUD and audio. The original pack places four boss slots below the visible screen in both engines; eight normal portraits are visible. Follow-up corrects character-to-motif portrait units (320p KFM and 1280p KFM720 occupy equal authored cells), selection portrait offsets/windows, VS portrait sprite/position/scale/facing/window, legacy pos and modern offset aliases, name alignment/spacing, match counter and fades. Motif backgrounds retain their archive independently of startup texture maps. The connected menu flow now checks rendered VS background and both clipped portraits; earlier checks only established state transitions. Rebuilt stock selection/VS and SF2 VS artwork were inspected."
+      "validation": "Selection and versus screens consume authored portraits, coordinate scaling, names, windows and backgrounds. Missing roster definitions retain empty grid positions; malformed available assets still report errors. Connected flows reach combat, round results and rematch."
     },
     {
       "id": "announcements",
@@ -350,7 +350,7 @@
         "storyboard/storyboard.go:DrawToWindow",
         "parsers/storyboard.go"
       ],
-      "validation": "Connected asset lifecycle spans a partially opaque colored fade, animated/text/sound scene, clearcolor=-1 scene transition and blank ticks retaining prior pixels, repeated presentation without re-blending, explicit clear replacement and exit. Content composes once per simulation tick; fade RGB is premultiplied and one reusable texel replaces full-canvas allocations. Match-flow passes with race detection. Linux rebuilt and owned-window KO/rematch/KO inspected; scratch removed. Scene sections require the separate Scene word and accept named identifiers; Scene0bgDef/Scene0bg remain background sections. The connected asset lifecycle loads one such background and a named ending scene. Supplied SF2 logo/intro/title run with music on Linux."
+      "validation": "Storyboard consumers retain scene order, localization, background groups, canvas fitting, text, sound and music. Named Scene sections remain distinct from similarly named background sections. Connected asset and campaign flows exercise entry, skip, completion and return."
     },
     {
       "id": "bgm",
@@ -373,7 +373,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; no further SF2 mod repairs are planned.",
+      "gap": "Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; third-party script repair is outside engine implementation.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -401,7 +401,7 @@
         "parsers/parser.go",
         "engine/explod.go"
       ],
-      "validation": "Connected asset flow covers V1 commented font maps, padded PCX rows, bank/scene changes, malformed packed sprite correction, outfits and round reset. Explicit glyph coordinates are honored even for Type=Fixed; the native SF2 victory font displays the ATW probe with these metrics. First private portrait palettes bootstrap later shared portraits without overriding established ACT/combat palettes. The SF2 executable is byte-identical to the supplied beta reference; assets remain unchanged. After the prior storyboard/empty-slot/WAV-padding fixes, this batch corrects legacy StateTypeSet Type parameters, AnimElem time ranges and counter comparisons, first-definition constants, bare numeric state headers, CMD dividers and scalar Explod scale. A grouped audit compiles all 12 roster entries (1,743 state programs, zero errors). Linux title-to-Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. All five connected segments and existing SFF/font/CNS/parser/evaluator regressions pass with race detection. This establishes loading and observed fights, not complete roster or native gameplay parity. Owned captures/PCM/overlays/helpers were inspected and removed; pack, ZIP, executable and local YAML were preserved. Follow-up adds omitted beta movement/recovery defaults, including the reported state5101 bounce offset, with character-coordinate scaling. Existing sweep coverage continues through bounce, lying down, get-up and control restoration with optional constants removed. All five connected segments pass with races. Rebuilt Honda/Dhalsim ran for 60 seconds with audio and no missing-constant or unknown-projectile-trigger diagnostics. Stock and SF2 selection/VS presentation were inspected. A native time-over flow reproduces the original pack second-round state5900 stall; the separate repaired copy completes round two with movement and attacks from both Ryu and Dhalsim. Original pack assets/configuration stay unchanged."
+      "validation": "Connected asset scenarios cover padded PCX rows, legacy font maps, explicit glyph coordinates, font banks, sprite palette ownership, malformed-resource correction and round reset. Legacy definitions retain first values and accepted state/parser spellings. Optional movement/recovery constants supply native defaults with dimensional coordinate scaling. Loading or observed fights do not establish arbitrary roster, font or native gameplay equivalence."
     },
     {
       "id": "raster-audio",
@@ -795,7 +795,7 @@
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
     "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
-    "SF2 original tiny grid is authored and matches native. Stock mixed-resolution portrait shrinkage, missing VS presentation and missing optional constants are corrected. Original Ryu/Dhalsim round-two initialization also stalls in native: a separate ignored playable copy repairs those two scripts without changing engine state semantics or the source pack. Full-roster gameplay and remaining expression/resource warnings stay open.",
+    "Authored low-resolution grids and offscreen cells are content layout choices. Mixed-coordinate portraits, versus presentation and optional recovery constants are implemented. Later-round stalls reproduced by the target runtime are content defects; no further third-party script repairs are planned.",
     "The reported crossover-facing gap is corrected for command-to-state handoff and ordinary walking turns, using native beta observations and CNS. Arbitrary air cancels, turning during bindings/hitpause and charge-history permutations remain unverified; do not treat Paintown C++ turning as the reference."
   ],
   "known_differences": [
@@ -824,28 +824,28 @@
       "validation": "Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed."
     },
     {
-      "id": "sf2-selection-loading",
-      "name": "SF2 selection and legacy character loading",
+      "id": "legacy-selection-loading",
+      "name": "Legacy selection and character loading",
       "completed": true,
-      "validation": "Saved roster handoff and an independent automatic opponent fix the reported selection failure. Authored layout/cursors/portrait colors and legacy font/CNS forms load. All 12 roster entries compile 1,743 state programs; Linux Arcade Ryu/Dhalsim and Guile/Honda fights run with input, HUD and audio. The four boss slots are also offscreen in the native pack. Full roster gameplay remains unverified."
+      "validation": "Legacy packs may use old StateTypeSet spellings, AIR timing comparisons, scalar effect scales and minimal roster placeholders. The corresponding consumers accept these forms while preserving source diagnostics; selection reaches a playable match."
     },
     {
       "id": "frontend-recovery",
       "name": "Rendered selection/VS and legacy bounce recovery",
       "completed": true,
-      "validation": "Corrected character-to-motif portrait scaling and authored VS portraits, windows, names and artwork. Connected checks now inspect pixels and cover omitted-constant bounce \u2192 lying down \u2192 get-up \u2192 control. All five segments pass with races; Linux stock/SF2 screens and a 60-second Honda/Dhalsim run were inspected."
+      "validation": "Character-to-motif portrait scaling and authored versus portraits, windows, names and artwork are consumed. Connected recovery covers omitted optional constants, bounce, lying down, get-up and restored control."
     },
     {
-      "id": "sf2-round-two",
-      "name": "SF2 later-round initialization script repairs",
+      "id": "legacy-round-initialization",
+      "name": "Legacy later-round initialization diagnosis",
       "completed": true,
-      "validation": "The native beta also stalls with the supplied scripts that omit later-round state5900 exits. The playable-copy tool now discovers all ten matching scripts instead of repairing only Ryu/Dhalsim. --update extends existing copies while preserving configuration and local edits. All ten initialization programs exit on round two; full Guile/Chun-Li intro \u2192 KO/reset \u2192 round-two control \u2192 walking passed. The retained working copy is updated; original pack and engine state semantics are preserved."
+      "validation": "Some older character scripts omit their state5900 exit on later rounds. A stall reproduced by the target runtime is recorded as a content defect; the engine does not add a timeout or rewrite third-party scripts."
     },
     {
       "id": "crossover-turning",
       "name": "Crossover command and walking turns",
       "completed": true,
-      "validation": "Matched supplied Elecbyte behavior: command evaluation sees the old heading, controlled ground state entry sees the opponent-facing heading and authored velocity, and walking uses turn action 5 without resetting its state clock. The connected flow covers NoAutoTurn release, physical input and stage-disabled turning. Locked attacks retain facing. Linux Ryu/Dhalsim jump-over and continued input were inspected; all segments are checked with races."
+      "validation": "Controlled grounded command moves correct facing before destination entry. Walking/crouching can turn while retaining state time; locked attacks, airborne headings, NoAutoTurn and held guard keep their existing ownership. Connected input/combat scenarios cover crossover and recovery."
     },
     {
       "id": "held-guard",
@@ -1143,15 +1143,15 @@
     },
     {
       "id": "hd-pack-admission",
-      "name": "HD screenpack loading, portrait requests and palette alpha",
+      "name": "High-resolution screenpack and palette compatibility",
       "completed": true,
-      "validation": "Reference identity clarification (2026-11-11): HD-native observations here used the bundled StreetFighterHDM.exe, whose SHA-256 differs from the supplied canonical beta. They establish pack-runtime behavior; stock-beta equivalence requires canonical-runtime confirmation. The supplied ssf2-turbo-hd pack bundles an executable reporting MUGEN 1.1 Beta 1 P1 and targets 1280x720. Native loads its sub AIR flags and keeps unavailable -/ roster definitions as empty cells; Go now retains those cells and honors the requested cell/P1/P2 portrait sprites without substituting missing portraits. The beta loop guide documents loopend=-1 as EOF. Native Ryu reports zero for Data sparkno=F2 and guard.sparkno=F3; those defaults now retain integer zero coercion. Projectile accepts the pack's three-component projshadow spelling as a scalar flag. SFF 2.01 retains palette alpha through sprite/palette links and remaps, including opaque index zero, while 2.00 retains its reserved-byte/index-zero policy. All five connected segments pass with races. A Go Ryu mirror reaches live combat with recorded audio; native selection/idle combat were inspected. The follow-up HD HUD/admission checkpoint closes numbered backgrounds and surplus animation components. Full roster/matchup acceptance is unverified; no pack files are repaired."
+      "validation": "High-resolution screenpacks may use blank roster cells, nondefault portrait sprites, explicit palette alpha, sub/AI AIR flags and EOF loop endpoints. Selection preserves requested portraits and empty positions. SFF2.01 retains palette alpha through links/remaps; SFF2.00 keeps its reserved-byte/index-zero policy. Resource/controller admission is covered by connected asset and gameplay scenarios; arbitrary content equivalence remains partial."
     },
     {
       "id": "hd-hud-text-admission",
-      "name": "HD fight backgrounds and native legacy text admission",
+      "name": "Sparse HUD components and legacy text admission",
       "completed": true,
-      "validation": "Reference identity clarification (2026-11-11): HD-native observations here used the bundled StreetFighterHDM.exe, whose SHA-256 differs from the supplied canonical beta. They establish pack-runtime behavior; stock-beta equivalence requires canonical-runtime confirmation. Numbered HUD backgrounds now include sparse higher indices in numeric order, cached per fight rather than limited to bg0/bg1. The first scalar animation ID in p2.front.anim=14,0 restores the right lifebar; bg2 restores the central KO artwork. Native accepts Ken's loose pausetime label before the first CNS section; Go ignores unassigned preamble labels while retaining source lines and assignment errors. A disposable native Ryu idle animation confirms AI is ordinary additive blending (256/256); Go now admits that spelling. Existing connected asset/team scenarios cover these consumers and all segments are checked with races. Rebuilt 1280x720 Go Ryu/Ken rendering, movement/attacks, stage audio and a natural KO/win icon/victory pose were inspected; the natural-KO run used temporary 2% life and one-win settings. Subsequent full-life Ryu/Dhalsim round acceptance is recorded in the projectile/empty-effect checkpoint; complete roster gameplay remains unverified. A debug-forced KO was still falling after its observation interval; this is not evidence of normal KO failure. Bundled native Ken loading failed at SFF under Wine without a specific cause, although its PNGs validate and Go now loads/renders him. No pack scripts, assets or user settings were changed; scratch is removed."
+      "validation": "HUD backgrounds may have sparse numbered indices and are drawn in numeric order. Animation attributes consume their first scalar component. Legacy CNS preamble labels and AIR AI additive spelling are admitted. Loading and presentation checks are scoped to connected scenarios and do not establish full roster gameplay or native fidelity."
     },
     {
       "id": "debug-player-activation",
@@ -1163,13 +1163,13 @@
       "id": "options-artwork-motifs",
       "name": "Usable Options in artwork-only menu motifs",
       "completed": true,
-      "validation": "The HD motif supplies title labels as background art and omits title-menu text fonts. Options now supplies a bounded, fitted built-in settings panel when those fonts are absent or too tall for the row spacing, retaining the motif background and heading. Enter changes a value or opens an action; explicit Back and Escape return to title. Existing menu/input/VS/two-round combat/rematch flow edits values, checks fontless rendering, live speed/audio configuration and inherited match life/time, then exits through Back. Connected match-flow passes with races; Linux rebuilt and actual HD Options was inspected changing difficulty 1 to 3, life 100 to 110, time 99 to 98, speed Slow2 to Slow1 and both volumes 20 to 15, opening Input Configuration and returning to title. Settings remain session-only; source pack and ignored YAML unchanged. Owned review overlays/captures are removed."
+      "validation": "An artwork-driven motif supplies title labels as background art and omits title-menu text fonts. Options now supplies a bounded, fitted built-in settings panel when those fonts are absent or too tall for the row spacing, retaining the motif background and heading. Enter changes a value or opens an action; explicit Back and Escape return to title. Existing menu/input/VS/two-round combat/rematch flow edits values, checks fontless rendering, live speed/audio configuration and inherited match life/time, then exits through Back. Connected match-flow passes with races; Linux rebuilt and artwork-driven Options was inspected changing difficulty 1 to 3, life 100 to 110, time 99 to 98, speed Slow2 to Slow1 and both volumes 20 to 15, opening Input Configuration and returning to title. Settings remain session-only; source pack and ignored YAML unchanged. Owned review overlays/captures are removed."
     },
     {
       "id": "hd-projectile-empty-effects",
-      "name": "HD projectile syntax and empty effect lifecycle",
+      "name": "Legacy projectile syntax and empty effect lifecycle",
       "completed": true,
-      "validation": "Parenthesized ProjHit/ProjContact/ProjGuarded IDs now use the existing legacy comparison/time grammar. Native contact observations confirm literal filtering, zero-ID/unfiltered Var(...) arguments and the legacy != rule. This admits Dhalsim: all 19 HD roster characters and 3,118 state programs load without errors. Native empty Explods survive creation and retire on their first end boundary; an effect-only clock now accepts zero-duration placeholders/tails without weakening fighter-loop diagnostics. Existing guard/contact/recovery and pause/effect/expiry/reset scenarios cover both changes. All five connected segments are checked with races; Linux rebuilt. A full-life Ryu/Dhalsim AI match completes two natural-KO rounds and a final 0-2 result at tick7497; a rendered Watch fight runs past the formerly fatal effect. Dhalsim references palette1,22 although its SFF has neither1,21 nor1,22; that diagnostic remains a content finding. Complete roster gameplay/native fidelity remain unverified. Pack/YAML untouched; owned scratch removed."
+      "validation": "Parenthesized projectile IDs use legacy boolean/time comparison semantics, including literal filtering and the established inequality rule. Empty effect actions can contain zero-duration placeholders or loop tails and retire on their first pass without weakening fighter-loop diagnostics. Guard/contact/recovery and pause/effect/expiry/reset scenarios cover these consumers. References to absent palette banks remain content diagnostics rather than synthesized engine resources."
     },
     {
       "id": "lazy-story-admission",

@@ -50,27 +50,13 @@ that existing behavior required no change.
 
 ## Validation and remaining work
 
-The pre-fix root-only defender failures are retained in
-temp/m4an-before-contacts.log. Adding helper candidates fixes damage/state/target
-selection but leaves the one-tick counter differences in m4an-helper-first-race.log.
-The nine defender/phase/pair programs pass races in m4an-helper-second-race.log;
-the tenth friendly-helper control passes m4an-friendly-race.log. Full scoped
-races pass in m4an-full-race.log. Four fresh native replays reproduce all input
-hashes and observations: m4an-replay-player, pair-late-attack, phase-p2-attack
-and own-team.
+Stock recovery retains two fighters without permanent dust clones. The helper
+scene shows both victims; its native/Go white clothing masks contain 19,993/19,692
+pixels and differ at 1,507 pixels. This is a smoke check, not framebuffer parity.
+Existing mirrored/ clipped placement, native debug magenta versus Go black,
+background filtering and HUD differences remain renderer obligations.
 
-Seven real 1280x720 captures under temp/app-runs/helpercontact-two-go/
-(3/5/7 seconds) and helpercontact-stock-throw-go/ (2/3/4/7) pass provenance,
-dimensions, nonblack and runtime/resource checks. Stock recovery retains two
-fighters without permanent dust clones. The helper scene shows both victims;
-its native/Go white clothing masks contain 19,993/19,692 pixels and differ at
-1,507 pixels. This is a smoke check, not framebuffer parity. Existing mirrored/
-clipped placement, native debug magenta versus Go black, background filtering
-and HUD differences remain renderer obligations. Measurements:
-temp/m4an-app-comparison.json.
-
-Sources/goldens: tests/testdata/reference/helpercontact-*. Authors/catalogues:
-temp/author-helper-contact*.py and helpercontact-*-cases.json. All programs use
+Sources/goldens: tests/testdata/reference/helpercontact-*. All programs use
 version 1.1, a fixed camera, neutral input and PlayerPush=0 to isolate contact
 from displacement. Sources query a missing optional helper/target in some
 controls; their expected warnings/bottom writes are not missing-asset errors.

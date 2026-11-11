@@ -79,30 +79,13 @@ these measured rules and reports missing attributes with the stage path and
 
 ## Evidence and validation
 
-Full scoped races pass in temp/m4ah-full-race.log and pure engine/evaluator
-races pass in temp/m4ah-pure-race.log. The focused boundary race run passes in
-temp/m4ah-screenbound-final-race.log.
-
-The 47 programs pin 924 numeric observations, four controller load rejections,
-three stage load rejections and all 141 authored CNS/AIR/stage input hashes.
-TestNativeScreenBoundaries loads each authored stage and program through the
-production Match path, resets the round, advances through control grant and
-90 further ticks, then compares every captured fvar at float32 precision.
-The helper programs compare values copied back through Helper(123) redirection.
-Rejected programs must produce source-context errors in Go. Pure engine tests
-also exercise immutable source, host-local expressions and compilation before
-side effects.
-
 Native inputs retain their captured bytes, including final blank CNS lines and
 the empty-margin assignment's trailing space. Whitespace-only cleanup would
 change their pinned hashes; implementation and documentation pass diff checks.
 
 Six fresh native replays reproduce reset, constant coupled-axis freezing,
 normal-helper confinement, float-literal rejection, 640-stage scaling and a
-missing-margin stage rejection. Real 1280x720 windows at
-`temp/app-runs/screenbound-motion-go/` and `screenbound-stock-throw-go/` run at
-2/3/4/7 seconds. All eight PNG hashes/nonblack checks pass, with no runtime or
-missing-resource errors. The stock throw recovers with two actors and no
+missing-margin stage rejection. The stock throw recovers with two actors and no
 permanent dust clones. The box-free motion scene eventually overlays the two
 actors at the right limit; its minimal background still ends during scrolling.
 These are window/asset smoke checks, not full native framebuffer parity.

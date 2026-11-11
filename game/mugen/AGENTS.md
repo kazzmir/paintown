@@ -1,98 +1,62 @@
-# MUGEN implementation instructions
+# MUGEN development instructions
 
-## User-directed workflow — 2026-11-06
+## Scope and authorization
 
-The user replaced exhaustive native matrices and repeated small-test batteries
-with implementation-led progress and connected state-machine scenarios. These
-instructions supersede old research plans and checkpoint test requirements.
+Author only game/mugen/ and preserve unrelated work. Local source/text commits
+are authorized; do not push, commit binaries or user configuration, spawn
+subagents or create goals. Keep mugen.yaml ignored. Continue through coherent
+checkpoints without individual approval; recap about every ten to fifteen
+commits, or sooner when input is needed. A recap is not an automatic stop.
 
-- Use docs/PROGRESS.md as the SINGLE project completion ledger: the full project
-  breakdown, checkmarks, partial/missing features and completed scenario coverage.
-- Implement substantial, coherent mechanics batches from unchecked items. Use
-  existing code, evidence and the supplied beta documentation. Do not create
-  native parameter matrices, new per-piece documents or asset-copy experiments.
-- Tests cover segments spanning entry/order/transitions, combat/recovery,
-  helper/binding/retirement, effects/pause, or complete match flow. Consolidate
-  existing scenarios through tests/segments.py. Do not add a test per parameter.
-- Completed segments stay checked and out of default runs. Reopen only when
-  their covered production source changes, a regression identifies that segment,
-  or the user explicitly requests it. Run affected segments/end-state acceptance
-  after a coherent batch, never broad suites after every edit.
-- Update the small feature catalog after implementing its actual consumer and
-  refresh the single progress page with mugen.sh --coverage --write. Routes alone
-  do not establish complete semantics. Mark the stated scenario complete after
-  it passes; do not call known partial features complete.
-- Keep handoffs and plans short. Historical detailed research is optional
-  background and Git history, not a queue of mandatory experiments.
-- Do not add generated testing data, captures, PCM, copied assets, binaries or
-  new fixture matrices to Git. Reuse the supplied assets and shared build cache.
-  Segment scratch output is automatically deleted on success AND failure; keep
-  only a concise failure explanation or explicit user-requested artifact.
+## Portable documentation
 
-## Scope and execution
+Keep documentation, feature catalogs and handoffs useful to another contributor.
+Do not record personal filesystem paths, private environment setup, local asset
+or pack names, executable fingerprints, server/process identities, copied run
+logs or inventories of unavailable test content. Describe general compatibility
+patterns and implementation limits. Use placeholders for external game data.
+Repository-relative source/tool references and public-source coverage
+fingerprints remain valid project metadata.
 
-The user authorized the remaining functional work on 2026-11-07: BGM/NoMusic,
-teams/modes/AI, remaining stage/team context, assets and platform support. Defer
-color/shadow/alpha and KO-echo precision until functional coverage is finished.
-Continue autonomously with local source/text checkpoints. Author only game/mugen/.
-No pushes, committed binaries, subagents or goals. Preserve unrelated root work.
-The user renewed autonomous local commit authorization on 2026-11-07. Continue
-through coherent checkpoints without individual commit approval; give a recap
-about every 10–15 commits (user 2026-11-09), or sooner for a blocker needing input. This
-supersedes the earlier pre-commit approval rule. On 2026-11-09 the user clarified
-that recaps are progress updates, never automatic stopping points. Continue
-through larger batches until work is complete or input is actually needed. Do not add user configuration
-files to Git. Keep mugen.yaml local and ignored; document examples in README.md.
+Reference game content and runtimes are external prerequisites. A bundled
+runtime may differ from the target despite a familiar version banner; separate
+pack observations from verified target behavior. Paintown C++ turning is not
+normative. A script defect reproduced in the target runtime is a content issue;
+do not repair further third-party scripts or add engine workarounds for them.
 
-On 2026-11-08 the user redirected work back to engine state-machine coverage
-and will supply another mod for compatibility testing. Do not repair further
-mod scripts. Record defects that also reproduce in native as content findings;
-they are not engine implementation tasks. Retain the existing optional SF2
-playable copy/tool and original assets without further mod changes.
+## Implementation and validation
 
-Use the readonly mugen.mod/mugen.sum overlay and preserve root module files.
-The requested origin/go-rewrite merge at172d3fb02 and reconciliation of the
-earlier remote dependency commit dc3423cf1 update root metadata and the overlay:
-Go1.26, Ebitengine2.10.6, purego0.11.3.
-For this host prefix private-wrapper commands with env GOTOOLCHAIN=go1.26.9;
-that toolchain is cached. Both graphs retain MUGEN's audio/YAML dependencies.
-Prefer rg/rg --files --no-ignore; historical ignores hide source. Do not recurse
-into temp for source discovery. Temporary Go helpers belong under temp/_tmp/.
+Use docs/PROGRESS.md as the SINGLE project completion ledger. Implement coherent
+mechanics batches from actual gaps using existing evidence and target beta
+documentation. Connect the production consumer before marking a route complete.
+The ledger currently has 89 controller families, 127 trigger routes and 32/35
+implemented project rows; route counts are not arbitrary native conformance.
 
-For this host use python3 game/mugen/temp/round-task-env.py with its authorized
-elevated prefix for Xvfb:97/Pulse/Go. Native/app/display-dependent runs stay serial;
-await the entire process and confirm owned clients exited before edits/new runs.
-Never expose cookies or unrelated process arguments or reset shared servers.
+The five connected segments cover state flow, combat/recovery, entity/binding/
+retirement, effects/pause and complete match flow. Completed segments stay checked
+until covered source changes, a regression identifies the segment, or a rerun is
+explicitly requested. Validate affected segments at the end of a coherent batch;
+do not run every legacy test after each parameter edit or create fixture matrices.
+Extend existing state paths and keep handoffs short.
 
-The user authorized temp cleanup. Nine generated run directories were removed,
-recovering126.58 GiB; native originals/captures/prepared copies in those directories
-are intentionally no longer retained. This supersedes earlier raw-evidence
-retention instructions. Canonical temp/mugen-1.1b1, build tools/cache and old
-tracked fixtures remain. Never regenerate removed matrices just to pass legacy
-pixel diagnostics. --check-all is explicit historical diagnostics only and some
-artifact-dependent tests now require unavailable captures.
+Use the scoped mugen.mod/mugen.sum overlay and preserve root module metadata.
+Use a supported toolchain and discover the current display/audio environment;
+do not assume another contributor's cached tools or private wrapper. Native,
+application and display-dependent runs stay serial. Await owned clients before
+edits or another run; do not reset shared services or expose credentials.
 
-## Current state and boundaries
+Reuse external data in place and a shared build cache. Clean disposable scratch
+on success and failure. Preserve external assets, user configuration and
+unrelated files; remove only output created for the current task. Never commit
+generated test data, captures, recordings, copied distributions or binaries.
+Optional historical diagnostics may require separately supplied inputs; they
+are not routine completion gates.
 
-The ledger has 89 controller routes, 127 trigger routes and 32/35 implemented
-project rows. All five connected segments are checked with race detection;
-Linux is rebuilt. These are scoped checks, not arbitrary native conformance.
-The three partial rows cover physical gamepad/native joystick acceptance, broader
-asset/font/media acceptance and native AI/rules/fidelity combinations. Physical CD audio, absent licensed/CJK fonts and
-other platforms are deferred. Standalone music-file CLI playback was deferred
-by the user. Do not turn unknown permutations into mandatory test matrices.
-
-Use supplied Elecbyte runtime observations and beta docs/CNS as the reference.
-The canonical executable is temp/mugen-1.1b1/mugen.exe (SHA-256 in README).
-sf2_mugen/mugen.exe is byte-identical. HD StreetFighterHDM.exe differs despite
-reporting the same beta version; its observations are pack-runtime evidence,
-not proof of stock behavior. Recheck normative claims against the canonical
-runtime; neither filename nor version banner establishes executable identity.
-Paintown C++ turning is not normative. Original SF2 later-round state5900 stalls
-also reproduce in native: do not add an engine timeout or repair more mod scripts.
-Retain temp/sf2_mugen_playable and its existing ten-script repair tool/copy,
-original SF2 pack/ZIP/executable, canonical temp/mugen-1.1b1, shared cache and the
-single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
+Three broad areas remain partial: arbitrary content/font/media acceptance,
+native runtime/render/audio/AI/menu fidelity and physical controller acceptance.
+Physical CD playback, unavailable licensed/CJK fonts, other-platform runtime
+acceptance and standalone music-file CLI playback are deferred. Do not turn
+unknown permutations into mandatory parameter matrices.
 
 ## Implementation invariants
 
@@ -241,7 +205,6 @@ single ignored temp/bin/mugen-go binary. Other old run banks stay removed.
 - Audio uses consumed cursors, shared WAV decoding and reusable Linux codec
   buffers. Retain SFX two-stage quantization and existing KO-echo scheduling.
 
-Details and native observations remain in docs/STATE-MACHINE-FEATURES.json,
-PROGRESS.md and Git history. Keep future handoffs short; do not append a full
-checkpoint narrative to this file. Verify root modules with
-`sha256sum -c game/mugen/temp/upstream-post-merge-module.sha256`.
+Current behavior and remaining work are recorded in docs/STATE-MACHINE-FEATURES.json
+and PROGRESS.md. Keep future handoffs portable and concise; use Git history for
+code changes rather than accumulating per-run transcripts.

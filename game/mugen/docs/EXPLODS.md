@@ -14,14 +14,13 @@ Creation's full bindID/random/palette/other fields and dependent consumers remai
 in active item3. The M4ae notes below are historical bounds, not current absence
 claims for those two mutation controllers.
 
-M4ae adds 27 native programs: 636 numeric observations, two load rejections
-and nine original RGB marker placements. The typed Explod path replaces the legacy literal parser
-that converted F(expression) to own action 0 and left it indefinitely visible.
-That defect made stock landing dust appear as permanent standing KFM sprites.
-The repaired draft stock throw capture at
-`temp/app-runs/stock-throw-effects-draft-go/at-7s.png` has two fighters and no
-permanent extra poses. The draft capture was inspected; final window validation is recorded with the
-checkpoint. Eight fresh native lifetime/grammar/RGB replays match.
+M4ae adds 27 native programs: 636 numeric observations, two load rejections and
+nine original RGB marker placements. The typed Explod path replaces the legacy
+literal parser that converted F(expression) to own action 0 and left it
+indefinitely visible. That defect made stock landing dust appear as permanent
+standing KFM sprites. The draft capture was inspected; final window validation is
+recorded with the checkpoint. Eight fresh native lifetime/grammar/RGB replays
+match.
 
 ## State and rendering ownership
 
@@ -82,10 +81,9 @@ from the implicit front case (60,-100). Go preserves the explicit-space flag
 and converts the horizontal edge origin accordingly. These are static camera
 controls, not complete camera/zoom or every space/postype combination.
 
-All 18 lifecycle programs and nine RGB-position/source-bank cases pass through
-the production simulation. Full scoped races pass with all markers in
-temp/m4ae-full-markers-race.log. Pure compiler/effect tests cover host isolation,
-pre-effect validation, one shared clock, immediate retirement and scene cleanup.
+All 18 lifecycle programs and nine RGB-position/source-bank cases pass through the
+production simulation. Pure compiler/effect tests cover host isolation, pre-effect
+validation, one shared clock, immediate retirement and scene cleanup.
 
 The renderer uses common/own archive selection and active AIR elements rather
 than the old own first-frame draw. Negative stock dust priority is drawn below
@@ -103,7 +101,6 @@ PalFX, shadow, random displacement, angle/3D transforms and transparency overrid
 are not covered by this checkpoint. Full Explod, engine and asset compatibility
 remain unfinished. See THROWS.md, EFFECTS.md and COMPATIBILITY.md.
 
-
 M4af adds two fixed nonzero-camera marker controls for Pos X + CameraPos X,
 using own/common banks. Both project to native (30,-10) with camera (80,-20),
 and the production scene and real windows retain that position. Pos X/PosSet
@@ -111,13 +108,3 @@ now convert between screen-centered scripts and stage-based actor storage.
 See COORDINATES.md. These controls establish the coordinate contract; dynamic
 camera follow/easing/zoom and full framebuffer filtering remain open. Do not
 accept complete stock visual/engine parity from a clean recovery frame alone.
-
-
-All final normal/forward/drop 1280x720 windows were inspected through 2/3/4/7
-seconds at temp/app-runs/stock-throw-{base,forward,drop}-effects-go/. They recover
-with two fighters and no permanent dust clones, without missing-effect warnings
-or runtime errors. The ordinary throw was also repeated in
-stock-throw-base-effects-recheck-go/. A black preview was a display artifact:
-the stored original/repeat recovery PNGs have identical hashes and substantial
-nonblack pixels. app_smoke.py now rejects entirely black quick-match captures.
-These remain window/asset smoke checks, not full camera/filter/layer/audio parity.

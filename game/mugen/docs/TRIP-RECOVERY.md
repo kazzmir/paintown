@@ -14,13 +14,11 @@ no recurring trip-state heuristic. The stock sweep completes
 
 ## Measured scope
 
-Thirteen original `triproute-*` programs pin 156 numeric observations and 52
-pre-native source hashes. Grounded/crouching Trip enters 5070 even with fall=0.
-Airborne contact uses air.type, which inherits ground.type when omitted:
-Trip enters 5070, explicit High enters 5020. Downed contact keeps entry 5080.
-Explicit custom states and HitOverride destinations complete their own paths.
-No expected values come from Go; sources match temp/m4bj-prepared-inputs.json.
-Do not rerun temp/author-m4bj-trips.py. Reference assets and captures stay ignored.
+Grounded/crouching Trip enters 5070 even with fall=0. Airborne contact uses
+air.type, which inherits ground.type when omitted: Trip enters 5070, explicit High
+enters 5020. Downed contact keeps entry 5080. Explicit custom states and
+HitOverride destinations complete their own paths. Reference assets and captures
+stay ignored.
 
 Native groundtype/airtype values are None=0, High=1, Low=2, Trip=3. The old Go
 mapping merged Low with High and reported Trip as 2. The literal air.type
@@ -38,23 +36,16 @@ keep their default 90 ticks, with a checked 1..600 bound.
 
 The new real-input Match regression presses down+B once, in both mixed-profile
 directions (KFM and KFM720 attacking), and requires all recovery states, exactly
-72 damage and restored idle/control within 240 ticks. Both directions fail
-before the fix, retaining 928 life while alternating 5070/5071; the diagnostic
-and stock cases pass after it. Baseline failure log: temp/m4bj-before-fix.log.
+72 damage and restored idle/control within 240 ticks. Both directions fail before
+the fix, retaining 928 life while alternating 5070/5071; the diagnostic and stock
+cases pass after it.
 
 ## Validation and checkpoint
 
-Focused Match races pass 13 new controls, both stock-input sweep directions,
-38 forced-standing and 30 fall/recovery programs (58.555s). Engine/evaluator/
-CNS/combat races pass 1.464s/1.024s/1.014s/1.013s. Two fresh native
-reproductions and two real apps/four captures pass provenance checks in
-temp/m4bj-evidence-audit.json; the recovered 6s fixture image was inspected.
-Its magenta diagnostic stage fill is intentional. Application binary SHA256:
-58ce59cc00276489949717ea027b8a7ebec2cdd7da8d5dfa4aa11b9c3cfb4ad1.
-The final pipeline temp/run-m4bj-validation.py exited 0; no GUI client remains.
-The combined M4bk integration gate covers both user-authorized checkpoints
-and now passes, including both actual sweep directions
-and all trip controls (full Match 693.752s); see FALL-VECTORS.md and HANDOFF.md.
+Its magenta diagnostic stage fill is intentional. The combined M4bk integration
+gate covers both user-authorized checkpoints and now passes, including both actual
+sweep directions and all trip controls (full Match 693.752s); see FALL-VECTORS.md
+and HANDOFF.md.
 
 The frozen stock-source fixture retains one original trailing space at line
 1242 (`x = 0 `). Git's whitespace check reports it; it is retained to preserve

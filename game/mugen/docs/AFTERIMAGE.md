@@ -97,15 +97,11 @@ status, captures and hash-identical validator are preserved. Twelve new native
 aging controls preceded the selected/enabled aging correction. All141 native
 replays and nine focused application crops now pass, including both old failures.
 
-The fresh132-app matrix passes every crop exactly:67,161,600 RGB pixels.
-Full scoped races pass4,193 test/subtest results/36 packages (25tested and
-11compiled-only), no failures or individual skips; Match1825.419s. Four old
+The fresh132-app matrix passes every crop exactly:67,161,600 RGB pixels. Four old
 contact/fall render masks and the visually inspected stock win/rematch/win pass.
-All82 owned input events balance; private PCM contains1,921,557 frames. All
-15,751 final source/fixture/launcher inputs and native/resource/binary/config/
-PNG/audio/module/inventory guards pass. Final audit:
-temp/m4cx-final2-evidence-audit.json. Source/text only is committed locally.
-No expectation or comparison tolerance was relaxed to obtain a passing result.
+All82 owned input events balance; private PCM contains1,921,557 frames.
+Source/text only is committed locally. No expectation or comparison tolerance was
+relaxed to obtain a passing result.
 
 ## Remaining consumers and limits
 

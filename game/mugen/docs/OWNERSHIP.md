@@ -94,18 +94,14 @@ The promoted ownership-* packets use --mugenversion 1.1 --bank fvar
 four-second drafts sometimes captured a stale intro clipboard and are diagnostic
 only. Stable chain captures and fresh replays must agree before promotion.
 
-Full scoped races and pure engine/evaluator races pass. Fresh entry-phase,
-repeat-hit retained-animation, missing-state and elem replays reproduce their
-pinned numbers. A real Go game smoke at temp/app-runs/ownership-borrowed-air-go/
-draws both actors and the borrowed action through state restoration; this does
-not establish pixel/filtering parity. Root module hashes remain unchanged.
+Fresh entry-phase, repeat-hit retained-animation, missing-state and elem replays
+reproduce their pinned numbers.
 
 Next: TargetBind/BindToTarget/Parent/Root clocks and geometry; HitDef p1stateno,
 p2stateno and p2getp1state; complete helper parameters/eligibility, owner deletion,
 multi-target/world phases and every remaining controller geometry boundary.
 Complete throws, all state-machine behavior and whole controller/trigger rows
 remain unverified. See TARGETS.md, ENTITIES.md and COMPATIBILITY.md.
-
 
 M4ac now connects HitDef custom-state fields to these ownership/entry paths.
 Custom destinations supersede standard get-hit entry attributes and preserve

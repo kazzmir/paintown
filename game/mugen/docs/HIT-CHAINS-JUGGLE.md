@@ -48,14 +48,12 @@ queries, teams, foreign states and pause variants remain a separate gate.
 
 ## Evidence
 
-The final 57 hitcombo-* programs pin 660 observations, eight native rejections
-and 228 pre-native hashes. Two misplaced-marker order drafts are archived under
-ignored temp/m4bp-draft-order, unpromoted. Three duplicate-state drafts were
-archived before native execution. Corrected source inputs were frozen as new
-programs; native values/tolerances were never changed. Manifests distinguish
-34 base, six extra, three clean state, two final order and two component-order
-controls. Four additional non-fall, three rejected hitid, two chainid-query and one
-zero-ID controls were frozen before native execution.
+Three duplicate-state drafts were archived before native execution. Corrected
+source inputs were frozen as new programs; native values/tolerances were never
+changed. Manifests distinguish 34 base, six extra, three clean state, two final
+order and two component-order controls. Four additional non-fall, three rejected
+hitid, two chainid-query and one zero-ID controls were frozen before native
+execution.
 
 Integration results, provenance and remaining limits are recorded in HANDOFF.md.
 Broad entity/helper/third-party/projectile/reversal/foreign/pause combinations,
