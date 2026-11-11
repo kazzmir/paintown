@@ -36,6 +36,15 @@ only needed for optional comparisons against the original Windows executable.
 Linux amd64 standalone build, normal startup, connected gameplay segments and
 windowed keyboard combat with audio have passed. Other platforms are deferred.
 
+Native comparison baseline: `temp/mugen-1.1b1/mugen.exe`, SHA-256
+`d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e`.
+The supplied `sf2_mugen/mugen.exe` is byte-for-byte identical to that file.
+The HD pack's `StreetFighterHDM.exe` reports 1.1 Beta 1 P1 but differs: SHA-256
+`32f08a81f06fef51255f4338f61e148006a0779cd1958c0c608ed699cae12c48`.
+Its different packaging/content has not been shown to preserve engine behavior.
+Treat bundled-HD observations as pack compatibility evidence; use the supplied
+baseline runtime for authoritative beta comparisons.
+
 **Run every command below from the repository root.**
 
 ## Run
@@ -60,7 +69,8 @@ entries compile; full gameplay across every character remains unverified. The
 original motif displays eight normal portraits and places four boss slots below
 the visible screen, including in the bundled native engine.
 
-The supplied HD Remix pack bundles MUGEN 1.1 Beta 1 and targets 1280×720:
+The supplied HD Remix pack targets 1280×720 and bundles an executable reporting
+MUGEN 1.1 Beta 1 P1; see the executable distinction above:
 
 ```bash
 game/mugen/mugen.sh --game --data-dir game/mugen/temp/ssf2-turbo-hd

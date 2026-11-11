@@ -83,6 +83,11 @@ other platforms are deferred. Standalone music-file CLI playback was deferred
 by the user. Do not turn unknown permutations into mandatory test matrices.
 
 Use supplied Elecbyte runtime observations and beta docs/CNS as the reference.
+The canonical executable is temp/mugen-1.1b1/mugen.exe (SHA-256 in README).
+sf2_mugen/mugen.exe is byte-identical. HD StreetFighterHDM.exe differs despite
+reporting the same beta version; its observations are pack-runtime evidence,
+not proof of stock behavior. Recheck normative claims against the canonical
+runtime; neither filename nor version banner establishes executable identity.
 Paintown C++ turning is not normative. Original SF2 later-round state5900 stalls
 also reproduce in native: do not add an engine timeout or repair more mod scripts.
 Retain temp/sf2_mugen_playable and its existing ten-script repair tool/copy,

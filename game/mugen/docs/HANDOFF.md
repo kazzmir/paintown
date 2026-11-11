@@ -32,7 +32,12 @@ opens session keyboard/gamepad configuration. Never write those edits to YAML.
 Ctrl-Alt-1..4 activation survives F4/reload while preserving identity/AI ownership.
 Native PNG screenshots date to 1.0 RC4; do not reopen the obsolete PCX claim.
 
-HD Remix bundles native 1.1 Beta 1 P1 and targets 1280x720. All 19 characters and 3,118
+HD Remix's executable reports 1.1 Beta 1 P1; it is not byte-identical to the
+supplied canonical beta. SHA-256 identities are recorded in README. The original
+SF2 executable is byte-identical to the canonical beta. Prior HD-native findings
+are pack-runtime observations; verify stock-beta claims with the canonical
+executable rather than assuming a matching version banner proves equivalence.
+HD Remix targets 1280x720. All 19 characters and 3,118
 state programs load. Preserve legacy parenthesized projectile-ID comparisons,
 including != and unfiltered Var(...) IDs. Empty effect clocks accept zero-time
 placeholders/tails and retire on their first pass; fighter-loop errors stay
