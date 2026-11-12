@@ -1,0 +1,110 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, delayed redirect 0]
+type=VarSet
+trigger1=Time=2
+fv=0
+value=Enemy,Cond(1,Const(size.height),0)
+[State 700, delayed redirect 1]
+type=VarSet
+trigger1=Time=2
+fv=1
+value=Enemy,Cond(1,Vel X,0)
+[State 700, delayed redirect 2]
+type=VarSet
+trigger1=Time=2
+fv=2
+value=Enemy,IfElse(1,Vel X,0)
+[State 700, delayed redirect 3]
+type=VarSet
+trigger1=Time=2
+fv=3
+value=Enemy,Cond(1,Abs(Vel X),0)
+[State 700, delayed redirect 4]
+type=VarSet
+trigger1=Time=2
+fv=4
+value=Enemy,Cond(1,Const240p(320),0)
+[State 700, delayed redirect 5]
+type=VarSet
+trigger1=Time=2
+fv=5
+value=Enemy,Cond(1,Pos X,0)
+[State 700, delayed redirect 6]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=Enemy,Cond(1,FVar(0),0)
+[State 700, delayed redirect 7]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=Enemy,IfElse(1,Const(size.height),0)
+[State 700, delayed redirect 8]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=Enemy,Cond(1,Var(0):=1,0)
+[State 700, delayed redirect 9]
+type=VarSet
+trigger1=Time=2
+fv=9
+value=Enemy,Var(0)
+[State 700, delayed redirect 10]
+type=VarSet
+trigger1=Time=2
+fv=10
+value=Var(0)
+[State 700, delayed redirect 11]
+type=VarSet
+trigger1=Time=2
+fv=11
+value=Enemy,Cond(0,Var(0):=11,Var(0):=13)
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, initialize]
+type=PosSet
+trigger1=Time=0
+x=280
+y=40
+[State 701, velocity]
+type=VelSet
+trigger1=Time=0
+x=8
+y=12
+[State 701, stable axis]
+type=PosFreeze
+trigger1=1
+value=1
+[State 701, raw float]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=640
+[State 701, raw integer]
+type=VarSet
+trigger1=Time=0
+v=0
+value=640

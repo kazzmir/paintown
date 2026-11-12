@@ -1,0 +1,10 @@
+[Begin Action 9999]
+-1,0,0,0,-1
+[Begin Action 9100]
+0,0,0,0,-1,HV
+[Begin Action 9101]
+0,1,0,0,-1
+[Begin Action 9102]
+0,2,0,0,-1
+[Begin Action 9103]
+0,3,0,0,-1

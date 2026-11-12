@@ -1,0 +1,28 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "ecb8c9c831fd346b3b8bbbd57cd33cf7783370bdf581d3be69c59533672ad7db",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "load_error": "Library error message: Died parsing UndefinedAfterImage\n\nError detected.\n\nInvalid trigger: UndefinedAfterImage\nError parsing [State 700, Actor transparency]\nError in [Statedef 700]\nError in probe.cns:188\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 1638381154\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...Freeing player RC Kung Fu Man...CMD...CNS...SFF...AIR...SND...Misc...OK\nCharacter kfm.def failed to load\n\n",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "afterimage_time_count": 1,
+  "pages": [
+    0
+  ],
+  "followup": "AfterImageTime atTime4 then continue toPause8",
+  "time_arguments": "time=UndefinedAfterImage",
+  "origin_changes": {},
+  "expected_load_error": "Library error message: Died parsing UndefinedAfterImage",
+  "expected_compile_state": 700
+}

@@ -1,0 +1,117 @@
+[Statedef 5900]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 0, explicit intro context]
+type=AssertSpecial
+trigger1=RoundState=1 && TeamSide=1
+flag=intro
+[State 0, counter]
+type=VarAdd
+trigger1=1
+v=0
+value=1
+[State 0, move on issue]
+type=PosSet
+trigger1=GameTime=40
+x=IfElse(TeamSide=1,0,80)
+y=IfElse(TeamSide=1,-20,-10)
+[State 0, change visible pose]
+type=ChangeAnim
+trigger1=GameTime=40
+value=9000
+[State 0, post mutation marker]
+type=VarAdd
+trigger1=GameTime=40
+v=1
+value=1
+[State 0, save post mutation 0]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=0
+value=GameTime
+[State 0, save post mutation 1]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=1
+value=Time
+[State 0, save post mutation 2]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=2
+value=Pos X
+[State 0, save post mutation 3]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=3
+value=Anim
+[State 0, save post mutation 4]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=4
+value=Var(0)
+[State 0, save post mutation 5]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=5
+value=Var(1)
+[State 0, save post mutation 6]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=6
+value=RoundState
+[State 0, save post mutation 7]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=7
+value=(EnemyNear,Time)
+[State 0, save post mutation 8]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=8
+value=(EnemyNear,Pos X)
+[State 0, save post mutation 9]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=9
+value=(EnemyNear,Anim)
+[State 0, save post mutation 10]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=10
+value=(EnemyNear,Var(0))
+[State 0, save post mutation 11]
+type=VarSet
+trigger1=GameTime>=40 && TeamSide=1
+fv=11
+value=TeamSide
+[State 0, own post mutation values]
+type=DisplayToClipboard
+trigger1=GameTime>=40 && TeamSide=1
+text="P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)
+[State 0, phase and opponent values]
+type=AppendToClipboard
+trigger1=GameTime>=40 && TeamSide=1
+text="P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)
+[State 0, hold phase after snapshot]
+type=Pause
+trigger1=GameTime=40 && TeamSide=1
+time=99999
+movetime=0
+pausebg=0

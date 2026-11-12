@@ -1,0 +1,30 @@
+; Appended after stock KFM's constants in a disposable reference copy.
+[Statedef 5900]
+type=S
+movetype=I
+physics=N
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, trace]
+type=VarSet
+trigger1=time<30
+v=time
+value=(AnimElemTime(1)+20)*10000 + (AnimElemTime(2)+20)*100 + AnimElemNo(0)
+[State 0, trace2]
+type=VarSet
+trigger1=time<30
+v=time+30
+value=(AnimElemTime(3)+20)*100+AnimTime+20

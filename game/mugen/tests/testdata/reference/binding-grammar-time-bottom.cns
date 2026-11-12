@@ -1,0 +1,224 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 700, hold round]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State 700, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=0,0
+pausetime=0,0
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+id=1234
+[State 700, moving anchor]
+type=VelSet
+trigger1=Time=1
+x=2
+y=0
+
+[State 700, record 0]
+type=VarSet
+trigger1=Time=2
+fv=0
+value=Pos X
+
+[State 700, record 1]
+type=VarSet
+trigger1=Time=2
+fv=1
+value=Target,Pos X
+
+[State 700, bind]
+type=TargetBind
+trigger1=Time=2
+time=1/0
+pos=30,5
+
+[State 700, record 2]
+type=VarSet
+trigger1=Time=2
+fv=2
+value=Target,Pos X
+
+[State 700, record 3]
+type=VarSet
+trigger1=Time=2
+fv=3
+value=Target,Pos Y
+
+[State 700, record 4]
+type=VarSet
+trigger1=Time=2
+fv=4
+value=Target,Vel X
+
+[State 700, record 5]
+type=VarSet
+trigger1=Time=3
+fv=5
+value=Pos X
+
+[State 700, record 6]
+type=VarSet
+trigger1=Time=3
+fv=6
+value=Target,Pos X
+
+[State 700, record 7]
+type=VarSet
+trigger1=Time=3
+fv=7
+value=Target,Pos Y
+
+[State 700, record 8]
+type=VarSet
+trigger1=Time=3
+fv=8
+value=Target,Vel X
+
+[State 700, record 9]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=Enemy,FVar(0)
+
+[State 700, record 10]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=Enemy,FVar(1)
+
+[State 700, record 11]
+type=VarSet
+trigger1=Time=3
+fv=11
+value=Target,Facing
+
+[State 700, change anchor velocity 3]
+type=VelSet
+trigger1=Time=3
+x=5
+y=0
+
+[State 700, change anchor velocity 4]
+type=VelSet
+trigger1=Time=4
+x=8
+y=0
+
+[State 700, change anchor velocity 5]
+type=VelSet
+trigger1=Time=5
+x=1
+y=0
+
+[State 700, change anchor velocity 6]
+type=VelSet
+trigger1=Time=6
+x=4
+y=0
+
+[State 700, duration snapshot 12]
+type=VarSet
+trigger1=Time=4
+fv=12
+value=Pos X
+
+[State 700, duration snapshot 13]
+type=VarSet
+trigger1=Time=4
+fv=13
+value=Target,Pos X
+
+[State 700, duration snapshot 14]
+type=VarSet
+trigger1=Time=4
+fv=14
+value=Target,Vel X
+
+[State 700, duration snapshot 15]
+type=VarSet
+trigger1=Time=5
+fv=15
+value=Pos X
+
+[State 700, duration snapshot 16]
+type=VarSet
+trigger1=Time=5
+fv=16
+value=Target,Pos X
+
+[State 700, duration snapshot 17]
+type=VarSet
+trigger1=Time=5
+fv=17
+value=Target,Vel X
+
+[State 700, duration snapshot 18]
+type=VarSet
+trigger1=Time=6
+fv=18
+value=Pos X
+
+[State 700, duration snapshot 19]
+type=VarSet
+trigger1=Time=6
+fv=19
+value=Target,Pos X
+
+[State 700, duration snapshot 20]
+type=VarSet
+trigger1=Time=6
+fv=20
+value=Target,Vel X
+
+[State 700, duration snapshot 21]
+type=VarSet
+trigger1=Time=7
+fv=21
+value=Pos X
+
+[State 700, duration snapshot 22]
+type=VarSet
+trigger1=Time=7
+fv=22
+value=Target,Pos X
+
+[State 700, duration snapshot 23]
+type=VarSet
+trigger1=Time=7
+fv=23
+value=Target,Vel X

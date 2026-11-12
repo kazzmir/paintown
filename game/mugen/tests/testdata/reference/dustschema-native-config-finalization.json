@@ -1,0 +1,428 @@
+{
+  "native_finalization": "Exact prepared configuration; FirstRun1->0 and LF->CRLF only. Originals unchanged.",
+  "programs": {
+    "dustschema-baseline": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-default-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-default-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-default-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-default-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-one-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-one-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-one-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-one-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-three-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-three-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-three-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-clock-three-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-defaults": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-explod-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-game-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-phase-axis": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-bottom": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-empty": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-extra": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-float-x": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-float-y": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-only": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-quoted": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-runtime-floats": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-single": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-trailing": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-position-unknown": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-same-tick-two": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-bottom": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-empty": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-extra": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-floats": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-only": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-quoted": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-single": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-trailing": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-second-unknown": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-bottom": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-empty": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-float": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-negative": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-quoted": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-runtime": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-unknown": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-spacing-zero": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustschema-unused-unknown": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    }
+  }
+}

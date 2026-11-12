@@ -1,0 +1,41 @@
+[Statedef 5900]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 5900, boot 0]
+type=VarSet
+trigger1=1
+fv=0
+value=CameraPos X
+[State 5900, boot 1]
+type=VarSet
+trigger1=1
+fv=1
+value=ScreenPos X
+[State 5900, boot 2]
+type=VarSet
+trigger1=1
+fv=2
+value=GameTime
+[State 5900, boot 3]
+type=VarSet
+trigger1=1
+fv=3
+value=Pos X
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+velset=0,0
+[State 0, inert]
+type=Null
+trigger1=0

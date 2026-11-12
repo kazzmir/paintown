@@ -1,0 +1,88 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700+(Facing=-1)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, idle]
+type=Null
+trigger1=1
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+damage=1,0
+pausetime=0,0
+ground.type=High
+ground.hittime=11
+ground.slidetime=5
+ground.velocity=-16,0
+air.velocity=-12,-20
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, xvel]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=GetHitVar(xvel)
+[State 5000, yvel]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=GetHitVar(yvel)
+[State 5000, yaccel]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=GetHitVar(yaccel)
+[State 5000, fall xvel]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=GetHitVar(fall.xvel)
+[State 5000, fall yvel]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=GetHitVar(fall.yvel)
+[State 5000, current xvel]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Vel X
+[State 5000, current yvel]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Vel Y

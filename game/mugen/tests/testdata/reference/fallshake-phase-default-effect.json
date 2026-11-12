@@ -1,0 +1,71 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "79149ed4ff787dd5e903b5f1d6652b8f485359252a4de3a3dc269f05165ee0bf",
+  "air_sha256": "e7a5a85a5b3947208c5acdda46e9ffd77602cf4c5351282b120e20ff3024e3e4",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "03356fc5b5a1156bbff164123d722bef099e97dfe069c576cf062797f469c493",
+      "variables": {
+        "0": 8,
+        "1": 90,
+        "2": 4,
+        "3": 90,
+        "4": 0,
+        "5": 90,
+        "6": 4,
+        "7": 90,
+        "8": 101000,
+        "9": 200,
+        "10": 0,
+        "11": 1
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "hit_effect_render": {
+    "baseline_run": "fallshake-defaults-native",
+    "baseline_png_sha256": "ffb22a43babea04698e0f0294d1c4a226a8ae03e6fede31579d9eba274a87f23",
+    "baseline_prepared_sha256": {
+      "chars/kfm/kfm.def": "a14bee1914995481f7cbc065cbf4a6d07ca2176f6dd9bffeb5795cd46898aa1b",
+      "chars/kfm/kfm.cns": "af4c90afdfc664dcff9108185ff80ece9cafa31f3bbc15b4bbea9c9d481a97c2",
+      "chars/kfm/kfm.sff": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746",
+      "chars/kfm/probe.cns": "50b98898e2dd5912f7c4aac91e6d0f91e94e186d60570ca9bd9a7e39f99ac393",
+      "chars/kfm/probe.air": "e7a5a85a5b3947208c5acdda46e9ffd77602cf4c5351282b120e20ff3024e3e4",
+      "chars/kfm/probe.cmd": "8a7beba647cb7bfc2299622eeb32bcfff3c61c0a6c6ca507a108c808a3e076ed",
+      "stages/probe-stage.def": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+      "stages/kfm.sff": "f5ddfc6e52e3f8de8cf731b924ba4f241450bfe56c51e61c45a04ee72e981fff",
+      "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+    },
+    "prepared_sha256": {
+      "chars/kfm/kfm.def": "a14bee1914995481f7cbc065cbf4a6d07ca2176f6dd9bffeb5795cd46898aa1b",
+      "chars/kfm/kfm.cns": "af4c90afdfc664dcff9108185ff80ece9cafa31f3bbc15b4bbea9c9d481a97c2",
+      "chars/kfm/kfm.sff": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746",
+      "chars/kfm/probe.cns": "b1ca32ed007f21dea01c490395d1e177f0ef2bc678524ed3b610c264a0df2dee",
+      "chars/kfm/probe.air": "e7a5a85a5b3947208c5acdda46e9ffd77602cf4c5351282b120e20ff3024e3e4",
+      "chars/kfm/probe.cmd": "8a7beba647cb7bfc2299622eeb32bcfff3c61c0a6c6ca507a108c808a3e076ed",
+      "stages/probe-stage.def": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+      "stages/kfm.sff": "f5ddfc6e52e3f8de8cf731b924ba4f241450bfe56c51e61c45a04ee72e981fff",
+      "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+    },
+    "measurement": {
+      "offset_y": 0,
+      "garment_pixels": 7935,
+      "region": [
+        720,
+        260,
+        1030,
+        650
+      ]
+    }
+  }
+}

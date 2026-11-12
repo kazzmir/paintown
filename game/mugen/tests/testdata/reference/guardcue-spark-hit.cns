@@ -1,0 +1,205 @@
+[Data]
+life = 1000
+attack = 100
+defence = 100
+fall.defence_up = 50
+liedown.time = 60
+airjuggle = 15
+sparkno = 2
+guard.sparkno = 40
+KO.echo = 0
+volume = 0
+IntPersistIndex = 60
+FloatPersistIndex = 40
+[Size]
+xscale = 1
+yscale = 1
+ground.back=10
+ground.front=10
+air.back=10
+air.front=10
+height = 60
+attack.dist = 160
+proj.attack.dist = 90
+proj.doscale = 0
+head.pos = -5, -90
+mid.pos = -5, -60
+shadowoffset = 0
+draw.offset = 0,0
+[Velocity]
+walk.fwd  = 2.4
+walk.back = -2.2
+run.fwd  = 4.6, 0
+run.back = -4.5,-3.8
+jump.neu = 0,-8.4
+jump.back = -2.55
+jump.fwd = 2.5
+runjump.back = -2.55,-8.1
+runjump.fwd = 4,-8.1
+airjump.neu = 0,-8.1
+airjump.back = -2.55
+airjump.fwd = 2.5
+air.gethit.groundrecover = -.15,-3.5
+air.gethit.airrecover.mul = .5,.2
+air.gethit.airrecover.add = 0,-4.5
+air.gethit.airrecover.back = -1
+air.gethit.airrecover.fwd = 0
+air.gethit.airrecover.up = -2
+air.gethit.airrecover.down = 1.5
+[Movement]
+airjump.num = 1
+airjump.height = 35
+yaccel = .44
+stand.friction = .85
+crouch.friction = .82
+stand.friction.threshold = 2
+crouch.friction.threshold = .05
+air.gethit.groundlevel = 25
+air.gethit.groundrecover.ground.threshold = -20
+air.gethit.groundrecover.groundlevel = 10
+air.gethit.airrecover.threshold = -1
+air.gethit.airrecover.yaccel = .35
+air.gethit.trip.groundlevel = 15
+down.bounce.offset = 0, 20
+down.bounce.yaccel = .4
+down.bounce.groundlevel = 12
+down.friction.threshold = .05
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, hold]
+type=Null
+trigger1=1
+[State 700, low life]
+type=LifeSet
+trigger1=Time=0
+value=5
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=MA
+damage=10,1
+hitsound=-1,0
+guardsound=-1,0
+pausetime=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+guard.velocity=0
+sparkno=S9992
+guard.sparkno=S9993
+sparkxy=10,-50
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, hold]
+type=Null
+trigger1=1
+[State 5000, cue context]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=Life
+[State 5000, cue context]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=GetHitVar(guarded)
+[State 5000, cue context]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=100000+StateNo
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, hold]
+type=Null
+trigger1=1
+[State 150, cue context]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=Life
+[State 150, cue context]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=GetHitVar(guarded)
+[State 150, cue context]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=100000+StateNo
+[Statedef -2]
+[State -2, observation 0]
+type=VarSet
+trigger1=1
+fv=0
+value=Pos X
+[State -2, observation 1]
+type=VarSet
+trigger1=1
+fv=1
+value=Pos Y
+[State -2, observation 2]
+type=VarSet
+trigger1=1
+fv=2
+value=Facing
+[State -2, observation 3]
+type=VarSet
+trigger1=1
+fv=3
+value=StateNo
+[State -2, observation 4]
+type=VarSet
+trigger1=1
+fv=4
+value=Const(size.ground.front)
+[State -2, observation 5]
+type=VarSet
+trigger1=1
+fv=5
+value=P2Dist X
+[State -2, isolate visual cues]
+type=AssertSpecial
+trigger1=1
+flag=nokosnd

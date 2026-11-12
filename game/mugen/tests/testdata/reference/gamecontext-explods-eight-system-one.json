@@ -1,0 +1,69 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "80c70fd85fc3d1e6a0a30fdadd3b2a562a39c6e2ed175c8e5121a318aacc8d25",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "4cc3ba67e117d537c2345fe6c927c5f9462e1e8585b43e6c6f7fd4f3c6c9e396",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 8,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 222,
+        "9": 418,
+        "10": 612,
+        "11": 20
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "config_sha256": "8d5801c4d72c72d2c306704909884db9586e65f1ceed17bf85916cd4d6c6ca54",
+  "effect_limits": {
+    "ExplodMax": 8,
+    "SysExplodMax": 1,
+    "AfterImageMax": 16
+  },
+  "common_air_override": {
+    "path": "data/fightfx.air",
+    "canonical_sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7",
+    "replacement_sha256": "ec121a330952ef7c63c23fb81365023a1e6737e7b73d521f1e30587041cb7340",
+    "prepared_sha256": "ec121a330952ef7c63c23fb81365023a1e6737e7b73d521f1e30587041cb7340",
+    "canonical_unchanged": true
+  },
+  "random_seed": 860331867,
+  "seed_log_sha256": "61b3cac68bf47e4084c8e0f69662df51cb1ae3089e8d14d68a7f067b6d9ee80a",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4dm-gamecontext-explods-eight-system-one",
+  "native_scope_notes": "Visible AIR9999 is shared by BOTH fighters. Per-entity noshadow suppresses P1 shadow, while P2 shadow remains. Globalnoshadow once atTime8 resets after owner pauses and does not suppress either shadow.",
+  "game_animation_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "cc0f2fa9ed863c5b152939358fe73b948dada53839ef7382791984c448fe70cf",
+    "scope": "Full world, chosen native-only before Go baseline. Includes real common cues, pool/negative-action/profile/RNG/layer/palette consumers. Exact RGB remains mandatory; no tolerance."
+  }
+}

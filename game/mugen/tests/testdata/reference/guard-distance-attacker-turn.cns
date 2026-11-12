@@ -1,0 +1,82 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700+(Facing=-1)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, no automatic turn]
+type=AssertSpecial
+trigger1=1
+flag=noautoturn
+[State 700, remain]
+type=Null
+trigger1=1
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9990
+ctrl=0
+[State 701, no automatic turn]
+type=AssertSpecial
+trigger1=1
+flag=noautoturn
+[State 701, turn]
+type=Turn
+trigger1=Time=1
+[Statedef -2]
+[State -2, start clock]
+type=VarSet
+trigger1=RoundState=2 && ctrl
+v=58
+value=1
+[State -2, frame clock]
+type=VarAdd
+trigger1=var(58)
+ignorehitpause=1
+v=59
+value=1
+[State -2, spatial 0]
+type=VarSet
+triggerall=StateNo=700
+trigger1=var(59)<=10
+fv=(var(59)-1)*4+0
+value=InGuardDist
+[State -2, spatial 1]
+type=VarSet
+triggerall=StateNo=700
+trigger1=var(59)<=10
+fv=(var(59)-1)*4+1
+value=P2Dist X
+[State -2, spatial 2]
+type=VarSet
+triggerall=StateNo=700
+trigger1=var(59)<=10
+fv=(var(59)-1)*4+2
+value=P2Dist Y
+[State -2, spatial 3]
+type=VarSet
+triggerall=StateNo=700
+trigger1=var(59)<=10
+fv=(var(59)-1)*4+3
+value=Facing

@@ -1,0 +1,73 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "96ed8ec9e59eb15cbb532e64e3fdb1983af917107480e4d982bc79dfc94ab909",
+  "air_sha256": "fa7ff15be30938f1eae123273d0afe79a3e5ed437bb94f220e1c2e198a418ebb",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "6febaaf7bf22f8303a879f880fcf083a16a4d0a214b90e002b05c7a229d98fc0",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 1,
+        "3": 0,
+        "4": 58,
+        "5": 0,
+        "6": 700,
+        "7": 701,
+        "8": 800,
+        "9": 0,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+  },
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b9583a5079f5e637fa4484fcf321fa0018464ac52ecac0d5b78dbb5b4f0fb4f2",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "sprite_render": {
+    "window": [
+      1280,
+      720
+    ],
+    "rgb": [
+      220,
+      30,
+      40
+    ],
+    "pure_color_pixels": 11472,
+    "pure_color_bounds": [
+      521,
+      522,
+      760,
+      570
+    ],
+    "crop_region": [
+      517,
+      518,
+      764,
+      574
+    ],
+    "crop_sha256": "95d02ef073bbca46a4c670d988781c259c6db8fbad28191e14315fdf44f3327c"
+  },
+  "sprite_crop_rgb_zlib": "eNrt0rEJACAMAME04gw2goWQ/RuXcRjXCHLPjfARkiRJkkq0W78z4Q9nLJNjcjA5mBxMDiYHk4PJMbnJMTmYHEwOJgeTg8nB5Jjc5JgcTA4mB5ODycHkYHJMbnJMDiYHk4PJweRgcjA5JgeTg8nB5GByMDmYHEyOycHkYHIwOZgcTA4mx+SSJEmSKvQA/gL87w=="
+}

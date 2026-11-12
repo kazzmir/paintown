@@ -1,0 +1,59 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+movetype=A
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, record 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Enemy,Pos X
+
+[State 701, record 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Enemy,Time
+
+[State 701, record 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Enemy,StateNo
+
+[State 701, record 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Pos X
+
+[State 701, record 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Time
+
+[State 701, record 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Vel X

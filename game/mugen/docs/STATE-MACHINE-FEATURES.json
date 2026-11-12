@@ -1,0 +1,1235 @@
+{
+  "schema": 1,
+  "controller_extensions": [
+    "fvaradd",
+    "fvarrangeset",
+    "fvarset"
+  ],
+  "controller_gaps": {},
+  "trigger_gap_allocations": {},
+  "mechanics": [
+    {
+      "id": "state-compilation",
+      "name": "State loading, compilation and source diagnostics",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/compile.go:compileState"
+      ]
+    },
+    {
+      "id": "expressions",
+      "name": "Typed expressions, variables and ordered evaluation",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "evaluator/runtime.go:EvaluateValue",
+        "evaluator/value.go:CoerceInt",
+        "engine/parameters.go:compileVariable",
+        "engine/parameters.go:compileVariableRange"
+      ],
+      "validation": "Legacy projectile elapsed-time suffixes such as Parent, ProjHitTime1 normalize to the existing typed ID query; the contact continuation scenario checks parity with ProjHitTime(1). Optional 1.0 movement/recovery constants now provide native defaults for old characters. Native observations at 320p and 1280p confirm dimensional scaling while recovery multipliers remain unitless. Explicit values, including zero, retain precedence. Register/range destination admission now precedes value evaluation. Invalid/reversed writes are no-ops; valid ranges evaluate once and coerce ordinary bottom to zero while admitted VM errors stay fatal. The connected runtime/recovery flow and rebuilt Linux match twelve native observations."
+    },
+    {
+      "id": "triggers",
+      "name": "Trigger groups and short circuit evaluation",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/compile.go:compileTriggers"
+      ]
+    },
+    {
+      "id": "state-entry",
+      "name": "State entry attributes, time and control",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/entry.go:EnterState"
+      ],
+      "validation": "For a grounded, controllable command transition, automatic facing precedes destination entry expressions and velset. Native command observation still reads the old heading; first attack controllers read the corrected heading with entry velocity 4 retained. Explicit facep2 remains an independent entry rule. The connected contact/crossover lifecycle retains these observations. Ordinary bottom ctrl/velset values use the measured beta zero fallback; fatal VM errors retain their source context. First Statedef attributes now retain entry/metadata precedence across control, type, physics, animation, velocity and power. The connected runtime/animation lifecycle matches twelve native entry/motion/persistence observations and recovers control."
+    },
+    {
+      "id": "negative-states",
+      "name": "Negative states and same-tick state continuation",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/pass.go:RunStatePassWithBudget",
+        "engine/pass.go:RunPositivePassWithBudget"
+      ]
+    },
+    {
+      "id": "controller-scheduling",
+      "name": "Controller persistence and hit-pause eligibility",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/statemachine.go:ExecuteState"
+      ],
+      "validation": "Repeated persistent attributes retain their first value; repeated trigger lines remain separate conditions. The connected runtime/animation scenario covers once-only persistence and contradictory triggers through own-state recovery. Native and rebuilt Linux observations agree; all five segments pass with races."
+    },
+    {
+      "id": "custom-states",
+      "name": "Borrowed states, animation and SelfState ownership",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/ownership.go:ResolveState"
+      ],
+      "validation": " Borrowed-state Explod creation now carries its evaluation width through deferred admission, converts geometry once into issuer storage units and retains the creating state\u2019s private-sprite scale after SelfState. The existing connected entity lifecycle covers mixed-coordinate contact, creation gating, Pause, own-state recovery, expiry and reset; native and rebuilt Linux marker positions/dimensions agree. Animation selection now retains first duplicate AIR actions and restarts invalid element selectors, with native numeric fallback."
+    },
+    {
+      "id": "world-ticks",
+      "name": "Root/helper update, collision, physics and clocks",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/tick.go:TickCharacters",
+        "character/character.go:ResolvePushCollision",
+        "character/coordinates.go:pushBoxesOverlapY",
+        "character/ownership.go:automaticTurn",
+        "character/commands.go:turnCommandFrame",
+        "character/character.go:changeStateWithEntry",
+        "character/character.go:HandleBuiltinTransitions",
+        "character/commands.go:justPressedUp"
+      ],
+      "validation": "Connected scenarios cover ordered root/helper updates, collision, physics, clock ownership and recovery. Boundary correction and constrained placement are checked independently from rendered sprite alignment."
+    },
+    {
+      "id": "helper-lifecycle",
+      "name": "Helper creation, identity, retirement and round cleanup",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/helper.go:CreateHelper",
+        "character/retire.go:DestroyHelper",
+        "character/helper.go:CreateHelperEvaluated",
+        "character/ownership.go:CreateHelperEvaluated"
+      ],
+      "validation": "The connected entity lifecycle includes helper-bank admission before expressions, full-bank rejection without side effects/VM failures, retirement, vacancy reuse, parent confirmation and fresh round identities. All five segments pass with races; rebuilt Linux matches twelve native helper-bank observations. Deferred admission also retains borrowed-state position conversion while leaving size overrides in helper units. The existing mixed-profile lifecycle covers helper ownership through parent SelfState, Pause and retirement. Native and rebuilt Linux match all twelve context observations."
+    },
+    {
+      "id": "bindings",
+      "name": "Targets and parent/root/target binding",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/binding.go:BindSelf",
+        "character/binding.go:BindCallerToTarget",
+        "engine/target.go:evaluateTargetArguments",
+        "engine/parameters.go:compileVariable",
+        "character/targets.go:HasTargets"
+      ],
+      "validation": "Connected mixed-coordinate entity lifecycle covers moving-owner self binding, cumulative Pause allowances, bound body contact, retirement and reset. Asymmetric throw (pausetime 8,2) matches beta at elapsed passes 3/7/10: (attacker Time,target Time,target VelX,deltaX)=(0,3,0,30)/(0,7,0,30)/(2,10,0,26). A hit-paused anchor places targets but transfers zero velocity; expiry does not start victim drift. Scenario ends with own-state recovery/control and fresh helper identities/budgets after reset. Changed-source segments pass with race detection; native scratch removed. Other binding/pause combinations remain unverified. Target/parent admission now matches beta: absent relationships suppress expressions, unmatched target IDs suppress remaining fields, and TargetBind checks ID before time/position. The same lifecycle continues through grab, drop, helper-parent writes, retirement and recovery; all twelve native slots match rebuilt Linux."
+    },
+    {
+      "id": "combat",
+      "name": "Hit/guard contacts, damage and reaction state transitions",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/tick.go:TickCharacters",
+        "character/hit_damage.go:contactDamage",
+        "character/corner_push.go:recordCornerPush",
+        "character/hit_damage.go:GetDefenceDamageMultiplier",
+        "character/targets.go:AddTargetLife",
+        "character/character.go:GetInGuardDist",
+        "character/projectile.go:CreateProjectile"
+      ],
+      "validation": "Stock input/contact/recovery and complete match flows pass. A bounded original-beta projectile/direct/helper corner-contact flow confirms the existing projectile exclusion: explicit -12 leaves the owner at 0; direct/helper attackers move 130 to approximately 93.294, with receiver life990/980/970. Corrected the old missing-owner-path note; no owner-recoil behavior was added. HitDef now combines base attack/defence with runtime adjustments. Negative, nonabsolute TargetLifeAdd/LifeAdd share defence reductions, including SuperPause; healing and absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual. The existing mixed-coordinate combat scenario matches twelve native observations, then completes recovery and round reset. All five segments are checked with races; rebuilt Linux reproduces the same twelve values. Scratch removed; no mod scripts or user configuration changed. InGuardDist includes opposing helpers and live projectiles after their owner returns to idle. Projectile defaults use size.proj.attack.dist; explicit guard.dist retains precedence and coordinate units. Native approach/pass/retirement observations and owned-keyboard fireball blocking agree with rebuilt Linux: 5 chip damage and a guard event rather than a hit. The existing mixed-coordinate combat scenario continues through recovery, damage adjustments and round reset. Four changed-source segments pass with races; state-flow stays checked. Shared assets were reused and diagnostic scratch removed. Negative nonabsolute life adjustments now retain the native one-point scaled minimum while explicit zero stays zero. Scalar fallback, selective effect retirement, zero-damage contact and recovery match twelve native observations in rebuilt Linux; all segments pass with races."
+    },
+    {
+      "id": "recovery",
+      "name": "Hit, fall, landing and recovery state progression",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/character.go:HandleBuiltinTransitions",
+        "character/liedown.go:advanceLiedownTime"
+      ]
+    },
+    {
+      "id": "death",
+      "name": "Death latching, KO and damage grace",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/life.go:completeLifeState",
+        "match/match.go:finishRound"
+      ]
+    },
+    {
+      "id": "pause",
+      "name": "Pause/SuperPause, movement allowances and clock ownership",
+      "group": "Controllers and effects",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/timeline.go:BeginFrame",
+        "engine/timeline.go:RequestSuperPause",
+        "engine/pause.go:compilePause",
+        "engine/superpause.go:compileSuperPause"
+      ],
+      "validation": " The connected shared-clock lifecycle now includes ordinary-bottom numeric fallback, zero-duration power updates, later argument side effects and real pause/recovery. Admitted VM errors remain fatal. All twelve bounded native observations match rebuilt Linux; all segments pass with races."
+    },
+    {
+      "id": "effects",
+      "name": "Projectiles, Explods, trails, palettes and transforms",
+      "group": "Controllers and effects",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/parameters.go:compileCoreController",
+        "effect/scene.go:AdvanceWithPause",
+        "palette/state.go:CloneMappings",
+        "character/after_image.go:advanceAfterImages",
+        "character/after_image.go:drawAfterImages"
+      ],
+      "validation": "Palette mappings invalidate base textures independently of shader effects; fighter/HUD draws share mapped pixels while retaining separate effects. AfterImage saves the AIR element clock and mapping-only outfit snapshot. Connected scenarios cover local-effect expiry, interpolation followed by an animation change, Pause, history drain/resume, remapping and round reset. Existing palette/cache regressions and four affected segments pass with race detection; state-flow stays checked. The rebuilt Linux game matches all five retained-pose positions in one beta scene. Other rendering combinations remain unverified; current scratch removed."
+    },
+    {
+      "id": "rounds",
+      "name": "One-on-one rounds, results, reset and rematch",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "match/match.go:Update",
+        "match/match.go:resetRound"
+      ]
+    },
+    {
+      "id": "selection",
+      "name": "Title, player/stage selection, versus and fight handoff",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/flow_test.go:TestTitleSelectionVersusFightResultRematchAndExit",
+        "system/fight_state.go:NewFightState",
+        "system/options.go:NewOptionsState",
+        "config/extended.go:UnmarshalYAML",
+        "config/keys.go:SetBindings",
+        "input/manager.go:matchAction",
+        "system/charloader.go",
+        "system/select.go"
+      ],
+      "validation": "Selection and versus screens consume authored portraits, coordinate scaling, names, windows and backgrounds. Missing roster definitions retain empty grid positions; malformed available assets still report errors. Connected flows reach combat, round results and rematch."
+    },
+    {
+      "id": "announcements",
+      "name": "One-on-one Round/Fight/Win presentation scheduling",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/hud_message.go:updateMessages",
+        "system/hud.go:Draw"
+      ]
+    },
+    {
+      "id": "clipboard",
+      "name": "Formatted clipboard and production debug display",
+      "group": "Controllers and effects",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/clipboard.go:compileClipboard",
+        "system/debug.go:drawDebugClipboard"
+      ]
+    },
+    {
+      "id": "combo",
+      "name": "Combo count lifecycle and HUD consumer",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/combo.go:creditCombo",
+        "system/hud_combo.go:drawCombos"
+      ]
+    },
+    {
+      "id": "residual-schema",
+      "name": "Remaining variable and StateTypeSet schemas",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "engine/parameters.go:compileVariable",
+        "engine/state_type.go:compileStateTypeSet",
+        "engine/variable_alias.go:compileFloatVariableAlias"
+      ]
+    },
+    {
+      "id": "start-constraints",
+      "name": "Cold-start screen constraint ordering",
+      "group": "Characters and combat",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/character.go:runStateTick",
+        "match/camera.go:updateHorizontalCamera"
+      ]
+    },
+    {
+      "id": "stock-assets",
+      "name": "Stock character/stage, SFF/AIR/CNS/CMD loading",
+      "group": "Assets and sound",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "character/loader.go:LoadPlayerWithOptions",
+        "stage/loader.go:LoadStage",
+        "parsers/localization.go:Localize"
+      ],
+      "validation": "Config.Language selects complete localized definition groups throughout the asset lifecycle, with English fallback and original source lines. Native and rebuilt Linux metadata/constants/input observations agree; the connected storyboard/selection/VS/fight/KO/rematch scenario passes with race detection."
+    },
+    {
+      "id": "sound-effects",
+      "name": "Sound effects, channels and production mixing",
+      "group": "Assets and sound",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/sound.go",
+        "sound/mixer.go:preparePan",
+        "sound/mixer.go:prepareVolume",
+        "snd/wav.go:ReadWAVHeader",
+        "snd/wav.go:DecodePCMInto"
+      ],
+      "validation": "Existing decoder/mixer regressions pass with race detection. The connected media scenario covers live pan/mute/unmute and owner retirement during NoMusic, plus extensible float SND playback and expiry. Pan/gain/frequency factors move out of sample mixing while per-sample quantization stays unchanged. Linux KO/rematch/KO with private audio passed; generated scratch removed."
+    },
+    {
+      "id": "storyboards",
+      "name": "Storyboard loading, playback and canvas scaling",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item3",
+      "sources": [
+        "system/storyboard_state.go",
+        "storyboard/storyboard.go:DrawToWindow",
+        "parsers/storyboard.go"
+      ],
+      "validation": "Storyboard consumers retain scene order, localization, background groups, canvas fitting, text, sound and music. Named Scene sections remain distinct from similarly named background sections. Connected asset and campaign flows exercise entry, skip, completion and return."
+    },
+    {
+      "id": "bgm",
+      "name": "Background music and NoMusic integration",
+      "group": "Assets and sound",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item4",
+      "sources": [
+        "sound/music.go:Play",
+        "system/music.go:syncMusic",
+        "character/character.go:AssertSpecial",
+        "sound/wav.go:decodeWaveMusic",
+        "sound/legacy_linux.go:Read"
+      ],
+      "validation": "BGM decodes bounded blocks while position counts consumed samples. One connected lifecycle spans menu continuity, one-shot expiry, loop edges, NoMusic, SFX separation, round/scene clearing, rematch, streamed/resampled PCM24, extensible float WAV replacement and malformed-file recovery. Native Linux codecs reuse PCM buffers. The affected effects-pause/match-flow segments pass with race detection. Rebuilt Linux KO/rematch/KO played authored float WAV through the real device; all captures/PCM/overlays removed."
+    },
+    {
+      "id": "fonts",
+      "name": "Complete font, media and asset compatibility",
+      "group": "Assets and sound",
+      "status": "partial",
+      "gap": "Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; third-party script repair is outside engine implementation.",
+      "allocation": "item4",
+      "sources": [
+        "font/font.go",
+        "font/truetype.go:loadTrueType",
+        "sff/pcx.go:decodePCX",
+        "sff/sff.go:ParsePortraits",
+        "resource/characters.go:Resolve",
+        "sound/legacy_linux.go:decodeLegacyMusic",
+        "storyboard/loader.go:Load",
+        "storyboard/storyboard.go:SoundCommands",
+        "air/air.go:Sample",
+        "system/mode_screens.go:victoryQuote",
+        "character/palette_load.go:loadLegacyPalettes",
+        "character/palette_load.go:BindPalette",
+        "palette/state.go:SelectLegacy",
+        "air/air.go:ParseFromAST",
+        "snd/wav.go:ReadWAVHeader",
+        "sound/wav.go:decodeWaveMusic",
+        "sff/images.go:UploadPixels",
+        "sff/sff.go:Index",
+        "background/sprites.go:Image",
+        "sff/sff.go:parseWithSelection",
+        "cns/cns.go:ParseFromAST",
+        "evaluator/parser.go",
+        "parsers/parser.go",
+        "engine/explod.go"
+      ],
+      "validation": "Connected asset scenarios cover padded PCX rows, legacy font maps, explicit glyph coordinates, font banks, sprite palette ownership, malformed-resource correction and round reset. Legacy definitions retain first values and accepted state/parser spellings. Optional movement/recovery constants supply native defaults with dimensional coordinate scaling. Loading or observed fights do not establish arbitrary roster, font or native gameplay equivalence."
+    },
+    {
+      "id": "raster-audio",
+      "name": "Remaining native runtime, rendering, audio and AI fidelity",
+      "group": "Assets and sound",
+      "status": "partial",
+      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Concrete remaining result consumers include wintext/winstext.layerno and Survival roundstowin pose policy.",
+      "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
+      "sources": [
+        "render/linear.go",
+        "character/ko_sound.go",
+        "font/font.go:DrawWithPalette",
+        "match/teams.go:recoverWinner",
+        "match/teams.go:rosterLife",
+        "sff/images.go:UploadPixels",
+        "background/background.go:drawPaletteImage",
+        "render/nearest.go",
+        "render/shadow.go",
+        "system/fight_state.go:Draw"
+      ],
+      "validation": "Camera return matches eleven beta samples. A bounded beta rendering scene establishes fixed 3/8 game-pixel indexed calibration, unsnapped source addressing and delta-first, ties-to-even byte interpolation. Rotated indexed sprite/shadow and overlapping RGBA RGB crops match exactly. The connected stage/asset lifecycle covers finite AIR alpha entries, overlap, pause, expiry, foreground over HUD, projected letterboxing and final AllPalFX. All five segments are checked with race detection; existing renderer color regressions also pass with race detection. Prior PNG32/raw RGBA background coverage retains its 40 fixed native samples. This closes the documented rendering discrepancies, not arbitrary renderer/asset compatibility. Rebuilt Linux application matches all four target native RGB regions exactly (indexed sprite, true-color sprite, shadows, overlap). Native and Go ordinary KO playback both pass the original seven-segment reference with unchanged amplitude8/time 0.35s criteria. Go amplitude error is 0 and maximum relative-start difference 0.05s. The old missing quiet interval does not reproduce; sample-exact device synchronization is not inferred."
+    },
+    {
+      "id": "player-input-devices",
+      "name": "Player input devices and configuration",
+      "group": "Modes and platforms",
+      "status": "partial",
+      "gap": "Keyboard/gamepad software input and session configuration are implemented across menus, combat and co-op. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; the controller model/connection question is pending.",
+      "allocation": "item4",
+      "sources": [
+        "input/manager.go",
+        "input/gamepad.go",
+        "config/gamepad.go",
+        "system/input_config.go",
+        "character/commands.go:GetRawInputs"
+      ],
+      "validation": "Connected title/options/selection/VS/stock two-round fight/rematch/exit uses keyboard alternatives and injected standard/raw gamepads, neutral/deadzone capture, held edges, disabled/list bindings, copy isolation, ownership/hotplug and live session edits. Co-op retains the second human slot/facing. All five segments are checked with races; Linux keyboard/gamepad configuration panes inspected. No physical or native numeric acceptance is inferred."
+    },
+    {
+      "id": "ai",
+      "name": "Opponent AI and authored CMD command flow",
+      "group": "Modes and platforms",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item4",
+      "sources": [
+        "match/ai.go:BasicAIInput",
+        "character/commands.go:Match",
+        "character/command_inputs.go:CommandInputs",
+        "cmd/remap.go:RemapInputs",
+        "cmd/remap.go:PhysicalInputs",
+        "character/character.go:Command",
+        "character/commands.go:reserveCommands",
+        "match/ai.go:nextInput",
+        "cmd/cmd.go:Parse"
+      ],
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree. AI uses timed input steps so long charges no longer fail the old planner cutoff or allocate per charge tick. The connected scenario completes a 300-tick authored AI charge, contact and control recovery before fresh stock AI combat. Native decision-policy equivalence remains unverified. Global CMD defaults, first-value remaps/attributes and bounded buffers now match the native 5/30/1 command episode. The existing human/helper/AI and corrected-content asset flows pass with races."
+    },
+    {
+      "id": "modes",
+      "name": "Arcade/survival/demo progression, continue/ending and training/watch rules",
+      "group": "Modes and platforms",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item4",
+      "sources": [
+        "system/modes.go:prepareMode",
+        "system/modes.go:result",
+        "system/mode_screens.go",
+        "match/round_carry.go:SnapshotRound",
+        "match/round_carry.go:initialCarry",
+        "character/world.go:RestoreRandom",
+        "system/demo.go:beginDemo",
+        "system/demo.go:endDemo",
+        "system/fight_controls.go:holdForUserPause",
+        "system/fight_controls.go:trainingInput",
+        "system/fight_controls.go:drawTrainingMenu"
+      ],
+      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered. Idle title demo now spans optional selection/VS, AI combat, timed return, intro cycling and input interruption. Its music/bar/debug consumers run through existing production mode/media scenarios and the rebuilt Linux window. Supplied readme/CFG runtime controls now reach their consumers: Pause holds match/HUD/GameTime while input/audio continue; fresh Scroll Lock advances one pass; AnyKeyUnpauses applies outside training menus. Training exposes manual/AI/cooperative dummy control, guard/stance/jumps/spacing/button jam and minimize/resume. Existing connected mode/feedback/co-op flows pass with races and the rebuilt Linux menu was inspected. Exact native dummy spacing/jam/AI timing and menu parity remain unverified; the bounded native UI review stayed at the beta welcome overlay despite synthetic F1, so it is not acceptance evidence."
+    },
+    {
+      "id": "teams",
+      "name": "Team/simul/turns lifecycle, partner context and recovery",
+      "group": "Modes and platforms",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item4",
+      "sources": [
+        "match/teams.go:commitTeamResult",
+        "match/teams.go:recoverWinner",
+        "match/teams.go:rotateNextMembers",
+        "system/team_select.go:selectedTeams",
+        "system/team_select.go:updateTeamMenu"
+      ],
+      "validation": "Original1.1b1 mixed-team life/round budgets and Survival recovery are calibrated. Connected roster flow covers initial Up swap, forward/back reserve rotations, eliminated-prefix/selection/root identity and exhaustion, plus continuing Survival winner protection. Menu-to-fight flow covers Team Co-op opponent choice, both human input slots, Survival Co-op Single CPU, P1 selection of both Watch rosters and Team Arcade's deferred opponent menu. Changed-source segments pass with race detection."
+    },
+    {
+      "id": "stage-triggers",
+      "name": "Remaining stage, viewport and team trigger bindings",
+      "group": "State machine",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "item4 context",
+      "sources": [
+        "character/world.go:LookupFunction",
+        "character/world.go:lookupEntity"
+      ]
+    },
+    {
+      "id": "platforms",
+      "name": "Linux build and final playable acceptance",
+      "group": "Modes and platforms",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "Linux now; other targets deferred (user 2026-11-07)",
+      "sources": [
+        "mugen.sh"
+      ],
+      "validation": "Standalone Linux amd64 rebuilt. Owned-window KFM/KFM720 ZIP-entry startup rendered correctly; handled termination removed both pack expansions with no runtime/audio warnings. The probe shared canonical assets and packed only tiny DEF references; capture/overlay/helpers removed. Affected connected segments pass with race detection; earlier keyboard KO/rematch/KO and private audio acceptance remain recorded. Other targets deferred by user."
+    },
+    {
+      "id": "stage-zoom",
+      "name": "Stage cameras, moving floors, linked/animated parallax and reflections",
+      "group": "Match and presentation",
+      "status": "implemented",
+      "gap": "",
+      "allocation": "1.1 functional gap (resumed audit)",
+      "sources": [
+        "stage/loader.go:LoadStage",
+        "match/camera.go:updateHorizontalCamera",
+        "coord/viewport.go:ZoomTransform",
+        "background/background.go:zoomGeometry",
+        "system/effects.go:drawEffectPose",
+        "render/shadow.go:Opacity",
+        "system/fight_state.go:Draw",
+        "stage/stage.go:GroundLevel",
+        "background/background.go:LoadFromAST",
+        "character/character.go",
+        "background/background.go:stageGeometry",
+        "background/geometry.go:drawWithBlending",
+        "background/controllers.go:loadControllers",
+        "background/background.go:drawFrame",
+        "character/context.go:lookupViewport",
+        "match/camera.go:horizontalStageBounds",
+        "stage/stage.go:backgroundCamera",
+        "background/background.go:drawPaletteImage",
+        "character/width.go:HorizontalCameraBounds",
+        "background/sprites.go:Image"
+      ],
+      "validation": "Connected stage lifecycle covers mixed coordinates, camera tension/zoom/bounds, Width, Pause, linked/parallax backgrounds, modern/legacy cropping and reset. It now also replays exact native PNG32/raw RGBA mask colors and fractional true-color filtering, then mask changes, visibility and reset. Background/motif/storyboard textures upload on demand and share linked pixel views. Four affected segments pass with race detection; Linux reproduces 40 native samples. Camera fitting now retains the original participant midpoint before stage limits. Eleven native camera/zoom samples through the offscreen return match, including time120 X80.6977; affected connected validation is pending for this batch."
+    }
+  ],
+  "segments": [
+    {
+      "id": "state-flow",
+      "contract": "entry \u2192 negative states \u2192 chained transitions \u2192 persistence/loop diagnostics",
+      "source_dirs": [
+        "cns",
+        "engine",
+        "evaluator"
+      ],
+      "tests": [
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestStatePassReferenceOrder"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestPersistenceReferenceTrace"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestEntryParametersReferenceTrace"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestStateBindingReferenceTrace"
+        },
+        {
+          "file": "engine/pass_test.go",
+          "name": "TestStatePassRunawayAndMissingState"
+        },
+        {
+          "file": "engine/statemachine_test.go",
+          "name": "TestCompilationFailsBeforeSideEffects"
+        },
+        {
+          "file": "engine/parameters_test.go",
+          "name": "TestVariableExpressions"
+        }
+      ],
+      "completed": true,
+      "validation": "consolidated segment run",
+      "passed_source": "c587dfbbd14dae8dbece1f075511959d45ef36797d25b55ca6a520b4a5de4c17"
+    },
+    {
+      "id": "combat",
+      "contract": "logical input \u2192 attack/contact \u2192 damage/stat scaling/life adjustments/runtime fallback/recovery/reset \u2192 held/projectile/helper guard/release \u2192 jump/air-jump budget/landing/reset \u2192 sweep/legacy bounce/recovery",
+      "source_dirs": [
+        "air",
+        "background",
+        "character",
+        "cmd",
+        "cns",
+        "combat",
+        "coord",
+        "effect",
+        "engine",
+        "evaluator",
+        "input",
+        "match",
+        "stage"
+      ],
+      "tests": [
+        {
+          "file": "match/match_test.go",
+          "name": "TestStockMatchBasicAttackFromLogicalInput"
+        },
+        {
+          "file": "match/match_test.go",
+          "name": "TestStockMixedMatchJumpAndCNSLandingRecovery"
+        },
+        {
+          "file": "character/tick_test.go",
+          "name": "TestContactContinuationDoesNotRepeatNegativeStatesOrTimeZero"
+        },
+        {
+          "file": "match/bootcamera_test.go",
+          "name": "TestCameraStartupViewportAndResetFlow"
+        },
+        {
+          "file": "match/sweep_test.go",
+          "name": "TestStockMixedMatchSweepCompletesRecovery"
+        }
+      ],
+      "completed": true,
+      "validation": "consolidated segment run",
+      "passed_source": "4c305f6dc515b2ac5e215f14fbbe7b6b4b9116683cf0132aebb2bdc067278a42"
+    },
+    {
+      "id": "entities",
+      "contract": "helper creation \u2192 self binding/Pause/body contact \u2192 retirement/orphan effects \u2192 hit-paused throw/recovery \u2192 borrowed-state effect/Pause/SelfState/expiry \u2192 round identity reset",
+      "source_dirs": [
+        "air",
+        "background",
+        "character",
+        "cns",
+        "coord",
+        "effect",
+        "engine",
+        "evaluator",
+        "match",
+        "stage"
+      ],
+      "tests": [
+        {
+          "file": "character/retire_test.go",
+          "name": "TestOrphanExplodClockExpiryBindingAndRoundReset"
+        },
+        {
+          "file": "match/world_test.go",
+          "name": "TestRoundResetRebindsRootsAndRetiresHelperIDs"
+        },
+        {
+          "file": "match/team_flow_test.go",
+          "name": "TestTeamRosterCombatAndResetFlow"
+        }
+      ],
+      "completed": true,
+      "validation": "consolidated segment run",
+      "passed_source": "962a4bd6b9f7111762a2790970a41ee655500b5f845f1a6dfad38d82a51145ce"
+    },
+    {
+      "id": "effects-pause",
+      "contract": "Pause/SuperPause \u2192 actor/background/effect clocks \u2192 resources/power \u2192 reset",
+      "source_dirs": [
+        "air",
+        "background",
+        "character",
+        "cns",
+        "coord",
+        "effect",
+        "engine",
+        "evaluator",
+        "match",
+        "palette",
+        "sound",
+        "stage"
+      ],
+      "tests": [
+        {
+          "file": "match/match_test.go",
+          "name": "TestPauseMatchClockBackgroundEffectsAndRoundReset"
+        },
+        {
+          "file": "match/match_test.go",
+          "name": "TestStockSuperPauseConsumesPowerAndUsesCommonResources"
+        },
+        {
+          "file": "character/after_image_test.go",
+          "name": "TestAfterImageRecordingExpiresAndResumesWithoutClearingHistory"
+        }
+      ],
+      "completed": true,
+      "validation": "consolidated segment run",
+      "passed_source": "2b53d3d00c3762f45d7d05b2b7d1aaa581cedffe99bfc563ad0fc4c7831d3429"
+    },
+    {
+      "id": "match-flow",
+      "contract": "title/selection \u2192 rendered VS \u2192 stock input-driven fight \u2192 KO/time-over \u2192 results \u2192 rematch/exit",
+      "source_dirs": [
+        "air",
+        "background",
+        "character",
+        "cmd",
+        "cns",
+        "combat",
+        "config",
+        "coord",
+        "effect",
+        "engine",
+        "evaluator",
+        "fight",
+        "font",
+        "input",
+        "internal",
+        "logger",
+        "match",
+        "motif",
+        "palette",
+        "parsers",
+        "render",
+        "resource",
+        "sff",
+        "snd",
+        "sound",
+        "stage",
+        "storyboard",
+        "system"
+      ],
+      "tests": [
+        {
+          "file": "system/flow_test.go",
+          "name": "TestTitleSelectionVersusFightResultRematchAndExit"
+        },
+        {
+          "file": "match/complete_match_test.go",
+          "name": "TestStockInputDrivenCompleteMatches"
+        },
+        {
+          "file": "system/round_flow_test.go",
+          "name": "TestAnnouncementsAndControllerRoundFlow"
+        },
+        {
+          "file": "system/feedback_flow_test.go",
+          "name": "TestCombatClipboardComboAndDebugFlow"
+        },
+        {
+          "file": "system/music_flow_test.go",
+          "name": "TestMusicControllerAndSceneFlow"
+        },
+        {
+          "file": "system/team_flow_test.go",
+          "name": "TestTeamSelectionFightHUDAndExitFlow"
+        },
+        {
+          "file": "system/command_flow_test.go",
+          "name": "TestAuthoredCommandsAndAICombatFlow"
+        },
+        {
+          "file": "system/mode_flow_test.go",
+          "name": "TestModeProgressionContinueSurvivalAndTrainingFlow"
+        },
+        {
+          "file": "system/asset_flow_test.go",
+          "name": "TestStoryboardAssetsTextSoundAndAnimationFlow"
+        },
+        {
+          "file": "system/asset_flow_test.go",
+          "name": "TestStageZoomCameraRenderingAndResetFlow"
+        }
+      ],
+      "completed": true,
+      "validation": "consolidated segment run",
+      "passed_source": "6c041756c031b967af0ead0fe79f4561476bc38bd33da1a2e8327f90036cc616"
+    }
+  ],
+  "presentation_followups": [
+    "Known indexed sprite/shadow alignment and finite/overlap RGB differences are corrected. Native fixed 3/8 calibration replaces the old half-pixel plus source-grid approximation; byte interpolation rounds the weighted delta before adding the first texel. One bounded scene and the connected stage lifecycle retain exact native RGB expectations. OnTop effects blend over HUD before final AllPalFX.",
+    "Ordinary KO-echo gap is closed for the existing acceptance: both current native and Go device captures yield all seven segments and three native cue levels, including the quiet interval. The historical mismatch no longer reproduces on the current mixer/decoder; preserve the scheduler and original tolerances. Sample-exact device synchronization remains unverified.",
+    "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
+    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
+    "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
+    "Authored low-resolution grids and offscreen cells are content layout choices. Mixed-coordinate portraits, versus presentation and optional recovery constants are implemented. Later-round stalls reproduced by the target runtime are content defects; no further third-party script repairs are planned.",
+    "The reported crossover-facing gap is corrected for command-to-state handoff and ordinary walking turns, using native beta observations and CNS. Arbitrary air cancels, turning during bindings/hitpause and charge-history permutations remain unverified; do not treat Paintown C++ turning as the reference."
+  ],
+  "known_differences": [
+    {
+      "id": "camera-return",
+      "name": "Offscreen camera return",
+      "completed": true,
+      "validation": "Unclipped participant midpoint fixes the mixed-return tick; all eleven beta camera/zoom samples match through time 120."
+    },
+    {
+      "id": "indexed-shadow",
+      "name": "Indexed sprite and shadow alignment",
+      "completed": true,
+      "validation": "Fixed 3/8 game-pixel calibration and unsnapped addressing reproduce the bounded beta rotated-sprite/shadow RGB crops exactly in the Linux application."
+    },
+    {
+      "id": "rgba-overlap",
+      "name": "Finite and overlapping alpha composition",
+      "completed": true,
+      "validation": "Delta-first byte interpolation and foreground-over-HUD composition reproduce the bounded RGBA overlap crop exactly. Connected AIR transitions, pause/expiry, letterboxing and final global PalFX pass."
+    },
+    {
+      "id": "ko-echo",
+      "name": "Ordinary KO echo playback",
+      "completed": true,
+      "validation": "Native and Go device captures both pass the existing frozen seven-segment acceptance, including the formerly missing quiet interval. All three Go cue levels match exactly; maximum relative-start difference is 0.05 seconds, within the unchanged 0.35 second device-capture criterion. The historical mismatch no longer reproduces; no scheduler change was needed."
+    },
+    {
+      "id": "legacy-selection-loading",
+      "name": "Legacy selection and character loading",
+      "completed": true,
+      "validation": "Legacy packs may use old StateTypeSet spellings, AIR timing comparisons, scalar effect scales and minimal roster placeholders. The corresponding consumers accept these forms while preserving source diagnostics; selection reaches a playable match."
+    },
+    {
+      "id": "frontend-recovery",
+      "name": "Rendered selection/VS and legacy bounce recovery",
+      "completed": true,
+      "validation": "Character-to-motif portrait scaling and authored versus portraits, windows, names and artwork are consumed. Connected recovery covers omitted optional constants, bounce, lying down, get-up and restored control."
+    },
+    {
+      "id": "legacy-round-initialization",
+      "name": "Legacy later-round initialization diagnosis",
+      "completed": true,
+      "validation": "Some older character scripts omit their state5900 exit on later rounds. A stall reproduced by the target runtime is recorded as a content defect; the engine does not add a timeout or rewrite third-party scripts."
+    },
+    {
+      "id": "crossover-turning",
+      "name": "Crossover command and walking turns",
+      "completed": true,
+      "validation": "Controlled grounded command moves correct facing before destination entry. Walking/crouching can turn while retaining state time; locked attacks, airborne headings, NoAutoTurn and held guard keep their existing ownership. Connected input/combat scenarios cover crossover and recovery."
+    },
+    {
+      "id": "held-guard",
+      "name": "Stable held guard and movement exits",
+      "completed": true,
+      "validation": "Held guard retains its state clock instead of falling through into ordinary walking/crouching. Native beta confirms Ctrl=1 during standing/crouching guard, immediate forward movement on release and up-back jumping. The existing mixed-coordinate combat scenario continues through posture changes, a real blocked punch/recovery, re-guard, release and jump/landing. Four changed-source segments pass with races; state-flow stays checked. Linux rebuilt and visible guard/posture/release inspected; diagnostic scratch removed."
+    },
+    {
+      "id": "intro-explod-motion",
+      "name": "Visible incoming character-intro effects",
+      "completed": true,
+      "validation": "Explod creation accepts the legacy velocity spelling used by stock KFM. The incoming block now moves onscreen before impact, followed by the broken pieces. Native beta and rebuilt Linux pre-impact scenes were inspected. The existing title-to-match scenario checks actual incoming-block pixels, break, control and complete rounds; all five connected segments pass with races. Diagnostic scratch removed."
+    },
+    {
+      "id": "borrowed-effect-context",
+      "name": "Borrowed-state effect creation context",
+      "completed": true,
+      "validation": "Explods created in an opponent\u2019s state retain the creating coordinate profile for offsets, motion and private-sprite scale while using the issuer\u2019s banks. Deferred creation preserves animation/admission gates. The connected mixed-coordinate entity flow continues through Pause, SelfState, expiry and round reset. All five affected segments pass with races; rebuilt Linux position and sprite dimensions agree with the beta scene. The related guard-distance observation matched existing behavior. Scratch removed; no mod scripts changed."
+    },
+    {
+      "id": "automatic-air-jump",
+      "name": "Automatic air-jump state entry and budget",
+      "completed": true,
+      "validation": "The engine now selects common state45 from fresh airborne up input, honoring control, minimum height and the per-flight limit. Low/held input cannot activate later at height. Common CNS owns directional velocity and animation; grounded S/C restores the budget before guard can return early. The mixed-coordinate jump/body/Pause/reset scenario spans two flights. Four changed-source segments pass with races; state-flow stays checked. Native and rebuilt Linux keyboard flows each accepted two air jumps and returned to idle. Scratch removed."
+    },
+    {
+      "id": "declared-command-button-hold",
+      "name": "Declared button commands do not auto-repeat through raw fallback",
+      "completed": true,
+      "validation": "Character.Command now honors a declared label\u2019s matched window and cannot reactivate it from a held raw button. The existing player/helper command lifecycle covers attack/recovery, release/repress, explicit held/released input and authored buffering before stock AI combat. Four affected segments pass with races; state-flow stays checked. Native beta and rebuilt Linux stock KFM each attack once while held and a second time after repress. Scratch removed; no user configuration or mod scripts changed."
+    },
+    {
+      "id": "base-combat-stats",
+      "name": "Base combat stats and life-adjustment scaling",
+      "completed": true,
+      "validation": "HitDef now combines base attack/defence with runtime adjustments. Negative, nonabsolute TargetLifeAdd/LifeAdd share defence reductions, including SuperPause; healing and absolute additions stay unscaled. Native TargetLifeAdd ignores issuer attack despite its manual. The existing mixed-coordinate combat scenario matches twelve native observations, then completes recovery and round reset. All five segments are checked with races; rebuilt Linux reproduces the same twelve values. Scratch removed; no mod scripts or user configuration changed."
+    },
+    {
+      "id": "independent-attack-guarding",
+      "name": "Guarding against independently moving attacks",
+      "completed": true,
+      "validation": "InGuardDist includes opposing helpers and live projectiles after their owner returns to idle. Projectile defaults use size.proj.attack.dist; explicit guard.dist retains precedence and coordinate units. Native approach/pass/retirement observations and owned-keyboard fireball blocking agree with rebuilt Linux: 5 chip damage and a guard event rather than a hit. The existing mixed-coordinate combat scenario continues through recovery, damage adjustments and round reset. Four changed-source segments pass with races; state-flow stays checked. Shared assets were reused and diagnostic scratch removed."
+    },
+    {
+      "id": "core-runtime-fallback",
+      "name": "Runtime numeric fallback through state recovery",
+      "completed": true,
+      "validation": "Confirmed beta zero fallback for ordinary invalid numeric results in position/velocity controllers, life/control/power updates, state transitions, and entry ctrl/velset. Argument evaluation continues; omitted attributes retain their defaults. Genuine VM failures still return source-context errors without partly applying a vector. The existing combat scenario spans movement, life/power, same-tick entry, SelfState recovery and fatal diagnostics. All five connected segments pass with races; rebuilt Linux matches all twelve native observations. Shared assets were reused and diagnostic scratch removed."
+    },
+    {
+      "id": "animation-selection-compat",
+      "name": "Animation selection and duplicate AIR compatibility",
+      "completed": true,
+      "validation": "AIR action lookup preserves the first duplicate definition while validating later blocks. ChangeAnim/ChangeAnim2 restart at the first element for out-of-range selectors and coerce ordinary bottom arguments to zero. The existing combat/runtime scenario continues through twelve native animation observations and stand/control recovery. All five segments pass with races; rebuilt Linux matches the twelve beta observations exactly. Shared assets reused; diagnostic scratch removed."
+    },
+    {
+      "id": "held-command-compat",
+      "name": "Held chords, release and command-buffer compatibility",
+      "completed": true,
+      "validation": "Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused."
+    },
+    {
+      "id": "definition-first-values",
+      "name": "Character and motif definition precedence",
+      "completed": true,
+      "validation": "Character DEF metadata/resources and motif Info/Files retain first definitions, including explicit blanks, with their original source lines. Later bad duplicates cannot replace coordinate profiles, palette policy, sprites or fonts; a bad primary reference still reports its own path and line. The connected asset/ZIP-selection/fight/reload flow passes with races; other completed segments remain checked. Native and rebuilt Linux both load the duplicate-containing character/motif and agree on the metadata observations. Probe overlays/captures removed; shared assets reused."
+    },
+    {
+      "id": "localized-definition-groups",
+      "name": "Language selection across definition assets",
+      "completed": true,
+      "validation": "The configured language reaches character/CNS/CMD, stage, motif/roster/VS, HUD, storyboard and definition-font loaders. Localized groups replace whole English groups while preserving source lines and scene order; missing groups fall back. Commands/states and individual background elements are exempt; quote banks remain available to their runtime selector. Standalone AIR remains undecorated, as observed in beta. The existing asset lifecycle covers localized scenes/fonts, English fallback, motif-relative roster, portraits, input/remap, constants, KO and rematch. All five segments are checked with races. Rebuilt Linux matches all twelve native observation slots; the fight capture was inspected. Shared assets reused; diagnostic scratch removed."
+    },
+    {
+      "id": "target-parent-admission",
+      "name": "Target selection and parent-variable expression admission",
+      "completed": true,
+      "validation": "Target controllers skip all parameters when no acquired target exists. With targets, ID is evaluated first; an unmatched ID skips remaining values, including TargetBind time/position. ParentVarSet/Add skip index/value evaluation without a live parent. Compilation and admitted VM errors retain their existing checks. The connected mixed-coordinate entity lifecycle spans absent relationships, grab, ID rejection/admission, velocity, TargetDrop, unused fatal expressions, actual helper-parent writes, retirement and own-state recovery/reset. All five segments pass with race detection. Rebuilt Linux matches all twelve native observation slots; the capture was inspected. Shared assets reused; diagnostic overlays/captures/helpers removed."
+    },
+    {
+      "id": "helper-bank-admission",
+      "name": "Helper-bank admission before parameter evaluation",
+      "completed": true,
+      "validation": "A full helper bank suppresses all controller expressions, including unused VM errors. Compilation stays strict. Retirement makes the next request eligible again; ID/state/position/key control/palette and child-to-parent confirmation then evaluate normally. The existing entity lifecycle continues through bank fill, rejection, vacancy reuse, recovery and round reset. All five connected segments pass with races. Rebuilt Linux matches all twelve native observation slots. Shared sprites were linked; diagnostic overlay/capture removed."
+    },
+    {
+      "id": "long-command-history",
+      "name": "Authored long charge and motion history",
+      "completed": true,
+      "validation": "Command history now retains the loaded CMD motion window, release-charge duration and completion buffer instead of a fixed 120-tick cutoff. Ordinary commands keep their small history; larger budgets grow only as input arrives, with overflow-safe sizing. Player and key-controlled helper share this policy without sharing history. The connected human/helper/recovery/fresh-match/AI scenario spans a 300-tick charge, expired motion, later delayed motion and rejected short charge. Four changed-source segments pass with races; state-flow stays checked. Rebuilt Linux matches native: one long charge, one charged motion, two valid delayed motions and three fresh presses. Diagnostic overlay/capture removed; shared sprites reused."
+    },
+    {
+      "id": "borrowed-helper-admission-context",
+      "name": "Borrowed helper context through deferred admission",
+      "completed": true,
+      "validation": "Deferred helper admission forwards the existing active-state position adapter, converting offsets exactly once after the capacity gate. Native mixed 320/1280 observations confirm helper size overrides remain in helper units, and helpers retain the issuer profile, state programs and sprite bank. The existing borrowed effect/entity scenario now spans two helper creations, Pause, parent SelfState, retained helper ownership, retirement and round reset. Four affected segments pass with races; state-flow stays checked. Rebuilt Linux matches all twelve native context observations. Diagnostic overlays/captures/helpers removed; canonical assets reused."
+    },
+    {
+      "id": "ai-long-command-plans",
+      "name": "Timed AI plans for authored long commands",
+      "completed": true,
+      "validation": "AI command plans now store input snapshots with durations instead of one array per simulated tick. The old 120-frame planner rejection is removed; charge playback remains incremental and uses normal remapping, CMD matching and CNS. The connected human/helper command lifecycle continues into a fresh AI match whose only move is a remapped 300-tick charge, then attack/contact/damage/control recovery and fresh stock AI combat. Four affected segments pass with races; state-flow stays checked. Linux rebuilt. This closes authored command availability, not parity with the native AI decision policy."
+    },
+    {
+      "id": "variable-write-admission",
+      "name": "Variable register and range write admission",
+      "completed": true,
+      "validation": "Variable and parent-variable writes validate their destination before evaluating the value. Invalid register IDs, out-of-bounds ranges and reversed ranges are no-ops without value side effects or unused VM failures. Valid ranges evaluate the value once; ordinary bottom becomes zero for integer/float writes. Admitted VM errors remain fatal with source context. The existing runtime lifecycle continues through invalid writes, valid scalar/range updates, numeric fallback and own-state recovery. All five connected segments pass with races. Rebuilt Linux matches all twelve native observations; diagnostic overlay/capture removed."
+    },
+    {
+      "id": "pause-numeric-fallback",
+      "name": "Pause and SuperPause numeric fallback through recovery",
+      "completed": true,
+      "validation": "Ordinary bottom-valued Pause/SuperPause parameters coerce to zero; omitted fields retain defaults and later arguments still run. A zero-duration SuperPause still applies its power change. Genuine VM failures remain fatal before applying power or pause requests. The existing shared-clock/background/effect/reset scenario continues through invalid numeric results, argument side effects, zero-duration power updates, real Pause/SuperPause and own-state recovery. All five segments pass with races. Rebuilt Linux matches all twelve native observations. Diagnostic overlay/capture removed. Separately confirmed that native DestroySelf evaluates parameters even on nonhelpers; existing behavior was retained."
+    },
+    {
+      "id": "cmd-defaults-and-loading",
+      "name": "CMD defaults, duplicate settings and loading contract",
+      "completed": true,
+      "validation": "CMD defaults are resolved before commands regardless of section order. First duplicate defaults, remaps and command attributes win, including disabled mappings. Command time is at least one tick and buffer time is limited to 1\u201330. Full character loading rejects empty command sets with the CMD path and DEF context, and corrected content reloads. Existing human/helper/long-charge AI and asset/ZIP/reload scenarios cover these consumers. Four affected segments pass with races; state-flow stays checked. Rebuilt Linux matches native command-window counts 5/30/1. Diagnostic overlay/capture removed; shared assets reused."
+    },
+    {
+      "id": "state-header-precedence",
+      "name": "State entry and persistence first-value precedence",
+      "completed": true,
+      "validation": "Statedef attributes retain the first authored value in both raw entry parameters and parsed metadata. Repeated persistent attributes also retain the first value; repeated trigger lines remain separate conditions. The existing animation/runtime combat lifecycle continues through duplicate type/movetype/physics/control/animation/velocity/power settings, one-shot persistence, contradictory triggers and own-state recovery. All five segments pass with races. Rebuilt Linux matches all twelve native entry/motion/persistence observations. Diagnostic overlay/capture removed; shared assets reused."
+    },
+    {
+      "id": "scalar-combat-fallback",
+      "name": "Scalar control/effect fallback and minimum life adjustments",
+      "completed": true,
+      "validation": "PlayerPush, AttackDist, PosFreeze, HitAdd, VictoryQuote, attack/defence multipliers and RemoveExplod accept ordinary-bottom zero fallback while true VM failures retain their checks. Nonzero negative nonabsolute LifeAdd/TargetLifeAdd retain a one-point minimum after defence scaling; explicit zero stays zero, and zero attack can still produce a zero-damage contact. The existing runtime combat lifecycle spans guard-range change, freeze release, selective effect removal, stat adjustment, real contact, life changes, both actors recovering and effect retirement. All five segments pass with races. Rebuilt Linux matches all twelve native observations. Diagnostic overlay/capture/helper removed; shared assets reused."
+    },
+    {
+      "id": "target-numeric-fallback",
+      "name": "Target numeric fallback after relationship and ID admission",
+      "completed": true,
+      "validation": "The mixed-coordinate entity lifecycle now spans unmatched bottom IDs (skipping side effects and unused VM failures), matched numeric fallback for life/power/velocity/facing/state, target retention/drop and own-state recovery followed by round reset. All twelve native observations match rebuilt Linux; all five connected segments pass with race detection. Ordinary bottom becomes zero only after relationship/ID admission; admitted real VM failures remain fatal. Owned overlay and captures removed."
+    },
+    {
+      "id": "protection-media-fallback",
+      "name": "Protection, sound and palette fallback through contact recovery",
+      "completed": true,
+      "validation": "HitBy/NotHitBy timers and HitOverride state/slot/time/forceair accept ordinary-bottom zero fallback; the connected mixed-coordinate fight clears active protection/override, takes a normal ten-point contact and recovers both actors. PlaySnd/SndPan/StopSnd and RemapPal likewise retain later argument evaluation after ordinary bottom; omitted defaults stay intact. Real VM errors remain fatal before application, including deprecated volume. All twelve native observations match rebuilt Linux. All five changed-source segments pass with races; owned overlay/captures removed. Override range admission is covered by the following checkpoint."
+    },
+    {
+      "id": "override-range-admission",
+      "name": "HitOverride slot admission, clearing and reaction recovery",
+      "completed": true,
+      "validation": "Out-of-range positive/negative HitOverride slots select slot zero rather than aborting or clamping to slot seven. Durations below -1 clear that slot; -1 remains indefinite. A shared normalization consumer keeps compiled controllers and direct character adapters consistent. The existing mixed-coordinate combat flow continues through four contacts: override reaction, explicit clearing/normal reaction, another invalid-slot override, invalid-duration clearing/normal reaction and own-state/control recovery, with all overrides retired. All twelve native observations match rebuilt Linux. All five changed-source segments pass with races; owned scratch removed."
+    },
+    {
+      "id": "nested-vm-failure-propagation",
+      "name": "Nested VM failures stop evaluation before partial writes",
+      "completed": true,
+      "validation": "A fatal error in a redirect ID retains its runtime error through coercion rather than becoming ordinary bottom. Fatal assignment indices and interval lower bounds stop before evaluating later expressions. Ordinary bottom and valid eager evaluation retain their policies. The existing runtime recovery scenario includes terminal branches covering parameters and trigger conditions, source-context errors, unchanged position/velocity and suppressed later assignment side effects. All five changed-source segments pass with race detection. This closes the source-audited error propagation paths; it does not claim arbitrary expression conformance."
+    },
+    {
+      "id": "font-field-precedence",
+      "name": "Legacy and v2 font definition precedence",
+      "completed": true,
+      "validation": "Legacy FNT metadata and v2 header/Def settings keep the first authored value, including empty/invalid primary declarations. Later duplicates cannot replace a resource, alter metrics/bank/blending settings or cause spurious validation failures. Native loads both bitmap formats with deliberately invalid later metadata; rebuilt Linux loads the same v2 content. The connected storyboard asset flow covers bitmap/TrueType/legacy loading, text and color banks across scenes, a bad primary resource diagnostic and corrected-content reload. The affected match-flow segment passes with race detection; four unchanged segments remain checked. Linux rebuilt and owned-window capture inspected; scratch overlays removed."
+    },
+    {
+      "id": "stage-background-layout-precedence",
+      "name": "Stage, background and fight layout field precedence",
+      "completed": true,
+      "validation": "Stage metadata/resources retain first fields across repeated groups. Background elements/controller groups retain first fields within each independent instance, without collapsing repeated BG names or AIR/state/CMD records. Fight layout lookups retain first fields for HUD and round scheduling. Native and rebuilt Linux both load/render the same stage with later invalid localcoord/sprite/type/controller fields and an ignored offscreen timer position. The connected camera/linked-parallax/reset and announcement/combo/expiry flows pass with races; four changed-source segments pass and unchanged state-flow stays checked. Owned overlays/captures removed; shared banks reused."
+    },
+    {
+      "id": "motif-storyboard-field-precedence",
+      "name": "Motif and storyboard declaration admission",
+      "completed": true,
+      "validation": "Motif music/title/selection/VS/options/background declarations and storyboard metadata/scene/layer/sound fields retain first values. Ordinary singleton groups merge first fields without collapsing ordered scenes, BG instances or AIR frames. Explicitly blank private motif BG sprite declarations remain resource errors rather than falling back to the shared bank. The connected storyboard/pack lifecycle passes with race detection through timed text/sound, scene completion, bad primary resources, corrected reload and pack retirement; other segments stay checked. Native and rebuilt Linux complete the same intro-to-title flow with deliberately invalid later resource/scene/menu fields. The visual comparison identifies the separate presentation follow-up below."
+    },
+    {
+      "id": "motif-storyboard-presentation",
+      "name": "Storyboard presentation inside a widescreen motif",
+      "completed": true,
+      "validation": "Storyboard playback keeps the motif-aspect game frame and a viewport-sized retained surface for side overflow. Layers and scene windows start at the fitted storyboard top-left; centered BG projection remains separate. The previous viewport change incorrectly added a half-width to layerall.pos and shifted stock KFM right. The reported regression is corrected without changing assets. With canonical native1280x720 game space and a640x480 window, first-scene colored art bounds are native x140..500 and rebuilt Linux x141..499, both centered at320; small edge raster differences remain deferred. The existing connected asset lifecycle now includes stock KFM authored layerall.pos=160,0 alongside timed art/text/audio, clipping, retention, repeated draws, side-margin art and exit. Affected match-flow passes with races; other completed segments stay checked. Linux rebuilt and visually inspected. Omitted windows remain unmasked; authored scene windows still carry forward and clip BGs. Arbitrary source-aspect/common-resolution/filtering parity is not established. Owned scratch removed."
+    },
+    {
+      "id": "clipboard-escaped-quote-admission",
+      "name": "Escaped quote admission in state debug text",
+      "completed": true,
+      "validation": "The container accepts a single escaped quote in a CNS format string and retains literal Windows-path admission. Native beta loads the same escaped-quote text; rebuilt Linux starts that match. Native rejects the checked escaped-quote/semicolon combination, so existing comment handling remains unchanged. The existing feedback lifecycle passes with races through formatted display/append, debug drawing, contact, Pause, clear and helper retirement. Other affected segments also pass in the combined batch."
+    },
+    {
+      "id": "ai-composite-command-plans",
+      "name": "AI plans for charged chords and strict command steps",
+      "completed": true,
+      "validation": "Timed plans charge each release component, emit ordinary presses on the release/completion frame and retain unrelated inputs across strict steps. Command-key extraction recognizes modifiers on every chord component. The existing human/helper command lifecycle continues through a fresh AI-only composite command, actual CMD/CNS admission, attack/contact/damage and control recovery, followed by fresh stock AI combat. The affected connected segments pass with races. Long charges retain constant plan storage. Native AI decision probabilities remain partial."
+    },
+    {
+      "id": "victory-background-clear-color",
+      "name": "Authored victory background clear color",
+      "completed": true,
+      "validation": "All five motif BGDef groups use the same first-field metadata/resource path. Victory drawing applies the authored clear color before background layers, portraits and text. The existing real-mode lifecycle loads a stock-resource motif with a first color and an ignored duplicate, completes loss/continue/retry and Arcade victory, checks the exposed victory canvas, then continues through ending, Survival and training/watch. The connected match-flow segment and other affected batch segments pass with races. This is a functional metadata-to-screen fix; it does not claim arbitrary native screen/raster parity."
+    },
+    {
+      "id": "redirected-constant-dimensions",
+      "name": "Recovery constant dimensions across borrowed and redirected states",
+      "completed": true,
+      "validation": "Implemented a shared CNS dimensional classification so recovery multipliers stay unitless while velocities/distances scale; redirected hit X offsets now follow the same geometry policy as Y offsets. Native mixed-coordinate clipboard shows recovery multipliers .5/.2 and friction .85 unchanged while -4.5 Y addition becomes -1.125 and height60 becomes15 at 320/1280. Existing mixed-entity Pause/SelfState/recovery flow extended. All five connected segments pass with race detection in one batch acceptance run."
+    },
+    {
+      "id": "character-presentation-precedence",
+      "name": "First character storyboards and portrait sprites",
+      "completed": true,
+      "validation": "Selection now retains first character Arcade fields across repeated groups, including explicit blanks, and first duplicate portrait sprites, matching normal archive lookups. The existing packed/legacy asset lifecycle contains ignored later missing stories and a later duplicate large portrait, followed by intro/VS/fight/reset/ending and pack retirement. All five connected segments pass with race detection in one batch acceptance run."
+    },
+    {
+      "id": "selected-entry-presentation-snapshot",
+      "name": "Roster entry presentation through selection handoff",
+      "completed": true,
+      "validation": "Confirmed selections retain value snapshots of their portrait/story/entry metadata alongside match rosters. Handoff no longer finds the first same-DEF row and substitutes its music or intro; backing out clears both snapshots and rosters. Existing packed intro-to-fight and team selection/VS/HUD/exit lifecycles exercise metadata changes after confirmation. All five connected segments pass with race detection in one batch acceptance run."
+    },
+    {
+      "id": "localized-opponent-schedule",
+      "name": "Localized roster limits through Arcade scheduling",
+      "completed": true,
+      "validation": "Arcade parses select.def limits with the same configured language as roster selection. Singleton Options fields keep first values across groups without deduplicating character/stage rows. The existing localized asset/selection/VS/fight/rematch lifecycle now schedules an order-two entry using localized limits and an ignored later duplicate. All five connected segments pass with race detection in one batch acceptance run."
+    },
+    {
+      "id": "title-attract-mode",
+      "name": "Idle title demo and intro cycling",
+      "completed": true,
+      "validation": "Implemented idle title entry, optional selection/VS previews, authored AI fight, end-time return, intro cycling and two-player input interruption. Demo music/bar/debug settings have actual consumers without rewriting user controls/configuration. Title BG controllers advance with their elements. Native idle run enters AI combat without bars; Enter returns to title. Existing real-mode lifecycle extended through complete demo/intro/return, interruption and disabled mode. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked. Rebuilt Linux reaches visible AI combat without bars and returns to title on Enter, matching the bounded native flow."
+    },
+    {
+      "id": "authored-font-height",
+      "name": "Authored TrueType font height overrides",
+      "completed": true,
+      "validation": "Motif, fight HUD and storyboard font loading accept first fontN.height values for TrueType rasterization. Bitmap atlases retain authored cell sizes. The shared font loader preserves resource/fallback behavior and bounded height diagnostics. Existing scene/localized-selection/VS/HUD/fight lifecycle now includes independent height overrides and ignored later duplicates; batch acceptance pending. The supplied Japanese motif actively declares font6.height=13."
+    },
+    {
+      "id": "configuration-first-fields",
+      "name": "Legacy configuration first-field admission before YAML overrides",
+      "completed": true,
+      "validation": "Legacy mugen.cfg singleton groups merge first fields before the independent explicit YAML layer. Native retains initial320x240 game resolution with a later Config640x480 group. The existing complete title/selection/VS/input/fight/KO/rematch scenario uses later invalid dimensions/motif/rules while retaining YAML key alternatives. No local user configuration changed. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked."
+    },
+    {
+      "id": "configuration-runtime-consumers",
+      "name": "Shadow and quick-versus configuration consumers",
+      "completed": true,
+      "validation": "DrawShadows now gates fighter/effect floor rendering; explicit --stage retains precedence, while omitted quick-versus stage uses the documented Debug.StartStage with a conventional fallback. The connected zoom/reflection/foreground/reset lifecycle checks the disabled renderer. Supplied mugen.cfg/readme document these options. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked. Rebuilt Linux quick match without --stage loads the configured stage0-720 grid stage."
+    },
+    {
+      "id": "background-runtime-policy",
+      "name": "Background simulation and audio policy",
+      "completed": true,
+      "validation": "Documented Misc.PauseOnDefocus reaches the Linux runtime scheduler. Background SFX Mute changes gain without retiring voices; BGM Pause preserves its consumed cursor, Mute advances silently, and Play continues. Unfocused fullscreen BGM uses Pause as documented. The existing music/NoMusic/SFX/story/rematch/codec lifecycle now includes focus loss, silent advance, focus recovery and demo music handoff. Host-device scheduling precision remains partial. Affected connected match-flow acceptance passes with race detection; other completed segments remain checked."
+    },
+    {
+      "id": "portable-gamepad-input",
+      "name": "Portable gamepad input through menus and combat",
+      "completed": true,
+      "validation": "Opt-in SDK adapter connects standard/raw buttons and axes, YAML alternatives/deadzones, stable two-player seats/hotplug and non-consuming logical press edges through menus and stock CNS. The existing title/options/selection/VS/two-round fight/rematch/exit scenario covers the lifecycle with injected devices. Affected combat and match-flow segments pass with race detection; other completed segments stay checked. Physical hardware/native legacy numbering remain partial."
+    },
+    {
+      "id": "keyboard-enable-consumers",
+      "name": "Player keyboard enable settings and controller-only co-op",
+      "completed": true,
+      "validation": "First cfg P1.UseKeyboard/P2.UseKeyboard flags reach logical input, explicit YAML keyboard_enabled overrides them, and runtime keys/Escape remain available. Existing selection/stock combat/co-op scenarios cover disabled keyboard input, preserved gamepads and the second human partner slot. Affected combat/match-flow pass with races; other segments remain checked."
+    },
+    {
+      "id": "runtime-pause-training",
+      "name": "User pause, frame-step and training dummy controls",
+      "completed": true,
+      "validation": "Documented runtime Pause/Scroll Lock/AnyKeyUnpauses now hold and advance the complete fight independently of CNS Pause/SuperPause. Training controls feed human/AI/cooperative inputs through existing CNS and expose guard/stance/jump/spacing/jam settings with minimize/resume. Existing feedback/mode lifecycle passes with races, all five segments are checked. Rebuilt Linux title-to-Training menu/minimize was inspected; exact native menu/dummy policy remains partial, and the native welcome-overlay probe was inconclusive."
+    },
+    {
+      "id": "documented-fight-runtime-controls",
+      "name": "Fight debug life, AI, restart/reload and presentation controls",
+      "completed": true,
+      "validation": "Supplied readme/CFG controls reach ordinary character/match consumers: life/power/stand/time-over, per-slot live AI, round restart, resource reload, bar visibility, pacing/vsync, collision/target/juggle/protection diagnostics and requested PNG capture. Pre-state5900 snapshots retain round/score/carry without duplicate entry effects or RoundsExisted increments; process time/RNG continue. Reload uses fresh banks/caches and current process time. The existing combat/debug episode spans gates, paused control, real KO into round two, helper retirement, edited on-disk CNS reload, score/ownership and decoded frame capture. Connected acceptance passes with races; Linux Training/collision/F12 output inspected. Native Ctrl-Alt player enable/disable and PCX screenshot output remain outside this completed scope."
+    },
+    {
+      "id": "session-input-configuration",
+      "name": "Options input configuration through gameplay",
+      "completed": true,
+      "validation": "Options/F1 opens a session editor sharing YAML binding setters and runtime fallbacks. It supports per-player keyboard/gamepad enable, deadzones, replace/add/disable, raw navigation while disabled, device name/layout and standard/raw capture. Release admission and neutral-axis baselines prevent held activation or -1 trigger rests from becoming unintended bindings. Device/layout changes rearm capture. Existing title/options/selection/VS/two-round fight/rematch coverage edits keyboard/raw gamepad alternatives and uses both through stock CNS; raw-trigger capture is included. Connected acceptance passes with races; rebuilt Linux panes inspected. No user configuration is written; physical/native numeric acceptance remains partial."
+    },
+    {
+      "id": "options-motif-layout",
+      "name": "Options layout and font consumers in HD motifs",
+      "completed": true,
+      "validation": "Options uses motif dimensions and authored title offset/font/text, uppercase labels for restricted bitmap banks, measured short captions and a reusable cursor image. Existing full Options/input/gameplay flow checks centered rendered rows. Connected acceptance passes with races; rebuilt stock HD Options title, rows and footer inspected without overlap/clipping."
+    },
+    {
+      "id": "direct-mode-entry",
+      "name": "Direct training, watch and partner match entry",
+      "completed": true,
+      "validation": "CLI --mode selects versus/watch/training/coop through the existing quick-match request path. --p3/--p4 use normal simul rosters, CPU ownership and HUDs; co-op P3 uses human input 2. Debug.StartStage remains the omitted-stage default. Existing team/selection/HUD/co-op coverage also loads/renders a direct four-participant watch match. Connected acceptance passes with races. Rebuilt Linux --mode training with mixed KFM/KFM720, an explicit stage/seed and requested screenshots was inspected."
+    },
+    {
+      "id": "hd-pack-admission",
+      "name": "High-resolution screenpack and palette compatibility",
+      "completed": true,
+      "validation": "High-resolution screenpacks may use blank roster cells, nondefault portrait sprites, explicit palette alpha, sub/AI AIR flags and EOF loop endpoints. Selection preserves requested portraits and empty positions. SFF2.01 retains palette alpha through links/remaps; SFF2.00 keeps its reserved-byte/index-zero policy. Resource/controller admission is covered by connected asset and gameplay scenarios; arbitrary content equivalence remains partial."
+    },
+    {
+      "id": "hd-hud-text-admission",
+      "name": "Sparse HUD components and legacy text admission",
+      "completed": true,
+      "validation": "HUD backgrounds may have sparse numbered indices and are drawn in numeric order. Animation attributes consume their first scalar component. Legacy CNS preamble labels and AIR AI additive spelling are admitted. Loading and presentation checks are scoped to connected scenarios and do not establish full roster gameplay or native fidelity."
+    },
+    {
+      "id": "debug-player-activation",
+      "name": "Debug player activation and target PNG screenshot format",
+      "completed": true,
+      "validation": "Ctrl-Alt-1 through 4 toggle present root slots through the existing debug gate without changing AI ownership or retiring resources/identity. Native KFM observations confirm hidden/frozen actors, continuing HUD/match clocks, NumEnemy=0, PlayerIDExist=0 and unavailable redirects while disabled; reenable restores the same ID. Native F4 retains the disabled slot. Round restart/reload preserve live slot choices, and inactive roots do not attack, reverse, push or follow the camera. Existing debug lifecycle covers gates, rendered removal, query visibility, frozen clocks, both roots disabled, restart/reload and reenabling; affected connected segments pass with races. Independently scheduled child actors retain their own ownership. The supplied history.html Version 1.0 RC4 documents PNG screenshots (2009-10-25), so the earlier PCX gap was a bookkeeping error for the 1.1 target. Existing F12 composition/exclusive-file acceptance already covers PNG output; no obsolete PCX writer is added."
+    },
+    {
+      "id": "options-artwork-motifs",
+      "name": "Usable Options in artwork-only menu motifs",
+      "completed": true,
+      "validation": "An artwork-driven motif supplies title labels as background art and omits title-menu text fonts. Options now supplies a bounded, fitted built-in settings panel when those fonts are absent or too tall for the row spacing, retaining the motif background and heading. Enter changes a value or opens an action; explicit Back and Escape return to title. Existing menu/input/VS/two-round combat/rematch flow edits values, checks fontless rendering, live speed/audio configuration and inherited match life/time, then exits through Back. Connected match-flow passes with races; Linux rebuilt and artwork-driven Options was inspected changing difficulty 1 to 3, life 100 to 110, time 99 to 98, speed Slow2 to Slow1 and both volumes 20 to 15, opening Input Configuration and returning to title. Settings remain session-only; source pack and ignored YAML unchanged. Owned review overlays/captures are removed."
+    },
+    {
+      "id": "hd-projectile-empty-effects",
+      "name": "Legacy projectile syntax and empty effect lifecycle",
+      "completed": true,
+      "validation": "Parenthesized projectile IDs use legacy boolean/time comparison semantics, including literal filtering and the established inequality rule. Empty effect actions can contain zero-duration placeholders or loop tails and retire on their first pass without weakening fighter-loop diagnostics. Guard/contact/recovery and pause/effect/expiry/reset scenarios cover these consumers. References to absent palette banks remain content diagnostics rather than synthesized engine resources."
+    },
+    {
+      "id": "lazy-story-admission",
+      "name": "Lazy character and campaign storyboard admission",
+      "completed": true,
+      "validation": "Roster previews anchor character storyboard paths without opening unused intros/endings. Playback resolves Windows separators/case and reports the selected missing resource; chained campaign stories are resolved only on entry. Blank optional storyboard music states are safe. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "victory-portrait-window",
+      "name": "Victory portrait window in motif coordinates",
+      "completed": true,
+      "validation": "Victory portraits honor inclusive p1.window clipping while retaining full-canvas scaling, sprite axes and facing. The existing Arcade result-to-next-match episode checks that art cannot escape the authored window. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "mode-font-rgb",
+      "name": "Authored result and campaign font colors",
+      "completed": true,
+      "validation": "The supplied beta fight.def specifies optional RGB multipliers with neutral 256,256,256. Result/continue/VS-counter labels now consume those values through shared immutable glyph caches; the existing campaign episode checks tinted and neutral labels using the same glyph. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "inset-victory-quotes",
+      "name": "Victory quote wrapping within its authored anchor",
+      "completed": true,
+      "validation": "Victory word wrapping measures usable width from the authored offset and alignment inside its inclusive clipping window. Long words split without losing Unicode code points; explicit paragraphs and glyph-bank metrics remain intact. The campaign flow renders an inset multi-line quote. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "victory-fade-flow",
+      "name": "Victory fades through campaign handoff",
+      "completed": true,
+      "validation": "Victory screens consume authored fade-in/out times. Timed holds include fade-out; early Enter/Escape dismissal runs the fade while the background continues, then hands off once. The connected Arcade episode observes initial black, the authored canvas and deferred next-match entry. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "menu-font-rgb",
+      "name": "Menu selection and versus font color consumers",
+      "completed": true,
+      "validation": "Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "hud-font-rgb",
+      "name": "HUD font color and optional tuple components",
+      "completed": true,
+      "validation": "Fight names, timers, combo labels and announcements consume six-component font tuples with native neutral RGB defaults while retaining global palette effects. Omitted tuple components keep their individual defaults. The campaign combat/result episode checks a colored HUD label with an omitted bank. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "campaign-result-policy",
+      "name": "Configured campaign and survival result screens",
+      "completed": true,
+      "validation": "Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "completed-result-clocks",
+      "name": "Live completed-fight poses behind result overlays",
+      "completed": true,
+      "validation": "Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    },
+    {
+      "id": "campaign-stage-admission",
+      "name": "Automatic campaign stages without a manual stage pool",
+      "completed": true,
+      "validation": "Arcade, Team Arcade/co-op and Survival use the scheduled opponent stage directly after roster selection. includestage=0 no longer makes assigned campaign stages unavailable. A random-stage request without a pool reports its opponent/match context instead of dividing by zero. The campaign flow starts and advances with no manual stage list. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+    }
+  ]
+}

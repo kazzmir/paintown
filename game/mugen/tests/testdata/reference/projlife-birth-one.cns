@@ -1,0 +1,164 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, lifecycle control]
+type=Helper
+trigger1=Time=0
+id=9
+stateno=710
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=NumProj
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=NumProj
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=2
+fv=2
+value=NumProj
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=3
+fv=3
+value=NumProj
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=4
+fv=4
+value=NumProj
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=5
+fv=5
+value=NumProj
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=10
+fv=6
+value=Enemy,FVar(20)
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=10
+fv=7
+value=Enemy,FVar(21)
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=10
+fv=8
+value=Enemy,FVar(22)
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=10
+fv=9
+value=Enemy,FVar(23)
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=10
+fv=10
+value=Enemy,FVar(24)
+[State 700, lifecycle control]
+type=VarSet
+trigger1=Time=10
+fv=11
+value=Enemy,FVar(25)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, lifecycle control]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=Enemy,NumProj
+[State 701, lifecycle control]
+type=VarSet
+trigger1=Time=1
+fv=21
+value=Enemy,NumProj
+[State 701, lifecycle control]
+type=VarSet
+trigger1=Time=2
+fv=22
+value=Enemy,NumProj
+[State 701, lifecycle control]
+type=VarSet
+trigger1=Time=3
+fv=23
+value=Enemy,NumProj
+[State 701, lifecycle control]
+type=VarSet
+trigger1=Time=4
+fv=24
+value=Enemy,NumProj
+[State 701, lifecycle control]
+type=VarSet
+trigger1=Time=5
+fv=25
+value=Enemy,NumProj
+[Statedef 710]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 710, lifecycle control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 710, lifecycle control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 710, lifecycle control]
+type=Projectile
+trigger1=Time=0
+projid=7
+projanim=9990
+projremovetime=1
+[State 710, lifecycle control]
+type=DestroySelf
+trigger1=Time=0
+

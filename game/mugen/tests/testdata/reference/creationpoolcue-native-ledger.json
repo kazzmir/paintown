@@ -1,0 +1,27 @@
+{
+  "programs": 3,
+  "accepted": 3,
+  "rejected": 0,
+  "captured_numeric_values": 36,
+  "source_probe_hashes": {
+    "game/mugen/tests/testdata/reference/creationpoolcue-contact-before-creation.cns": "8716d35e2adb775ac3687647a595422eddc64349ca47d7829edce5aa0c7e0a56",
+    "game/mugen/tests/testdata/reference/creationpoolcue-contact-before-creation.air": "68cd5eb2d18dc977dec4cdb5c280bc950510d99f4566fea8b4e2c08a217df41a",
+    "game/mugen/tests/testdata/reference/creationpoolcue-contact-before-creation.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/creationpoolcue-contact-before-creation.stage.def": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+    "game/mugen/tests/testdata/reference/creationpoolcue-full-before-contact.cns": "ee290b750c9307041791f5c2650b56daf1c3acdc92b75570af7f0a4219d93219",
+    "game/mugen/tests/testdata/reference/creationpoolcue-full-before-contact.air": "68cd5eb2d18dc977dec4cdb5c280bc950510d99f4566fea8b4e2c08a217df41a",
+    "game/mugen/tests/testdata/reference/creationpoolcue-full-before-contact.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/creationpoolcue-full-before-contact.stage.def": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+    "game/mugen/tests/testdata/reference/creationpoolcue-space-before-contact.cns": "ee290b750c9307041791f5c2650b56daf1c3acdc92b75570af7f0a4219d93219",
+    "game/mugen/tests/testdata/reference/creationpoolcue-space-before-contact.air": "68cd5eb2d18dc977dec4cdb5c280bc950510d99f4566fea8b4e2c08a217df41a",
+    "game/mugen/tests/testdata/reference/creationpoolcue-space-before-contact.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/creationpoolcue-space-before-contact.stage.def": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+    "game/mugen/temp/m4df-cue-draft/DRAFT-NOTES.json": "0f3ab2467f53ca13a73d65b99530137251c1799b1dd0e7877051ce4224880b57",
+    "game/mugen/temp/m4df-cue-parsed-intent.json": "a9ccb4c282027ce9ff3998d088193b934fdc85a129ef09a155da0994ecb35fbf",
+    "game/mugen/temp/_tmp/m4df-cue-intent/main.go": "f316ada7fdec63b83b2c4c1b6f33630bbbea1f9fc8cde5b3364a1bf4560eb977",
+    "game/mugen/temp/pool-reference-probe.py": "50032ce0aa178f85ac1a2bc69fa85049bd25c41d0c4bccfb0f41306d9f06c993",
+    "game/mugen/temp/run-m4df-cue-native.py": "2c9d3658d76d1e76d07ae4110e29f543d83ad19dd228687f6e94520531c40e66",
+    "game/mugen/tests/reference_probe.py": "7c5ba2b9a1ed8f063e291be7db2577f7638ce7ab223c6295c1c9bf61657689f4"
+  },
+  "review": "ALL native numeric/color/geometry/seed rows and complete-body sheets inspected BEFORE promotion/fix. Original inputs/captures/goldens immutable."
+}

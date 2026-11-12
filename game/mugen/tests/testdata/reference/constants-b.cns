@@ -1,0 +1,242 @@
+; Omit all constants when --bare-constants is used, to measure engine defaults.
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+
+[State 0, velocity.jump.neu.x]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Const(velocity.jump.neu.x)
+
+[State 0, velocity.jump.back.x]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Const(velocity.jump.back.x)
+
+[State 0, velocity.jump.fwd.x]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Const(velocity.jump.fwd.x)
+
+[State 0, velocity.runjump.back.x]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Const(velocity.runjump.back.x)
+
+[State 0, velocity.runjump.fwd.x]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Const(velocity.runjump.fwd.x)
+
+[State 0, velocity.airjump.y]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Const(velocity.airjump.y)
+
+[State 0, velocity.airjump.neu.x]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Const(velocity.airjump.neu.x)
+
+[State 0, velocity.airjump.back.x]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Const(velocity.airjump.back.x)
+
+[State 0, velocity.airjump.fwd.x]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Const(velocity.airjump.fwd.x)
+
+[State 0, velocity.air.gethit.groundrecover.x]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Const(velocity.air.gethit.groundrecover.x)
+
+[State 0, velocity.air.gethit.groundrecover.y]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Const(velocity.air.gethit.groundrecover.y)
+
+[State 0, velocity.air.gethit.airrecover.mul.x]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Const(velocity.air.gethit.airrecover.mul.x)
+
+[State 0, velocity.air.gethit.airrecover.mul.y]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Const(velocity.air.gethit.airrecover.mul.y)
+
+[State 0, velocity.air.gethit.airrecover.add.x]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=Const(velocity.air.gethit.airrecover.add.x)
+
+[State 0, velocity.air.gethit.airrecover.add.y]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Const(velocity.air.gethit.airrecover.add.y)
+
+[State 0, velocity.air.gethit.airrecover.back]
+type=VarSet
+trigger1=Time=0
+fv=15
+value=Const(velocity.air.gethit.airrecover.back)
+
+[State 0, velocity.air.gethit.airrecover.fwd]
+type=VarSet
+trigger1=Time=0
+fv=16
+value=Const(velocity.air.gethit.airrecover.fwd)
+
+[State 0, velocity.air.gethit.airrecover.up]
+type=VarSet
+trigger1=Time=0
+fv=17
+value=Const(velocity.air.gethit.airrecover.up)
+
+[State 0, velocity.air.gethit.airrecover.down]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=Const(velocity.air.gethit.airrecover.down)
+
+[State 0, movement.airjump.num]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=Const(movement.airjump.num)
+
+[State 0, movement.airjump.height]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=Const(movement.airjump.height)
+
+[State 0, movement.yaccel]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=Const(movement.yaccel)
+
+[State 0, movement.stand.friction]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Const(movement.stand.friction)
+
+[State 0, movement.crouch.friction]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Const(movement.crouch.friction)
+
+[State 0, movement.stand.friction.threshold]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=Const(movement.stand.friction.threshold)
+
+[State 0, movement.crouch.friction.threshold]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=Const(movement.crouch.friction.threshold)
+
+; Documented constant is rejected by the supplied beta. Leave its slot zero.
+[State 0, unavailable documented constant]
+type=Null
+trigger1=1
+
+[State 0, movement.air.gethit.groundlevel]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=Const(movement.air.gethit.groundlevel)
+
+[State 0, movement.air.gethit.groundrecover.ground.threshold]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Const(movement.air.gethit.groundrecover.ground.threshold)
+
+[State 0, movement.air.gethit.groundrecover.groundlevel]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Const(movement.air.gethit.groundrecover.groundlevel)
+
+[State 0, movement.air.gethit.airrecover.threshold]
+type=VarSet
+trigger1=Time=0
+fv=30
+value=Const(movement.air.gethit.airrecover.threshold)
+
+[State 0, movement.air.gethit.airrecover.yaccel]
+type=VarSet
+trigger1=Time=0
+fv=31
+value=Const(movement.air.gethit.airrecover.yaccel)
+
+[State 0, movement.air.gethit.trip.groundlevel]
+type=VarSet
+trigger1=Time=0
+fv=32
+value=Const(movement.air.gethit.trip.groundlevel)
+
+[State 0, movement.down.bounce.offset.x]
+type=VarSet
+trigger1=Time=0
+fv=33
+value=Const(movement.down.bounce.offset.x)
+
+[State 0, movement.down.bounce.offset.y]
+type=VarSet
+trigger1=Time=0
+fv=34
+value=Const(movement.down.bounce.offset.y)
+
+[State 0, movement.down.bounce.yaccel]
+type=VarSet
+trigger1=Time=0
+fv=35
+value=Const(movement.down.bounce.yaccel)
+
+[State 0, movement.down.bounce.groundlevel]
+type=VarSet
+trigger1=Time=0
+fv=36
+value=Const(movement.down.bounce.groundlevel)
+
+[State 0, movement.down.friction.threshold]
+type=VarSet
+trigger1=Time=0
+fv=37
+value=Const(movement.down.friction.threshold)

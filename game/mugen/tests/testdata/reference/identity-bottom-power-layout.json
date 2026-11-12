@@ -1,0 +1,51 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "8c49ed70842ed8a01af2ca151360df7ac01dff5b6b3ada383d0a326fbe61cdb6",
+  "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "eafc4820757294533fc30d43b49878eecac1cf57267b33a723158d20b8c70806",
+      "variables": {
+        "0": 2,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 37,
+        "5": 0,
+        "6": 1,
+        "7": 0,
+        "8": 0,
+        "9": 37,
+        "10": 0,
+        "11": 2
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "2affa347bc19443d4485d33a5e34e674013fde9f4cafc534c94a3b8769229f84",
+      "variables": {
+        "12": 2.5,
+        "13": 2,
+        "14": 2,
+        "15": 73759720,
+        "16": 73759720,
+        "17": 0,
+        "18": 1,
+        "19": 0,
+        "20": 1,
+        "21": 2,
+        "22": 2,
+        "23": 34
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "status": "Unresolved: same two invalid power expressions produce a different native result in this larger expression layout."
+}

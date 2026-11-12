@@ -1,0 +1,65 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "da40e5586588bd103fd1aafb92bef95e7751c88fc33590ee507f39b311b6fc4e",
+  "air_sha256": "6f9b3c6cffb4e879d47c6fc88dfe06ce7e3d9828bfad82020a637f2e2f05c3ca",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "91433cd67fc6c88578b7cba9b6bfa239d475658a7898d07ad1d0fa8436121f3f",
+      "variables": {
+        "0": -100,
+        "1": 0,
+        "2": -140,
+        "3": -80,
+        "4": 240,
+        "5": -80,
+        "6": 240,
+        "7": -1,
+        "8": 320,
+        "9": 1,
+        "10": 1,
+        "11": 80
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "projectile_position": {
+    "offset_from_owner": [
+      100.0,
+      0
+    ],
+    "facing": -1,
+    "native_mask": {
+      "rgb": [
+        247,
+        239,
+        231
+      ],
+      "region": [
+        160,
+        450,
+        1120,
+        674
+      ],
+      "pixels": 4293,
+      "bounds": [
+        569,
+        450,
+        679,
+        555
+      ]
+    },
+    "calibration_fixture": "projdraw-draw-p1-f-1",
+    "calibration_png_sha256": "9aa6c11bdc94836b738458379b4ac1f7513faa393a0b632c79ce7e504a4f4d3b",
+    "pixels_per_local_unit": 3
+  }
+}

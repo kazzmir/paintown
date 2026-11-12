@@ -1,0 +1,124 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9996
+ctrl=0
+[State 700, cancellation control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, cancellation control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, cancellation control]
+type=Projectile
+trigger1=Time=3
+projid=7
+projanim=9992
+projpriority=1
+attr=S,SP
+sparkno=-1
+hitsound=-1,0
+
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=0
+value=NumProj
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=1
+value=Enemy,NumProj
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=2
+value=ProjCancelTime(0)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=3
+value=Enemy,ProjCancelTime(0)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=4
+value=ProjContactTime(0)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=Enemy,ProjContactTime(0)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=6
+value=ProjHitTime(0)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=7
+value=Enemy,ProjHitTime(0)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=8
+value=ProjCancelTime(7)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=9
+value=Enemy,ProjCancelTime(8)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=10
+value=ProjContactTime(7)
+[State 700, measured query]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=Enemy,ProjContactTime(8)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9996
+ctrl=0
+[State 701, cancellation control]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, cancellation control]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, cancellation control]
+type=Projectile
+trigger1=Time=3
+projid=8
+projanim=9992
+projpriority=1
+attr=S,SP
+sparkno=-1
+hitsound=-1,0
+

@@ -1,0 +1,864 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "95ba79e8672a43ece2282b3f72e9f97b53e896890357b6725a79ecc375fc7531",
+          "variables": {
+            "0": 320,
+            "1": 240,
+            "2": 320,
+            "3": 240,
+            "4": 90,
+            "5": 200,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "5478f12c7489efe5f2f1e843966a41d72a3f6048773b88352a29b1f681524363",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 34.2857132,
+            "15": 34.2857132,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 66.6666641,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 200
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          1280,
+          720
+        ],
+        "hud_core": [
+          1024,
+          48,
+          1048,
+          60
+        ],
+        "world_core": [
+          505,
+          450,
+          529,
+          462
+        ],
+        "hud_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8",
+        "world_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8"
+      }
+    },
+    "stage0": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d9f3087b1799c76e542d9dfce096eab5573e87943b89d6529dcd162486cd1c4b",
+          "variables": {
+            "0": 320,
+            "1": 180,
+            "2": 320,
+            "3": 180,
+            "4": 90,
+            "5": 165,
+            "6": 0,
+            "7": 35,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "5b11381aec3eea21f3954a6ada527c687a479f45949a99b1043ab880999129dc",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 25.7142849,
+            "15": 25.7142849,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 55,
+            "19": 0,
+            "20": 11.666667,
+            "21": 0,
+            "22": 0,
+            "23": 165
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "video": {
+        "StageFit": 0
+      },
+      "config_sha256": "cc3c5f1c97461e9b110c5eb1bf782620e3c652166ee90e26013742eaf35fd432",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          1280,
+          720
+        ],
+        "hud_core": [
+          1152,
+          64,
+          1184,
+          80
+        ],
+        "world_core": [
+          460,
+          460,
+          492,
+          476
+        ],
+        "hud_core_sha256": "63bd73b2d70bf24133b68a8812cec7df3a13cd9a57168881e002e3483d34c6ee",
+        "world_core_sha256": "63bd73b2d70bf24133b68a8812cec7df3a13cd9a57168881e002e3483d34c6ee"
+      }
+    },
+    "system0": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "dd13d2829f70acdbcbdcb871fab450bc495504386e3d8716e1cecbf8db04deca",
+          "variables": {
+            "0": 320,
+            "1": 240,
+            "2": 320,
+            "3": 240,
+            "4": 90,
+            "5": 200,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "5eb6a2054f6894d12f0b8d932f9dc7c73e1112d9fd1d35f3df2f68f21a1d9e0a",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 34.2857132,
+            "15": 34.2857132,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 66.6666641,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 200
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "video": {
+        "SystemFit": 0
+      },
+      "config_sha256": "007d32e9f5466e0597987b832a40e1847794f17709e95234db15b0da605090e3",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          1280,
+          720
+        ],
+        "hud_core": [
+          1024,
+          48,
+          1048,
+          60
+        ],
+        "world_core": [
+          505,
+          450,
+          529,
+          462
+        ],
+        "hud_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8",
+        "world_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8"
+      }
+    },
+    "window-keep": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "35fb72d6fe511b805abb7844e188eb6e88f4b748e663e31a7acf772e40843a38",
+          "variables": {
+            "0": 320,
+            "1": 240,
+            "2": 320,
+            "3": 240,
+            "4": 90,
+            "5": 200,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "3ed2dd801babd545df0a468ca8929ab71661ea3e7e5269ef4dcc78bac7d66110",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 34.2857132,
+            "15": 34.2857132,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 66.6666641,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 200
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "video": {
+        "Width": 960,
+        "Height": 600
+      },
+      "config_sha256": "d4df7f2de43a6ff590fc3e3b5415a4a35faeb809d2c5af4c202c8e3e869f07d9",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          960,
+          600
+        ],
+        "hud_core": [
+          800,
+          40,
+          820,
+          50
+        ],
+        "world_core": [
+          368,
+          375,
+          387,
+          385
+        ],
+        "hud_core_sha256": "7ed9b871680d334e89b9f484883afaeebdf61e49e31c0245650d61fed523b761",
+        "world_core_sha256": "b43c388dbecc88de70f4f1663a17f12d2549a1f381482adea194dccf4dc4365e"
+      }
+    },
+    "window-stretch": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6aa076a4a97e38d3d77a6fbf64c10d0dd700d3a271ca5e938cb116f151d077f2",
+          "variables": {
+            "0": 320,
+            "1": 240,
+            "2": 320,
+            "3": 240,
+            "4": 90,
+            "5": 200,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "31ffdefe894b6b0af8056c3dd1ee825ba9bfff1aef7c9da755a4fb62cca737a3",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 34.2857132,
+            "15": 34.2857132,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 66.6666641,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 200
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "video": {
+        "Width": 960,
+        "Height": 600,
+        "KeepAspect": 0
+      },
+      "config_sha256": "b540f35ea77695c952ec516908efb8d3c78b7386938ff843de2a7fd3b86f4852",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          960,
+          600
+        ],
+        "hud_core": [
+          864,
+          40,
+          888,
+          50
+        ],
+        "world_core": [
+          345,
+          375,
+          369,
+          385
+        ],
+        "hud_core_sha256": "5d3cd887072ea8156b2b1df65df72b4efdc766598ca6abf6409be7babfb941be",
+        "world_core_sha256": "5d3cd887072ea8156b2b1df65df72b4efdc766598ca6abf6409be7babfb941be"
+      }
+    },
+    "crop800": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "86efbd67c193ff27253397b67dfea25f2eb968cd057c143321efbbd54e09c05a",
+          "variables": {
+            "0": 320,
+            "1": 200,
+            "2": 320,
+            "3": 200,
+            "4": 90,
+            "5": 177,
+            "6": 0,
+            "7": 23,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "fb463becb06e441ad1691a1c3bfff56fc1ae65220bde0cd64623c4ede5c72773",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 28.5714283,
+            "15": 28.5714283,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 59,
+            "19": 0,
+            "20": 7.66666651,
+            "21": 0,
+            "22": 0,
+            "23": 177
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "game_height": 800,
+      "video": {
+        "StageFit": 0
+      },
+      "config_sha256": "2b5bd313d6c2e9df0780817d618697b29c57cd00f8575c9d24674393fc4184f9",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          1280,
+          800
+        ],
+        "hud_core": [
+          1152,
+          64,
+          1184,
+          80
+        ],
+        "world_core": [
+          460,
+          508,
+          492,
+          524
+        ],
+        "hud_core_sha256": "63bd73b2d70bf24133b68a8812cec7df3a13cd9a57168881e002e3483d34c6ee",
+        "world_core_sha256": "63bd73b2d70bf24133b68a8812cec7df3a13cd9a57168881e002e3483d34c6ee"
+      }
+    },
+    "crop600": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "1e18489c34c55e9842efc290f57b6a988100ee4435203bfd8aa772e80f3ae6c8",
+          "variables": {
+            "0": 320,
+            "1": 150,
+            "2": 320,
+            "3": 150,
+            "4": 90,
+            "5": 135,
+            "6": 0,
+            "7": 65,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "ca08d9aa3f86fc917956ca5c79590a04e06fc2f11728652daea1eb6b85a95de9",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 21.4285717,
+            "15": 21.4285717,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 45,
+            "19": 0,
+            "20": 21.666666,
+            "21": 0,
+            "22": 0,
+            "23": 135
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "game_height": 600,
+      "video": {
+        "StageFit": 0
+      },
+      "config_sha256": "838a322e0e89b6e8c4105dc637ec4291482aaf6a775464cc73e5a1896950bfa9",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          1280,
+          600
+        ],
+        "hud_core": [
+          1152,
+          64,
+          1184,
+          80
+        ],
+        "world_core": [
+          460,
+          340,
+          492,
+          356
+        ],
+        "hud_core_sha256": "63bd73b2d70bf24133b68a8812cec7df3a13cd9a57168881e002e3483d34c6ee",
+        "world_core_sha256": "63bd73b2d70bf24133b68a8812cec7df3a13cd9a57168881e002e3483d34c6ee"
+      }
+    },
+    "crop900": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f084ba357692ca84e5946062a79b7f748e249bee0e82c631e8e04ff41feda68d",
+          "variables": {
+            "0": 320,
+            "1": 225,
+            "2": 320,
+            "3": 225,
+            "4": 90,
+            "5": 192,
+            "6": 0,
+            "7": 8,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "30e0fa5b6ec9c594649d81f85da65f6ebe682b5e07a2710abfab21f34ebef8dd",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 32.1428566,
+            "15": 32.1428566,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 64,
+            "19": 0,
+            "20": 2.66666675,
+            "21": 0,
+            "22": 0,
+            "23": 192
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "game_height": 900,
+      "video": {
+        "StageFit": 0,
+        "Width": 960,
+        "Height": 600
+      },
+      "config_sha256": "1d6c1123d7262f3b6d9f1f699c35d476d8a5c25d583ddece5a2d6eb0887a8766",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          960,
+          600
+        ],
+        "hud_core": [
+          821,
+          43,
+          842,
+          53
+        ],
+        "world_core": [
+          360,
+          379,
+          381,
+          389
+        ],
+        "hud_core_sha256": "e45522779ea3e518a6ac9262c83f0a46cf31ef103e0716ca975fd4798e4088bc",
+        "world_core_sha256": "64673102ff111acb4dd078b585986ebe84db84dbc11344b2da3fc629c31c79ed"
+      }
+    },
+    "crop640": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f5db040f1179bcdb21b4248aaab28d31fe64fca3be5ae5ab5b05cc809d70c10a",
+          "variables": {
+            "0": 320,
+            "1": 160,
+            "2": 320,
+            "3": 160,
+            "4": 90,
+            "5": 145,
+            "6": 0,
+            "7": 55,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "e4d2b1d02221ea17508dd56407ef05bd52722cc919d909f01c4ca05590d49e09",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 22.8571434,
+            "15": 22.8571434,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 48.3333321,
+            "19": 0,
+            "20": 18.333334,
+            "21": 0,
+            "22": 0,
+            "23": 145
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "game_height": 640,
+      "video": {
+        "StageFit": 0,
+        "Width": 960,
+        "Height": 600
+      },
+      "config_sha256": "9cc7d09efbf393cacf3a962cc183908ae16b6fd1234691caf08bc3fd32eab610",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          960,
+          600
+        ],
+        "hud_core": [
+          864,
+          108,
+          888,
+          120
+        ],
+        "world_core": [
+          345,
+          345,
+          369,
+          357
+        ],
+        "hud_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8",
+        "world_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8"
+      }
+    },
+    "crop765": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "1d47ae43296c2bc7fa8dd2ada30084d2d42962a7b6c4bc2ffc4c32d12a292d7a",
+      "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "30cc440373b97afa8210585531381eb10b58c48eb75de290a91c2d1820f797b3",
+          "variables": {
+            "0": 320,
+            "1": 191.25,
+            "2": 320,
+            "3": 191.25,
+            "4": 90,
+            "5": 172,
+            "6": 0,
+            "7": 28,
+            "8": 1,
+            "9": -70,
+            "10": 0,
+            "11": 320
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "dd21039c7bd3f780d827fd5156fa60cf7ee5396a3766ffe953218950bb52cc6b",
+          "variables": {
+            "12": 106.666664,
+            "13": 106.666664,
+            "14": 27.3214283,
+            "15": 27.3214283,
+            "16": 0.333333343,
+            "17": 30,
+            "18": 57.3333321,
+            "19": 0,
+            "20": 9.33333302,
+            "21": 0,
+            "22": 0,
+            "23": 172
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sprite": "probe.sff"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+      },
+      "mugenversion": "1.1",
+      "game_height": 765,
+      "video": {
+        "StageFit": 0,
+        "Width": 960,
+        "Height": 600
+      },
+      "config_sha256": "83960e10d9d9ebaa4b8c72411732131e4aca0cbf905fb82b42bc2a951b33dd4c",
+      "hud_marker": true,
+      "hud_fight_sha256": {
+        "data/fight.def": "a82654c582d584b2d0b991f53b576831e9df3af41f507a6cf73b2b9bc9210379",
+        "data/mugen1/fight.def": "b370ae597ec484aace69c0a7861422007d3c4aec555a10c865d3777927bc44fe"
+      },
+      "video_render": {
+        "window": [
+          960,
+          600
+        ],
+        "hud_core": [
+          864,
+          61,
+          888,
+          73
+        ],
+        "world_core": [
+          345,
+          380,
+          369,
+          391
+        ],
+        "hud_core_sha256": "f1b8d63f0d15c2782f1817ee0e3ab927744033350c0ed2860a29776d89e72ddc",
+        "world_core_sha256": "be1b07742391dc58c1a517a93f7bbc12141c9a60c133769f60fd9895c94fdfef"
+      }
+    }
+  }
+}

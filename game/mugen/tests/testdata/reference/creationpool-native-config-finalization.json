@@ -1,0 +1,201 @@
+{
+  "native_finalization": "Every prepared config and exact FirstRun1->0/LF->CRLF finalization verified",
+  "programs": {
+    "creationpool-capacity-explod-0": {
+      "prepared_sha256": "3e4d2b0a33a47476e7f7af830fa7d22f04862c51f77439f063d983d2a9c31cd5",
+      "final_sha256": "262f57b984364dc1d5a1a8edbc52cc235d3214de6758b2e6a442a9f7e66aa3e5",
+      "ExplodMax": 0,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-explod-1": {
+      "prepared_sha256": "dce7521c827e2d16451c47826d18d0d661646ece842063a17b134d09c5bc78cd",
+      "final_sha256": "ed21568e96b8f7ad964bdcad5a153c2051295f68ccbfca859e98fa119f84cb20",
+      "ExplodMax": 1,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-explod-16": {
+      "prepared_sha256": "459096bcc452e55eab2ffd1569dcd215004020494c87c159ab05df61a7e85290",
+      "final_sha256": "d8d9c6a329f42529d1e7953d56e9e7c1d0bead4f44c8a7c8c43ae1cf2e0b9e07",
+      "ExplodMax": 16,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-explod-8": {
+      "prepared_sha256": "9fef30d87c438556cd4d77cfdb773c118069153a2b20fd78ff0827c5e020bcfe",
+      "final_sha256": "e15bc25be1f04efd46cc624ea348996eb279ae1ca0514a53864a86ba53ee0c84",
+      "ExplodMax": 8,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-explod-9": {
+      "prepared_sha256": "bec967418c3c07a7721f6a22d432fcbcf9a16df7933cb7a28457614f39720b19",
+      "final_sha256": "56866298f838264eb2d0b4d4541156893ec72e1faf5a2761c1b0c5a16438597e",
+      "ExplodMax": 9,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-explod-neg1": {
+      "prepared_sha256": "4944b633871b4a0c7aca688813d9549faf2aca39301b31832218d55b45d59df8",
+      "final_sha256": "a845ec315b43e3625299d4293f1dd08198e0c9a0f83b16ac06d410b75e33a289",
+      "ExplodMax": -1,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-missing-before": {
+      "prepared_sha256": "9fef30d87c438556cd4d77cfdb773c118069153a2b20fd78ff0827c5e020bcfe",
+      "final_sha256": "e15bc25be1f04efd46cc624ea348996eb279ae1ca0514a53864a86ba53ee0c84",
+      "ExplodMax": 8,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-remove-reuse": {
+      "prepared_sha256": "9fef30d87c438556cd4d77cfdb773c118069153a2b20fd78ff0827c5e020bcfe",
+      "final_sha256": "e15bc25be1f04efd46cc624ea348996eb279ae1ca0514a53864a86ba53ee0c84",
+      "ExplodMax": 8,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-system-0": {
+      "prepared_sha256": "169d812961e0c82ca39cfaadf303ba36e68c8814bfb11536d77fc16682240bb2",
+      "final_sha256": "2a9feecc399b3a57f1994726f100cf5d9a1b18156ae3be6ad81aa90c83330ae6",
+      "ExplodMax": 16,
+      "SysExplodMax": 0,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-system-1": {
+      "prepared_sha256": "00382d3dcb6dada4ab07b10d9d75ce26b10d965523f14d97dcf9a650f121b3cb",
+      "final_sha256": "e7d336a4d1644d07c2d91a51c2aa534a5fc3bec7a1824a8c9286d00dcc0a793d",
+      "ExplodMax": 16,
+      "SysExplodMax": 1,
+      "AfterImageMax": 16
+    },
+    "creationpool-capacity-system-8": {
+      "prepared_sha256": "d1436b00ff4aa595d9e36f60054b4ab92a286df9a34c1b5d4f06176afa553e6f",
+      "final_sha256": "9f30c101ac06b2173aa1a3f7fa5b67886f685edd6dd4b952038681c39ffa1917",
+      "ExplodMax": 16,
+      "SysExplodMax": 8,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-absent": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-bottom": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-even": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-literal-float": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-missing-action": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-negative": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-odd": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-one": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-remove-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-runtime-float": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-single": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-three": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-three-components": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-trailing": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-two": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-unknown": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    },
+    "creationpool-random-zero": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "ExplodMax": 256,
+      "SysExplodMax": 128,
+      "AfterImageMax": 16
+    }
+  }
+}

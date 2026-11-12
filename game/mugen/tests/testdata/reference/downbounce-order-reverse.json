@@ -1,0 +1,92 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "97f27772ede1f4625fbb8c4edd73584a350535efdbd8db85f0edd7d79a3b5bbe",
+  "air_sha256": "55283a4205ad73a8f4bf7b93ed95b17e6242b8871ff4f12731698dd73bcf662b",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "a829895cc06166ff615aea9935227d417e7d778911483b1dd17577e0b3d7fa07",
+      "variables": {
+        "0": 15,
+        "1": 16,
+        "2": 17,
+        "3": 18,
+        "4": 19,
+        "5": 20,
+        "6": 21,
+        "7": 22,
+        "8": 100023,
+        "9": 24,
+        "10": 25,
+        "11": 26
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "0353a4a5b40b1a2c0ab7bf93d99a0f7e0f855401cce52e0d564a63512014453c",
+      "variables": {
+        "12": 27,
+        "13": 28,
+        "14": 29,
+        "15": 30,
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 35,
+        "21": 36,
+        "22": 37,
+        "23": 38
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "3424e5ff1a0319c4683364c01b2052be6a7609879decaa12a293b1908ac45516",
+      "variables": {
+        "24": 39,
+        "25": 40,
+        "26": 42,
+        "27": 43,
+        "28": 44,
+        "29": 45,
+        "30": 46,
+        "31": 47,
+        "32": 48,
+        "33": 49,
+        "34": 50,
+        "35": 51
+      }
+    },
+    {
+      "page": 28,
+      "path": "animation-page28.png",
+      "sha256": "c43aec54fbb79a4b2aa53d719913877681724211185145decd83af775844fc6e",
+      "variables": {
+        "28": 44,
+        "29": 45,
+        "30": 46,
+        "31": 47,
+        "32": 48,
+        "33": 49,
+        "34": 50,
+        "35": 51,
+        "36": 52,
+        "37": 53,
+        "38": 54,
+        "39": 41
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c"
+}

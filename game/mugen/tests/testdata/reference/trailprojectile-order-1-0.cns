@@ -1,0 +1,155 @@
+[Statedef 5900]
+[State 5900, ChangeState]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 0, ChangeState]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 700, PlayerPush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, PosSet]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, ScreenBound]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=0,0
+[State 700, Projectile]
+type=Projectile
+trigger1=Time=0
+projid=((Var(30):=(Var(58):=Var(58)+1))*0+(77))
+projanim=((Var(31):=(Var(58):=Var(58)+1))*0+(9100))
+postype=p1
+offset=-160,-80
+velocity=((Var(32):=(Var(58):=Var(58)+1))*0+(30)),0
+projremove=0
+projremovetime=-1
+projedgebound=4000
+projstagebound=4000
+projheightbound=-4000,4000
+ownpal=((Var(33):=(Var(58):=Var(58)+1))*0+(0))
+damage=((Var(34):=(Var(58):=Var(58)+1))*0+(0)),0
+afterimage.trans=none
+afterimage.palmul=((Var(18):=(Var(58):=Var(58)+1))*0+(1)),((Var(19):=(Var(58):=Var(58)+1))*0+(1)),((Var(20):=(Var(58):=Var(58)+1))*0+(1))
+afterimage.paladd=((Var(15):=(Var(58):=Var(58)+1))*0+(0)),((Var(16):=(Var(58):=Var(58)+1))*0+(0)),((Var(17):=(Var(58):=Var(58)+1))*0+(0))
+afterimage.palpostbright=((Var(12):=(Var(58):=Var(58)+1))*0+(0)),((Var(13):=(Var(58):=Var(58)+1))*0+(0)),((Var(14):=(Var(58):=Var(58)+1))*0+(0))
+afterimage.palcontrast=((Var(9):=(Var(58):=Var(58)+1))*0+(256)),((Var(10):=(Var(58):=Var(58)+1))*0+(256)),((Var(11):=(Var(58):=Var(58)+1))*0+(256))
+afterimage.palbright=((Var(6):=(Var(58):=Var(58)+1))*0+(0)),((Var(7):=(Var(58):=Var(58)+1))*0+(0)),((Var(8):=(Var(58):=Var(58)+1))*0+(0))
+afterimage.palinvertall=((Var(5):=(Var(58):=Var(58)+1))*0+(0))
+afterimage.palcolor=((Var(4):=(Var(58):=Var(58)+1))*0+(256))
+afterimage.framegap=((Var(3):=(Var(58):=Var(58)+1))*0+(1))
+afterimage.timegap=((Var(2):=(Var(58):=Var(58)+1))*0+(1))
+afterimage.length=((Var(1):=(Var(58):=Var(58)+1))*0+(60))
+afterimage.time=((Var(0):=(Var(58):=Var(58)+1))*0+(99999))
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=0
+value=Var(0)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=1
+value=Var(1)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=2
+value=Var(2)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=3
+value=Var(3)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=4
+value=Var(4)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=Var(5)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=6
+value=Var(30)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=7
+value=Var(31)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=8
+value=Var(32)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=9
+value=Var(33)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=10
+value=Var(34)
+[State 700, VarSet]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=Var(58)
+[State 700, DisplayToClipboard]
+type=DisplayToClipboard
+trigger1=1
+text="P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)
+[State 700, AppendToClipboard]
+type=AppendToClipboard
+trigger1=1
+text="P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)
+[State 700, Pause]
+type=Pause
+trigger1=Time=8
+time=99999
+movetime=0
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 701, PlayerPush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, ScreenBound]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=0,0

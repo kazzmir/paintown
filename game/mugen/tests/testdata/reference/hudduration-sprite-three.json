@@ -1,0 +1,1194 @@
+{
+  "schema": "timed-hud-native-v1",
+  "fixture_sha256": {
+    ".cns": "0b4862e9f97e6b77a47d062730ec049b395e25c070cc189eba127139453f1ded",
+    ".cmd": "940eb72b311efe5a14f3244adf3bfa1547e7f77c686fe21da4b754e20fc8c833",
+    ".air": "58096aa2b92c951efcd0d69fc16b3bc6d21ccc20c312bdf3929bbdf5f2e4769f",
+    ".stage.def": "3f484b43aa0d7a4cd204d0085d333dc5896a02b954c8b0ceaf416112e5550069",
+    ".fight.def": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9"
+  },
+  "full_parsed_compiled_recipe_intent_verified": true,
+  "native_scope": "Timed KO component defaults/start/expiry and positive sprite/font/animation/pause/slow consumers; not whole HUD/theme/font conformance.",
+  "image_size": [
+    1280,
+    720
+  ],
+  "world_region": [
+    160,
+    140,
+    1120,
+    640
+  ],
+  "strict_rgb": true,
+  "source_git": "43145992f07bc3df19638e598ac21e83512c0208",
+  "observations": [
+    {
+      "native_run": "temp/reference-runs/m4dq-hudduration-sprite-three",
+      "evidence_sha256": "ae9b63aac712c8deedf7950b3b83a1a81b1eb6b340584e67f2fec9c6a523ec09",
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "seed_log_sha256": "a6b6644c933cb0b8a6a2f8f00e89b66ef6ec59659d237a8a37399ff1450b95a4",
+      "random_seed": 1224354680,
+      "captures": [
+        {
+          "label": "paused-before-seek",
+          "path": "paused-before-seek.png",
+          "sha256": "df885950589d171034bd177c7c48ae9ba8b1bb1feeeccaad2d902f6416e6c37c",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 335,
+            "1": 2,
+            "2": 335,
+            "3": 1000,
+            "4": 0,
+            "5": 1,
+            "6": 335,
+            "7": 335,
+            "8": 335,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 1
+        },
+        {
+          "label": "seek-g399",
+          "path": "seek-g399.png",
+          "sha256": "b8acb37a8dc3c4369b061b4932dd7609e8efacf91c5bfade0cbd77a67bffc196",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 399,
+            "1": 2,
+            "2": 399,
+            "3": 1000,
+            "4": 0,
+            "5": 1,
+            "6": 399,
+            "7": 399,
+            "8": 399,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          }
+        },
+        {
+          "label": "frame-400",
+          "path": "frame-400.png",
+          "sha256": "0336cc32c84e412ae57a762282c0f07c0849e6f98d0442384bea273c4954d453",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 400,
+            "1": 2,
+            "2": 400,
+            "3": 1000,
+            "4": 0,
+            "5": 1,
+            "6": 400,
+            "7": 400,
+            "8": 400,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 4
+        },
+        {
+          "label": "frame-401",
+          "path": "frame-401.png",
+          "sha256": "e64a8bd606b3055608153d380e5c9a28a502d92008d2d6a32a41f69a82d87e09",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 401,
+            "1": 3,
+            "2": 401,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 401,
+            "7": 401,
+            "8": 1,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 6
+        },
+        {
+          "label": "frame-402",
+          "path": "frame-402.png",
+          "sha256": "b30cb537db3c9b2e2573d86cecb5d3690ca52770f49efae05b4b20cb78b462ba",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 402,
+            "1": 3,
+            "2": 402,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 402,
+            "7": 401,
+            "8": 2,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 8
+        },
+        {
+          "label": "frame-403",
+          "path": "frame-403.png",
+          "sha256": "5b6a66f5b5f3aa341eab07eab058ce11329e5d64e6da710baefcf27ef57667c3",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 403,
+            "1": 3,
+            "2": 403,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 403,
+            "7": 401,
+            "8": 3,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 10
+        },
+        {
+          "label": "frame-404",
+          "path": "frame-404.png",
+          "sha256": "6638dc54aa82fab8e5dc96d3623a91b041db7e6542bb04abf393cdd4bfb8f990",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 404,
+            "1": 3,
+            "2": 404,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 404,
+            "7": 401,
+            "8": 4,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 12
+        },
+        {
+          "label": "frame-405",
+          "path": "frame-405.png",
+          "sha256": "b9e2b07aba37a2bba900af4ac1acd0a1b6ffe51ebb331596faf9572ab480be9d",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 405,
+            "1": 3,
+            "2": 405,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 405,
+            "7": 401,
+            "8": 5,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 14
+        },
+        {
+          "label": "frame-406",
+          "path": "frame-406.png",
+          "sha256": "69c9861300c80d283260460585ecac37fca10f068f51e27e92866b69cac0cb93",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 406,
+            "1": 3,
+            "2": 406,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 406,
+            "7": 401,
+            "8": 6,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 16
+        },
+        {
+          "label": "frame-407",
+          "path": "frame-407.png",
+          "sha256": "c7f1b623a53e00ded552784e4a6abd8a44b00d0518fe79e7a5bb3a730cef012e",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 407,
+            "1": 3,
+            "2": 407,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 407,
+            "7": 401,
+            "8": 7,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 18
+        },
+        {
+          "label": "frame-408",
+          "path": "frame-408.png",
+          "sha256": "01078861fa7739c3ec772a1add1edd208f8970c80b8f2b90ba0c4e0df9a2a2f5",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 408,
+            "1": 3,
+            "2": 408,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 408,
+            "7": 401,
+            "8": 8,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 20
+        },
+        {
+          "label": "frame-409",
+          "path": "frame-409.png",
+          "sha256": "d4c801d0fefe4f2853d2690486f2545bd6fc36634606b39fb12af2881c04c56b",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 409,
+            "1": 3,
+            "2": 409,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 409,
+            "7": 401,
+            "8": 9,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 22
+        },
+        {
+          "label": "frame-410",
+          "path": "frame-410.png",
+          "sha256": "55e156f0b2641389869696300fd628f4b3475802d3d8e9f5df730349af239353",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 410,
+            "1": 3,
+            "2": 410,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 410,
+            "7": 401,
+            "8": 10,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 24
+        },
+        {
+          "label": "frame-411",
+          "path": "frame-411.png",
+          "sha256": "1544889b4e7fd32357ed7e4339c27e2d309c39dd411be8e126c542e580a3f978",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "dcf3be63864bfffc6a11f3df6f6a0ed73e64eec9257ecb6168effe73d5aca022",
+          "variables": {
+            "0": 411,
+            "1": 3,
+            "2": 411,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 411,
+            "7": 401,
+            "8": 11,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 26
+        },
+        {
+          "label": "frame-412",
+          "path": "frame-412.png",
+          "sha256": "35bd4e61032d303f02e9671eae33da5cc78c78b6374338ccd1296f2dcbcca537",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "dcf3be63864bfffc6a11f3df6f6a0ed73e64eec9257ecb6168effe73d5aca022",
+          "variables": {
+            "0": 412,
+            "1": 3,
+            "2": 412,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 412,
+            "7": 401,
+            "8": 12,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 28
+        }
+      ],
+      "sequence": [
+        {
+          "key": "Pause"
+        },
+        {
+          "capture": "paused-before-seek",
+          "numeric": true
+        },
+        {
+          "seek_game_time": 399
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-400",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-401",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-402",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-403",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-404",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-405",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-406",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-407",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-408",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-409",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-410",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-411",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-412",
+          "numeric": true
+        }
+      ],
+      "sequence_sha256": "9475ef25824006fc8ac02f0dde8757c71fb01344e3ed6c7cfdbba20818ffdff5",
+      "prepared_inputs_sha256": "10cd71b874f226962c698e6fc3a79998f34896ca9feb5264fd642e13650377c0",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9",
+        "prepared_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9"
+      }
+    },
+    {
+      "native_run": "temp/reference-runs/m4dq-tail-hudduration-sprite-three",
+      "evidence_sha256": "5073ffe491fda59f20159d7ed408fc3e28a78a3ee692e93f44ffb5ad1171ad45",
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "seed_log_sha256": "18fc1dba2f3bfeaef9c4a728b3dd9347ef31da7365577ca9fe284b77dbb94abd",
+      "random_seed": 1232909443,
+      "captures": [
+        {
+          "label": "paused-before-seek",
+          "path": "paused-before-seek.png",
+          "sha256": "2a0f013ae5b3712bfd91e3165cebc4b99c4dc560268f476bb979420ea7a58998",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 334,
+            "1": 2,
+            "2": 334,
+            "3": 1000,
+            "4": 0,
+            "5": 1,
+            "6": 334,
+            "7": 334,
+            "8": 334,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 1
+        },
+        {
+          "label": "seek-g399",
+          "path": "seek-g399.png",
+          "sha256": "bf6e9b08d28cf39a9080b59a49dce72102efde17c7ab3ca2109ae97f3feaf942",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 399,
+            "1": 2,
+            "2": 399,
+            "3": 1000,
+            "4": 0,
+            "5": 1,
+            "6": 399,
+            "7": 399,
+            "8": 399,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          }
+        },
+        {
+          "label": "frame-410",
+          "path": "frame-410.png",
+          "sha256": "78583f8d679e97c00081930c8bb31c3e4321ba442a2414a3c3a1dd99a05277fb",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 410,
+            "1": 3,
+            "2": 410,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 410,
+            "7": 401,
+            "8": 10,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 4
+        },
+        {
+          "label": "frame-411",
+          "path": "frame-411.png",
+          "sha256": "53583f783c2fe7654263dc5a980f047fe9559fba17a858396f8aff33b8c38ba3",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "dcf3be63864bfffc6a11f3df6f6a0ed73e64eec9257ecb6168effe73d5aca022",
+          "variables": {
+            "0": 411,
+            "1": 3,
+            "2": 411,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 411,
+            "7": 401,
+            "8": 11,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 6
+        },
+        {
+          "label": "frame-412",
+          "path": "frame-412.png",
+          "sha256": "1168e00b35138096cfa1ed98e0402d64e893fb0a19deb256efab672a3f131353",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "dcf3be63864bfffc6a11f3df6f6a0ed73e64eec9257ecb6168effe73d5aca022",
+          "variables": {
+            "0": 412,
+            "1": 3,
+            "2": 412,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 412,
+            "7": 401,
+            "8": 12,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 8
+        },
+        {
+          "label": "frame-413",
+          "path": "frame-413.png",
+          "sha256": "6be38cf64ae0e049c0ac908372203a1dcb049a924b647441d2b478992327ac8c",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "dcf3be63864bfffc6a11f3df6f6a0ed73e64eec9257ecb6168effe73d5aca022",
+          "variables": {
+            "0": 413,
+            "1": 3,
+            "2": 413,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 413,
+            "7": 401,
+            "8": 13,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 10
+        },
+        {
+          "label": "frame-414",
+          "path": "frame-414.png",
+          "sha256": "6bec82bc2d3c778b3c8dc56bc4e32da08f4859968348827245f85f182242dc66",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 414,
+            "1": 3,
+            "2": 414,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 414,
+            "7": 401,
+            "8": 14,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 12
+        },
+        {
+          "label": "frame-415",
+          "path": "frame-415.png",
+          "sha256": "0ff022a7d2b4ebced47ca0ff3272670e8288f964c12bcf631818dc489550544a",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 415,
+            "1": 3,
+            "2": 415,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 415,
+            "7": 401,
+            "8": 15,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 14
+        },
+        {
+          "label": "frame-416",
+          "path": "frame-416.png",
+          "sha256": "305457edb85e967da6b53a952c1adec73a86862a5a64f5cb30c96a88b23168f3",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 416,
+            "1": 3,
+            "2": 416,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 416,
+            "7": 401,
+            "8": 16,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 16
+        },
+        {
+          "label": "frame-417",
+          "path": "frame-417.png",
+          "sha256": "22b1801a4101199de8d88dcc6bd921eb84f8a3dd144c71687e8f8095b13db0ea",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 417,
+            "1": 3,
+            "2": 417,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 417,
+            "7": 401,
+            "8": 17,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 18
+        },
+        {
+          "label": "frame-418",
+          "path": "frame-418.png",
+          "sha256": "3ac2dfcc6159751f1f9645f695e05d741abae91dda87e67365700fd31ee32e85",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 418,
+            "1": 3,
+            "2": 418,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 418,
+            "7": 401,
+            "8": 18,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 20
+        },
+        {
+          "label": "frame-419",
+          "path": "frame-419.png",
+          "sha256": "b3b964fae07c74ae8e4cbb3c766edd3588b4692cafdb0a312a1d41e7b7c3ab32",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 419,
+            "1": 3,
+            "2": 419,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 419,
+            "7": 401,
+            "8": 19,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 22
+        },
+        {
+          "label": "frame-420",
+          "path": "frame-420.png",
+          "sha256": "6c6310af76a8792186c90f2bef2449335b7a084a4b43af4812ccfc960906b19d",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 420,
+            "1": 3,
+            "2": 420,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 420,
+            "7": 401,
+            "8": 20,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 24
+        },
+        {
+          "label": "frame-421",
+          "path": "frame-421.png",
+          "sha256": "c5af50224c9b035a88dfc42c8fc371f2e3e355833a79353d165e1fa5cf58b6ca",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 421,
+            "1": 3,
+            "2": 421,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 421,
+            "7": 401,
+            "8": 21,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 26
+        },
+        {
+          "label": "frame-422",
+          "path": "frame-422.png",
+          "sha256": "8dc779440e0b96a1a73e5ca4d0e17d3ce33e3c00852cee8d8866bae29f998ab0",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "world_region": [
+            160,
+            140,
+            1120,
+            640
+          ],
+          "world_rgb_sha256": "23361c856490d4ce009048826de990f950a6b5eaf03b71b69e3e10f4f7b12dab",
+          "variables": {
+            "0": 422,
+            "1": 3,
+            "2": 422,
+            "3": 0,
+            "4": 5030,
+            "5": 0,
+            "6": 422,
+            "7": 401,
+            "8": 22,
+            "9": 0,
+            "10": 0,
+            "11": 1
+          },
+          "sequence_index": 28
+        }
+      ],
+      "sequence": [
+        {
+          "key": "Pause"
+        },
+        {
+          "capture": "paused-before-seek",
+          "numeric": true
+        },
+        {
+          "seek_game_time": 399
+        },
+        {
+          "steps": 11
+        },
+        {
+          "capture": "frame-410",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-411",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-412",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-413",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-414",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-415",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-416",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-417",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-418",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-419",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-420",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-421",
+          "numeric": true
+        },
+        {
+          "steps": 1
+        },
+        {
+          "capture": "frame-422",
+          "numeric": true
+        }
+      ],
+      "sequence_sha256": "dc5fb580ba920534ab67c16b7024485520cc396d5a76279a2e0b73df5115cdb9",
+      "prepared_inputs_sha256": "e225f11812e54b37a3f76d5df3f03f6cf4317c20739aa9f64e0992bec2cace17",
+      "fight_definition_override": {
+        "path": "data/mugen1/fight.def",
+        "canonical_sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a",
+        "replacement_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9",
+        "prepared_sha256": "bdb258f1bedf0cd7d626f87a40f008632599896d147b8eded0a6021db84b28d9"
+      }
+    }
+  ]
+}

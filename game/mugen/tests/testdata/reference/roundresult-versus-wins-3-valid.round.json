@@ -1,0 +1,21 @@
+{
+  "round_time": 99,
+  "fight": {
+    "Round.slow.time": 0,
+    "Round.over.waittime": 3,
+    "Round.over.wintime": 2,
+    "Round.over.time": 10,
+    "Round.win.time": 0,
+    "Round.match.wins": 3
+  },
+  "dense": true,
+  "pages": [
+    0,
+    12,
+    24,
+    36,
+    48
+  ],
+  "replay_ticks": 1200,
+  "native_mode": "versus"
+}

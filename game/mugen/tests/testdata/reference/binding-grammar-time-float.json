@@ -1,0 +1,18 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "b9eab2fd4bb5a967e5021a05672c80acf40ec3f3d6322627beeb5845ddca26c8",
+  "air_sha256": "a19979ed08a7422603ce6b70034137a738e5456f0eff4873f814240f76a5d39e",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_fixture": "binding-victim",
+  "p2_sha256": {
+    "cns": "5414617333cd8ec61f3699d1dafeb1b0ef3beac717c4cfdc24367c7351168e88",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e"
+  },
+  "load_error": "Library error message: Expected int value and read float.\n\nError detected.\n\nError parsing [State 700, bind]\nError in [Statedef 700]\nError in probe.cns:196\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 1012138781\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...Freeing player RC Kung Fu Man...CMD...CNS...SFF...AIR...SND...Misc...OK\nCharacter kfm.def failed to load\n\n",
+  "expected_load_error": "Expected int value and read float"
+}

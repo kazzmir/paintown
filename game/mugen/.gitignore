@@ -1,0 +1,31 @@
+temp
+/temp/
+/unresolved.log
+/mugen.yaml
+mugen
+
+# Compiled game and test outputs belong under temp/.
+/mugen-go
+*.exe
+*.test
+__pycache__/
+
+# Historical tracked fixtures stay available; new generated matrices stay local.
+/tests/testdata/reference/
+
+# Immutable rejected native drafts, retained in place; corrected controls use -valid.
+/tests/testdata/reference/reversal-movereversed-clear.*
+/tests/testdata/reference/reversal-movereversed-idle.*
+/tests/testdata/reference/reversal-movereversed-persist.*
+/tests/testdata/reference/reversal-spark-base.*
+/tests/testdata/reference/reversal-spark-both.*
+/tests/testdata/reference/reversal-spark-enemy.*
+/tests/testdata/reference/reversal-spark-own.*
+/tests/testdata/reference/reversal-state-dest-both.*
+/tests/testdata/reference/reversal-state-dest-own.*
+/tests/testdata/reference/reversal-state-dest-p1.*
+/tests/testdata/reference/reversal-state-dest-p2.*
+
+# Immutable setup diagnostic: native rejects VarSet before ExplodBindTime.
+# Its valid replacement is explodbind-supp-runtime-expr; retain this in place.
+/tests/testdata/reference/explodbind-runtime.*

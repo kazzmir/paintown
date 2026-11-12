@@ -1,0 +1,153 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, power]
+type=PowerSet
+trigger1=Time=0
+value=100
+[State 700, child]
+type=Helper
+trigger1=Time=1
+id=123
+stateno=800
+postype=p1
+pos=0,0
+keyctrl=0
+ownpal=0
+[State 700, child phase]
+type=VarSet
+trigger1=Time=2
+fv=28
+value=Power
+[State 700, later phase]
+type=VarSet
+trigger1=Time=6
+fv=29
+value=Power
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, no push]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, power]
+type=PowerSet
+trigger1=Time=0
+value=200
+[State 701, child phase]
+type=VarSet
+trigger1=Time=2
+fv=28
+value=Power
+[State 701, later phase]
+type=VarSet
+trigger1=Time=6
+fv=29
+value=Power
+[Statedef 800]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+poweradd=-10
+[State 800, initial power]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Power
+[State 800, after power]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Power
+[State 800, parent phase]
+type=VarSet
+trigger1=Time=6
+fv=27
+value=Parent,Power
+[Statedef -3]
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=0
+value=Power
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=1
+value=Helper(123),Power
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=2
+value=Enemy,Power
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=3
+value=Helper(123),FVar(28)
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=4
+value=Helper(123),FVar(29)
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=5
+value=Helper(123),FVar(27)
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=6
+value=FVar(28)
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=7
+value=FVar(29)
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=8
+value=PowerMax
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=9
+value=Helper(123),PowerMax
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=10
+value=NumHelper
+[State -3, power snapshot]
+type=VarSet
+trigger1=TeamSide=1 && !IsHelper && GameTime=200
+fv=11
+value=Helper(123),StateNo

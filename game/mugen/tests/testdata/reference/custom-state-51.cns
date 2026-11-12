@@ -1,0 +1,156 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef -2]
+[State -2, tick]
+type=VarAdd
+trigger1=RoundState=2
+v=50
+value=1
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, origin tick]
+type=VarSet
+trigger1=RoundState=2 && Ctrl
+v=51
+value=var(50)
+[State 0, launch]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=51
+[Statedef 51]
+type=A
+movetype=I
+physics=N
+anim=9992
+ctrl=0
+velset=1,1
+[State 51, snapshot 1 0]
+type=VarSet
+trigger1=Time=1
+fv=0
+value=StateNo
+[State 51, snapshot 1 1]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=Time
+[State 51, snapshot 1 2]
+type=VarSet
+trigger1=Time=1
+fv=2
+value=var(50)-var(51)
+[State 51, snapshot 1 3]
+type=VarSet
+trigger1=Time=1
+fv=3
+value=Pos X
+[State 51, snapshot 1 4]
+type=VarSet
+trigger1=Time=1
+fv=4
+value=Pos Y
+[State 51, snapshot 1 5]
+type=VarSet
+trigger1=Time=1
+fv=5
+value=Vel X
+[State 51, snapshot 1 6]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=Vel Y
+[State 51, snapshot 1 7]
+type=VarSet
+trigger1=Time=1
+fv=7
+value=PrevStateNo
+[State 51, snapshot 1 8]
+type=VarSet
+trigger1=Time=1
+fv=8
+value=Anim
+[State 51, snapshot 1 9]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=Ctrl
+[State 51, snapshot 1 10]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=AnimTime
+[State 51, snapshot 1 11]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=AnimElemTime(1)
+[State 51, snapshot 5 0]
+type=VarSet
+trigger1=Time=5
+fv=12
+value=StateNo
+[State 51, snapshot 5 1]
+type=VarSet
+trigger1=Time=5
+fv=13
+value=Time
+[State 51, snapshot 5 2]
+type=VarSet
+trigger1=Time=5
+fv=14
+value=var(50)-var(51)
+[State 51, snapshot 5 3]
+type=VarSet
+trigger1=Time=5
+fv=15
+value=Pos X
+[State 51, snapshot 5 4]
+type=VarSet
+trigger1=Time=5
+fv=16
+value=Pos Y
+[State 51, snapshot 5 5]
+type=VarSet
+trigger1=Time=5
+fv=17
+value=Vel X
+[State 51, snapshot 5 6]
+type=VarSet
+trigger1=Time=5
+fv=18
+value=Vel Y
+[State 51, snapshot 5 7]
+type=VarSet
+trigger1=Time=5
+fv=19
+value=PrevStateNo
+[State 51, snapshot 5 8]
+type=VarSet
+trigger1=Time=5
+fv=20
+value=Anim
+[State 51, snapshot 5 9]
+type=VarSet
+trigger1=Time=5
+fv=21
+value=Ctrl
+[State 51, snapshot 5 10]
+type=VarSet
+trigger1=Time=5
+fv=22
+value=AnimTime
+[State 51, snapshot 5 11]
+type=VarSet
+trigger1=Time=5
+fv=23
+value=AnimElemTime(1)

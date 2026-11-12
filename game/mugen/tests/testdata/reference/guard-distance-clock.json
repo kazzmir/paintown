@@ -1,0 +1,158 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "c561f78e289a87fb19a42d10b30540cf78187b118b61a2a6cd6b41007e87ca35",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "16cf80b52c34bb7be75a8aecbff5e75647976f69c8d7141fda9cf64714ab5215",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 999,
+            "6": 701,
+            "7": 140,
+            "8": 1,
+            "9": 998,
+            "10": 701,
+            "11": 140
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "4cbe7f047d28b8eb77b2d468ef01fd707bf9b4e6009fa1c75a9f0931cf899d77",
+          "variables": {
+            "12": 0,
+            "13": 997,
+            "14": 701,
+            "15": 140,
+            "16": 0,
+            "17": 996,
+            "18": 701,
+            "19": 140,
+            "20": 0,
+            "21": 995,
+            "22": 701,
+            "23": 140
+          }
+        },
+        {
+          "page": 24,
+          "path": "animation-page24.png",
+          "sha256": "a2c3918ecb0307b322b3b3ae0fc8730a8202c07b0c6c2060b350bfb005c4cf85",
+          "variables": {
+            "24": 0,
+            "25": 994,
+            "26": 701,
+            "27": 140,
+            "28": 0,
+            "29": 993,
+            "30": 701,
+            "31": 140,
+            "32": 0,
+            "33": 993,
+            "34": 701,
+            "35": 140
+          }
+        },
+        {
+          "page": 28,
+          "path": "animation-page28.png",
+          "sha256": "717ed448c3afd349fbb9256954ec0345589576abf25b60ccff24d8c0abbb4b9e",
+          "variables": {
+            "28": 0,
+            "29": 993,
+            "30": 701,
+            "31": 140,
+            "32": 0,
+            "33": 993,
+            "34": 701,
+            "35": 140,
+            "36": 0,
+            "37": 991,
+            "38": 701,
+            "39": 140
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    },
+    "large-small": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "c561f78e289a87fb19a42d10b30540cf78187b118b61a2a6cd6b41007e87ca35",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6545685bab628d3f13a4d5e6d07ace402df184c80ac451f7310131fe3f2b3db4",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 999,
+            "6": 701,
+            "7": 560,
+            "8": 1,
+            "9": 998,
+            "10": 701,
+            "11": 560
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1",
+      "localcoord": "1280,720",
+      "p2_localcoord": "320,240"
+    },
+    "small-large": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "c561f78e289a87fb19a42d10b30540cf78187b118b61a2a6cd6b41007e87ca35",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0c593024e5d7b2cbea58a6fcb08c35ae82fa0e2bf57fb7a0c4972b53a4e8b2ba",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 999,
+            "6": 701,
+            "7": 140,
+            "8": 0,
+            "9": 998,
+            "10": 701,
+            "11": 140
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1",
+      "localcoord": "320,240",
+      "p2_localcoord": "1280,720"
+    }
+  }
+}

@@ -1,0 +1,3114 @@
+{
+  "summary": {
+    "programs": 121,
+    "accepted": 112,
+    "rejects": 9,
+    "numeric_values_captured": 1428,
+    "render_only_clipboard_diagnostics": 6,
+    "static_render_programs": 112,
+    "source_probe_hashes": 486,
+    "pre_go_native_tables_inspected": true,
+    "originals_or_expectations_modified": false
+  },
+  "programs": [
+    {
+      "fixture": "afteredge-alias-time-wins",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e028f490a74bea4076429f2e4f1ecb7fdd08f9403e19544ae93007f8210b45d8",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-alias-time-wins-reverse",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8ad2ddf548878d73254720feb0a52450c820570e1fc16bae406b981841d542df",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-alias-unused-value-float",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "63ff788679358d19493fb0ed3b7591276058b0c52ccd65905687a733241f79d8",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-alias-unused-value-unknown",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6c8928ce2195544459c12b32599501ae709477ef7fda21404a84e43bb646287b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-framegap-negative",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8f14914011c922a704812542133dfa4c834fea0cc899c9e2b623faab213d6379",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-framegap-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8f14914011c922a704812542133dfa4c834fea0cc899c9e2b623faab213d6379",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-inactive-order-negative",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "98d173afdc44edb2cbf53646b401d2a7db6886a87133eb5194c81dfa254a1507",
+          "variables": {
+            "0": 18,
+            "1": 19,
+            "2": 20,
+            "3": 20,
+            "4": 7,
+            "5": 9100,
+            "6": 130,
+            "7": -80,
+            "8": 1,
+            "9": 7,
+            "10": 9100,
+            "11": 137
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-inactive-order-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "250526e600afb949add521fd610ad070ffddeaad1952ab109661249e6826f014",
+          "variables": {
+            "0": 18,
+            "1": 19,
+            "2": 20,
+            "3": 20,
+            "4": 7,
+            "5": 9100,
+            "6": 130,
+            "7": -80,
+            "8": 1,
+            "9": 7,
+            "10": 9100,
+            "11": 137
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-length-61",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "906304b8656e44caee7a97c39f21f6f718112059a8036d35ae43e2170a58cd68",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-length-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8c2455016083476f641cef501d92bd145978010a0f3015eb0d399e06d289ddfc",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-long-snapshot7",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f0507455a2c527d2eef797a66e8b5a1130de09ca0777635f1b75e414ca388682",
+          "variables": {
+            "0": 1,
+            "1": 2,
+            "2": 3,
+            "3": 4,
+            "4": 5,
+            "5": 6,
+            "6": 0,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "7223ef9e414310f37d71f04f57aadeee64bf8016abef4e53233b067e69ba5b53",
+          "variables": {
+            "12": 12,
+            "13": 13,
+            "14": 14,
+            "15": 15,
+            "16": 16,
+            "17": 17,
+            "18": 18,
+            "19": 19,
+            "20": 20,
+            "21": 20,
+            "22": 7,
+            "23": 9100
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-short-snapshot8",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e05c14b945539fae2a0762d2a245efca9276ca96a76af63a254ba5c8b8132aae",
+          "variables": {
+            "0": 18,
+            "1": 19,
+            "2": 20,
+            "3": 20,
+            "4": 8,
+            "5": 9100,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-timegap-negative",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "cf76e360bbffe81065d3a3f79d9f917cc30503d79131f3c914d9e9697f5fe23a",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afteredge-timegap-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "cdc0ee1d4ce4dbaab06b0845711624b842b50c3296b34bab1821bf9cc40157df",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-order-null",
+      "accepted": true,
+      "render_only": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "329cffaaca26601602126953c08b81acdde5d89253bf1c2c1acf257870fcdadf",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "99ab66bfe8e0f03eca4f792b14ea332d9f0b9628fc991704fa55d78008cbc923",
+          "variables": {
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-order-raw-forward",
+      "accepted": true,
+      "render_only": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b92949241ab455efa482f9180f7f14e2f2b37f01a562b18cd96fd0a113142d41",
+          "variables": {
+            "0": 1,
+            "1": 2,
+            "2": 3,
+            "3": 4,
+            "4": 5,
+            "5": 6,
+            "6": 0,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "dd73734e831f3b91d989c85cbf3f945aee6981dd8e69dbac8906f038b41eee6a",
+          "variables": {
+            "12": 12,
+            "13": 13,
+            "14": 14,
+            "15": 15,
+            "16": 16,
+            "17": 17,
+            "18": 18,
+            "19": 19,
+            "20": 20,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-order-raw-reverse",
+      "accepted": true,
+      "render_only": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ecf303a21b171ef85e0a0fe5499fc8fc078e39dec6f38d500d73d51311bc5f2a",
+          "variables": {
+            "0": 1,
+            "1": 2,
+            "2": 3,
+            "3": 4,
+            "4": 5,
+            "5": 6,
+            "6": 0,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "40eb8f1f0df23b3fbcc5395e18a91b42689b91bbecacf6b79e0687c7170e909c",
+          "variables": {
+            "12": 12,
+            "13": 13,
+            "14": 14,
+            "15": 15,
+            "16": 16,
+            "17": 17,
+            "18": 18,
+            "19": 19,
+            "20": 20,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-snapshot-only",
+      "accepted": true,
+      "render_only": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "94a455367fb64a83ad42490833b93cb021c4be344c3646ba3dfc1b4652879070",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "2ee3f1de2bccc94b2117d9eb8f189dd7636c903e8ab975709cca6eeba3c9de2d",
+          "variables": {
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-expired-extend",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6c2fe7a3d1a7146d3c40114611c4196f7fca4785be2e6eb9dd897bed55a89f84",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-float",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterfollow-time-forever",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "2e8cefec0ab5daa9bdac14fe84b190f521c1f3552956b4b1b9e5b19a770ad615",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-gap-two-extend",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e4786028abd2451e4ea4c9842c37687a4a446081cbdab67efbdd21079ee35d20",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-gap-two-stop",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6a118b8904126ff19a5414dfc8d1cfeff73c5fc3cba2ce8bac2b0c037a8636a6",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-keep-two",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "18a295ad61f8ed1c3db2a2c773f8bd770175fcd853e806f8749977fb873447cd",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-missing",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4ae4b08961a370170b05eab7eca9dcf469a0484a324e98da694fdd917a4a7a70",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-stop-one",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6c8928ce2195544459c12b32599501ae709477ef7fda21404a84e43bb646287b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-stop-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b80f3bc8b2a9e5b7acf57ee2d6c874136338b7863cdf4b7edc4afb6d23dd3cc3",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterfollow-time-unknown",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterfollow-time-value-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "63ff788679358d19493fb0ed3b7591276058b0c52ccd65905687a733241f79d8",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-baseline",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "75ab5dcc60c52111852769268e77f56bac9a4927ee2d8647ec986b10f34c1624",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-brightness-expression-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d425002f5fbdc45ceb4f214a75c47c522d58fa884a64f5d0c1e4645de0ad7273",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-brightness-one",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f87499803c766ee9faf1ef10283ef8d4871cf5e57e1d7aa0a4608fe1386435d8",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-capacity-1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "3bd9dee0577ed2efc1dcb8c53e2ae9a9b45b83fdcbb3d0598a0407261179a17d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-capacity-32",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "30544f103472e024f0c641dcce20bb9129e0581c788633426072293fc9fabaab",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-capacity-4",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "56779ed71345696a1f02d4e33c2e327e440e389ffb18ab82441f7857ea738c49",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-capacity-64",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "092c2215998772800f227e94a8543ef41ea092647a08919a9c5c4dfa62cdc76d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-framegap-2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "816f58772b808e6728ba10526c19612b0a8aea3b13ff8c2457daf11113def365",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-framegap-3",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "77b3acd4efc9996df2994c1d1a67d094e73eadfb4918d24c75a02e09d9e88a14",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-framegap-4",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "cd966e9e904e5fa83299fbb791a913a17c03f8a3b09490a8651a660b6cf2e7fa",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "217e3bebb8493e677e4d39007152fe9d9fbfe1794c6febfb224879dc91d7ab27",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-10",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4fd7dfb61321f5172971b72d6902bb4f978fc7980908af507b8d6a49bb4f3670",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-12",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4fd7dfb61321f5172971b72d6902bb4f978fc7980908af507b8d6a49bb4f3670",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-16",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "c81eb884881c97fb10db0f860117cf23992058215afa3e9c1d2ec2892c842c14",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "aaa7a3c5057700cbc34a8ce0d48702943796ca80655b54a80b92eb3ddca631ac",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-20",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "9b8834adfd01ff46003597478902a0a779f39514e1751594addb6718fd01476a",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-3",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b4576e96929c389fcbd1dc7616ab67aff3ccc525dfb544ce8c0c79f424fe7d69",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-4",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "89ccac19139b1fc296ff124cb04509b3c4913380319a809600ed2df237b20ea2",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-5",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "dda64a619c78eddfb211a48c4250a1780ecad3b00c86c00f78e2d0099d1a48ff",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-6",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b5fb0b03452f65b57707d306abd5a5e3aa80e029949de11383eff0ea05e721f9",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-60",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f87499803c766ee9faf1ef10283ef8d4871cf5e57e1d7aa0a4608fe1386435d8",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-7",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "7b48ff4e747ba0fe4e9c251cf16b9b64562e4b57cbe0b78e67de6345e89bd206",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-8",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a07ae6d25f1e756dda298688484d90cb7a38d0eb172ec811dcf918f25da5500e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-length-9",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a643b21d1a1373abe12a30e3c3a6c39bd4e4e3fb3cf6466836ebe54608394cec",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-stop-0",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "9bfcf5cd7d299ad88abcfff131f58991ee52b7271c6da681cd3be7f361c388c0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": -80,
+            "7": -80,
+            "8": 1,
+            "9": 0,
+            "10": 9100,
+            "11": 130
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-stop-1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "7ca3129fe96c04929e63d6232e2280df5220d8e384d0b71d6c51ef451808459c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": -50,
+            "7": -80,
+            "8": 1,
+            "9": 1,
+            "10": 9100,
+            "11": 131
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-stop-2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f9a11cc325d808dc6bb120748726a1ec1ec736a5dd58cfde2c49588d3e197d97",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": -20,
+            "7": -80,
+            "8": 1,
+            "9": 2,
+            "10": 9100,
+            "11": 132
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-stop-4",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0ab77a0aca60ad01df52b5d2f9689fa0d4cb285e9ba925dd85295bebca8bac6d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 40,
+            "7": -80,
+            "8": 1,
+            "9": 4,
+            "10": 9100,
+            "11": 134
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-stop-6",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "fdbd6663826a5ea6c265c9ee57c0522d33878c2a900111b3303b215deaa9549e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 100,
+            "7": -80,
+            "8": 1,
+            "9": 6,
+            "10": 9100,
+            "11": 136
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-timegap-2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "2155305888355fc916088c3404c44bf6f5f532b951c4046c1e0cf74e7dfee1f0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-timegap-3",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "77b3acd4efc9996df2994c1d1a67d094e73eadfb4918d24c75a02e09d9e88a14",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterhist-timegap-4",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f068a4c6516ccc95e35dae6a00b471886f4df9031e6e007b94e5f02b6e43199b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterorder-snap7-0",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "1a3377f33ba9084c25cf53ff45ceab4a588435f8cda30f40bcc61a9fe7f0a463",
+          "variables": {
+            "0": 1,
+            "1": 2,
+            "2": 3,
+            "3": 4,
+            "4": 5,
+            "5": 6,
+            "6": 130,
+            "7": -80,
+            "8": 1,
+            "9": 7,
+            "10": 9100,
+            "11": 137
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterorder-snap7-12",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "2b0b31e5912c0fa461edf76eb318387a836eb15ad626921de39c9dadf7b8b0f3",
+          "variables": {
+            "0": 12,
+            "1": 13,
+            "2": 14,
+            "3": 15,
+            "4": 16,
+            "5": 17,
+            "6": 130,
+            "7": -80,
+            "8": 1,
+            "9": 7,
+            "10": 9100,
+            "11": 137
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterorder-snap7-18",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b314f081a42a03317088c7b1ccf233204680129b5f292210763090d2dd226ca0",
+          "variables": {
+            "0": 18,
+            "1": 19,
+            "2": 20,
+            "3": 20,
+            "4": 7,
+            "5": 9100,
+            "6": 130,
+            "7": -80,
+            "8": 1,
+            "9": 7,
+            "10": 9100,
+            "11": 137
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterorder-snap7-6",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f52fae289779d01d513eece654aa509e1eb0faa38659025912d63a6658e3e055",
+          "variables": {
+            "0": 0,
+            "1": 7,
+            "2": 8,
+            "3": 9,
+            "4": 10,
+            "5": 11,
+            "6": 130,
+            "7": -80,
+            "8": 1,
+            "9": 7,
+            "10": 9100,
+            "11": 137
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-age-add",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a9026a2f9f2205585980809b345845a5fab2f4daeb1574586b74d91baeaf5200",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-age-mul",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "c166bbebfbe93055109846b0fec064afef88e2df83de832bbb52c0578bb5840c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-brightness-b64",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "3fbe0b53c8b107dea537df1138480210151cb873c3699e5baa3c7dfd2567b1ee",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-brightness-g64",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "5b6d353f42e7461c988cb895e46410fb5d55d4be234ea7e930b8c11b40654a4d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-brightness-r64",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "411adc61b00c471e713b3094bdf2d6b868605304d5b83c114c54296f8e2f99ec",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-brightness-rgb",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "17e9c937da9b5b51ce296d5f2b4f6dc23c73a665285ba538bb9b20a665416546",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-contrast",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8d79ee5966eb7cff53ce9894b8b6c6726903db79e1a533b6b7981c8a89cdf55a",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-default-palette",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "823fe761bf0dcf036cbb82c577eb0dd2757ef371e06e655946b9af9437915464",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-gray",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "91bec40b8d69172e763fa99912b8e94a6e4f54c5499edb70ab9fac71f2996d1c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-half-color",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "1c9fc86eaeaff0ebd4b6b1836507721274b60f1ef47b79988ebdf00c6975753e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-invert",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "74edef8327418e3f9debb112dbf77b8d924ce0d4c5cccabf3f021443087abe34",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-order-forward",
+      "accepted": true,
+      "render_only": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "2a7f78b397cc9804099b13d00a471ffe087aedf359357ddebcfa07e63b164ab0",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "464a3fa35ce7dffc1c524ca4e5f68a8cef6b25dfd64f1f019ae28224268f5063",
+          "variables": {
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-order-reverse",
+      "accepted": true,
+      "render_only": true,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "9c9aba12f43f06da91a5aff9a18d9a6f4a66a5d6d1d31688f9e94ecc892ced3e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "31fd6fed2f27dc98fcd47f29ca036ed837e1da5694a4b0509ebea92c948babfe",
+          "variables": {
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-postbright",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b55c78916c2b51ad271d94e9918c6801140bd2e746962fb4b7bf64befdabf516",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-reissue-0",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "9ff07a1cf17d2bd594fa31d32060cbaa0e102a6847da6a4f06334573351673c5",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-reissue-2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "786c88e09561db0e2b66f246bc2b675118a7df58bece56ad05c468a865f8f69e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-reissue-neg1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ee12f087a5bcb05fb5657593e27111a72439c868a9cd52ffc2c621dc34f3958c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-schema-brightness-first-float",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-brightness-first-unknown",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-brightness-second-float",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-length-float",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-mul-unknown",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-time-float",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-time-unknown",
+      "accepted": false,
+      "render_only": false,
+      "native_captures": []
+    },
+    {
+      "fixture": "afterparam-schema-trans-bogus",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4fd7dfb61321f5172971b72d6902bb4f978fc7980908af507b8d6a49bb4f3670",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-schema-trans-quoted",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a67970e060704b981307e278ff777bde9b0065c231a82c6b5f7e30d9904a9cda",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-0",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "434d1144afe445c8d72b0297899c67ffb3d8007deb29fea4d0975749f068aa71",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "a5a5def63e5468d1d420cd8695d602aa8f0c06ad3f287ad55e77ef22a11c8683",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "edb69ea12b7ea4ccee273b0f540963c095002b7718517a6585f0b3fcc5fcc97c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-3",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "fa5eb1868b68226f2cf9b441e96bcec80a0b307ca0756eedd041b6d2448ac36b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-controller-missing",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "6c6d2d87dddca674b6385f95f055cf0559d5b181b237ccddca454b5025e7bace",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-controller-time-over-value",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "2823e6f8a5e67a3b53ce2beb7ac39473debc850553ed4ea6f451f6717e1b0b82",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-controller-value",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "56d4ce5ede65be630073481a62c41131a7bb3a43427933fc269426191a77760d",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-controller-value-over-time",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "54236ef6824ee0cc5a6d37406535b81757922cf1b863bbcc58868c5676500802",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-controller-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "c12a9e817cdc2fdd66df16d9c78320ae9e0cc7df76a542e07738414311ed8dab",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-neg1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4fd7dfb61321f5172971b72d6902bb4f978fc7980908af507b8d6a49bb4f3670",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-time-neg2",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "5efc3746e974bef853416eb9741c55096db3600c758bbd27e8de56fb527bb2e5",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-trans-add",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "e157b276b3367f3bb8465a7e598ff65b65139920447fb1db8963afca615d46d6",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-trans-add1",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0068219db983ce88fd2fe08b6d237b65cdcfe19a286a50822072af5134a1d1f5",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterparam-trans-sub",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b16066ba260826e52cb54a8d0d579eb9295c8353794f50c16286913c9fecccbf",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-baseline",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "4b99818e6ef22ce82d57f1245f6a8cdc4007f86b9fe1215df3910354ad79b64c",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-default",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "c40e2fa55809a93bfdaaf531f10f590fa4e7593cc85251222c76e0b598f43a33",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-indefinite-default-palette",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8b2bb7ad2902b082b75c9dba7e780be104fd693dbbf557da387804c47a6155c1",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f8ef7e124ade6f4df41ccedfb4cb5061966b26985c8e497ef8bfc4d21430e941",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral-eight",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "86d583c858af96541da7a42ddd94190c3c2d65ddb382d31679e51814fad335ec",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral-indefinite",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "066bc557f7d230cb64ed45e6af5d7860f20c1faf7b543da8c9fe4ea6f72e833b",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral-length-one",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b61dadff6ead40cd395e6dc29c510f5c172823eae1136d0939c6a2a1ab7b20fd",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral-negative-two",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8ed2f274c8b99aad7b810ed85105ebfcd68c56a953945f50e690243383ef4b19",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral-timegap-two",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "93f53c35ed0d0ef2be60f0e288804dedf6446e61b1533ae44117465a7a8ac01e",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-neutral-zero",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "02a47bd8e3c48fe44b97928b5ff09feee3d257e71ceeded0850a6594983ed1e1",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-time-extend",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d283af5ba00c566e67375d513eb66b770e0106e250e707c8b05933e011e8903f",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpilot-time-stop",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "debb2274860b76480b00b91dd526b67bc17fe0e824910be70e42be039017bade",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 192,
+            "7": 0,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpos-body-origin",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "71102138080dfa105b51c8bfd14dee9233b13597ee9868b142b095e040b0b411",
+          "variables": {
+            "0": 160,
+            "1": 120,
+            "2": 80,
+            "3": 320,
+            "4": 1,
+            "5": 1,
+            "6": 0,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpos-portrait-160",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d0c5b9d881c5fa55e9771c8a8cfa0fa437dad9d154fde601edcaed788a646272",
+          "variables": {
+            "0": 320,
+            "1": 120,
+            "2": 80,
+            "3": 320,
+            "4": 1,
+            "5": 1,
+            "6": 160,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpos-portrait-default-camera",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "214a2b57e0d529b6d7ae471ced8efae054918d1ae90adeb8e965d924420ef8db",
+          "variables": {
+            "0": 160,
+            "1": 120,
+            "2": 80,
+            "3": 320,
+            "4": 1,
+            "5": 1,
+            "6": 0,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "afterpos-portrait-origin",
+      "accepted": true,
+      "render_only": false,
+      "native_captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "065250b0cbfd42f00b92746619f3a6acac2f08fb2fe705f7cd279a6193bddbf0",
+          "variables": {
+            "0": 160,
+            "1": 120,
+            "2": 80,
+            "3": 320,
+            "4": 1,
+            "5": 1,
+            "6": 0,
+            "7": -80,
+            "8": 1,
+            "9": 8,
+            "10": 9100,
+            "11": 138
+          }
+        }
+      ]
+    }
+  ]
+}

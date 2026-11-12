@@ -1,0 +1,100 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, calibrated projectile]
+type=Turn
+trigger1=Time=0 && Facing!=1
+
+[State 700, calibrated projectile]
+type=Projectile
+trigger1=Time=0
+projid=7
+projanim=9994
+postype=p2
+projedgebound=4000
+projstagebound=4000
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=0
+value=Pos X
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=1
+value=Pos Y
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=2
+value=P2Dist X
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=3
+value=LeftEdge
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=4
+value=RightEdge
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=5
+value=FrontEdge
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=6
+value=BackEdge
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=7
+value=Facing
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=8
+value=GameWidth
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=NumProj
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=NumProjID(7)
+[State 700, calibrated projectile]
+type=VarSet
+trigger1=Time=3
+fv=11
+value=CameraPos X
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, inert]
+type=Null
+trigger1=1

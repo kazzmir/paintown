@@ -1,0 +1,191 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "7330d8a366856920e29b7efab1b5114f9c1091aad6d8ad942473bb2365ed54a4",
+  "air_sha256": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "f20d67c291315845fa74dbb10840dcf1db9cbf3ad6ea5176535e3b7f0aceb8cd",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 700,
+        "4": 9100,
+        "5": 8,
+        "6": 72,
+        "7": -120,
+        "8": 1,
+        "9": 138,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_time_count": 0,
+  "helper_count": 0,
+  "root_afterimage": true,
+  "root_afterimage_overrides": {
+    "palbright": "30,30,30",
+    "palcontrast": "120,120,220",
+    "paladd": "10,10,25",
+    "palmul": ".65,.65,.75"
+  },
+  "duration_modifier": null,
+  "helper_issue_time": 0,
+  "helper_destroy_time": null,
+  "helper_move_budget": 0,
+  "stop_time": 8,
+  "AfterImageMax": null,
+  "actual_controller_counts": {
+    "AfterImage": 1,
+    "AllPalFX": 1,
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "Pause": 1,
+    "PlayerPush": 2,
+    "PosSet": 1,
+    "ScreenBound": 2,
+    "VarSet": 12
+  },
+  "native_afterimage_max": 16,
+  "source_intent_verified_by_cns_air_parser": true,
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "1ce10bb1c560ae0f17e178db657c1ce8be92dbb563a2a2e75866bc6d8cbb9394"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "root",
+      "region": [
+        160,
+        140,
+        1120,
+        330
+      ],
+      "nonbackground_pixels": 29934,
+      "bbox": [
+        424,
+        240,
+        931,
+        315
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            1,
+            70,
+            34
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            2,
+            74,
+            41
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            2,
+            79,
+            48
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            4,
+            86,
+            55
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            5,
+            96,
+            62
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            7,
+            110,
+            67
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            13,
+            177,
+            49
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            2,
+            75,
+            50
+          ],
+          "pixels": 1161
+        }
+      ]
+    },
+    {
+      "entity_row": "helper1",
+      "region": [
+        160,
+        330,
+        1120,
+        450
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    },
+    {
+      "entity_row": "helper2",
+      "region": [
+        160,
+        450,
+        1120,
+        600
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

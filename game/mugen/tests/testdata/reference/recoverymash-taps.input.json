@@ -1,0 +1,78 @@
+{
+  "settle_seconds": 6,
+  "events": [
+    {
+      "keys": [
+        "l"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    },
+    {
+      "keys": [
+        "l"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    },
+    {
+      "keys": [
+        "l"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    },
+    {
+      "keys": [
+        "l"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    },
+    {
+      "keys": [
+        "l"
+      ],
+      "hold_seconds": 0.15,
+      "gap_seconds": 0.2
+    }
+  ],
+  "tail_seconds": 0.5,
+  "go_inputs": [
+    {
+      "at": 10,
+      "duration": 9,
+      "inputs": [
+        "ButtonX"
+      ]
+    },
+    {
+      "at": 34,
+      "duration": 9,
+      "inputs": [
+        "ButtonX"
+      ]
+    },
+    {
+      "at": 58,
+      "duration": 9,
+      "inputs": [
+        "ButtonX"
+      ]
+    },
+    {
+      "at": 82,
+      "duration": 9,
+      "inputs": [
+        "ButtonX"
+      ]
+    },
+    {
+      "at": 106,
+      "duration": 9,
+      "inputs": [
+        "ButtonX"
+      ]
+    }
+  ]
+}

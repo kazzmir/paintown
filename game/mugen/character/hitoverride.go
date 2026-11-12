@@ -1,0 +1,46 @@
+package character
+
+import (
+	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/combat"
+)
+
+func (c *Character) excludesCustomHit(hit cns.HitDef) bool {
+	if !hit.P2GetP1State && (hit.P1StateNo == nil || *hit.P1StateNo < 0) {
+		return false
+	}
+	_, overridden := c.matchingOverride(hit.Attr)
+	return overridden
+}
+
+func (c *Character) SetHitOverride(override combat.HitOverride) error {
+	override = override.Normalized()
+	if override.Time == 0 || override.StateNo < 0 || override.Attributes.Empty() {
+		c.HitOverrides[override.Slot] = combat.HitOverride{}
+	} else {
+		c.HitOverrides[override.Slot] = override
+	}
+	return nil
+}
+
+func (c *Character) matchingOverride(attributes string) (combat.HitOverride, bool) {
+	hit, err := combat.ParseAttributes(attributes)
+	if err != nil {
+		c.EvaluationWarning("HitDef attr: " + err.Error())
+		return combat.HitOverride{}, false
+	}
+	for _, override := range c.HitOverrides {
+		if override.Time != 0 && override.Attributes.Matches(hit) {
+			return override, true
+		}
+	}
+	return combat.HitOverride{}, false
+}
+
+func (c *Character) tickHitOverrides() {
+	for slot := range c.HitOverrides {
+		if c.HitOverrides[slot].Time > 0 {
+			c.HitOverrides[slot].Time--
+		}
+	}
+}

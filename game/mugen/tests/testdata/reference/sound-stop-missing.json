@@ -1,0 +1,13 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "c8baba950f1911dafd60798bf3dc3c5de1ab2e520c557fec8f36305b4720dce9",
+  "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "load_error": "Error detected.\n\nMissing channel parameter\nError parsing [State 700, sound]\nError in [Statedef 700]\nError in probe.cns:162\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 709696816\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...Freeing player RC Kung Fu Man...CMD...CNS...SFF...AIR...SND...Misc...OK\nCharacter kfm.def failed to load\n\n",
+  "expected_load_error": "Error parsing [State 700, sound]"
+}

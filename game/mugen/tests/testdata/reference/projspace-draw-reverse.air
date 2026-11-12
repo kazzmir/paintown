@@ -1,0 +1,31 @@
+[Begin Action 9990]
+Clsn2: 1
+Clsn2[0]=-10,-60,10,0
+-1,-1,0,0,-1
+[Begin Action 9992]
+Clsn1: 1
+Clsn1[0]=-10,-60,10,0
+Clsn2: 1
+Clsn2[0]=-10,-60,10,0
+0,0,0,0,-1
+
+[Begin Action 9993]
+0,0,0,0,1
+0,0,5,0,1
+[Begin Action 9996]
+0,0,0,0,-1
+[Begin Action 9997]
+Clsn1: 1
+Clsn1[0]=-10,-60,10,0
+0,0,0,0,-1
+[Begin Action 9998]
+Clsn2: 1
+Clsn2[0]=-10,-60,10,0
+0,0,0,0,-1
+
+[Begin Action 9999]
+Clsn1: 1
+Clsn1[0]=-10,-60,10,0
+Clsn2: 1
+Clsn2[0]=-10,-60,10,0
+-1,-1,0,0,-1

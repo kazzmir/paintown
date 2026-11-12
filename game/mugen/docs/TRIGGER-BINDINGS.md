@@ -1,0 +1,75 @@
+# Trigger runtime routing audit (M4bz)
+
+Target: the immutable local M.U.G.E.N 1.1 beta 1 trigger manual.
+Run `python3 game/mugen/tests/trigger_inventory.py` from the repository root.
+After reviewing an intentional routing change, `--write` regenerates
+[TRIGGER-BINDINGS.json](TRIGGER-BINDINGS.json). The tool compares the manual's
+127 section names with the recognized vocabulary and inspects named production
+functions; parser/validation switches are excluded. Explicit conditional routes
+include Command, Const variants, IfElse/Cond, Log, GetHitVar and HitDefAttr.
+
+120/127 families (94.5%) have a candidate runtime route; seven have none. This is a
+source-routing percentage, not behavioral coverage. A route can return bottom
+in an unsupported context, implement only some variants, or call partial code.
+No row is marked variant-complete. The original compatibility table is historical.
+
+| Unbound families | Dependency / next obligation |
+| --- | --- |
+| IsHomeTeam, TeamMode, P3Name, P4Name | Match mode, teams and available-player context. |
+| TopEdge, BottomEdge, StageVar | Vertical/zoom camera and typed stage selectors. |
+
+The manual documents 36 distinct GetHitVar selectors (including selectors listed
+in Details but omitted from its short argument list). The M4bz baseline had 29/36 typed runtime/Character routes; its seven absent
+routes were: `fallcount`, `hitcount`,
+`hitid`, `recovertime`, `xveladd`, `yveladd`, `zoff`. The existing `air.animtype`
+route is an additional accepted selector, outside this denominator. M4ca measures
+combat metadata/counters; M4cb separately measures the liedown `recovertime`
+consumer and actual recovery routing. Eligibility alone does not prove routing.
+
+Remaining variant obligations include selector argument/error/type checking;
+vector axes (recognition currently admits generic X/Y/Z more broadly than the
+runtime); win/lose suffixes; numbered/legacy projectile forms; name comparison
+and missing opponent behavior; redirect/foreign/helper ownership; pause/state
+lifetime; and all Const/StageVar/GetHitVar selectors. MatchNo=1 is bounded to
+one-on-one Versus; horizontal edges do not establish vertical camera support.
+Math/type/bottom and numeric conformance remain governed by their native controls.
+
+Validation: the generator was run in write and comparison modes and the scoped
+evaluator tests pass. No Go runtime changed in M4bz, so no new native/application
+capture or full race rerun is required for this source-only checkpoint. The
+M4by final integration remains the last full suite. Do not average this inventory
+with key registration, stock compilation, test counts or whole-engine coverage.
+
+M4ca update: 33/36 documented selectors now have both runtime routes (91.7% of
+manual entries), two are parser-rejected by the beta and Go (`hitid`, `zoff`),
+and one accepted selector remains unbound (`recovertime`). Native controls and
+limits are in [GETHIT-METADATA.md](GETHIT-METADATA.md). The generator now reports
+parser acceptance separately. The extra air.animtype runtime case is rejected
+by the reference parser; its route alone is not usable reference support.
+
+M4cb update: all 34 documented selectors accepted by the beta now have typed
+runtime/Character routes, including recovertime and its liedown/input consumer.
+The two other manual entries remain target load rejections. See
+[LIEDOWN-RECOVERY.md](LIEDOWN-RECOVERY.md). No family count changes; 18 complete
+families and broader variants remain unbound/unverified.
+
+M4cc update: HitPauseTime has an integer binding and native controls for own,
+guard, Enemy/helper, negative, ordinary and globally paused contexts. Routing
+is now 110/127 (86.6%), 17 unbound. See [HITPAUSETIME.md](HITPAUSETIME.md).
+
+M4cd update: Random is a typed match-owned binding; compiled VarRandom uses the
+same native stream. Twenty-one controls pin 192 values and five rejections.
+Routing is 111/127 (87.4%), 16 unbound. See [RANDOM.md](RANDOM.md).
+
+M4ce update: NumProjID has typed counts, ID/default/type/bottom/arity and root/
+helper ownership controls. Basic counts moved ahead of other query families to
+measure native lifetime. Routing is 112/127 (88.2%), 15 unbound. The source audit
+explicitly records the named conditional production handler. See PROJECTILES.md.
+
+M4cg: four elapsed-time and three legacy projectile query families have measured
+routes.51 controls/456 values/13 rejections pin kinds/IDs, helper/root publication,
+clocks and syntax. See PROJECTILE-QUERIES.md; other variant gates remain.
+
+M4ch binds typed MoveReversed and its reversal consumer. See REVERSALS.md for
+90 native programs, counter/target/pause/custom-state behavior and exact render
+controls. Seven mode/stage/name families remain unbound; broader variants remain.

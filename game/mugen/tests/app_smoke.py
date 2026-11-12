@@ -1,0 +1,264 @@
+#!/usr/bin/env python3
+"""Build/run the Go application with a small config overlay; capture its own window.
+
+Requires Go, DISPLAY, xdotool, ImageMagick import and Pillow. Default captures
+send no input. Optional stock input targets only the spawned window, without
+pointer/focus changes. Captures are inspection artifacts, not parity tests.
+"""
+import argparse
+import atexit
+import array
+import hashlib
+import json
+import math
+import os
+from pathlib import Path, PureWindowsPath
+import re
+import shutil
+import subprocess
+import time
+
+from PIL import Image
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def asset_overlay(reference, destination, writable):
+    """Link canonical resources; copy only the explicitly edited text files."""
+    reference = reference.resolve()
+    writable = {Path(path) for path in writable}
+    def populate(source, target, relative):
+        target.mkdir()
+        for child in source.iterdir():
+            path = relative / child.name
+            output = target / child.name
+            if path in writable:
+                if child.is_file():
+                    shutil.copyfile(child, output)
+            elif any(path in edit.parents for edit in writable):
+                populate(child, output, path)
+            else:
+                output.symlink_to(child, target_is_directory=child.is_dir())
+    populate(reference, destination, Path())
+
+
+def relative_asset_path(path):
+    normalized = path.replace('\\', '/')
+    return (not Path(normalized).is_absolute() and not PureWindowsPath(path).drive
+            and '..' not in Path(normalized).parts and not any(ord(c) < 32 for c in path))
+
+
+def main():
+    project = Path(__file__).resolve().parents[1]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--name', required=True, help='Fresh scratch directory name')
+    parser.add_argument('--binary', type=Path, help='Use an existing executable instead of building')
+    parser.add_argument('--keep-artifacts', action='store_true', help='Explicitly retain scratch for visual inspection; otherwise delete on success/failure')
+    parser.add_argument('--reference', type=Path, default=project / 'temp/mugen-1.1b1')
+    parser.add_argument('--motif', default='data/kfm/system.def')
+    parser.add_argument('--seconds', type=int, nargs='+', default=[2, 6, 16])
+    parser.add_argument('--match', nargs=2, help='Quick-match character DEF paths in the disposable distribution')
+    parser.add_argument('--stage', default='stages/kfm.def')
+    parser.add_argument('--match-seed', type=int, help='Reproduce a logged initial match RNG seed in a quick match')
+    parser.add_argument('--stock-input', action='store_true', help='Exercise stock keyboard attacks, results and rematch in the owned window (2%% life, one win)')
+    parser.add_argument('--input-recipe', type=Path, help='Replay a frozen owned-window input recipe under mugen/')
+    parser.add_argument('--audio', action='store_true', help='Also record the task-owned private null sink, using a private ALSA configuration')
+    parser.add_argument('--width',type=int,default=320)
+    parser.add_argument('--height',type=int,default=240)
+    args = parser.parse_args()
+    input_schedule = []
+    input_recipe = None
+    if args.input_recipe is not None:
+        path = args.input_recipe.resolve()
+        if args.stock_input or not path.is_relative_to(project):
+            parser.error('An input recipe requires a path under mugen/ and no stock input')
+        input_recipe = json.loads(path.read_text())
+        when = input_recipe['settle_seconds']
+        if not isinstance(when, (int, float)) or not math.isfinite(when) or not 0 <= when <= 30:
+            parser.error('Invalid recipe settle time')
+        for event in input_recipe['events']:
+            keys, hold, gap = event['keys'], event['hold_seconds'], event['gap_seconds']
+            if (not keys or len(set(keys)) != len(keys)
+                    or any(not isinstance(key, str) or not re.fullmatch('[A-Za-z0-9_]+', key) for key in keys)
+                    or any(not isinstance(value, (int, float)) or not math.isfinite(value) for value in [hold, gap])
+                    or not 0 < hold <= 5 or not 0 <= gap <= 5):
+                parser.error('Invalid owned-input event')
+            input_schedule.extend((when, 'keydown', key) for key in keys)
+            when += hold
+            input_schedule.extend((when, 'keyup', key) for key in keys)
+            when += gap
+        tail = input_recipe['tail_seconds']
+        if (not isinstance(tail, (int, float)) or not math.isfinite(tail)
+                or not 0 <= tail <= 10 or not args.seconds or when + tail > max(args.seconds)):
+            parser.error('Final capture must follow the complete input recipe and tail')
+    if args.match_seed is not None and (not args.match or not 1 <= args.match_seed < 2147483647):
+        parser.error('A seeded smoke run requires a quick match and a seed in1..2147483646')
+    if not 64<=args.width<=4096 or not 64<=args.height<=4096:
+        parser.error('Smoke window dimensions must be in 64..4096')
+    if args.stock_input and (args.match != ['chars/kfm/kfm.def','chars/kfm720/kfm720.def'] or max(args.seconds)<45):
+        parser.error('Stock input requires the KFM/KFM720 pair and a capture at or after 45 seconds')
+    if args.audio:
+        server = os.environ.get('PULSE_SERVER', '')
+        alsa = os.environ.get('ALSA_CONFIG_PATH', '')
+        if (not server.startswith('unix:') or not Path(server[5:]).resolve().is_relative_to(project / 'temp') or
+                not alsa or not Path(alsa).resolve().is_relative_to(project / 'temp')):
+            parser.error('Audio smoke requires explicit private PULSE_SERVER and ALSA_CONFIG_PATH under mugen/temp/')
+    if not re.fullmatch('[a-z0-9_-]+', args.name):
+        parser.error('Use a simple lowercase run name')
+    if not args.seconds or args.seconds != sorted(set(args.seconds)) or not 1 <= min(args.seconds) <= max(args.seconds) <= 60:
+        parser.error('Capture times must be increasing unique seconds from 1 through 60')
+    if not relative_asset_path(args.motif):
+        parser.error('Motif must be a relative path within the disposable distribution')
+    for path in (args.match or []) + [args.stage]:
+        if not relative_asset_path(path):
+            parser.error('Match paths must be relative paths within the disposable distribution')
+    work = project / 'temp/app-runs' / args.name
+    work.mkdir(parents=True, exist_ok=False)
+    if not args.keep_artifacts:
+        atexit.register(shutil.rmtree, work, ignore_errors=True)
+    stock = work / 'stock'
+    writable = ['data/mugen.cfg', 'mugen.yaml']
+    if args.stock_input:
+        writable += ['data/fight.def', 'data/mugen1/fight.def']
+    asset_overlay(args.reference, stock, writable)
+    if not (stock / args.motif).is_file():
+        parser.error('Requested motif is absent from the supplied distribution')
+    config = stock / 'data/mugen.cfg'
+    source = config.read_text()
+    for key, value in [('motif', args.motif), ('width', str(args.width)), ('height', str(args.height))]:
+        source = re.sub(r'(?im)^\s*' + key + r'\s*=.*$', lambda match: key + ' = ' + value, source)
+    prepared_fight={}
+    if args.stock_input:
+        from round_probe import override
+        source=override(source,'Options','Life',2)
+        for relative in ['data/fight.def','data/mugen1/fight.def']:
+            path=stock/relative
+            path.write_text(override(path.read_text(encoding='utf-8-sig'),'Round','match.wins',1))
+            prepared_fight[relative]=digest(path)
+    config.write_text(source)
+    # First readable override wins: exclude ambient user/executable settings.
+    (stock / 'mugen.yaml').write_text(json.dumps({'video': {'width': args.width, 'height': args.height}}) + '\n')
+    env = os.environ.copy()
+    for key, suffix in [('GOCACHE', 'go-build'), ('GOTMPDIR', '_tmp'), ('TMPDIR', '_tmp')]:
+        path = project / 'temp' / suffix
+        path.mkdir(parents=True, exist_ok=True)
+        env[key] = str(path)
+    env['GOFLAGS'] = '-modfile=' + str(project / 'mugen.mod') + ' -mod=readonly'
+    env['GOPROXY'] = 'off'
+    binary = args.binary.resolve() if args.binary else project / 'temp/bin/mugen-go'
+    if args.binary:
+        if not binary.is_file():
+            parser.error('Requested executable is absent')
+    else:
+        binary.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['go', 'build', '-o', str(binary), './game/mugen/system'], cwd=project.parents[1], env=env, check=True)
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=project, text=True).strip()
+    dirty = bool(subprocess.check_output(['git', 'status', '--porcelain', '--', 'game/mugen'], cwd=project.parents[1], text=True).strip())
+    metadata = {'commit': commit, 'dirty': dirty, 'binary_sha256': digest(binary), 'config_sha256': digest(config),
+                'motif': args.motif, 'window':[args.width,args.height], 'captures': []}
+    if args.match:
+        metadata.update(players=args.match, stage=args.stage)
+    if args.match_seed is not None:
+        metadata['match_random_seed'] = args.match_seed
+    schedule=[(seconds,'capture',None) for seconds in args.seconds]
+    if input_recipe is not None:
+        metadata['input_recipe'] = {'path': str(args.input_recipe), 'sha256': digest(args.input_recipe),
+                                    'recipe': input_recipe, 'events': []}
+        schedule.extend(input_schedule)
+    if args.stock_input:
+        metadata['stock_input']={'life_percent':2,'wins_required':1,'fight_sha256':prepared_fight,'events':[]}
+        for start in [5,28]:
+            schedule.extend([(start,'keydown','Right'),(start+.9,'keyup','Right')])
+            for stroke in range(10):
+                when=start+1+stroke*.7
+                if stroke:
+                    schedule.extend([(when-.35,'keydown','Right'),(when-.05,'keyup','Right')])
+                schedule.extend([(when,'keydown','l'),(when+.10,'keyup','l')])
+        schedule.extend([(23,'keydown','Return'),(23.10,'keyup','Return')])
+    schedule.sort(key=lambda row:row[0])
+    with (work / 'run.log').open('w') as log:
+        command = [str(binary), '--data-dir', str(stock)]
+        if args.match:
+            command += ['--quick-match', ','.join(args.match), '--stage', args.stage]
+        if args.match_seed is not None:
+            command += ['--match-seed', str(args.match_seed)]
+        process = subprocess.Popen(command, cwd=project.parents[1], env=env, stdout=log, stderr=log)
+        started = time.monotonic()
+        recorder, recording = None, None
+        held, input_window = set(), None
+        try:
+            if args.audio:
+                recording = (work / 'capture.s16le').open('wb')
+                recorder = subprocess.Popen(['parec', '--device=mugen_reference.monitor', '--format=s16le',
+                                             '--rate=44100', '--channels=2', '--latency-msec=20'],
+                                            env=env, stdout=recording, stderr=log)
+            for seconds,operation,key in schedule:
+                time.sleep(max(0, started + seconds - time.monotonic()))
+                if process.poll() is not None:
+                    raise RuntimeError('Application exited early: ' + str(process.returncode))
+                if recorder is not None and recorder.poll() is not None:
+                    raise RuntimeError('Private audio recorder exited early')
+                windows = subprocess.run(['xdotool', 'search', '--onlyvisible', '--pid', str(process.pid)],
+                                         text=True, capture_output=True, check=False).stdout.split()
+                if len(windows) != 1:
+                    raise RuntimeError('Expected exactly one visible window belonging to the spawned application')
+                if operation!='capture':
+                    subprocess.run(['xdotool',operation,'--window',windows[0],key],check=True,timeout=5,stdout=log,stderr=log)
+                    held.add(key) if operation == 'keydown' else held.discard(key)
+                    input_window = windows[0]
+                    field = 'stock_input' if args.stock_input else 'input_recipe'
+                    metadata[field]['events'].append({'seconds':seconds,'operation':operation,'key':key,'window':windows[0],'pid':process.pid})
+                    continue
+                output = work / ('at-' + str(seconds) + 's.png')
+                subprocess.run(['import', '-window', windows[0], str(output)], check=True, timeout=5, stdout=log, stderr=log)
+                dimensions = [int(n) for n in subprocess.check_output(['identify', '-format', '%w %h', str(output)], text=True).split()]
+                metadata['captures'].append({'seconds': seconds, 'path': output.name, 'sha256': digest(output), 'dimensions': dimensions})
+                if dimensions != [args.width, args.height]:
+                    raise RuntimeError('Captured window dimensions differ from requested size: ' + str(dimensions))
+                if args.match and Image.open(output).convert('RGB').getbbox() is None:
+                    raise RuntimeError('Quick-match capture is entirely black; inspect this diagnostic run and repeat the isolated window check')
+                print('Captured', output, flush=True)
+        except Exception as error:
+            metadata['error'] = str(error)
+            log.flush()
+            print('Application failure:', str(error), flush=True)
+            for line in (work / 'run.log').read_text(errors='replace').splitlines()[-8:]:
+                print(line, flush=True)
+            raise
+        finally:
+            if held and input_window is not None and process.poll() is None:
+                for key in sorted(held):
+                    subprocess.run(['xdotool','keyup','--window',input_window,key],check=False,timeout=5,stdout=log,stderr=log)
+                    field = 'stock_input' if args.stock_input else 'input_recipe'
+                    metadata[field]['events'].append({'seconds':time.monotonic()-started,'operation':'keyup',
+                                                       'key':key,'window':input_window,'pid':process.pid,'cleanup':True})
+            process.terminate()
+            try:
+                process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+            if recorder is not None:
+                recorder.terminate()
+                recorder.wait(timeout=5)
+            if recording is not None:
+                recording.close()
+                raw = work / 'capture.s16le'
+                pcm = array.array('h', raw.read_bytes())
+                metadata['audio'] = {'path': raw.name, 'sha256': digest(raw), 'sample_rate': 44100, 'channels': 2,
+                                     'frames': len(pcm)//2, 'peak': max((abs(value) for value in pcm), default=0),
+                                     'rms': round(math.sqrt(sum(value*value for value in pcm)/max(1,len(pcm))), 2)}
+                if metadata['audio']['peak'] == 0:
+                    metadata['error'] = 'No device PCM captured from the private sink'
+            print('Application smoke:', len(metadata['captures']), 'owned-window captures;',
+                  'audio peak=' + str(metadata.get('audio', {}).get('peak', 'not requested')),
+                  'canonical assets shared; scratch ' + ('retained explicitly' if args.keep_artifacts else 'removed at exit'), flush=True)
+            (work / 'evidence.json').write_text(json.dumps(metadata, indent=2) + '\n')
+            if recording is not None and metadata['audio']['peak'] == 0:
+                raise RuntimeError(metadata['error'])
+
+
+if __name__ == '__main__':
+    main()

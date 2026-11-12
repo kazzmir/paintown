@@ -1,0 +1,119 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "07d6258f1d76dc18e0e3205f025d3234427d7132008bb05c27891adc6cf001b3",
+  "air_sha256": "033fe6b27c6c69d2f3677a4c40d1ef7e417b14c52d282abbee31b4c311302a56",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "fc8415cfaef02e92b9e618e722b1ac773aab07c7e794b54e2facf1e6875898a0",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 101,
+        "6": 1,
+        "7": 1,
+        "8": 0,
+        "9": 1,
+        "10": 1,
+        "11": 101
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+  },
+  "mugenversion": "1.1",
+  "super_render": {
+    "window": [
+      1280,
+      720
+    ],
+    "visible": true,
+    "samples": {
+      "stage": {
+        "point": [
+          640,
+          300
+        ],
+        "rgb": [
+          34,
+          37,
+          54
+        ]
+      },
+      "stage_floor": {
+        "point": [
+          500,
+          500
+        ],
+        "rgb": [
+          33,
+          23,
+          8
+        ]
+      },
+      "hud": {
+        "point": [
+          300,
+          23
+        ],
+        "rgb": [
+          80,
+          80,
+          128
+        ]
+      },
+      "owner": {
+        "point": [
+          440,
+          605
+        ],
+        "rgb": [
+          93,
+          89,
+          75
+        ]
+      },
+      "opponent": {
+        "point": [
+          840,
+          605
+        ],
+        "rgb": [
+          45,
+          45,
+          56
+        ]
+      },
+      "super_effect": {
+        "point": [
+          510,
+          455
+        ],
+        "rgb": [
+          42,
+          89,
+          75
+        ]
+      }
+    },
+    "effect_core": [
+      505,
+      450,
+      529,
+      462
+    ],
+    "effect_core_sha256": "332a367881b47bfe3c93e477b7557aaf57d19530b1b50f31acc87f04cd4262c8"
+  }
+}

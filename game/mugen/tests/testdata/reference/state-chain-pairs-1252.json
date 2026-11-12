@@ -1,0 +1,13 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "c5c54b3c111f237122d7110bb50f6dcbbe37f7cb7e7488bf29bd7e4d40f42474",
+  "air_sha256": "e2855793ff6bcac77a93c7003d583fe9e04d74f80f702eaa506e46fee9b32fee",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [],
+  "bank": "var",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "load_error": "Error detected.\n\nState machine stuck in loop (stopped after 2500 loops): 701 for Kung Fu Man\nCheck your states for infinite ChangeState loops.\n\nClipboard tail:\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...OK\n  Loading cmd state entry probe.cmd...OK\n  Loading sff kfm.sff...OK\n  Loading anim probe.air...OK\n  Loading snd kfm.snd...OK\n  Loading pals...OK\n  Loading learned AI kfm.ai...OK\n  67 expressions (21 on trigger lines)\nCharacter kfm.def loaded OK\nNew char Kung Fu Man loaded into cache: (1/4 cached) Load time: 20.000ms\nKung Fu Man (56) missing required animation actions:\n10, 11, 12, 20, 21, 40, 41, 42 (more)\nPlayer Kung Fu Man cache count increased: 2\nKung Fu Man (57) missing required animation actions:\n10, 11, 12, 20, 21, 40, 41, 42 (more)\nResetting round\nMatch assets initialized OK\nGame loop init\nMatch loop init\n\n",
+  "expected_load_error": "State machine stuck in loop (stopped after 2500 loops): 701"
+}

@@ -1,0 +1,117 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "fixture_sha256": {
+    ".cns": "225e06d3b778a1959b353dd3c401d8b85c0011cf819fab5d9dacdf57aa02399f",
+    ".air": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+    ".cmd": "38747b0625d7256ec5fcaa5a03e29ab56d4877a4d5dfa0da9e76cf31091aa255",
+    ".round.json": "57507612da34e3ce14afa0ec0692923a89f9bed6a89487c46ae6842e129ff1fa"
+  },
+  "original_fight_sha256": {
+    "data/fight.def": "4215173e699fb022da39c53382effdf1bc2dd1c02daf66b5dc04369624092891",
+    "data/mugen1/fight.def": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+  },
+  "prepared_fight_sha256": {
+    "data/fight.def": "8b8d57827a8017cece8df1d9baebf871cece3d69128f644bd76973b87cc18f52",
+    "data/mugen1/fight.def": "2d1beba9691379382a2db9cd4f497d1ce3cc965bb1bdbd8512f9cca2106c42b5"
+  },
+  "config_sha256": "40de7001f5ef76354ba75a42258e43c06cb38800647a60c531f22227b411b62e",
+  "captures": [
+    {
+      "page": 0,
+      "path": "cycle-3.png",
+      "sha256": "6b619dd89f1c8b564875072de7c7ce7aed033cfaea80d790fe43ac01347fa996",
+      "variables": {
+        "0": 744,
+        "1": 874,
+        "2": 885,
+        "3": 885,
+        "4": 0,
+        "5": 0,
+        "6": 5,
+        "7": 0,
+        "8": 888,
+        "9": 888,
+        "10": 890,
+        "11": 0
+      }
+    },
+    {
+      "page": 12,
+      "path": "cycle-0.png",
+      "sha256": "ace3dff18db9a15733d6662d302baa4c9731918786f693d0b6e8ce54faffa9ff",
+      "variables": {
+        "12": 0,
+        "13": 1000,
+        "14": 0,
+        "15": 1,
+        "16": 0,
+        "17": 5900,
+        "18": 0,
+        "19": 1,
+        "20": 940,
+        "21": 1070,
+        "22": 1081,
+        "23": 1081
+      }
+    },
+    {
+      "page": 24,
+      "path": "cycle-1.png",
+      "sha256": "1953c54b08a4a4aa6e1ffa144b14dd0ac54f3f0f0440c93511c68f24b1dbc12a",
+      "variables": {
+        "24": 0,
+        "25": 0,
+        "26": 5,
+        "27": 1084,
+        "28": 1084,
+        "29": 1084,
+        "30": 1086,
+        "31": 0,
+        "32": 0,
+        "33": 1000,
+        "34": 0,
+        "35": 2
+      }
+    },
+    {
+      "page": 36,
+      "path": "cycle-5.png",
+      "sha256": "38b67e28012dde6e4a8e18f5c9c5f8319d7815d281ce6612c67ed44cd8402358",
+      "variables": {
+        "36": 1,
+        "37": 5900,
+        "38": 1234,
+        "39": 2,
+        "40": 0,
+        "41": 0,
+        "42": 0,
+        "43": 0,
+        "44": 0,
+        "45": 0,
+        "46": 0,
+        "47": 0
+      }
+    },
+    {
+      "page": 48,
+      "path": "cycle-4.png",
+      "sha256": "7c77e1f6afd8054ebe65ee56cd92123f9dbbcf860110c19a57768a3d2b9757fa",
+      "variables": {
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0,
+        "54": 0,
+        "55": 0,
+        "56": 0,
+        "57": 0,
+        "58": 0,
+        "59": 0
+      }
+    }
+  ],
+  "native_mode": "versus",
+  "select_sha256": "b248568ddb8f5e490aa54c25f6d3f7c08bbb6747ba267e286a9ab358d9579aa2"
+}

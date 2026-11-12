@@ -1,0 +1,99 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef -2]
+[State -2, frame count]
+type=VarAdd
+trigger1=RoundState=2
+v=50
+value=1
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, reset local frame count]
+type=VarSet
+trigger1=RoundState=2 && Ctrl
+v=50
+value=0
+[State 0, save frame]
+type=VarSet
+trigger1=RoundState=2 && Ctrl
+v=51
+value=var(50)
+[State 0, start loop]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=700
+[Statedef 700]
+physics=N
+poweradd=1
+[State 700, count]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 700, continue]
+type=ChangeState
+trigger1=var(0)<1249
+value=701
+[State 700, finish]
+type=ChangeState
+trigger1=1
+value=702
+[Statedef 701]
+physics=N
+poweradd=2
+[State 701, return]
+type=ChangeState
+trigger1=1
+value=700
+[Statedef 702]
+physics=N
+[State 702, snapshot 0]
+type=VarSet
+trigger1=Time=0
+v=1
+value=var(0)
+[State 702, snapshot 1]
+type=VarSet
+trigger1=Time=0
+v=2
+value=Time
+[State 702, snapshot 2]
+type=VarSet
+trigger1=Time=0
+v=3
+value=var(50)-var(51)
+[State 702, snapshot 3]
+type=VarSet
+trigger1=Time=0
+v=4
+value=Power
+[State 702, snapshot 4]
+type=VarSet
+trigger1=Time=0
+v=5
+value=PrevStateNo
+[State 702, snapshot 5]
+type=VarSet
+trigger1=Time=0
+v=6
+value=StateNo
+[State 702, snapshot 6]
+type=VarSet
+trigger1=Time=0
+v=7
+value=var(50)
+[State 702, snapshot 7]
+type=VarSet
+trigger1=Time=0
+v=8
+value=var(51)

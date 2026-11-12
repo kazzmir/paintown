@@ -1,0 +1,63 @@
+{
+  "entry": [
+    {
+      "keys": [
+        "F1"
+      ],
+      "wait": 1
+    },
+    {
+      "keys": [
+        "Down",
+        "Return"
+      ],
+      "wait": 2
+    },
+    {
+      "keys": [
+        "comma",
+        "f"
+      ],
+      "wait": 2
+    },
+    {
+      "keys": [
+        "Return"
+      ],
+      "wait": 6
+    }
+  ],
+  "reentry": [
+    {
+      "keys": [
+        "Escape"
+      ],
+      "wait": 1
+    },
+    {
+      "keys": [
+        "Escape"
+      ],
+      "wait": 2
+    },
+    {
+      "keys": [
+        "Return"
+      ],
+      "wait": 2
+    },
+    {
+      "keys": [
+        "comma",
+        "f"
+      ],
+      "wait": 2
+    },
+    {
+      "keys": [
+        "Return"
+      ],
+      "wait": 6
+    }
+  ]
+}

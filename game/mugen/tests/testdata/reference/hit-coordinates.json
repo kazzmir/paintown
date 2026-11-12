@@ -1,0 +1,68 @@
+{
+  "cases": {
+    "240-720": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "3fa11c61c14dc921912cbd3c1287cc43a42d8872d5f39d2bafa7e7f3aa047705",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d9aa5d6c644f47e3857fee5513b36d0204308838f1a9df9d561842eb0a203f48",
+          "variables": {
+            "0": -4,
+            "1": 0,
+            "2": 0.200000003,
+            "3": -2,
+            "4": -6,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "320,240",
+      "p2_localcoord": "1280,720"
+    },
+    "720-240": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "3fa11c61c14dc921912cbd3c1287cc43a42d8872d5f39d2bafa7e7f3aa047705",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "cbbf65e0b8d0b06bab277dcb331452af2b2d3b8f4c78b131b4f90f0ccf74c86f",
+          "variables": {
+            "0": -64,
+            "1": 0,
+            "2": 3.20000005,
+            "3": -32,
+            "4": -96,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "1280,720",
+      "p2_localcoord": "320,240"
+    }
+  }
+}

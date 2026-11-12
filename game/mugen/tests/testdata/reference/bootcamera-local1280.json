@@ -1,0 +1,61 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "8397ee7ee34368b88e4522e493ed78a7bedd7e92d99dc4103d3c6aef50c00f0c",
+  "air_sha256": "58096aa2b92c951efcd0d69fc16b3bc6d21ccc20c312bdf3929bbdf5f2e4769f",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "1e437912440337e76e1da7c49784e612e31fc9e5409448a1aed7e2a35c61ff5c",
+      "variables": {
+        "0": 80,
+        "1": 480,
+        "2": 0,
+        "3": -160,
+        "4": 80,
+        "5": 480,
+        "6": 1,
+        "7": -160,
+        "8": 320,
+        "9": 240,
+        "10": 2,
+        "11": -400
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "0f332e304b3f42c2faf9cf075d687990de56d77403c89e3ad5c2dcbc55748253",
+      "variables": {
+        "12": 80,
+        "13": 1040,
+        "14": 0,
+        "15": 400,
+        "16": 320,
+        "17": 800,
+        "18": 1,
+        "19": 160,
+        "20": 320,
+        "21": 800,
+        "22": 2,
+        "23": 160
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "localcoord": "1280,960",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "fae81d43a5e4c5dd3da45731fa5ab00657529a8b1f6e0ff2e93c17e4ba2fbc3e",
+  "random_seed": 1118268896,
+  "seed_log_sha256": "667e0882d7c6e0af49980a1ead6c78299fc59b10705a869b62168de49690f008",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4do-bootcamera-local1280",
+  "native_scope_notes": "X startup publication only; no claim for Y, reset/rematch camera, paused draw cache, helpers or fully moving startup stages. Negative80 P2 reaches screenright margin305 after P1 publication; retain actual145 PosX."
+}

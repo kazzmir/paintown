@@ -1,0 +1,278 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+
+[State 700, spawn]
+type=Helper
+trigger1=Time=0
+helpertype=normal
+id=123
+stateno=800
+pos=400,0
+
+[State 700, set]
+type=PosSet
+trigger1=Time=0
+x=30-CameraPos X
+y=0
+
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=1
+fv=3
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=1
+fv=4
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=1
+fv=5
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=3
+fv=11
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=4
+fv=12
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=4
+fv=13
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=4
+fv=14
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=5
+fv=15
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=5
+fv=16
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=5
+fv=17
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=6
+fv=18
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=6
+fv=19
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=6
+fv=20
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=7
+fv=21
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=7
+fv=22
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=7
+fv=23
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=8
+fv=24
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=8
+fv=25
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=8
+fv=26
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=9
+fv=27
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=9
+fv=28
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=9
+fv=29
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=10
+fv=30
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=10
+fv=31
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=10
+fv=32
+value=CameraZoom
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=11
+fv=33
+value=LeftEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=11
+fv=34
+value=RightEdge
+
+[State 700, endpoints]
+type=VarSet
+trigger1=Time=11
+fv=35
+value=CameraZoom
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, set]
+type=PosSet
+trigger1=Time=0
+x=130-CameraPos X
+y=0
+
+[Statedef 800]
+physics=N
+anim=9990
+ctrl=0
+[State 800, idle]
+type=Null
+trigger1=1
+
+[State 800, follow]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=1,1

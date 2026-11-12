@@ -1,0 +1,148 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=10,3
+pausetime=0,0
+
+ground.type=High
+ground.hittime=300
+air.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=7
+ground.velocity=0,0
+air.velocity=1.25,-0.5
+down.hittime=300
+guard.hittime=300
+airguard.ctrltime=300
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 5010]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 152]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 152, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 154]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 154, freeze]
+type=PosFreeze
+trigger1=1
+value=1
+[Statedef 130]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 130, same position]
+type=PosSet
+trigger1=1
+x=0
+y=0
+[State 130, no push]
+type=PlayerPush
+trigger1=1
+value=0

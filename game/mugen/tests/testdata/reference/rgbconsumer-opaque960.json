@@ -1,0 +1,64 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "71128dc09597f6651448331e89218fa3382b4cf314063f78676591ec24a1a4db",
+  "air_sha256": "55f5a433b26903924c23984e97c49fbcbb3a2ff2fb4eb781840daea3925ed2b3",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "a9ca9a364007772a040263875f1e5f2095f524cfb0e540a56c074d657974a0a5",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 700,
+        "7": 701,
+        "8": 0,
+        "9": 0,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "42752c27e00ab5881352f058f6c74d645052f8c6f95df5212532df9ff4913dde"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "42752c27e00ab5881352f058f6c74d645052f8c6f95df5212532df9ff4913dde"
+  },
+  "mugenversion": "1.1",
+  "game_width": 960,
+  "video": {
+    "Width": 1280,
+    "Height": 720
+  },
+  "config_sha256": "82eda4b1ed69847303acb200999f01696f402ff5a47318b89682993040388c7e",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b9583a5079f5e637fa4484fcf321fa0018464ac52ecac0d5b78dbb5b4f0fb4f2",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "pattern_native_config_sha256": "493144b61a87af38514d82303bc21389e2de6886d32d90819077e53916b5afc1",
+  "pattern_render": {
+    "region": [
+      620,
+      530,
+      680,
+      565
+    ],
+    "sha256": "b6602ec901ff82180e03d1f7d8b5a0864ac1cfea9cc85422738157be169c2beb"
+  },
+  "pattern_crop_rgb_zlib": "eNrtziGOqDAYAOFqPLVoRB0aU0MyElWBxjZo9O/R1OJJugqNqUJzm0e4wEtWYLaT7wDz85PL5XK5XO43KcWjUJSKSlErGkWr6BS9YlCMikkxK0SxKFbFptgVh+JUXIr7lZ//86x5FJpSU2lqTaNpNZ2m1wyaUTNpZo1oFs2q2TS75tCcmktzvz59NjwKQ2moDLWhMbSGztAbBsNomAyzQQyLYTVsht1wGE7DZbhfnz5bHoWltFSW2tJYWktn6S2DZbRMltkilsWyWjbLbjksp+Wy3K9Pnx2PwlE6KkftaByto3P0jsExOibH7BDH4lgdm2N3HI7TcTnu16fPnkfhKT2Vp/Y0ntbTeXrP4Bk9k2f2iGfxrJ7Ns3sOz+m5PPfr02fhUQilUAm10Ait0Am9MAijMAmzIMIirMIm7MIhnMIl3K9PnwOPIlAGqkAdaAJtoAv0gSEwBqbAHJDAElgDW2APHIEzcAXu16fPkUcRKSNVpI40kTbSRfrIEBkjU2SOSGSJrJEtskeOyBm5Ivfr0+fEo0iUiSpRJ5pEm+gSfWJIjIkpMScksSTWxJbYE0fiTFyJ+5Wfc7lcLpfL5f5m/wBEcC6h"
+}

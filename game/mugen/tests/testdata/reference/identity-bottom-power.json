@@ -1,0 +1,67 @@
+{
+  "status": "Unresolved: native bottom exponentiation returns layout-dependent non-mathematical values; not a Go conformance golden.",
+  "cases": {
+    "repeat-a": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "fb64b8e8d3c7b937fa283bef11d8e2a11aa062e845b6944d757d575e4fa1b976",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ea877080888bf163bfdcedc48e935fb5976487b9d065691571b7069545f26ee7",
+          "variables": {
+            "0": 73735280,
+            "1": 73735280,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    },
+    "repeat-b": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "fb64b8e8d3c7b937fa283bef11d8e2a11aa062e845b6944d757d575e4fa1b976",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "8f17deb15c5fac4c0dfd06a73a58f1d59dc11094d93d18113484a9f1f2379f58",
+          "variables": {
+            "0": 73735280,
+            "1": 73735280,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    }
+  }
+}

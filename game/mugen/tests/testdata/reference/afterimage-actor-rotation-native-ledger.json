@@ -1,0 +1,17 @@
+{
+  "programs": 2,
+  "numeric_values": 24,
+  "source_probe_hashes": {
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-current-angle-45.cns": "be638240de074941ed1553320c1e5d270efaf6f6881e5dafa390a7a02a2fdbeb",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-current-angle-45.air": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-current-angle-45.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-current-angle-45.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-trail-angle-90.cns": "dd11d5198e42ddd1a7731706e73deb398f2ac7b84cc8f39b6bdbf9011e6e0be3",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-trail-angle-90.air": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-trail-angle-90.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/trailactor-diagnostic-trail-angle-90.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "game/mugen/tests/reference_probe.py": "7c5ba2b9a1ed8f063e291be7db2577f7638ce7ab223c6295c1c9bf61657689f4",
+    "game/mugen/tests/after_image_reference_probe.py": "3d8680801496508789b16f0fd4b1e9b8f0408d80f72d73d6ca082df1abfc2412"
+  },
+  "all_rows_and_native_review_inspected_before_promotion": true
+}

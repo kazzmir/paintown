@@ -1,0 +1,94 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, projectile probe]
+type=Projectile
+trigger1=Time=0
+projid=7
+projanim=9990
+offset=0,-240
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=NumProj
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=NumProj
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=2
+fv=2
+value=NumProj
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=3
+fv=3
+value=NumProj
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=5
+fv=4
+value=NumProj
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=NumProj
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=NumProjID(7)
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=1
+fv=7
+value=NumProjID(7)
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=NumProjID(7)
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=NumProjID(7)
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=5
+fv=10
+value=NumProjID(7)
+[State 700, projectile probe]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=NumProjID(7)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, inert]
+type=Null
+trigger1=1

@@ -1,0 +1,154 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=10,3
+pausetime=0,0
+ground.type=High
+ground.hittime=300
+air.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=7
+fall=1
+ground.velocity=2,0
+air.velocity=1.25,-0.5
+down.hittime=300
+guard.hittime=300
+airguard.ctrltime=300
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+[State 5000, land]
+type=ChangeState
+trigger1=Time=2
+value=5100
+[Statedef 5100]
+type=L
+movetype=H
+physics=N
+anim=9990
+[State 5110, sample]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=GetHitVar(hitcount)
+[State 5110, sample]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=GetHitVar(fallcount)
+[State 5110, leave hit]
+type=StateTypeSet
+trigger1=Time=2
+movetype=I
+[State 5110, sample]
+type=VarSet
+trigger1=Time=2
+fv=22
+value=GetHitVar(hitcount)
+[State 5110, sample]
+type=VarSet
+trigger1=Time=2
+fv=23
+value=GetHitVar(fallcount)
+[State 5110, sample]
+type=VarSet
+trigger1=Time=3
+fv=24
+value=GetHitVar(hitcount)
+[State 5110, sample]
+type=VarSet
+trigger1=Time=3
+fv=25
+value=GetHitVar(fallcount)
+[State 5110, sample]
+type=VarSet
+trigger1=Time=3
+fv=26
+value=GetHitVar(chainid)
+[State 5110, reenter]
+type=ChangeState
+trigger1=Time=4 && Var(50)=0
+value=900
+[Statedef 900]
+type=S
+movetype=I
+physics=N
+anim=9990
+[State 5110, sample]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=GetHitVar(hitcount)
+[State 5110, sample]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=GetHitVar(fallcount)
+[State 900, one]
+type=VarSet
+trigger1=1
+v=50
+value=1
+[State 900, next]
+type=ChangeState
+trigger1=Time=2
+value=5110
+[Statedef 5110]
+type=L
+movetype=H
+physics=N
+anim=9990
+[State 5110, sample]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=GetHitVar(fallcount)

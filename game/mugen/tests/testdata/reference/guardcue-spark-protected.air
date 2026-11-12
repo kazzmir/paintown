@@ -1,0 +1,14 @@
+[Begin Action 0]
+-1,0,0,0,-1
+[Begin Action 9990]
+Clsn2Default: 1
+Clsn2[0]=-10,-60,10,0
+-1,0,0,0,-1
+[Begin Action 9991]
+Clsn1Default: 1
+Clsn1[0]=-1000,-1000,1000,1000
+-1,0,0,0,-1
+[Begin Action 9992]
+0,2,0,0,-1
+[Begin Action 9993]
+0,2,60,0,-1

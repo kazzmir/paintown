@@ -1,0 +1,127 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "3682cb72cf2307e7a8f067dae21742873cb06db44da28fce0539cf0cb85133ff",
+      "air_sha256": "0002f15f8e937910b1ba687190e22f266d00ff2f40201e2a998f15fe9638c9bc",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "99f83a7e39742b83f1b057ca4737cc1e3b1dff0a80c239bbb6bd8ba706679211",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 1,
+            "5": 101,
+            "6": 4,
+            "7": 1,
+            "8": 2,
+            "9": 1,
+            "10": 1,
+            "11": 101
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "files": {
+        "sound": "probe.snd"
+      },
+      "clipboard_in_cmd": true,
+      "extra_sha256": {
+        "common-probe.snd": "a8677ce5010d777ad22e1b48811e69e026ca6e11870c4b3cebec7a4e2cafd325",
+        "probe.snd": "a211f342605a2c0c8166faf119f329c76400386b5f9384dd091a41071fc4b315"
+      },
+      "mugenversion": "1.1",
+      "audio": {
+        "sample_rate": 44100,
+        "channels": 2,
+        "frequencies": [
+          441.0,
+          1323.0,
+          2646.0
+        ],
+        "pcm_sha256": "f05c7b0b318b51409a75e0d6ee6493b5c8cff396ce4fe51e2bc79cc15ba28ee6",
+        "segments": [
+          {
+            "start": 2.0,
+            "end": 3.0,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "2646": [
+                3092.7,
+                4873.7
+              ]
+            }
+          },
+          {
+            "start": 3.1,
+            "end": 6.7,
+            "levels": {
+              "441": [
+                0,
+                0
+              ],
+              "1323": [
+                0,
+                0
+              ],
+              "2646": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "amplitude_tolerance": 8,
+        "time_tolerance": 0.35,
+        "analysis_window_ms": 200,
+        "analysis_step_ms": 100,
+        "config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+        "settings": {
+          "SampleRate": 44100,
+          "WavChannels": 32,
+          "MasterVolume": 100,
+          "WavVolume": 80,
+          "StereoEffects": 1,
+          "PanningWidth": 240,
+          "ReverseStereo": 0,
+          "GameWidth": 1280,
+          "GameHeight": 720
+        },
+        "common_tone": true,
+        "common_fight_sha256": {
+          "data/fight.def": "fa2c20944a84c32cbb9d37cef7b11a450b7211718d0eb449b512178ea25033b5",
+          "data/mugen1/fight.def": "0549513a8c70a621ccf48b59a5ef6c046c0b9a9e1b8f1085a80b1d5a2d95bea2"
+        },
+        "quiet_hud": true,
+        "quiet_fight_sha256": {
+          "data/fight.def": "fa2c20944a84c32cbb9d37cef7b11a450b7211718d0eb449b512178ea25033b5",
+          "data/mugen1/fight.def": "0549513a8c70a621ccf48b59a5ef6c046c0b9a9e1b8f1085a80b1d5a2d95bea2"
+        },
+        "quiet_hud_bank_sha256": "be7bdf1c91d70abb098a4b416115fcbcefbda09e4372ef0d5d9474bfab96cf17",
+        "checks": [
+          {
+            "Tick": 20,
+            "Segment": 0
+          },
+          {
+            "Tick": 90,
+            "Segment": 1
+          }
+        ]
+      }
+    }
+  }
+}

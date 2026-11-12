@@ -1,0 +1,277 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+
+[State 700, spawn]
+type=Helper
+trigger1=Time=0
+helpertype=normal
+id=123
+stateno=800
+pos=170,0
+
+[State 700, set]
+type=PosSet
+trigger1=Time=0
+x=30-CameraPos X
+y=0
+
+[State 700, sample 0 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=CameraPos X
+
+[State 700, sample 0 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Pos X
+
+[State 700, sample 0 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=ScreenPos X
+
+[State 700, sample 1 0]
+type=VarSet
+trigger1=Time=1
+fv=3
+value=CameraPos X
+
+[State 700, sample 1 1]
+type=VarSet
+trigger1=Time=1
+fv=4
+value=Pos X
+
+[State 700, sample 1 2]
+type=VarSet
+trigger1=Time=1
+fv=5
+value=ScreenPos X
+
+[State 700, sample 2 0]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=CameraPos X
+
+[State 700, sample 2 1]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=Pos X
+
+[State 700, sample 2 2]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=ScreenPos X
+
+[State 700, sample 3 0]
+type=VarSet
+trigger1=Time=3
+fv=9
+value=CameraPos X
+
+[State 700, sample 3 1]
+type=VarSet
+trigger1=Time=3
+fv=10
+value=Pos X
+
+[State 700, sample 3 2]
+type=VarSet
+trigger1=Time=3
+fv=11
+value=ScreenPos X
+
+[State 700, sample 4 0]
+type=VarSet
+trigger1=Time=4
+fv=12
+value=CameraPos X
+
+[State 700, sample 4 1]
+type=VarSet
+trigger1=Time=4
+fv=13
+value=Pos X
+
+[State 700, sample 4 2]
+type=VarSet
+trigger1=Time=4
+fv=14
+value=ScreenPos X
+
+[State 700, sample 5 0]
+type=VarSet
+trigger1=Time=5
+fv=15
+value=CameraPos X
+
+[State 700, sample 5 1]
+type=VarSet
+trigger1=Time=5
+fv=16
+value=Pos X
+
+[State 700, sample 5 2]
+type=VarSet
+trigger1=Time=5
+fv=17
+value=ScreenPos X
+
+[State 700, sample 6 0]
+type=VarSet
+trigger1=Time=6
+fv=18
+value=CameraPos X
+
+[State 700, sample 6 1]
+type=VarSet
+trigger1=Time=6
+fv=19
+value=Pos X
+
+[State 700, sample 6 2]
+type=VarSet
+trigger1=Time=6
+fv=20
+value=ScreenPos X
+
+[State 700, sample 7 0]
+type=VarSet
+trigger1=Time=7
+fv=21
+value=CameraPos X
+
+[State 700, sample 7 1]
+type=VarSet
+trigger1=Time=7
+fv=22
+value=Pos X
+
+[State 700, sample 7 2]
+type=VarSet
+trigger1=Time=7
+fv=23
+value=ScreenPos X
+
+[State 700, sample 8 0]
+type=VarSet
+trigger1=Time=8
+fv=24
+value=CameraPos X
+
+[State 700, sample 8 1]
+type=VarSet
+trigger1=Time=8
+fv=25
+value=Pos X
+
+[State 700, sample 8 2]
+type=VarSet
+trigger1=Time=8
+fv=26
+value=ScreenPos X
+
+[State 700, sample 9 0]
+type=VarSet
+trigger1=Time=9
+fv=27
+value=CameraPos X
+
+[State 700, sample 9 1]
+type=VarSet
+trigger1=Time=9
+fv=28
+value=Pos X
+
+[State 700, sample 9 2]
+type=VarSet
+trigger1=Time=9
+fv=29
+value=ScreenPos X
+
+[State 700, sample 10 0]
+type=VarSet
+trigger1=Time=10
+fv=30
+value=CameraPos X
+
+[State 700, sample 10 1]
+type=VarSet
+trigger1=Time=10
+fv=31
+value=Pos X
+
+[State 700, sample 10 2]
+type=VarSet
+trigger1=Time=10
+fv=32
+value=ScreenPos X
+
+[State 700, sample 11 0]
+type=VarSet
+trigger1=Time=11
+fv=33
+value=CameraPos X
+
+[State 700, sample 11 1]
+type=VarSet
+trigger1=Time=11
+fv=34
+value=Pos X
+
+[State 700, sample 11 2]
+type=VarSet
+trigger1=Time=11
+fv=35
+value=ScreenPos X
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, set]
+type=PosSet
+trigger1=Time=0
+x=130-CameraPos X
+y=0
+
+[Statedef 800]
+physics=N
+anim=9990
+ctrl=0
+[State 800, idle]
+type=Null
+trigger1=1
+
+[State 800, follow]
+type=ScreenBound
+trigger1=1
+value=0
+movecamera=1,1

@@ -1,0 +1,455 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 700, hold round]
+type=AssertSpecial
+trigger1=1
+flag=roundnotover
+[State 700, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=0,0
+pausetime=0,0
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+id=1234
+[State 700, custom state]
+type=TargetState
+trigger1=Time=2
+value=900
+
+[State 700, record 0]
+type=VarSet
+trigger1=Time>=20
+fv=0
+value=Enemy,FVar(0)
+
+[State 700, record 1]
+type=VarSet
+trigger1=Time>=20
+fv=1
+value=Enemy,FVar(1)
+
+[State 700, record 2]
+type=VarSet
+trigger1=Time>=20
+fv=2
+value=Enemy,FVar(2)
+
+[State 700, record 3]
+type=VarSet
+trigger1=Time>=20
+fv=3
+value=Enemy,FVar(3)
+
+[State 700, record 4]
+type=VarSet
+trigger1=Time>=20
+fv=4
+value=Enemy,FVar(4)
+
+[State 700, record 5]
+type=VarSet
+trigger1=Time>=20
+fv=5
+value=Enemy,FVar(5)
+
+[State 700, record 6]
+type=VarSet
+trigger1=Time>=20
+fv=6
+value=Enemy,FVar(6)
+
+[State 700, record 7]
+type=VarSet
+trigger1=Time>=20
+fv=7
+value=Enemy,FVar(7)
+
+[State 700, record 8]
+type=VarSet
+trigger1=Time>=20
+fv=8
+value=Enemy,FVar(8)
+
+[State 700, record 9]
+type=VarSet
+trigger1=Time>=20
+fv=9
+value=Enemy,FVar(9)
+
+[State 700, record 10]
+type=VarSet
+trigger1=Time>=20
+fv=10
+value=Enemy,FVar(10)
+
+[State 700, record 11]
+type=VarSet
+trigger1=Time>=20
+fv=11
+value=Enemy,FVar(11)
+
+[State 700, record 12]
+type=VarSet
+trigger1=Time>=20
+fv=12
+value=Enemy,FVar(12)
+
+[State 700, record 13]
+type=VarSet
+trigger1=Time>=20
+fv=13
+value=Enemy,FVar(13)
+
+[State 700, record 14]
+type=VarSet
+trigger1=Time>=20
+fv=14
+value=Enemy,FVar(14)
+
+[State 700, record 15]
+type=VarSet
+trigger1=Time>=20
+fv=15
+value=Enemy,FVar(15)
+
+[State 700, record 16]
+type=VarSet
+trigger1=Time>=20
+fv=16
+value=Enemy,FVar(16)
+
+[State 700, record 17]
+type=VarSet
+trigger1=Time>=20
+fv=17
+value=Enemy,FVar(17)
+
+[State 700, record 18]
+type=VarSet
+trigger1=Time>=20
+fv=18
+value=Enemy,FVar(18)
+
+[State 700, record 19]
+type=VarSet
+trigger1=Time>=20
+fv=19
+value=Enemy,FVar(19)
+
+[State 700, record 20]
+type=VarSet
+trigger1=Time>=20
+fv=20
+value=Enemy,FVar(20)
+
+[State 700, record 21]
+type=VarSet
+trigger1=Time>=20
+fv=21
+value=Enemy,FVar(21)
+
+[State 700, record 22]
+type=VarSet
+trigger1=Time>=20
+fv=22
+value=Enemy,FVar(22)
+
+[State 700, record 23]
+type=VarSet
+trigger1=Time>=20
+fv=23
+value=Enemy,FVar(23)
+
+[State 700, record 24]
+type=VarSet
+trigger1=Time>=20
+fv=24
+value=Enemy,FVar(24)
+
+[State 700, record 25]
+type=VarSet
+trigger1=Time>=20
+fv=25
+value=Enemy,FVar(25)
+
+[State 700, record 26]
+type=VarSet
+trigger1=Time>=20
+fv=26
+value=Enemy,FVar(26)
+
+[State 700, record 27]
+type=VarSet
+trigger1=Time>=20
+fv=27
+value=Enemy,FVar(27)
+
+[State 700, record 28]
+type=VarSet
+trigger1=Time>=20
+fv=28
+value=Enemy,FVar(28)
+
+[State 700, record 29]
+type=VarSet
+trigger1=Time>=20
+fv=29
+value=Enemy,FVar(29)
+
+[State 700, record 30]
+type=VarSet
+trigger1=Time>=20
+fv=30
+value=Enemy,FVar(30)
+
+[State 700, record 31]
+type=VarSet
+trigger1=Time>=20
+fv=31
+value=Enemy,FVar(31)
+
+[State 700, record 32]
+type=VarSet
+trigger1=Time>=20
+fv=32
+value=Enemy,FVar(32)
+
+[State 700, record 33]
+type=VarSet
+trigger1=Time>=20
+fv=33
+value=Enemy,FVar(33)
+
+[State 700, record 34]
+type=VarSet
+trigger1=Time>=20
+fv=34
+value=Enemy,FVar(34)
+
+[State 700, record 35]
+type=VarSet
+trigger1=Time>=20
+fv=35
+value=Enemy,FVar(35)
+
+[State 700, record 36]
+type=VarSet
+trigger1=Time>=20
+fv=36
+value=Enemy,FVar(36)
+
+[State 700, record 37]
+type=VarSet
+trigger1=Time>=20
+fv=37
+value=Enemy,FVar(37)
+[Statedef 900]
+movetype=H
+physics=N
+anim=9100
+ctrl=0
+
+[State 900, record 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Time
+
+[State 900, record 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Anim
+
+[State 900, record 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=AnimExist(9100)
+
+[State 900, record 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=SelfAnimExist(9100)
+
+[State 900, record 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=AnimExist(9200)
+
+[State 900, record 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=SelfAnimExist(9200)
+
+[State 900, record 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Pos X
+
+[State 900, record 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Const(size.height)
+
+[State 900, record 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Const240p(320)
+
+[State 900, record 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Var(30)
+
+[State 900, record 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Var(31)
+
+[State 900, record 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Var(32)
+[State 900, foreign animation]
+type=ChangeAnim2
+trigger1=Time=0
+value=9101
+
+[State 900, record 12]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Anim
+
+[State 900, record 13]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=AnimTime
+[State 900, position]
+type=PosSet
+trigger1=Time=0
+x=10
+
+[State 900, record 14]
+type=VarSet
+trigger1=Time=1
+fv=14
+value=AnimElemTime(1)
+
+[State 900, record 15]
+type=VarSet
+trigger1=Time=1
+fv=15
+value=Pos X
+
+[State 900, record 16]
+type=VarSet
+trigger1=Time=1
+fv=16
+value=Var(30)
+
+[State 900, record 17]
+type=VarSet
+trigger1=Time=1
+fv=17
+value=Var(31)
+
+[State 900, record 18]
+type=VarSet
+trigger1=Time=1
+fv=18
+value=Var(32)
+[State 900, own animation]
+type=Null
+trigger1=Time=1
+value=9200
+
+[State 900, record 19]
+type=VarSet
+trigger1=Time=1
+fv=19
+value=Anim
+
+[State 900, record 20]
+type=VarSet
+trigger1=Time=1
+fv=20
+value=AnimTime
+[State 900, another custom state]
+type=ChangeState
+trigger1=Time=2
+value=901
+[Statedef 901]
+movetype=H
+physics=N
+
+[State 900, record 21]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=111
+
+[State 900, record 22]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Anim
+
+[State 900, record 23]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Pos X
+
+[State 900, record 24]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=333
+[State 901, restore]
+type=SelfState
+trigger1=Time=1
+value=902

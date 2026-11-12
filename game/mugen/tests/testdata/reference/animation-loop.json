@@ -1,0 +1,322 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "20fa9528359cd332fd5a9ff5cf8ba1ce642ff9cc85c7427e823130af4ddb8e05",
+  "air_sha256": "3fc72e29881f7560242996132c408d3cf606799c3e35b49a321076d29cbf3a62",
+  "capture_notes": "Exact bundled debug-font mask matching from two-line DisplayToClipboard captures; neutral CMD state; all captures inspected. Original reference images remain untracked.",
+  "captures": [
+    {
+      "page": 0,
+      "sha256": "2420f963cac2acf9319c35e7d4d41287a49c00c95ae5eeb240e8a45f9406853b",
+      "variables": {
+        "0": 201801,
+        "1": 211901,
+        "2": 222002,
+        "3": 232102,
+        "4": 242202,
+        "5": 252303,
+        "6": 262403,
+        "7": 272503,
+        "8": 282603,
+        "9": 292702,
+        "10": 232102,
+        "11": 242202
+      }
+    },
+    {
+      "page": 12,
+      "sha256": "5224f91a32d6e81634de5bc36849ae306b90f4c9c269cc47912f6e0aa5faa51d",
+      "variables": {
+        "12": 252303,
+        "13": 262403,
+        "14": 272503,
+        "15": 282603,
+        "16": 292702,
+        "17": 232102,
+        "18": 242202,
+        "19": 252303,
+        "20": 262403,
+        "21": 272503,
+        "22": 282603,
+        "23": 292702
+      }
+    },
+    {
+      "page": 30,
+      "sha256": "0b6040c544b192e25843669e8aa5f7f60ff44c67fbf34c400c165420c79471ac",
+      "variables": {
+        "30": 1511,
+        "31": 1612,
+        "32": 1713,
+        "33": 1814,
+        "34": 1915,
+        "35": 2016,
+        "36": 2117,
+        "37": 2218,
+        "38": 2319,
+        "39": 2420,
+        "40": 1814,
+        "41": 1915
+      }
+    },
+    {
+      "page": 42,
+      "sha256": "2ceea0c309cf0676ccc27e8efbc6c1c4b1e095c30b3e0d5390f5f002409e646b",
+      "variables": {
+        "42": 2016,
+        "43": 2117,
+        "44": 2218,
+        "45": 2319,
+        "46": 2420,
+        "47": 1814,
+        "48": 1915,
+        "49": 2016,
+        "50": 2117,
+        "51": 2218,
+        "52": 2319,
+        "53": 2420
+      }
+    }
+  ],
+  "Ticks": [
+    {
+      "Tick": 0,
+      "Element": 1,
+      "AnimTime": -9,
+      "ElementTimes": [
+        0,
+        -2,
+        -5
+      ]
+    },
+    {
+      "Tick": 1,
+      "Element": 1,
+      "AnimTime": -8,
+      "ElementTimes": [
+        1,
+        -1,
+        -4
+      ]
+    },
+    {
+      "Tick": 2,
+      "Element": 2,
+      "AnimTime": -7,
+      "ElementTimes": [
+        2,
+        0,
+        -3
+      ]
+    },
+    {
+      "Tick": 3,
+      "Element": 2,
+      "AnimTime": -6,
+      "ElementTimes": [
+        3,
+        1,
+        -2
+      ]
+    },
+    {
+      "Tick": 4,
+      "Element": 2,
+      "AnimTime": -5,
+      "ElementTimes": [
+        4,
+        2,
+        -1
+      ]
+    },
+    {
+      "Tick": 5,
+      "Element": 3,
+      "AnimTime": -4,
+      "ElementTimes": [
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "Tick": 6,
+      "Element": 3,
+      "AnimTime": -3,
+      "ElementTimes": [
+        6,
+        4,
+        1
+      ]
+    },
+    {
+      "Tick": 7,
+      "Element": 3,
+      "AnimTime": -2,
+      "ElementTimes": [
+        7,
+        5,
+        2
+      ]
+    },
+    {
+      "Tick": 8,
+      "Element": 3,
+      "AnimTime": -1,
+      "ElementTimes": [
+        8,
+        6,
+        3
+      ]
+    },
+    {
+      "Tick": 9,
+      "Element": 2,
+      "AnimTime": 0,
+      "ElementTimes": [
+        9,
+        7,
+        4
+      ]
+    },
+    {
+      "Tick": 10,
+      "Element": 2,
+      "AnimTime": -6,
+      "ElementTimes": [
+        3,
+        1,
+        -2
+      ]
+    },
+    {
+      "Tick": 11,
+      "Element": 2,
+      "AnimTime": -5,
+      "ElementTimes": [
+        4,
+        2,
+        -1
+      ]
+    },
+    {
+      "Tick": 12,
+      "Element": 3,
+      "AnimTime": -4,
+      "ElementTimes": [
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "Tick": 13,
+      "Element": 3,
+      "AnimTime": -3,
+      "ElementTimes": [
+        6,
+        4,
+        1
+      ]
+    },
+    {
+      "Tick": 14,
+      "Element": 3,
+      "AnimTime": -2,
+      "ElementTimes": [
+        7,
+        5,
+        2
+      ]
+    },
+    {
+      "Tick": 15,
+      "Element": 3,
+      "AnimTime": -1,
+      "ElementTimes": [
+        8,
+        6,
+        3
+      ]
+    },
+    {
+      "Tick": 16,
+      "Element": 2,
+      "AnimTime": 0,
+      "ElementTimes": [
+        9,
+        7,
+        4
+      ]
+    },
+    {
+      "Tick": 17,
+      "Element": 2,
+      "AnimTime": -6,
+      "ElementTimes": [
+        3,
+        1,
+        -2
+      ]
+    },
+    {
+      "Tick": 18,
+      "Element": 2,
+      "AnimTime": -5,
+      "ElementTimes": [
+        4,
+        2,
+        -1
+      ]
+    },
+    {
+      "Tick": 19,
+      "Element": 3,
+      "AnimTime": -4,
+      "ElementTimes": [
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "Tick": 20,
+      "Element": 3,
+      "AnimTime": -3,
+      "ElementTimes": [
+        6,
+        4,
+        1
+      ]
+    },
+    {
+      "Tick": 21,
+      "Element": 3,
+      "AnimTime": -2,
+      "ElementTimes": [
+        7,
+        5,
+        2
+      ]
+    },
+    {
+      "Tick": 22,
+      "Element": 3,
+      "AnimTime": -1,
+      "ElementTimes": [
+        8,
+        6,
+        3
+      ]
+    },
+    {
+      "Tick": 23,
+      "Element": 2,
+      "AnimTime": 0,
+      "ElementTimes": [
+        9,
+        7,
+        4
+      ]
+    }
+  ]
+}

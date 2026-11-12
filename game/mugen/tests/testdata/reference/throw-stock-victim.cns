@@ -1,0 +1,32 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=0
+ctrl=0
+[State 0, place]
+type=PosSet
+triggerall=RoundState=2 && Ctrl
+trigger1=Var(50)=0
+x=ifelse(Facing=1,-15,15)
+y=0
+[State 0, start]
+type=ChangeState
+triggerall=RoundState=2 && Ctrl
+trigger1=Var(50)=0
+value=701
+[Statedef 701]
+physics=N
+anim=0
+ctrl=0
+[State 701, hold]
+type=Null
+trigger1=1

@@ -1,0 +1,213 @@
+[Statedef 5900]
+[State 5900, guard distance probe]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, guard distance probe]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(TeamSide=1,700,701)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, guard distance probe]
+type=PosSet
+trigger1=Time=0
+x=40
+y=0
+[State 701, guard distance probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, guard distance probe]
+type=PosSet
+trigger1=Time=4
+x=0
+[State 701, guard distance probe]
+type=PosSet
+trigger1=Time=5
+x=-10
+[State 701, guard distance probe]
+type=PosSet
+trigger1=Time=6
+x=40
+y=-500
+[State 701, guard distance probe]
+type=PosSet
+trigger1=Time=9
+y=0
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=3
+fv=20
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=4
+fv=21
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=5
+fv=22
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=6
+fv=23
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=10
+fv=24
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=11
+fv=25
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=15
+fv=26
+value=InGuardDist
+[State 701, guard distance probe]
+type=VarSet
+trigger1=Time=16
+fv=27
+value=InGuardDist
+[Statedef -3]
+[State -3, guard distance probe]
+type=Null
+trigger1=0
+
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, guard distance probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, guard distance probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, guard distance probe]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=40.75
+[State 700, guard distance probe]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=MAF
+damage=0
+sparkno=-1
+hitsound=-1,0
+pausetime=0,0
+guard.dist=FVar(10)
+[State 700, guard distance probe]
+type=HitDef
+trigger1=Time=10
+attr=S,NA
+damage=0
+sparkno=-1
+hitsound=-1,0
+[State 700, guard distance probe]
+type=ChangeState
+trigger1=Time=15
+value=800
+[Statedef 800]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 800, guard distance probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 800, guard distance probe]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+damage=0
+sparkno=-1
+hitsound=-1,0
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=0
+value=Enemy,FVar(20)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=1
+value=Enemy,FVar(21)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=2
+value=Enemy,FVar(22)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=3
+value=Enemy,FVar(23)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=4
+value=Enemy,FVar(24)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=5
+value=Enemy,FVar(25)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=6
+value=Enemy,FVar(26)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=7
+value=Enemy,FVar(27)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=8
+value=100000+(Enemy,Life)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=9
+value=Var(10)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=10
+value=Var(58)
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+fv=11
+value=Enemy,InGuardDist
+[State 800, guard distance probe]
+type=VarSet
+trigger1=Time>=30 && Var(59)=0
+v=59
+value=1

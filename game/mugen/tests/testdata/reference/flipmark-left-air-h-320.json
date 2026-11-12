@@ -1,0 +1,79 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "08a191308e1e57327720cdfa6f604bfab2f7f0c64728680b97821f4f853545ac",
+  "air_sha256": "19b47835cbe89125f898009bedba97d5ed2c2eeebf05a8ca464dc81fdf225557",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "625332c28923a814a779606db5c9fc6bc11403e2011b0234e9b07d0da76c802c",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 700,
+        "7": 701,
+        "8": 0,
+        "9": 0,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+  },
+  "mugenversion": "1.1",
+  "game_width": 320,
+  "video": {
+    "Width": 1280,
+    "Height": 720
+  },
+  "config_sha256": "167bec12e9e6d2e9bbd4f57781f7020bcc31a130006db02f6238c5039787628b",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b9583a5079f5e637fa4484fcf321fa0018464ac52ecac0d5b78dbb5b4f0fb4f2",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "sprite_render": {
+    "window": [
+      1280,
+      720
+    ],
+    "rgb": [
+      220,
+      30,
+      40
+    ],
+    "pure_color_pixels": 8836,
+    "pure_color_bounds": [
+      593,
+      475,
+      687,
+      569
+    ],
+    "crop_region": [
+      589,
+      471,
+      691,
+      573
+    ],
+    "crop_sha256": "13f8825e006ff8207ce1d32e4c2c60eca73cd8ead67aab1f2c9f791abf2db7fd"
+  },
+  "sprite_crop_rgb_zlib": "eNrt3bEJhFAURFFBQRRMZANBMDbdMmzDlmzPYnbCH/zEwI3OcKMXngZe05j9Y0vbffvhGCdVC06ISrFczmm+PquqBSdEpVgYc7+3XdWCEyJixIgRI0aMDDFixIgREzFixIgRI0aMGDFixIiJGDFixIiJGDFixIgRI0aMGDFixESMGDFixIgRI0aMGDFiZIgRI0aMmIgRI0aMGDFixIgRI0ZMxIgRI0ZMxIgRI0aMGDFixIgRIyZixIgRI0aMGDFixIgRI0PsPTHfGJ9+Y/Tx8+nHT7P39gMUHMpZ"
+}

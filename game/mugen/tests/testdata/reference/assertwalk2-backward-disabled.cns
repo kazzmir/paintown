@@ -1,0 +1,61 @@
+[Statedef 5900]
+[State 5900, intent]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 0, intent]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=S
+anim=9999
+ctrl=1
+[State 700, intent]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 701, intent]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 20]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 20, intent]
+type=VarSet
+trigger1=TeamSide=1 && Time=0
+fv=0
+value=20
+[Statedef -3]
+[State -3, intent]
+type=AssertSpecial
+trigger1=TeamSide=1
+flag=nowalk
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && (Command = "holdback")
+fv=1
+value=1
+[State -3, intent]
+type=VarSet
+trigger1=TeamSide=1 && (Command = "holdback")
+fv=2
+value=Ctrl

@@ -1,0 +1,259 @@
+[Statedef 5900]
+[State 5900, init]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=IfElse(TeamSide=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 700, mutation probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, mutation probe]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, mutation probe]
+type=VelSet
+trigger1=Time=0
+x=2
+y=0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=100
+postype=none
+pos=-40,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=100
+trans=addalpha
+alpha=0,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=101
+postype=none
+pos=-10,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=101
+trans=addalpha
+alpha=1,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=102
+postype=none
+pos=20,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=102
+trans=addalpha
+alpha=64,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=103
+postype=none
+pos=50,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=103
+trans=addalpha
+alpha=127,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=104
+postype=none
+pos=80,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=104
+trans=addalpha
+alpha=128,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=105
+postype=none
+pos=110,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=105
+trans=addalpha
+alpha=129,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=106
+postype=none
+pos=140,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=106
+trans=addalpha
+alpha=192,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=107
+postype=none
+pos=170,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=107
+trans=addalpha
+alpha=255,0
+[State 700, alpha grid]
+type=Explod
+trigger1=Time=0
+anim=9100
+id=108
+postype=none
+pos=200,-20
+scale=0.5,0.5
+removetime=-1
+[State 700, alpha grid]
+type=ModifyExplod
+trigger1=Time=3
+id=108
+trans=addalpha
+alpha=256,0
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=0
+value=Pos X
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=1
+value=Pos Y
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=2
+value=Facing
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=3
+value=NumExplod
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=4
+value=Var(0)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=5
+value=Var(1)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=6
+value=Var(2)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=7
+value=Var(3)
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=8
+value=Enemy,Pos X
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=9
+value=Enemy,Pos Y
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=10
+value=Time
+[State 700, mutation probe]
+type=VarSet
+trigger1=Time=8
+fv=11
+value=GameTime
+[State 700, mutation probe]
+type=DisplayToClipboard
+trigger1=1
+text="P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)
+[State 700, mutation probe]
+type=AppendToClipboard
+trigger1=1
+text="P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\n"
+params=FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)
+[State 700, mutation probe]
+type=Pause
+trigger1=Time=8
+time=99999
+movetime=0
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+[State 701, mutation probe]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, mutation probe]
+type=PosSet
+trigger1=1
+x=0
+y=0

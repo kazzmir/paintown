@@ -1,0 +1,71 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=1
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=0
+value=TicksPerSecond
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=1
+value=TicksPerSecond/7
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=2
+value=MatchNo
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=3
+value=MatchNo/2
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=4
+value=RoundNo
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=5
+value=TeamSide
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=6
+value=IsHelper
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=7
+value=TicksPerSecond*2
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=8
+value=MatchNo+5
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=9
+value=TicksPerSecond%7
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=10
+value=MatchNo=1
+[State 0, rate]
+type=VarSet
+trigger1=1
+fv=11
+value=TicksPerSecond>0

@@ -1,0 +1,156 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, fixed marker]
+type=SuperPause
+trigger1=Time=0
+time=0
+anim=S9992
+pos=25,-50
+sound=-1
+darken=0
+unhittable=0
+p2defmul=1
+[State 700, observation 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=GameWidth
+[State 700, observation 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=GameHeight
+[State 700, observation 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=ScreenWidth
+[State 700, observation 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=ScreenHeight
+[State 700, observation 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=ScreenPos X
+[State 700, observation 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=ScreenPos Y
+[State 700, observation 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=CameraPos X
+[State 700, observation 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=CameraPos Y
+[State 700, observation 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=CameraZoom
+[State 700, observation 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Pos X
+[State 700, observation 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Pos Y
+[State 700, observation 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Const240p(320)
+[State 700, observation 12]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=GameWidth/3
+[State 700, observation 13]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=ScreenWidth/3
+[State 700, observation 14]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=GameHeight/7
+[State 700, observation 15]
+type=VarSet
+trigger1=Time=0
+fv=15
+value=ScreenHeight/7
+[State 700, observation 16]
+type=VarSet
+trigger1=Time=0
+fv=16
+value=CameraZoom/3
+[State 700, observation 17]
+type=VarSet
+trigger1=Time=0
+fv=17
+value=ScreenPos X/3
+[State 700, observation 18]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=ScreenPos Y/3
+[State 700, observation 19]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=CameraPos X/3
+[State 700, observation 20]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=CameraPos Y/3
+[State 700, observation 21]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=GameWidth-ScreenWidth
+[State 700, observation 22]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=GameHeight-ScreenHeight
+[State 700, observation 23]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=ScreenPos Y-Pos Y

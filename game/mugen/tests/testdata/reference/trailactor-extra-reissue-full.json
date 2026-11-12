@@ -1,0 +1,258 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "9c4eeb9fb8fe9e718093eb109101dc964d90bbb1c64e8a02f3966e23c781af47",
+  "air_sha256": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "18c21dede34ffbafec0b399fb8965d640e5927defe86c9bab670fc02b7ccc08e",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 700,
+        "4": 9100,
+        "5": 8,
+        "6": 72,
+        "7": -120,
+        "8": 1,
+        "9": 138,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 1
+  },
+  "config_sha256": "86dbcf389530be9387de6c6f27b5175fd40725e736cd77b7aa4b4981303f96d8",
+  "controller_kind": "AfterImage",
+  "controller_count": 3,
+  "controller_states": [
+    700,
+    710
+  ],
+  "afterimage_time_count": 0,
+  "helper_count": 1,
+  "root_afterimage": true,
+  "root_afterimage_overrides": {},
+  "duration_modifier": null,
+  "helper_issue_time": 0,
+  "helper_destroy_time": null,
+  "helper_move_budget": 0,
+  "stop_time": 8,
+  "AfterImageMax": 1,
+  "actual_controller_counts": {
+    "AfterImage": 3,
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "Helper": 1,
+    "Pause": 1,
+    "PlayerPush": 3,
+    "PosSet": 2,
+    "ScreenBound": 3,
+    "VarSet": 12
+  },
+  "reissue_when_full": true,
+  "native_afterimage_max": 1,
+  "source_intent_verified_by_cns_air_parser": true,
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "dfc165f319ab337125934a66c015519ed78f819acf2989b4735e7495c501a5a6"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "root",
+      "region": [
+        160,
+        140,
+        1120,
+        330
+      ],
+      "nonbackground_pixels": 8568,
+      "bbox": [
+        640,
+        240,
+        931,
+        315
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            37,
+            37,
+            68
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            49,
+            49,
+            49
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            126,
+            103,
+            160
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            239,
+            189,
+            156
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            103,
+            68,
+            103
+          ],
+          "pixels": 477
+        },
+        {
+          "rgb": [
+            189,
+            115,
+            90
+          ],
+          "pixels": 477
+        },
+        {
+          "rgb": [
+            122,
+            83,
+            125
+          ],
+          "pixels": 297
+        },
+        {
+          "rgb": [
+            231,
+            148,
+            115
+          ],
+          "pixels": 297
+        }
+      ]
+    },
+    {
+      "entity_row": "helper1",
+      "region": [
+        160,
+        330,
+        1120,
+        450
+      ],
+      "nonbackground_pixels": 4284,
+      "bbox": [
+        856,
+        360,
+        931,
+        435
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            49,
+            49,
+            49
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            239,
+            189,
+            156
+          ],
+          "pixels": 1161
+        },
+        {
+          "rgb": [
+            189,
+            115,
+            90
+          ],
+          "pixels": 477
+        },
+        {
+          "rgb": [
+            231,
+            148,
+            115
+          ],
+          "pixels": 297
+        },
+        {
+          "rgb": [
+            66,
+            99,
+            165
+          ],
+          "pixels": 225
+        },
+        {
+          "rgb": [
+            132,
+            66,
+            49
+          ],
+          "pixels": 225
+        },
+        {
+          "rgb": [
+            165,
+            144,
+            125
+          ],
+          "pixels": 54
+        },
+        {
+          "rgb": [
+            165,
+            181,
+            222
+          ],
+          "pixels": 45
+        }
+      ]
+    },
+    {
+      "entity_row": "helper2",
+      "region": [
+        160,
+        450,
+        1120,
+        600
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

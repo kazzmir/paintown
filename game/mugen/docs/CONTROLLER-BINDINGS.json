@@ -1,0 +1,970 @@
+{
+  "target": "Elecbyte M.U.G.E.N 1.1 beta 1",
+  "scope": "source routes and audited gaps; not behavioral coverage",
+  "source_sha256": {
+    "engine/dust.go": "89850174a33a160d632c0fe6a293df0db56bbe363ba51f629e85faed8e44dcdd",
+    "character/dust.go": "1f8940618b3b9cd93e6a246414fe173b9e22b2b0e50c63740355b47b3cd490c1",
+    "engine/game_animation.go": "a625607cff6b8e45d56564b0e2d8a629c18d3789d068474da2096171d6ba016c",
+    "character/game_animation.go": "dc07d0f822240637310933d49e0b7843f4071e85515a65df326c630166f170e1",
+    "character/ko_sound.go": "6e46efe88d2ff2d29a6acf1df471f358b32646bc162e2dd0a6e573e28c715910",
+    "character/life.go": "9a033713d5527c6f70b2fc494261a1ea39481905dd3051925ae766b354e0be75",
+    "character/power.go": "dd885692cab05d47d254c546943702ec47bc567c7896d4a0943ce6ef9396fcbe",
+    "character/hit_damage.go": "8e89689375963981e73b6f3b0af787799ebaae921301c97481c547fb8fc3456d",
+    "character/reversal.go": "c72eb7586f8dc9b2ba12621c78d0f91d7ac62fef1b769a7110728a465a19b4ea",
+    "character/loader.go": "0eb5be41fbd347491b9e2dcdabf48e4626b8740364b36f801cdb7396b632a0d4",
+    "evaluator/validate.go": "8513131b59cdf3950928e3e5d5a19fe5d1c8f5ef8f0308f6c4a62b500f110c06",
+    "engine/assert_special.go": "f32c4532ceacac8fbe779d0e25c22003baf211ad9a4c744cd10640048ae5e7cc",
+    "engine/projectile.go": "e14a2afbcd12e977bdd437582ae2cec6d264a7e352491c5a207a1ced6fa8ab70",
+    "character/projectile.go": "bf8a8cf11497e0e4e2a1212ea3e35978dbf34ebc4da5a83d94ab9f6d1b9ceb5e",
+    "character/hit_chain.go": "e110798c10d7f4707482d73f632fb36a92df730826222e641b62afe24894b7d9",
+    "engine/after_image.go": "21231466aa235bacad93cf1abb467432c0f6dfcf8d70967637fb43dbd0bf6f61",
+    "character/after_image.go": "54660f3427ebe04f089a8331cfbe92ca8b2f4889499dc90d99109c7ef5d0dfe4",
+    "character/retire.go": "1e4573642c7f2fd34b2f2aa70534ca2131bdc70f6dec8a2065a0781b95d0d7ed",
+    "config/config.go": "b512188207fab2dbeda70b48709b06c28d7861278e4b5ce6b6fdd449885f4e45",
+    "match/match.go": "ddf893c1c3e20745b5b1da3e41628a0ae196b0b51a645951b7365624a8f63132",
+    "cns/hit_shake.go": "b54153e6de718858cf396d14ca5405f2eec0d7cc71b83c90551e1879f6f57790",
+    "engine/statemachine.go": "3927c6f17edb8bd2d13825071eab9d1e99e8c2386727f783e259e72db0cda15f",
+    "engine/parameters.go": "931d0a3473a9f398d44dd121b7883da57e2f886cf9d318ec889cdba42069eb32",
+    "character/character.go": "05ff7e6bd3662001902dd1b9f43d849915dbab99e16fb314147834140688fa16",
+    "character/player.go": "a9fb775bb0c3d87638fa50bef0c7a7b11cbed90b0254bc1f71cc44152c5a8654",
+    "character/explod.go": "765bea6d51dec568094dfd2a7e7ea3f753cdd5dfe6a7185e03ba37a222320b16",
+    "engine/explod.go": "26b65ee5033d6478e4b5a4dfbe53913fc3af97fa1a9296370c621e4e7fc1bdfa",
+    "engine/modify_explod.go": "b9ecd4380e92c3a33cd41bd3ca9b8ed539e12034f98ce71f1b63f36b0f648fc8",
+    "effect/scene.go": "90d49440e1e3d1f2e27254aaae4bcccb8878bf211264c42033c9a59417fd874e",
+    "character/actor_order.go": "49ec0333a344d9be424fb4e71cd278be4a3516c55e940745100299fceaa5fbf7",
+    "system/effects.go": "bb6cdbf1a97eb72f6ddac6ba25233d9572dcd140790aedadbf45930b44c4f192",
+    "render/perspective.go": "f6e549bf0737c7b1c02167b9645a39f403c2d5a75e129c66b71a11aae52a6e50",
+    "render/shadow.go": "8b3bf8c5b95e0835472bd43a9c3054ce5531c6e61c4ac489ad44ccba540e1285",
+    "stage/loader.go": "514411a8c51f301fb3f6e4e3aa3a464529d84324c2d79df9a7cc632cc6bc6cc5",
+    "render/alpha.go": "8b939718d5db8fb1bd297e59678bd8ecc138ee4ea509d0a4269f224e0d1b8ba9",
+    "render/nearest.go": "3c81318886a482d7c3c88604813209e0b8517aadcc85691e97dc292c92cc17b8",
+    "render/linear.go": "5a3c1ff8c295d5e3c2700805c3a5d5a0080ad9e1f63f6849657cf8d574681850",
+    "engine/drawing.go": "160df41e6afb94a1e34a9e850f553aac3a3a666e882eb483d92db79c52d16cf0",
+    "engine/trans.go": "b717dfdee4e242860e1ae8964f1d00df1071205327d3cca7d5ee94bcaff84dfe",
+    "engine/palette_fx.go": "fbfe30e579171d3b9c646462edfe324fe8c1053ff1e8366684238fe3dcb209c7",
+    "engine/env_color.go": "1942e610d264677741a74c7d033aac9ecf01d25dc0db7e8d77f460eb530318c3",
+    "engine/env_shake.go": "4792c308034f6cbd95c9d40de4c8a4c5f529270ff075a71f0ea2a917afcd3d06",
+    "engine/shake.go": "badeca8942018cda36f154190115c52d89bed797adb2adfa848c6a3b9cc8659b",
+    "engine/timeline.go": "5e8a6480a32dc404eef3ab04ad1124ad22907148f35bfee29fbbf3ac40fa126a",
+    "engine/round_clock.go": "8afc81824782a7518c9df09e295232dfb1239a58889e12c7ede54aa315c38dca",
+    "palette/state.go": "9eefaae5b93fb3e8089f86969c029cc2a79b88443a1f19ba78b31fa25060f8fd",
+    "palette/controller_effect.go": "cc22d4df913b1207993e8bbe133d44b6a76a3ce25a5c8805e6ef02325f8aae60",
+    "palette/hit_effect.go": "14f801c3823004401e2f8183cd25e536ffd9ea32dca7d230dcc38c35816d978f",
+    "render/palette.go": "1b628fbb7df6b671492bdc501a990036af79f42338de41e058ab4dde04628dd6",
+    "character/helper.go": "c1818f63af4509c9401dcaf336e359db82ba1d4193595f5d6a9ca23d8e90998f",
+    "character/tick.go": "d6770675c30d22d7d05079ab8c8a2679610eb1eecc8149a0d8ee7a02823c24c1",
+    "background/background.go": "f36563eac6933881a62559a51831f86e03b3b60f4e840644eec4a79ad815b4d3",
+    "stage/stage.go": "1b332abc2baa19dea173ed7c96ea6c1ad5b468c3ea084476e6231765500ce55f",
+    "font/font.go": "7ed8a64b51c3a1473de27f23f33a3ca8d47401e829067584697fc730821a8fb7",
+    "system/fight_state.go": "7fb0c79a76b3ad04813f98d09b5012bb6e3da9955123ea415d2ab4e0b1931bbe",
+    "system/hud.go": "ae4528bf2c55089a6979e2f9263cbc763f29bcd9ac1056b0cb34a203224bacd7",
+    "system/hud_message.go": "ca131f1ba01d7b4752073697ea67548e92ffcdf8f3c1da296a5b2a067042945f",
+    "engine/self_binding.go": "88464c1e2d27b234098427782cbcb7364d3020403dd7399d1fb8667315d550f2",
+    "engine/target_self_binding.go": "ea5d51bfca67e807ddf9a18e5e7baf25a3e9b0ba81d814efaeb479252a747291",
+    "character/binding.go": "02b6b4732e749ad3b992d2d9f18ceca13a2b741c67e8b2bb298e8ba1170dd44d",
+    "character/targets.go": "fba2c3077fdff85e0b5ed0925c607248e5ab9a3f1693b1f26b360af66ff0998e",
+    "character/world.go": "21e4873e628e3728504ab5683e4faee59c1ceade7d532161dcf65e3a11e4b548"
+  },
+  "summary": {
+    "manual": 89,
+    "registered": 89,
+    "typed": 77,
+    "fallback": 12,
+    "missing": [],
+    "consumer_status_counts": {
+      "stub": 0,
+      "unconsumed-render-field": 0,
+      "partial-consumer": 9,
+      "missing-dispatcher": 0,
+      "bounded-native-consumer": 20,
+      "route-only": 60
+    },
+    "extra_registered_aliases": [
+      "fvaradd",
+      "fvarrangeset",
+      "fvarset"
+    ],
+    "observed_assertspecial_consumers": [
+      "globalnoshadow",
+      "intro",
+      "invisible",
+      "noairguard",
+      "noautoturn",
+      "nobardisplay",
+      "nobg",
+      "nocrouchguard",
+      "nofg",
+      "nojugglecheck",
+      "noko",
+      "nokoslow",
+      "nokosnd",
+      "noshadow",
+      "nostandguard",
+      "nowalk",
+      "roundnotover",
+      "timerfreeze",
+      "unguardable"
+    ]
+  },
+  "controllers": [
+    {
+      "name": "afterimage",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAfterImage",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "AFTERIMAGE.md: typed native schema/order, recording/palette/render and global root/helper context admission/lifetime; PROJECTILE-TRAILS.md adds projectile admission/lifetime/palette/phase coverage; broader resource/profile variants open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "afterimagetime",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAfterImageTime",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "AFTERIMAGE.md: native canonical/alias schema, missing-context evaluation gate and retained history/expiry/resume consumer; wider variants open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "allpalfx",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAllPalFX",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "GLOBAL-PALETTE-FX.md: native independent global clock, parameter merge and two-stage actor/effect/stage/HUD/portrait/font production drawing; wider variants remain open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "angleadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleAdd",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ANGLES-OFFSET.md: native persistent float32 angle addition and renderer consumer; wider combinations open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "angledraw",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleDraw",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ANGLES-OFFSET.md: native activation, cumulative frame scales, value/scale evaluation and production rotation; final raster gates explicit"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "anglemul",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleMul",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ANGLES-OFFSET.md: native persistent float32 multiplication and omitted-zero behavior; wider combinations open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "angleset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAngleSet",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ANGLES-OFFSET.md: native persistent float32 angle register, omitted zero and production drawing activation; wider combinations open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "appendtoclipboard",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleAppendToClipboard",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "stores raw text; params/formatting absent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "assertspecial",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAssertSpecial",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "ASSERT-SPECIAL.md: native literal schema including accepted undocumented noko, global background/foreground/bar consumers and per-game-tick reset under frozen Pause/SuperPause; ASSERT-SPECIAL-CONTROLS.md adds native posture-specific automatic guard entry, scripted-guard preservation, attacker unguardable and nowalk entry with owned keyboard replay/render evidence; NO-KO.md adds measured per-entity non-reviving death latches, current-pass global NoKO assertions, self-KO entry/corpse-contact and paused-KO lifecycle; NO-KO-AUDIO.md adds measured committed-death KOvoice/echo gating with contact-independent channel0 interruption and native/private-application PCM; broader helper/projectile/pause/music/round variants remain; SHADOWS.md adds shared shadow suppression"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "attackdist",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "attackmulset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleAttackMulSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "bgpalfx",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleBGPalFX",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "GLOBAL-PALETTE-FX.md: native global clock and stage-only palette pass, independent cancellation/composition; sampled actors/HUD unchanged despite manual wording"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bindtoparent",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleBindToParent",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "SELF-BINDING.md: helper constraints, phase/velocity/facing/lifecycle; wider interactions open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bindtoroot",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleBindToRoot",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "SELF-BINDING.md: root constraints, phase/velocity/facing/lifecycle; wider interactions open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "bindtotarget",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleBindToTarget",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "TARGET-SELF-BINDING.md: native selection, immediate caller position, reverse constraint, retained/quantized offsets and profiles; wider interactions open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "changeanim",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleChangeAnim",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "changeanim2",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleChangeAnim2",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "changestate",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleChangeState",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "clearclipboard",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleClearClipboard",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "ctrlset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleCtrlSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "defencemulset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleDefenceMulSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "destroyself",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleDestroySelf",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "displaytoclipboard",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleDisplayToClipboard",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "stores raw text; params/formatting absent"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "envcolor",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleEnvColor",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ENV-COLOR.md: native packed RGB/evaluation/global clocks, finite overlays and negative-duration stage suppression, actor/effect/foreground/palette production consumers; wider variants open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "envshake",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleEnvShake",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ENV-SHAKE.md: native schemas/evaluation, author-local amplitude, frequency normalization, pending/current clocks and actual fixed-overlay/viewport consumers; wider variants open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "explod",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleExplod",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "EXPLOD-ATTACHMENT.md: native entity/legacy binding, motion and clocks; EFFECT-ORDERING.md: measured priorities/ties/creation order consumed; SHADOWS.md adds typed creation shadow validation/evaluation/order and drawing; EXPLOD-CREATION-PALETTES.md and EXPLOD-PALETTE-CONTEXTS.md add typed creation ownership/remapping, common/localFX separation and mapping replacement; EXPLOD-CREATION-DRAWING.md adds typed creation angles/trans/alpha and conditional priority evaluation; EXPLOD-CAPACITY-RANDOM.md adds typed ordered random displacements, global root/helper/retired-owner and hitspark admission, zero-range draw phases and config binding; broader variants and strict sampling differences remain"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "explodbindtime",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "EXPLOD-BINDING.md: native ID/time/alias/geometry controls; broader ownership/pause interactions open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "fallenvshake",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleFallEnvShake",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "forcefeedback",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleForceFeedback",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "FORCE-FEEDBACK.md: exact supplied beta compiler lowers this name to Null;18 native programs prove ignored parameters/ordinary triggers across1.0/1.1 profiles; no host/device dispatch"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gamemakeanim",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleGameMakeAnim",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "SYSTEM-EFFECTS.md: typed native schema/defaults/error/order, split displacement RNG before late under, common-resource cues, caller/profile math, helper/slot2, facing/global-unit random offsets, independent Game admission, negative-action normalization and measured integer origins, palette/layer/pause consumers; all138 recorded native programs pass; M4dm dependency worlds39/54 exact with15 max-one RGB failures retained; INITIAL-PLACEMENT.md fixes shared startup drawing; HUD-TIMING.md adds bounded message lifetime consumers and closes five held overlays; wider phase, font and strict raster obligations remain"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "gravity",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleGravity",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "helper",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHelper",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitAdd",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "updates ComboCount; no production reader of that field was found"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "hitby",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitdef",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitDef",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfalldamage",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleHitFallDamage",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfallset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitFallSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitfallvel",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleHitFallVel",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitoverride",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "hitvelset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleHitVelSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "lifeadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleLifeAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "lifeset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleLifeSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "makedust",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleMakeDust",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "SYSTEM-EFFECTS.md: typed measured int/float tuple schemas, spacing/aggregate round-phase clock, axis-interleaved RNG, common120 producer, ordinary shared pool/noNumExplod, helper retirement, facing offset without sprite flip, palette/layer/pause/lifetime consumers;166 native programs/1728 values pass after measured shared cold-start camera publication; INITIAL-PLACEMENT.md: seven original startup worlds now exact after measured root drawing/first-fight X/Y reset; HUD-TIMING.md records bounded KO start/real-frame lifetime consumers and closes five held startup overlays; visible HUD RGB/font, finite-color and shadow differences remain strict; wider Round/Fight/Win timing remains open; STARTUP-CAMERA.md records four independent camera controls with a separate negative-start constraint failure; broader camera/KO-slowdown/resource/round variants remain"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "modifyexplod",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "MODIFY-EXPLOD.md: native mutation/schema consumers; bounded shared alpha now matches; EFFECT-ORDERING.md: measured actor/effect priority and ties consumed; SHADOWS.md adds shared shadow drawing; MODIFY-EXPLOD-ENUMS.md: independently measured quoted modes skip alpha compilation/evaluation and retain drawing; broader pause/projection variants and unwaived raster gates remain"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "movehitreset",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleMoveHitReset",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "nothitby",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "null",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "offset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleOffset",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "ANGLES-OFFSET.md: native frame-local partial updates, constants/facing/profile geometry and production drawing; wider combinations open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "palfx",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePalFX",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "PALETTE-FX.md: native schemas/evaluation, helper ownership, expiry/sine, unclamped indexed/RGB production drawing; wider global/contact/creation combinations open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "parentvaradd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "parentvarset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "pause",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePause",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "playerpush",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "func",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "playsnd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePlaySnd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "posadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePosAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "posfreeze",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePosFreeze",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "posset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePosSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "poweradd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePowerAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "powerset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handlePowerSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "projectile",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleProjectile",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "PROJECTILE-TRAILS.md: typed nested schemas, ordered admission, global context ownership/release, saved palettes and phase/pause history consumers; SHADOWS.md adds measured current-only stage shadows, alpha/fade/geometry/flags/layer consumers; wider resource/profile variants and unwaived raster differences remain"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "remappal",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleRemapPal",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "removeexplod",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleRemoveExplod",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "reversaldef",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleReversalDef",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "screenbound",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleScreenBound",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "selfstate",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSelfState",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "sndpan",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSndPan",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "sprpriority",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSprPriority",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "statetypeset",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleStateTypeSet",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "fallback literal handling; full schema/version/error matrix open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "stopsnd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleStopSnd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "superpause",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleSuperPause",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetbind",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetBind",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetdrop",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetDrop",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetfacing",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetFacing",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetlifeadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetLifeAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetpoweradd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetPowerAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetstate",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetState",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetveladd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetVelAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "targetvelset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTargetVelSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "trans",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleTrans",
+      "consumer_status": "bounded-native-consumer",
+      "evidence": [
+        "TRANS.md: native schemas/evaluation, AIR defaults, per-actor overrides, expiry/frozen frame/transition and shared blend consumer; wider pause/RGBA combinations open"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "turn",
+      "registered": true,
+      "parameter_route": "fallback",
+      "handler": "handleTurn",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varadd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varrandom",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarRandom",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varrangeset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarRangeSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "varset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVarSet",
+      "consumer_status": "partial-consumer",
+      "evidence": [
+        "native literal-float integer rejection found in M4cj setup diagnostic; residual schema closure pending"
+      ],
+      "variants_complete": false
+    },
+    {
+      "name": "veladd",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVelAdd",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "velmul",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVelMul",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "velset",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVelSet",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "victoryquote",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleVictoryQuote",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    },
+    {
+      "name": "width",
+      "registered": true,
+      "parameter_route": "typed",
+      "handler": "handleWidth",
+      "consumer_status": "route-only",
+      "evidence": [],
+      "variants_complete": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f8f181aba1fdb42ec48a474f6e97470363f6386ef6c94d2d994ff4a302b43864",
+  "air_sha256": "c90460b3a57b3d384cc6ddba0adc34c85c8588b53cb142d8b99514934120d1dc",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [],
+  "bank": "var",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "load_error": "Error detected.\n\nNeed at least one state controller\nError in [Statedef 700]\nError in probe.cns:149\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 830724023\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...Freeing player RC Kung Fu Man...CMD...CNS...SFF...AIR...SND...Misc...OK\nCharacter kfm.def failed to load\n\n",
+  "expected_load_error": "Need at least one state controller"
+}

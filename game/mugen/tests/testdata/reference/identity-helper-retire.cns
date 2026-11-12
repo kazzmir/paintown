@@ -1,0 +1,114 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=700
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, spawn first]
+type=Helper
+trigger1=Time=0 && Facing=1
+id=777
+stateno=800
+[State 700, spawn second]
+type=Helper
+trigger1=Time=4 && Facing=1
+id=888
+stateno=801
+[State 700, retirement 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=NumHelper
+[State 700, retirement 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Helper,ID
+[State 700, retirement 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Helper,Time
+[State 700, retirement 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=PlayerIDExist((Helper,ID))
+[State 700, retirement 4]
+type=VarSet
+trigger1=Time=3
+fv=4
+value=NumHelper
+[State 700, retirement 5]
+type=VarSet
+trigger1=Time=3
+fv=5
+value=PlayerIDExist(Var(0))
+[State 700, retirement 6]
+type=VarSet
+trigger1=Time=3
+fv=6
+value=Var(0)
+[State 700, retirement 7]
+type=VarSet
+trigger1=Time=3
+fv=7
+value=Var(1)
+[State 700, retirement 8]
+type=VarSet
+trigger1=Time=5
+fv=8
+value=Helper,ID
+[State 700, retirement 9]
+type=VarSet
+trigger1=Time=5
+fv=9
+value=NumHelper
+[State 700, retirement 10]
+type=VarSet
+trigger1=Time=5
+fv=10
+value=Helper,IsHelper(888)
+[State 700, retirement 11]
+type=VarSet
+trigger1=Time=5
+fv=11
+value=NumHelper(777)
+[Statedef 800]
+physics=N
+anim=9990
+[State 800, publish old ID]
+type=ParentVarSet
+trigger1=Time=0
+v=0
+value=ID
+[State 800, retire]
+type=DestroySelf
+trigger1=Time=1
+[State 800, must abort]
+type=ParentVarSet
+trigger1=Time=1
+v=1
+value=99
+[Statedef 801]
+physics=N
+anim=9990
+[State 801, wait]
+type=Null
+trigger1=1

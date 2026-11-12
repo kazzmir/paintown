@@ -1,0 +1,427 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "14e78925feedbb0f7b299fce5bd6e2b729c3249731a628773c92db951064fca4",
+  "air_sha256": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "28e8ee3f500c1109771cf558ffd01638f97e327cda38f7c6146b22550a4ae8d2",
+      "variables": {
+        "0": 0,
+        "1": 1,
+        "2": 77,
+        "3": 1,
+        "4": 1,
+        "5": 0,
+        "6": 8,
+        "7": 0,
+        "8": 0,
+        "9": 138,
+        "10": 0,
+        "11": 1
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "controller_kind": "Projectile",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "afterimage_count": 0,
+  "helper_count": 0,
+  "actual_controller_counts": {
+    "ChangeState": 2,
+    "PlayerPush": 2,
+    "ScreenBound": 2,
+    "PosSet": 2,
+    "PalFX": 1,
+    "Projectile": 1,
+    "VarSet": 13,
+    "DisplayToClipboard": 1,
+    "AppendToClipboard": 1,
+    "Pause": 1
+  },
+  "declared_states": [
+    0,
+    700,
+    701,
+    5900
+  ],
+  "full_controller_intent": [
+    {
+      "state": 5900,
+      "type": "ChangeState",
+      "params": {
+        "value": "0"
+      }
+    },
+    {
+      "state": 0,
+      "type": "ChangeState",
+      "params": {
+        "value": "IfElse(TeamSide=1,700,701)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "PlayerPush",
+      "params": {
+        "value": "0"
+      }
+    },
+    {
+      "state": 700,
+      "type": "ScreenBound",
+      "params": {
+        "value": "0",
+        "movecamera": "0,0"
+      }
+    },
+    {
+      "state": 700,
+      "type": "PosSet",
+      "params": {
+        "x": "0",
+        "y": "0"
+      }
+    },
+    {
+      "state": 700,
+      "type": "PalFX",
+      "params": {
+        "time": "99999",
+        "add": "64,0,0",
+        "mul": "256,256,256"
+      }
+    },
+    {
+      "state": 700,
+      "type": "Projectile",
+      "params": {
+        "projid": "77",
+        "projanim": "9100",
+        "postype": "p1",
+        "offset": "-160,-80",
+        "velocity": "30,0",
+        "projremove": "0",
+        "projremovetime": "-1",
+        "projedgebound": "4000",
+        "projstagebound": "4000",
+        "projheightbound": "-4000,4000",
+        "ownpal": "0",
+        "afterimage.time": "((Var(11):=Var(11)+1))*0+(-1)",
+        "afterimage.length": "60",
+        "afterimage.timegap": "1",
+        "afterimage.framegap": "1",
+        "afterimage.palcolor": "256",
+        "afterimage.palinvertall": "0",
+        "afterimage.palbright": "0,0,0",
+        "afterimage.palcontrast": "256,256,256",
+        "afterimage.palpostbright": "0,0,0",
+        "afterimage.paladd": "0,0,0",
+        "afterimage.palmul": "((Var(14):=Var(14)+1))*0+(1),1,1",
+        "afterimage.trans": "none"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "v": "12",
+        "value": "77"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "0",
+        "value": "Var(10)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "1",
+        "value": "Var(11)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "2",
+        "value": "Var(12)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "3",
+        "value": "NumProj"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "4",
+        "value": "NumProjID(77)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "5",
+        "value": "NumHelper"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "6",
+        "value": "Time"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "7",
+        "value": "Pos X"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "8",
+        "value": "Pos Y"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "9",
+        "value": "GameTime"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "10",
+        "value": "Var(13)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "VarSet",
+      "params": {
+        "fv": "11",
+        "value": "Var(14)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "DisplayToClipboard",
+      "params": {
+        "text": "\"P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\"",
+        "params": "FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "AppendToClipboard",
+      "params": {
+        "text": "\"P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\"",
+        "params": "FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)"
+      }
+    },
+    {
+      "state": 700,
+      "type": "Pause",
+      "params": {
+        "time": "99999",
+        "movetime": "0"
+      }
+    },
+    {
+      "state": 701,
+      "type": "PlayerPush",
+      "params": {
+        "value": "0"
+      }
+    },
+    {
+      "state": 701,
+      "type": "ScreenBound",
+      "params": {
+        "value": "0",
+        "movecamera": "0,0"
+      }
+    },
+    {
+      "state": 701,
+      "type": "PosSet",
+      "params": {
+        "x": "0",
+        "y": "0"
+      }
+    }
+  ],
+  "native_afterimage_max": 16,
+  "snapshot_expressions": [
+    "Var(10)",
+    "Var(11)",
+    "Var(12)",
+    "NumProj",
+    "NumProjID(77)",
+    "NumHelper",
+    "Time",
+    "Pos X",
+    "Pos Y",
+    "GameTime",
+    "Var(13)",
+    "Var(14)"
+  ],
+  "hitpause_control": false,
+  "source_intent_verified_by_cns_air_parser": true,
+  "projectile_trail_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "321ae54a55635fd018b5e172e19b36583c0d9e50a285a35fae395cdae29f8119"
+  },
+  "native_entity_rows": [
+    {
+      "entity_row": "root",
+      "region": [
+        160,
+        140,
+        1120,
+        330
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    },
+    {
+      "entity_row": "projectile1",
+      "region": [
+        160,
+        330,
+        1120,
+        450
+      ],
+      "nonbackground_pixels": 38556,
+      "bbox": [
+        250,
+        360,
+        1045,
+        435
+      ],
+      "top_colors": [
+        {
+          "rgb": [
+            79,
+            49,
+            49
+          ],
+          "pixels": 13896
+        },
+        {
+          "rgb": [
+            255,
+            189,
+            156
+          ],
+          "pixels": 10449
+        },
+        {
+          "rgb": [
+            219,
+            115,
+            90
+          ],
+          "pixels": 3816
+        },
+        {
+          "rgb": [
+            255,
+            148,
+            115
+          ],
+          "pixels": 2673
+        },
+        {
+          "rgb": [
+            96,
+            99,
+            165
+          ],
+          "pixels": 1800
+        },
+        {
+          "rgb": [
+            162,
+            66,
+            49
+          ],
+          "pixels": 1800
+        },
+        {
+          "rgb": [
+            113,
+            49,
+            49
+          ],
+          "pixels": 1737
+        },
+        {
+          "rgb": [
+            253,
+            115,
+            90
+          ],
+          "pixels": 477
+        }
+      ]
+    },
+    {
+      "entity_row": "projectile2",
+      "region": [
+        160,
+        450,
+        1120,
+        600
+      ],
+      "nonbackground_pixels": 0,
+      "bbox": null,
+      "top_colors": []
+    }
+  ]
+}

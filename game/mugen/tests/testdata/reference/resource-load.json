@@ -1,0 +1,271 @@
+{
+  "cases": {
+    "sound-missing": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "sound": "missing.snd"
+      },
+      "clipboard_in_cmd": true,
+      "expected_load_error": "Could not open file: missing.snd"
+    },
+    "st-blank": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st": ""
+      },
+      "clipboard_in_cmd": true,
+      "expected_load_error": "Could not open file: "
+    },
+    "st-omitted": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "omitted_files": [
+        "st"
+      ],
+      "expected_load_error": "Error loading chars/kfm/kfm.def"
+    },
+    "st10-missing": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "27c9b61cdf0c2c4706f8f721a7cefb7789f93a8f89662796b5b3d7573b6d5dd5",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st10": "missing.cns"
+      },
+      "clipboard_in_cmd": true
+    },
+    "st10-version11": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "7473ab64bb78c9ebd2b92b66d0ac2dadd56f632d0e1c08e1ed3cd26608330643",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st10": "missing.cns"
+      },
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    },
+    "st12-missing": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "95a259749332ef5d2f656fba2a47a2dfb910aa30f831a701039ac598fe483b9c",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st12": "missing.cns"
+      },
+      "clipboard_in_cmd": true
+    },
+    "st8-missing": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st8": "missing.cns"
+      },
+      "clipboard_in_cmd": true,
+      "expected_load_error": "Could not open file: missing.cns"
+    },
+    "st9-missing": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st9": "missing.cns"
+      },
+      "clipboard_in_cmd": true,
+      "expected_load_error": "Could not open file: missing.cns"
+    },
+    "st9-version11": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st9": "missing.cns"
+      },
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1",
+      "expected_load_error": "Could not open file: missing.cns"
+    },
+    "stcommon-missing": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "stcommon": "missing.cns"
+      },
+      "clipboard_in_cmd": true,
+      "expected_load_error": "Can't find file missing.cns"
+    },
+    "st9-blank": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "0b82fd968770bd2b6634af150398a285cd5ca89b9211e3ed359ecda299199bce",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "st9": ""
+      },
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    },
+    "sound-blank": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "e7bcdbcb16fd8e1b59a25e083854023b5900c8a9d3fb6b4b262f4b964298361d",
+      "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "f0cb359575e1a174f253d7b231be2dccdf1c868b7863f63521d176235f3d5b4f",
+          "variables": {
+            "0": 111,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "sound": ""
+      },
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "fixture_sha256": {
+    ".cns": "81e2182db231c01ca9eab5c40f54ec66762d38f69e4502f5d435243c8f9b10c2",
+    ".cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    ".air": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+    ".stage.def": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+    ".rate.json": "75e9eae850104145463a0a41237f100bd884d661e89b1acf53d4f32d85d5c2f1"
+  },
+  "config_sha256": "2a5723edf2d1884cbd0db19234123a4d020a399b81c7c164b151c065f9fe8eac",
+  "recipe": {
+    "name": "clockrate-fps30",
+    "config_game_speed": 30,
+    "options_game_speed": 0,
+    "bank": "fvar",
+    "pages": [
+      0
+    ]
+  },
+  "capture": {
+    "path": "animation-page0.png",
+    "sha256": "aeca4815dffa0793fa30153c9f3bd617b38a8245ce266e4bc33eae5222456889",
+    "variables": {
+      "0": 30,
+      "1": 4,
+      "2": 1,
+      "3": 0,
+      "4": 1,
+      "5": 1,
+      "6": 0,
+      "7": 60,
+      "8": 6,
+      "9": 2,
+      "10": 1,
+      "11": 1
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "8397ee7ee34368b88e4522e493ed78a7bedd7e92d99dc4103d3c6aef50c00f0c",
+  "air_sha256": "58096aa2b92c951efcd0d69fc16b3bc6d21ccc20c312bdf3929bbdf5f2e4769f",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "77f3dd2128dea1551327500ae71da91c76a8abbdedb59c89a82cbbd2d09a0f1d",
+      "variables": {
+        "0": 40,
+        "1": 240,
+        "2": 0,
+        "3": -80,
+        "4": 40,
+        "5": 240,
+        "6": 1,
+        "7": -80,
+        "8": 160,
+        "9": 120,
+        "10": 2,
+        "11": -200
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "9ff1bea0c78abb6373a699747db448e639ffd2e3f3c15ec73beecb1ab604b88c",
+      "variables": {
+        "12": 40,
+        "13": 520,
+        "14": 0,
+        "15": 200,
+        "16": 160,
+        "17": 400,
+        "18": 1,
+        "19": 80,
+        "20": 160,
+        "21": 400,
+        "22": 2,
+        "23": 80
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "localcoord": "640,480",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b57e50f5215336889cace9aad780533214255ba7f894aa9e56178748ad15b408",
+  "cmd_sha256": "fae81d43a5e4c5dd3da45731fa5ab00657529a8b1f6e0ff2e93c17e4ba2fbc3e",
+  "random_seed": 1118537808,
+  "seed_log_sha256": "01e2b548984dcc26a7d9b53fec768b980cec058923c24eed658382d3e25ffd19",
+  "state_language_version": "1.1",
+  "full_controller_state_trigger_parameter_air_cmd_stage_intent_verified": true,
+  "native_run": "temp/reference-runs/m4do-bootcamera-local640",
+  "native_scope_notes": "X startup publication only; no claim for Y, reset/rematch camera, paused draw cache, helpers or fully moving startup stages. Negative80 P2 reaches screenright margin305 after P1 publication; retain actual145 PosX."
+}

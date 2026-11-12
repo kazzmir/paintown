@@ -1,0 +1,32 @@
+[Output]
+filename = formats.sff
+[Option]
+sprite.autocrop = 0
+sprite.usepal = -1
+sprite.compress.5 = rle5
+[Pal]
+1,1,indexed5.png,0,31
+[Option]
+sprite.usepal=1,1
+sprite.removecolors=32,255
+sprite.compress.8 = rle8
+[Sprite]
+0,0,indexed5.png,-3,7
+[Option]
+sprite.compress.8 = png8
+sprite.usepal=-1
+sprite.removecolors=-1
+[Sprite]
+0,1,indexed8.png,2,-4
+[Option]
+sprite.compress.24 = png24
+sprite.compress.32 = png32
+[Sprite]
+0,2,rgb.png,0,0
+0,3,rgba.png,0,0
+[Option]
+sprite.compress.24 = none
+sprite.compress.32 = none
+[Sprite]
+0,4,rgb-raw.png,0,0
+0,5,rgba-raw.png,0,0

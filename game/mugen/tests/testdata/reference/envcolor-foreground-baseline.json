@@ -1,0 +1,499 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "af39931621be88af88c22167d6fb19ff3f8127ac09cbf0c3445a084d708204e1",
+  "air_sha256": "89d2428a42e7824c0055f263404da4fdcde7e0318ac3411c7b02cb4511dbe7d9",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "89cd3848f7da79442ebaed4980974b2a660f3cb85ea6f433a9ac5feb283162c1",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "1ce2f7d576cdce7c3bf5e8f5468a7802452b4bae949ce2860b7039ef1317b72e",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controllers_by_state": {
+    "700": {
+      "EnvColor": 1
+    }
+  },
+  "continuous_issue": false,
+  "env_color_render": {
+    "region": [
+      200,
+      140,
+      1080,
+      670
+    ],
+    "native_crop_sha256": "42ea8145be776f12974c9e09f681b2e1600ec1cec297883619ffd547e60872f0",
+    "calibration_json": "global-palette-points.json",
+    "calibration_sha256": "a53162fe0c6598983232d7aba4ac7c095d75fda67139de5c1bbda06c4f0c3383",
+    "native_rgb_samples": [
+      {
+        "kind": "actor",
+        "point": [
+          635,
+          286
+        ],
+        "rgb": [
+          125,
+          131,
+          116
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          626,
+          325
+        ],
+        "rgb": [
+          92,
+          110,
+          101
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          638,
+          289
+        ],
+        "rgb": [
+          125,
+          131,
+          116
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          641,
+          325
+        ],
+        "rgb": [
+          82,
+          106,
+          101
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          626,
+          331
+        ],
+        "rgb": [
+          100,
+          116,
+          108
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          620,
+          349
+        ],
+        "rgb": [
+          130,
+          128,
+          109
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          620,
+          352
+        ],
+        "rgb": [
+          130,
+          128,
+          109
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          644,
+          325
+        ],
+        "rgb": [
+          82,
+          106,
+          101
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          629,
+          331
+        ],
+        "rgb": [
+          100,
+          122,
+          115
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          617,
+          355
+        ],
+        "rgb": [
+          130,
+          128,
+          109
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          635,
+          331
+        ],
+        "rgb": [
+          72,
+          97,
+          92
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          653,
+          355
+        ],
+        "rgb": [
+          116,
+          124,
+          108
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          629,
+          334
+        ],
+        "rgb": [
+          100,
+          116,
+          108
+        ]
+      },
+      {
+        "kind": "actor",
+        "point": [
+          659,
+          358
+        ],
+        "rgb": [
+          108,
+          116,
+          100
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          524,
+          457
+        ],
+        "rgb": [
+          49,
+          54,
+          47
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          500,
+          448
+        ],
+        "rgb": [
+          106,
+          97,
+          71
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          455,
+          286
+        ],
+        "rgb": [
+          92,
+          110,
+          101
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          515,
+          427
+        ],
+        "rgb": [
+          123,
+          115,
+          84
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          404,
+          370
+        ],
+        "rgb": [
+          121,
+          122,
+          92
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          527,
+          412
+        ],
+        "rgb": [
+          124,
+          123,
+          100
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          497,
+          442
+        ],
+        "rgb": [
+          146,
+          130,
+          90
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          536,
+          226
+        ],
+        "rgb": [
+          117,
+          136,
+          131
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          479,
+          226
+        ],
+        "rgb": [
+          158,
+          163,
+          161
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          449,
+          151
+        ],
+        "rgb": [
+          182,
+          178,
+          227
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          410,
+          241
+        ],
+        "rgb": [
+          195,
+          194,
+          220
+        ]
+      },
+      {
+        "kind": "stage",
+        "point": [
+          326,
+          166
+        ],
+        "rgb": [
+          206,
+          202,
+          234
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1038,
+          16
+        ],
+        "rgb": [
+          49,
+          49,
+          49
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1065,
+          67
+        ],
+        "rgb": [
+          132,
+          66,
+          49
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1053,
+          28
+        ],
+        "rgb": [
+          66,
+          99,
+          165
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1056,
+          34
+        ],
+        "rgb": [
+          189,
+          115,
+          90
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1050,
+          37
+        ],
+        "rgb": [
+          231,
+          148,
+          115
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1053,
+          31
+        ],
+        "rgb": [
+          165,
+          181,
+          222
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          864,
+          57
+        ],
+        "rgb": [
+          185,
+          188,
+          199
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          1062,
+          37
+        ],
+        "rgb": [
+          239,
+          189,
+          156
+        ]
+      },
+      {
+        "kind": "hud",
+        "point": [
+          902,
+          20
+        ],
+        "rgb": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "kind": "clear",
+        "point": [
+          300,
+          650
+        ],
+        "rgb": [
+          255,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "outer",
+        "point": [
+          100,
+          400
+        ],
+        "rgb": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+}

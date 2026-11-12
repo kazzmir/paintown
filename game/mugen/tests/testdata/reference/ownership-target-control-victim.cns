@@ -1,0 +1,148 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+[State 701, wait]
+type=Null
+trigger1=1
+[State 701, reset counts]
+type=VarRangeSet
+trigger1=Time=0
+first=30
+last=32
+value=0
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=1
+[State 5000, wait]
+type=Null
+trigger1=1
+[Statedef 900]
+movetype=H
+physics=N
+[State 900, unexpected owner]
+type=VarSet
+trigger1=1
+fv=0
+value=999
+[Statedef 901]
+movetype=H
+physics=N
+[State 901, unexpected owner]
+type=VarSet
+trigger1=1
+fv=21
+value=222
+[Statedef 902]
+movetype=H
+physics=N
+
+[State 902, record 25]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=222
+
+[State 902, record 26]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=Anim
+
+[State 902, record 27]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=AnimExist(9100)
+
+[State 902, record 28]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=AnimExist(9200)
+
+[State 902, record 29]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Pos X
+
+[State 902, record 30]
+type=VarSet
+trigger1=Time=0
+fv=30
+value=Const(size.height)
+
+[State 902, record 31]
+type=VarSet
+trigger1=Time=0
+fv=31
+value=Var(30)
+
+[State 902, record 32]
+type=VarSet
+trigger1=Time=0
+fv=32
+value=Var(31)
+
+[State 902, record 33]
+type=VarSet
+trigger1=Time=0
+fv=33
+value=Var(32)
+
+[State 902, record 34]
+type=VarSet
+trigger1=Time=0
+fv=34
+value=AnimElemTime(1)
+
+[State 902, record 35]
+type=VarSet
+trigger1=Time=0
+fv=35
+value=SelfAnimExist(9200)
+
+[Statedef -3]
+[State -3, count]
+type=VarAdd
+trigger1=1
+v=30
+value=1
+
+[Statedef -2]
+[State -2, count]
+type=VarAdd
+trigger1=1
+v=31
+value=1
+[State -2, own position while foreign]
+type=VarSet
+trigger1=StateNo=900 && Time=0
+fv=36
+value=Pos X
+[State -2, own constant while foreign]
+type=VarSet
+trigger1=StateNo=900 && Time=0
+fv=37
+value=Const(size.height)

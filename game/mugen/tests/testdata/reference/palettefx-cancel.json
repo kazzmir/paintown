@@ -1,0 +1,206 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "2b4ae244db1712035441bee8bc1036fa877b78560a0a6700514af7780a1e1f3d",
+  "air_sha256": "89d2428a42e7824c0055f263404da4fdcde7e0318ac3411c7b02cb4511dbe7d9",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "00d1cd1850cbd750408c7350840711a55a4b2f5e432b8f5a3ff8a70ddfeb5e05",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "controller_kind": "PalFX",
+  "controller_state": 700,
+  "controller_count": 2,
+  "palette_render": {
+    "region": [
+      560,
+      270,
+      875,
+      615
+    ],
+    "native_crop_sha256": "8e7cf691604de8e18dbc7e84c5b82e6a66d36acaf8ce19f792c6c9abc726e17f",
+    "native_rgb_samples": [
+      {
+        "point": [
+          635,
+          286
+        ],
+        "rgb": [
+          49,
+          49,
+          49
+        ]
+      },
+      {
+        "point": [
+          626,
+          325
+        ],
+        "rgb": [
+          66,
+          99,
+          165
+        ]
+      },
+      {
+        "point": [
+          638,
+          289
+        ],
+        "rgb": [
+          90,
+          90,
+          99
+        ]
+      },
+      {
+        "point": [
+          641,
+          325
+        ],
+        "rgb": [
+          128,
+          148,
+          196
+        ]
+      },
+      {
+        "point": [
+          626,
+          331
+        ],
+        "rgb": [
+          132,
+          66,
+          49
+        ]
+      },
+      {
+        "point": [
+          620,
+          349
+        ],
+        "rgb": [
+          132,
+          107,
+          90
+        ]
+      },
+      {
+        "point": [
+          620,
+          352
+        ],
+        "rgb": [
+          165,
+          144,
+          125
+        ]
+      },
+      {
+        "point": [
+          644,
+          325
+        ],
+        "rgb": [
+          165,
+          181,
+          222
+        ]
+      },
+      {
+        "point": [
+          629,
+          331
+        ],
+        "rgb": [
+          189,
+          115,
+          90
+        ]
+      },
+      {
+        "point": [
+          617,
+          355
+        ],
+        "rgb": [
+          206,
+          181,
+          165
+        ]
+      },
+      {
+        "point": [
+          635,
+          331
+        ],
+        "rgb": [
+          231,
+          148,
+          115
+        ]
+      },
+      {
+        "point": [
+          653,
+          355
+        ],
+        "rgb": [
+          231,
+          214,
+          198
+        ]
+      },
+      {
+        "point": [
+          629,
+          334
+        ],
+        "rgb": [
+          239,
+          189,
+          156
+        ]
+      },
+      {
+        "point": [
+          659,
+          358
+        ],
+        "rgb": [
+          247,
+          239,
+          231
+        ]
+      }
+    ],
+    "coordinate_calibration_json": "actortrans-baseline.json",
+    "coordinate_calibration_sha256": "9e61995bea548041fcea880312dbe0eec44b164a5c0a9d3dc2ac971eaa5de177"
+  }
+}

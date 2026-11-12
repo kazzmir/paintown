@@ -1,0 +1,409 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, refinement]
+type=Projectile
+trigger1=Time=0
+projid=9
+projanim=9990
+[State 700, projectile control]
+type=Projectile
+trigger1=Time=0
+projid=7+0*(Var(1):=(Var(59):=Var(59)+1))
+projanim=9990+0*(Var(2):=(Var(59):=Var(59)+1))
+projhitanim=-1+0*(Var(3):=(Var(59):=Var(59)+1))
+projremanim=-1+0*(Var(4):=(Var(59):=Var(59)+1))
+projcancelanim=-1+0*(Var(5):=(Var(59):=Var(59)+1))
+projscale=1+0*(Var(6):=(Var(59):=Var(59)+1)),1+0*(Var(7):=(Var(59):=Var(59)+1))
+projremove=1+0*(Var(8):=(Var(59):=Var(59)+1))
+projremovetime=-1+0*(Var(9):=(Var(59):=Var(59)+1))
+velocity=0+0*(Var(10):=(Var(59):=Var(59)+1)),0+0*(Var(11):=(Var(59):=Var(59)+1))
+remvelocity=0+0*(Var(12):=(Var(59):=Var(59)+1)),0+0*(Var(13):=(Var(59):=Var(59)+1))
+accel=0+0*(Var(14):=(Var(59):=Var(59)+1)),0+0*(Var(15):=(Var(59):=Var(59)+1))
+velmul=1+0*(Var(16):=(Var(59):=Var(59)+1)),1+0*(Var(17):=(Var(59):=Var(59)+1))
+projhits=1+0*(Var(18):=(Var(59):=Var(59)+1))
+projmisstime=0+0*(Var(19):=(Var(59):=Var(59)+1))
+projpriority=1+0*(Var(20):=(Var(59):=Var(59)+1))
+projsprpriority=3+0*(Var(21):=(Var(59):=Var(59)+1))
+projedgebound=1000+0*(Var(22):=(Var(59):=Var(59)+1))
+projstagebound=1000+0*(Var(23):=(Var(59):=Var(59)+1))
+projheightbound=-1000+0*(Var(24):=(Var(59):=Var(59)+1)),1000+0*(Var(25):=(Var(59):=Var(59)+1))
+offset=0+0*(Var(26):=(Var(59):=Var(59)+1)),0+0*(Var(27):=(Var(59):=Var(59)+1))
+projshadow=0+0*(Var(28):=(Var(59):=Var(59)+1))
+supermovetime=0+0*(Var(29):=(Var(59):=Var(59)+1))
+pausemovetime=0+0*(Var(30):=(Var(59):=Var(59)+1))
+ownpal=1+0*(Var(31):=(Var(59):=Var(59)+1))
+remappal=-1+0*(Var(32):=(Var(59):=Var(59)+1)),0+0*(Var(33):=(Var(59):=Var(59)+1))
+damage=0+0*(Var(34):=(Var(59):=Var(59)+1)),0+0*(Var(35):=(Var(59):=Var(59)+1))
+id=3+0*(Var(36):=(Var(59):=Var(59)+1))
+pausetime=0+0*(Var(37):=(Var(59):=Var(59)+1)),0+0*(Var(38):=(Var(59):=Var(59)+1))
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Var(1)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Var(2)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Var(3)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Var(4)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Var(5)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Var(6)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Var(7)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Var(8)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Var(9)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Var(10)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Var(11)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Var(12)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Var(13)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=Var(14)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Var(15)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=15
+value=Var(16)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=16
+value=Var(17)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=17
+value=Var(18)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=Var(19)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=Var(20)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=Var(21)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=Var(22)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Var(23)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=Var(24)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=24
+value=Var(25)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=Var(26)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=26
+value=Var(27)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=27
+value=Var(28)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Var(29)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Var(30)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=30
+value=Var(31)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=31
+value=Var(32)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=32
+value=Var(33)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=33
+value=Var(34)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=34
+value=Var(35)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=35
+value=Var(36)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=36
+value=Var(37)
+[State 700, projectile control]
+type=VarSet
+trigger1=Time=0
+fv=37
+value=Var(38)
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, inert]
+type=Null
+trigger1=1

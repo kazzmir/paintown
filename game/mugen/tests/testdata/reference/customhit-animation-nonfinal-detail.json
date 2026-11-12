@@ -1,0 +1,76 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "243f2ee580794465cfa1f93315ebcc8a655dc9a3401108f267bdd7740640b831",
+  "air_sha256": "139f618a0186e67170b73f9868375646cab7b9dd712fe10af24a8ff67e3eb9ad",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "31f6c0089223e0122ee9fd58368be688e951677589006565a98e40b7349b394e",
+      "variables": {
+        "0": 1,
+        "1": 1,
+        "2": 3,
+        "3": 1,
+        "4": 1,
+        "5": 3,
+        "6": 1,
+        "7": 1,
+        "8": 3,
+        "9": 1,
+        "10": -3,
+        "11": -2
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "41aa7f7313d3ad8baca356c2aa666e524cac16578a7db1e3e3b0a2ac2b56c3d0",
+      "variables": {
+        "12": -1,
+        "13": 0,
+        "14": -2,
+        "15": -1,
+        "16": 0,
+        "17": -2,
+        "18": -1,
+        "19": 0,
+        "20": -2,
+        "21": -1,
+        "22": 0,
+        "23": 1
+      }
+    },
+    {
+      "page": 28,
+      "path": "animation-page28.png",
+      "sha256": "e4385f1f4ffa872cf48bec9db11e33d52b74ff6be86ab1097ba6019beb4fdfcb",
+      "variables": {
+        "28": 0,
+        "29": 1,
+        "30": -1,
+        "31": 0,
+        "32": 1,
+        "33": 2,
+        "34": 0,
+        "35": 1,
+        "36": 2,
+        "37": 0,
+        "38": 1,
+        "39": 2
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_localcoord": "1280,960",
+  "p2_fixture": "customhit-victim",
+  "p2_sha256": {
+    "cns": "3e2288cd6c8c42eae7228f69d388da0f1596f7c4dcb638631cd0a3782760aa7c",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e",
+    "cmd": "0dbbc4cc9cd05bcd9ab08cd951afffe46f3b1af229304ca91042dc2ed7c4b60a"
+  }
+}

@@ -1,0 +1,44 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, scientific 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=1e2
+[State 0, scientific 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=1e-2
+[State 0, scientific 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=.5E+1
+[State 0, scientific 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=2.E2
+[State 0, scientific 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=3.0E+2
+[State 0, scientific 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=-2.5e-1

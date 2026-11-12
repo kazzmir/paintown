@@ -1,0 +1,156 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9999
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+sprpriority=0
+[State 700, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=-10
+[State 700, scaled helper]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+pos=0,0
+size.xscale=1.1
+size.yscale=0.5
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9999
+ctrl=0
+sprpriority=0
+[State 701, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=-10
+[State 701, helper metadata]
+type=VarSet
+trigger1=1
+fv=0
+value=Helper(124),ID
+[State 701, helper metadata]
+type=VarSet
+trigger1=1
+fv=1
+value=Helper(124),StateNo
+[Statedef 800]
+type=S
+movetype=I
+physics=N
+anim=9100
+ctrl=0
+sprpriority=0
+[State 800, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 800, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=-10
+[Statedef 801]
+type=S
+movetype=I
+physics=N
+anim=9103
+ctrl=0
+sprpriority=0
+[State 801, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 801, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=-10
+[Statedef -2]
+[State -2, snapshot 0]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=0
+value=ID
+[State -2, snapshot 1]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=1
+value=Enemy,ID
+[State -2, snapshot 2]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=2
+value=NumHelper
+[State -2, snapshot 3]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=3
+value=Enemy,NumHelper
+[State -2, snapshot 4]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=4
+value=Helper(123),ID
+[State -2, snapshot 5]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=5
+value=Enemy,FVar(0)
+[State -2, snapshot 6]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=6
+value=StateNo
+[State -2, snapshot 7]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=7
+value=Enemy,StateNo
+[State -2, snapshot 8]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=8
+value=Helper(123),StateNo
+[State -2, snapshot 9]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=9
+value=Enemy,FVar(1)
+[State -2, snapshot 10]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=10
+value=Time
+[State -2, snapshot 11]
+type=VarSet
+trigger1=!IsHelper && TeamSide=1 && GameTime=200
+fv=11
+value=Enemy,Time

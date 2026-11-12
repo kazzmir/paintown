@@ -1,0 +1,249 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "67a5e768af7cd09b6bf6705e13803929207326bb1eff542cb0d1fd35cb74993e",
+  "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "8fc9d9964a838106edfe1241e58acaa392c0ae1d228528e9837905ff8472c36d",
+      "variables": {
+        "0": 1000,
+        "1": 3000,
+        "2": 100,
+        "3": 100,
+        "4": 0.666666687,
+        "5": 60,
+        "6": 15,
+        "7": 2,
+        "8": 40,
+        "9": 0,
+        "10": 60,
+        "11": 40
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "9d42da3b76c3d226d73cbb3fc9dd9f96b72b9a1d6b57989957f91181f96bd204",
+      "variables": {
+        "12": 1,
+        "13": 1,
+        "14": 15,
+        "15": 16,
+        "16": 12,
+        "17": 12,
+        "18": 60,
+        "19": 160,
+        "20": 90,
+        "21": 0,
+        "22": -5,
+        "23": -90
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "81c28e5e61c500f46cc04af381538b9b5e690eed1fb71c20cfcd849da2c80509",
+      "variables": {
+        "24": -5,
+        "25": -60,
+        "26": 0,
+        "27": 0,
+        "28": 0,
+        "29": 2.4000001,
+        "30": -2.20000005,
+        "31": 4.5999999,
+        "32": 0,
+        "33": -4.5,
+        "34": -3.79999995,
+        "35": -8.39999962
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "names": [
+    {
+      "name": "data.life",
+      "kind": "int",
+      "index": 0
+    },
+    {
+      "name": "data.power",
+      "kind": "int",
+      "index": 1
+    },
+    {
+      "name": "data.attack",
+      "kind": "int",
+      "index": 2
+    },
+    {
+      "name": "data.defence",
+      "kind": "int",
+      "index": 3
+    },
+    {
+      "name": "data.fall.defence_mul",
+      "kind": "float",
+      "index": 4
+    },
+    {
+      "name": "data.liedown.time",
+      "kind": "int",
+      "index": 5
+    },
+    {
+      "name": "data.airjuggle",
+      "kind": "int",
+      "index": 6
+    },
+    {
+      "name": "data.sparkno",
+      "kind": "int",
+      "index": 7
+    },
+    {
+      "name": "data.guard.sparkno",
+      "kind": "int",
+      "index": 8
+    },
+    {
+      "name": "data.ko.echo",
+      "kind": "int",
+      "index": 9
+    },
+    {
+      "name": "data.intpersistindex",
+      "kind": "int",
+      "index": 10
+    },
+    {
+      "name": "data.floatpersistindex",
+      "kind": "int",
+      "index": 11
+    },
+    {
+      "name": "size.xscale",
+      "kind": "float",
+      "index": 12
+    },
+    {
+      "name": "size.yscale",
+      "kind": "float",
+      "index": 13
+    },
+    {
+      "name": "size.ground.back",
+      "kind": "int",
+      "index": 14
+    },
+    {
+      "name": "size.ground.front",
+      "kind": "int",
+      "index": 15
+    },
+    {
+      "name": "size.air.back",
+      "kind": "int",
+      "index": 16
+    },
+    {
+      "name": "size.air.front",
+      "kind": "int",
+      "index": 17
+    },
+    {
+      "name": "size.height",
+      "kind": "int",
+      "index": 18
+    },
+    {
+      "name": "size.attack.dist",
+      "kind": "int",
+      "index": 19
+    },
+    {
+      "name": "size.proj.attack.dist",
+      "kind": "int",
+      "index": 20
+    },
+    {
+      "name": "size.proj.doscale",
+      "kind": "int",
+      "index": 21
+    },
+    {
+      "name": "size.head.pos.x",
+      "kind": "int",
+      "index": 22
+    },
+    {
+      "name": "size.head.pos.y",
+      "kind": "int",
+      "index": 23
+    },
+    {
+      "name": "size.mid.pos.x",
+      "kind": "int",
+      "index": 24
+    },
+    {
+      "name": "size.mid.pos.y",
+      "kind": "int",
+      "index": 25
+    },
+    {
+      "name": "size.shadowoffset",
+      "kind": "int",
+      "index": 26
+    },
+    {
+      "name": "size.draw.offset.x",
+      "kind": "int",
+      "index": 27
+    },
+    {
+      "name": "size.draw.offset.y",
+      "kind": "int",
+      "index": 28
+    },
+    {
+      "name": "velocity.walk.fwd.x",
+      "kind": "float",
+      "index": 29
+    },
+    {
+      "name": "velocity.walk.back.x",
+      "kind": "float",
+      "index": 30
+    },
+    {
+      "name": "velocity.run.fwd.x",
+      "kind": "float",
+      "index": 31
+    },
+    {
+      "name": "velocity.run.fwd.y",
+      "kind": "float",
+      "index": 32
+    },
+    {
+      "name": "velocity.run.back.x",
+      "kind": "float",
+      "index": 33
+    },
+    {
+      "name": "velocity.run.back.y",
+      "kind": "float",
+      "index": 34
+    },
+    {
+      "name": "velocity.jump.y",
+      "kind": "float",
+      "index": 35
+    }
+  ]
+}

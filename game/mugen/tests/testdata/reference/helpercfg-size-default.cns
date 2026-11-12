@@ -1,0 +1,293 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+[State 700, control]
+type=PosSet
+trigger1=Time=0
+x=30
+y=-20
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+pos=11,-6
+
+
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=0
+value=Helper(123),FVar(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=1
+value=Helper(123),FVar(1)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=2
+value=Helper(123),FVar(2)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=3
+value=Helper(123),FVar(3)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=4
+value=Helper(123),FVar(4)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=5
+value=Helper(123),FVar(5)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=6
+value=Helper(123),FVar(6)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=7
+value=Helper(123),FVar(7)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=8
+value=Helper(123),FVar(8)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=9
+value=Helper(123),FVar(9)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=10
+value=Helper(123),FVar(10)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=11
+value=Helper(123),FVar(11)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=12
+value=Helper(123),FVar(12)
+
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=13
+value=Const(size.xscale)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=14
+value=Const(size.yscale)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=15
+value=Const(size.ground.back)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=16
+value=Const(size.ground.front)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=17
+value=Const(size.air.back)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=18
+value=Const(size.air.front)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=19
+value=Const(size.height)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=20
+value=Const(size.proj.doscale)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=21
+value=Const(size.head.pos.x)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=22
+value=Const(size.head.pos.y)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=23
+value=Const(size.mid.pos.x)
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=PosSet
+trigger1=Time=0
+x=40
+y=-40
+
+[Statedef -3]
+
+[State -3, control]
+type=VarAdd
+trigger1=IsHelper
+v=0
+value=1
+
+[Statedef -2]
+
+[State -2, control]
+type=VarAdd
+trigger1=IsHelper
+v=1
+value=1
+
+[Statedef 800]
+physics=N
+anim=9990
+ctrl=1
+
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Const(size.xscale)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Const(size.yscale)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Const(size.ground.back)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Const(size.ground.front)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Const(size.air.back)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Const(size.air.front)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Const(size.height)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=Const(size.proj.doscale)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Const(size.head.pos.x)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Const(size.head.pos.y)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Const(size.mid.pos.x)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Const(size.mid.pos.y)
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=Const(size.shadowoffset)

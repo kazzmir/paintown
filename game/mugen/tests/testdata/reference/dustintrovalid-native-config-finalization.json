@@ -1,0 +1,176 @@
+{
+  "native_finalization": "Exact prepared configuration; FirstRun1->0 and LF->CRLF only. Originals unchanged.",
+  "programs": {
+    "dustintrovalid-active-11-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-active-11-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-active-13-7": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-active-13-8": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-active-7-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-active-7-4": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-delayed-7-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-delayed-7-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-entry-105-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-entry-107-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-entry-35-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-entry-35-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-entry-65-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-entry-65-5": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-ko-7-6": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-ko-7-7": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-preintro-1-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-preintro-1-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustintrovalid-preintro-2-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    }
+  }
+}

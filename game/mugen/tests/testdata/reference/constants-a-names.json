@@ -1,0 +1,182 @@
+[
+  {
+    "name": "data.life",
+    "kind": "int",
+    "index": 0
+  },
+  {
+    "name": "data.power",
+    "kind": "int",
+    "index": 1
+  },
+  {
+    "name": "data.attack",
+    "kind": "int",
+    "index": 2
+  },
+  {
+    "name": "data.defence",
+    "kind": "int",
+    "index": 3
+  },
+  {
+    "name": "data.fall.defence_mul",
+    "kind": "float",
+    "index": 4
+  },
+  {
+    "name": "data.liedown.time",
+    "kind": "int",
+    "index": 5
+  },
+  {
+    "name": "data.airjuggle",
+    "kind": "int",
+    "index": 6
+  },
+  {
+    "name": "data.sparkno",
+    "kind": "int",
+    "index": 7
+  },
+  {
+    "name": "data.guard.sparkno",
+    "kind": "int",
+    "index": 8
+  },
+  {
+    "name": "data.ko.echo",
+    "kind": "int",
+    "index": 9
+  },
+  {
+    "name": "data.intpersistindex",
+    "kind": "int",
+    "index": 10
+  },
+  {
+    "name": "data.floatpersistindex",
+    "kind": "int",
+    "index": 11
+  },
+  {
+    "name": "size.xscale",
+    "kind": "float",
+    "index": 12
+  },
+  {
+    "name": "size.yscale",
+    "kind": "float",
+    "index": 13
+  },
+  {
+    "name": "size.ground.back",
+    "kind": "int",
+    "index": 14
+  },
+  {
+    "name": "size.ground.front",
+    "kind": "int",
+    "index": 15
+  },
+  {
+    "name": "size.air.back",
+    "kind": "int",
+    "index": 16
+  },
+  {
+    "name": "size.air.front",
+    "kind": "int",
+    "index": 17
+  },
+  {
+    "name": "size.height",
+    "kind": "int",
+    "index": 18
+  },
+  {
+    "name": "size.attack.dist",
+    "kind": "int",
+    "index": 19
+  },
+  {
+    "name": "size.proj.attack.dist",
+    "kind": "int",
+    "index": 20
+  },
+  {
+    "name": "size.proj.doscale",
+    "kind": "int",
+    "index": 21
+  },
+  {
+    "name": "size.head.pos.x",
+    "kind": "int",
+    "index": 22
+  },
+  {
+    "name": "size.head.pos.y",
+    "kind": "int",
+    "index": 23
+  },
+  {
+    "name": "size.mid.pos.x",
+    "kind": "int",
+    "index": 24
+  },
+  {
+    "name": "size.mid.pos.y",
+    "kind": "int",
+    "index": 25
+  },
+  {
+    "name": "size.shadowoffset",
+    "kind": "int",
+    "index": 26
+  },
+  {
+    "name": "size.draw.offset.x",
+    "kind": "int",
+    "index": 27
+  },
+  {
+    "name": "size.draw.offset.y",
+    "kind": "int",
+    "index": 28
+  },
+  {
+    "name": "velocity.walk.fwd.x",
+    "kind": "float",
+    "index": 29
+  },
+  {
+    "name": "velocity.walk.back.x",
+    "kind": "float",
+    "index": 30
+  },
+  {
+    "name": "velocity.run.fwd.x",
+    "kind": "float",
+    "index": 31
+  },
+  {
+    "name": "velocity.run.fwd.y",
+    "kind": "float",
+    "index": 32
+  },
+  {
+    "name": "velocity.run.back.x",
+    "kind": "float",
+    "index": 33
+  },
+  {
+    "name": "velocity.run.back.y",
+    "kind": "float",
+    "index": 34
+  },
+  {
+    "name": "velocity.jump.y",
+    "kind": "float",
+    "index": 35
+  }
+]

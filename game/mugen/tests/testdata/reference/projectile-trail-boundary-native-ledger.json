@@ -1,0 +1,27 @@
+{
+  "programs": 4,
+  "accepted": 4,
+  "rejected": 0,
+  "captured_numeric_values": 48,
+  "source_probe_hashes": {
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget5.cns": "be5abc785808c8abd144bf5e4c0403bf66314a6de54ba219de4818a1de81a88d",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget5.air": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget5.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget5.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget6.cns": "65755987c8759d8ca2885fd11b0d0f38c01c13fc2a4dbc7ac482c592b490b73f",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget6.air": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget6.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-pause-budget6.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget5.cns": "1eef6d7f11daf1fc60429dc5fa6bda02e71e84b160f7cff0fc97704e0e37633c",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget5.air": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget5.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget5.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget6.cns": "2fae4742f61f575998338895b69d6e8bf2c7c352fd311bd8a0865f8d041864fe",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget6.air": "e0a848e0d04ace90470a8ffaa094407f75e21d72c2c684a01320df81e2745bdd",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget6.cmd": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+    "game/mugen/tests/testdata/reference/trailphase-boundary-superpause-budget6.stage.def": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+    "game/mugen/tests/reference_probe.py": "7c5ba2b9a1ed8f063e291be7db2577f7638ce7ab223c6295c1c9bf61657689f4",
+    "game/mugen/tests/after_image_reference_probe.py": "3d8680801496508789b16f0fd4b1e9b8f0408d80f72d73d6ca082df1abfc2412"
+  },
+  "review": "Allfour native rows and review0 inspected before promoting expectations once; budget5 gives6moving poses, budget6 gives7, both pause kinds."
+}

@@ -1,0 +1,183 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 700, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+guardflag=
+damage=10
+pausetime=0,0
+ground.type=High
+ground.velocity=0,0
+air.velocity=0,0
+ground.hittime=300
+air.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=7
+[Statedef 701]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 701, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 701, falling]
+type=HitFallSet
+trigger1=Time=0
+value=1
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5000, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5010]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5010, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5020, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, position]
+type=PosSet
+trigger1=Time=0
+x=0
+y=0
+[State 5080, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef -3]
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=0
+value=Life
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=1
+value=Enemy,Life
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=2
+value=StateNo
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=3
+value=Enemy,StateNo
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=4
+value=MoveHit
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=5
+value=MoveContact
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=6
+value=HitCount
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=7
+value=UniqHitCount
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=8
+value=NumTarget
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=9
+value=Enemy,HitFall
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=10
+value=Enemy,MoveType=H
+[State -3, snapshot]
+type=VarSet
+trigger1=TeamSide=1 && GameTime=200
+fv=11
+value=Enemy,StateType=A

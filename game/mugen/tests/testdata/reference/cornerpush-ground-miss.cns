@@ -1,0 +1,426 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=A
+physics=N
+anim=9992
+ctrl=0
+[State 700, position]
+type=PosSet
+trigger1=Time=0
+x=130
+y=0
+[State 700, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 700, attack]
+type=HitDef
+trigger1=Time=3
+attr=S,NA
+hitflag=A
+guardflag=
+damage=10,3
+pausetime=0,0
+ground.type=High
+ground.hittime=300
+air.hittime=300
+sparkno=-1
+hitsound=-1,0
+id=7
+ground.velocity=-4,0
+air.velocity=-4,0
+down.velocity=-4,0
+guard.velocity=-4
+airguard.velocity=-4,0
+down.hittime=300
+guard.hittime=300
+airguard.ctrltime=300
+[Statedef 701]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 701, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 701, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 5000, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5000, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5000, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5000, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 5010]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5010, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 5010, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5010, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5010, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5010, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 5020]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5020, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 5020, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5020, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5020, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5020, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 5080]
+type=L
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5080, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 5080, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 5080, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 5080, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 5080, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 150, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 150, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 150, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 150, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 152]
+type=C
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 152, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 152, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 152, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 152, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 152, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef 154]
+type=A
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 154, position]
+type=PosSet
+trigger1=Time=0
+x=145
+y=0
+[State 154, nopush]
+type=PlayerPush
+trigger1=1
+value=0
+[State 154, hit velocity]
+type=HitVelSet
+trigger1=Time=0
+x=1
+y=1
+[State 154, initial x]
+type=VarSet
+trigger1=Time=0
+fv=28
+value=Vel X
+[State 154, initial y]
+type=VarSet
+trigger1=Time=0
+fv=29
+value=Vel Y
+[Statedef -3]
+[State -3, contact clock]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && StateNo=700 && Time>=4 && Var(31)=0
+v=31
+value=GameTime
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+0
+fv=0
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+1
+fv=1
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+2
+fv=2
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+3
+fv=3
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+4
+fv=4
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+5
+fv=5
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+6
+fv=6
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+8
+fv=7
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+10
+fv=8
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+15
+fv=9
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+25
+fv=10
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+40
+fv=11
+value=Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+0
+fv=12
+value=Enemy,Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+1
+fv=13
+value=Enemy,Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+40
+fv=14
+value=Enemy,Pos X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+0
+fv=15
+value=Enemy,Vel X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+1
+fv=16
+value=Enemy,Vel X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+40
+fv=17
+value=Enemy,Vel X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+0
+fv=18
+value=Vel X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+1
+fv=19
+value=Vel X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+40
+fv=20
+value=Vel X
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+0
+fv=21
+value=Enemy,Life
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+1
+fv=22
+value=Enemy,Life
+[State -3, corner sample]
+type=VarSet
+ignorehitpause=1
+trigger1=TeamSide=1 && Var(31)!=0 && GameTime=Var(31)+40
+fv=23
+value=Facing

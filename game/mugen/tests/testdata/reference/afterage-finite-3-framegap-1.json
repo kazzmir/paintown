@@ -1,0 +1,289 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "0e443562093b6076a438eb48b9aa0ae6d40e922d19fe0bfe760b16fdd98bbb2c",
+  "air_sha256": "0c107624ff601d7611fe16f82c648e71c266249626481c737ab3429aa3fe7aab",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "943f4e16ee1b51683b4754ffe5022c2888a0b66852e9a9918a81b707732c6a39",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 160,
+        "7": -80,
+        "8": 1,
+        "9": 8,
+        "10": 9100,
+        "11": 138
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "555f5fd7fc3d59f94b361ff97c43c74c9da832fde75a8e9a27bf10e8c903f35f",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "framegap": 1,
+  "timegap": 1,
+  "reissue": false,
+  "finite_duration": 3,
+  "controller_kind": "AfterImage",
+  "controller_count": 1,
+  "controller_states": [
+    700
+  ],
+  "palette_age_control": true,
+  "after_image_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "native_crop_sha256": "d8a0305ae05304e0c1828e913e84ffb2438ba2969e0375f1e9aa6b82a5fc33a1"
+  },
+  "native_palette_samples": [
+    {
+      "recorded_time": 0,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            27,
+            27,
+            67
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            84,
+            69,
+            136
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 1,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            37,
+            37,
+            68
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            126,
+            103,
+            160
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 2,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 3,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 4,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 5,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 6,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "recorded_time": 7,
+      "colors": [
+        {
+          "source": [
+            49,
+            49,
+            49
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        },
+        {
+          "source": [
+            239,
+            189,
+            156
+          ],
+          "native": [
+            255,
+            0,
+            255
+          ]
+        }
+      ]
+    }
+  ]
+}

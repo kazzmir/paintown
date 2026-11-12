@@ -1,0 +1,105 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef -2]
+[State -2, tick]
+type=VarAdd
+trigger1=RoundState=2
+v=50
+value=1
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, origin tick]
+type=VarSet
+trigger1=RoundState=2 && Ctrl
+v=51
+value=var(50)
+[State 0, launch]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=105
+[Statedef 105]
+type=A
+movetype=I
+physics=A
+anim=9990
+ctrl=0
+velset=2,1
+[State 700, origin x]
+type=VarSet
+trigger1=Time=0
+fv=25
+value=Pos X
+[State 700, launch height]
+type=PosSet
+trigger1=Time=0
+y=0
+[State 50, snapshot 0]
+type=VarSet
+trigger1=Time=1
+fv=0
+value=StateNo
+[State 50, snapshot 1]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=Time
+[State 50, snapshot 2]
+type=VarSet
+trigger1=Time=1
+fv=2
+value=var(50)-var(51)
+[State 50, snapshot 3]
+type=VarSet
+trigger1=Time=1
+fv=3
+value=Pos X-fvar(25)
+[State 50, snapshot 4]
+type=VarSet
+trigger1=Time=1
+fv=4
+value=Pos Y
+[State 50, snapshot 5]
+type=VarSet
+trigger1=Time=1
+fv=5
+value=Vel X
+[State 50, snapshot 6]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=Vel Y
+[State 50, snapshot 7]
+type=VarSet
+trigger1=Time=1
+fv=7
+value=PrevStateNo
+[State 50, snapshot 8]
+type=VarSet
+trigger1=Time=1
+fv=8
+value=Anim
+[State 50, snapshot 9]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=StateType=A
+[State 50, snapshot 10]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=Ctrl
+[State 50, snapshot 11]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=AnimElemTime(1)

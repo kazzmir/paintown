@@ -1,0 +1,151 @@
+; Compare omitted control and controller/entry precedence outside special states.
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+[State 0, begin ordinary states]
+type=ChangeState
+trigger1=1
+value=700
+
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, record control]
+type=VarSet
+trigger1=Time=0
+v=10
+value=ctrl
+[State 700, record animation]
+type=VarSet
+trigger1=Time=0
+v=12
+value=anim
+[State 700, next]
+type=ChangeState
+trigger1=1
+value=701
+anim=9991
+
+[Statedef 701]
+physics=N
+anim=9990
+[State 701, record control]
+type=VarSet
+trigger1=Time=0
+v=0
+value=ctrl
+[State 701, record animation]
+type=VarSet
+trigger1=Time=0
+v=13
+value=anim
+[State 701, next]
+type=ChangeState
+trigger1=1
+value=702
+anim=9991
+ctrl=0
+
+[Statedef 702]
+physics=N
+anim=9990
+ctrl=1
+[State 702, record control]
+type=VarSet
+trigger1=Time=0
+v=1
+value=ctrl
+[State 702, record animation]
+type=VarSet
+trigger1=Time=0
+v=14
+value=anim
+[State 702, next]
+type=ChangeState
+trigger1=1
+value=703
+anim=9991
+ctrl=1
+
+[Statedef 703]
+physics=N
+anim=9990
+ctrl=0
+[State 703, record control]
+type=VarSet
+trigger1=Time=0
+v=2
+value=ctrl
+[State 703, record animation]
+type=VarSet
+trigger1=Time=0
+v=15
+value=anim
+[State 703, next]
+type=ChangeState
+trigger1=1
+value=704
+anim=9991
+ctrl=0
+
+[Statedef 704]
+physics=N
+[State 704, record control]
+type=VarSet
+trigger1=Time=0
+v=3
+value=ctrl
+[State 704, record animation]
+type=VarSet
+trigger1=Time=0
+v=16
+value=anim
+[State 704, next]
+type=ChangeState
+trigger1=1
+value=705
+anim=9990
+ctrl=1
+
+[Statedef 705]
+physics=N
+[State 705, record control]
+type=VarSet
+trigger1=Time=0
+v=4
+value=ctrl
+[State 705, record animation]
+type=VarSet
+trigger1=Time=0
+v=17
+value=anim
+[State 705, next]
+type=ChangeState
+trigger1=1
+value=706
+anim=9990
+ctrl=0
+
+[Statedef 706]
+physics=N
+anim=ifelse(ctrl,9990,9991)
+ctrl=ctrl
+[State 706, record control]
+type=VarSet
+trigger1=Time=0
+v=5
+value=ctrl
+[State 706, record animation]
+type=VarSet
+trigger1=Time=0
+v=18
+value=anim

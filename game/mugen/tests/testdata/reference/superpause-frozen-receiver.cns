@@ -1,0 +1,189 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,701,700)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, origin]
+type=VarSet
+trigger1=Time=0
+v=50
+value=GameTime
+[Statedef 701]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, origin]
+type=VarSet
+trigger1=Time=0
+v=50
+value=GameTime
+[State 701, super]
+type=SuperPause
+trigger1=Time=0
+time=3
+movetime=3
+anim=-1
+sound=-1
+darken=0
+unhittable=0
+p2defmul=1
+[State 701, first and second hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=100,0
+pausetime=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+[State 701, sender 1 0]
+type=VarSet
+trigger1=Time=1
+fv=0
+value=MoveHit
+[State 701, sender 1 1]
+type=VarSet
+trigger1=Time=1
+fv=1
+value=MoveContact
+[State 701, sender 1 2]
+type=VarSet
+trigger1=Time=1
+fv=2
+value=P2Life
+[State 701, sender 1 3]
+type=VarSet
+trigger1=Time=1
+fv=3
+value=P2StateNo
+[State 701, sender 1 4]
+type=VarSet
+trigger1=Time=1
+fv=4
+value=GameTime-var(50)
+[State 701, sender 1 5]
+type=VarSet
+trigger1=Time=1
+fv=5
+value=Time
+[State 701, sender 2 0]
+type=VarSet
+trigger1=Time=2
+fv=6
+value=MoveHit
+[State 701, sender 2 1]
+type=VarSet
+trigger1=Time=2
+fv=7
+value=MoveContact
+[State 701, sender 2 2]
+type=VarSet
+trigger1=Time=2
+fv=8
+value=P2Life
+[State 701, sender 2 3]
+type=VarSet
+trigger1=Time=2
+fv=9
+value=P2StateNo
+[State 701, sender 2 4]
+type=VarSet
+trigger1=Time=2
+fv=10
+value=GameTime-var(50)
+[State 701, sender 2 5]
+type=VarSet
+trigger1=Time=2
+fv=11
+value=Time
+[State 701, sender 3 0]
+type=VarSet
+trigger1=Time=3
+fv=12
+value=MoveHit
+[State 701, sender 3 1]
+type=VarSet
+trigger1=Time=3
+fv=13
+value=MoveContact
+[State 701, sender 3 2]
+type=VarSet
+trigger1=Time=3
+fv=14
+value=P2Life
+[State 701, sender 3 3]
+type=VarSet
+trigger1=Time=3
+fv=15
+value=P2StateNo
+[State 701, sender 3 4]
+type=VarSet
+trigger1=Time=3
+fv=16
+value=GameTime-var(50)
+[State 701, sender 3 5]
+type=VarSet
+trigger1=Time=3
+fv=17
+value=Time
+[State 701, sender 4 0]
+type=VarSet
+trigger1=Time=4
+fv=18
+value=MoveHit
+[State 701, sender 4 1]
+type=VarSet
+trigger1=Time=4
+fv=19
+value=MoveContact
+[State 701, sender 4 2]
+type=VarSet
+trigger1=Time=4
+fv=20
+value=P2Life
+[State 701, sender 4 3]
+type=VarSet
+trigger1=Time=4
+fv=21
+value=P2StateNo
+[State 701, sender 4 4]
+type=VarSet
+trigger1=Time=4
+fv=22
+value=GameTime-var(50)
+[State 701, sender 4 5]
+type=VarSet
+trigger1=Time=4
+fv=23
+value=Time
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, stay]
+type=Null
+trigger1=1

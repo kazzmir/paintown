@@ -1,0 +1,61 @@
+{
+  "programs": {
+    "assertnoko-attacker": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-attacker-expired": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-baseline": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-both": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-defender": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-defender-expired": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-direct-zero-baseline": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "assertnoko-direct-zero-both": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    }
+  },
+  "native_finalization": "Debug1/AfterImageMax16 prepared; FirstRun1->0 and LF->CRLF only final"
+}

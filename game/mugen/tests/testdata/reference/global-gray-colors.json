@@ -1,0 +1,4194 @@
+{
+  "description": "Every consistent flat native source/gray pair from the fixed stage and stage/actor regions; no Go output used",
+  "native_input_sha256": {
+    "globalfx-all-default.json": "d1766f7f4e06e324db06a52cfedec3557d5ca8197b35308081945933b48daa85",
+    "globalfx-all-default.cns": "eb7a02730823ad1a531e48f9b8e900a894e89c006542488bf1a5b249a1d40d82",
+    "globalfx-all-gray.json": "6df39013c19007b7c561c72568a14041c2ed720adaa5e48495e78ab6860a52d2",
+    "globalfx-all-gray.cns": "d91544b5ccb1e9828b34cfea617a55934086e8a55683881b28ef625e53f53297",
+    "globalfx-bg-gray.json": "0340b91afba0b1d8fcfdd248fc4a53183e7b235727ff26da4e92fa9bf3544098",
+    "globalfx-bg-gray.cns": "a11cfef49df4cf7ffa2475b57c431edc71275b6ca99ec62d47860750788d8ab9"
+  },
+  "native_png_sha256": {
+    "globalfx-all-default": "b2944a6a6861967fa62b29f1bd4fc8cf5db77131d83324bb5f38bbfeb65f6771",
+    "globalfx-all-gray": "b7eabbd694488da416672effb2b0549ced35f9da9d27a5fa3037ca451b291f0f",
+    "globalfx-bg-gray": "aa72bfa27a1a9fede67d523bd2958233b3b6730b6fccc73af3e231055c4520b8"
+  },
+  "cases": [
+    {
+      "passes": 1,
+      "source": [
+        194,
+        186,
+        230
+      ],
+      "expected": [
+        200,
+        200,
+        200
+      ],
+      "native_point": [
+        203,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        194,
+        190,
+        230
+      ],
+      "expected": [
+        201,
+        201,
+        201
+      ],
+      "native_point": [
+        290,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        198,
+        190,
+        230
+      ],
+      "expected": [
+        203,
+        203,
+        203
+      ],
+      "native_point": [
+        293,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        198,
+        194,
+        228
+      ],
+      "expected": [
+        204,
+        204,
+        204
+      ],
+      "native_point": [
+        308,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        202,
+        197,
+        234
+      ],
+      "expected": [
+        208,
+        208,
+        208
+      ],
+      "native_point": [
+        317,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        190,
+        186,
+        228
+      ],
+      "expected": [
+        198,
+        198,
+        198
+      ],
+      "native_point": [
+        431,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        187,
+        180,
+        230
+      ],
+      "expected": [
+        195,
+        195,
+        195
+      ],
+      "native_point": [
+        434,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        186,
+        174,
+        230
+      ],
+      "expected": [
+        192,
+        192,
+        192
+      ],
+      "native_point": [
+        446,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        182,
+        178,
+        227
+      ],
+      "expected": [
+        192,
+        192,
+        192
+      ],
+      "native_point": [
+        449,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        180,
+        172,
+        228
+      ],
+      "expected": [
+        189,
+        189,
+        189
+      ],
+      "native_point": [
+        452,
+        151
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        202,
+        198,
+        230
+      ],
+      "expected": [
+        207,
+        207,
+        207
+      ],
+      "native_point": [
+        380,
+        154
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        206,
+        202,
+        234
+      ],
+      "expected": [
+        211,
+        211,
+        211
+      ],
+      "native_point": [
+        326,
+        166
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        194,
+        186,
+        226
+      ],
+      "expected": [
+        199,
+        199,
+        199
+      ],
+      "native_point": [
+        230,
+        175
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        194,
+        190,
+        226
+      ],
+      "expected": [
+        200,
+        200,
+        200
+      ],
+      "native_point": [
+        269,
+        175
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        187,
+        181,
+        226
+      ],
+      "expected": [
+        194,
+        194,
+        194
+      ],
+      "native_point": [
+        434,
+        175
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        198,
+        190,
+        226
+      ],
+      "expected": [
+        202,
+        202,
+        202
+      ],
+      "native_point": [
+        389,
+        181
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        194,
+        190,
+        221
+      ],
+      "expected": [
+        199,
+        199,
+        199
+      ],
+      "native_point": [
+        533,
+        220
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        184,
+        183,
+        209
+      ],
+      "expected": [
+        190,
+        190,
+        190
+      ],
+      "native_point": [
+        536,
+        220
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        190,
+        186,
+        220
+      ],
+      "expected": [
+        196,
+        196,
+        196
+      ],
+      "native_point": [
+        203,
+        223
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        178,
+        178,
+        199
+      ],
+      "expected": [
+        183,
+        183,
+        183
+      ],
+      "native_point": [
+        479,
+        223
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        187,
+        188,
+        200
+      ],
+      "expected": [
+        191,
+        191,
+        191
+      ],
+      "native_point": [
+        500,
+        223
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        172,
+        175,
+        187
+      ],
+      "expected": [
+        177,
+        177,
+        177
+      ],
+      "native_point": [
+        530,
+        223
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        163,
+        168,
+        175
+      ],
+      "expected": [
+        168,
+        168,
+        168
+      ],
+      "native_point": [
+        533,
+        223
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        144,
+        154,
+        148
+      ],
+      "expected": [
+        149,
+        149,
+        149
+      ],
+      "native_point": [
+        536,
+        223
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        187,
+        186,
+        213
+      ],
+      "expected": [
+        193,
+        193,
+        193
+      ],
+      "native_point": [
+        452,
+        226
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        158,
+        163,
+        161
+      ],
+      "expected": [
+        161,
+        161,
+        161
+      ],
+      "native_point": [
+        479,
+        226
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        132,
+        146,
+        137
+      ],
+      "expected": [
+        139,
+        139,
+        139
+      ],
+      "native_point": [
+        530,
+        226
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        123,
+        142,
+        134
+      ],
+      "expected": [
+        134,
+        134,
+        134
+      ],
+      "native_point": [
+        533,
+        226
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        117,
+        136,
+        131
+      ],
+      "expected": [
+        129,
+        129,
+        129
+      ],
+      "native_point": [
+        536,
+        226
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        110,
+        132,
+        129
+      ],
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        533,
+        229
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        138,
+        145,
+        129
+      ],
+      "expected": [
+        139,
+        139,
+        139
+      ],
+      "native_point": [
+        449,
+        232
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        128,
+        139,
+        127
+      ],
+      "expected": [
+        133,
+        133,
+        133
+      ],
+      "native_point": [
+        506,
+        232
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        124,
+        133,
+        123
+      ],
+      "expected": [
+        128,
+        128,
+        128
+      ],
+      "native_point": [
+        527,
+        235
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        186,
+        182,
+        221
+      ],
+      "expected": [
+        193,
+        193,
+        193
+      ],
+      "native_point": [
+        201,
+        238
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        195,
+        194,
+        220
+      ],
+      "expected": [
+        201,
+        201,
+        201
+      ],
+      "native_point": [
+        410,
+        241
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        128,
+        122
+      ],
+      "expected": [
+        120,
+        120,
+        120
+      ],
+      "native_point": [
+        449,
+        241
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        100,
+        122,
+        115
+      ],
+      "expected": [
+        113,
+        113,
+        113
+      ],
+      "native_point": [
+        494,
+        241
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        125,
+        131,
+        116
+      ],
+      "expected": [
+        125,
+        125,
+        125
+      ],
+      "native_point": [
+        530,
+        247
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        116,
+        131,
+        123
+      ],
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        497,
+        253
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        117,
+        131,
+        116
+      ],
+      "expected": [
+        123,
+        123,
+        123
+      ],
+      "native_point": [
+        527,
+        253
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        123,
+        116
+      ],
+      "expected": [
+        117,
+        117,
+        117
+      ],
+      "native_point": [
+        482,
+        259
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        110,
+        127,
+        112
+      ],
+      "expected": [
+        118,
+        118,
+        118
+      ],
+      "native_point": [
+        527,
+        259
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        92,
+        115,
+        108
+      ],
+      "expected": [
+        106,
+        106,
+        106
+      ],
+      "native_point": [
+        440,
+        262
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        117,
+        125,
+        115
+      ],
+      "expected": [
+        120,
+        120,
+        120
+      ],
+      "native_point": [
+        503,
+        265
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        100,
+        116,
+        108
+      ],
+      "expected": [
+        109,
+        109,
+        109
+      ],
+      "native_point": [
+        518,
+        268
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        122,
+        108
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        434,
+        280
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        116,
+        124,
+        108
+      ],
+      "expected": [
+        118,
+        118,
+        118
+      ],
+      "native_point": [
+        512,
+        283
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        117,
+        107
+      ],
+      "expected": [
+        112,
+        112,
+        112
+      ],
+      "native_point": [
+        530,
+        283
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        92,
+        110,
+        101
+      ],
+      "expected": [
+        102,
+        102,
+        102
+      ],
+      "native_point": [
+        455,
+        286
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        82,
+        106,
+        101
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        458,
+        286
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        186,
+        182,
+        214
+      ],
+      "expected": [
+        191,
+        191,
+        191
+      ],
+      "native_point": [
+        206,
+        289
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        101,
+        115,
+        100
+      ],
+      "expected": [
+        107,
+        107,
+        107
+      ],
+      "native_point": [
+        536,
+        289
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        116,
+        117,
+        107
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        503,
+        292
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        91,
+        105,
+        92
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        464,
+        301
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        126,
+        139,
+        116
+      ],
+      "expected": [
+        129,
+        129,
+        129
+      ],
+      "native_point": [
+        314,
+        304
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        116,
+        100
+      ],
+      "expected": [
+        110,
+        110,
+        110
+      ],
+      "native_point": [
+        497,
+        304
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        102,
+        109,
+        99
+      ],
+      "expected": [
+        104,
+        104,
+        104
+      ],
+      "native_point": [
+        449,
+        313
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        123,
+        125,
+        108
+      ],
+      "expected": [
+        120,
+        120,
+        120
+      ],
+      "native_point": [
+        521,
+        313
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        72,
+        97,
+        92
+      ],
+      "expected": [
+        88,
+        88,
+        88
+      ],
+      "native_point": [
+        479,
+        319
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        130,
+        128,
+        109
+      ],
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        353,
+        322
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        133,
+        136,
+        120
+      ],
+      "expected": [
+        131,
+        131,
+        131
+      ],
+      "native_point": [
+        284,
+        328
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        85,
+        98,
+        85
+      ],
+      "expected": [
+        91,
+        91,
+        91
+      ],
+      "native_point": [
+        434,
+        334
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        100,
+        109,
+        92
+      ],
+      "expected": [
+        102,
+        102,
+        102
+      ],
+      "native_point": [
+        395,
+        340
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        122,
+        101
+      ],
+      "expected": [
+        112,
+        112,
+        112
+      ],
+      "native_point": [
+        428,
+        346
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        116,
+        117,
+        99
+      ],
+      "expected": [
+        112,
+        112,
+        112
+      ],
+      "native_point": [
+        401,
+        349
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        117,
+        122,
+        101
+      ],
+      "expected": [
+        115,
+        115,
+        115
+      ],
+      "native_point": [
+        425,
+        349
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        109,
+        115,
+        93
+      ],
+      "expected": [
+        108,
+        108,
+        108
+      ],
+      "native_point": [
+        407,
+        352
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        66,
+        84,
+        77
+      ],
+      "expected": [
+        77,
+        77,
+        77
+      ],
+      "native_point": [
+        497,
+        355
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        121,
+        122,
+        92
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        404,
+        370
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        116,
+        116,
+        92
+      ],
+      "expected": [
+        110,
+        110,
+        110
+      ],
+      "native_point": [
+        410,
+        370
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        113,
+        110,
+        96
+      ],
+      "expected": [
+        107,
+        107,
+        107
+      ],
+      "native_point": [
+        476,
+        373
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        122,
+        118,
+        107
+      ],
+      "expected": [
+        117,
+        117,
+        117
+      ],
+      "native_point": [
+        356,
+        379
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        98,
+        100,
+        86
+      ],
+      "expected": [
+        96,
+        96,
+        96
+      ],
+      "native_point": [
+        461,
+        379
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        109,
+        92
+      ],
+      "expected": [
+        104,
+        104,
+        104
+      ],
+      "native_point": [
+        461,
+        382
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        84,
+        86,
+        70
+      ],
+      "expected": [
+        81,
+        81,
+        81
+      ],
+      "native_point": [
+        488,
+        388
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        100,
+        105,
+        83
+      ],
+      "expected": [
+        98,
+        98,
+        98
+      ],
+      "native_point": [
+        479,
+        391
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        62,
+        68,
+        56
+      ],
+      "expected": [
+        63,
+        63,
+        63
+      ],
+      "native_point": [
+        503,
+        406
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        123,
+        118,
+        99
+      ],
+      "expected": [
+        115,
+        115,
+        115
+      ],
+      "native_point": [
+        536,
+        409
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        124,
+        123,
+        100
+      ],
+      "expected": [
+        118,
+        118,
+        118
+      ],
+      "native_point": [
+        527,
+        412
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        117,
+        115,
+        84
+      ],
+      "expected": [
+        108,
+        108,
+        108
+      ],
+      "native_point": [
+        533,
+        412
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        115,
+        109,
+        86
+      ],
+      "expected": [
+        105,
+        105,
+        105
+      ],
+      "native_point": [
+        530,
+        415
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        133,
+        127,
+        98
+      ],
+      "expected": [
+        122,
+        122,
+        122
+      ],
+      "native_point": [
+        201,
+        418
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        108,
+        108,
+        85
+      ],
+      "expected": [
+        102,
+        102,
+        102
+      ],
+      "native_point": [
+        434,
+        421
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        114,
+        107,
+        76
+      ],
+      "expected": [
+        101,
+        101,
+        101
+      ],
+      "native_point": [
+        533,
+        421
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        107,
+        101,
+        78
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        434,
+        424
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        123,
+        117,
+        92
+      ],
+      "expected": [
+        113,
+        113,
+        113
+      ],
+      "native_point": [
+        428,
+        427
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        94,
+        93,
+        74
+      ],
+      "expected": [
+        89,
+        89,
+        89
+      ],
+      "native_point": [
+        494,
+        427
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        123,
+        115,
+        84
+      ],
+      "expected": [
+        110,
+        110,
+        110
+      ],
+      "native_point": [
+        515,
+        427
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        129,
+        122,
+        92
+      ],
+      "expected": [
+        117,
+        117,
+        117
+      ],
+      "native_point": [
+        521,
+        427
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        138,
+        132,
+        106
+      ],
+      "expected": [
+        127,
+        127,
+        127
+      ],
+      "native_point": [
+        494,
+        433
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        78,
+        76,
+        61
+      ],
+      "expected": [
+        73,
+        73,
+        73
+      ],
+      "native_point": [
+        467,
+        436
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        147,
+        138,
+        112
+      ],
+      "expected": [
+        134,
+        134,
+        134
+      ],
+      "native_point": [
+        491,
+        436
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        146,
+        134,
+        102
+      ],
+      "expected": [
+        130,
+        130,
+        130
+      ],
+      "native_point": [
+        488,
+        439
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        146,
+        130,
+        90
+      ],
+      "expected": [
+        125,
+        125,
+        125
+      ],
+      "native_point": [
+        497,
+        442
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        106,
+        97,
+        71
+      ],
+      "expected": [
+        93,
+        93,
+        93
+      ],
+      "native_point": [
+        500,
+        448
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        131,
+        120,
+        83
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        485,
+        454
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        49,
+        54,
+        47
+      ],
+      "expected": [
+        51,
+        51,
+        51
+      ],
+      "native_point": [
+        524,
+        457
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 1,
+      "source": [
+        156,
+        142,
+        108
+      ],
+      "expected": [
+        138,
+        138,
+        138
+      ],
+      "native_point": [
+        470,
+        460
+      ],
+      "fixture": "globalfx-bg-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        194,
+        186,
+        230
+      ],
+      "expected": [
+        200,
+        200,
+        200
+      ],
+      "native_point": [
+        203,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        194,
+        190,
+        230
+      ],
+      "expected": [
+        201,
+        201,
+        201
+      ],
+      "native_point": [
+        290,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        198,
+        190,
+        230
+      ],
+      "expected": [
+        203,
+        203,
+        203
+      ],
+      "native_point": [
+        293,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        198,
+        194,
+        228
+      ],
+      "expected": [
+        204,
+        204,
+        204
+      ],
+      "native_point": [
+        308,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        202,
+        197,
+        234
+      ],
+      "expected": [
+        208,
+        208,
+        208
+      ],
+      "native_point": [
+        317,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        190,
+        186,
+        228
+      ],
+      "expected": [
+        198,
+        198,
+        198
+      ],
+      "native_point": [
+        431,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        187,
+        180,
+        230
+      ],
+      "expected": [
+        195,
+        195,
+        195
+      ],
+      "native_point": [
+        434,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        186,
+        174,
+        230
+      ],
+      "expected": [
+        192,
+        192,
+        192
+      ],
+      "native_point": [
+        446,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        182,
+        178,
+        227
+      ],
+      "expected": [
+        192,
+        192,
+        192
+      ],
+      "native_point": [
+        449,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        180,
+        172,
+        228
+      ],
+      "expected": [
+        189,
+        189,
+        189
+      ],
+      "native_point": [
+        452,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        202,
+        198,
+        230
+      ],
+      "expected": [
+        207,
+        207,
+        207
+      ],
+      "native_point": [
+        689,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        206,
+        202,
+        234
+      ],
+      "expected": [
+        211,
+        211,
+        211
+      ],
+      "native_point": [
+        695,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        210,
+        206,
+        233
+      ],
+      "expected": [
+        214,
+        214,
+        214
+      ],
+      "native_point": [
+        704,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        213,
+        211,
+        232
+      ],
+      "expected": [
+        217,
+        217,
+        217
+      ],
+      "native_point": [
+        719,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        174,
+        166,
+        230
+      ],
+      "expected": [
+        185,
+        185,
+        185
+      ],
+      "native_point": [
+        986,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        173,
+        165,
+        226
+      ],
+      "expected": [
+        183,
+        183,
+        183
+      ],
+      "native_point": [
+        989,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        167,
+        158,
+        224
+      ],
+      "expected": [
+        177,
+        177,
+        177
+      ],
+      "native_point": [
+        1055,
+        151
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        206,
+        203,
+        228
+      ],
+      "expected": [
+        210,
+        210,
+        210
+      ],
+      "native_point": [
+        695,
+        172
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        194,
+        186,
+        226
+      ],
+      "expected": [
+        199,
+        199,
+        199
+      ],
+      "native_point": [
+        230,
+        175
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        194,
+        190,
+        226
+      ],
+      "expected": [
+        200,
+        200,
+        200
+      ],
+      "native_point": [
+        269,
+        175
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        187,
+        181,
+        226
+      ],
+      "expected": [
+        194,
+        194,
+        194
+      ],
+      "native_point": [
+        434,
+        175
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        198,
+        190,
+        226
+      ],
+      "expected": [
+        202,
+        202,
+        202
+      ],
+      "native_point": [
+        389,
+        181
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        170,
+        163,
+        220
+      ],
+      "expected": [
+        179,
+        179,
+        179
+      ],
+      "native_point": [
+        1067,
+        184
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        195,
+        194,
+        220
+      ],
+      "expected": [
+        201,
+        201,
+        201
+      ],
+      "native_point": [
+        638,
+        193
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        194,
+        190,
+        221
+      ],
+      "expected": [
+        199,
+        199,
+        199
+      ],
+      "native_point": [
+        641,
+        193
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        187,
+        186,
+        213
+      ],
+      "expected": [
+        193,
+        193,
+        193
+      ],
+      "native_point": [
+        632,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        172,
+        175,
+        187
+      ],
+      "expected": [
+        177,
+        177,
+        177
+      ],
+      "native_point": [
+        635,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        158,
+        163,
+        161
+      ],
+      "expected": [
+        161,
+        161,
+        161
+      ],
+      "native_point": [
+        638,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        144,
+        154,
+        148
+      ],
+      "expected": [
+        149,
+        149,
+        149
+      ],
+      "native_point": [
+        641,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        178,
+        178,
+        199
+      ],
+      "expected": [
+        183,
+        183,
+        183
+      ],
+      "native_point": [
+        659,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        187,
+        188,
+        200
+      ],
+      "expected": [
+        191,
+        191,
+        191
+      ],
+      "native_point": [
+        662,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        167,
+        161,
+        214
+      ],
+      "expected": [
+        176,
+        176,
+        176
+      ],
+      "native_point": [
+        1049,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        156,
+        154,
+        185
+      ],
+      "expected": [
+        162,
+        162,
+        162
+      ],
+      "native_point": [
+        1055,
+        196
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        163,
+        168,
+        175
+      ],
+      "expected": [
+        168,
+        168,
+        168
+      ],
+      "native_point": [
+        629,
+        199
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        132,
+        146,
+        137
+      ],
+      "expected": [
+        139,
+        139,
+        139
+      ],
+      "native_point": [
+        638,
+        199
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        124,
+        133,
+        123
+      ],
+      "expected": [
+        128,
+        128,
+        128
+      ],
+      "native_point": [
+        1055,
+        199
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        117,
+        125,
+        115
+      ],
+      "expected": [
+        120,
+        120,
+        120
+      ],
+      "native_point": [
+        1058,
+        199
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        116,
+        131,
+        123
+      ],
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        1067,
+        199
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        128,
+        139,
+        127
+      ],
+      "expected": [
+        133,
+        133,
+        133
+      ],
+      "native_point": [
+        1076,
+        199
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        184,
+        183,
+        209
+      ],
+      "expected": [
+        190,
+        190,
+        190
+      ],
+      "native_point": [
+        614,
+        202
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        133,
+        136,
+        120
+      ],
+      "expected": [
+        131,
+        131,
+        131
+      ],
+      "native_point": [
+        1073,
+        202
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        123,
+        142,
+        134
+      ],
+      "expected": [
+        134,
+        134,
+        134
+      ],
+      "native_point": [
+        641,
+        205
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        116,
+        117,
+        107
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        1055,
+        205
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        125,
+        131,
+        116
+      ],
+      "expected": [
+        125,
+        125,
+        125
+      ],
+      "native_point": [
+        1067,
+        205
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        130,
+        128,
+        109
+      ],
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        1076,
+        205
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        117,
+        136,
+        131
+      ],
+      "expected": [
+        129,
+        129,
+        129
+      ],
+      "native_point": [
+        644,
+        208
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        181,
+        176,
+        220
+      ],
+      "expected": [
+        189,
+        189,
+        189
+      ],
+      "native_point": [
+        935,
+        208
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        117,
+        107
+      ],
+      "expected": [
+        112,
+        112,
+        112
+      ],
+      "native_point": [
+        1049,
+        208
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        116,
+        124,
+        108
+      ],
+      "expected": [
+        118,
+        118,
+        118
+      ],
+      "native_point": [
+        1058,
+        208
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        123,
+        125,
+        108
+      ],
+      "expected": [
+        120,
+        120,
+        120
+      ],
+      "native_point": [
+        1061,
+        208
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        122,
+        118,
+        107
+      ],
+      "expected": [
+        117,
+        117,
+        117
+      ],
+      "native_point": [
+        1076,
+        208
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        186,
+        182,
+        221
+      ],
+      "expected": [
+        193,
+        193,
+        193
+      ],
+      "native_point": [
+        917,
+        211
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        116,
+        117,
+        99
+      ],
+      "expected": [
+        112,
+        112,
+        112
+      ],
+      "native_point": [
+        1076,
+        211
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        124,
+        123,
+        100
+      ],
+      "expected": [
+        118,
+        118,
+        118
+      ],
+      "native_point": [
+        1067,
+        214
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        123,
+        118,
+        99
+      ],
+      "expected": [
+        115,
+        115,
+        115
+      ],
+      "native_point": [
+        1070,
+        214
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        190,
+        186,
+        220
+      ],
+      "expected": [
+        196,
+        196,
+        196
+      ],
+      "native_point": [
+        542,
+        217
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        138,
+        145,
+        129
+      ],
+      "expected": [
+        139,
+        139,
+        139
+      ],
+      "native_point": [
+        596,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        110,
+        132,
+        129
+      ],
+      "expected": [
+        124,
+        124,
+        124
+      ],
+      "native_point": [
+        641,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        128,
+        122
+      ],
+      "expected": [
+        120,
+        120,
+        120
+      ],
+      "native_point": [
+        653,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        178,
+        173,
+        216
+      ],
+      "expected": [
+        185,
+        185,
+        185
+      ],
+      "native_point": [
+        965,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        172,
+        168,
+        214
+      ],
+      "expected": [
+        181,
+        181,
+        181
+      ],
+      "native_point": [
+        968,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        117,
+        122,
+        101
+      ],
+      "expected": [
+        115,
+        115,
+        115
+      ],
+      "native_point": [
+        1013,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        113,
+        110,
+        96
+      ],
+      "expected": [
+        107,
+        107,
+        107
+      ],
+      "native_point": [
+        1070,
+        220
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        109,
+        92
+      ],
+      "expected": [
+        104,
+        104,
+        104
+      ],
+      "native_point": [
+        1073,
+        226
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        117,
+        131,
+        116
+      ],
+      "expected": [
+        123,
+        123,
+        123
+      ],
+      "native_point": [
+        575,
+        229
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        98,
+        100,
+        86
+      ],
+      "expected": [
+        96,
+        96,
+        96
+      ],
+      "native_point": [
+        1073,
+        229
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        182,
+        179,
+        214
+      ],
+      "expected": [
+        189,
+        189,
+        189
+      ],
+      "native_point": [
+        938,
+        232
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        116,
+        100
+      ],
+      "expected": [
+        110,
+        110,
+        110
+      ],
+      "native_point": [
+        1046,
+        232
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        186,
+        182,
+        214
+      ],
+      "expected": [
+        191,
+        191,
+        191
+      ],
+      "native_point": [
+        920,
+        235
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        100,
+        109,
+        92
+      ],
+      "expected": [
+        102,
+        102,
+        102
+      ],
+      "native_point": [
+        1052,
+        235
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        116,
+        116,
+        92
+      ],
+      "expected": [
+        110,
+        110,
+        110
+      ],
+      "native_point": [
+        1064,
+        235
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        109,
+        115,
+        93
+      ],
+      "expected": [
+        108,
+        108,
+        108
+      ],
+      "native_point": [
+        1064,
+        238
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        108,
+        85
+      ],
+      "expected": [
+        102,
+        102,
+        102
+      ],
+      "native_point": [
+        1067,
+        238
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        115,
+        109,
+        86
+      ],
+      "expected": [
+        105,
+        105,
+        105
+      ],
+      "native_point": [
+        1073,
+        238
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        100,
+        122,
+        115
+      ],
+      "expected": [
+        113,
+        113,
+        113
+      ],
+      "native_point": [
+        494,
+        241
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        123,
+        116
+      ],
+      "expected": [
+        117,
+        117,
+        117
+      ],
+      "native_point": [
+        593,
+        241
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        100,
+        105,
+        83
+      ],
+      "expected": [
+        98,
+        98,
+        98
+      ],
+      "native_point": [
+        1067,
+        241
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        110,
+        127,
+        112
+      ],
+      "expected": [
+        118,
+        118,
+        118
+      ],
+      "native_point": [
+        575,
+        244
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        100,
+        116,
+        108
+      ],
+      "expected": [
+        109,
+        109,
+        109
+      ],
+      "native_point": [
+        659,
+        244
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        122,
+        108
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        698,
+        244
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        158,
+        150,
+        127
+      ],
+      "expected": [
+        147,
+        147,
+        147
+      ],
+      "native_point": [
+        917,
+        244
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        92,
+        115,
+        108
+      ],
+      "expected": [
+        106,
+        106,
+        106
+      ],
+      "native_point": [
+        701,
+        247
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        107,
+        101,
+        78
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        1076,
+        247
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        94,
+        93,
+        74
+      ],
+      "expected": [
+        89,
+        89,
+        89
+      ],
+      "native_point": [
+        1064,
+        253
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        102,
+        109,
+        99
+      ],
+      "expected": [
+        104,
+        104,
+        104
+      ],
+      "native_point": [
+        668,
+        259
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        92,
+        110,
+        101
+      ],
+      "expected": [
+        102,
+        102,
+        102
+      ],
+      "native_point": [
+        671,
+        259
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        147,
+        138,
+        112
+      ],
+      "expected": [
+        134,
+        134,
+        134
+      ],
+      "native_point": [
+        878,
+        262
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        84,
+        86,
+        70
+      ],
+      "expected": [
+        81,
+        81,
+        81
+      ],
+      "native_point": [
+        1022,
+        262
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        85,
+        98,
+        85
+      ],
+      "expected": [
+        91,
+        91,
+        91
+      ],
+      "native_point": [
+        1031,
+        262
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        101,
+        115,
+        100
+      ],
+      "expected": [
+        107,
+        107,
+        107
+      ],
+      "native_point": [
+        896,
+        265
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        123,
+        117,
+        92
+      ],
+      "expected": [
+        113,
+        113,
+        113
+      ],
+      "native_point": [
+        950,
+        265
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        126,
+        139,
+        116
+      ],
+      "expected": [
+        129,
+        129,
+        129
+      ],
+      "native_point": [
+        590,
+        268
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        138,
+        132,
+        106
+      ],
+      "expected": [
+        127,
+        127,
+        127
+      ],
+      "native_point": [
+        869,
+        268
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        156,
+        142,
+        108
+      ],
+      "expected": [
+        138,
+        138,
+        138
+      ],
+      "native_point": [
+        860,
+        271
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        106,
+        97,
+        71
+      ],
+      "expected": [
+        93,
+        93,
+        93
+      ],
+      "native_point": [
+        1070,
+        271
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        114,
+        107,
+        76
+      ],
+      "expected": [
+        101,
+        101,
+        101
+      ],
+      "native_point": [
+        1052,
+        274
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        117,
+        115,
+        84
+      ],
+      "expected": [
+        108,
+        108,
+        108
+      ],
+      "native_point": [
+        1049,
+        277
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        121,
+        122,
+        92
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        923,
+        280
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        91,
+        105,
+        92
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        998,
+        280
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        78,
+        76,
+        61
+      ],
+      "expected": [
+        73,
+        73,
+        73
+      ],
+      "native_point": [
+        1016,
+        280
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        133,
+        127,
+        98
+      ],
+      "expected": [
+        122,
+        122,
+        122
+      ],
+      "native_point": [
+        848,
+        283
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        66,
+        84,
+        77
+      ],
+      "expected": [
+        77,
+        77,
+        77
+      ],
+      "native_point": [
+        980,
+        283
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        62,
+        68,
+        56
+      ],
+      "expected": [
+        63,
+        63,
+        63
+      ],
+      "native_point": [
+        983,
+        283
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        82,
+        106,
+        101
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        458,
+        286
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        49,
+        49,
+        49
+      ],
+      "expected": [
+        49,
+        49,
+        49
+      ],
+      "native_point": [
+        635,
+        286
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        90,
+        90,
+        99
+      ],
+      "expected": [
+        92,
+        92,
+        92
+      ],
+      "native_point": [
+        638,
+        289
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        164,
+        144,
+        103
+      ],
+      "expected": [
+        140,
+        140,
+        140
+      ],
+      "native_point": [
+        791,
+        289
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        146,
+        134,
+        102
+      ],
+      "expected": [
+        130,
+        130,
+        130
+      ],
+      "native_point": [
+        797,
+        292
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        123,
+        115,
+        84
+      ],
+      "expected": [
+        110,
+        110,
+        110
+      ],
+      "native_point": [
+        935,
+        313
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        72,
+        97,
+        92
+      ],
+      "expected": [
+        88,
+        88,
+        88
+      ],
+      "native_point": [
+        479,
+        319
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        96,
+        85,
+        60
+      ],
+      "expected": [
+        82,
+        82,
+        82
+      ],
+      "native_point": [
+        1022,
+        319
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        129,
+        122,
+        92
+      ],
+      "expected": [
+        117,
+        117,
+        117
+      ],
+      "native_point": [
+        845,
+        322
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        66,
+        99,
+        165
+      ],
+      "expected": [
+        105,
+        105,
+        105
+      ],
+      "native_point": [
+        626,
+        325
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        128,
+        148,
+        196
+      ],
+      "expected": [
+        154,
+        154,
+        154
+      ],
+      "native_point": [
+        641,
+        325
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        165,
+        181,
+        222
+      ],
+      "expected": [
+        186,
+        186,
+        186
+      ],
+      "native_point": [
+        644,
+        325
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        122,
+        109,
+        72
+      ],
+      "expected": [
+        104,
+        104,
+        104
+      ],
+      "native_point": [
+        1064,
+        325
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        116,
+        102,
+        65
+      ],
+      "expected": [
+        97,
+        97,
+        97
+      ],
+      "native_point": [
+        1070,
+        325
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        132,
+        66,
+        49
+      ],
+      "expected": [
+        82,
+        82,
+        82
+      ],
+      "native_point": [
+        626,
+        331
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        189,
+        115,
+        90
+      ],
+      "expected": [
+        132,
+        132,
+        132
+      ],
+      "native_point": [
+        629,
+        331
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        231,
+        148,
+        115
+      ],
+      "expected": [
+        166,
+        166,
+        166
+      ],
+      "native_point": [
+        635,
+        331
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        239,
+        189,
+        156
+      ],
+      "expected": [
+        196,
+        196,
+        196
+      ],
+      "native_point": [
+        629,
+        334
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        140,
+        124,
+        83
+      ],
+      "expected": [
+        119,
+        119,
+        119
+      ],
+      "native_point": [
+        785,
+        334
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        146,
+        130,
+        90
+      ],
+      "expected": [
+        125,
+        125,
+        125
+      ],
+      "native_point": [
+        788,
+        334
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        108,
+        122,
+        101
+      ],
+      "expected": [
+        112,
+        112,
+        112
+      ],
+      "native_point": [
+        605,
+        337
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        131,
+        120,
+        83
+      ],
+      "expected": [
+        114,
+        114,
+        114
+      ],
+      "native_point": [
+        923,
+        340
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        107,
+        93,
+        61
+      ],
+      "expected": [
+        89,
+        89,
+        89
+      ],
+      "native_point": [
+        1022,
+        343
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        132,
+        107,
+        90
+      ],
+      "expected": [
+        111,
+        111,
+        111
+      ],
+      "native_point": [
+        620,
+        349
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        129,
+        115,
+        74
+      ],
+      "expected": [
+        109,
+        109,
+        109
+      ],
+      "native_point": [
+        926,
+        349
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        165,
+        144,
+        125
+      ],
+      "expected": [
+        146,
+        146,
+        146
+      ],
+      "native_point": [
+        620,
+        352
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        206,
+        181,
+        165
+      ],
+      "expected": [
+        185,
+        185,
+        185
+      ],
+      "native_point": [
+        617,
+        355
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        231,
+        214,
+        198
+      ],
+      "expected": [
+        215,
+        215,
+        215
+      ],
+      "native_point": [
+        653,
+        355
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        247,
+        239,
+        231
+      ],
+      "expected": [
+        240,
+        240,
+        240
+      ],
+      "native_point": [
+        659,
+        358
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        49,
+        54,
+        47
+      ],
+      "expected": [
+        51,
+        51,
+        51
+      ],
+      "native_point": [
+        1076,
+        406
+      ],
+      "fixture": "globalfx-all-gray"
+    },
+    {
+      "passes": 2,
+      "source": [
+        157,
+        137,
+        94
+      ],
+      "expected": [
+        133,
+        133,
+        133
+      ],
+      "native_point": [
+        704,
+        418
+      ],
+      "fixture": "globalfx-all-gray"
+    }
+  ]
+}

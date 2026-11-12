@@ -1,0 +1,158 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+[State 700, control]
+type=PlaySnd
+trigger1=Time=0
+value=1,0
+channel=1
+loop=1
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+
+[State 700, control]
+type=StopSnd
+trigger1=Time=240
+channel=1
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=0
+value=NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=1
+value=PlayerIDExist(58)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=2
+value=PlayerIDExist(59)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=3
+value=Time
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=4
+value=RoundState
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=5
+value=NumEnemy
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=6
+value=Var(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=7
+value=Helper(124),Time
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=8
+value=Helper(124),ID
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=9
+value=Helper(124),NumHelper
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=10
+value=Helper(124),StateNo
+
+[State 700, control]
+type=VarSet
+trigger1=Time=300
+fv=11
+value=GameTime
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=Null
+trigger1=1
+
+
+[Statedef 800]
+physics=N
+anim=9991
+ctrl=0
+
+[State 800, control]
+type=PlaySnd
+trigger1=Time=0
+value=2,0
+channel=1
+loop=1
+
+[State 800, control]
+type=Helper
+trigger1=Time=0
+id=124
+stateno=801
+
+[State 800, control]
+type=DestroySelf
+trigger1=Time=120
+recursive=1
+
+[State 800, control]
+type=ParentVarSet
+trigger1=Time=120
+v=0
+value=999
+
+[Statedef 801]
+physics=N
+anim=9991
+ctrl=0
+
+[State 801, control]
+type=PlaySnd
+trigger1=Time=0
+value=3,0
+channel=1
+loop=1

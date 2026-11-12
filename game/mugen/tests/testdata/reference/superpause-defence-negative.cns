@@ -1,0 +1,84 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, wait]
+type=Null
+trigger1=1
+[Statedef 701]
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, super]
+type=SuperPause
+trigger1=Time=2
+time=1
+movetime=1
+anim=-1
+sound=-1
+darken=0
+unhittable=0
+p2defmul=-1
+[State 701, first and second hit]
+type=HitDef
+trigger1=Time=0 || Time=4
+attr=S,NA
+hitflag=MAF
+guardflag=
+damage=100,0
+pausetime=0,0
+ground.type=High
+ground.hittime=10000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+[Statedef 5000]
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, entry count]
+type=VarAdd
+trigger1=Time=0
+v=0
+value=1
+[State 5000, entry 0]
+type=VarSet
+trigger1=Time=0
+fv=2*(var(0)-1)+0
+value=GetHitVar(damage)
+[State 5000, entry 1]
+type=VarSet
+trigger1=Time=0
+fv=2*(var(0)-1)+1
+value=Life
+[State 5000, final life]
+type=VarSet
+trigger1=Time=1
+fv=4
+value=Life
+[State 5000, entries]
+type=VarSet
+trigger1=1
+fv=5
+value=var(0)

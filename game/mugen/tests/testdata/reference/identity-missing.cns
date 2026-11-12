@@ -1,0 +1,142 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=700
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, missing destination 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=1+(Helper(999),ID)
+[State 700, missing destination 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=1+(PlayerID(-1),ID)
+[State 700, missing destination 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=(Parent,ID)=0
+[State 700, missing destination 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=2+(Parent,Time)
+[State 700, missing destination 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=2+(Helper,Time)
+[State 700, missing destination 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=Ln(-1)+2
+[State 700, missing destination 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=1%0+2
+[State 700, missing destination 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=(Parent,ID) || 1
+[State 700, missing destination 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=(Helper,ID)=0
+[State 700, missing destination 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=Cond((Parent,ID)=0,91,37)
+[State 700, missing destination 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=IfElse((Parent,ID)=0,91,37)
+[State 700, missing destination 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Cond((Helper,ID)=0,91,37)
+[State 700, missing destination 12]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=1+Ln(-1)
+[State 700, missing destination 13]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=1+(1/0)
+[State 700, missing destination 14]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Cond(1/0,91,37)
+[State 700, missing destination 15]
+type=VarSet
+trigger1=Time=0
+fv=15
+value=IfElse(1/0,91,37)
+[State 700, missing destination 16]
+type=VarSet
+trigger1=Time=0
+fv=16
+value=2+(Root,ID)
+[State 700, missing destination 17]
+type=VarSet
+trigger1=Time=0
+fv=17
+value=(PlayerID(-1),ID)=0
+[State 700, missing destination 18]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=1+(Helper,Life)
+[State 700, missing destination 19]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=1+(PlayerID(-1),Life)
+[State 700, missing destination 20]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=(Parent,Life)=0
+[State 700, missing destination 21]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=(Root,NumHelper)=0
+[State 700, missing destination 22]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=NumHelper(1/0)+1
+[State 700, missing destination 23]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=PlayerIDExist(1/0)+1

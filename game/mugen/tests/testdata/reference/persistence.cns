@@ -1,0 +1,37 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, clear]
+type=VarRangeSet
+trigger1=time=0
+value=0
+[State 0, alternate true evaluations]
+type=VarAdd
+triggerall=time<12
+trigger1=((var(15):=var(15)+1)>0) && time%3!=1
+persistent=2
+v=0
+value=1
+[State 0, once with observable trigger]
+type=VarAdd
+triggerall=time<12
+trigger1=(var(14):=var(14)+1)>0
+persistent=0
+v=13
+value=1
+[State 0, capture each tick]
+type=VarSet
+trigger1=time<12
+v=time+1
+value=var(0)

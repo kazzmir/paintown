@@ -1,0 +1,347 @@
+{
+  "native_finalization": "Exact prepared config; final FirstRun1->0 and LF->CRLF only. Original inputs/captures unchanged.",
+  "programs": {
+    "gamecontext-action-negative-large": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-action-negative-one": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-action-zero-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-actor-x-negative": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-actor-x-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-actor-y-negative": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-actor-y-positive": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-explods-eight-system-one": {
+      "prepared_sha256": "8d5801c4d72c72d2c306704909884db9586e65f1ceed17bf85916cd4d6c6ca54",
+      "final_sha256": "eeba5ef92743b3b352cd0e32386cccd7416df377a197055e913e02f493020797",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 1,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-explods-eight-then-game": {
+      "prepared_sha256": "c64cf8ca5f597df07584a9efd9b012da19eff3f02693d772734c9a8b0e2697d6",
+      "final_sha256": "60460994aa91d8650960b886aedbd4ad29834e0f783f4bb0b7e5cfba781b930b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 8,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-explods-sixteen-then-game": {
+      "prepared_sha256": "d1436b00ff4aa595d9e36f60054b4ab92a286df9a34c1b5d4f06176afa553e6f",
+      "final_sha256": "9f30c101ac06b2173aa1a3f7fa5b67886f685edd6dd4b952038681c39ffa1917",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 8,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-facing-fraction": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-games-eight-then-explod": {
+      "prepared_sha256": "c64cf8ca5f597df07584a9efd9b012da19eff3f02693d772734c9a8b0e2697d6",
+      "final_sha256": "60460994aa91d8650960b886aedbd4ad29834e0f783f4bb0b7e5cfba781b930b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 8,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-games-sixteen-then-explod": {
+      "prepared_sha256": "ee92c71afc60c5a724486f39133d0f30172c4ad1af98d5a81b13ece8fe593cc7",
+      "final_sha256": "ca07eb83cf7fecda35e533163f50cf356e2d5072154396e8cc53085ace93e17b",
+      "effect_limits": {
+        "ExplodMax": 8,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-local1280-xy": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-local640-x": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-local640-y": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-no-shadow-over": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-no-shadow-under": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-normal": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-palette-all": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-palette-background": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-palette-local": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-random-fraction-phase": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-shadow-none": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-shadow-over": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-shadow-under": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-system-eight": {
+      "prepared_sha256": "d1436b00ff4aa595d9e36f60054b4ab92a286df9a34c1b5d4f06176afa553e6f",
+      "final_sha256": "9f30c101ac06b2173aa1a3f7fa5b67886f685edd6dd4b952038681c39ffa1917",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 8,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-system-negative": {
+      "prepared_sha256": "2b7fd2dd9a1b83de7a9fd8ebc9ebebbf4931c31ac7b0e13882ebc8a67804542a",
+      "final_sha256": "90b81760fa96af17b4ed62762a41859a11ad7a8330d97b12be9e09f21c508bd1",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": -1,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-system-one": {
+      "prepared_sha256": "00382d3dcb6dada4ab07b10d9d75ce26b10d965523f14d97dcf9a650f121b3cb",
+      "final_sha256": "e7d336a4d1644d07c2d91a51c2aa534a5fc3bec7a1824a8c9286d00dcc0a793d",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 1,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-system-sixteen": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-system-zero": {
+      "prepared_sha256": "169d812961e0c82ca39cfaadf303ba36e68c8814bfb11536d77fc16682240bb2",
+      "final_sha256": "2a9feecc399b3a57f1994726f100cf5d9a1b18156ae3be6ad81aa90c83330ae6",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 0,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-x-negative-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-x-negative-seven-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-x-positive-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-x-positive-seven-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-xy-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-y-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "gamecontext-y-seven-eighth": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    }
+  }
+}

@@ -1,0 +1,142 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=700
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+[State 700, bottom operator 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=5/((Ln(-1))+2)
+[State 700, bottom operator 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=5/((Parent,ID)+2)
+[State 700, bottom operator 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=5/((1/0)+2)
+[State 700, bottom operator 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=!(Parent,ID)
+[State 700, bottom operator 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=IfElse(1/0,91,37)
+[State 700, bottom operator 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=-(Parent,ID)
+[State 700, bottom operator 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=(Parent,ID)<1
+[State 700, bottom operator 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=(Parent,ID)!=0
+[State 700, bottom operator 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=(Parent,ID)&&1
+[State 700, bottom operator 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=IfElse(Ln(-1),91,37)
+[State 700, bottom operator 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Cond(Ln(-1),91,37)
+[State 700, bottom operator 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=Abs(Ln(-1))+2
+[State 700, bottom operator 12]
+type=VarSet
+trigger1=Time=0
+fv=12
+value=5/((Ln(-1))+2.0)
+[State 700, bottom operator 13]
+type=VarSet
+trigger1=Time=0
+fv=13
+value=IfElse(1,Ln(-1),37)+2
+[State 700, bottom operator 14]
+type=VarSet
+trigger1=Time=0
+fv=14
+value=Cond(1,Ln(-1),37)+2
+[State 700, bottom operator 15]
+type=VarSet
+trigger1=Time=0
+fv=15
+value=(1/0) ** 0
+[State 700, bottom operator 16]
+type=VarSet
+trigger1=Time=0
+fv=16
+value=0 ** (1/0)
+[State 700, bottom operator 17]
+type=VarSet
+trigger1=Time=0
+fv=17
+value=4 * (1/0)
+[State 700, bottom operator 18]
+type=VarSet
+trigger1=Time=0
+fv=18
+value=(1/0) || 4
+[State 700, bottom operator 19]
+type=VarSet
+trigger1=Time=0
+fv=19
+value=(1/0) && 4
+[State 700, bottom operator 20]
+type=VarSet
+trigger1=Time=0
+fv=20
+value=(1/0) = (1/0)
+[State 700, bottom operator 21]
+type=VarSet
+trigger1=Time=0
+fv=21
+value=Sin(1/0)+2
+[State 700, bottom operator 22]
+type=VarSet
+trigger1=Time=0
+fv=22
+value=Floor(1/0)+2
+[State 700, bottom operator 23]
+type=VarSet
+trigger1=Time=0
+fv=23
+value=IfElse(1/0,Var(0):=11,Var(0):=17)+Var(0)

@@ -1,0 +1,19 @@
+{
+  "programs": {
+    "gamephase-missing": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    },
+    "gamephase-valid": {
+      "prepared_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+      "final_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+      "effect_limits": {
+        "AfterImageMax": 16
+      }
+    }
+  },
+  "native_finalization": "Exact Debug1/AfterImageMax16 preparation, native FirstRun1->0 plus CRLF; commonAIR appendices independently pinned in original evidence where present."
+}

@@ -1,0 +1,40 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, initialize]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=5
+[State 700, sound]
+type=PlaySnd
+trigger1=Time=0
+value=fvar(1),0
+[State 700, report]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=1

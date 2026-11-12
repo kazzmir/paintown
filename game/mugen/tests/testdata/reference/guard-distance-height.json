@@ -1,0 +1,92 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "192cb6c81ec9b09547e928e7428c6a6f196abb19b8257e42ccbe5258722f5495",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "54fa6b407b971621b00e673f9d237f68d96ad0100e5b81c48b74e307a7856ee1",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 1,
+            "5": 140,
+            "6": 0,
+            "7": 1,
+            "8": 1,
+            "9": 140,
+            "10": -10,
+            "11": 1
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "44c5665913d1ea6885ac49fb08977909d2022157ec1da66b1631a239ba65b346",
+          "variables": {
+            "12": 1,
+            "13": 140,
+            "14": -50,
+            "15": 1,
+            "16": 1,
+            "17": 140,
+            "18": -100,
+            "19": 1,
+            "20": 1,
+            "21": 140,
+            "22": -200,
+            "23": 1
+          }
+        },
+        {
+          "page": 24,
+          "path": "animation-page24.png",
+          "sha256": "6373d18c969fa6f2a357052ad2e8a209bc1a108002c7dcc57bbe8ba9a59d7680",
+          "variables": {
+            "24": 1,
+            "25": 140,
+            "26": -500,
+            "27": 1,
+            "28": 1,
+            "29": 140,
+            "30": 10,
+            "31": 1,
+            "32": 1,
+            "33": 140,
+            "34": 100,
+            "35": 1
+          }
+        },
+        {
+          "page": 28,
+          "path": "animation-page28.png",
+          "sha256": "05a51f9588c747049916517103bdda1dfb5ff2d6e3787a9afbadcb5ae8e5d576",
+          "variables": {
+            "28": 1,
+            "29": 140,
+            "30": 10,
+            "31": 1,
+            "32": 1,
+            "33": 140,
+            "34": 100,
+            "35": 1,
+            "36": 1,
+            "37": 140,
+            "38": 0,
+            "39": 1
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    }
+  }
+}

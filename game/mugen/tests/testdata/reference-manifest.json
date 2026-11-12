@@ -1,0 +1,547 @@
+[
+  {
+    "path": "chars/kfm/ending.def",
+    "size": 2047,
+    "sha256": "7a61119695005495bcf31ae5da84daedbf6d7cdb5df21c6685ec6ba974bb74ad"
+  },
+  {
+    "path": "chars/kfm/ending.sff",
+    "size": 48958,
+    "sha256": "abd3b10e42d3518a86c214ee38a394c8e2f08984e165387c47fa7a1153a37484"
+  },
+  {
+    "path": "chars/kfm/intro.def",
+    "size": 2989,
+    "sha256": "dfa6964fe91c32fa0addf742bb1b70c641d6ab899602460e778716b5a206225b"
+  },
+  {
+    "path": "chars/kfm/intro.sff",
+    "size": 90427,
+    "sha256": "ea90366a6f85fd60e4940de3c37636c7b4c80a96c61e72edd02fd07e0d18229d"
+  },
+  {
+    "path": "chars/kfm/kfm.air",
+    "size": 51853,
+    "sha256": "a9ed7aae299fe25e79b7ccf2fe66c36dbe8d42063f430600cd38127c3250f825"
+  },
+  {
+    "path": "chars/kfm/kfm.cmd",
+    "size": 22991,
+    "sha256": "f20d365f68944b12f69839e8756432ce36c57dde9fd1ec5a5496360382922fac"
+  },
+  {
+    "path": "chars/kfm/kfm.cns",
+    "size": 78679,
+    "sha256": "af4c90afdfc664dcff9108185ff80ece9cafa31f3bbc15b4bbea9c9d481a97c2"
+  },
+  {
+    "path": "chars/kfm/kfm.def",
+    "size": 1384,
+    "sha256": "6fca01470c82aa5ff48b1dac96adc58bf530a8cd0c276480e26c16e0d1305f72"
+  },
+  {
+    "path": "chars/kfm/kfm.sff",
+    "size": 206449,
+    "sha256": "48be6f118ce8665ab1b383d877d93efe51c47246c30358f39ec8db62172d3746"
+  },
+  {
+    "path": "chars/kfm/kfm.snd",
+    "size": 76631,
+    "sha256": "daae16a39cc22b5eaf7b40c09a20076ee2278c1fb34ab40af4caa3f3b4db669a"
+  },
+  {
+    "path": "chars/kfm720/ending.def",
+    "size": 2047,
+    "sha256": "7a61119695005495bcf31ae5da84daedbf6d7cdb5df21c6685ec6ba974bb74ad"
+  },
+  {
+    "path": "chars/kfm720/ending.sff",
+    "size": 48958,
+    "sha256": "abd3b10e42d3518a86c214ee38a394c8e2f08984e165387c47fa7a1153a37484"
+  },
+  {
+    "path": "chars/kfm720/intro.def",
+    "size": 2989,
+    "sha256": "dfa6964fe91c32fa0addf742bb1b70c641d6ab899602460e778716b5a206225b"
+  },
+  {
+    "path": "chars/kfm720/intro.sff",
+    "size": 90427,
+    "sha256": "ea90366a6f85fd60e4940de3c37636c7b4c80a96c61e72edd02fd07e0d18229d"
+  },
+  {
+    "path": "chars/kfm720/kfm.snd",
+    "size": 76631,
+    "sha256": "daae16a39cc22b5eaf7b40c09a20076ee2278c1fb34ab40af4caa3f3b4db669a"
+  },
+  {
+    "path": "chars/kfm720/kfm720.air",
+    "size": 49606,
+    "sha256": "3fd2417c3ce08257cbb8879b3b6e3f155c00b5efdb6ff9dcde97d7712fcea789"
+  },
+  {
+    "path": "chars/kfm720/kfm720.cmd",
+    "size": 22988,
+    "sha256": "8901f1ba9eed2d8c4d3faee732adafdbbf14e312bb8a73dd252b102c99c30502"
+  },
+  {
+    "path": "chars/kfm720/kfm720.cns",
+    "size": 78575,
+    "sha256": "6115397b278324c5e97bb0b1d91624f051faf01c9deb4cfbfaceb7db8fcacd50"
+  },
+  {
+    "path": "chars/kfm720/kfm720.def",
+    "size": 1379,
+    "sha256": "ca2fa81312411293ee3e7132b0261ff44802d51aec21ad568db6707bf289839b"
+  },
+  {
+    "path": "chars/kfm720/kfm720.sff",
+    "size": 937029,
+    "sha256": "d8d3931efa8148f307d83774fea819346a12069e08b59bc1a84d118abcbf9a2b"
+  },
+  {
+    "path": "data/big/system.def",
+    "size": 20139,
+    "sha256": "adb1966e8177fc382dca76af975b6193063ce88b8cc38c72d77494afeb0a7313"
+  },
+  {
+    "path": "data/common.snd",
+    "size": 72705,
+    "sha256": "b49c8b62fb07a1212ce3e3d2c98bf5f59446ad68451b6a70a4740110f75d5926"
+  },
+  {
+    "path": "data/common1.cns",
+    "size": 43361,
+    "sha256": "1b3fa7977d31884d3c7c3475a7238cdc6d463ac61f60a55daedaec757aff54d3"
+  },
+  {
+    "path": "data/fight.def",
+    "size": 16531,
+    "sha256": "4215173e699fb022da39c53382effdf1bc2dd1c02daf66b5dc04369624092891"
+  },
+  {
+    "path": "data/fight.sff",
+    "size": 70125,
+    "sha256": "59be2efaaf5f519293b3ea4df6cf86783a96511afe580a268b2953e3fe31e532"
+  },
+  {
+    "path": "data/fight.snd",
+    "size": 89579,
+    "sha256": "82cf3132b38be9b1f88487f58d37067e7d2c7dd5b19e2994618ddfe60ff26945"
+  },
+  {
+    "path": "data/fightfx.air",
+    "size": 3921,
+    "sha256": "d9f6bc1d98682815f69a793f6a709163ad5beed971786eea8db2483221124bc7"
+  },
+  {
+    "path": "data/fightfx.sff",
+    "size": 148215,
+    "sha256": "e65fcbb0b98e4a6753c474c4f4cfa8189ef18fa055c5b3a7f54a9c674a9c04e5"
+  },
+  {
+    "path": "data/kfm/credits.def",
+    "size": 1579,
+    "sha256": "cb6c23fc2556f4a388adcb96a47e43a5c599d08ac998f40f0c4130868ea9ba51"
+  },
+  {
+    "path": "data/kfm/credits.sff",
+    "size": 29331,
+    "sha256": "d16071b6cbe65071edc5265ed4afc3f38d9c286303044db2a474de51a42b0f49"
+  },
+  {
+    "path": "data/kfm/gameover.def",
+    "size": 1077,
+    "sha256": "1fdda10502939ae92385a38f90af141a8fc79dd7bbd9ecb19bc46160660c3a96"
+  },
+  {
+    "path": "data/kfm/gameover.sff",
+    "size": 5767,
+    "sha256": "9cbb0d1491de1bc766256138674e73c3d9c6bd9ff0551c1ac1b5a66ed7b169e9"
+  },
+  {
+    "path": "data/kfm/intro.def",
+    "size": 3283,
+    "sha256": "fc7583d07c93b053248efe955b2e5b6ec8f52c3df8b4095ea82760a4bf5e758e"
+  },
+  {
+    "path": "data/kfm/intro.sff",
+    "size": 97583,
+    "sha256": "56df904524eb471840bf4c8de26d87da10a85e491b0e9d00fc94f6a0c19d0153"
+  },
+  {
+    "path": "data/kfm/kfmtitle.sff",
+    "size": 30894,
+    "sha256": "8000c7764fd01f14840b1f6585e085f8f2073d3e0bc52a67cd32f13d2dcc4c14"
+  },
+  {
+    "path": "data/kfm/logo.def",
+    "size": 455,
+    "sha256": "e926b4321a70c689a676db112d840bc8cfe0a20dd578a68c42e9bad4fba0754b"
+  },
+  {
+    "path": "data/kfm/logo.sff",
+    "size": 7997,
+    "sha256": "c1e5560521a4009036dc7f9c644ae44492a3d10737ae862e57f6dc84a9a59d60"
+  },
+  {
+    "path": "data/kfm/select.def",
+    "size": 3522,
+    "sha256": "c36a63120ffa28429582890198e27f058b81e4deea01caf8ec11df7d17b9ae4e"
+  },
+  {
+    "path": "data/kfm/system.def",
+    "size": 14084,
+    "sha256": "7f9f3af2d3a9bc23ec9970369f6385117850757e487d98ca6a7d20a8fdb972b9"
+  },
+  {
+    "path": "data/mugen.cfg",
+    "size": 17116,
+    "sha256": "4d3b3fc9d880eb15b3a64b025deb270702ba469a56fab3f40e4bbda28f333b1a"
+  },
+  {
+    "path": "data/mugen1/fight.def",
+    "size": 18301,
+    "sha256": "4fa8c5b8e52c1ab4fb53935428ee3aad7985604803a1ee589597423b6719474a"
+  },
+  {
+    "path": "data/mugen1/fight.sff",
+    "size": 245707,
+    "sha256": "b7e082db1bd6635c3c456378f061a7137c3a8610ee3b0623fb771771dffc7b94"
+  },
+  {
+    "path": "data/mugen1/system.def",
+    "size": 20521,
+    "sha256": "c1f86ec725ec791531e7cb0dd1f14142e8507d117368f749e6b8d8eb8b60a986"
+  },
+  {
+    "path": "data/mugen1/system.sff",
+    "size": 976131,
+    "sha256": "d5d1ff73610a80ec0899186e17a8cfc20c493b02c4855f469eb01e66453c92e2"
+  },
+  {
+    "path": "data/select.def",
+    "size": 3759,
+    "sha256": "063afad84c3a676b8ad4e4e67ea7e884d456be766adb1d11ab0e833dc63b3d7b"
+  },
+  {
+    "path": "data/system.def",
+    "size": 15759,
+    "sha256": "8806d0cdac4cf613959bb14e72650346251536696440adcd766264ad1f466c6d"
+  },
+  {
+    "path": "data/system.sff",
+    "size": 145264,
+    "sha256": "ee6d64bba221b5cb7f3cfad4b513e5aa389ab0562de227482a8ded2ad7c05b5a"
+  },
+  {
+    "path": "data/system.snd",
+    "size": 8976,
+    "sha256": "421b989a6af8b0c046ded40f3de63dde0b376827ccf4d9bb241c12a064b63341"
+  },
+  {
+    "path": "docs/air.html",
+    "size": 26377,
+    "sha256": "e05355b0cde3bb060a070d3527b85bfe7fb48101353750b28657461b0729cd9a"
+  },
+  {
+    "path": "docs/bg-tut.html",
+    "size": 15967,
+    "sha256": "103c7dceacbff43d7461876e65d8c350ff7ade77153e7880df46021319b7b672"
+  },
+  {
+    "path": "docs/bgs.html",
+    "size": 59083,
+    "sha256": "cdca1ebaae49ad8696c6f582696ae4b2357dedbbd57d2dbd76b7c08510b1e3c2"
+  },
+  {
+    "path": "docs/cns.html",
+    "size": 93847,
+    "sha256": "4da0b71329d7e9125c177421f354c10ce64799bf0d125223f6e39321007be94e"
+  },
+  {
+    "path": "docs/coordspace.html",
+    "size": 7003,
+    "sha256": "c7b3d6d6ffd4d0404112a7e0b610cb972525c9a5708e5b744d25ed67c0db3f59"
+  },
+  {
+    "path": "docs/fonts.html",
+    "size": 11576,
+    "sha256": "0623f8cc3267b84a6149f4c864595bbba64d4c673f109a1188e9f51ac7a379af"
+  },
+  {
+    "path": "docs/history.html",
+    "size": 39145,
+    "sha256": "1bb2425d393e7d9c1a8315f7a74ec5789faf1323b098d53afea9729dd851b2d9"
+  },
+  {
+    "path": "docs/localization.html",
+    "size": 9601,
+    "sha256": "1dde4f3b6ca3fbace0e4d5544b1a9e2380ab5e02a05b68f40e595a9a74ea4298"
+  },
+  {
+    "path": "docs/loopguide.html",
+    "size": 8912,
+    "sha256": "d4af5522625cc0adca2517ef421b025a41efce5cf7bb548d857c44714fc5802d"
+  },
+  {
+    "path": "docs/mconsole.html",
+    "size": 11709,
+    "sha256": "8699180dcad0e60e3d32a3b9e0017d71d19212c569c39ecd61d173a25186f3c6"
+  },
+  {
+    "path": "docs/mugen.html",
+    "size": 10625,
+    "sha256": "4909caed0dfde37b0b67abc7f655a47a150c2280a2ac1688edebda4ed82643d9"
+  },
+  {
+    "path": "docs/sctrls.html",
+    "size": 155987,
+    "sha256": "16e143ce3f7b61be0de8a3056d03495c916dd83c76d7ef339a6c70e54877b332"
+  },
+  {
+    "path": "docs/spr.html",
+    "size": 13385,
+    "sha256": "9a45f65cc260f988452fa708081ce0004752c1799190963385772a57cc04c0c5"
+  },
+  {
+    "path": "docs/sprmake2.html",
+    "size": 13982,
+    "sha256": "a83644b816cea18deff60a27d563504881e6d447d771993bed77439239f6daf4"
+  },
+  {
+    "path": "docs/storyboard.html",
+    "size": 27798,
+    "sha256": "e7a89779cfcdb21e183c0c9bdd341165ab550a20b162d9d8746825bdd5ecc6f4"
+  },
+  {
+    "path": "docs/trigger.html",
+    "size": 135758,
+    "sha256": "9a6636b9e14edc1c91b38de7357aae43049d2a612313d10be55f6e6117ab121c"
+  },
+  {
+    "path": "docs/tutorial1.html",
+    "size": 20336,
+    "sha256": "910192c763b2c8ba55210cd07e65458fab18aad35f0bcce417d38f9fa65689e3"
+  },
+  {
+    "path": "docs/tutorial2.html",
+    "size": 9328,
+    "sha256": "724035ebf035734bf41e605e456c038b89d7fd6222d89444c4f525e9368c58b1"
+  },
+  {
+    "path": "docs/tutorial3.html",
+    "size": 18144,
+    "sha256": "dcb56108a38ceb0c1a5c07d259dd5e07dd135a4fda380be24fc83d2c42382fc1"
+  },
+  {
+    "path": "docs/tutorial4.html",
+    "size": 16024,
+    "sha256": "3ce65a3ace0cd67c5c52c069927ba6c23902dad0de94d52664c40add72d1166e"
+  },
+  {
+    "path": "docs/upgrading.html",
+    "size": 24445,
+    "sha256": "5ebb317f993adc0529cb0b02643f4521764c2a2fae1c3902f2cad2c63b6b4b53"
+  },
+  {
+    "path": "font/arcade.def",
+    "size": 932,
+    "sha256": "c830aef3bdf9f2bde4129053d48eed2443af314b31372bda858b44f8be6f8591"
+  },
+  {
+    "path": "font/arcade.sff",
+    "size": 42084,
+    "sha256": "725878e48f07f4d0f3b7d35e9c0fc33c3047ecf40a4a2a480671d9a4ec474b90"
+  },
+  {
+    "path": "font/enter48.def",
+    "size": 898,
+    "sha256": "4a88422edcef9d2e0bf834e9a30f383a94503a99dc2d4c26f427659bc060e99c"
+  },
+  {
+    "path": "font/enter48.sff",
+    "size": 44010,
+    "sha256": "7be81d5db12ceb09f0494ba2d3f089e1988e5fdc964069c6182569ff58f1590c"
+  },
+  {
+    "path": "font/f-4x6.def",
+    "size": 813,
+    "sha256": "353e012b937650e1352d9fb92618ad4fee678550f26be66ee4471b2f54e2eb4c"
+  },
+  {
+    "path": "font/f-4x6.fnt",
+    "size": 3028,
+    "sha256": "7a4ecf40f4548e301546a50835af06015d2a0b1a0e4901222d2f9b589c6d9402"
+  },
+  {
+    "path": "font/f-4x6.sff",
+    "size": 5631,
+    "sha256": "08b21d5e47735aec4641c3319e0fc591145fdd4540e9300543ac202f1527d325"
+  },
+  {
+    "path": "font/f-6x8f.fnt",
+    "size": 4314,
+    "sha256": "49bce8c6b14597247f5ea9fc6da5b0028f136e2e851ac5fdebe3c437cb551cfb"
+  },
+  {
+    "path": "font/f-6x9.def",
+    "size": 813,
+    "sha256": "259a794f1c554dca9b663211163e07c74edb4aba4cf6fc820b68006468e2edc0"
+  },
+  {
+    "path": "font/f-6x9.fnt",
+    "size": 4410,
+    "sha256": "48f14ca06f152c7b302ea019a7a22a3cb17a14a0db270a12e7a69948508eff9c"
+  },
+  {
+    "path": "font/f-6x9.sff",
+    "size": 6619,
+    "sha256": "351aebd4bec316920e74cca1cea6ec91e29431d519fb2e02a1d50690af3a920d"
+  },
+  {
+    "path": "font/f-6x9f.fnt",
+    "size": 4307,
+    "sha256": "ccfa2311f46f8bd03e4d5c6ba4a66fdb1c9d91bcda90559bf5f545e213b4e8bf"
+  },
+  {
+    "path": "font/infofont.def",
+    "size": 691,
+    "sha256": "225b68060cab813de952d388d4bcb217f31316c1e9dd32d15c4b93582facf592"
+  },
+  {
+    "path": "font/jg.fnt",
+    "size": 7029,
+    "sha256": "c0c7849b57912cd36734478d26f6b49c636b796580ea705a679f3cac64ae5f80"
+  },
+  {
+    "path": "font/msgothic-tt36.def",
+    "size": 705,
+    "sha256": "2be1f3aeefc6e7a67019ab123ec485440a0ec3866eb35f43574319b7986ce3b8"
+  },
+  {
+    "path": "font/mssansserif-tt36.def",
+    "size": 692,
+    "sha256": "54d843bee0e98cb1c5f0082c639d13b41810b261764135e9eb6f0ec871f57dc6"
+  },
+  {
+    "path": "font/name1.fnt",
+    "size": 3859,
+    "sha256": "ec50e35895abbc5ae0c5c0da9dc17c1118aa63edfcf97e3ee8e29a9b2f8c49d9"
+  },
+  {
+    "path": "font/name14.def",
+    "size": 924,
+    "sha256": "275fd8e9828d4879cafe47c98e97e2218e74fe0be5850ecceae1f0577709e406"
+  },
+  {
+    "path": "font/name14.sff",
+    "size": 20563,
+    "sha256": "86f45188f026619913187ef560866ea09bb7564993b5cb473e8e95b6b4aa4d51"
+  },
+  {
+    "path": "font/num1.def",
+    "size": 941,
+    "sha256": "6e635605652cda6dffd3a186a68af1c6b36f84717111df529a26d19a7c6a29e9"
+  },
+  {
+    "path": "font/num1.fnt",
+    "size": 2477,
+    "sha256": "8d0188cf91e830a3b586fa579b4694e021f1d0353c9f7dde5ef5d1755ba0cc7e"
+  },
+  {
+    "path": "font/num1.sff",
+    "size": 10103,
+    "sha256": "4b52368111705a6197d0a0fbd71e28e708bb9b24f23592cf653a05a2b7fffd4f"
+  },
+  {
+    "path": "font/num48.def",
+    "size": 945,
+    "sha256": "1c124a1676dc6483009e6656e1942f13d2a717a7d7289d2a6f6eec32aae57ff0"
+  },
+  {
+    "path": "font/num48.sff",
+    "size": 16304,
+    "sha256": "b100ba7c7e4430532175ac864207a61e4131b07777d293c269e62ca0ba419702"
+  },
+  {
+    "path": "font/num72.def",
+    "size": 873,
+    "sha256": "2ad26c646d938a35acc8b5b3856d39279ced2638a6c0f05f11956485cf428619"
+  },
+  {
+    "path": "font/num72.sff",
+    "size": 68129,
+    "sha256": "3110f8bebc9756002d8c3cb258e7955b1d91f91b29cd760d251bde9018a6e63a"
+  },
+  {
+    "path": "font/options.def",
+    "size": 691,
+    "sha256": "763d2187c434c62d260c169a62ef661cdafda3007ec4a86ef2a6579e18f13198"
+  },
+  {
+    "path": "mugen.exe",
+    "size": 1092608,
+    "sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e"
+  },
+  {
+    "path": "old_tools/data/airedit.cfg",
+    "size": 2298,
+    "sha256": "c6c25c4ddd45f907485a092c65cf5171dc31170f63f84e0ad30ab7c45e9ba614"
+  },
+  {
+    "path": "old_tools/font/f-4x6.fnt",
+    "size": 3028,
+    "sha256": "7a4ecf40f4548e301546a50835af06015d2a0b1a0e4901222d2f9b589c6d9402"
+  },
+  {
+    "path": "old_tools/font/f-6x9.fnt",
+    "size": 4410,
+    "sha256": "48f14ca06f152c7b302ea019a7a22a3cb17a14a0db270a12e7a69948508eff9c"
+  },
+  {
+    "path": "readme.txt",
+    "size": 23909,
+    "sha256": "9303a0be5b229397865c6200fdc1bef526423d85996d5102ffea8b84bfaae1d0"
+  },
+  {
+    "path": "sff2png.exe",
+    "size": 179712,
+    "sha256": "1bda8d94f0345df1bc7a872911ae9086f5f08aedc7f2a3c8ccd5ca18a23337ea"
+  },
+  {
+    "path": "sprmake2.exe",
+    "size": 199168,
+    "sha256": "8b545b2d0a7216217b6367337478b3afe33d82292716e1d29f59cc5fcbd89333"
+  },
+  {
+    "path": "stages/kfm.def",
+    "size": 12211,
+    "sha256": "f9242df0b014b3af6fa6330d5a1648fc279765854c485ee2f7c12987c25ac91b"
+  },
+  {
+    "path": "stages/kfm.sff",
+    "size": 156733,
+    "sha256": "f5ddfc6e52e3f8de8cf731b924ba4f241450bfe56c51e61c45a04ee72e981fff"
+  },
+  {
+    "path": "stages/stage0-720.def",
+    "size": 10749,
+    "sha256": "c1a0a09209bbddbcaea80b97df0dbadf9ffd74d889e886396cc420bfcbc80df2"
+  },
+  {
+    "path": "stages/stage0-720.sff",
+    "size": 481363,
+    "sha256": "11678402988691f3305bc227952648359dcb760856ead3cef765b6ba9076604b"
+  },
+  {
+    "path": "stages/stage0.def",
+    "size": 11203,
+    "sha256": "239e3682942b458a594182f94e4cd7441ad6bd6c92ca9e6fe466553a93eff3d2"
+  },
+  {
+    "path": "stages/stage0.sff",
+    "size": 4202,
+    "sha256": "9e2a4a8883776e2298caa3a724b2e87a8532d866a7765f974e1a2eabadea4b62"
+  }
+]

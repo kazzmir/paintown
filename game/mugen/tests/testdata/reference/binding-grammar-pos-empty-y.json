@@ -1,0 +1,36 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "d41d9a88d6f99c6bb6ede36ad2016d92b5b44e0640bb1fb51d7b21f97d411aa0",
+  "air_sha256": "a19979ed08a7422603ce6b70034137a738e5456f0eff4873f814240f76a5d39e",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "0fe85a54908d4bd5081e52da5761212e6e7d4b63ba8ffe2ff0db1c608e5d15f3",
+      "variables": {
+        "0": -68,
+        "1": 67,
+        "2": 67,
+        "3": 0,
+        "4": 3,
+        "5": -66,
+        "6": -36,
+        "7": 0,
+        "8": -2,
+        "9": -36,
+        "10": 0,
+        "11": -1
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_fixture": "binding-victim",
+  "p2_sha256": {
+    "cns": "5414617333cd8ec61f3699d1dafeb1b0ef3beac717c4cfdc24367c7351168e88",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e"
+  }
+}

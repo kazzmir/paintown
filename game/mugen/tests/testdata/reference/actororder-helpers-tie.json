@@ -1,0 +1,70 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "111c8a4f7800753c2404be233836ebbaffb2a9c6969d802fd6c67513bbe0724e",
+  "air_sha256": "fa7ff15be30938f1eae123273d0afe79a3e5ed437bb94f220e1c2e198a418ebb",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "84beda7d946c2fef7cd552441a97c4221459015f8e9f938de6451a440fa9c94f",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 1,
+        "3": 1,
+        "4": 58,
+        "5": 59,
+        "6": 700,
+        "7": 701,
+        "8": 800,
+        "9": 801,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "f47c3275832cfccdde11519d88412353b69aa13cbc01f3cc6fec8512a8656d8f"
+  },
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "8cb41524ece8579453f865e385dc1623f16df3ffb007ed0245de2a778392c0cb",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "actor_render": {
+    "window": [
+      1280,
+      720
+    ],
+    "point": [
+      640,
+      492
+    ],
+    "rgb": [
+      40,
+      60,
+      230
+    ],
+    "front_entity_id": 58,
+    "pure_color_pixels": 9216,
+    "pure_color_bounds": [
+      592,
+      444,
+      688,
+      540
+    ]
+  }
+}

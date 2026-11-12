@@ -1,0 +1,154 @@
+package match
+
+import (
+	"github.com/kazzmir/paintown/game/mugen/character"
+	"math"
+)
+
+// Native boot controllers for both roots see the raw stage start in game
+// units. It remains published for the first root's next CNS pass, then the
+// ordinary per-entity update publishes the converted camera for the next root.
+// Later-round startup has not been measured by these cold-start controls.
+func (m *Match) publishedCameraX() float64 {
+	if m.Round == 1 && m.Tick == 0 {
+		return m.Stage.Camera.StartX
+	}
+	return m.CameraX
+}
+
+func (m *Match) cameraActors() []*character.Character {
+	actors := make([]*character.Character, 0, len(m.Players)+len(m.World.Helpers))
+	for _, player := range m.Actors() {
+		actors = append(actors, player.Character)
+	}
+	return append(actors, m.World.Helpers...)
+}
+
+// Stage camera bounds describe the fully zoomed-out view. Its outer edges
+// stay fixed as zoom changes; a narrower view can travel farther sideways.
+func (m *Match) horizontalStageBounds() (float64, float64) {
+	scale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+	half := float64(m.Options.GameSpace.Width) / (2 * m.Stage.Camera.ZoomOut)
+	return m.Stage.Camera.BoundLeft*scale - half, m.Stage.Camera.BoundRight*scale + half
+}
+
+// The native zoom-one horizontal camera keeps a tension region, eases after
+// each entity update and in the shared late phase. Both endpoints and the
+// movement delta round independently before the center/zoom are published.
+func (m *Match) updateHorizontalCamera() {
+	stageScale, _ := m.Stage.StageInfo.LocalCoord.ScaleTo(m.Options.GameSpace)
+	left, right := math.Inf(1), math.Inf(-1)
+	top, bottom := math.Inf(1), math.Inf(-1)
+	leftVelocity, rightVelocity := 0.0, 0.0
+	participants := false
+	verticalParticipants := false
+	for _, actor := range m.cameraActors() {
+		verticalParticipants = verticalParticipants || actor.CameraMovementEnabled(1)
+		if actor.CameraMovementEnabled(1) {
+			y := actor.Y * float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
+			top, bottom = min(top, y), max(bottom, y)
+		}
+		if !actor.CameraMovementEnabled(0) {
+			continue
+		}
+		participants = true
+		scale := float64(m.Options.GameSpace.Width) / float64(actor.LocalCoordinateWidth())
+		actorLeft, actorRight := actor.HorizontalCameraBounds()
+		actorLeft, actorRight = actorLeft*scale, actorRight*scale
+		velocity := actor.VelX * float64(actor.Facing) * scale
+		if actorLeft < left {
+			left, leftVelocity = actorLeft, velocity
+		}
+		if actorRight > right {
+			right, rightVelocity = actorRight, velocity
+		}
+	}
+	// The beta freezes camera updates if either axis has no participants,
+	// even when the other axis still has eligible actors.
+	if !participants || !verticalParticipants {
+		return
+	}
+	// ScreenBound=0 can place actors beyond the stage. Limit only their
+	// camera fitting region; their actual positions remain unrestricted.
+	stageLeft, stageRight := m.horizontalStageBounds()
+	margin := m.Stage.Camera.Tension * stageScale
+	leftEdge, rightEdge := left-margin, right+margin
+	participantCenter := (leftEdge + rightEdge) / 2
+	leftEdge = max(stageLeft, min(stageRight, leftEdge))
+	rightEdge = max(stageLeft, min(stageRight, rightEdge))
+	half := float64(m.Options.GameSpace.Width) / 2
+	zoom := 1.0
+	zoomEnabled := m.Stage.Camera.StartZoom != 1 || m.Stage.Camera.ZoomOut != 1 || m.Stage.Camera.ZoomIn != 1
+	if zoomEnabled {
+		zoom = m.Stage.Camera.ZoomIn
+		// Tension margins, like the vertical margins below, occupy unzoomed
+		// stage units. Fit the actor span plus both margins into the view.
+		span := rightEdge - leftEdge
+		if span > 0 {
+			zoom = max(m.Stage.Camera.ZoomOut, min(zoom, 2*half/span))
+		}
+		if high, low := m.Stage.Camera.TensionHigh, m.Stage.Camera.TensionLow; high != nil && low != nil {
+			// Native vertical tension is in unzoomed stage units. Its visible
+			// height must fit the participant span plus both margins.
+			span := bottom - top + (*high+*low)*stageScale
+			if span > 0 {
+				zoom = max(m.Stage.Camera.ZoomOut, min(zoom, float64(m.Options.GameSpace.Height)/span))
+			}
+		}
+		half /= zoom
+	}
+	threshold := half - margin
+	low, high := rightEdge-half, leftEdge+half
+	wanted := m.cameraGoalX
+	if low > high {
+		// Clipping limits zoom fitting, not the actors' midpoint. When the
+		// minimum zoom cannot fit both actors, center their original region
+		// before applying the final stage limits below. Anchoring the clipped
+		// side instead makes a returning offscreen actor displace the camera.
+		wanted = participantCenter
+	} else {
+		wanted = math.Max(low, math.Min(high, wanted))
+	}
+	wanted = math.Max(stageLeft+half, math.Min(stageRight-half, wanted))
+	m.cameraGoalX = wanted
+	wantedLeft, wantedRight := float32(wanted-half), float32(wanted+half)
+	bias := float32(float64(float32(.1)) * float64(m.Options.GameSpace.Width) / 320)
+	advance := func(currentEdge, wantedEdge float32) float32 {
+		if currentEdge == wantedEdge {
+			return currentEdge
+		}
+		direction := math.Copysign(1, float64(wantedEdge-currentEdge))
+		delta := float32(.95*float64(currentEdge) + .05*float64(wantedEdge) - float64(currentEdge) + float64(bias)*direction)
+		if direction > 0 {
+			if right > m.CameraX+threshold && rightVelocity > 0 {
+				delta = max(delta, float32(rightVelocity))
+			}
+			return min(currentEdge+delta, wantedEdge)
+		}
+		if left < m.CameraX-threshold && leftVelocity < 0 {
+			delta = min(delta, float32(leftVelocity))
+		}
+		return max(currentEdge+delta, wantedEdge)
+	}
+	m.cameraLeft, m.cameraRight = advance(m.cameraLeft, wantedLeft), advance(m.cameraRight, wantedRight)
+	width := float64(m.Options.GameSpace.Width)
+	if !zoomEnabled && float64(m.cameraRight)-float64(m.cameraLeft) > width {
+		if m.cameraRight <= wantedRight {
+			m.cameraLeft = float32(float64(m.cameraRight) - width)
+		} else if m.cameraLeft >= wantedLeft {
+			m.cameraRight = float32(float64(m.cameraLeft) + width)
+		}
+	}
+	if zoomEnabled {
+		center := (float64(m.cameraLeft) + float64(m.cameraRight)) / 2
+		span := max(width/m.Stage.Camera.ZoomIn, min(width/m.Stage.Camera.ZoomOut, float64(m.cameraRight)-float64(m.cameraLeft)))
+		m.cameraLeft, m.cameraRight = float32(center-span/2), float32(center+span/2)
+	}
+	m.CameraX = float64(float32((float64(m.cameraLeft) + float64(m.cameraRight)) / 2))
+	m.Viewport.Zoom = float64(float32(width / (float64(m.cameraRight) - float64(m.cameraLeft))))
+	m.Viewport.CameraX = m.publishedCameraX()
+	for _, player := range m.Actors() {
+		scale, _ := m.Options.GameSpace.ScaleTo(player.LocalCoord)
+		player.Character.CameraX = m.Viewport.CameraX * scale
+	}
+}

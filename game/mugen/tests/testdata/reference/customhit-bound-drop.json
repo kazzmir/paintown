@@ -1,0 +1,94 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f2a8e5471e0669a46f012bbf9c944a623eb8c630340818da85c8f131369970b2",
+  "air_sha256": "a19979ed08a7422603ce6b70034137a738e5456f0eff4873f814240f76a5d39e",
+  "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "e33159a1d3a392cf73270a3d0b65740f8eb136a0640fe061fb9790c699d6eef4",
+      "variables": {
+        "0": -68,
+        "1": 67,
+        "2": 67,
+        "3": 0,
+        "4": 3,
+        "5": -66,
+        "6": -36,
+        "7": 5,
+        "8": -2,
+        "9": -36,
+        "10": 5,
+        "11": -1
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "7021d29ae2b76089d252b92df17a3684cad1dda96de46f6ec626dc0de8d41882",
+      "variables": {
+        "12": -61,
+        "13": 0,
+        "14": 0,
+        "15": -53,
+        "16": 0,
+        "17": 0,
+        "18": -52,
+        "19": 0,
+        "20": 0,
+        "21": -48,
+        "22": 0,
+        "23": 0
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "76eb14dc8c5b3b1fdfd9fe814dad2e1b430d17ee13db8394315ef81ad904b9b2",
+      "variables": {
+        "24": 0,
+        "25": 0,
+        "26": 1,
+        "27": 0,
+        "28": 0,
+        "29": 0,
+        "30": 1,
+        "31": 0,
+        "32": 0,
+        "33": 0,
+        "34": 0,
+        "35": 2
+      }
+    },
+    {
+      "page": 28,
+      "path": "animation-page28.png",
+      "sha256": "5009df4b821ac5569ffc7445d2e6d784d69f70011943c8c7efd832c23b3d2b43",
+      "variables": {
+        "28": 0,
+        "29": 0,
+        "30": 1,
+        "31": 0,
+        "32": 0,
+        "33": 0,
+        "34": 0,
+        "35": 2,
+        "36": 1,
+        "37": 0,
+        "38": 0,
+        "39": 0
+      },
+      "run": "customhit-bound-drop-immediate-native"
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "mugenversion": "1.1",
+  "p2_fixture": "customhit-bound-drop-victim",
+  "p2_sha256": {
+    "cns": "48cd822e3a81a7cf3c311b99800ad7de1e59b89231ddf8cca7232a1f34f7caa3",
+    "air": "863fac94bbfe5c2d2dc05a0f66b7bd2d5a10b35217a11ad9a141c9d1713cf32e"
+  }
+}

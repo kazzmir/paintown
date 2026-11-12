@@ -1,0 +1,263 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "f136a6d1a04e02d9944b7f0e351f46c5cfacc83f8670fbd6286b4131f0ecbf48",
+  "air_sha256": "12cf4ad981fced7389d5b9f95c15c33cb417550c7f4986d770f9ee5910c03be2",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "55d476f695a002a5a1e8a2a337dfbe97756eb9e5caddb12e2225e4ac6c92aaaa",
+      "variables": {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 8,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 138,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "clipboard_in_cmd": true,
+  "clipboard_delay": 0,
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "9417cea2eaf0db33e63cd3275c4a4c7db983cdd681e2430b45d0e6088a474ee0",
+  "cmd_sha256": "34315f222eca5bbfa5f3978618064abe0338e21f423024098fe9f9b976ea3f38",
+  "effect_limits": {
+    "AfterImageMax": 16
+  },
+  "config_sha256": "4c3a5138a06e63b6964386510a558b5096ebfa05defa7260ae39b25461339492",
+  "actual_controller_counts": {
+    "AppendToClipboard": 1,
+    "ChangeState": 2,
+    "DisplayToClipboard": 1,
+    "Explod": 1,
+    "Pause": 1,
+    "PlayerPush": 2,
+    "PosSet": 2,
+    "ScreenBound": 2,
+    "VarSet": 12
+  },
+  "all_inherited_air_command_stage_bytes_unchanged": true,
+  "all_non_target_controllers_unchanged": true,
+  "consumer": "Explod shadow creation schema/order; native results NOT assumed",
+  "full_controller_intent": [
+    {
+      "State": 5900,
+      "Type": "ChangeState",
+      "Params": {
+        "value": "0"
+      }
+    },
+    {
+      "State": 0,
+      "Type": "ChangeState",
+      "Params": {
+        "value": "IfElse(TeamSide=1,700,701)"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "PlayerPush",
+      "Params": {
+        "value": "0"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "ScreenBound",
+      "Params": {
+        "movecamera": "0,0",
+        "value": "0"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "PosSet",
+      "Params": {
+        "x": "0",
+        "y": "0"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "Explod",
+      "Params": {
+        "anim": "9100",
+        "bindtime": "-1",
+        "id": "77",
+        "pos": "0,-40",
+        "postype": "p1",
+        "removetime": "-1",
+        "shadow": "1.5+0.0"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "0",
+        "value": "NumProj"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "1",
+        "value": "NumHelper"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "2",
+        "value": "NumExplod"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "3",
+        "value": "Time"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "4",
+        "value": "Pos X"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "5",
+        "value": "Pos Y"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "6",
+        "value": "Facing"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "7",
+        "value": "GameTime"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "8",
+        "value": "Var(0)"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "9",
+        "value": "Var(1)"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "10",
+        "value": "Var(2)"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "VarSet",
+      "Params": {
+        "fv": "11",
+        "value": "Var(3)"
+      }
+    },
+    {
+      "State": 700,
+      "Type": "DisplayToClipboard",
+      "Params": {
+        "params": "FVar(0),FVar(1),FVar(2),FVar(3),FVar(4),FVar(5)",
+        "text": "\"P0:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\""
+      }
+    },
+    {
+      "State": 700,
+      "Type": "AppendToClipboard",
+      "Params": {
+        "params": "FVar(6),FVar(7),FVar(8),FVar(9),FVar(10),FVar(11)",
+        "text": "\"P6:%.9g,%.9g,%.9g,%.9g,%.9g,%.9g\\n\""
+      }
+    },
+    {
+      "State": 700,
+      "Type": "Pause",
+      "Params": {
+        "movetime": "0",
+        "time": "99999"
+      }
+    },
+    {
+      "State": 701,
+      "Type": "PlayerPush",
+      "Params": {
+        "value": "0"
+      }
+    },
+    {
+      "State": 701,
+      "Type": "ScreenBound",
+      "Params": {
+        "movecamera": "0,0",
+        "value": "0"
+      }
+    },
+    {
+      "State": 701,
+      "Type": "PosSet",
+      "Params": {
+        "x": "0",
+        "y": "0"
+      }
+    }
+  ],
+  "source_intent_verified_by_cns_air_stage_parser": true,
+  "shadow_render": {
+    "region": [
+      160,
+      140,
+      1120,
+      670
+    ],
+    "image_size": [
+      1280,
+      720
+    ],
+    "native_crop_sha256": "92ca2de40dc0459b5f3bc932c45c6143a7c7f26b2cc82973725382e1685f3b97"
+  }
+}

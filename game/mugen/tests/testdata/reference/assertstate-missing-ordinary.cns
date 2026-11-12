@@ -1,0 +1,124 @@
+[Statedef 5900]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 5900, dependency]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, dependency]
+type=Null
+trigger1=1
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, dependency]
+type=VarAdd
+trigger1=1
+v=27
+value=1
+[State 700, dependency]
+type=VarSet
+trigger1=1
+v=58
+value=1
+[State 700, dependency]
+type=ChangeState
+trigger1=1
+value=999
+[Statedef -3]
+[State -3, dependency]
+type=VarSet
+trigger1=RoundState=2 && Ctrl && Var(59)=0
+v=59
+value=1
+[State -3, dependency]
+type=ChangeState
+trigger1=Var(59)=1 && Var(58)=0
+value=700
+[State -3, dependency]
+type=VarAdd
+trigger1=Var(58)=1 && Var(57)<40
+v=57
+value=1
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=0
+value=StateNo
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=1
+value=PrevStateNo
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=2
+value=StateType=S
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=3
+value=Ctrl
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=4
+value=Anim
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=5
+value=Time
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=6
+value=FVar(20)
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=7
+value=Var(27)
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=8
+value=100000+Var(57)
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=9
+value=MoveType=I
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=10
+value=StateType=C
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+fv=11
+value=AnimElemNo(0)
+[State -3, dependency]
+type=Pause
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+movetime=0
+time=99999
+[State -3, dependency]
+type=VarSet
+trigger1=Var(58)=1 && Var(57)=40 && Var(56)=0
+v=56
+value=1

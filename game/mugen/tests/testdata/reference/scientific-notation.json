@@ -1,0 +1,12 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "a93b1f72af2a1516896bedeaa98578b0d6a1685cfbf611c7abdbf8670dfc8b0b",
+  "air_sha256": "b540be51de07d5ad813d16e0a20e85db093625db76bda81bbec9cdb8f07f719e",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [],
+  "bank": "fvar",
+  "bare_constants": false,
+  "mugenversion": "1.1",
+  "load_error": "Library error message: Died parsing 1e2\n\nError detected.\n\nInvalid trigger: e2\nError parsing [State 0, scientific 0]\nError in [Statedef 0]\nError in probe.cns:147\nError loading chars/kfm/kfm.def\nError loading p1\n\nClipboard tail:\nReset persist vars team 0\nReset persist vars team 1\nGameflow 8\nGameflow 9\nGameflow 10\nGameflow 11\nLoading match assets...\nLoading stage...\n  Loading BG...OK\nStage loaded OK\nSetting game resolution 1280x960...OK\n  Allocating helpers...OK\nMatch RNG seed: 603762295\nReset persist vars team 0\nReset persist vars team 1\nLoading character chars/kfm/kfm.def...\n  Loading info...OK\n  Loading cmd command set probe.cmd...OK\n  Loading cns probe.cns...Freeing player RC Kung Fu Man...CMD...CNS...SFF...AIR...SND...Misc...OK\nCharacter kfm.def failed to load\n\n",
+  "expected_load_error": "Died parsing 1e2"
+}

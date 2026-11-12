@@ -1,0 +1,204 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, start]
+type=ChangeState
+trigger1=RoundState=2 && Ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+physics=N
+anim=9990
+ctrl=0
+
+
+
+
+[State 700, control]
+type=Helper
+trigger1=Time=0
+id=123
+stateno=800
+helpertype=normal
+keyctrl=0
+pos=0,0
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=0
+value=Helper(123),FVar(0)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=1
+value=Helper(123),FVar(1)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=2
+value=Helper(123),FVar(2)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=3
+value=Helper(123),FVar(3)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=4
+value=Helper(123),FVar(4)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=5
+value=Helper(123),FVar(5)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=6
+value=Helper(123),FVar(6)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=7
+value=Helper(123),FVar(7)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=8
+value=Helper(123),FVar(8)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=9
+value=Helper(123),FVar(9)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=10
+value=Helper(123),FVar(10)
+
+[State 700, control]
+type=VarSet
+trigger1=Time=10
+fv=11
+value=Helper(123),FVar(11)
+
+[Statedef 701]
+physics=N
+anim=9990
+ctrl=0
+
+[State 701, control]
+type=Null
+trigger1=1
+
+
+[Statedef 800]
+physics=N
+anim=9990
+ctrl=0
+
+[State 800, control]
+type=ScreenBound
+trigger1=1
+value=1
+
+[State 800, control]
+type=PosSet
+trigger1=Time=0
+x=300
+y=0
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Pos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=ScreenPos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=CameraPos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=Vel X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=Time
+
+[State 800, control]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=IsHelper
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=Pos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=7
+value=ScreenPos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=8
+value=CameraPos X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=9
+value=Vel X
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=10
+value=Time
+
+[State 800, control]
+type=VarSet
+trigger1=Time=1
+fv=11
+value=IsHelper

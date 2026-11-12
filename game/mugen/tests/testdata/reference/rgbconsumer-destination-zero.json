@@ -1,0 +1,58 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "71128dc09597f6651448331e89218fa3382b4cf314063f78676591ec24a1a4db",
+  "air_sha256": "17e97528f5df90eb7f5f9d0e2414af66d799b4d2aa667d014b0372a4df5a44d6",
+  "invocation": "wine mugen.exe kfm kfm -s probe-stage -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "b1d88be38cf7be28c99759048d9013af6c5eeb7d2c62cadc566d76f8a8c439d5",
+      "variables": {
+        "0": 56,
+        "1": 57,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 700,
+        "7": 701,
+        "8": 0,
+        "9": 0,
+        "10": 70,
+        "11": 70
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "file_sha256": {
+    "sprite": {
+      "path": "chars/kfm/probe.sff",
+      "sha256": "42752c27e00ab5881352f058f6c74d645052f8c6f95df5212532df9ff4913dde"
+    }
+  },
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "42752c27e00ab5881352f058f6c74d645052f8c6f95df5212532df9ff4913dde"
+  },
+  "mugenversion": "1.1",
+  "stage": "probe-stage",
+  "fixture_stage": true,
+  "stage_fixture_sha256": "b9583a5079f5e637fa4484fcf321fa0018464ac52ecac0d5b78dbb5b4f0fb4f2",
+  "cmd_sha256": "a2430521f2bd47a672f07f61d15e8726eb2d89d2807b595f6f5b19829e57156c",
+  "pattern_native_config_sha256": "09cf7b49a6ca76ac8ac4631f12bce72a5953edcadce39b582bdf0da69410b80f",
+  "pattern_render": {
+    "region": [
+      620,
+      530,
+      680,
+      565
+    ],
+    "sha256": "12140d1627ba71bc31baeac9480ed66574e5aeccdad72206687ad5858cb9dac9"
+  },
+  "pattern_crop_rgb_zlib": "eNrtzqEKrjAYgOE5MH3F8jOwCENeMAyLYRbLkmXFIgOLY2DQuzsXeO7hBMPB5wqeP38+n8/n8/n8C6WoFLVCFI3ip2gVnaJXDIpRMSlmxaIIilURFZtiVxyKU3EpbsWjePWsqTS1RjSN5qdpNZ2m1wyaUTNpZs2iCZpVEzWbZtccmlNzaW7No989C5VQCyI0wk9ohU7ohUEYhUmYhUUIwipEYRN24RBO4RJu4ZF3z4bKUBvE0Bh+htbQGXrDYBgNk2E2LIZgWA3RsBl2w2E4DZfhNjzm3bOlstQWsTSWn6W1dJbeMlhGy2SZLYslWFZLtGyW3XJYTstluS2PfffsqBy1QxyN4+doHZ2jdwyO0TE5ZsfiCI7VER2bY3ccjtNxOW7H4949eypP7RFP4/l5Wk/n6T2DZ/RMntmzeIJn9UTP5tk9h+f0XJ7b8/h3z4EqUAck0AR+gTbQBfrAEBgDU2AOLIEQWAMxsAX2wBE4A1fgDjzh3XOkitQRiTSRX6SNdJE+MkTGyBSZI0skRNZIjGyRPXJEzsgVuSNPfPecqBJ1QhJN4pdoE12iTwyJMTEl5sSSCIk1ERNbYk8ciTNxJe7Ek949Z6pMnZFMk/ll2kyX6TNDZsxMmTmzZEJmzcTMltkzR+bMXJk78+R3z4WqUBek0BR+hbbQFfrCUBgLU2EuLIVQWAuxsBX2wlE4C1fhLjzl1fPn8/l8Pp/P/+ovrFyP5g=="
+}

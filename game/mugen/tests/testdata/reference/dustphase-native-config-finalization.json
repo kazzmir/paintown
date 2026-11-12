@@ -1,0 +1,320 @@
+{
+  "native_finalization": "Exact prepared configuration; FirstRun1->0 and LF->CRLF only. Originals unchanged.",
+  "programs": {
+    "dustphase-active-2-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-2-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-2-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-2-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-2-8": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-5-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-5-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-5-4": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-5-5": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-7-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-7-5": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-7-6": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-active-7-7": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-delayed-2-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-delayed-2-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-delayed-3-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-delayed-3-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-delayed-5-0": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-delayed-5-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-ko-2-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-ko-2-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-ko-2-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-ko-3-1": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-ko-3-2": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-ko-3-3": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-position-comma": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-position-double-trailing": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-position-empty-first": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-runtime-four": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-runtime-three": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-second-comma": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-second-double-trailing": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-second-empty-first": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-second-single-float": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    },
+    "dustphase-second-zero": {
+      "prepared_sha256": "fedad01c89d86e6040270b13ddc7be8e8e8bd327a2bf99f728cfe6bc432bd876",
+      "final_sha256": "a65c9473db955ef0812ad2b492cf88113f6b76f69f4b04d5a77102a90b4d2673",
+      "effect_limits": {
+        "ExplodMax": 16,
+        "SysExplodMax": 16,
+        "AfterImageMax": 16
+      }
+    }
+  }
+}
