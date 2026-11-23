@@ -21,6 +21,13 @@ observing a fight or matching a rendering sample does not establish arbitrary
 content or complete native equivalence. The current completion boundary is the
 single [progress ledger](PROGRESS.md).
 
+For menu-driven observations, dismiss the beta welcome overlay with F1 and use
+key holds long enough for frame polling. Disable idle demos in the disposable
+motif so they cannot replace the intended flow. A blank external OpenGL window
+read is not behavioral evidence: use the engine's own F12 capture and distinguish
+its game-canvas dimensions from the fitted window. Keep inputs and capture
+ownership confined to the reference process and an isolated display.
+
 Keep temporary comparison output out of Git and clean it after review. Public
 notes should describe the finding, its implementation and the remaining limits;
 they should not depend on a contributor having another person's local files.

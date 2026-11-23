@@ -294,12 +294,21 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 		t.Fatalf("no-ending Arcade completion omitted Win Screen: %T", e.currentState)
 	}
 	completedTime, completedWins := f.match.Players[0].Character.Time, f.match.Wins
+	pose := completion.fight
+	if pose == f || !pose.resultScene || pose.match.World == f.match.World || len(pose.match.World.Roots) != 1 || pose.match.Players[0].SFF != f.match.Players[0].SFF || pose.match.Players[0].Character.Palettes == f.match.Players[0].Character.Palettes {
+		t.Fatal("Win Screen did not isolate fresh presentation over shared banks")
+	}
+	actor := pose.match.Players[0].Character
+	if actor.StateNo != 180 || !actor.IsAlive() || actor.Life != actor.MaxLife || actor.RoundNo != 1 || actor.RoundState != 0 || actor.RoundWon || len(actor.Opponents) != 0 || actor.X != 0 {
+		t.Fatal("Win Screen did not enter the native fresh centered pose", actor.StateNo, actor.X, actor.RoundState)
+	}
+	poseTime := actor.Time
 	for n := 0; n < 3; n++ {
 		step()
 	}
 	e.Draw(canvas)
-	if f.match.Players[0].Character.Time <= completedTime || f.match.Wins != completedWins || f.match.Phase != match.Finished {
-		t.Fatal("Win Screen froze its pose or changed the committed result")
+	if actor.Time <= poseTime || f.match.Players[0].Character.Time != completedTime || f.match.Wins != completedWins || f.match.Phase != match.Finished {
+		t.Fatal("Win Screen froze its presentation or advanced the committed fight")
 	}
 	step(ebiten.KeyEnter)
 	if e.currentState != completion || !completion.transition.leaving {
@@ -331,18 +340,38 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	if !ok || !result.survival || result.score != 1 {
 		t.Fatalf("survival loss did not show the actual streak: %T", e.currentState)
 	}
-	if result.fight != f {
-		t.Fatal("survival results lost the completed fight presentation")
+	pose = result.fight
+	actor = pose.match.Players[0].Character
+	if pose == f || !pose.resultScene || len(pose.match.World.Roots) != 1 || actor.StateNo != 170 || !actor.IsAlive() || actor.Life != actor.MaxLife || actor.RoundNo != 1 || actor.RoundState != 0 || actor.RoundWon || len(actor.Opponents) != 0 {
+		t.Fatal("below-threshold Survival result did not restore a separate lose pose", actor.StateNo, actor.Life)
 	}
 	resultTick, resultTime := f.match.Tick, f.match.Players[0].Character.Time
 	resultRound, resultWins, resultTimer := f.match.Round, f.match.Wins, f.match.TimeLeft
+	poseTick, poseTime := pose.match.Tick, actor.Time
 	for n := 0; n < 3; n++ {
 		step()
 	}
-	if f.match.Tick != resultTick+3 || f.match.Players[0].Character.Time <= resultTime || f.match.Phase != match.Finished || f.match.Round != resultRound || f.match.Wins != resultWins || f.match.TimeLeft != resultTimer {
-		t.Fatal("result poses froze or replayed completed-match scheduling")
+	if pose.match.Tick != poseTick+3 || actor.Time <= poseTime || f.match.Tick != resultTick || f.match.Players[0].Character.Time != resultTime || f.match.Phase != match.Finished || f.match.Round != resultRound || f.match.Wins != resultWins || f.match.TimeLeft != resultTimer || f.match.Players[0].Character.IsAlive() {
+		t.Fatal("result scene froze, revived the defeated actor or replayed committed scheduling")
 	}
+	// Reference result text uses the fitted game viewport: 1280x960 fits
+	// at x=160 in the 1280x720 motif canvas, retaining the outer letterbox.
+	savedSections, savedResultFont := e.motif.AST.Sections, e.motif.Fonts[3]
+	resultLayout, err := parsers.Parse(strings.NewReader("[Survival Results Screen]\nwinstext.text=A\nwinstext.font=3,0,1,256,0,256\nwinstext.offset=0,1\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.motif.AST.Sections = append(resultLayout.Sections, savedSections...)
+	e.motif.Fonts[3] = &font.Font{Width: 1, Height: 1, Glyphs: map[rune]*font.Glyph{'A': {Width: 1, Image: white}}}
+	result.ticks = e.themeNumber("Survival Results Screen", "fadein.time", 0)
 	e.Draw(canvas)
+	if got := color.RGBAModel.Convert(canvas.At(160, 0)); got != (color.RGBA{255, 0, 255, 255}) {
+		t.Fatal("result text ignored the fitted game viewport", got)
+	}
+	if got := color.RGBAModel.Convert(canvas.At(0, 0)); got != (color.RGBA{0, 0, 0, 255}) {
+		t.Fatal("result text escaped into the outer letterbox", got)
+	}
+	e.motif.AST.Sections, e.motif.Fonts[3] = savedSections, savedResultFont
 	step(ebiten.KeyEnter)
 	if e.currentState != result || !result.transition.leaving {
 		t.Fatal("survival result dismissal bypassed its fade")
@@ -438,6 +467,11 @@ type=S
 movetype=I
 physics=N
 anim=ifelse(var(58)=123 && fvar(38)=2.5 && RoundNo>1 && RoundsExisted>0 && GameTime>0,20,0)
+[State 5900, initialization marker]
+type=VarSet
+trigger1=1
+v=59
+value=444
 [State 5900, enter]
 type=ChangeState
 trigger1=1
@@ -530,10 +564,27 @@ trigger1=1
 	if f.match.Round != 3 || f.match.Players[0].Character.RoundsExisted != 2 || f.match.Players[0].Character.Life != 667 || f.match.Teams[0].Members[1].Character.Life != 528 {
 		t.Fatal("Survival second recovery/cap", f.match.Players[0].Character.Life, f.match.Teams[0].Members[1].Character.Life)
 	}
+	threshold := e.themeAttribute("Survival Results Screen", "roundstowin")
+	savedThreshold, savedThresholdRaw := threshold.Value, threshold.RawValue
+	threshold.Value, threshold.RawValue = parsers.NumberValue{Val: 2}, "2"
 	complete(f, 1)
-	if result, ok := e.currentState.(*GameOverScreenState); !ok || result.score != 2 {
+	result, ok = e.currentState.(*GameOverScreenState)
+	if !ok || result.score != 2 {
 		t.Fatalf("Survival Simul defeat did not finish its streak: %T", e.currentState)
 	}
+	actors := result.fight.match.Actors()
+	if len(actors) != 2 || len(result.fight.match.World.Roots) != 2 {
+		t.Fatal("result scene lost a partner or retained an enemy")
+	}
+	for index, player := range actors {
+		c := player.Character
+		baseX := c.X * 320 / float64(c.LocalCoordinateWidth())
+		if c.StateNo != 180 || !c.IsAlive() || c.Life != 1000 || c.MaxLife != 1000 || c.RoundState != 0 || c.IntVars[58] != 0 || c.IntVars[59] != 0 || c.FloatVars[38] != 0 || len(c.Opponents) != 0 || c.Facing != 1-2*index || baseX != float64(2*index-1)*50 {
+			t.Fatal("at-threshold partner result did not restore the native pose/context", index, c.StateNo, c.X, c.Life, c.IntVars[58:60])
+		}
+	}
+	e.Draw(canvas)
+	threshold.Value, threshold.RawValue = savedThreshold, savedThresholdRaw
 	step(ebiten.KeyEnter)
 	step()
 	f = selectMode("Training")

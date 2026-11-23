@@ -76,7 +76,10 @@ func (m *Match) ActivePlayers() []*character.Player {
 
 func (m *Match) Actors() []*character.Player {
 	var players []*character.Player
-	for _, p := range m.ActivePlayers() {
+	for slot, p := range m.ActivePlayers() {
+		if m.resultScene && slot%2 == 1 {
+			continue
+		}
 		if p != nil {
 			players = append(players, p)
 		}
@@ -307,6 +310,9 @@ func (m *Match) recoverWinner() {
 // life is reduced (native4245ac..424643). Original roster/round allowances
 // remain in force after members are eliminated; it never boosts Single life.
 func (m *Match) rosterLife(side, life int) int {
+	if m.resultScene {
+		return max(1, int(float64(life)*float64(m.Options.LifePercent)/100+.5))
+	}
 	var strength [2]float32
 	for team := range m.Teams {
 		count := 1

@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Confirmed code targets: K1 result-text layering, K2 Survival pose threshold and K3 AI.Cheat command policy. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and additional precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
+      "gap": "K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command policy remains missing. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4c305f6dc515b2ac5e215f14fbbe7b6b4b9116683cf0132aebb2bdc067278a42"
+      "passed_source": "70931d99a80a5aeb247a191dbb844612038f7fe0199db905f4602dcab070efd7"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "962a4bd6b9f7111762a2790970a41ee655500b5f845f1a6dfad38d82a51145ce"
+      "passed_source": "6c2ac15315dc6f3221e45b3ec7e6fa1bfcecc6f15c49a086978182b19dad2b4c"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2b53d3d00c3762f45d7d05b2b7d1aaa581cedffe99bfc563ad0fc4c7831d3429"
+      "passed_source": "77fc7fedc81382f958d6cfd20291249171b8c3631f203a970c4961d69f2b0f6f"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6c041756c031b967af0ead0fe79f4561476bc38bd33da1a2e8327f90036cc616"
+      "passed_source": "0f2b2d2370ab2c9c4b702ad527d7235eb72a69aab868d3f2ddf0bf2ddc576022"
     }
   ],
   "presentation_followups": [
@@ -1217,13 +1217,13 @@
       "id": "campaign-result-policy",
       "name": "Configured campaign and survival result screens",
       "completed": true,
-      "validation": "Survival results honor enabled, show/fade times and text display duration while retaining the completed fight canvas. Win completion consumes pose/fade/text durations. Campaign results omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Existing Survival loss-to-title coverage waits for the real fade. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+      "validation": "Survival results honor enabled, show/fade times and caption display duration; Win consumes pose/fade/caption durations. Campaigns omit the direct-match rematch hint, and Continue uses authored active/inactive YES/NO captions. Result actors now use the separate scene lifecycle recorded by K1/K2 rather than the old completed-fight canvas. The connected campaign/results flow passes with race detection."
     },
     {
       "id": "completed-result-clocks",
-      "name": "Live completed-fight poses behind result overlays",
+      "name": "Separate Win/Survival result scene lifecycle",
       "completed": true,
-      "validation": "Win and Survival result overlays advance the completed fight CNS, animation, helper/effect, stage and camera clocks. The match stays Finished with unchanged wins, round and timer; no repeated result commitment or round reset occurs. The existing Survival loss-to-results-to-title episode checks continuing actor time and stable result bookkeeping. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+      "validation": "Reference-driven replacement of the old continued-fight approach: Win/Survival use fresh human-only actors, restored base life, cleared variables and RoundNo1/RoundState0 without state5900 controller replay. Single centers; partners face inward at -50/+50 base units. Caption layer values 0/1/2 retain observed front composition and game-viewport fitting. Connected campaign/results acceptance passes with races, including mixed-coordinate partners, both threshold outcomes and unchanged committed actors/score/timer. All segments are checked; Linux build and owned-window application smoke pass. Temporary comparison data removed."
     },
     {
       "id": "campaign-stage-admission",
@@ -1234,20 +1234,20 @@
   ],
   "remaining_scope": {
     "baseline": "linux-1.1-remaining-v1",
-    "boundary": "Linux 1.1 beta 1 remaining-scope baseline from target documentation, production consumers and existing evidence: four confirmed code targets, separate from six acceptance/evidence followups. No new gameplay/native runs were performed. This bounded review is not an exhaustive semantic audit or whole-engine conformance claim.",
+    "boundary": "Linux 1.1 beta 1 remaining-scope baseline from documentation, production consumers and bounded reference observation. Implementation targets and acceptance/evidence followups are separate. Scope corrections are explicit below; closure applies to the named connected behavior, not exhaustive semantic or whole-engine conformance.",
     "targets": [
       {
         "id": "K1",
         "parent": "raster-audio",
-        "name": "Authored Win/Survival result text layers",
-        "implementation": "missing",
-        "acceptance": "unverified",
-        "size": "medium",
+        "name": "Result text composition and fitted viewport",
+        "implementation": "implemented",
+        "acceptance": "passed",
+        "size": "small",
         "confidence": "high",
-        "contract": "Consume wintext.layerno and winstext.layerno in completed-fight composition.",
-        "basis": "Target motif definitions expose both fields; mode_screens.go always draws result text after FightState.Draw and has no layer consumer.",
-        "prerequisite": "Confirm target result-text positions relative to actors, foreground and HUD before changing composition.",
-        "completion": "One connected Win/Survival results episode observes authored layers and existing fades/display durations, with score, round and timer unchanged. Extend match-flow once for the results batch.",
+        "contract": "Preserve the beta's observed front-composed result captions and project them through the game viewport.",
+        "basis": "Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.",
+        "prerequisite": "Resolved by bounded native Win/Survival single/co-op scenes; connected match-flow acceptance passed with race detection.",
+        "completion": "The campaign/result lifecycle checks caption color/fit/letterboxing, visibility and fades without altering the committed fight. Match-flow acceptance closes the target.",
         "sources": [
           "system/mode_screens.go",
           "system/fight_state.go"
@@ -1256,15 +1256,15 @@
       {
         "id": "K2",
         "parent": "raster-audio",
-        "name": "Survival result pose threshold",
-        "implementation": "missing",
-        "acceptance": "unverified",
+        "name": "Fresh result scene and Survival pose policy",
+        "implementation": "implemented",
+        "acceptance": "passed",
         "size": "medium",
-        "confidence": "medium",
-        "contract": "Use Survival Results Screen roundstowin to select the human side's result pose.",
-        "basis": "Target motif comments specify a win pose at the threshold and a lose pose below it. Campaign results retain the defeated match; no production roundstowin read exists.",
-        "prerequisite": "Confirm result-state entry for defeated/dead actors and co-op participants; preserve committed outcomes.",
-        "completion": "The same results episode finishes below and at an authored threshold, observes the correct poses/live animation, and returns to title without another KO/result/reset. Extend match-flow with K1.",
+        "confidence": "high",
+        "contract": "Create separate restored human actors for Win/Survival results; choose state170 below the Survival threshold and state180 at/above it.",
+        "basis": "Native resets presentation actors to full base life, RoundNo1/RoundState0, zero Win/enemy context and cleared variables. Single centers; a co-op pair faces inward at -50/+50 base units. State5900 controllers are not replayed. The old port resumed the defeated match and retained opponents/HUD.",
+        "prerequisite": "Resolved by bounded native Win/Survival single/co-op scenes; connected match-flow acceptance passed with race detection.",
+        "completion": "The existing mode lifecycle checks separate world/actor/palette ownership over shared banks, both threshold outcomes, restored partners in mixed coordinates, no enemies/HUD, ongoing animation, clean exit and unchanged committed fight state. Match-flow acceptance closes the target.",
         "sources": [
           "system/modes.go",
           "system/mode_screens.go",
@@ -1347,7 +1347,7 @@
         "name": "Native Options/training behavior and presentation",
         "status": "unverified",
         "completion": "Compare one menu-to-training flow covering setting effects, dummy ownership/guard/stance/distance/jam, pause/resume and return. Preserve intentional session-only edits; quantify any mismatch before scheduling code.",
-        "prerequisite": "Operate the relevant target controls. The earlier attempted native UI review did not reach them and is not acceptance.",
+        "prerequisite": "Operate the relevant Options/training controls and compare their effects. Current native observations cover campaign/results, not native Options/training acceptance.",
         "sources": [
           "system/options.go",
           "system/input_config.go",
@@ -1442,7 +1442,7 @@
       {
         "id": "A3",
         "name": "Rendering and audio",
-        "finding": "Prior calibration findings remain closed. Result-text layers and Survival pose-threshold consumers are missing. No additional demonstrated raster/device-audio defect was established by this source/evidence review.",
+        "finding": "Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed.",
         "targets": [
           "K1",
           "K2"
@@ -1506,6 +1506,9 @@
       "Other-platform runtime acceptance.",
       "Standalone music-file CLI playback."
     ],
-    "scope_changes": []
+    "scope_changes": [
+      "K1 corrected by direct target observation: absent layerno reads did not prove a behavioral defect. Tested Win/Survival values 0/1/2 share front composition; K1 now covers that policy and the demonstrated viewport-projection gap.",
+      "K2 expanded within the results batch: target results initialize a separate human-only presentation, including restored life/context, zeroed variables and partner placement. Continuing completed-fight actors was incorrect. This supersedes the earlier result-clock implementation without reopening unrelated mechanics."
+    ]
   }
 }

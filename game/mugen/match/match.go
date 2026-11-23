@@ -114,9 +114,14 @@ type Match struct {
 	elapsedFightTicks        int
 	startingLife             [2]float32 // mean fraction before this round's CNS
 	roundRestart, restarting *roundRestartSnapshot
+	resultScene              bool
 }
 
 func New(request Request, options Options) (*Match, error) {
+	return newMatch(request, options, [2][]*character.Player{}, false)
+}
+
+func newMatch(request Request, options Options, cached [2][]*character.Player, resultScene bool) (*Match, error) {
 	var err error
 	request, err = normalizeTeams(request)
 	if err != nil {
@@ -135,7 +140,7 @@ func New(request Request, options Options) (*Match, error) {
 	if options.Team1Vs2Life <= 0 {
 		options.Team1Vs2Life = 150
 	}
-	m := &Match{Request: request, Options: options, Round: max(1, request.RoundStart), Winner: -1, Timeline: &engine.Timeline{GameTime: options.GameTime, TicksPerSecond: options.TicksPerSecond}}
+	m := &Match{Request: request, Options: options, Round: max(1, request.RoundStart), Winner: -1, resultScene: resultScene, Timeline: &engine.Timeline{GameTime: options.GameTime, TicksPerSecond: options.TicksPerSecond}}
 	helperMax := options.HelperMax
 	if helperMax == 0 {
 		helperMax = 56
@@ -214,7 +219,16 @@ func New(request Request, options Options) (*Match, error) {
 			if selected.Palette < 1 || selected.Palette > 12 || selected.AILevel < 0 || selected.AILevel > 8 {
 				return nil, fmt.Errorf("team %d member %d: invalid palette/AI level", side+1, index+1)
 			}
-			player, err := character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir, Language: options.Language})
+			var player *character.Player
+			if index < len(cached[side]) {
+				// Share immutable banks, not the completed actor, input history or
+				// mutable render caches. resetRound creates the fresh character.
+				p := cached[side][index]
+				player = &character.Player{Character: character.NewCharacter(p.Character.StateFile, p.AIR, p.CMD), SFF: p.SFF, AIR: p.AIR, CMD: p.CMD, SND: p.SND,
+					DefPath: p.DefPath, Definition: p.Definition, LocalCoord: p.LocalCoord, Dir: p.Dir}
+			} else {
+				player, err = character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir, Language: options.Language})
+			}
 			if err != nil {
 				return nil, fmt.Errorf("team %d member %d: %w", side+1, index+1, err)
 			}

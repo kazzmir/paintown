@@ -427,6 +427,9 @@ The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed remaining scope: four
 confirmed implementation targets and six separate acceptance/evidence followups.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
+Win/Survival results now present restored human actors in a separate scene,
+with Survival threshold poses and captions fitted to the game viewport. The
+completed fight stays frozen; result scenes omit the enemy and fight HUD.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains

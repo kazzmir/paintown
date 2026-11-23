@@ -15,8 +15,12 @@ of native compatibility. A registered route can still have a behavioral defect.
 The three partial categories mix missing consumers, unverified behavior and
 capabilities deliberately deferred from the current Linux work.
 
-The assessment establishes four missing consumers: result-text layers, Survival
-pose thresholds, AI.Cheat command policy and legacy joystick configuration.
+The baseline identified four implementation candidates. Direct target review
+corrected the first: tested result-text layerno values 0/1/2 all compose in front,
+so the absent field read was not a behavioral gap. K1 now covers the demonstrated
+caption viewport difference and preserving that composition policy. K2 includes
+fresh result-scene initialization as well as Survival pose thresholds. K3/K4
+remain AI.Cheat command policy and legacy joystick configuration.
 Six separate acceptance/evidence followups retain remaining runtime, font,
 menu/dummy, stochastic AI, precision and hardware uncertainty. These are not six
 assumed code defects. This bounded review does not establish an exhaustive list
@@ -55,8 +59,8 @@ questions forward instead of expanding the assessment indefinitely.
 
 K1–K4 contracts, sources, prerequisites, estimates and completion conditions are
 recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
-Confidence describes the effort estimate: the missing consumers are established,
-but exact native admission/mapping policy still needs reference evidence.
+Confidence describes the effort estimate. Result semantics are now observed;
+exact AI admission and joystick mapping policy still need reference evidence.
 
 ## Bounded review areas
 
@@ -121,8 +125,10 @@ checks. Neither establishes universal compatibility with arbitrary content.
 
 ## Implementation order and stopping point
 
-1. Resolve result-layer and defeated-actor state policy, then implement K1/K2 in
-   one results batch. Both are medium changes across existing components.
+1. K1/K2 form the results batch. Reference evidence requires fresh restored
+   human actors, no enemy/HUD context, state170/180 threshold selection and
+   game-viewport caption fitting. Preserve observed front composition for
+   layerno 0/1/2. See the ledger for implementation/acceptance status.
 2. Resolve AI.Cheat admission with one bounded comparison, then implement K3.
    Its large/low-confidence estimate reflects a missing command-admission path;
    it does not include reproducing native random decision probabilities (U4).

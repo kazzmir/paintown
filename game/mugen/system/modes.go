@@ -159,7 +159,14 @@ func (r *modeRun) result(f *FightState) (State, error) {
 	}
 	if f.match.Winner != 0 {
 		if r.survival {
-			return &GameOverScreenState{engine: r.engine, score: r.index, survival: true, fight: f}, nil
+			if r.engine.themeNumber("Survival Results Screen", "enabled", 1) == 0 {
+				return NewTitleState(r.engine), nil
+			}
+			pose, err := f.newResultScene(r.index >= r.engine.themeNumber("Survival Results Screen", "roundstowin", 5))
+			if err != nil {
+				return nil, err
+			}
+			return &GameOverScreenState{engine: r.engine, score: r.index, survival: true, fight: pose}, nil
 		}
 		if r.engine.themeNumber("Continue Screen", "enabled", 1) == 0 {
 			return NewGameOverScreenState(r.engine), nil
@@ -210,7 +217,11 @@ func (r *modeRun) result(f *FightState) (State, error) {
 			return nil, err
 		}
 		if r.engine.themeNumber("Win Screen", "enabled", 1) != 0 {
-			return &completionScreen{engine: r.engine, fight: f, next: ending}, nil
+			pose, err := f.newResultScene(true)
+			if err != nil {
+				return nil, err
+			}
+			return &completionScreen{engine: r.engine, fight: pose, next: ending}, nil
 		}
 		return ending, nil
 	}

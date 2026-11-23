@@ -12,6 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
@@ -319,6 +320,9 @@ func NewGameOverScreenState(e *Engine) *GameOverScreenState { return &GameOverSc
 func (s *GameOverScreenState) Update() (State, error) {
 	s.ticks++
 	if s.survival && s.engine.themeNumber("Survival Results Screen", "enabled", 1) == 0 {
+		if s.fight != nil {
+			return NewTitleState(s.engine), s.fight.match.ClearSounds()
+		}
 		return NewTitleState(s.engine), nil
 	}
 	if s.survival && s.fight != nil {
@@ -338,6 +342,9 @@ func (s *GameOverScreenState) Update() (State, error) {
 	}
 	dismiss := input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape)
 	if s.transition.update(s.ticks, s.engine.themeNumber(section, "show.time", 300), s.engine.themeNumber(section, "fadeout.time", 0), dismiss) {
+		if s.fight != nil {
+			return NewTitleState(s.engine), s.fight.match.ClearSounds()
+		}
 		return NewTitleState(s.engine), nil
 	}
 	return s, nil
@@ -346,13 +353,8 @@ func (s *GameOverScreenState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	text := "Game Over"
 	if s.survival {
-		if s.fight != nil {
-			s.fight.Draw(screen)
-		}
 		text = strings.ReplaceAll(s.engine.themeText("Survival Results Screen", "winstext.text", "Rounds survived: %i"), "%i", fmt.Sprint(s.score))
-		if s.engine.resultTextVisible("Survival Results Screen", "winstext", s.ticks) {
-			s.engine.modeLabel(screen, "Survival Results Screen", "winstext", text, 0, 0, s.engine.motif.Fonts)
-		}
+		s.engine.drawResult(screen, s.fight, "Survival Results Screen", "winstext", text, s.ticks)
 		s.transition.draw(screen, s.ticks, s.engine.themeNumber("Survival Results Screen", "fadein.time", 0), s.engine.themeNumber("Survival Results Screen", "fadeout.time", 0))
 		return
 	}
@@ -384,25 +386,60 @@ func (s *completionScreen) Update() (State, error) {
 	}
 	dismiss := input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionEscape)
 	if s.transition.update(s.ticks, s.engine.themeNumber("Win Screen", "pose.time", 300), s.engine.themeNumber("Win Screen", "fadeout.time", 0), dismiss) {
+		if s.fight != nil {
+			return s.next, s.fight.match.ClearSounds()
+		}
 		return s.next, nil
 	}
 	return s, nil
 }
 func (s *completionScreen) Draw(screen *ebiten.Image) {
-	if s.fight != nil {
-		s.fight.Draw(screen)
-	} else {
-		screen.Fill(color.Black)
-	}
-	if s.engine.resultTextVisible("Win Screen", "wintext", s.ticks) {
-		s.engine.modeLabel(screen, "Win Screen", "wintext", s.engine.themeText("Win Screen", "wintext.text", "Congratulations!"), 0, 0, s.engine.motif.Fonts)
-	}
+	s.engine.drawResult(screen, s.fight, "Win Screen", "wintext", s.engine.themeText("Win Screen", "wintext.text", "Congratulations!"), s.ticks)
 	s.transition.draw(screen, s.ticks, s.engine.themeNumber("Win Screen", "fadein.time", 0), s.engine.themeNumber("Win Screen", "fadeout.time", 0))
 }
 
 func (e *Engine) resultTextVisible(section, key string, tick int) bool {
 	duration := e.themeNumber(section, key+".displaytime", -1)
 	return duration < 0 || tick < duration
+}
+
+func (s *FightState) newResultScene(win bool) (*FightState, error) {
+	game, err := s.match.NewResultScene(win, s.engine.gameTime, s.engine.nextMatchSeed())
+	if err != nil {
+		return nil, err
+	}
+	pose := &FightState{engine: s.engine, match: game, resultScene: true, debugSelection: s.debugSelection}
+	pose.bindMatchInputs()
+	return pose, nil
+}
+
+func (e *Engine) drawResult(screen *ebiten.Image, pose *FightState, section, key, text string, tick int) {
+	if pose == nil {
+		screen.Fill(color.Black)
+		if e.resultTextVisible(section, key, tick) {
+			e.modeLabel(screen, section, key, text, 0, 0, e.motif.Fonts)
+		}
+		return
+	}
+	pose.Draw(screen)
+	if !e.resultTextVisible(section, key, tick) {
+		return
+	}
+	// Beta result text remains in front for the observed layerno 0/1/2.
+	// Its coordinates use the game's fitted viewport, like HUD text, rather
+	// than an independent fit to the motif or the outer window dimensions.
+	pose.hudCanvas.Clear()
+	e.modeLabel(pose.hudCanvas, section, key, text, 0, 0, e.motif.Fonts)
+	transform, err := coord.HUDProject(pose.match.Options.GameSpace, e.motif.Info.LocalCoord,
+		coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}, e.cfg.Video.KeepAspect)
+	if err != nil {
+		pose.renderError = err
+		return
+	}
+	options := &ebiten.DrawImageOptions{}
+	options.GeoM.Scale(transform.ScaleX, transform.ScaleY)
+	options.GeoM.Translate(transform.X, transform.Y)
+	screen.DrawImage(pose.hudCanvas, options)
 }
 
 func (s *FightState) updateResultPose() error {
@@ -413,5 +450,5 @@ func (s *FightState) updateResultPose() error {
 	if err := s.match.AdvanceResultPose(); err != nil {
 		return err
 	}
-	return s.hud.Update(s.match.Phase, s.match.Round)
+	return nil
 }

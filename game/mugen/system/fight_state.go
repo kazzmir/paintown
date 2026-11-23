@@ -39,6 +39,7 @@ type FightState struct {
 	userPaused, simulationHeld         bool
 	training                           *trainingControls
 	debugResetHandoff                  bool
+	resultScene                        bool
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
@@ -256,7 +257,9 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 	s.hudCanvas.Clear()
 	// Consume HUD drawing even while covered, keeping lazy animation clocks
 	// and resource initialization independent of EnvColor visibility.
-	s.hud.Draw(s.hudCanvas)
+	if !s.resultScene {
+		s.hud.Draw(s.hudCanvas)
+	}
 	screen.Fill(color.Black)
 	target := coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()}
 	// OnTop Explods blend with the HUD, then receive the final global palette

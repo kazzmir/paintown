@@ -192,8 +192,11 @@ unknown permutations into mandatory parameter matrices.
   uses the remaining aligned space. Screen holds include their exit fades.
 - Campaigns use opponent stages without requiring a manual stage pool; a missing
   random pool is contextual failure. Resolve unused character/chained storyboards
-  only on playback. Win/Survival result poses advance clocks without committing
-  another result, decreasing the timer or starting a round.
+  only on playback. Win/Survival results use a separate restored human-only
+  scene over immutable banks; keep the committed fight frozen. No enemy/HUD
+  context or combat life balancing; enter 170/180 without replaying state5900
+  controllers. Partners face inward at -50/+50 base units. Observed result
+  layerno 0/1/2 all compose in front; captions use the fitted game viewport.
 - Options input edits remain session-only. Preserve release admission, inherited
   keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
   Requested F12 captures use exclusive PNG files; never commit generated output.
