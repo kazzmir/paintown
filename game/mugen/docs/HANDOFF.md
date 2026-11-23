@@ -5,6 +5,13 @@ work. Local source/text checkpoints are authorized; no pushes, committed game
 assets, binaries, user configuration, subagents or goals. Keep documentation
 portable and use [PROGRESS.md](PROGRESS.md) as the single completion ledger.
 
+The current step is assessment/planning before further engine implementation.
+[ITEM-3-PLAN.md](ITEM-3-PLAN.md) maps two confirmed result consumers (K1/K2),
+five bounded review areas (A1–A5) and physical input acceptance (H1). Complete
+that review and present a finite backlog before engine changes. The 32/35 broad
+category count is not remaining effort; keep implementation, acceptance and
+deferred scope separate. This planning checkpoint does not rerun gameplay.
+
 The latest compatibility batch covers deferred storyboard admission, victory
 portrait windows, font RGB across menus/VS/HUD/results, inset quote wrapping,
 fades, result-screen settings, continuing completed-fight poses and automatic

@@ -421,11 +421,11 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 [Project progress](docs/PROGRESS.md) is the single completion checklist for the
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
-The checklist replaces test counts and typed-routing percentages as the progress
-view. The current checklist has 32/35 implemented items (91% of checklist items, not
-native conformance or remaining effort); see the explicit partial rows. The
-audit added a separate input-device row for the gamepad gap, expanding the
-previous 34-item checklist rather than reopening completed state mechanics.
+The current ledger has 32 implemented categories and three broad partial ones.
+Those category counts do not measure remaining effort or native compatibility.
+The [scope plan](docs/ITEM-3-PLAN.md) separates concrete implementation targets,
+bounded compatibility reviews and physical acceptance before the next engine
+batch. Completion stays recorded in the single progress ledger.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains

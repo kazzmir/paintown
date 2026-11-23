@@ -30,7 +30,10 @@ Use docs/PROGRESS.md as the SINGLE project completion ledger. Implement coherent
 mechanics batches from actual gaps using existing evidence and target beta
 documentation. Connect the production consumer before marking a route complete.
 The ledger currently has 89 controller families, 127 trigger routes and 32/35
-implemented project rows; route counts are not arbitrary native conformance.
+implemented project categories; these counts measure neither remaining effort
+nor arbitrary native conformance. Before the next engine batch, follow the
+bounded assessment in docs/ITEM-3-PLAN.md and present the finite gap map. Keep
+confirmed implementation targets, unverified acceptance and deferrals distinct.
 
 The five connected segments cover state flow, combat/recovery, entity/binding/
 retirement, effects/pause and complete match flow. Completed segments stay checked
