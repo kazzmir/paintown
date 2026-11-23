@@ -44,6 +44,7 @@ func (c *Character) CreateHelper(p engine.HelperParameters) error {
 	// New helpers enter camera tracking at their first own state pass.
 	h.cameraDisabled = [2]bool{true, true}
 	h.InputSlot, h.InputSource = c.InputSlot, c.rootPlayer().InputSource
+	h.CommandSource = c.rootPlayer().CommandSource
 	h.Commands = NewCommandBuffer(120)
 	h.RoundState, h.RoundNo, h.RoundsExisted = c.RoundState, c.RoundNo, c.RoundsExisted
 	h.Timeline, h.SuperTargetDefenceMul = c.Timeline, c.SuperTargetDefenceMul

@@ -131,6 +131,9 @@ type Character struct {
 	// InputSource supplies facing-relative logical input for this entity's tick.
 	// A nil source retains the physical input adapter for existing applications.
 	InputSource func(playerID, facing int) []string
+	// CommandSource admits declared AI labels independently of key history.
+	CommandSource func(playerID int) []string
+	aiCommands    []string
 	// Buffered commands for the current tick
 	ActiveCommands []string
 

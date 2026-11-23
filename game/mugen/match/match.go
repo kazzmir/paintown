@@ -61,6 +61,7 @@ type Options struct {
 	AfterImageMax                int     // zero uses the default global pool of 16
 	ExplodMax                    int     // zero uses MaxEffects, then the default global pool of 256
 	DisabledPlayers              [4]bool // live debug slots; preserved by round restart/reload
+	AICheat                      bool    // admit CMD labels without simulated keys
 }
 
 type Phase int
@@ -338,6 +339,7 @@ func (m *Match) resetRound() error {
 		c.Commands = character.NewCommandBuffer(120)
 		p.Commands = c.Commands
 		c.InputSource = m.Options.Input
+		c.CommandSource = m.BasicAICommands
 		if m.Round > 1 {
 			c.Power = previous.Power
 			copyPersistentVariables(c, previous.IntVars, previous.FloatVars)

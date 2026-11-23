@@ -431,6 +431,7 @@ value=0
 	// remapped 300-tick charge. The authored CNS must receive it, hit and
 	// recover; the planner stores timed input steps rather than 300 frames.
 	request.Players[0].AILevel = 8
+	e.cfg.Arcade.AICheat = false
 	longAI, err := NewFightState(e, request)
 	if err != nil {
 		t.Fatal(err)
@@ -482,6 +483,64 @@ time=20
 	}
 	if aiRoot.GetVar(44) != 1 || aiVictim.Life >= aiVictim.MaxLife || aiRoot.StateNo != 0 || !aiRoot.Ctrl {
 		t.Fatal("composite AI plan failed attack/contact/recovery", aiRoot.GetVar(44), aiVictim.Life, aiRoot.StateNo, aiRoot.Ctrl)
+	}
+	// The enabled policy admits a declared label even when its physical remap
+	// is disabled. It still obeys CNS eligibility and gives key-controlled
+	// helpers the same label without rewriting any actor's physical history.
+	e.cfg.Arcade.AICheat = true
+	cheatAI, err := NewFightState(e, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.currentState, cheatAI.match.Phase = cheatAI, match.Active
+	aiRoot = cheatAI.match.Players[0].Character
+	aiRoot.StateFile = file
+	aiRoot.CmdFile = &cmd.Data{Remap: map[string]string{"z": ""}, Commands: map[string][]cmd.Command{"long-charge-motion": commands.Commands["long-charge-motion"]}}
+	aiRoot.X = 0
+	aiRoot.ChangeState(0, 1, -1)
+	for _, controlled := range []bool{true, false} {
+		if err := aiRoot.CreateHelper(engine.HelperParameters{ID: 78, StateNo: 0, KeyControl: controlled, Type: "normal", RemapPalette: [2]int{-1, 0}}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	keyHelper, offHelper := aiRoot.Helpers[0], aiRoot.Helpers[1]
+	aiVictim = cheatAI.match.Players[1].Character
+	aiVictim.X = 20
+	for frame := 0; frame < 16; frame++ {
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if aiRoot.StateNo != 0 || aiRoot.GetVar(41) == 0 || keyHelper.GetVar(41) == 0 || offHelper.GetVar(41) != 0 || aiVictim.Command("long-charge-motion") {
+		t.Fatal("AI command admission bypassed ownership/CNS eligibility", aiRoot.StateNo, aiRoot.GetVar(41), keyHelper.GetVar(41), offHelper.GetVar(41))
+	}
+	if len(aiRoot.Commands.History) >= 300 || aiRoot.Commands.Match(commands.Commands["long-charge-motion"][0].Sequence, 30, 1) {
+		t.Fatal("AI shortcut fabricated a charged physical command")
+	}
+	// Retire the observers before the contact portion; they must not intercept
+	// the attack intended for the human opponent.
+	for _, observer := range []*character.Character{keyHelper, offHelper} {
+		if err := observer.DestroyHelper(engine.DestroySelfParameters{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	aiRoot.SetVar(59, 2)
+	for frame := 0; frame < 120 && !(aiRoot.GetVar(44) > 0 && aiVictim.Life < aiVictim.MaxLife && aiRoot.StateNo == 0 && aiRoot.Ctrl); frame++ {
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if aiRoot.GetVar(44) == 0 || aiVictim.Life >= aiVictim.MaxLife || aiRoot.StateNo != 0 || !aiRoot.Ctrl {
+		t.Fatal("AI shortcut failed attack/contact/recovery", aiRoot.GetVar(44), aiVictim.Life, aiRoot.StateNo, aiRoot.Ctrl)
+	}
+	if !cheatAI.match.SetAILevel(1, 0) {
+		t.Fatal("could not return AI control to human")
+	}
+	if err := e.Update(); err != nil {
+		t.Fatal(err)
+	}
+	if aiRoot.Command("long-charge-motion") || len(cheatAI.match.BasicAICommands(1)) != 0 {
+		t.Fatal("AI shortcut survived the ownership handoff")
 	}
 	for side := range request.Players {
 		request.Players[side].AILevel = 8

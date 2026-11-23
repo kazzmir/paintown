@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command policy remains missing. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
+      "gap": "K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command admission and its connected acceptance are complete. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -639,7 +639,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "70931d99a80a5aeb247a191dbb844612038f7fe0199db905f4602dcab070efd7"
+      "passed_source": "2c2cb2fc746bcbee08ede8fe4b41379056ec1d02b0e04a8c5852165ba608a985"
     },
     {
       "id": "entities",
@@ -672,7 +672,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6c2ac15315dc6f3221e45b3ec7e6fa1bfcecc6f15c49a086978182b19dad2b4c"
+      "passed_source": "83fdf13e1af9c366e7d868c01479725629087370c7299b4e1143264818481493"
     },
     {
       "id": "effects-pause",
@@ -707,7 +707,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "77fc7fedc81382f958d6cfd20291249171b8c3631f203a970c4961d69f2b0f6f"
+      "passed_source": "5449d5256de12903a2ffdd6ce4f70a8d49b558275a4343d7c3ab7957133ed9a1"
     },
     {
       "id": "match-flow",
@@ -786,7 +786,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "0f2b2d2370ab2c9c4b702ad527d7235eb72a69aab868d3f2ddf0bf2ddc576022"
+      "passed_source": "40d11c24e8b4abc235bc63940932975bc9f7b3abb4abde8a040c79be7f1470e1"
     }
   ],
   "presentation_followups": [
@@ -1276,14 +1276,14 @@
         "id": "K3",
         "parent": "raster-audio",
         "name": "AI.Cheat command admission policy",
-        "implementation": "missing",
-        "acceptance": "unverified",
+        "implementation": "implemented",
+        "acceptance": "passed",
         "size": "large",
-        "confidence": "low",
+        "confidence": "high",
         "contract": "Connect AI.Cheat to AI command admission while retaining ordinary CMD/CNS eligibility when disabled.",
-        "basis": "The target CFG describes optional command activation without simulated key presses. AICheat is parsed but has no runtime reads; ai.go always emits timed physical-input plans.",
-        "prerequisite": "Establish enabled/disabled admission, charge handling and helper/AI ownership with a bounded target comparison. Do not invent the bypass policy; random move selection is separate U4 work.",
-        "completion": "One AI command-to-contact/recovery lifecycle distinguishes enabled/disabled policy, preserves human/helper recognition and CNS eligibility, and resets cleanly. Validate affected existing segments at batch end.",
+        "basis": "Target CFG permits AI command input without key presses. Target command-admission code selects declared command indices separately from physical keys and shares them with key-controlled helpers; bounded observation admits a long-charge label before its physical charge can finish.",
+        "prerequisite": "Resolved by target command-admission review and the connected command/combat lifecycle. Native random move-selection probabilities remain U4.",
+        "completion": "AI.Cheat reaches the production match consumer. Disabled mode retains timed CMD input. Enabled mode admits declared labels independently of remaps/physical charge, preserves CNS eligibility and helper/human ownership, and completes contact/recovery and ownership handoff. Affected connected segments pass with race detection.",
         "sources": [
           "config/config.go",
           "match/ai.go",
@@ -1461,7 +1461,7 @@
       {
         "id": "A4",
         "name": "Options, training and AI",
-        "finding": "Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat has no runtime reader. Native UI/dummy and stochastic AI parity remain unverified.",
+        "finding": "Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat reaches a separate declared-command consumer with connected ownership/contact/recovery acceptance. Native UI/dummy and stochastic AI parity remain unverified.",
         "targets": [
           "K3"
         ],

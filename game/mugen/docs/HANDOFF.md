@@ -18,10 +18,19 @@ The connected campaign/results scenario passes with races; all five segments
 remain checked. Linux build and owned-window application smoke pass. Reference
 captures, disposable configurations, the owned runtime and scratch are removed.
 
-The catalog's `remaining_scope` and generated ledger retain K3 AI.Cheat admission
-and K4 legacy joystick enable/numeric bindings, plus six separate U1–U5/H1
-acceptance/evidence followups. K3 needs reference command admission; K4 needs
-native device-code mapping. Their effort estimates have low confidence.
+K3 AI.Cheat admission is complete for its scoped contract. The target has a
+separate declared-command admission path shared with key-controlled helpers;
+charge shortcuts are observed before the required physical charge can finish.
+The production config now selects timed physical plans or independent command
+labels. Preserve CNS gates, physical history, helper ownership and human/reset
+isolation. The connected command-to-contact/recovery/handoff scenario and all
+affected segments pass with race detection; native random probabilities remain U4.
+
+The catalog's `remaining_scope` and generated ledger retain K4 legacy joystick
+enable/numeric bindings, plus six separate U1–U5/H1 acceptance/evidence followups.
+Target joystick review establishes four 32-code device blocks, dynamic axis/hat
+offsets, swapped first axis pairs and an axis threshold of 16000. Translation
+must use device metadata rather than assuming stock numeric button offsets.
 [ITEM-3-PLAN.md](ITEM-3-PLAN.md) records order and review boundaries; 32/35 broad
 categories do not measure remaining effort. K1/K2 scope corrections are recorded
 explicitly in the ledger rather than silently changing the baseline.

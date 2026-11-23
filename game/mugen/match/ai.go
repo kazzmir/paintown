@@ -10,6 +10,8 @@ import (
 type aiBrain struct {
 	random       *engine.RandomStream
 	commands     [][]character.CommandInput
+	commandNames []string
+	admitted     []string
 	queue        []character.CommandInput
 	held         []string
 	remaining    int
@@ -32,6 +34,7 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 			names = append(names, name)
 		}
 		sort.Strings(names)
+		b.commandNames = names
 		for _, name := range names {
 			for _, command := range c.CmdFile.Commands[name] {
 				steps := character.CommandInputs(command.Sequence)
@@ -88,6 +91,7 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		return b.inputs
 	}
 	b.frame, b.inputs = m.Tick, nil
+	b.admitted = nil
 	if b.remaining > 0 || len(b.queue) > 0 {
 		b.inputs = b.nextInput()
 		return b.inputs
@@ -129,11 +133,31 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		}
 		return b.inputs
 	}
-	if len(b.commands) > 0 {
+	if m.Options.AICheat && len(b.commandNames) > 0 {
+		// Native AI can admit a declared label without simulating its motion
+		// or charge. Do not forge press/release history or bypass CNS gates.
+		index := int(b.random.Next() % int64(len(b.commandNames)))
+		b.admitted = b.commandNames[index : index+1]
+	} else if len(b.commands) > 0 {
 		b.queue = b.commands[int(b.random.Next()%int64(len(b.commands)))]
 		b.inputs = b.nextInput()
 	} else {
 		b.inputs, _ = c.CmdFile.PhysicalInputs([]string{"ButtonX"})
 	}
 	return b.inputs
+}
+
+// BasicAICommands shares one decision with this tick's physical snapshot. A
+// key-controlled helper sees its root's labels with its own command buffer;
+// ordinary human input and helpers without key control never use this path.
+func (m *Match) BasicAICommands(playerID int) []string {
+	if !m.Options.AICheat || playerID < 1 || playerID > 4 || m.Phase != Active {
+		return nil
+	}
+	p := m.ActivePlayers()[playerID-1]
+	if p == nil || !p.Character.IsAlive() || p.Character.AILevel <= 0 {
+		return nil
+	}
+	m.BasicAIInput(playerID)
+	return m.brain(p.Character).admitted
 }

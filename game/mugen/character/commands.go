@@ -448,6 +448,7 @@ func IsButton(name string) bool {
 func (c *Character) updateCommands(isPaused bool) {
 	c.ActiveCommands = nil
 	c.LastCommandMatched = ""
+	c.aiCommands = nil
 	if c.Parent != nil && !c.isProjectile && !c.HelperKeyControl {
 		return
 	}
@@ -460,6 +461,9 @@ func (c *Character) updateCommands(isPaused bool) {
 			physicalRaw = GetRawInputs(c.InputSlot, c.Facing)
 		}
 		raw := c.CmdFile.RemapInputs(physicalRaw)
+		if c.CommandSource != nil {
+			c.aiCommands = c.CommandSource(c.InputSlot)
+		}
 		c.updateRecoveryInput(raw)
 
 		// Preserve actual press/release transitions. An unconditional direction
@@ -521,6 +525,12 @@ func (c *Character) matchCurrentCommands() {
 		}
 		// Turning may rematch held directions on the pause-release pass.
 		// Its previously buffered command must still reach this CNS pass.
+		for _, name := range c.aiCommands {
+			if _, declared := c.CmdFile.Commands[name]; declared && !c.Command(name) {
+				c.ActiveCommands = append(c.ActiveCommands, name)
+				matched = append(matched, name)
+			}
+		}
 		for name := range c.pauseCommands {
 			if !c.Command(name) {
 				c.ActiveCommands = append(c.ActiveCommands, name)

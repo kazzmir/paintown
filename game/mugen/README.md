@@ -209,7 +209,12 @@ Character CMD files can use `[Remap]`: `x = a` makes authored `x` commands read
 the configured `a` input; a blank `a =` disables logical `a`. Mappings use one
 input snapshot, so several logical buttons may share an input and swaps work
 without cascading. Holds, charged releases, key-controlled helpers and authored
-AI commands use these mappings. Menu bindings continue to use the keyboard
+AI physical input uses these mappings. With `[Arcade] AI.Cheat = 1`, the AI can
+instead admit a declared command without pressing its keys or completing its
+charge; its CNS conditions still decide whether to act. Key-controlled helpers
+receive the root's admitted labels through their own command recognition. Set
+`AI.Cheat = 0` to require the AI's timed physical input plans. Native random
+decision probabilities remain unverified. Menu bindings use the keyboard
 configuration below.
 
 ### Adding characters

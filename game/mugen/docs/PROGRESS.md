@@ -8,7 +8,7 @@ an estimate of total effort or complete native compatibility.
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project categories: 32 implemented, 3 partial, 0 missing.
-- Remaining-scope implementation targets: 2 closed, 2 open.
+- Remaining-scope implementation targets: 3 closed, 1 open.
 - Separate acceptance followups: 0 passed, 6 open.
 
 ## Remaining implementation and acceptance
@@ -24,7 +24,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | --- | --- | --- |
 | **K1 — Result text composition and fitted viewport** | implemented / passed | small / high |
 | **K2 — Fresh result scene and Survival pose policy** | implemented / passed | medium / high |
-| **K3 — AI.Cheat command admission policy** | missing / unverified | large / low |
+| **K3 — AI.Cheat command admission policy** | implemented / passed | large / high |
 | **K4 — Legacy joystick configuration consumer** | missing / unverified | medium / low |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
@@ -37,10 +37,10 @@ of native equivalence. Unknown behavior is not counted as a code defect.
   Prerequisite: Resolved by bounded native Win/Survival single/co-op scenes; connected match-flow acceptance passed with race detection.
   Completion: The existing mode lifecycle checks separate world/actor/palette ownership over shared banks, both threshold outcomes, restored partners in mixed coordinates, no enemies/HUD, ongoing animation, clean exit and unchanged committed fight state. Match-flow acceptance closes the target.
 
-- [ ] **K3**: Connect AI.Cheat to AI command admission while retaining ordinary CMD/CNS eligibility when disabled.
-  Basis: The target CFG describes optional command activation without simulated key presses. AICheat is parsed but has no runtime reads; ai.go always emits timed physical-input plans.
-  Prerequisite: Establish enabled/disabled admission, charge handling and helper/AI ownership with a bounded target comparison. Do not invent the bypass policy; random move selection is separate U4 work.
-  Completion: One AI command-to-contact/recovery lifecycle distinguishes enabled/disabled policy, preserves human/helper recognition and CNS eligibility, and resets cleanly. Validate affected existing segments at batch end.
+- [x] **K3**: Connect AI.Cheat to AI command admission while retaining ordinary CMD/CNS eligibility when disabled.
+  Basis: Target CFG permits AI command input without key presses. Target command-admission code selects declared command indices separately from physical keys and shares them with key-controlled helpers; bounded observation admits a long-charge label before its physical charge can finish.
+  Prerequisite: Resolved by target command-admission review and the connected command/combat lifecycle. Native random move-selection probabilities remain U4.
+  Completion: AI.Cheat reaches the production match consumer. Disabled mode retains timed CMD input. Enabled mode admits declared labels independently of remaps/physical charge, preserves CNS eligibility and helper/human ownership, and completes contact/recovery and ownership handoff. Affected connected segments pass with race detection.
 
 - [ ] **K4**: Honor legacy P1/P2.Joystick.type and bindings through explicit native-code translation, retaining YAML/session override precedence.
   Basis: Target CFG/readme expose joystick enable settings and numeric bindings. Joystick.type is ignored; stored P1/P2Joystick fields have no adapter reads. Portable/raw YAML controls are implemented separately.
@@ -72,7 +72,7 @@ Existing evidence was reused; no new native or gameplay runs are inferred.
 | **A1 — Runtime ordering** | Shared timeline, actor/helper ordering, pause allowances, binding, facing and reset have consumers and scoped connected/native evidence. No new missing consumer was established; broader interaction acceptance remains explicit. | U1 |
 | **A2 — Assets, fonts and media** | Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established. | U2 |
 | **A3 — Rendering and audio** | Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed. | K1, K2, U5 |
-| **A4 — Options, training and AI** | Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat has no runtime reader. Native UI/dummy and stochastic AI parity remain unverified. | K3, U3, U4 |
+| **A4 — Options, training and AI** | Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat reaches a separate declared-command consumer with connected ownership/contact/recovery acceptance. Native UI/dummy and stochastic AI parity remain unverified. | K3, U3, U4 |
 | **A5 — Input compatibility** | Standard/raw gamepads, keyboard alternatives, session editing and ownership/hotplug have injected-device evidence. Legacy enable settings/numeric bindings do not reach the adapter. Physical/native numbering acceptance is separate. | K4, H1 |
 
 ### Deferred capabilities
@@ -226,7 +226,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Reviewed format families have readers and scoped acceptance. Broader font/content acceptance is U2; missing licensed payloads and native-reproducing content defects are not missing consumers. Physical CD and unavailable licensed/CJK payloads remain deferred. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command policy remains missing. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command admission and its connected acceptance are complete. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 

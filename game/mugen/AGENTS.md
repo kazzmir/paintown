@@ -93,8 +93,11 @@ unknown permutations into mandatory parameter matrices.
   physical snapshots. Declared command labels cannot fall back to held buttons.
 - /x+y holds the entire chord; normal chords require button press edges. Held
   sequence endings complete on a fresh edge. Preserve release/charge windows.
-  Histories size lazily from CMD durations; AI uses timed input steps, not one
-  allocated frame per charge tick. Charge chord components before simultaneous
+  Histories size lazily from CMD durations; non-cheating AI uses timed input
+  steps, not one allocated frame per charge tick. AI.Cheat admits declared labels
+  separately from physical history, including charges/disabled remaps; preserve
+  CNS eligibility, key-controlled helper ownership and human/reset isolation.
+  Charge chord components before simultaneous
   release/press completion; strict steps retain unrelated preceding inputs. Player/helper buffers remain independent.
 - Gamepads are opt-in through YAML standard-layout or explicit SDK raw controls.
   Keep two-player seat ownership across hotplug and non-consuming held/edge

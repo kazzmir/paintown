@@ -59,8 +59,9 @@ questions forward instead of expanding the assessment indefinitely.
 
 K1–K4 contracts, sources, prerequisites, estimates and completion conditions are
 recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
-Confidence describes the effort estimate. Result semantics are now observed;
-exact AI admission and joystick mapping policy still need reference evidence.
+Confidence describes the effort estimate. Result and AI-admission contracts are
+resolved for their scoped implementations. Joystick translation uses target
+device-code review; physical acceptance remains separate.
 
 ## Bounded review areas
 
