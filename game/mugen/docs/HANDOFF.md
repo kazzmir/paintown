@@ -5,12 +5,16 @@ work. Local source/text checkpoints are authorized; no pushes, committed game
 assets, binaries, user configuration, subagents or goals. Keep documentation
 portable and use [PROGRESS.md](PROGRESS.md) as the single completion ledger.
 
-The current step is assessment/planning before further engine implementation.
-[ITEM-3-PLAN.md](ITEM-3-PLAN.md) maps two confirmed result consumers (K1/K2),
-five bounded review areas (A1–A5) and physical input acceptance (H1). Complete
-that review and present a finite backlog before engine changes. The 32/35 broad
-category count is not remaining effort; keep implementation, acceptance and
-deferred scope separate. This planning checkpoint does not rerun gameplay.
+The bounded assessment is complete; review the finite backlog before engine
+changes. The catalog's `remaining_scope` and generated ledger record four
+missing consumers: K1 result-text layers, K2 Survival pose threshold, K3 AI.Cheat
+admission, K4 legacy joystick enable/numeric bindings. Six separate U1–U5/H1
+followups retain acceptance/evidence uncertainty. K1/K2 form the first results
+batch; resolve native layer/dead-actor policy first. K3 needs reference command
+admission, K4 needs native device-code mapping; their estimates have low
+confidence. [ITEM-3-PLAN.md](ITEM-3-PLAN.md) records order and review boundaries.
+The 32/35 category count is not remaining effort. No engine behavior changed or
+gameplay/native checks ran during the assessment; segment fingerprints remain.
 
 The latest compatibility batch covers deferred storyboard admission, victory
 portrait windows, font RGB across menus/VS/HUD/results, inset quote wrapping,
@@ -34,9 +38,10 @@ activation persists across round restart/reload without changing actor identity.
 
 The project retains three broad partial areas: arbitrary content/font/media
 acceptance, native runtime/render/audio/AI/menu fidelity, and physical controller
-acceptance. Concrete result consumers still needing work include text layering
-and Survival pose-threshold policy. Physical CD, unavailable licensed fonts,
-other-platform runtime validation and standalone music CLI playback are deferred.
+acceptance. The scoped target/acceptance tables replace vague remaining-work
+counts; additional discoveries must be explicit scope changes. Physical CD,
+unavailable licensed fonts, other-platform runtime validation and standalone
+music CLI playback are deferred.
 
 Use target documentation and an independently obtained reference runtime for
 normative behavior. Bundled runtimes may differ despite a matching version

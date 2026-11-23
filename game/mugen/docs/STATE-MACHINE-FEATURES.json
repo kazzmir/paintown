@@ -373,7 +373,7 @@
       "name": "Complete font, media and asset compatibility",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; third-party script repair is outside engine implementation.",
+      "gap": "Reviewed format families have readers and scoped acceptance. Broader font/content acceptance is U2; missing licensed payloads and native-reproducing content defects are not missing consumers. Physical CD and unavailable licensed/CJK payloads remain deferred.",
       "allocation": "item4",
       "sources": [
         "font/font.go",
@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Concrete remaining result consumers include wintext/winstext.layerno and Survival roundstowin pose policy.",
+      "gap": "Confirmed code targets: K1 result-text layering, K2 Survival pose threshold and K3 AI.Cheat command policy. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and additional precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -429,7 +429,7 @@
       "name": "Player input devices and configuration",
       "group": "Modes and platforms",
       "status": "partial",
-      "gap": "Keyboard/gamepad software input and session configuration are implemented across menus, combat and co-op. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; the controller model/connection question is pending.",
+      "gap": "Portable/raw gamepad and keyboard software paths are implemented. K4 is the missing legacy enable/numeric-binding consumer; H1 is physical Linux acceptance. Establish native mappings before translation; injected devices cannot prove hardware/native compatibility.",
       "allocation": "item4",
       "sources": [
         "input/manager.go",
@@ -1231,5 +1231,281 @@
       "completed": true,
       "validation": "Arcade, Team Arcade/co-op and Survival use the scheduled opponent stage directly after roster selection. includestage=0 no longer makes assigned campaign stages unavailable. A random-stage request without a pool reports its opponent/match context instead of dividing by zero. The campaign flow starts and advances with no manual stage list. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
     }
-  ]
+  ],
+  "remaining_scope": {
+    "baseline": "linux-1.1-remaining-v1",
+    "boundary": "Linux 1.1 beta 1 remaining-scope baseline from target documentation, production consumers and existing evidence: four confirmed code targets, separate from six acceptance/evidence followups. No new gameplay/native runs were performed. This bounded review is not an exhaustive semantic audit or whole-engine conformance claim.",
+    "targets": [
+      {
+        "id": "K1",
+        "parent": "raster-audio",
+        "name": "Authored Win/Survival result text layers",
+        "implementation": "missing",
+        "acceptance": "unverified",
+        "size": "medium",
+        "confidence": "high",
+        "contract": "Consume wintext.layerno and winstext.layerno in completed-fight composition.",
+        "basis": "Target motif definitions expose both fields; mode_screens.go always draws result text after FightState.Draw and has no layer consumer.",
+        "prerequisite": "Confirm target result-text positions relative to actors, foreground and HUD before changing composition.",
+        "completion": "One connected Win/Survival results episode observes authored layers and existing fades/display durations, with score, round and timer unchanged. Extend match-flow once for the results batch.",
+        "sources": [
+          "system/mode_screens.go",
+          "system/fight_state.go"
+        ]
+      },
+      {
+        "id": "K2",
+        "parent": "raster-audio",
+        "name": "Survival result pose threshold",
+        "implementation": "missing",
+        "acceptance": "unverified",
+        "size": "medium",
+        "confidence": "medium",
+        "contract": "Use Survival Results Screen roundstowin to select the human side's result pose.",
+        "basis": "Target motif comments specify a win pose at the threshold and a lose pose below it. Campaign results retain the defeated match; no production roundstowin read exists.",
+        "prerequisite": "Confirm result-state entry for defeated/dead actors and co-op participants; preserve committed outcomes.",
+        "completion": "The same results episode finishes below and at an authored threshold, observes the correct poses/live animation, and returns to title without another KO/result/reset. Extend match-flow with K1.",
+        "sources": [
+          "system/modes.go",
+          "system/mode_screens.go",
+          "match/result_pose.go",
+          "match/announcements.go"
+        ]
+      },
+      {
+        "id": "K3",
+        "parent": "raster-audio",
+        "name": "AI.Cheat command admission policy",
+        "implementation": "missing",
+        "acceptance": "unverified",
+        "size": "large",
+        "confidence": "low",
+        "contract": "Connect AI.Cheat to AI command admission while retaining ordinary CMD/CNS eligibility when disabled.",
+        "basis": "The target CFG describes optional command activation without simulated key presses. AICheat is parsed but has no runtime reads; ai.go always emits timed physical-input plans.",
+        "prerequisite": "Establish enabled/disabled admission, charge handling and helper/AI ownership with a bounded target comparison. Do not invent the bypass policy; random move selection is separate U4 work.",
+        "completion": "One AI command-to-contact/recovery lifecycle distinguishes enabled/disabled policy, preserves human/helper recognition and CNS eligibility, and resets cleanly. Validate affected existing segments at batch end.",
+        "sources": [
+          "config/config.go",
+          "match/ai.go",
+          "character/commands.go",
+          "character/command_inputs.go",
+          "system/fight_state.go"
+        ]
+      },
+      {
+        "id": "K4",
+        "parent": "player-input-devices",
+        "name": "Legacy joystick configuration consumer",
+        "implementation": "missing",
+        "acceptance": "unverified",
+        "size": "medium",
+        "confidence": "low",
+        "contract": "Honor legacy P1/P2.Joystick.type and bindings through explicit native-code translation, retaining YAML/session override precedence.",
+        "basis": "Target CFG/readme expose joystick enable settings and numeric bindings. Joystick.type is ignored; stored P1/P2Joystick fields have no adapter reads. Portable/raw YAML controls are implemented separately.",
+        "prerequisite": "Establish the target code namespace and platform/device mapping. Native numbers are not SDK indices; physical confirmation belongs to H1.",
+        "completion": "A configuration-to-menu-to-combat/reconnect flow honors legacy enable/bindings and explicit overrides, preserves keyboard alternatives/seat ownership, and leaves YAML untouched. Validate translation in match-flow, then H1 on hardware.",
+        "sources": [
+          "config/config.go",
+          "config/gamepad.go",
+          "input/manager.go",
+          "input/gamepad.go",
+          "system/input_config.go"
+        ]
+      }
+    ],
+    "acceptance": [
+      {
+        "id": "U1",
+        "name": "Additional runtime interaction fidelity",
+        "status": "unverified",
+        "completion": "Reuse existing pause/binding/facing/reset findings. For broader acceptance, compare one overlapping pause/hitpause, bound-anchor turn, release/recovery episode. Create a code target only for a demonstrated mismatch.",
+        "prerequisite": "A precise target observation for the combined lifecycle; this review found no additional missing consumer.",
+        "sources": [
+          "engine/timeline.go",
+          "character/tick.go",
+          "character/binding.go",
+          "character/ownership.go",
+          "match/round_carry.go"
+        ]
+      },
+      {
+        "id": "U2",
+        "name": "Broader font/content acceptance",
+        "status": "unverified",
+        "completion": "Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects.",
+        "prerequisite": "Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity.",
+        "sources": [
+          "font/truetype.go",
+          "font/v2.go",
+          "sff/v2.go",
+          "resource/characters.go",
+          "system/asset_flow_test.go"
+        ]
+      },
+      {
+        "id": "U3",
+        "name": "Native Options/training behavior and presentation",
+        "status": "unverified",
+        "completion": "Compare one menu-to-training flow covering setting effects, dummy ownership/guard/stance/distance/jam, pause/resume and return. Preserve intentional session-only edits; quantify any mismatch before scheduling code.",
+        "prerequisite": "Operate the relevant target controls. The earlier attempted native UI review did not reach them and is not acceptance.",
+        "sources": [
+          "system/options.go",
+          "system/input_config.go",
+          "system/fight_controls.go",
+          "system/mode_flow_test.go",
+          "system/flow_test.go"
+        ]
+      },
+      {
+        "id": "U4",
+        "name": "Native AI decisions beyond AI.Cheat",
+        "status": "unverified",
+        "completion": "State observable target decision rules and permitted variability separately from K3 admission. Successful AI combat does not establish matching native probabilities.",
+        "prerequisite": "Bounded reference evidence sufficient for a finite decision contract; exact stochastic equivalence has no reliable estimate.",
+        "sources": [
+          "match/ai.go",
+          "system/modes.go",
+          "character/commands.go"
+        ]
+      },
+      {
+        "id": "U5",
+        "name": "Additional raster/device-audio precision",
+        "status": "unverified",
+        "completion": "Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks.",
+        "prerequisite": "A specific mismatch or explicitly scoped precision target. Whole-frame/sample-exact equivalence remains unverified.",
+        "sources": [
+          "render/linear.go",
+          "render/nearest.go",
+          "render/shadow.go",
+          "system/fight_state.go",
+          "sound/mixer.go",
+          "character/ko_sound.go"
+        ]
+      },
+      {
+        "id": "H1",
+        "name": "Physical Linux controller acceptance",
+        "status": "awaiting-prerequisite",
+        "completion": "Exercise menu/configuration, selection, combat and unplug/reconnect on hardware; preserve ownership, neutral/deadzone and held/edge behavior. Include native mapping after K4. Injected devices cannot close H1.",
+        "prerequisite": "An available controller and someone able to exercise it; no connected device is assumed.",
+        "sources": [
+          "input/gamepad.go",
+          "config/gamepad.go",
+          "system/input_config.go"
+        ]
+      }
+    ],
+    "reviews": [
+      {
+        "id": "A1",
+        "name": "Runtime ordering",
+        "finding": "Shared timeline, actor/helper ordering, pause allowances, binding, facing and reset have consumers and scoped connected/native evidence. No new missing consumer was established; broader interaction acceptance remains explicit.",
+        "targets": [],
+        "acceptance": [
+          "U1"
+        ],
+        "sources": [
+          "engine/timeline.go",
+          "character/tick.go",
+          "character/binding.go",
+          "character/ownership.go",
+          "match/match.go",
+          "match/round_carry.go"
+        ]
+      },
+      {
+        "id": "A2",
+        "name": "Assets, fonts and media",
+        "finding": "Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established.",
+        "targets": [],
+        "acceptance": [
+          "U2"
+        ],
+        "sources": [
+          "parsers/parser.go",
+          "air/air.go",
+          "sff/sff.go",
+          "sff/v2.go",
+          "sff/pcx.go",
+          "font/font.go",
+          "font/v2.go",
+          "font/truetype.go",
+          "snd/wav.go",
+          "sound/music.go",
+          "sound/legacy_linux.go",
+          "resource/characters.go",
+          "system/asset_flow_test.go",
+          "system/music_flow_test.go"
+        ]
+      },
+      {
+        "id": "A3",
+        "name": "Rendering and audio",
+        "finding": "Prior calibration findings remain closed. Result-text layers and Survival pose-threshold consumers are missing. No additional demonstrated raster/device-audio defect was established by this source/evidence review.",
+        "targets": [
+          "K1",
+          "K2"
+        ],
+        "acceptance": [
+          "U5"
+        ],
+        "sources": [
+          "system/fight_state.go",
+          "system/mode_screens.go",
+          "match/result_pose.go",
+          "render/linear.go",
+          "character/ko_sound.go"
+        ]
+      },
+      {
+        "id": "A4",
+        "name": "Options, training and AI",
+        "finding": "Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat has no runtime reader. Native UI/dummy and stochastic AI parity remain unverified.",
+        "targets": [
+          "K3"
+        ],
+        "acceptance": [
+          "U3",
+          "U4"
+        ],
+        "sources": [
+          "config/config.go",
+          "system/options.go",
+          "system/input_config.go",
+          "system/fight_controls.go",
+          "system/runtime_debug.go",
+          "system/main.go",
+          "system/sound.go",
+          "system/music.go",
+          "match/ai.go"
+        ]
+      },
+      {
+        "id": "A5",
+        "name": "Input compatibility",
+        "finding": "Standard/raw gamepads, keyboard alternatives, session editing and ownership/hotplug have injected-device evidence. Legacy enable settings/numeric bindings do not reach the adapter. Physical/native numbering acceptance is separate.",
+        "targets": [
+          "K4"
+        ],
+        "acceptance": [
+          "H1"
+        ],
+        "sources": [
+          "config/config.go",
+          "config/gamepad.go",
+          "input/manager.go",
+          "input/gamepad.go",
+          "system/input_config.go"
+        ]
+      }
+    ],
+    "deferred": [
+      "Physical CD playback.",
+      "Unavailable licensed/CJK font payloads; the Unicode reader exists, but absent fonts are not supplied by the engine.",
+      "Other-platform runtime acceptance.",
+      "Standalone music-file CLI playback."
+    ],
+    "scope_changes": []
+  }
 }

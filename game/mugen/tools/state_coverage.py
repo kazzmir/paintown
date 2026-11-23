@@ -37,6 +37,41 @@ def location(path, needle):
     return f'{path}:{text[:at].count(chr(10)) + 1}' if at >= 0 else None
 
 
+def remaining_scope(catalog, identifiers):
+    scope = catalog.get('remaining_scope')
+    if scope is None:
+        return None
+    targets, acceptance, reviews = scope['targets'], scope['acceptance'], scope['reviews']
+    ids = [row['id'] for row in targets + acceptance + reviews]
+    if len(ids) != len(set(ids)):
+        raise ValueError('Duplicate remaining-scope ID')
+    target_ids = {row['id'] for row in targets}
+    acceptance_ids = {row['id'] for row in acceptance}
+    for row in targets:
+        if row['parent'] not in identifiers or row['implementation'] not in {'missing', 'partial', 'implemented'}:
+            raise ValueError('Invalid implementation target: ' + row['id'])
+        if row['acceptance'] not in {'unverified', 'passed', 'awaiting-prerequisite'}:
+            raise ValueError('Invalid target acceptance: ' + row['id'])
+        if row['size'] not in {'small', 'medium', 'large'} or row['confidence'] not in {'low', 'medium', 'high'}:
+            raise ValueError('Invalid target estimate: ' + row['id'])
+        if row['acceptance'] == 'passed' and row['implementation'] != 'implemented':
+            raise ValueError('Acceptance cannot pass before implementation: ' + row['id'])
+        if not row['contract'] or not row['completion']:
+            raise ValueError('Missing target contract: ' + row['id'])
+    for row in acceptance:
+        if row['status'] not in {'unverified', 'passed', 'awaiting-prerequisite'}:
+            raise ValueError('Invalid acceptance followup: ' + row['id'])
+    for row in reviews:
+        if set(row['targets']) - target_ids or set(row['acceptance']) - acceptance_ids:
+            raise ValueError('Unknown review allocation: ' + row['id'])
+    for row in targets + acceptance + reviews:
+        if not row['sources']:
+            raise ValueError('Missing assessment source: ' + row['id'])
+        for path in row['sources']:
+            source(path)
+    return scope
+
+
 def report():
     catalog = json.loads(CATALOG.read_text())
     if catalog['schema'] != 1:
@@ -138,17 +173,68 @@ def report():
             'controller_extensions': extra, 'controllers': controllers, 'triggers': triggers,
             'mechanics': features, 'segments': load_audit('segments').statuses(catalog), 'structural_errors': errors,
             'known_differences': catalog.get('known_differences', []),
-            'presentation_followups': catalog['presentation_followups']}
+            'presentation_followups': catalog['presentation_followups'],
+            'remaining_scope': remaining_scope(catalog, identifiers)}
 
 
 def summary_lines(value):
     s = value['summary']
-    return [f"Controllers: {sum(x['parameter_route'] != 'missing' for x in value['controllers'])}/89 routes; "
+    lines = [f"Controllers: {sum(x['parameter_route'] != 'missing' for x in value['controllers'])}/89 routes; "
             f"{s['controllers'].get('partial', 0)} known partial, {s['controllers'].get('missing', 0)} missing.",
             f"Triggers: {s['triggers'].get('present', 0)}/127 runtime routes; "
             f"{s['triggers'].get('missing', 0)} missing.",
-            f"Project items: {s['mechanics'].get('implemented', 0)} implemented, "
+            f"Project categories: {s['mechanics'].get('implemented', 0)} implemented, "
             f"{s['mechanics'].get('partial', 0)} partial, {s['mechanics'].get('missing', 0)} missing."]
+    if scope := value['remaining_scope']:
+        closed = sum(row['implementation'] == 'implemented' and row['acceptance'] == 'passed'
+                     for row in scope['targets'])
+        passed = sum(row['status'] == 'passed' for row in scope['acceptance'])
+        lines.extend([f"Remaining-scope implementation targets: {closed} closed, {len(scope['targets']) - closed} open.",
+                      f"Separate acceptance followups: {passed} passed, {len(scope['acceptance']) - passed} open."])
+    return lines
+
+
+def scope_markdown(scope):
+    lines = ['## Remaining implementation and acceptance', '', scope['boundary'], '',
+             'This is a baseline of remaining work, not a reset of completed features.',
+             'Targets close only after implementation and their named acceptance pass.',
+             'Sizes are planning classes; confidence applies to the estimate, not proof',
+             'of native equivalence. Unknown behavior is not counted as a code defect.', '',
+             '| Target | Implementation / acceptance | Size / confidence |',
+             '| --- | --- | --- |']
+    for row in scope['targets']:
+        lines.append(f"| **{row['id']} — {row['name']}** | {row['implementation']} / {row['acceptance']} | {row['size']} / {row['confidence']} |")
+    lines.append('')
+    for row in scope['targets']:
+        mark = 'x' if row['implementation'] == 'implemented' and row['acceptance'] == 'passed' else ' '
+        lines.extend([f"- [{mark}] **{row['id']}**: {row['contract']}",
+                      f"  Basis: {row['basis']}",
+                      f"  Prerequisite: {row['prerequisite']}",
+                      f"  Completion: {row['completion']}", ''])
+    lines.extend(['', '### Separate acceptance and evidence questions', '',
+                  'These followups are separate from each implementation target\'s own',
+                  'acceptance. Open questions do not imply missing controller/trigger routes.', '',
+                  '| ID | Scope / status | Evidence needed to close it |',
+                  '| --- | --- | --- |'])
+    for row in scope['acceptance']:
+        lines.append(f"| **{row['id']}** | {row['name']} — {row['status']} | {row['completion']} Prerequisite: {row['prerequisite']} |")
+    lines.extend(['', '### Bounded assessment findings', '',
+                  'The documentation/source review is complete for these boundaries.',
+                  'Existing evidence was reused; no new native or gameplay runs are inferred.', '',
+                  '| Review | Finding | Allocation |', '| --- | --- | --- |'])
+    for row in scope['reviews']:
+        allocation = ', '.join(row['targets'] + row['acceptance']) or 'No new target'
+        lines.append(f"| **{row['id']} — {row['name']}** | {row['finding']} | {allocation} |")
+    lines.extend(['', '### Deferred capabilities', ''])
+    lines.extend('- ' + item for item in scope['deferred'])
+    lines.extend(['', 'New discoveries must be recorded as explicit scope changes with evidence.',
+                  'They do not silently enlarge this baseline or reopen unrelated completion.', ''])
+    if scope['scope_changes']:
+        lines.extend('- ' + item for item in scope['scope_changes'])
+    else:
+        lines.append('Scope changes since this baseline: none.')
+    lines.append('')
+    return lines
 
 
 def markdown(value):
@@ -158,6 +244,8 @@ def markdown(value):
              'items name the remaining work. Counts below are feature/route counts, not',
              'an estimate of total effort or complete native compatibility.', '',
              *[f'- {line}' for line in summary_lines(value)], '']
+    if value['remaining_scope']:
+        lines.extend(scope_markdown(value['remaining_scope']))
     if value['known_differences']:
         lines.extend(['## Known difference checkpoints', '',
                       'These checkmarks close the documented discrepancies for the observed scope.',
@@ -202,10 +290,11 @@ def markdown(value):
     lines.extend(['', 'Missing trigger routes: ' + (', '.join('`' + x + '`' for x in missing) if missing else 'none') + '.', '',
                   'Stage, viewport and team runtime context are implemented; remaining work is listed above.', '',
                   '## How progress is updated', '',
-                  '1. Pick an unchecked feature and implement a coherent batch.',
-                  '2. Update its status in `STATE-MACHINE-FEATURES.json`.',
+                  '1. Pick a scoped implementation target and resolve its prerequisites.',
+                  '2. Implement a coherent batch and update implementation status in `STATE-MACHINE-FEATURES.json`.',
                   '3. Validate the affected connected scenario at the end of the batch.',
-                  '4. Record its checkmark here, commit source/text, and remove scratch output.', '',
+                  '4. Record acceptance separately; close the target only when both pass.',
+                  '5. Refresh this ledger, commit source/text, and remove scratch output.', '',
                   'Use `mugen.sh --coverage --write` to refresh this page and',
                   '`mugen.sh --check` to run pending/reopened segments only. Explicit',
                   '`--check --segment NAME` reruns one segment. No reference executable,',
@@ -239,6 +328,10 @@ def main():
     else:
         print('\n'.join(summary_lines(value)))
         if args.gaps:
+            if scope := value['remaining_scope']:
+                for row in scope['targets']:
+                    if row['implementation'] != 'implemented' or row['acceptance'] != 'passed':
+                        print(f"target/{row['id']}: {row['name']} ({row['implementation']}; acceptance {row['acceptance']}; {row['size']}/{row['confidence']})")
             for group in ['mechanics', 'controllers', 'triggers']:
                 for row in value[group]:
                     if row['status'] in {'partial', 'missing'}:
@@ -247,6 +340,10 @@ def main():
             print('Coverage error: ' + error, file=sys.stderr)
     incomplete = any(row['status'] in {'partial', 'missing'}
                      for group in ['mechanics', 'controllers', 'triggers'] for row in value[group])
+    if scope := value['remaining_scope']:
+        incomplete |= any(row['implementation'] != 'implemented' or row['acceptance'] != 'passed'
+                          for row in scope['targets'])
+        incomplete |= any(row['status'] != 'passed' for row in scope['acceptance'])
     return int(bool(value['structural_errors']) or (args.require_complete and incomplete))
 
 

@@ -423,9 +423,10 @@ whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The current ledger has 32 implemented categories and three broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
-The [scope plan](docs/ITEM-3-PLAN.md) separates concrete implementation targets,
-bounded compatibility reviews and physical acceptance before the next engine
-batch. Completion stays recorded in the single progress ledger.
+The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed remaining scope: four
+confirmed implementation targets and six separate acceptance/evidence followups.
+The progress ledger shows their contracts, estimates and prerequisites; these
+counts describe remaining scoped work, not whole-engine completion percentages.
 The current Linux implementation supports one-on-one, simul/turns, arcade and
 survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains

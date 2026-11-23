@@ -7,7 +7,85 @@ an estimate of total effort or complete native compatibility.
 
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
-- Project items: 32 implemented, 3 partial, 0 missing.
+- Project categories: 32 implemented, 3 partial, 0 missing.
+- Remaining-scope implementation targets: 0 closed, 4 open.
+- Separate acceptance followups: 0 passed, 6 open.
+
+## Remaining implementation and acceptance
+
+Linux 1.1 beta 1 remaining-scope baseline from target documentation, production consumers and existing evidence: four confirmed code targets, separate from six acceptance/evidence followups. No new gameplay/native runs were performed. This bounded review is not an exhaustive semantic audit or whole-engine conformance claim.
+
+This is a baseline of remaining work, not a reset of completed features.
+Targets close only after implementation and their named acceptance pass.
+Sizes are planning classes; confidence applies to the estimate, not proof
+of native equivalence. Unknown behavior is not counted as a code defect.
+
+| Target | Implementation / acceptance | Size / confidence |
+| --- | --- | --- |
+| **K1 — Authored Win/Survival result text layers** | missing / unverified | medium / high |
+| **K2 — Survival result pose threshold** | missing / unverified | medium / medium |
+| **K3 — AI.Cheat command admission policy** | missing / unverified | large / low |
+| **K4 — Legacy joystick configuration consumer** | missing / unverified | medium / low |
+
+- [ ] **K1**: Consume wintext.layerno and winstext.layerno in completed-fight composition.
+  Basis: Target motif definitions expose both fields; mode_screens.go always draws result text after FightState.Draw and has no layer consumer.
+  Prerequisite: Confirm target result-text positions relative to actors, foreground and HUD before changing composition.
+  Completion: One connected Win/Survival results episode observes authored layers and existing fades/display durations, with score, round and timer unchanged. Extend match-flow once for the results batch.
+
+- [ ] **K2**: Use Survival Results Screen roundstowin to select the human side's result pose.
+  Basis: Target motif comments specify a win pose at the threshold and a lose pose below it. Campaign results retain the defeated match; no production roundstowin read exists.
+  Prerequisite: Confirm result-state entry for defeated/dead actors and co-op participants; preserve committed outcomes.
+  Completion: The same results episode finishes below and at an authored threshold, observes the correct poses/live animation, and returns to title without another KO/result/reset. Extend match-flow with K1.
+
+- [ ] **K3**: Connect AI.Cheat to AI command admission while retaining ordinary CMD/CNS eligibility when disabled.
+  Basis: The target CFG describes optional command activation without simulated key presses. AICheat is parsed but has no runtime reads; ai.go always emits timed physical-input plans.
+  Prerequisite: Establish enabled/disabled admission, charge handling and helper/AI ownership with a bounded target comparison. Do not invent the bypass policy; random move selection is separate U4 work.
+  Completion: One AI command-to-contact/recovery lifecycle distinguishes enabled/disabled policy, preserves human/helper recognition and CNS eligibility, and resets cleanly. Validate affected existing segments at batch end.
+
+- [ ] **K4**: Honor legacy P1/P2.Joystick.type and bindings through explicit native-code translation, retaining YAML/session override precedence.
+  Basis: Target CFG/readme expose joystick enable settings and numeric bindings. Joystick.type is ignored; stored P1/P2Joystick fields have no adapter reads. Portable/raw YAML controls are implemented separately.
+  Prerequisite: Establish the target code namespace and platform/device mapping. Native numbers are not SDK indices; physical confirmation belongs to H1.
+  Completion: A configuration-to-menu-to-combat/reconnect flow honors legacy enable/bindings and explicit overrides, preserves keyboard alternatives/seat ownership, and leaves YAML untouched. Validate translation in match-flow, then H1 on hardware.
+
+
+### Separate acceptance and evidence questions
+
+These followups are separate from each implementation target's own
+acceptance. Open questions do not imply missing controller/trigger routes.
+
+| ID | Scope / status | Evidence needed to close it |
+| --- | --- | --- |
+| **U1** | Additional runtime interaction fidelity — unverified | Reuse existing pause/binding/facing/reset findings. For broader acceptance, compare one overlapping pause/hitpause, bound-anchor turn, release/recovery episode. Create a code target only for a demonstrated mismatch. Prerequisite: A precise target observation for the combined lifecycle; this review found no additional missing consumer. |
+| **U2** | Broader font/content acceptance — unverified | Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects. Prerequisite: Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity. |
+| **U3** | Native Options/training behavior and presentation — unverified | Compare one menu-to-training flow covering setting effects, dummy ownership/guard/stance/distance/jam, pause/resume and return. Preserve intentional session-only edits; quantify any mismatch before scheduling code. Prerequisite: Operate the relevant target controls. The earlier attempted native UI review did not reach them and is not acceptance. |
+| **U4** | Native AI decisions beyond AI.Cheat — unverified | State observable target decision rules and permitted variability separately from K3 admission. Successful AI combat does not establish matching native probabilities. Prerequisite: Bounded reference evidence sufficient for a finite decision contract; exact stochastic equivalence has no reliable estimate. |
+| **U5** | Additional raster/device-audio precision — unverified | Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks. Prerequisite: A specific mismatch or explicitly scoped precision target. Whole-frame/sample-exact equivalence remains unverified. |
+| **H1** | Physical Linux controller acceptance — awaiting-prerequisite | Exercise menu/configuration, selection, combat and unplug/reconnect on hardware; preserve ownership, neutral/deadzone and held/edge behavior. Include native mapping after K4. Injected devices cannot close H1. Prerequisite: An available controller and someone able to exercise it; no connected device is assumed. |
+
+### Bounded assessment findings
+
+The documentation/source review is complete for these boundaries.
+Existing evidence was reused; no new native or gameplay runs are inferred.
+
+| Review | Finding | Allocation |
+| --- | --- | --- |
+| **A1 — Runtime ordering** | Shared timeline, actor/helper ordering, pause allowances, binding, facing and reset have consumers and scoped connected/native evidence. No new missing consumer was established; broader interaction acceptance remains explicit. | U1 |
+| **A2 — Assets, fonts and media** | Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established. | U2 |
+| **A3 — Rendering and audio** | Prior calibration findings remain closed. Result-text layers and Survival pose-threshold consumers are missing. No additional demonstrated raster/device-audio defect was established by this source/evidence review. | K1, K2, U5 |
+| **A4 — Options, training and AI** | Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat has no runtime reader. Native UI/dummy and stochastic AI parity remain unverified. | K3, U3, U4 |
+| **A5 — Input compatibility** | Standard/raw gamepads, keyboard alternatives, session editing and ownership/hotplug have injected-device evidence. Legacy enable settings/numeric bindings do not reach the adapter. Physical/native numbering acceptance is separate. | K4, H1 |
+
+### Deferred capabilities
+
+- Physical CD playback.
+- Unavailable licensed/CJK font payloads; the Unicode reader exists, but absent fonts are not supplied by the engine.
+- Other-platform runtime acceptance.
+- Standalone music-file CLI playback.
+
+New discoveries must be recorded as explicit scope changes with evidence.
+They do not silently enlarge this baseline or reopen unrelated completion.
+
+Scope changes since this baseline: none.
 
 ## Known difference checkpoints
 
@@ -146,12 +224,12 @@ source changes reopen only the affected segments.
 - [x] Stock character/stage, SFF/AIR/CNS/CMD loading.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
-- [ ] Complete font, media and asset compatibility. **partial** — Broader engine font, media and asset acceptance remains unverified. Physical CD playback is unavailable; absent licensed fonts use a reported fallback. Arbitrary content compatibility and raster parity are not established. Script defects that also reproduce in native are content findings, not engine implementation tasks; third-party script repair is outside engine implementation. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Documented camera, sprite/shadow, alpha and ordinary KO-echo discrepancies are closed for their checked scope. Broader pause/hitpause/binding/raster/filter combinations, device sample timing, native AI/cheat policy and menu/dummy fidelity remain unverified. Concrete remaining result consumers include wintext/winstext.layerno and Survival roundstowin pose policy. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Complete font, media and asset compatibility. **partial** — Reviewed format families have readers and scoped acceptance. Broader font/content acceptance is U2; missing licensed payloads and native-reproducing content defects are not missing consumers. Physical CD and unavailable licensed/CJK payloads remain deferred. (item4)
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — Confirmed code targets: K1 result-text layering, K2 Survival pose threshold and K3 AI.Cheat command policy. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and additional precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 
-- [ ] Player input devices and configuration. **partial** — Keyboard/gamepad software input and session configuration are implemented across menus, combat and co-op. Physical Linux controller acceptance and native legacy joystick-number translation remain unverified; the controller model/connection question is pending. (item4)
+- [ ] Player input devices and configuration. **partial** — Portable/raw gamepad and keyboard software paths are implemented. K4 is the missing legacy enable/numeric-binding consumer; H1 is physical Linux acceptance. Establish native mappings before translation; injected devices cannot prove hardware/native compatibility. (item4)
 - [x] Opponent AI and authored CMD command flow. (item4)
 - [x] Arcade/survival/demo progression, continue/ending and training/watch rules. (item4)
 - [x] Team/simul/turns lifecycle, partner context and recovery. (item4)
@@ -173,10 +251,11 @@ Stage, viewport and team runtime context are implemented; remaining work is list
 
 ## How progress is updated
 
-1. Pick an unchecked feature and implement a coherent batch.
-2. Update its status in `STATE-MACHINE-FEATURES.json`.
+1. Pick a scoped implementation target and resolve its prerequisites.
+2. Implement a coherent batch and update implementation status in `STATE-MACHINE-FEATURES.json`.
 3. Validate the affected connected scenario at the end of the batch.
-4. Record its checkmark here, commit source/text, and remove scratch output.
+4. Record acceptance separately; close the target only when both pass.
+5. Refresh this ledger, commit source/text, and remove scratch output.
 
 Use `mugen.sh --coverage --write` to refresh this page and
 `mugen.sh --check` to run pending/reopened segments only. Explicit

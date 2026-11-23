@@ -3,10 +3,12 @@
 Track current completion once in [PROGRESS.md](PROGRESS.md). The feature catalog
 maps implemented consumers and remaining work; it is not a test-data inventory.
 Broad category/route counts do not measure remaining effort. Follow the bounded
-assessment in [the scope plan](ITEM-3-PLAN.md) before the next engine batch:
-separate confirmed implementation targets, unverified acceptance and deferred
-requirements. Give targets concrete completion contracts and size/confidence;
-keep their completion statuses only in the catalog/generated ledger.
+assessment in [the scope plan](ITEM-3-PLAN.md). Its reviewed `remaining_scope`
+baseline separates confirmed implementation targets, unverified acceptance and
+deferred requirements. Resolve each target's prerequisites before coding; its
+contract and size/confidence stay in the catalog/generated ledger. Completion
+requires both implementation and acceptance. Record new gaps as explicit scope
+changes; do not turn unresolved evidence questions into assumed code defects.
 Implement a coherent feature batch, validate its affected connected scenarios,
 record completion and commit locally for reversal. Recap substantial progress
 about every ten to fifteen commits, or sooner when input is needed.

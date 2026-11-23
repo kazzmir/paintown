@@ -31,9 +31,11 @@ mechanics batches from actual gaps using existing evidence and target beta
 documentation. Connect the production consumer before marking a route complete.
 The ledger currently has 89 controller families, 127 trigger routes and 32/35
 implemented project categories; these counts measure neither remaining effort
-nor arbitrary native conformance. Before the next engine batch, follow the
-bounded assessment in docs/ITEM-3-PLAN.md and present the finite gap map. Keep
-confirmed implementation targets, unverified acceptance and deferrals distinct.
+nor arbitrary native conformance. The bounded assessment is recorded under
+remaining_scope in the catalog/ledger; docs/ITEM-3-PLAN.md gives implementation
+order. Review the finite gap map before the next engine batch. Keep confirmed
+implementation targets, unverified acceptance and deferrals distinct; record
+new findings as explicit scope changes rather than silently growing the count.
 
 The five connected segments cover state flow, combat/recovery, entity/binding/
 retirement, effects/pause and complete match flow. Completed segments stay checked

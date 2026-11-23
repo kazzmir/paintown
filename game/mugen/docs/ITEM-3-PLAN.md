@@ -1,9 +1,10 @@
-# Remaining scope and measurement plan
+# Remaining scope and implementation order
 
 Use [PROGRESS.md](PROGRESS.md) as the single completion ledger. This plan defines
-the assessment and proposed work contracts; it does not maintain another set of
-completion checkmarks. No further engine implementation is part of this planning
-checkpoint.
+the assessment boundaries and implementation order; it does not maintain another
+set of completion checkmarks. The bounded source/documentation assessment is now
+recorded under `remaining_scope` in the feature catalog and rendered near the
+top of the ledger. No engine behavior changed during this checkpoint.
 
 ## What the current numbers establish
 
@@ -14,21 +15,21 @@ of native compatibility. A registered route can still have a behavioral defect.
 The three partial categories mix missing consumers, unverified behavior and
 capabilities deliberately deferred from the current Linux work.
 
-The current source review confirms two result-screen consumers still need work.
-It also finds explicit functional policies for training distance/button jam and
-AI command selection whose native equivalence has not been established. Those
-policies need assessment; their existence alone does not prove a defect. A scan
-for stubs or unsupported paths cannot establish that these are all remaining
-gaps. For example, some rejected syntax/formats are intentional target behavior.
+The assessment establishes four missing consumers: result-text layers, Survival
+pose thresholds, AI.Cheat command policy and legacy joystick configuration.
+Six separate acceptance/evidence followups retain remaining runtime, font,
+menu/dummy, stochastic AI, precision and hardware uncertainty. These are not six
+assumed code defects. This bounded review does not establish an exhaustive list
+of every semantic difference; unsupported-path scans alone cannot do that.
 
-## Scope of the next assessment
+## Assessment method and limits
 
 Target the Linux implementation of M.U.G.E.N 1.1 beta 1, including documented
 state/runtime behavior, complete game flows, supported assets/audio and input.
 Older content is a compatibility input, not a promise that every pack is valid.
 Keep previously closed discrepancies closed unless new evidence reopens them.
 
-Perform one assessment checkpoint before starting the next implementation batch:
+The completed assessment used these rules:
 
 1. Review each area below against target documentation, production consumers and
    existing connected-scenario evidence. Reuse prior findings first.
@@ -43,29 +44,26 @@ Perform one assessment checkpoint before starting the next implementation batch:
    existing feature catalog/ledger. Unresolved questions stay visible with their
    evidence or hardware dependency. Present the map before engine changes.
 
-This checkpoint is a documentation/source assessment, not a new test campaign.
+This checkpoint reused documentation/source and existing scenario evidence.
 If a behavior cannot be resolved from existing evidence, record the precise
 question and the smallest connected reference comparison needed. Do not start
 native experiments, fixture generation or exhaustive compatibility sampling as
 part of the planning checkpoint. Review each area once; carry unresolved
 questions forward instead of expanding the assessment indefinitely.
 
-## Confirmed implementation targets
+## Implementation contracts
 
-These two targets belong to the current `raster-audio` partial category. Their
-completion remains recorded in the ledger, not in this table.
-
-| ID | Behavior and production boundary | Completion condition | Preliminary size / confidence |
-| --- | --- | --- | --- |
-| K1 | Win/Survival result text honors `wintext.layerno` / `winstext.layerno`. Currently `system/mode_screens.go` draws text after the completed fight; `system/fight_state.go` owns scene composition. | A completed-match result sequence places authored text at the target-defined layer, preserves fades/display duration and leaves score, round and timer committed. Resolve exact target layer semantics before implementation. | Medium: crosses result presentation and fight composition. High confidence that the consumer is missing; estimate remains provisional. |
-| K2 | Survival results honor `roundstowin` when choosing the win/lose pose. `system/mode_screens.go`, `system/modes.go` and `match/result_pose.go` currently continue the completed fight without this threshold consumer. | Survival completion below and at the authored threshold chooses the target pose while preserving the final score, actor lifecycle, result duration and return to title. Resolve state-entry/dead-actor policy before implementation. | Medium: crosses campaign results and actor state entry. High confidence that the consumer is missing; estimate remains provisional. |
+K1–K4 contracts, sources, prerequisites, estimates and completion conditions are
+recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
+Confidence describes the effort estimate: the missing consumers are established,
+but exact native admission/mapping policy still needs reference evidence.
 
 ## Bounded review areas
 
-These are assessment scopes, not five assumed defects or five equal units of
-remaining effort. Each review produces supported dispositions or specific gap
-contracts. The relevant three parent categories stay partial until their scoped
-requirements and acceptance have been resolved.
+These are reviewed boundaries, not five equal units of remaining effort. The
+ledger records their findings and allocations to K1–K4 and U1–U5/H1. The three
+parent categories stay partial until their scoped requirements and acceptance
+have been resolved.
 
 | ID | Review boundary and existing sources | Required assessment output / acceptance boundary |
 | --- | --- | --- |
@@ -75,21 +73,35 @@ requirements and acceptance have been resolved.
 | A4 | Options, training and native AI/debug policy: `system/options.go`, `system/input_config.go`, `system/fight_controls.go`, `system/runtime_debug.go` and `match/ai.go`. | Trace each scoped setting to its runtime effect, including session-only input edits. Separate documented behavior from current functional dummy/AI policy and undocumented reference decisions. Define observable acceptance for any mismatch; exact native random decision probabilities remain unverified unless evidence supports them. |
 | A5 | Input compatibility: `config/config.go`, `config/gamepad.go`, `input/gamepad.go` and `system/input_config.go`. | Separate implemented portable/raw controls from native legacy joystick-number translation. Determine whether a translation consumer is missing and what platform/device evidence it requires; injected devices do not settle native numbering. Record hardware acceptance separately as H1. |
 
-H1 is physical Linux controller acceptance: menu/configuration → selection →
-combat → unplug/reconnect, retaining player ownership and held/edge behavior.
-It requires an available controller and a person able to exercise it. Software
-implementation can progress independently; this acceptance cannot be marked
-complete from injected input. Do not assume a device is currently connected.
+The format-family review mapped the following production boundaries. This is
+an availability map, not a second acceptance checklist or a parameter matrix.
 
-## Measurement after the assessment
+| Format/resource family | Production consumer / existing evidence |
+| --- | --- |
+| Text definitions, CNS/CMD and AIR | `parsers/`, `cns/`, `cmd/`, `air/`; state-flow and command/asset lifecycles. |
+| SFF v1, ACT and indexed PCX | `sff/sff.go`, `sff/pcx.go`, `character/palette_load.go`; palette and character/asset lifecycles. |
+| SFF v2 indexed/raw/PNG and links | `sff/v2.go`; encoded-format regressions and connected stage/asset lifecycle. |
+| FNT v1 and v2 bitmap | `font/font.go`, `font/v2.go`; legacy maps, glyph/bank/precedence asset flow. Bitmap v2 printable ASCII limits match the format documentation. |
+| TrueType and collections | `font/truetype.go` uses `ParseCollection` and face zero; UTF-8/blend/height asset flow. Broader glyph/metric acceptance stays U2. |
+| SND and WAV | `snd/wav.go`, `sound/mixer.go`; shared PCM/float decoder, ownership and media lifecycles. |
+| WAV/MP3/Ogg/MIDI/MOD/S3M/XM/IT BGM | `sound/music.go`, `sound/legacy_linux.go`; consumed-cursor, NoMusic, loop and scene lifecycle. Optional codecs require their libraries. |
+| Resource paths and character ZIPs | `resource/path.go`, `resource/characters.go`; selective portraits, reload, error recovery and archive cleanup in the asset lifecycle. |
 
-Add the reviewed targets under the existing three partial catalog entries and
-render them in the single progress ledger. Keep stable IDs and record:
+Format docs, the target readme/CFG and motif comments provide the requirement
+basis. External inputs are not copied into the repository. Library availability,
+missing font payloads and native-reproducing script defects remain distinct from
+missing engine behavior.
+
+## Measurement and scope changes
+
+The catalog maps reviewed targets to the existing partial categories; the
+coverage tool validates their source links and renders the single ledger.
+Keep stable IDs and record:
 
 | Field | Meaning |
 | --- | --- |
 | Contract / basis | Observable behavior, production consumer and target documentation or demonstrated mismatch. |
-| Implementation | Missing, partial, implemented, or needing evidence. A source route alone does not establish behavior. |
+| Implementation | Missing, partial, or implemented for a confirmed target; uncertain behavior stays in the separate evidence list. A source route alone does not establish behavior. |
 | Acceptance | Unverified, passed for the named connected scenario, or awaiting a stated prerequisite. Keep this separate from implementation. |
 | Size / confidence | Small: one local consumer; medium: connected changes across components; large: scheduler/ownership/format redesign. Confidence is high/medium/low with the unresolved reason. These are planning classes, not hours, tokens or commit counts. |
 | Dependency / completion | What must be settled first and the concrete observable end state that closes the target. |
@@ -107,14 +119,25 @@ engine work. Completion of the implementation backlog means the scoped code
 gaps are closed; target compatibility additionally requires the named acceptance
 checks. Neither establishes universal compatibility with arbitrary content.
 
-## Proposed implementation order and stopping point
+## Implementation order and stopping point
 
-After the assessment is reviewed, implement K1/K2 as one coherent results batch,
-then schedule confirmed compatibility defects by impact and dependency: crashes,
-stalls and wrong state outcomes first; supported content/settings next; precision
-last. Larger findings receive their own checkpoint. Validate affected connected
-segments at batch end, record completion once and commit source/text locally.
-No per-field test matrices, copied assets or per-run documentation are required.
+1. Resolve result-layer and defeated-actor state policy, then implement K1/K2 in
+   one results batch. Both are medium changes across existing components.
+2. Resolve AI.Cheat admission with one bounded comparison, then implement K3.
+   Its large/low-confidence estimate reflects a missing command-admission path;
+   it does not include reproducing native random decision probabilities (U4).
+3. Establish native joystick enable/code translation, then implement K4 with
+   explicit override precedence. Its medium/low-confidence estimate depends on
+   platform/device mapping. Schedule physical acceptance H1 when hardware exists.
+4. Address U1–U5 through their named evidence questions. Create new code targets
+   only for demonstrated missing/incorrect behavior and record the scope change.
+   Prioritize crashes, stalls and wrong state outcomes over precision findings.
+
+K3 and K4 reference discovery can proceed independently of the results batch;
+neither is ready for speculative implementation. Larger findings receive their
+own checkpoint. Validate affected connected segments at batch end, record
+completion once and commit source/text locally. No per-field test matrices,
+copied assets or per-run documentation are required.
 
 The implementation milestone closes only when every in-scope code gap is closed
 and its connected acceptance passes. Linux compatibility acceptance closes only
