@@ -4,7 +4,7 @@ Use [PROGRESS.md](PROGRESS.md) as the single completion ledger. This plan define
 the assessment boundaries and implementation order; it does not maintain another
 set of completion checkmarks. The bounded source/documentation assessment is now
 recorded under `remaining_scope` in the feature catalog and rendered near the
-top of the ledger. No engine behavior changed during this checkpoint.
+top of the ledger. Use that ledger for current implementation/acceptance status.
 
 ## What the current numbers establish
 
@@ -20,7 +20,7 @@ corrected the first: tested result-text layerno values 0/1/2 all compose in fron
 so the absent field read was not a behavioral gap. K1 now covers the demonstrated
 caption viewport difference and preserving that composition policy. K2 includes
 fresh result-scene initialization as well as Survival pose thresholds. K3/K4
-remain AI.Cheat command policy and legacy joystick configuration.
+cover AI.Cheat command policy and legacy joystick configuration.
 Six separate acceptance/evidence followups retain remaining runtime, font,
 menu/dummy, stochastic AI, precision and hardware uncertainty. These are not six
 assumed code defects. This bounded review does not establish an exhaustive list
@@ -140,9 +140,10 @@ checks. Neither establishes universal compatibility with arbitrary content.
    only for demonstrated missing/incorrect behavior and record the scope change.
    Prioritize crashes, stalls and wrong state outcomes over precision findings.
 
-K3 and K4 reference discovery can proceed independently of the results batch;
-neither is ready for speculative implementation. Larger findings receive their
-own checkpoint. Validate affected connected segments at batch end, record
+K3 admission and K4 device-code prerequisites are resolved for the scoped
+implementations. Preserve the distinction between software acceptance and
+native probability/hardware followups. Larger findings receive their own
+checkpoint. Validate affected connected segments at batch end, record
 completion once and commit source/text locally. No per-field test matrices,
 copied assets or per-run documentation are required.
 

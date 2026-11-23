@@ -21,12 +21,26 @@ type GamepadSource interface {
 	Axis(ebiten.GamepadID, int) float64
 }
 
-type physicalGamepads struct{}
+type physicalGamepads struct {
+	layouts map[ebiten.GamepadID]legacyLayoutEntry
+}
+
+type legacyLayoutEntry struct {
+	guid, name string
+	layout     LegacyJoystickLayout
+	known      bool
+}
 
 func (physicalGamepads) Name(id ebiten.GamepadID) string { return ebiten.GamepadName(id) }
 
-func (physicalGamepads) AppendIDs(ids []ebiten.GamepadID) []ebiten.GamepadID {
-	return ebiten.AppendGamepadIDs(ids)
+func (p *physicalGamepads) AppendIDs(ids []ebiten.GamepadID) []ebiten.GamepadID {
+	ids = ebiten.AppendGamepadIDs(ids)
+	for id := range p.layouts {
+		if !slices.Contains(ids, id) {
+			delete(p.layouts, id)
+		}
+	}
+	return ids
 }
 func (physicalGamepads) StandardLayout(id ebiten.GamepadID) bool {
 	return ebiten.IsStandardGamepadLayoutAvailable(id)
@@ -55,7 +69,7 @@ func (im *InputManager) gamepadSource() GamepadSource {
 	if im.Gamepads != nil {
 		return im.Gamepads
 	}
-	return physicalGamepads{}
+	return &im.physicalPads
 }
 
 func (im *InputManager) GamepadInfo(player int) (id ebiten.GamepadID, name string, standard, connected bool) {
@@ -152,16 +166,48 @@ func (im *InputManager) updateGamepads() {
 	source := im.gamepadSource()
 	im.GamepadIDs = source.AppendIDs(im.GamepadIDs[:0])
 	slices.Sort(im.GamepadIDs)
+	for i, slot := range im.legacySlots {
+		if !slices.Contains(im.GamepadIDs, slot.id) {
+			im.legacySlots[i] = gamepadSlot{}
+		}
+	}
+	for _, id := range im.GamepadIDs {
+		used := false
+		for _, slot := range im.legacySlots {
+			used = used || slot.assigned && slot.id == id
+		}
+		if !used {
+			for i, slot := range im.legacySlots {
+				if !slot.assigned {
+					im.legacySlots[i] = gamepadSlot{id: id, assigned: true}
+					break
+				}
+			}
+		}
+	}
 	settings := [2]*config.GamepadConfig{&im.P1Gamepad, &im.P2Gamepad}
 	for side, slot := range im.padSlots {
 		if !settings[side].Enabled || !slices.Contains(im.GamepadIDs, slot.id) {
+			im.padSlots[side] = gamepadSlot{}
+		}
+		if ordinal, legacy := settings[side].LegacyDevice(); legacy && settings[side].Enabled {
+			im.padSlots[side] = im.legacySlots[ordinal]
+		}
+	}
+	for side, slot := range im.padSlots {
+		if _, legacy := settings[side].LegacyDevice(); legacy || !slot.assigned {
+			continue
+		}
+		other := 1 - side
+		if _, legacy := settings[other].LegacyDevice(); legacy && im.padSlots[other].assigned && slot.id == im.padSlots[other].id {
 			im.padSlots[side] = gamepadSlot{}
 		}
 	}
 	// A remaining controller keeps its player when another disconnects. New
 	// devices fill only free, enabled seats, with deterministic initial order.
 	for side := range settings {
-		if !settings[side].Enabled || im.padSlots[side].assigned {
+		_, legacy := settings[side].LegacyDevice()
+		if !settings[side].Enabled || im.padSlots[side].assigned || legacy {
 			continue
 		}
 		for _, id := range im.GamepadIDs {
@@ -181,6 +227,12 @@ func (im *InputManager) updateGamepads() {
 		slot := im.padSlots[side]
 		standard := slot.assigned && source.StandardLayout(slot.id)
 		matches := func(control config.GamepadControl) bool {
+			if control.Kind == config.PadLegacy {
+				return im.legacyPressed(source, control.Index, pad.Deadzone)
+			}
+			if !slot.assigned {
+				return false
+			}
 			switch control.Kind {
 			case config.PadStandardButton:
 				return standard && source.StandardButton(slot.id, ebiten.StandardGamepadButton(control.Index))
@@ -211,7 +263,7 @@ func (im *InputManager) updateGamepads() {
 				im.keyboardHeld[side] |= 1 << action
 			}
 			name, _ := actionBinding(action)
-			if slot.assigned && pad.MatchBinding(name, matches) {
+			if pad.Enabled && pad.MatchBinding(name, matches) {
 				im.padHeld[side] |= 1 << action
 			}
 		}

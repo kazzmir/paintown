@@ -17,6 +17,7 @@ const (
 	PadStandardAxis
 	PadButton
 	PadAxis
+	PadLegacy // one-based native joystick code, including its device ordinal
 )
 
 // GamepadControl names either a portable layout control or an explicit raw
@@ -49,6 +50,8 @@ func (c GamepadControl) String() string {
 		return fmt.Sprintf("button:%d", c.Index)
 	case PadAxis:
 		return fmt.Sprintf("axis:%d%s", c.Index, sign)
+	case PadLegacy:
+		return fmt.Sprintf("legacy:%d", c.Index)
 	}
 	return "unknown"
 }
@@ -182,6 +185,35 @@ func DefaultGamepadConfig() GamepadConfig {
 		c.SetBindings(action, controls...)
 	}
 	return c
+}
+
+// LegacyJoystick applies CFG before YAML/session edits. Native numbers describe
+// device blocks, not SDK button indices; input sampling resolves their layout.
+func (c *GamepadConfig) LegacyJoystick(keys Keys, enabled bool) {
+	c.Enabled, c.Deadzone = enabled, 16000.0/32767
+	for _, action := range []string{"jump", "crouch", "left", "right", "a", "b", "c", "x", "y", "z", "start", "escape"} {
+		var controls []GamepadControl
+		if key, present := keys.Binding(action); present {
+			code := int(key)
+			if code > 0 && code < 128 && code%32 != 0 {
+				controls = []GamepadControl{{Kind: PadLegacy, Index: code}}
+			}
+		}
+		c.SetBindings(action, controls...)
+	}
+}
+
+// LegacyDevice is the primary CFG device for configuration/capture. Each
+// binding still retains its own ordinal, including intentional shared devices.
+func (c GamepadConfig) LegacyDevice() (int, bool) {
+	for _, bindings := range c.bindings {
+		for _, control := range bindings {
+			if control.Kind == PadLegacy && control.Index > 0 && control.Index < 128 && control.Index%32 != 0 {
+				return control.Index / 32, true
+			}
+		}
+	}
+	return 0, false
 }
 
 func mergeGamepad(c *GamepadConfig, options *GamepadOptions, bindings map[string]KeyBinding) {

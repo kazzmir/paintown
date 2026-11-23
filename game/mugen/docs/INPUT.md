@@ -30,12 +30,24 @@ edge queries. The default source reads Ebitengine; tests/replays inject frames
 without sending keyboard events to the operating system. Gameplay's facing-relative
 input uses the same manager. Menu confirmation honors each player's Start binding.
 
-Validation covers all 22 stock bindings, KeyA overrides/presence, disabled actions,
-named keys, injected held/edge queries, player confirmation, and facing-relative
-gameplay inputs. This is not complete hardware/input compatibility: layout-specific
-SDL WORLD symbols and shifted-only symbols have no current translation; gamepad
-binding interpretation, device calibration, full command timing/release behavior,
-simultaneous-direction policy and reference hardware comparisons remain open.
-Joystick numbers are preserved as raw device identifiers in the existing config
-storage; they are not decoded through the keyboard symbol table. Joystick runtime
-polling/binding translation and YAML joystick overrides remain incomplete.
+Legacy `[Input] P1.Joystick.type` / `P2.Joystick.type` and numeric joystick bindings
+now reach the shared menu/gameplay consumer. CFG loads first; YAML lists replace
+an action, explicit enable settings win, and the input editor remains session-only.
+Native codes have four 32-code device blocks. Each device reserves two codes per
+axis, then four per reported hat, then real buttons. The first axis pair is
+vertical, the second horizontal; hat directions use Up/Down/Left/Right and alias
+the first quartet. Zero and device-block boundaries are unbound. Numeric button
+offsets depend on the device, so native codes are never treated as SDK indices.
+
+The target executable's joystick initialization/event handler establishes this
+namespace. The pinned Linux SDK's public button count includes appended hats;
+the adapter discovers their boundary from matching evdev name/GUID/capabilities,
+without reading another event stream. Unknown layouts warn instead of guessing.
+Use named/raw YAML or session bindings when metadata is unavailable. Other
+platforms retain named/raw controls; their legacy capability adapters are deferred.
+
+The connected configuration/menu/combat/reconnect flow covers native translation,
+explicit overrides, keyboard alternatives, held edges and player ownership.
+Physical Linux acceptance remains H1 in the project ledger. Injected layouts
+cannot prove hardware mapping/calibration or complete input compatibility;
+layout-specific SDL WORLD and shifted-only keyboard symbols remain untranslated.

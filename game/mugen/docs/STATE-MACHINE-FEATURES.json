@@ -429,16 +429,18 @@
       "name": "Player input devices and configuration",
       "group": "Modes and platforms",
       "status": "partial",
-      "gap": "Portable/raw gamepad and keyboard software paths are implemented. K4 is the missing legacy enable/numeric-binding consumer; H1 is physical Linux acceptance. Establish native mappings before translation; injected devices cannot prove hardware/native compatibility.",
+      "gap": "Legacy CFG enable/numeric bindings and portable/raw YAML/session controls reach the Linux input consumer. K4 software acceptance is complete. H1 remains physical Linux/native mapping and calibration acceptance; injected layouts cannot close it. Other-platform legacy capability adapters are deferred.",
       "allocation": "item4",
       "sources": [
         "input/manager.go",
         "input/gamepad.go",
         "config/gamepad.go",
         "system/input_config.go",
-        "character/commands.go:GetRawInputs"
+        "character/commands.go:GetRawInputs",
+        "input/legacy_gamepad.go",
+        "input/legacy_gamepad_linux.go"
       ],
-      "validation": "Connected title/options/selection/VS/stock two-round fight/rematch/exit uses keyboard alternatives and injected standard/raw gamepads, neutral/deadzone capture, held edges, disabled/list bindings, copy isolation, ownership/hotplug and live session edits. Co-op retains the second human slot/facing. All five segments are checked with races; Linux keyboard/gamepad configuration panes inspected. No physical or native numeric acceptance is inferred."
+      "validation": "The existing title/options/selection/VS/stock two-round fight/rematch/exit lifecycle covers legacy CFG enable and dynamic axis/hat/button translation, explicit YAML/session replacement, keyboard alternatives, neutral/deadzone capture, held edges, co-op ownership and hotplug. Affected connected segments pass with races. Physical controller and native calibration acceptance remain separate."
     },
     {
       "id": "ai",
@@ -458,7 +460,7 @@
         "match/ai.go:nextInput",
         "cmd/cmd.go:Parse"
       ],
-      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree. AI uses timed input steps so long charges no longer fail the old planner cutoff or allocate per charge tick. The connected scenario completes a 300-tick authored AI charge, contact and control recovery before fresh stock AI combat. Native decision-policy equivalence remains unverified. Global CMD defaults, first-value remaps/attributes and bounded buffers now match the native 5/30/1 command episode. The existing human/helper/AI and corrected-content asset flows pass with races."
+      "validation": "A bounded beta input flow confirms x=a, a= makes authored x read physical a while logical a is disabled; physical x triggers neither. Connected command lifecycle covers shared-input chords, charge/motion/strict taps, remapped Start/charged release on root and key-controlled helper, then remapped stock AI attack/special/contact. AI translates logical plans back to physical inputs and skips unreachable disabled commands. Four affected segments pass with race detection; native scratch removed. Exact native AI policy remains open. Declared CMD labels now own press/hold/release and buffer semantics instead of falling through to raw held buttons when inactive. The connected root/helper flow spans held attack/recovery, release/repress, explicit /hold, ~release and a three-frame buffer, then stock AI. Native and rebuilt Linux KFM attack once during a hold and again after repress; four affected segments pass with races. Hold-only commands ignore authored buffers; the slash modifier applies to an entire button chord. A held final symbol completes a sequence on its down transition and starts its normal buffer rather than retriggering throughout the hold. Ordinary simultaneous chords retain per-button press edges. The connected human/helper command, recovery and AI flow passes with races; the rebuilt Linux owned-keyboard episode matches all twelve native observations. Four changed-source segments pass; state-flow stays checked. Probe overlays/captures removed; shared assets reused. Loaded CMD motion, charge and buffer durations now reserve lazy input history. The connected long human/helper inputs and fresh AI match pass; native and rebuilt Linux command counts agree. AI uses timed input steps so long charges no longer fail the old planner cutoff or allocate per charge tick. The connected scenario completes a 300-tick authored AI charge, contact and control recovery before fresh stock AI combat. Native decision-policy equivalence remains unverified. Global CMD defaults, first-value remaps/attributes and bounded buffers now match the native 5/30/1 command episode. The existing human/helper/AI and corrected-content asset flows pass with races. AI.Cheat now selects declared-command admission separately from physical motion/charge history. Connected command/contact/recovery and helper/human ownership checks pass with races; native random probabilities remain unverified."
     },
     {
       "id": "modes",
@@ -639,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "2c2cb2fc746bcbee08ede8fe4b41379056ec1d02b0e04a8c5852165ba608a985"
+      "passed_source": "1d00ba28495c44d378168afc1b75a54673b862f378e1ce7ac261ea2e28e97868"
     },
     {
       "id": "entities",
@@ -786,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "40d11c24e8b4abc235bc63940932975bc9f7b3abb4abde8a040c79be7f1470e1"
+      "passed_source": "a5b68829ba01b050b2cba488c1886993f7df5c1663213795679c3b89fe027c16"
     }
   ],
   "presentation_followups": [
@@ -1296,20 +1298,22 @@
         "id": "K4",
         "parent": "player-input-devices",
         "name": "Legacy joystick configuration consumer",
-        "implementation": "missing",
-        "acceptance": "unverified",
+        "implementation": "implemented",
+        "acceptance": "passed",
         "size": "medium",
-        "confidence": "low",
+        "confidence": "high",
         "contract": "Honor legacy P1/P2.Joystick.type and bindings through explicit native-code translation, retaining YAML/session override precedence.",
-        "basis": "Target CFG/readme expose joystick enable settings and numeric bindings. Joystick.type is ignored; stored P1/P2Joystick fields have no adapter reads. Portable/raw YAML controls are implemented separately.",
-        "prerequisite": "Establish the target code namespace and platform/device mapping. Native numbers are not SDK indices; physical confirmation belongs to H1.",
-        "completion": "A configuration-to-menu-to-combat/reconnect flow honors legacy enable/bindings and explicit overrides, preserves keyboard alternatives/seat ownership, and leaves YAML untouched. Validate translation in match-flow, then H1 on hardware.",
+        "basis": "Target CFG/readme and target executable joystick initialization/event handling establish enable policy, four 32-code device blocks, axis-pair ordering, hat aliases and capability-dependent button offsets. Linux SDK layout review establishes its distinct combined button/hat namespace.",
+        "prerequisite": "Resolved for the current Linux software scope through target-handler review and evdev capability translation matched to SDK device identity/counts. Physical/native calibration remains H1; other-platform legacy capability adapters remain deferred.",
+        "completion": "CFG enable/numeric bindings feed the production input consumer before YAML/session overrides. The existing configuration/menu/stock combat/rematch/reconnect lifecycle passes with race detection, including differing axis/hat counts, disabled input, keyboard alternatives, ownership and unchanged YAML. Hardware acceptance is separate H1.",
         "sources": [
           "config/config.go",
           "config/gamepad.go",
           "input/manager.go",
           "input/gamepad.go",
-          "system/input_config.go"
+          "system/input_config.go",
+          "input/legacy_gamepad.go",
+          "input/legacy_gamepad_linux.go"
         ]
       }
     ],
@@ -1484,7 +1488,7 @@
       {
         "id": "A5",
         "name": "Input compatibility",
-        "finding": "Standard/raw gamepads, keyboard alternatives, session editing and ownership/hotplug have injected-device evidence. Legacy enable settings/numeric bindings do not reach the adapter. Physical/native numbering acceptance is separate.",
+        "finding": "Legacy CFG enable/numeric bindings, named/raw overrides, keyboard alternatives, session editing and ownership/hotplug have connected injected-device acceptance. Target-handler review establishes native numbering; Linux evdev metadata supplies the SDK button/hat boundary. Physical/native calibration remains H1.",
         "targets": [
           "K4"
         ],

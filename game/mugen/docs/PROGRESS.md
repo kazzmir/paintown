@@ -8,7 +8,7 @@ an estimate of total effort or complete native compatibility.
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project categories: 32 implemented, 3 partial, 0 missing.
-- Remaining-scope implementation targets: 3 closed, 1 open.
+- Remaining-scope implementation targets: 4 closed, 0 open.
 - Separate acceptance followups: 0 passed, 6 open.
 
 ## Remaining implementation and acceptance
@@ -25,7 +25,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | **K1 — Result text composition and fitted viewport** | implemented / passed | small / high |
 | **K2 — Fresh result scene and Survival pose policy** | implemented / passed | medium / high |
 | **K3 — AI.Cheat command admission policy** | implemented / passed | large / high |
-| **K4 — Legacy joystick configuration consumer** | missing / unverified | medium / low |
+| **K4 — Legacy joystick configuration consumer** | implemented / passed | medium / high |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
   Basis: Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.
@@ -42,10 +42,10 @@ of native equivalence. Unknown behavior is not counted as a code defect.
   Prerequisite: Resolved by target command-admission review and the connected command/combat lifecycle. Native random move-selection probabilities remain U4.
   Completion: AI.Cheat reaches the production match consumer. Disabled mode retains timed CMD input. Enabled mode admits declared labels independently of remaps/physical charge, preserves CNS eligibility and helper/human ownership, and completes contact/recovery and ownership handoff. Affected connected segments pass with race detection.
 
-- [ ] **K4**: Honor legacy P1/P2.Joystick.type and bindings through explicit native-code translation, retaining YAML/session override precedence.
-  Basis: Target CFG/readme expose joystick enable settings and numeric bindings. Joystick.type is ignored; stored P1/P2Joystick fields have no adapter reads. Portable/raw YAML controls are implemented separately.
-  Prerequisite: Establish the target code namespace and platform/device mapping. Native numbers are not SDK indices; physical confirmation belongs to H1.
-  Completion: A configuration-to-menu-to-combat/reconnect flow honors legacy enable/bindings and explicit overrides, preserves keyboard alternatives/seat ownership, and leaves YAML untouched. Validate translation in match-flow, then H1 on hardware.
+- [x] **K4**: Honor legacy P1/P2.Joystick.type and bindings through explicit native-code translation, retaining YAML/session override precedence.
+  Basis: Target CFG/readme and target executable joystick initialization/event handling establish enable policy, four 32-code device blocks, axis-pair ordering, hat aliases and capability-dependent button offsets. Linux SDK layout review establishes its distinct combined button/hat namespace.
+  Prerequisite: Resolved for the current Linux software scope through target-handler review and evdev capability translation matched to SDK device identity/counts. Physical/native calibration remains H1; other-platform legacy capability adapters remain deferred.
+  Completion: CFG enable/numeric bindings feed the production input consumer before YAML/session overrides. The existing configuration/menu/stock combat/rematch/reconnect lifecycle passes with race detection, including differing axis/hat counts, disabled input, keyboard alternatives, ownership and unchanged YAML. Hardware acceptance is separate H1.
 
 
 ### Separate acceptance and evidence questions
@@ -73,7 +73,7 @@ Existing evidence was reused; no new native or gameplay runs are inferred.
 | **A2 — Assets, fonts and media** | Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established. | U2 |
 | **A3 — Rendering and audio** | Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed. | K1, K2, U5 |
 | **A4 — Options, training and AI** | Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat reaches a separate declared-command consumer with connected ownership/contact/recovery acceptance. Native UI/dummy and stochastic AI parity remain unverified. | K3, U3, U4 |
-| **A5 — Input compatibility** | Standard/raw gamepads, keyboard alternatives, session editing and ownership/hotplug have injected-device evidence. Legacy enable settings/numeric bindings do not reach the adapter. Physical/native numbering acceptance is separate. | K4, H1 |
+| **A5 — Input compatibility** | Legacy CFG enable/numeric bindings, named/raw overrides, keyboard alternatives, session editing and ownership/hotplug have connected injected-device acceptance. Target-handler review establishes native numbering; Linux evdev metadata supplies the SDK button/hat boundary. Physical/native calibration remains H1. | K4, H1 |
 
 ### Deferred capabilities
 
@@ -230,7 +230,7 @@ source changes reopen only the affected segments.
 
 ### Modes and platforms
 
-- [ ] Player input devices and configuration. **partial** — Portable/raw gamepad and keyboard software paths are implemented. K4 is the missing legacy enable/numeric-binding consumer; H1 is physical Linux acceptance. Establish native mappings before translation; injected devices cannot prove hardware/native compatibility. (item4)
+- [ ] Player input devices and configuration. **partial** — Legacy CFG enable/numeric bindings and portable/raw YAML/session controls reach the Linux input consumer. K4 software acceptance is complete. H1 remains physical Linux/native mapping and calibration acceptance; injected layouts cannot close it. Other-platform legacy capability adapters are deferred. (item4)
 - [x] Opponent AI and authored CMD command flow. (item4)
 - [x] Arcade/survival/demo progression, continue/ending and training/watch rules. (item4)
 - [x] Team/simul/turns lifecycle, partner context and recovery. (item4)

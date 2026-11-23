@@ -79,6 +79,8 @@ type InputManager struct {
 	Gamepads                       GamepadSource
 	P1Gamepad, P2Gamepad           config.GamepadConfig
 	padSlots                       [2]gamepadSlot
+	legacySlots                    [4]gamepadSlot
+	physicalPads                   physicalGamepads
 	padHeld, padPrevious           [2]uint32
 	keyboardHeld, keyboardPrevious [2]uint32
 	P1Keyboard                     config.Keys

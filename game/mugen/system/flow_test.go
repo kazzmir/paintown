@@ -30,6 +30,7 @@ type flowPad struct {
 	axes       map[ebiten.StandardGamepadAxis]float64
 	rawButtons map[ebiten.GamepadButton]bool
 	rawAxes    map[int]float64
+	layout     input.LegacyJoystickLayout
 }
 
 func (p *flowPad) release() {
@@ -54,11 +55,24 @@ func (p flowGamepads) StandardButton(id ebiten.GamepadID, b ebiten.StandardGamep
 func (p flowGamepads) StandardAxis(id ebiten.GamepadID, a ebiten.StandardGamepadAxis) float64 {
 	return p[id].axes[a]
 }
-func (p flowGamepads) ButtonCount(id ebiten.GamepadID) int { return 4 }
+func (p flowGamepads) LegacyLayout(id ebiten.GamepadID) (input.LegacyJoystickLayout, bool) {
+	layout := p[id].layout
+	if layout == (input.LegacyJoystickLayout{}) {
+		layout = input.LegacyJoystickLayout{Axes: 2, Buttons: 4}
+	}
+	return layout, true
+}
+func (p flowGamepads) ButtonCount(id ebiten.GamepadID) int {
+	layout, _ := p.LegacyLayout(id)
+	return layout.Buttons + layout.Hats*4
+}
 func (p flowGamepads) Button(id ebiten.GamepadID, b ebiten.GamepadButton) bool {
 	return p[id].rawButtons[b]
 }
-func (p flowGamepads) AxisCount(id ebiten.GamepadID) int       { return 2 }
+func (p flowGamepads) AxisCount(id ebiten.GamepadID) int {
+	layout, _ := p.LegacyLayout(id)
+	return layout.Axes
+}
 func (p flowGamepads) Axis(id ebiten.GamepadID, a int) float64 { return p[id].rawAxes[a] }
 
 func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
@@ -74,6 +88,12 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
       enabled: true
       deadzone: 0.4
     joy:
+      jump: [dpad_up, left_y-]
+      crouch: [dpad_down, left_y+]
+      left: [dpad_left, left_x-]
+      right: [dpad_right, left_x+]
+      start: start
+      escape: back
       x: [west, "button:2", west]
       y: [north, not-a-control]
       z: disabled
@@ -88,6 +108,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
       z: none
   p2:
     joy:
+      a: none
       right: "axis:0+"
       b: "button:0"
     keyboard:
@@ -107,10 +128,57 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	configText = []byte(strings.ReplaceAll(string(configText), "UseKeyboard = 1", "UseKeyboard = 0"))
+	configText = []byte(strings.ReplaceAll(strings.TrimPrefix(string(configText), "\ufeff"), "UseKeyboard = 1", "UseKeyboard = 0"))
+	// CFG native numbering is device-dependent: the first controller has four
+	// axes plus a hat; the second has two axes and no hat. Later groups must
+	// not replace these explicit enable settings or numeric controls.
+	configText = append([]byte("[Input]\nP1.Joystick.type=0\nP2.Joystick.type=1\n[P2 Joystick]\nJump=33\nLeft=35\nA=37\n"), configText...)
 	configText = append(configText, []byte("\n[Config]\nGameWidth=0\nGameHeight=0\n[Options]\nMotif=missing-later.def\nLife=1\nTime=0\n[Input]\nP1.UseKeyboard=1\nP2.UseKeyboard=1\n")...)
 	if err := os.WriteFile(filepath.Join(configRoot, "data/mugen.cfg"), configText, 0600); err != nil {
 		t.Fatal(err)
+	}
+	legacy, err := config.LoadConfigWithOverrides(configRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacyInput := input.NewInputManager(legacy)
+	legacyInput.Keyboard = &flowKeyboard{}
+	legacyPad1 := &flowPad{layout: input.LegacyJoystickLayout{Axes: 4, Buttons: 20, Hats: 1}}
+	legacyPad2 := &flowPad{}
+	legacyPad1.release()
+	legacyPad2.release()
+	legacyPads := flowGamepads{8: legacyPad1, 23: legacyPad2}
+	legacyInput.Gamepads = legacyPads
+	legacyPad1.rawButtons[0], legacyPad2.rawButtons[0] = true, true
+	legacyInput.Update()
+	if legacyInput.P1Gamepad.Enabled || !legacyInput.P2Gamepad.Enabled || legacyInput.IsPressed(1, input.ActionA) || !legacyInput.IsJustPressed(2, input.ActionA) {
+		t.Fatal("native enable/code translation did not reach player input")
+	}
+	legacyInput.P1Gamepad.Enabled = true
+	legacyPad1.rawButtons[20] = true // Native 9: first hat up, not SDK button 9.
+	legacyPad2.rawAxes[0] = -.8      // Native 35: second device's horizontal negative.
+	legacyInput.Update()
+	if !legacyInput.IsPressed(1, input.ActionA) || !legacyInput.IsJustPressed(1, input.ActionUp) || !legacyInput.IsPressed(2, input.ActionLeft) || legacyInput.IsJustPressed(2, input.ActionA) {
+		t.Fatal("native hat/axis/button input lost its logical ownership/edges")
+	}
+	legacyPad1.layout.Hats = 2
+	legacyPad1.rawButtons[20], legacyPad1.rawButtons[24] = false, true
+	legacyInput.Update()
+	if !legacyInput.IsPressed(1, input.ActionUp) || legacyInput.IsPressed(1, input.ActionA) {
+		t.Fatal("native hat aliases or reserved button offset were treated as fixed SDK indices")
+	}
+	legacyPad1.layout.Hats = 1
+	delete(legacyPads, 8)
+	legacyInput.Update()
+	if legacyInput.IsPressed(1, input.ActionA) || !legacyInput.IsPressed(2, input.ActionA) {
+		t.Fatal("native device ordinal shifted after disconnect")
+	}
+	legacyPad1.release()
+	legacyPads[30] = legacyPad1
+	legacyPad1.rawButtons[0] = true
+	legacyInput.Update()
+	if !legacyInput.IsJustPressed(1, input.ActionA) || legacyInput.IsJustPressed(2, input.ActionA) {
+		t.Fatal("native reconnect did not restore the vacant device block")
 	}
 	cfg, err := config.LoadConfigWithOverrides(configRoot, override)
 	if err != nil {
@@ -155,7 +223,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	input.GlobalManager = input.NewInputManager(cfg)
 	keyboard := &flowKeyboard{}
 	input.GlobalManager.Keyboard = keyboard
-	pad1, pad2 := &flowPad{standard: true}, &flowPad{}
+	pad1, pad2 := &flowPad{standard: true, layout: input.LegacyJoystickLayout{Axes: 4, Buttons: 20, Hats: 1}}, &flowPad{}
 	pad1.release()
 	pad2.release()
 	pads := flowGamepads{8: pad1, 23: pad2}
@@ -553,13 +621,17 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("VS background or portraits missing", backgroundPixels, changed)
 	}
 	step() // Release keyboard Start before pressing its controller alternative.
-	pad1.buttons[ebiten.StandardGamepadButtonCenterRight] = true
+	portableStart, _ := input.GlobalManager.P1Gamepad.Bindings("start")
+	nativeStart, _ := legacy.Input.Gamepads[0].Bindings("start")
+	input.GlobalManager.P1Gamepad.SetBindings("start", nativeStart...)
+	pad1.rawButtons[11] = true // Native 24, after four axes and one hat.
 	step()
 	pad1.release()
 	f, ok := e.currentState.(*FightState)
 	if !ok {
 		t.Fatalf("versus did not enter fight: %T", e.currentState)
 	}
+	input.GlobalManager.P1Gamepad.SetBindings("start", portableStart...)
 	watchGameTime(t, f)
 	if f.match.Options.TicksPerSecond != int32(ebiten.TPS()) {
 		t.Fatal("match did not inherit the live Game Speed scheduler")
@@ -614,6 +686,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	// through the same stock CNS, contact, recovery and round-reset lifecycle.
 	// Keep initial positions, states, life, timer and round timing intact.
 	damagedRounds := map[int]bool{}
+	editedX, _ := input.GlobalManager.P1Gamepad.Bindings("x")
+	nativeX, _ := legacy.Input.Gamepads[0].Bindings("x")
 	for tick := 0; tick < 12000 && f.match.Phase != match.Finished; tick++ {
 		pad1.release()
 		if f.match.Phase != match.Active {
@@ -635,7 +709,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 			if f.match.Round == 1 {
 				step(ebiten.KeyF10) // Alternative edited in the Options UI.
 			} else {
-				pad1.rawButtons[1] = true // Alternative edited in the Options UI.
+				input.GlobalManager.P1Gamepad.SetBindings("x", nativeX...)
+				pad1.rawButtons[2] = true // Native 15 reaches the same CMD/CNS flow.
 				step()
 			}
 		} else {
@@ -649,6 +724,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !damagedRounds[1] || !damagedRounds[2] || f.match.Wins != [2]int{2, 0} {
 		t.Fatal("keyboard/controller input did not win both rounds", damagedRounds, f.match.Wins)
 	}
+	input.GlobalManager.P1Gamepad.SetBindings("x", editedX...)
 	pad1.release()
 	if f.match.World.RandomSeed() != 16807 {
 		t.Fatal("round reset reseeded the match")

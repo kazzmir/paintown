@@ -110,9 +110,9 @@ rendering. `[Misc] PauseOnDefocus`, `SFXBackgroundMode` and `BGMBackgroundMode`
 control background simulation and audio. BGM `Pause` preserves the track cursor;
 `Mute` advances it silently; `Play` continues normally.
 
-Keyboard input and opt-in gamepad input share menus and gameplay. Gamepads use
-portable layout names or explicit raw controls in YAML; see below. Linux
-physical-controller acceptance and native joystick-number mappings remain open.
+Keyboard and gamepad input share menus and gameplay. Gamepads honor legacy CFG
+enable/bindings on Linux, with named or raw YAML/session overrides; see below.
+Physical-controller acceptance remains open.
 
 AI executes authored CMD motions/chords through the same state controllers as
 human input, with difficulty-dependent reaction and defence. Arcade/team-arcade/co-op progress through ordered opponents, victory, continue
@@ -343,14 +343,17 @@ input:
       enabled: true
 ```
 
-Controllers are disabled by default. A valid `joy` binding also enables that player
-unless `gamepad.enabled: false` is explicit. The first available controllers
+Legacy `P1.Joystick.type` / `P2.Joystick.type` enable or disable each player's
+controller; their numeric CFG bindings load before YAML. Without a legacy enable
+setting, controllers stay disabled until enabled through YAML or the session
+input editor. A valid `joy` binding enables that player unless
+`gamepad.enabled: false` is explicit. The first available controllers
 fill enabled P1/P2 seats in SDK ID order. A connected controller keeps its seat
 when the other disconnects; a newly connected device fills the free seat.
 Assignments are session-local, so reconnecting both can change their order.
 Keyboard controls remain usable alongside controllers.
 
-Defaults are D-pad/left stick for directions, `south`/`east`/`r1` for a/b/c,
+When no legacy bindings apply, defaults are D-pad/left stick for directions, `south`/`east`/`r1` for a/b/c,
 `west`/`north`/`l1` for x/y/z, `start` for confirm and `back` for escape.
 Names describe button positions, independent of printed Xbox/PlayStation labels.
 Other names are `l2`, `r2`, `left_stick`, `right_stick`, `guide`, and
@@ -367,10 +370,18 @@ the previous binding. Holding a button keeps gameplay input active and produces
 one menu press until released. Adding another bound control to an already held
 action does not create a fresh press.
 
-Legacy `[P1 Joystick]` / `[P2 Joystick]` numbers are retained when parsing cfg,
-but are not translated to this SDK's raw indices. The adapter has connected
-scenario coverage with injected devices; physical Linux controllers still need
-acceptance testing. Your existing local YAML is never rewritten.
+Legacy `[P1 Joystick]` / `[P2 Joystick]` numbers use four device blocks of 32.
+Within each block, axis polarities precede hats and real buttons; the offsets
+depend on the device's reported axis/hat counts. For example, button zero is
+code 13 with four axes and one hat, but code 5 with two axes and no hat. Add 32
+for the second device. These are separate from zero-based SDK raw indices.
+Legacy device ordinals retain their slots through disconnect/reconnect; they
+also select the primary device for mixed YAML/session bindings. Linux discovers
+the button/hat boundary from matching evdev capability metadata. If unavailable,
+it warns; configure named/raw controls instead. Other-platform legacy capability
+adapters remain outside current Linux acceptance. Injected-device lifecycle
+checks pass; physical Linux controllers still need acceptance testing. Existing
+local YAML is never rewritten.
 
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic
@@ -428,8 +439,9 @@ whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The current ledger has 32 implemented categories and three broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
-The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed remaining scope: four
-confirmed implementation targets and six separate acceptance/evidence followups.
+The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed scope: all four confirmed
+implementation targets are closed; six separate acceptance/evidence followups
+remain open.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,

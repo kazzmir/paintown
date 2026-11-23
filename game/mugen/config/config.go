@@ -151,6 +151,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	cfg := &MugenConfig{}
 	cfg.Sound = DefaultSoundConfig()
 	cfg.Input.Gamepads = [2]GamepadConfig{DefaultGamepadConfig(), DefaultGamepadConfig()}
+	var legacyJoystick, legacyJoystickPresent [2]bool
 	cfg.Misc.SFXBackgroundMode, cfg.Misc.BGMBackgroundMode = "play", "play"
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
 	cfg.Config.HelperMax = 56
@@ -374,6 +375,10 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					cfg.Input.KeyboardDisabled[1] = !getBool(attr.Value)
 				case "anykeyunpauses":
 					cfg.Input.AnyKeyUnpauses = getBool(attr.Value)
+				case "p1.joystick.type":
+					legacyJoystick[0], legacyJoystickPresent[0] = getBool(attr.Value), true
+				case "p2.joystick.type":
+					legacyJoystick[1], legacyJoystickPresent[1] = getBool(attr.Value), true
 				}
 			}
 		case name == "p1 keys":
@@ -387,6 +392,11 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 		}
 	}
 
+	for side, keys := range []Keys{cfg.Input.Player1Joystick, cfg.Input.Player2Joystick} {
+		if legacyJoystickPresent[side] {
+			cfg.Input.Gamepads[side].LegacyJoystick(keys, legacyJoystick[side])
+		}
+	}
 	loaded := false
 	for _, path := range paths {
 		if path == "" {

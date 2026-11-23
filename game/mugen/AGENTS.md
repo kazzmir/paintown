@@ -99,7 +99,10 @@ unknown permutations into mandatory parameter matrices.
   CNS eligibility, key-controlled helper ownership and human/reset isolation.
   Charge chord components before simultaneous
   release/press completion; strict steps retain unrelated preceding inputs. Player/helper buffers remain independent.
-- Gamepads are opt-in through YAML standard-layout or explicit SDK raw controls.
+- Gamepads honor legacy CFG enable/numeric controls before YAML/session overrides.
+  Linux native codes use four 32-code device blocks and capability-dependent
+  axis/hat/button offsets; preserve the first axis-pair swap and hat aliases.
+  Discover the real-button/hat boundary instead of guessing from SDK counts.
   Keep two-player seat ownership across hotplug and non-consuming held/edge
   snapshots through menus/CNS. Native joystick numbers are not SDK raw indices;
   physical/native acceptance remains partial until verified on hardware.

@@ -191,6 +191,9 @@ p2.teammate.bg3.anim=51
 		pad.release()
 		pad.axes[ebiten.StandardGamepadAxisLeftStickHorizontal] = 0.9
 		manager := input.GlobalManager
+		// This flow assigns its only controller to P2. The supplied CFG now
+		// enables legacy P1 too, so release that seat explicitly for this setup.
+		manager.P1Gamepad.Enabled = false
 		manager.P2Gamepad = config.DefaultGamepadConfig()
 		manager.P2Gamepad.Enabled = true
 		manager.KeyboardDisabled[1] = true
