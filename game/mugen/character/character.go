@@ -1424,8 +1424,14 @@ func (c *Character) GetRoundsExisted() int {
 }
 
 func (c *Character) GetInGuardDist() bool {
+	return c.GuardThreat() != nil
+}
+
+// GuardThreat exposes the same incoming attack used by InGuardDist. Consumers
+// such as AI can inspect its guard flags without inventing a second range rule.
+func (c *Character) GuardThreat() *Character {
 	withinRange := func(target *Character) bool {
-		if target == nil || target.destroyed || !strings.EqualFold(target.MoveType, "A") {
+		if target == nil || target.destroyed || target.DebugDisabled || !strings.EqualFold(target.MoveType, "A") {
 			return false
 		}
 		if target.isProjectile && (!target.HitDefActive || target.projectile != nil && (target.projectile.removing || target.projectile.hits <= 0)) {
@@ -1439,7 +1445,7 @@ func (c *Character) GetInGuardDist() bool {
 	}
 	for _, opponent := range c.Opponents {
 		if withinRange(opponent) {
-			return true
+			return opponent
 		}
 		if opponent == nil || opponent.destroyed {
 			continue
@@ -1448,18 +1454,18 @@ func (c *Character) GetInGuardDist() bool {
 		// Their removal animation can remain visible after the attack retires.
 		for _, projectile := range opponent.Projectiles {
 			if withinRange(projectile) {
-				return true
+				return projectile
 			}
 		}
 	}
 	if c.World != nil {
 		for _, helper := range c.World.Helpers {
 			if helper.TeamSide != c.TeamSide && withinRange(helper) {
-				return true
+				return helper
 			}
 		}
 	}
-	return false
+	return nil
 }
 
 func (c *Character) GetMatchOver() bool {

@@ -167,23 +167,20 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	}
 	b.frame, b.inputs = m.Tick, nil
 	b.admitted = nil
-	if b.remaining > 0 || len(b.queue) > 0 {
-		b.inputs = b.nextInput()
-		return b.inputs
-	}
-	if !c.Ctrl && !(c.MoveType == "A" && c.MoveContact > 0) {
-		return nil
-	}
 	other, distance := m.aiOpponent(c)
 	if other == nil {
 		return nil
 	}
 	level := max(1, min(8, c.AILevel))
-	if other.MoveType == "A" && distance < 90 && b.random.Next()%10 < int64(level) {
-		b.inputs = []string{"DirBack"}
-		if other.StateType == "C" {
-			b.inputs = append(b.inputs, "DirDown")
-		}
+	if b.defence(c, other, distance, level) {
+		b.inputs = b.snapshot()
+		return b.inputs
+	}
+	if !c.GetInGuardDist() {
+		b.keys[3] = false
+	}
+	if b.remaining > 0 || len(b.queue) > 0 {
+		b.inputs = b.nextInput()
 		return b.inputs
 	}
 	if m.Tick < b.nextDecision {

@@ -51,7 +51,11 @@ an additional asset requirement.
 K8 work in progress: movement now retains held directions, selects the nearest
 live enabled opponent and measures axis distance in game units across character
 profiles. Fallback movement uses the reviewed approach/jump/retreat/crouch weights.
-Defence, attack cadence, recovery and ownership are the following checkpoints;
+Defence now shares InGuardDist's live threat lookup (including helpers and
+projectiles), applies difficulty/time/distance reaction weights, retains an
+established guard and adjusts height from incoming flags. A guard reaction
+interrupts a physical command plan; CNS still controls eligibility. Attack
+cadence, recovery and ownership are the following checkpoints;
 connected acceptance runs at the end of that batch. The target also has branches
 using learned attack metadata; those are distinct from the weighted fallback and
 must not be claimed reproduced merely because random command admission works.
