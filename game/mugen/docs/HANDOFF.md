@@ -12,16 +12,34 @@ not whole-engine equivalence percentages. The implementation phase is closed;
 continue with maintenance and content compatibility from demonstrated issues.
 H1 physical unplug/reconnect is a non-blocking manual test note.
 
-## Input editor presentation
+## Input maintenance checkpoint
 
 Keyboard/gamepad editing now shares the Options motif background, heading style
 and small utility lettering, including capture hints and reset confirmation.
-Bindings fit below the heading; input behavior and session-only persistence stay
-the same. The editor uses the window-sized Options layout so HD motifs retain
-readable lettering. The affected connected match-flow segment passes with race
-detection; Linux build and keyboard/gamepad/reset/return window inspection pass.
-Owned scratch is removed. The user verified controller configuration, character
-selection and combat on Linux with an 8BitDo controller.
+Bindings fit below the heading using window-sized Options layout. Capture has a
+four-second wall-clock timeout. F4 tests raw signals and device-specific actions;
+F6 raw capture bypasses the standard mapping, including omitted raw axes.
+F5 saves both players' inputs into the active YAML without replacing other
+settings/comments; the complete prior file is backed up before atomic replacement.
+Leaving changed inputs offers Save, Session only (retain live edits), or Back.
+Main Options Load/Save still uses memory snapshots. YAML/backups are ignored.
+The user verified setup, selection and combat with an 8BitDo controller; another
+detected standard-layout controller supplies no captured presses in the reported
+session. Physical diagnosis remains open; the tester separates missing signals
+from legacy-binding mismatches. Do not infer a hardware fix from injected devices.
+The affected combat/match-flow segments pass with race detection; other segments
+stay checked. The connected edit/test/session/save/reload path verifies complete
+backups, preserved unrelated settings/comments/anchors and safe validation/backup
+failures. Linux build and themed countdown/test/save-dialog inspection pass.
+Owned overlay, captures and binaries are removed; shared assets/cache remain.
+
+Profile investigation confirms the pinned SDK already embeds platform-specific
+SDL controller mappings. Its [mapping API](https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#UpdateStandardGamepadLayoutMappings)
+accepts additional GUID/platform entries from the public
+[SDL database](https://github.com/mdqinc/SDL_GameControllerDB). The next profile
+step is an opt-in SDK-default binding preset and optional local mapping overrides;
+preserve legacy CFG precedence until explicitly changed. No extra database or
+automatic profile replacement is added in this checkpoint.
 
 ## AI closure
 

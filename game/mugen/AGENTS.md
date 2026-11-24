@@ -141,7 +141,8 @@ unknown permutations into mandatory parameter matrices.
   physical/native acceptance remains partial until verified on hardware.
 - YAML key alternatives apply to menus and gameplay; omitted actions inherit,
   lists replace, and none/disabled/[] disable. Keep KeyA(0), shared-key ownership
-  and value-copy isolation. User YAML remains ignored and untouched.
+  and value-copy isolation. User YAML and backups remain ignored. Write input
+  settings only through the explicit input-editor Save action or save-on-exit.
 - Variable destination/range admission precedes value evaluation. Invalid IDs
   and invalid/reversed ranges are no-ops; valid ranges evaluate once. Target
   controllers check existence then ID, then apply numeric fallback; TargetBind
@@ -259,8 +260,15 @@ unknown permutations into mandatory parameter matrices.
   context or combat life balancing; enter 170/180 without replaying state5900
   controllers. Partners face inward at -50/+50 base units. Observed result
   layerno 0/1/2 all compose in front; captions use the fitted game viewport.
-- Options input edits remain session-only. Preserve release admission, inherited
-  keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
+- Options input edits are temporary until explicitly saved. Keep a four-second
+  wall-clock capture deadline, release admission, inherited keyboard fallbacks,
+  raw-axis neutral baselines and device-change rearming. Test mode reads raw
+  signals and device-specific gameplay actions without navigating or rebinding.
+  Raw capture can bypass the standard map. Exit choices are Save, Session only
+  (keep edits live) and Back (continue editing). Save merges only input fields
+  into the active YAML, retaining other settings/comments and backing up the
+  complete original bytes before atomic replacement. Failed saves keep editing
+  and the original file intact; reject ambiguous/noneditable YAML safely.
   Keyboard/gamepad editing and reset confirmation retain the active Options
   motif background, heading style and utility lettering; fit below the heading.
   Requested F12 captures use exclusive PNG files; never commit generated output.

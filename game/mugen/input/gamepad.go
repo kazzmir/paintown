@@ -104,6 +104,9 @@ type GamepadSnapshot struct {
 	Connected, Standard bool
 	Buttons             []config.GamepadControl
 	Axes                []float64
+	RawButtons          []config.GamepadControl
+	RawAxes             []float64
+	RawButtonCount      int
 }
 
 func (im *InputManager) GamepadSnapshot(player int) GamepadSnapshot {
@@ -113,6 +116,15 @@ func (im *InputManager) GamepadSnapshot(player int) GamepadSnapshot {
 		return state
 	}
 	source := im.gamepadSource()
+	state.RawButtonCount = min(source.ButtonCount(id), int(ebiten.GamepadButtonMax)+1)
+	for button := 0; button < state.RawButtonCount; button++ {
+		if source.Button(id, ebiten.GamepadButton(button)) {
+			state.RawButtons = append(state.RawButtons, config.GamepadControl{Kind: config.PadButton, Index: button})
+		}
+	}
+	for axis := 0; axis < min(source.AxisCount(id), 256); axis++ {
+		state.RawAxes = append(state.RawAxes, source.Axis(id, axis))
+	}
 	if standard {
 		for button := ebiten.StandardGamepadButton(0); button <= ebiten.StandardGamepadButtonMax; button++ {
 			if source.StandardButton(id, button) {
@@ -123,18 +135,17 @@ func (im *InputManager) GamepadSnapshot(player int) GamepadSnapshot {
 			state.Axes = append(state.Axes, source.StandardAxis(id, axis))
 		}
 	} else {
-		for axis := 0; axis < min(source.AxisCount(id), 256); axis++ {
-			state.Axes = append(state.Axes, source.Axis(id, axis))
-		}
+		state.Axes = state.RawAxes
 	}
-	if len(state.Buttons) == 0 {
-		for button := 0; button < min(source.ButtonCount(id), int(ebiten.GamepadButtonMax)+1); button++ {
-			if source.Button(id, ebiten.GamepadButton(button)) {
-				state.Buttons = append(state.Buttons, config.GamepadControl{Kind: config.PadButton, Index: button})
-			}
-		}
-	}
+	state.Buttons = append(state.Buttons, state.RawButtons...)
 	return state
+}
+
+// Raw retains the assigned device while bypassing its optional standard map.
+// Capture and diagnostics must be able to see controls missing from that map.
+func (s GamepadSnapshot) Raw() GamepadSnapshot {
+	s.Standard, s.Buttons, s.Axes = false, s.RawButtons, s.RawAxes
+	return s
 }
 func (s GamepadSnapshot) Changes(previous GamepadSnapshot, deadzone float64) []config.GamepadControl {
 	if !s.Connected || !previous.Connected || s.ID != previous.ID || s.Standard != previous.Standard {
@@ -159,7 +170,22 @@ func (s GamepadSnapshot) Changes(previous GamepadSnapshot, deadzone float64) []c
 			controls = append(controls, config.GamepadControl{Kind: kind, Index: axis, Positive: delta > 0})
 		}
 	}
+	if s.Standard {
+		// Prefer standard controls, then offer raw axes omitted by that mapping.
+		raw, baseline := s.Raw(), previous.Raw()
+		for _, control := range raw.Changes(baseline, deadzone) {
+			if control.Kind == config.PadAxis {
+				controls = append(controls, control)
+			}
+		}
+	}
 	return controls
+}
+
+// GamepadActionPressed reads the same held snapshot as gameplay, independently
+// of keyboard alternatives and without consuming an edge.
+func (im *InputManager) GamepadActionPressed(player int, action Action) bool {
+	return im.gamepadPressed(player, action, false)
 }
 
 func (im *InputManager) updateGamepads() {

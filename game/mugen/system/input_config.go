@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"math"
+	"reflect"
 	"strings"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/config"
@@ -11,6 +13,8 @@ import (
 )
 
 var inputConfigActions = []input.Action{input.ActionJump, input.ActionCrouch, input.ActionLeft, input.ActionRight, input.ActionA, input.ActionB, input.ActionC, input.ActionX, input.ActionY, input.ActionZ, input.ActionStart, input.ActionEscape}
+
+const inputCaptureTimeout = 4 * time.Second
 
 // Session edits use YAML's immutable binding setters and never rewrite a user
 // file. Raw navigation survives disabled input and rebinding menu controls.
@@ -25,14 +29,74 @@ type InputConfigState struct {
 	background                    *ebiten.Image
 	utility, dialog               utilityMenu
 	confirmDefaults, defaultsYes  bool
+	rawCapture, testing, testSeen bool
+	testBaseline                  input.GamepadSnapshot
+	now                           func() time.Time
+	captureDeadline, messageUntil time.Time
+	message                       string
+	savedInput                    *optionSnapshot
+	confirmExit                   bool
+	exitChoice                    int
 }
 
 func NewInputConfigState(engine *Engine, back State) *InputConfigState {
 	if engine.initialOptions == nil {
 		engine.initialOptions = engine.snapshotOptions()
 	}
-	return &InputConfigState{engine: engine, back: back, player: 1}
+	return &InputConfigState{engine: engine, back: back, player: 1, now: time.Now, savedInput: engine.snapshotOptions()}
 }
+
+func (s *InputConfigState) captureState() input.GamepadSnapshot {
+	state := input.GlobalManager.GamepadSnapshot(s.player)
+	if s.rawCapture {
+		return state.Raw()
+	}
+	return state
+}
+
+func (s *InputConfigState) notify(message string) {
+	s.message, s.messageUntil = message, s.now().Add(3*time.Second)
+}
+
+func (s *InputConfigState) startTest() {
+	s.testing, s.testSeen = true, false
+	s.testBaseline = input.GlobalManager.GamepadSnapshot(s.player).Raw()
+}
+
+func (s *InputConfigState) save() bool {
+	// The manager owns live edits; persist a value snapshot without changing
+	// the session Load/Save or startup-reset snapshots.
+	cfg := *s.engine.cfg
+	live := s.engine.snapshotOptions()
+	cfg.Input.Player1Keyboard, cfg.Input.Player2Keyboard = live.keys[0], live.keys[1]
+	cfg.Input.Gamepads, cfg.Input.KeyboardDisabled = live.pads, live.keyboardDisabled
+	backup, err := cfg.SaveInputConfig()
+	if err != nil {
+		fmt.Printf("Input configuration save failed: %v\n", err)
+		s.notify("Save failed; see console")
+		return false
+	} else if backup != "" {
+		s.notify("Saved inputs; backup made")
+	} else {
+		s.notify("Saved inputs to mugen.yaml")
+	}
+	s.savedInput = live
+	return true
+}
+
+func (s *InputConfigState) inputsChanged() bool {
+	live, saved := s.engine.snapshotOptions(), s.savedInput
+	return live.keyboardDisabled != saved.keyboardDisabled || !reflect.DeepEqual(live.keys, saved.keys) || !reflect.DeepEqual(live.pads, saved.pads)
+}
+
+func (s *InputConfigState) leave() State {
+	if s.inputsChanged() {
+		s.confirmExit, s.exitChoice = true, 0
+		return s
+	}
+	return s.back
+}
+
 func (s *InputConfigState) offset() int {
 	if s.gamepad {
 		return 2
@@ -82,6 +146,59 @@ func (s *InputConfigState) Update() (State, error) {
 	if s.engine.motif.OptionBG != nil {
 		s.engine.motif.OptionBG.Update()
 	}
+	if s.confirmExit {
+		if im.KeyJustPressed(ebiten.KeyEscape) {
+			s.confirmExit = false
+			return s, nil
+		}
+		if im.KeyJustPressed(ebiten.KeyArrowLeft) || im.KeyJustPressed(ebiten.KeyArrowUp) || im.IsJustPressed(1, input.ActionLeftUI) || im.IsJustPressed(1, input.ActionUp) {
+			s.exitChoice = (s.exitChoice + 2) % 3
+		}
+		if im.KeyJustPressed(ebiten.KeyArrowRight) || im.KeyJustPressed(ebiten.KeyArrowDown) || im.IsJustPressed(1, input.ActionRightUI) || im.IsJustPressed(1, input.ActionDown) {
+			s.exitChoice = (s.exitChoice + 1) % 3
+		}
+		if im.KeyJustPressed(ebiten.KeyEnter) || im.IsJustPressed(1, input.ActionEnter) {
+			s.confirmExit = false
+			switch s.exitChoice {
+			case 0:
+				if s.save() {
+					return s.back, nil
+				}
+			case 1:
+				return s.back, nil
+			}
+			s.settle = true
+		}
+		return s, nil
+	}
+	if s.testing {
+		if im.KeyJustPressed(ebiten.KeyEscape) || im.KeyJustPressed(ebiten.KeyF4) {
+			s.testing, s.settle = false, true
+			s.baseline = s.captureState()
+			return s, nil
+		}
+		if im.KeyJustPressed(ebiten.KeyTab) {
+			s.player = 3 - s.player
+			s.startTest()
+		}
+		if im.KeyJustPressed(ebiten.KeyF2) {
+			s.gamepad, s.cursor = !s.gamepad, 0
+			s.startTest()
+		}
+		if s.gamepad {
+			current := im.GamepadSnapshot(s.player)
+			state := current.Raw()
+			if state.ID != s.testBaseline.ID || state.Connected != s.testBaseline.Connected {
+				s.testBaseline, s.testSeen = state, false
+			}
+			s.testSeen = s.testSeen || len(current.Buttons) > 0 || len(state.Changes(s.testBaseline, .05)) > 0
+		} else {
+			for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
+				s.testSeen = s.testSeen || im.KeyPressed(key)
+			}
+		}
+		return s, nil
+	}
 	if s.confirmDefaults {
 		if im.KeyJustPressed(ebiten.KeyArrowLeft) || im.KeyJustPressed(ebiten.KeyArrowRight) {
 			s.defaultsYes = !s.defaultsYes
@@ -113,7 +230,7 @@ func (s *InputConfigState) Update() (State, error) {
 			s.waiting = false
 			return s, nil
 		}
-		return s.back, nil
+		return s.leave(), nil
 	}
 	if s.settle {
 		if s.controlsReleased() {
@@ -122,10 +239,15 @@ func (s *InputConfigState) Update() (State, error) {
 		return s, nil
 	}
 	if !s.waiting && im.IsJustPressed(1, input.ActionEscape) {
-		return s.back, nil
+		return s.leave(), nil
 	}
 	if s.waiting {
-		state := im.GamepadSnapshot(s.player)
+		if !s.now().Before(s.captureDeadline) {
+			s.waiting, s.armed = false, false
+			s.notify("Timed out; binding unchanged")
+			return s, nil
+		}
+		state := s.captureState()
 		if !s.armed {
 			s.armed = s.controlsReleased()
 			if s.armed {
@@ -155,6 +277,18 @@ func (s *InputConfigState) Update() (State, error) {
 		}
 		return s, nil
 	}
+	if im.KeyJustPressed(ebiten.KeyF4) {
+		s.startTest()
+		return s, nil
+	}
+	if im.KeyJustPressed(ebiten.KeyF5) {
+		s.save()
+		return s, nil
+	}
+	if s.gamepad && im.KeyJustPressed(ebiten.KeyF6) {
+		s.rawCapture = !s.rawCapture
+		return s, nil
+	}
 	if im.KeyJustPressed(ebiten.KeyF3) {
 		s.confirmDefaults, s.defaultsYes = true, false
 		return s, nil
@@ -166,7 +300,8 @@ func (s *InputConfigState) Update() (State, error) {
 		s.gamepad = !s.gamepad
 		s.cursor = 0
 	}
-	count := len(inputConfigActions) + s.offset()
+	actionEnd := len(inputConfigActions) + s.offset()
+	count := actionEnd + 2 // Test Inputs and Save Inputs are also selectable.
 	if im.KeyJustPressed(ebiten.KeyArrowUp) || im.IsJustPressed(1, input.ActionUp) {
 		s.cursor = (s.cursor + count - 1) % count
 	}
@@ -202,6 +337,14 @@ func (s *InputConfigState) Update() (State, error) {
 			s.savePad(pad)
 			s.settle = true
 		}
+	} else if s.cursor >= actionEnd {
+		if confirm {
+			if s.cursor == actionEnd {
+				s.startTest()
+			} else {
+				s.save()
+			}
+		}
 	} else if im.KeyJustPressed(ebiten.KeyDelete) {
 		s.appendBinding = false
 		if s.gamepad {
@@ -212,6 +355,8 @@ func (s *InputConfigState) Update() (State, error) {
 		s.settle = true
 	} else if confirm || im.KeyJustPressed(ebiten.KeyInsert) {
 		s.waiting, s.armed = true, false
+		s.captureDeadline = s.now().Add(inputCaptureTimeout)
+		s.message = ""
 		s.appendBinding = im.KeyJustPressed(ebiten.KeyInsert)
 	}
 	return s, nil
@@ -226,7 +371,7 @@ func (s *InputConfigState) controlsReleased() bool {
 	if !s.gamepad {
 		return true
 	}
-	state := im.GamepadSnapshot(s.player)
+	state := s.captureState()
 	if !state.Connected {
 		return true
 	}
@@ -251,7 +396,11 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 	if s.background == nil {
 		s.background = ebiten.NewImage(e.logicalWidth, e.logicalHeight)
 	}
-	content := e.drawOptionsBackground(screen, s.background, "INPUT CONFIGURATION")
+	heading := "INPUT CONFIGURATION"
+	if s.testing {
+		heading = "INPUT TEST"
+	}
+	content := e.drawOptionsBackground(screen, s.background, heading)
 	im := input.GlobalManager
 	kind := "Keyboard"
 	if s.gamepad {
@@ -273,7 +422,11 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 			}
 			detail = name + " (" + layout + ")"
 		}
-		rows = append(rows, utilityRow{detail, ""}, utilityRow{},
+		capture := "Auto"
+		if s.rawCapture {
+			capture = "Raw"
+		}
+		rows = append(rows, utilityRow{detail, ""}, utilityRow{"F6 capture", capture}, utilityRow{},
 			utilityRow{"Gamepad", enabled}, utilityRow{"Deadzone", fmt.Sprintf("%.2f", pad.Deadzone)})
 	} else {
 		enabled := "Enabled"
@@ -281,6 +434,27 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 			enabled = "Disabled"
 		}
 		rows = append(rows, utilityRow{}, utilityRow{"Keyboard", enabled})
+	}
+	panel := screen.SubImage(content).(*ebiten.Image)
+	if s.confirmExit {
+		s.dialog.draw(e, panel, []utilityRow{{"Save changed inputs?", ""}, {},
+			{"Save", "YAML + backup"}, {"Session only", "Keep changes"}, {"Back", "Continue editing"}, {},
+			{"Arrows: choose", "Enter: confirm"}, {"Esc: continue editing", ""}}, s.exitChoice+2, "", panel.Bounds().Dy()/2)
+		return
+	}
+	if s.confirmDefaults {
+		choice := "No"
+		if s.defaultsYes {
+			choice = "Yes"
+		}
+		s.dialog.draw(e, panel, []utilityRow{{fmt.Sprintf("Restore P%d startup bindings?", s.player), choice},
+			{"Left/right: choose", "Enter: confirm"}}, 0, "", panel.Bounds().Dy()/2)
+		return
+	}
+	if s.testing {
+		rows = append(rows, s.testRows()...)
+		s.utility.draw(e, panel, rows, -1, "", 4)
+		return
 	}
 	cursor := len(rows) - s.offset() + s.cursor
 	for _, action := range inputConfigActions {
@@ -301,23 +475,90 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 		}
 		rows = append(rows, utilityRow{action.String(), value})
 	}
+	rows = append(rows, utilityRow{"Test Inputs", "Enter / F4"}, utilityRow{"Save Inputs", "Enter / F5"})
 	hint := utilityRow{"Enter: replace", "Insert: add"}
 	if s.waiting {
-		hint = utilityRow{"Release controls, then press one", "Esc: cancel"}
+		seconds := max(0, int(math.Ceil(s.captureDeadline.Sub(s.now()).Seconds())))
+		prompt := "Press input"
+		if !s.armed {
+			prompt = "Release controls"
+		}
+		hint = utilityRow{fmt.Sprintf("%s (%ds)", prompt, seconds), "Esc: cancel"}
 	}
 	if s.settle {
 		hint = utilityRow{"Release controls to continue", ""}
 	}
-	rows = append(rows, utilityRow{}, hint, utilityRow{"Delete: disable", "F3: reset"}, utilityRow{"Session only", "Esc: back"})
+	if s.message != "" && s.now().Before(s.messageUntil) {
+		hint = utilityRow{s.message, ""}
+	}
+	rows = append(rows, utilityRow{}, hint, utilityRow{"Delete: disable", "F3: reset"}, utilityRow{"F5 saves to YAML", "Esc: back"})
 	// Fit below the authored heading, using the same small utility lettering as
 	// Options. Every binding stays visible, including on a small game window.
-	panel := screen.SubImage(content).(*ebiten.Image)
 	s.utility.draw(e, panel, rows, cursor, "", 4)
-	if s.confirmDefaults {
-		choice := "No"
-		if s.defaultsYes {
-			choice = "Yes"
-		}
-		s.dialog.draw(e, panel, []utilityRow{{fmt.Sprintf("Restore P%d startup bindings?", s.player), choice}}, 0, "", panel.Bounds().Dy()/2)
+}
+
+func compactInputNames(names []string) string {
+	if len(names) == 0 {
+		return "--"
 	}
+	for count := len(names); count > 1; count-- {
+		if len(strings.Join(names[:count], ", ")) <= 28 {
+			if count < len(names) {
+				return strings.Join(names[:count], ", ") + fmt.Sprintf(" +%d", len(names)-count)
+			}
+			return strings.Join(names, ", ")
+		}
+	}
+	return names[0]
+}
+
+// Diagnostics read the same device-specific held actions as gameplay. Raw
+// signals remain separate so a keyboard or a bad legacy map cannot hide the
+// difference between a detected device and one actually supplying input.
+func (s *InputConfigState) testRows() []utilityRow {
+	im := input.GlobalManager
+	signal := "Waiting for input"
+	if s.testSeen {
+		signal = "Input observed"
+	}
+	rows := []utilityRow{{"Device signal", signal}}
+	if s.gamepad {
+		state := im.GamepadSnapshot(s.player)
+		var buttons, axes, standard []string
+		for _, control := range state.RawButtons {
+			buttons = append(buttons, fmt.Sprint(control.Index))
+		}
+		for _, control := range state.Buttons {
+			if control.Kind == config.PadStandardButton {
+				standard = append(standard, control.String())
+			}
+		}
+		for _, control := range state.Raw().Changes(s.testBaseline, .05) {
+			if control.Kind == config.PadAxis {
+				axes = append(axes, fmt.Sprintf("%d:%+.2f", control.Index, state.RawAxes[control.Index]))
+			}
+		}
+		rows = append(rows, utilityRow{fmt.Sprintf("Raw: %d buttons, %d axes", state.RawButtonCount, len(state.RawAxes)), ""},
+			utilityRow{"Buttons", compactInputNames(buttons)}, utilityRow{"Axes", compactInputNames(axes)}, utilityRow{"Standard", compactInputNames(standard)})
+	} else {
+		var keys []string
+		for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
+			if im.KeyPressed(key) {
+				keys = append(keys, key.String())
+			}
+		}
+		rows = append(rows, utilityRow{"Keys", compactInputNames(keys)})
+	}
+	for _, action := range inputConfigActions {
+		pressed := im.KeyboardActionPressed(s.player, action)
+		if s.gamepad {
+			pressed = im.GamepadActionPressed(s.player, action)
+		}
+		value := "--"
+		if pressed {
+			value = "PRESSED"
+		}
+		rows = append(rows, utilityRow{action.String(), value})
+	}
+	return append(rows, utilityRow{}, utilityRow{"Test only; bindings unchanged", ""}, utilityRow{"F4 / Esc: finish test", ""})
 }

@@ -128,6 +128,11 @@ func (im *InputManager) KeyPressed(key ebiten.Key) bool {
 	return im.keyboard().IsPressed(key)
 }
 
+// KeyboardActionPressed is the keyboard-only view used by input diagnostics.
+func (im *InputManager) KeyboardActionPressed(player int, action Action) bool {
+	return im.matchAction(player, action, im.keyboard().IsPressed)
+}
+
 // KeyboardBindings includes runtime fallbacks for omitted fields. Editors can
 // append an alternative without accidentally discarding an inherited Escape.
 func (im *InputManager) KeyboardBindings(player int, action Action) []ebiten.Key {

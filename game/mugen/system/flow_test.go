@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/character"
@@ -81,7 +82,15 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal(err)
 	}
 	override := filepath.Join(t.TempDir(), "mugen.yaml")
-	if err := os.WriteFile(override, []byte(`input:
+	if err := os.WriteFile(override, []byte(`# Hand-edited configuration
+video:
+  fullscreen: false # keep this comment
+  custom_video_hint: retained
+sound:
+  master_volume: 100
+extension:
+  nested: {marker: untouched}
+input:
   p1:
     keyboard_enabled: true
     gamepad:
@@ -98,7 +107,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
       y: [north, not-a-control]
       z: disabled
     keyboard:
-      right: [KeyArrowRight, KeyNumpad6]
+      Up: KeyArrowUp # preserve direction comment
+      right: &right_keys [KeyArrowRight, KeyNumpad6]
       left: [KeyArrowLeft, KeyNumpad4]
       a: [KeyComma, KeyF6]
       x: [KeyL, KeyF7, L]
@@ -115,6 +125,8 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
       a: [KeyF, KeyNumpad1]
       b: KeyG
       z: []
+extension_alias:
+  saved_right: *right_keys
 `), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -472,11 +484,13 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 				}
 			}
 		}
-		if exposed < 1000 || changed < 1000 || bindingsMenu.utility.canvas == nil {
+		if exposed < 1000 || changed < 1000 || bindingsMenu.utility.canvas == nil && bindingsMenu.dialog.canvas == nil {
 			t.Fatal("input page lost its motif or readable utility rows", exposed, changed)
 		}
 	}
 	checkInputMotif()
+	menuNow := time.Now()
+	bindingsMenu.now = func() time.Time { return menuNow }
 	step()
 	for n := 0; n < 8; n++ {
 		step(ebiten.KeyArrowDown)
@@ -490,6 +504,24 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !slices.Contains(input.GlobalManager.KeyboardBindings(1, input.ActionX), ebiten.KeyF10) {
 		t.Fatal("input editor did not append a keyboard alternative")
 	}
+	// Continue the same editing journey through an undetected input, timeout
+	// and live keyboard test. No sleep or device/parameter matrix is needed.
+	beforeTimeout := input.GlobalManager.KeyboardBindings(1, input.ActionX)
+	step(ebiten.KeyEnter)
+	step()
+	menuNow = menuNow.Add(inputCaptureTimeout)
+	step()
+	if bindingsMenu.waiting || !slices.Equal(beforeTimeout, input.GlobalManager.KeyboardBindings(1, input.ActionX)) {
+		t.Fatal("capture timeout changed the binding or left input capture blocked")
+	}
+	step(ebiten.KeyF4)
+	step(ebiten.KeyF10)
+	if !bindingsMenu.testing || !bindingsMenu.testSeen || !input.GlobalManager.KeyboardActionPressed(1, input.ActionX) {
+		t.Fatal("input tester did not read the live keyboard binding")
+	}
+	checkInputMotif()
+	step(ebiten.KeyF4)
+	step()
 	for n := 0; n < 8; n++ {
 		step(ebiten.KeyArrowUp)
 		step()
@@ -548,6 +580,48 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !slices.Contains(controls, config.GamepadControl{Kind: config.PadButton, Index: 1}) {
 		t.Fatal("gamepad editor could not capture an unbound raw control")
 	}
+	// Standard-map availability must not hide raw-only axes/buttons. The
+	// tester distinguishes physical signals from mapped actions and ignores
+	// the keyboard while testing a controller.
+	step(ebiten.KeyInsert)
+	step()
+	pad1.rawAxes[3] = .9
+	step()
+	pad1.release()
+	step()
+	controls, _ = cfg.Input.Gamepads[0].Bindings("x")
+	if !slices.Contains(controls, config.GamepadControl{Kind: config.PadAxis, Index: 3, Positive: true}) {
+		t.Fatal("standard mapping hid an unmapped raw axis from capture")
+	}
+	step(ebiten.KeyF4)
+	pad1.rawButtons[3] = true
+	step(ebiten.KeyF10)
+	if !bindingsMenu.testSeen || input.GlobalManager.GamepadActionPressed(1, input.ActionX) {
+		t.Fatal("controller diagnostics confused a raw signal or keyboard with its mapped action")
+	}
+	foundRaw := false
+	for _, row := range bindingsMenu.testRows() {
+		foundRaw = foundRaw || row.label == "Buttons" && row.value == "3"
+	}
+	if !foundRaw {
+		t.Fatal("input tester hid the unbound raw button")
+	}
+	checkInputMotif()
+	pad1.release()
+	step(ebiten.KeyF4)
+	step()
+	step(ebiten.KeyF6)
+	step(ebiten.KeyInsert)
+	pad1.buttons[ebiten.StandardGamepadButtonCenterCenter] = true // Broken map reports a permanently held button.
+	step()
+	pad1.rawButtons[3] = true
+	step()
+	pad1.release()
+	step()
+	controls, _ = cfg.Input.Gamepads[0].Bindings("x")
+	if bindingsMenu.waiting || !slices.Contains(controls, config.GamepadControl{Kind: config.PadButton, Index: 3}) {
+		t.Fatal("explicit raw capture could not bypass the standard mapping")
+	}
 	// A nonstandard trigger may rest at -1. Capture learns that neutral value
 	// and stores the positive press direction, rather than binding the rest.
 	pad2.rawAxes[1] = -1
@@ -566,6 +640,23 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	pad2.release()
 	checkInputMotif()
 	step(ebiten.KeyEscape)
+	step()
+	if !bindingsMenu.confirmExit || e.currentState != bindingsMenu {
+		t.Fatal("changed inputs left the editor without a save prompt")
+	}
+	checkInputMotif()
+	step(ebiten.KeyArrowLeft) // Back returns to editing.
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	if bindingsMenu.confirmExit || e.currentState != bindingsMenu {
+		t.Fatal("Back did not retain the editing session")
+	}
+	step(ebiten.KeyEscape)
+	step()
+	step(ebiten.KeyArrowRight) // Session only keeps changes live without writing.
+	step()
+	step(ebiten.KeyEnter)
 	step()
 	if e.currentState != options {
 		t.Fatal("input editor did not return to the existing Options state")
@@ -590,6 +681,10 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	}
 	step(ebiten.KeyEscape)
 	step()
+	step(ebiten.KeyArrowRight) // Keep the startup reset session-only too.
+	step()
+	step(ebiten.KeyEnter)
+	step()
 	options.cursor = 9
 	step(ebiten.KeyArrowLeft)
 	step()
@@ -600,6 +695,68 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	}
 	if contents, err := os.ReadFile(override); err != nil || !bytes.Contains(contents, []byte("not-a-control")) || bytes.Contains(contents, []byte("F10")) {
 		t.Fatal("session edits rewrote the user's YAML", err)
+	}
+	// Explicit persistence merges into the complete document and backs up its
+	// original bytes. A rejected save must leave both editing and disk intact.
+	originalYAML, _ := os.ReadFile(override)
+	step(ebiten.KeyF1)
+	bindingsMenu = e.currentState.(*InputConfigState)
+	step()
+	brokenYAML := []byte("input: [incomplete")
+	if err := os.WriteFile(override, brokenYAML, 0600); err != nil {
+		t.Fatal(err)
+	}
+	step(ebiten.KeyF5)
+	if actual, _ := os.ReadFile(override); !bytes.Equal(actual, brokenYAML) || bindingsMenu.message != "Save failed; see console" {
+		t.Fatal("failed input save replaced the original YAML or reported success")
+	}
+	if _, err := os.Stat(override + ".bak"); !os.IsNotExist(err) {
+		t.Fatal("failed YAML validation replaced the backup", err)
+	}
+	if err := os.WriteFile(override, originalYAML, 0600); err != nil {
+		t.Fatal(err)
+	}
+	step()
+	if err := os.Mkdir(override+".bak", 0700); err != nil {
+		t.Fatal(err)
+	}
+	step(ebiten.KeyF5)
+	if actual, _ := os.ReadFile(override); !bytes.Equal(actual, originalYAML) || bindingsMenu.message != "Save failed; see console" {
+		t.Fatal("backup failure replaced the original YAML or reported success")
+	}
+	if err := os.Remove(override + ".bak"); err != nil {
+		t.Fatal(err)
+	}
+	step()
+	step(ebiten.KeyF5)
+	step()
+	backup, _ := os.ReadFile(override + ".bak")
+	savedYAML, _ := os.ReadFile(override)
+	if !bytes.Equal(backup, originalYAML) || !bytes.Contains(savedYAML, []byte("# keep this comment")) || !bytes.Contains(savedYAML, []byte("custom_video_hint: retained")) || !bytes.Contains(savedYAML, []byte("marker: untouched")) || !bytes.Contains(savedYAML, []byte("# preserve direction comment")) || bytes.Contains(savedYAML, []byte("      Up:")) {
+		t.Fatal("input save lost other configuration/comments or the complete original backup")
+	}
+	reloaded, err := config.LoadConfigWithOverrides(configRoot, override)
+	if err != nil {
+		t.Fatal(err)
+	}
+	persisted, _ := reloaded.Input.Player1Keyboard.Bindings("x")
+	persistedPad, _ := reloaded.Input.Gamepads[0].Bindings("x")
+	expectedPad, _ := cfg.Input.Gamepads[0].Bindings("x")
+	if !slices.Contains(persisted, ebiten.KeyF10) || !slices.Equal(persistedPad, expectedPad) || reloaded.Sound.MasterVolume != 100 || bindingsMenu.inputsChanged() {
+		t.Fatal("saved input did not round-trip or changed unrelated audio settings")
+	}
+	bindingsMenu.cursor = bindingsMenu.offset() + 7
+	step(ebiten.KeyInsert)
+	step()
+	step(ebiten.KeyF11)
+	step()
+	step(ebiten.KeyEscape)
+	step()
+	step(ebiten.KeyEnter) // Save from the exit prompt.
+	step()
+	backup, _ = os.ReadFile(override + ".bak")
+	if e.currentState != options || !bytes.Equal(backup, savedYAML) {
+		t.Fatal("save-on-exit did not preserve the previous full document")
 	}
 	// Utility rows center in the motif independently of its title-menu bank.
 	optionCanvas := ebiten.NewImage(e.logicalWidth, e.logicalHeight)

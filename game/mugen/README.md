@@ -163,8 +163,8 @@ loses; the main page's defaults reset only its numeric settings. Each reset
 requires confirmation.
 
 Session Load/Save uses left/right to choose an operation and Enter to save or
-restore settings and live input bindings in memory. All edits remain session-only;
-configuration files stay unchanged. Use local YAML for persistent settings.
+restore settings and live input bindings in memory. These main-page actions do
+not write files. The input editor has a separate persistent Save Inputs action.
 
 In Options, choose Input Configuration or press F1 to edit keyboard bindings.
 Both input panes retain the active motif's Options background and title styling,
@@ -174,9 +174,28 @@ and Delete disables it. The keyboard enable row can be changed with left/right.
 F2 switches to the gamepad pane, which shows the assigned device and offers
 enable/deadzone controls plus button/axis capture. Release controls between
 bindings; standard-layout names are preferred, with raw controls as fallback.
+Capture cancels after four seconds without changing the old binding. F6 switches
+gamepad capture between Auto and Raw; Raw bypasses an incorrect standard mapping.
 F3 confirms restoring the selected player's startup keyboard/gamepad bindings.
-Escape returns to Options. These edits last for the session; use the YAML examples
-below for persistent settings.
+
+Choose Test Inputs or press F4 to test the selected player/device. The page shows
+raw buttons/axis changes and the actions they activate. Keyboard input cannot
+mask a broken gamepad binding. A detected device with no signals differs from
+signals that activate no action; legacy numbers are CFG device codes, not SDK
+button indices. Escape or F4 ends testing without changing bindings.
+
+Choose Save Inputs or press F5 to persist both players' keyboard/gamepad settings.
+Saving updates only input fields in the loaded `mugen.yaml`, preserving other
+settings and comments. If no override was loaded, it creates the preferred
+`mugen.yaml` in the data root. An existing file is backed up in full as
+`mugen.yaml.bak` before atomic replacement; each save keeps the previous version.
+Invalid YAML, multiple documents or aliases used as editable input mappings are
+reported without replacing the original. YAML and backups stay out of Git.
+
+Escape returns to Options. With changed inputs it offers **Save**, **Session
+only** (keep changes active without writing), or **Back** (continue editing).
+Unsaved changes last until the game exits. The YAML examples below also support
+manual persistent configuration.
 
 Direct matches accept `--mode versus` (default), `watch`, `training` or `coop`.
 For example, add `--mode training` to an existing `--quick-match` command to
@@ -418,7 +437,7 @@ it warns; configure named/raw controls instead. Other-platform legacy capability
 adapters remain outside current Linux acceptance. Injected-device lifecycle
 checks pass; the user also verified setup, selection and combat with an 8BitDo
 controller on Linux. Physical unplug/reconnect remains unverified. Existing local
-YAML is never rewritten.
+YAML is updated only by an explicit input-editor save, with a complete backup.
 
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic

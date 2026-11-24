@@ -33,7 +33,10 @@ type AIRamp struct {
 }
 
 type MugenConfig struct {
-	Options struct {
+	// ExtendedConfigPath is the loaded override, or the preferred new file.
+	// Only an explicit input-editor Save writes this file.
+	ExtendedConfigPath string
+	Options            struct {
 		Difficulty   int
 		Life         int
 		Time         int
@@ -401,6 +404,10 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 		}
 	}
 	loaded := false
+	cfg.ExtendedConfigPath = filepath.Join(base, "mugen.yaml")
+	if len(paths) > 0 && paths[0] != "" {
+		cfg.ExtendedConfigPath = paths[0]
+	}
 	for _, path := range paths {
 		if path == "" {
 			continue
@@ -408,6 +415,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 		if ext, err := LoadExtendedConfig(path); err == nil {
 			fmt.Printf("Merged extended config from: %s\n", path)
 			mergeExtendedConfig(cfg, ext)
+			cfg.ExtendedConfigPath = path
 			loaded = true
 			break
 		} else if !os.IsNotExist(err) {
