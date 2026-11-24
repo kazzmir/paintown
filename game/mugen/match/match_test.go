@@ -427,7 +427,7 @@ func aiLearnedPlannerFlow(t *testing.T, m *Match) {
 		step()
 		sawPreparation = sawPreparation || c.StateNo == 12
 		sawAttack = sawAttack || c.StateNo == 200
-		if len(m.BasicAICommands(1)) != 0 {
+		if len(b.admitted) != 0 {
 			t.Fatal("non-cheating learned plan fabricated admitted command labels")
 		}
 	}
@@ -438,17 +438,66 @@ func aiLearnedPlannerFlow(t *testing.T, m *Match) {
 	m.Options.AICheat = true
 	c.ChangeState(0, 1, -1)
 	enemy.ChangeState(0, 1, -1)
+	c.X, enemy.X = 0, 240
+	step()
+	step("ButtonY")
+	m.SetAILevel(1, 8)
+	b = m.brain(c)
+	b.planner.known = enemy.AIMoves.Ground[210]
+	selected = b.counterMove(c, enemy, 8, true, true)
+	if selected == nil || selected.StateNo != 200 {
+		t.Fatal("learned startup window did not select the admitted counter", selected)
+	}
+	b.planner.enter(aiLearnedAttack)
+	b.planner.selected = selected
+	before = enemy.Life
+	sawAdmission := false
+	for pass := 0; pass < 80 && !(enemy.Life < before && c.StateNo == 0 && c.Ctrl); pass++ {
+		step()
+		sawAdmission = sawAdmission || slices.Contains(b.admitted, "x")
+	}
+	if !sawAdmission || enemy.Life >= before || c.StateNo != 0 || !c.Ctrl {
+		t.Fatal("learned admitted counter did not reach CNS/contact/recovery", sawAdmission, enemy.Life, c.StateNo)
+	}
+	m.SetAILevel(1, 0)
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
 	c.X, enemy.X = 0, 400
 	step("ButtonStart")
 	m.SetAILevel(1, 8)
 	b = m.brain(c)
 	sawNavigation := false
-	for pass := 0; pass < 12; pass++ {
+	for pass := 0; pass < 100; pass++ {
 		step("ButtonStart")
 		sawNavigation = sawNavigation || b.planner.context == aiNavigate
+		if sawNavigation && b.planner.context != aiNavigate {
+			break
+		}
 	}
-	if !sawNavigation || c.X <= 0 {
-		t.Fatal("opponent Start did not reach waypoint navigation through normal walking", sawNavigation, c.X)
+	navigationX, _ := aiPosition(c, c.AIMoves.Width)
+	if !sawNavigation || navigationX < 350 || b.planner.context == aiNavigate {
+		t.Fatal("opponent Start did not complete waypoint navigation through normal walking", sawNavigation, navigationX)
+	}
+	m.SetAILevel(1, 0)
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
+	c.X, enemy.X = 0, 400
+	step("DirUp", "ButtonStart")
+	for pass := 0; pass < 8; pass++ {
+		step("ButtonStart")
+	}
+	m.SetAILevel(1, 8)
+	b = m.brain(c)
+	sawJump := false
+	for pass := 0; pass < 100; pass++ {
+		step("ButtonStart")
+		sawJump = sawJump || c.StateType == "A" && b.planner.context == aiNavigate
+		if sawJump && c.StateNo == 0 && c.Ctrl {
+			break
+		}
+	}
+	if !sawJump || c.StateNo != 0 || !c.Ctrl {
+		t.Fatal("elevated waypoint did not reach authored jump/landing", sawJump, c.StateNo)
 	}
 	m.SetAILevel(1, 0)
 	step()

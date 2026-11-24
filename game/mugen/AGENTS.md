@@ -54,6 +54,8 @@ Reuse external data in place and a shared build cache. Clean disposable scratch
 on success and failure. Preserve external assets, user configuration and
 unrelated files; remove only output created for the current task. Never commit
 generated test data, captures, recordings, copied distributions or binaries.
+Before writing an overlay leaf, verify its resolved path remains in owned
+scratch; copying a leaf does not isolate it through a linked ancestor.
 Optional historical diagnostics may require separately supplied inputs; they
 are not routine completion gates.
 

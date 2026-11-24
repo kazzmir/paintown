@@ -128,14 +128,18 @@ func (b *aiBrain) learnedInput(c, enemy *character.Character, distance, level in
 		p.age++
 		return owned
 	}
-	if p.context == aiNavigate {
-		if b.navigate(c) {
-			p.age++
-			return true
-		}
-		p.enter(aiNeutral)
-	}
 	if p.known != nil && c.Ctrl {
+		// Prediction can interrupt navigation/fallback. Native counter
+		// selection then runs from that guard context, before its keys emit.
+		if p.context != aiPredictiveGuard && p.cooldown == 0 && aiOverlaps(enemy, c, p.known.Attack, nil, c.AIMoves.Width) && (p.known.Startup.Time.Mean == 0 || p.elapsed <= int(p.known.Active[0].Time.Mean)) {
+			p.cooldown = 5
+			if level < 4 {
+				p.cooldown += int(b.random.Next() % int64(4-level))
+			}
+			if int(b.random.Next()%20) <= level+11 {
+				p.enter(aiPredictiveGuard)
+			}
+		}
 		_, _, _, outcome := enemy.AIAction()
 		remaining := int(p.known.Startup.Time.Mean) - p.elapsed
 		beforeStartup := remaining > 0
@@ -162,20 +166,11 @@ func (b *aiBrain) learnedInput(c, enemy *character.Character, distance, level in
 				}
 			}
 		}
-		if remaining > 0 && int(b.random.Next()%100) < chance {
+		if p.context == aiPredictiveGuard && remaining > 0 && int(b.random.Next()%100) < chance {
 			if selected := b.counterMove(c, enemy, remaining, beforeStartup, cheat); selected != nil {
 				p.enter(aiLearnedAttack)
 				p.selected = selected
 				return b.executeLearnedAttack(c, cheat)
-			}
-		}
-		if p.context != aiPredictiveGuard && p.cooldown == 0 && aiOverlaps(enemy, c, p.known.Attack, nil, c.AIMoves.Width) && (p.known.Startup.Time.Mean == 0 || p.elapsed <= int(p.known.Active[0].Time.Mean)) {
-			p.cooldown = 5
-			if level < 4 {
-				p.cooldown += int(b.random.Next() % int64(4-level))
-			}
-			if int(b.random.Next()%20) <= level+11 {
-				p.enter(aiPredictiveGuard)
 			}
 		}
 	}
@@ -202,6 +197,13 @@ func (b *aiBrain) learnedInput(c, enemy *character.Character, distance, level in
 		b.keys[0], b.keys[1], b.keys[2], b.keys[3] = false, false, p.guardLow, true
 		p.age++
 		return true
+	}
+	if p.context == aiNavigate {
+		if b.navigate(c) {
+			p.age++
+			return true
+		}
+		p.enter(aiNeutral)
 	}
 	if p.context != aiFallback {
 		p.enter(aiFallback)
@@ -299,7 +301,7 @@ func (b *aiBrain) executeLearnedAttack(c *character.Character, cheat bool) bool 
 			}
 		}
 	}
-	if p.prepared != "" && c.StateType != p.prepared && p.age <= 4 {
+	if c.StateType != p.prepared && p.age <= 4 {
 		b.keys[0], b.keys[2] = p.prepared == "A", p.prepared == "C"
 		return true
 	}
@@ -348,14 +350,17 @@ func (b *aiBrain) navigate(c *character.Character) bool {
 	goal := p.path[0]
 	x, y := aiPosition(c, c.AIMoves.Width)
 	crossed := (goal.x-p.lastX)*(goal.x-x) <= 0 || math.Abs(goal.x-x) < 1
-	yReached := !goal.jump || (goal.y-p.lastY)*(goal.y-y) <= 0
+	// Keep the waypoint's original axis, not the preceding frame. A moving
+	// jump finishes on horizontal passage; a vertical jump uses its height.
+	// Requiring both crossings in one pass can make an actor jump forever.
+	yReached := !goal.jump || c.VelX != 0 || (goal.y-p.lastY)*(goal.y-y) <= 0
 	if crossed && yReached {
 		p.path = p.path[1:]
+		p.lastX, p.lastY = x, y
 		b.releaseDirections()
 		return len(p.path) > 0
 	}
 	direction := (goal.x - x) * float64(c.Facing)
 	b.keys[0], b.keys[1], b.keys[2], b.keys[3] = goal.jump && c.StateType != "A", direction > 0, false, direction < 0
-	p.lastX, p.lastY = x, y
 	return true
 }

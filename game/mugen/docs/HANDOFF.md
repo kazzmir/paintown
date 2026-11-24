@@ -64,6 +64,17 @@ non-cheating plans explicit. No generated records, binaries or private observati
 belong in Git. Keep the native/application runs serial and clean owned scratch at
 batch completion.
 
+The completed native comparison reaches navigation, predictive guard and learned
+attack contexts using observed move records. All five connected segments pass
+with races for the planner batch. The expanded journey also covers admitted
+counters and walk/jump waypoint completion. Navigation retains the waypoint's
+starting axis and accepts horizontal passage during a moving jump; requiring
+simultaneous horizontal/vertical crossings caused repeated jumps. Prediction can
+interrupt navigation, and counters are selected from predictive guard. Final
+profile hashing now includes selected language as well as source bytes; refresh
+affected segment fingerprints and perform the final Linux application run before
+closing K8/U4. Writable overlay paths must resolve inside owned scratch.
+
 U5 whole-text TrueType layout is corrected. The target text library's surfaces
 and a shared rendered scene establish negative-bearing padding, final overhangs,
 center-before-truncation and inclusive right anchors. The existing timed asset

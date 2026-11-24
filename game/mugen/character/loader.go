@@ -77,6 +77,10 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	// same file. No process-global mutable common-state cache is involved.
 	parsedCNS := make(map[string]*cns.CNS)
 	aiRevision := sha256.New()
+	// Localized groups can select different constants/resources from the same
+	// source bytes. Their completed estimates must not reuse another language.
+	aiRevision.Write([]byte(options.Language))
+	aiRevision.Write([]byte{0})
 	aiRevision.Write(definition)
 	loadCNS := func(key string, directories ...string) (*cns.CNS, error) {
 		path, err := resolve(key, directories...)

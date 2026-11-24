@@ -215,7 +215,7 @@ covered source, a reported regression, or an explicit rerun reopens them.
 Checkmarks record successful runs against the covered source fingerprint;
 source changes reopen only the affected segments.
 
-- [ ] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
+- [x] **state-flow**: entry → negative states → chained transitions → persistence/loop diagnostics.
 - [ ] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
 - [ ] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [ ] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
