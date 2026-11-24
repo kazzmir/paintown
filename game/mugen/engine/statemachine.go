@@ -292,23 +292,36 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 			env.SetPersistence(key, count-1)
 			continue
 		}
-		matched, err := compiled.triggers.match(env)
+		matched, err := func() (bool, error) {
+			if observer, ok := env.(interface {
+				BeginControllerEvaluation()
+				EndControllerEvaluation()
+			}); ok {
+				observer.BeginControllerEvaluation()
+				defer observer.EndControllerEvaluation()
+			}
+			matched, err := compiled.triggers.match(env)
+			if err != nil {
+				return false, err
+			}
+			if host, ok := env.(interface{ StateExecutionError() error }); ok && host.StateExecutionError() != nil {
+				return false, host.StateExecutionError()
+			}
+			if !matched {
+				return false, nil
+			}
+			if ctrl.Persistent == 0 {
+				env.SetPersistence(key, 1)
+			} else if ctrl.Persistent > 1 {
+				env.SetPersistence(key, ctrl.Persistent-1)
+			}
+			return true, compiled.handler(ctrl, env)
+		}()
 		if err != nil {
 			return false, controllerError(state, i, ctrl, err)
 		}
-		if host, ok := env.(interface{ StateExecutionError() error }); ok && host.StateExecutionError() != nil {
-			return false, controllerError(state, i, ctrl, host.StateExecutionError())
-		}
 		if !matched {
 			continue
-		}
-		if ctrl.Persistent == 0 {
-			env.SetPersistence(key, 1)
-		} else if ctrl.Persistent > 1 {
-			env.SetPersistence(key, ctrl.Persistent-1)
-		}
-		if err := compiled.handler(ctrl, env); err != nil {
-			return false, controllerError(state, i, ctrl, err)
 		}
 		switch strings.ToLower(ctrl.Type) {
 		case "changestate", "selfstate":

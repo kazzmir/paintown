@@ -113,6 +113,9 @@ func (c *Character) CreateProjectile(parameters engine.ProjectileParameters, hit
 		}
 	}
 	owner.Projectiles = append(owner.Projectiles, p)
+	if c.aiTrial != nil {
+		c.aiTrial.projectile = p
+	}
 	return p.RuntimeError
 }
 

@@ -22,6 +22,7 @@ type Player struct {
 	SFF        *sff.SFF
 	AIR        *air.Data
 	CMD        *cmd.Data
+	AIMoves    *AIMoveLibrary
 	SND        *snd.SoundBank
 	DefPath    string
 	Definition *parsers.DefData

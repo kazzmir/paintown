@@ -38,13 +38,19 @@ races; map-only adapters retain deterministic additional-label ordering.
 Linux build and stock-match window inspection pass; owned runtime/helper/overlay
 and capture scratch are removed.
 
-K8/U4 remain open for actual move learning and prediction. The next dependency
-is successful command-check attribution to transitions, followed by ground/air
-trial collection, active-box/startup/recovery statistics and model retention,
-then the movement/attack/guard planner. Connect and accept one complete lifecycle
-before closure. Independent seat streams and non-cheating timed plans remain
-explicit port policies. A hints-file load message does not establish an asset
-requirement; the public sample labels its hints unused.
+K8/U4 collection is now implemented in character/ai_learning.go. Controller-scoped
+successful command reads attribute actual transitions; live root episodes collect
+ground/air records, geometry and startup/active/control/end statistics. Timing
+banks are whiff/guard/hit outcomes, correcting the earlier pose inference. Native
+punch startup3/active6/recovery12, air collection, hitpause exclusion, five-percent
+repeat smoothing and completed-record round retention pass the extended existing
+AI/combat journey. Linux compiles. Full segments await the coherent planner batch.
+
+Next connect learned-data loading/retention and movement/attack/guard prediction;
+collection alone does not close K8/U4. Keep independent seat streams and timed
+non-cheating plans explicit. No generated records, binaries or private observations
+belong in Git. Keep the native/application runs serial and clean owned scratch at
+batch completion.
 
 U5 whole-text TrueType layout is corrected. The target text library's surfaces
 and a shared rendered scene establish negative-bearing padding, final overhangs,

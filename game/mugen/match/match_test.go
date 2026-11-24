@@ -99,7 +99,9 @@ func aiDecisionContextFlow(t *testing.T) {
 	t.Helper()
 	m := stockMatch(t, 99)
 	m.Phase, m.Options.AICheat = Active, true
+	m.roundState(2)
 	c, enemy := m.Players[0].Character, m.Players[1].Character
+	aiLearningContextFlow(t, m)
 	c.X, enemy.X = 0, 800 // same game-space distance with mixed character profiles
 	if got := m.BasicAIInput(1); len(got) != 0 || len(m.aiBrains) != 0 {
 		t.Fatal("human root acquired AI input")
@@ -236,6 +238,9 @@ command=c
 	if len(m.aiBrains) != 0 || c.AILevel != 1 || m.brain(c).random != stream {
 		t.Fatal("round reset retained AI state or lost level/random continuity")
 	}
+	if c.AIMoves.Ground[200] == nil || c.AIMoves.Air[600] == nil {
+		t.Fatal("round reset discarded completed learned moves")
+	}
 	fresh, err := m.Reload()
 	if err != nil {
 		t.Fatal(err)
@@ -243,6 +248,60 @@ command=c
 	freshBrain := fresh.brain(fresh.Players[0].Character)
 	if freshBrain.random == stream || freshBrain.random.Next() != stream.Next() || len(freshBrain.snapshot()) != 0 || len(freshBrain.admitted) != 0 {
 		t.Fatal("reload restarted AI randomness, shared the old stream or retained input")
+	}
+}
+
+// The same human CMD/CNS episode feeds later CPU decisions. Match the target's
+// whiff/air/hit timing rather than manufacturing records from state definitions.
+func aiLearningContextFlow(t *testing.T, m *Match) {
+	t.Helper()
+	c, enemy := m.Players[0].Character, m.Players[1].Character
+	original := c.InputSource
+	defer func() { c.InputSource = original }()
+	var held []string
+	c.InputSource = func(int, int) []string { return held }
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
+	c.X, enemy.X = 0, 800
+	step := func(keys ...string) {
+		t.Helper()
+		held = keys
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	step()
+	step("ButtonX")
+	for pass := 0; pass < 40 && c.AIMoves.Ground[200] == nil; pass++ {
+		step()
+	}
+	move := c.AIMoves.Ground[200]
+	if move == nil || move.Startup.Time.Mean != 3 || move.Active[0].Time.Mean != 6 || move.End[0].Time.Mean != 12 || move.CommandIndex != 27 || move.Attack.Left != 64 || move.Attack.Right != 244 {
+		t.Fatal("native whiff command/startup/active/recovery/geometry was not learned", move)
+	}
+	if len(move.Contexts) != 1 || move.Contexts[0].StateNo != 0 || !move.Contexts[0].Ctrl || enemy.AIMoves.Ground[200] != nil {
+		t.Fatal("move attribution leaked across controllers or actors", move.Contexts)
+	}
+	step("DirUp")
+	for pass := 0; pass < 10 && c.StateNo != 50; pass++ {
+		step()
+	}
+	step("ButtonX")
+	for pass := 0; pass < 100 && c.AIMoves.Air[600] == nil; pass++ {
+		step()
+	}
+	air := c.AIMoves.Air[600]
+	if air == nil || air.Startup.Time.Mean != 3 || air.Control[0].Time.Mean != 17 || air.End[0].Time.Mean < 17 || c.AIMoves.Ground[600] != nil {
+		t.Fatal("air startup/control/landing was not learned separately", air)
+	}
+	c.X, enemy.X = 0, 160
+	enemy.ChangeState(0, 1, -1)
+	step("ButtonX")
+	for pass := 0; pass < 80 && !move.End[2].Time.Valid; pass++ {
+		step()
+	}
+	if move.End[2].Time.Mean != 12 || move.Startup.Time.Mean != 3 || move.Damage.Mean != float32(1.15) || move.Damage.Max != 23 || !move.End[0].Time.Valid {
+		t.Fatal("hitpause or repeat sampling corrupted outcome timing/statistics", move)
 	}
 }
 

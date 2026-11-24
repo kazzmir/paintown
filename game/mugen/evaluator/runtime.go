@@ -182,6 +182,11 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 	if id, ok := e.Left.(*Identifier); ok && strings.EqualFold(id.Name, "command") {
 		if text, ok := e.Right.(*StringExpr); ok && env != nil {
 			matched := env.Command(text.Value)
+			if matched {
+				if observer, ok := env.(interface{ RecordAICommand(string) }); ok {
+					observer.RecordAICommand(text.Value)
+				}
+			}
 			if e.Operator == "!=" {
 				matched = !matched
 			}

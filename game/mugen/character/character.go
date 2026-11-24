@@ -68,6 +68,12 @@ type Character struct {
 	pendingStateEntry   *cns.StateDef
 	pendingMissingEntry bool
 	commandState        bool
+	AIMoves             *AIMoveLibrary
+	aiTrial             *aiMoveTrial
+	aiCommandReads      []int
+	aiCapturing         bool
+	aiHitDefinition     int
+	aiNextHitDefinition int
 	autoTurnPending     bool
 	autoTurnBlocked     bool
 	allowMissingState   bool
@@ -858,6 +864,8 @@ func (c *Character) PosFreeze(active bool) {
 }
 
 func (c *Character) HitDef(params map[string]string) {
+	c.aiHitDefinition = c.aiNextHitDefinition
+	c.aiNextHitDefinition++
 	c.reversal = nil
 	c.ActiveReversalDef = nil
 	c.HitDefActive = true
@@ -1987,6 +1995,17 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 		}
 	} else {
 		c.EvaluationWarning(fmt.Sprintf("state transition: state %d is missing from the state owner", stateNo))
+	}
+	if external {
+		c.aiTrial = nil
+	} else if found && c.aiCapturing && len(c.aiCommandReads) > 0 {
+		context := AIEntryContext{c.StateNo, c.StateType, c.MoveType, c.Ctrl}
+		command := c.aiCommandReads[0]
+		defer func() {
+			if c.RuntimeError == nil {
+				c.beginAIMove(context, command)
+			}
+		}()
 	}
 	// The command's arguments read the old heading. A controlled ground
 	// transition turns before destination entry expressions/velset are applied.

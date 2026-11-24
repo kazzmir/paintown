@@ -312,6 +312,9 @@ func TickCharacters(players []*Character) error {
 		c.Helpers = children
 	}
 	for _, c := range players {
+		c.observeAIMove()
+	}
+	for _, c := range players {
 		if c.destroyed {
 			continue
 		}

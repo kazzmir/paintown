@@ -307,6 +307,10 @@ func (m *Match) resetRound() error {
 		side := slot % 2
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
+		if p.AIMoves == nil || p.AIMoves.Commands != p.CMD || p.AIMoves.Width != m.Options.GameSpace.Width {
+			p.AIMoves = character.NewAIMoveLibrary(p.CMD, m.Options.GameSpace.Width)
+		}
+		c.AIMoves = p.AIMoves
 		c.DebugDisabled = m.Options.DisabledPlayers[slot]
 		c.Name, c.AuthorName = previous.Name, previous.AuthorName
 		if p.Definition != nil {
