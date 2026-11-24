@@ -119,9 +119,20 @@ value=Partner, TeamSide
 			t.Fatal("simul slot/reset lost identity or life", slot)
 		}
 	}
-	// The configured lose-on-first-KO rule still uses the same team result path.
+	// Team loses concerns the human leader, not the AI partner's KO. Both
+	// sides now use AI partners; a CPU death alone keeps combat running.
 	m.Options.TeamLoseOnKO = true
+	m.SetAILevel(3, 4)
+	m.SetAILevel(4, 4)
 	advanceUntil(t, m, Active, 650)
+	m.Teams[0].Members[1].Character.SetLife(0)
+	m.Teams[0].Members[1].Character.ChangeState(5150, 0, -1)
+	if err := m.Update(); err != nil {
+		t.Fatal(err)
+	}
+	if m.Phase != Active {
+		t.Fatal("AI partner's KO ended the human-led team")
+	}
 	m.Players[1].Character.SetLife(0)
 	m.Players[1].Character.ChangeState(5150, 0, -1)
 	advanceUntil(t, m, PreOver, 3)

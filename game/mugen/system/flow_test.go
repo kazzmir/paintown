@@ -334,7 +334,14 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("Options activation closed the page without changing its value")
 	}
 	step()
-	for _, index := range []int{1, 2, 4, 5} {
+	for n := 0; n < 60; n++ {
+		step(ebiten.KeyArrowRight)
+	}
+	step()
+	if cfg.Options.Difficulty != 8 {
+		t.Fatal("held utility navigation did not repeat and clamp difficulty")
+	}
+	for _, index := range []int{1, 2, 4, 5, 6} {
 		options.cursor = index
 		before := options.items[index].getValue()
 		step(ebiten.KeyArrowLeft)
@@ -342,6 +349,85 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		if options.items[index].getValue() == before {
 			t.Fatal("Options adjustment had no live consumer", options.items[index].label)
 		}
+	}
+	options.cursor = 4
+	step(ebiten.KeyArrowLeft) // Below the Max/100 display aliases: actual gain 99.
+	step()
+	if cfg.Sound.MasterVolume != 99 || cfg.Sound.EffectsVolume() >= .8 || cfg.Sound.MusicVolume() >= .75 {
+		t.Fatal("Master Volume did not reach both audio gains")
+	}
+	// Continue one settings lifecycle through the native team/default actions
+	// and the port's explicit session snapshot policy before editing input.
+	step(ebiten.KeyF2)
+	teamOptions, ok := e.currentState.(*OptionsState)
+	if !ok || !teamOptions.team {
+		t.Fatal("Options F2 did not open team settings")
+	}
+	if !cfg.Options.TeamLoseOnKO || teamOptions.items[1].displayValue() != "Team loses" {
+		t.Fatal("native KO policy zero did not retain team defeat")
+	}
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyArrowDown)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	if cfg.Options.Team1Vs2Life != 160 || cfg.Options.TeamLoseOnKO {
+		t.Fatal("team settings did not reach configuration")
+	}
+	step(ebiten.KeyArrowDown)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	if cfg.Options.Team1Vs2Life != 200 || !cfg.Options.TeamLoseOnKO {
+		t.Fatal("team defaults did not restore native factory values")
+	}
+	teamOptions.cursor = 0
+	for n := 0; n < 4; n++ {
+		step(ebiten.KeyArrowLeft)
+		step()
+	}
+	step(ebiten.KeyArrowDown)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEscape)
+	step()
+	options.cursor = 9 // Explicitly session-only Load/Save.
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	savedSettings := *e.sessionOptions
+	options.cursor = 10
+	step(ebiten.KeyEnter)
+	step()
+	step(ebiten.KeyEnter) // No is selected initially.
+	step()
+	if cfg.Options.Life != savedSettings.life {
+		t.Fatal("default confirmation changed settings without Yes")
+	}
+	step(ebiten.KeyEnter)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	if cfg.Options.Difficulty != 4 || cfg.Options.Life != 100 || cfg.Options.Time != 99 || cfg.Options.GameSpeed != 0 || cfg.Sound.MasterVolume != 100 || cfg.Sound.WavVolume != 80 || cfg.Sound.BGMVolume != 75 || cfg.Options.Team1Vs2Life != 160 {
+		t.Fatal("main defaults did not restore their own settings scope")
+	}
+	options.cursor = 9
+	step(ebiten.KeyArrowLeft)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	if cfg.Options.Life != savedSettings.life || cfg.Options.Time != 80 || cfg.Sound.WavVolume != savedSettings.wav || cfg.Sound.BGMVolume != savedSettings.bgm {
+		t.Fatal("session load did not restore settings/audio consumers")
 	}
 	// Rebind in the real Options/Input UI, then carry that new alternative
 	// through the stock match below. Raw navigation also survives disabling P1.
@@ -444,8 +530,36 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if e.currentState != options {
 		t.Fatal("input editor did not return to the existing Options state")
 	}
-	// HD motif options use their authored space, including the title font and
-	// uppercase-only menu bank, rather than a 320px fixed left-hand anchor.
+	options.cursor = 9
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEnter) // Save the live input edits too.
+	step()
+	step(ebiten.KeyF1)
+	step()
+	step(ebiten.KeyF3)
+	step()
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	if slices.Contains(input.GlobalManager.KeyboardBindings(1, input.ActionX), ebiten.KeyF10) {
+		t.Fatal("input defaults did not restore startup bindings")
+	}
+	step(ebiten.KeyEscape)
+	step()
+	options.cursor = 9
+	step(ebiten.KeyArrowLeft)
+	step()
+	step(ebiten.KeyEnter)
+	step()
+	if !slices.Contains(input.GlobalManager.KeyboardBindings(1, input.ActionX), ebiten.KeyF10) {
+		t.Fatal("session load lost keyboard alternatives")
+	}
+	if contents, err := os.ReadFile(override); err != nil || !bytes.Contains(contents, []byte("not-a-control")) || bytes.Contains(contents, []byte("F10")) {
+		t.Fatal("session edits rewrote the user's YAML", err)
+	}
+	// Utility rows center in the motif independently of its title-menu bank.
 	optionCanvas := ebiten.NewImage(e.logicalWidth, e.logicalHeight)
 	e.Draw(optionCanvas)
 	optionPixels := make([]byte, e.logicalWidth*e.logicalHeight*4)
@@ -488,7 +602,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		}
 	}
 	e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index = fontIndices[0], fontIndices[1]
-	if changedOptions < 1000 || options.fallbackCanvas == nil {
+	if changedOptions < 1000 || options.utility.canvas == nil {
 		t.Fatal("fontless screenpack left Options rows invisible", changedOptions)
 	}
 	for index, item := range options.items {
@@ -511,6 +625,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	step()
 	options.cursor = len(options.items) - 1
 	step(ebiten.KeyEnter)
+	for n := 0; n < 20 && e.currentState == options; n++ {
+		step()
+	}
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatal("options did not return to title")
 	}
@@ -638,6 +755,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	}
 	if f.match.Options.LifePercent != cfg.Options.Life || f.match.Options.RoundTime != cfg.Options.Time || f.match.Players[0].Character.MaxLife != f.match.Players[0].Character.StateFile.Data.Life*cfg.Options.Life/100 {
 		t.Fatal("Options life/time changes did not reach the selected match")
+	}
+	if f.match.Options.Team1Vs2Life != 160 || f.match.Options.TeamLoseOnKO {
+		t.Fatal("team Options did not reach the match consumer")
 	}
 	if f.match.World.RandomSeed() != 16807 {
 		t.Fatal("session seed was not handed to production match")

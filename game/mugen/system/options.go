@@ -3,25 +3,22 @@ package main
 import (
 	"fmt"
 	"image/color"
-	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 type optionItem struct {
-	label      string
-	shortLabel string
-	getValue   func() int
-	setValue   func(int)
-	action     func() State
-	// Display strings for each value, indexed by (value - min)
-	// If nil, just shows the integer.
-	choices   []string
-	min, max  int
-	increment int // amount to change per press (default 1)
+	label               string
+	getValue            func() int
+	setValue            func(int)
+	action              func() State
+	choices             []string
+	min, max, increment int
+	format              func(int) string
+	adjust              func(int)
 }
 
 func (o *optionItem) displayValue() string {
@@ -29,335 +26,339 @@ func (o *optionItem) displayValue() string {
 		return ""
 	}
 	v := o.getValue()
-	if o.choices != nil {
-		idx := v - o.min
-		if idx >= 0 && idx < len(o.choices) {
-			return o.choices[idx]
-		}
+	if o.format != nil {
+		return o.format(v)
 	}
-	// Special case for time limit
-	if o.label == "Time Limit" && v == -1 {
-		return "Unlimited"
+	if o.choices != nil && v-o.min >= 0 && v-o.min < len(o.choices) {
+		return o.choices[v-o.min]
 	}
-	// Special case for life
-	if o.label == "Life" {
-		return fmt.Sprintf("%d%%", v)
-	}
-	return fmt.Sprintf("%d", v)
+	return fmt.Sprint(v)
 }
-
-func (o *optionItem) doIncrement() {
+func (o *optionItem) change(direction int) {
+	if o.adjust != nil {
+		o.adjust(direction)
+		return
+	}
 	if o.getValue == nil || o.setValue == nil {
 		return
 	}
-	v := o.getValue()
-	inc := o.increment
-	if inc == 0 {
-		inc = 1
+	step := o.increment
+	if step == 0 {
+		step = 1
 	}
-	v += inc
-	if v > o.max {
-		//v = o.max
-		v = o.min
-	}
-	o.setValue(v)
+	o.setValue(max(o.min, min(o.max, o.getValue()+step*direction)))
 }
+func (o *optionItem) doIncrement() { o.change(1) }
+func (o *optionItem) doDecrement() { o.change(-1) }
 
-func (o *optionItem) doDecrement() {
-	if o.getValue == nil || o.setValue == nil {
-		return
-	}
-	v := o.getValue()
-	inc := o.increment
-	if inc == 0 {
-		inc = 1
-	}
-	v -= inc
-	if v < o.min {
-		//v = o.min
-		v = o.max
-	}
-	o.setValue(v)
-}
-
-// OptionsState shows the options menu with live value editing.
 type OptionsState struct {
-	engine         *Engine
-	items          []*optionItem
-	cursor         int
-	ticks          int
-	cursorAlpha    float64
-	cursorAlphaMod float64
-	cursorImage    *ebiten.Image
-	fallbackCanvas *ebiten.Image
+	repeat        menuRepeat
+	engine        *Engine
+	items         []*optionItem
+	cursor, ticks int
+	team          bool
+	back          *OptionsState
+	confirmation  bool
+	yes           bool
+	loadSave      int
+	message       string
+	messageTicks  int
+	utility       utilityMenu
+	dialog        utilityMenu
+	background    *ebiten.Image
+	transition    screenTransition
+	volume        [3]int
 }
 
-func NewOptionsState(engine *Engine) *OptionsState {
-	diffChoices := []string{"1", "2", "3", "4", "5", "6", "7", "8"}
-	speedChoices := []string{"Slow 2", "Slow 1", "Normal", "Fast 1", "Fast 2"}
-
-	items := []*optionItem{
-		{
-			label:    "Difficulty",
-			getValue: func() int { return engine.cfg.Options.Difficulty },
-			setValue: func(v int) { engine.cfg.Options.Difficulty = v },
-			choices:  diffChoices,
-			min:      1, max: 8,
-		},
-		{
-			label:     "Life",
-			getValue:  func() int { return engine.cfg.Options.Life },
-			setValue:  func(v int) { engine.cfg.Options.Life = v },
-			min:       10,
-			max:       300,
-			increment: 10,
-		},
-		{
-			label:     "Time Limit",
-			getValue:  func() int { return engine.cfg.Options.Time },
-			setValue:  func(v int) { engine.cfg.Options.Time = v },
-			min:       -1,
-			max:       99,
-			increment: 1,
-		},
-		{
-			label:    "Game Speed",
-			getValue: func() int { return engine.cfg.Options.GameSpeed },
-			setValue: func(v int) {
-				engine.cfg.Options.GameSpeed = v
-				engine.applyScheduler()
-			},
-			choices: speedChoices,
-			min:     -2, max: 2,
-		},
-		{
-			label:    "Sound Volume",
-			getValue: func() int { return engine.cfg.Sound.WavVolume },
-			setValue: func(v int) { engine.cfg.Sound.WavVolume = v },
-			min:      0, max: 100, increment: 5,
-		},
-		{
-			label:    "Music Volume",
-			getValue: func() int { return engine.cfg.Sound.BGMVolume },
-			setValue: func(v int) { engine.cfg.Sound.BGMVolume = v },
-			min:      0, max: 100, increment: 5,
-		},
+func NewOptionsState(e *Engine) *OptionsState {
+	if e.initialOptions == nil {
+		e.initialOptions = e.snapshotOptions()
 	}
-
-	s := &OptionsState{
-		engine:         engine,
-		items:          items,
-		cursorAlpha:    0,
-		cursorAlphaMod: 2.0 / 255.0,
+	if e.sessionOptions == nil {
+		e.sessionOptions = e.snapshotOptions()
 	}
-	s.items = append(s.items, &optionItem{label: "Input Configuration", shortLabel: "Input Config", action: func() State { return NewInputConfigState(engine, s) }})
-	s.items = append(s.items, &optionItem{label: "Return to Main Menu", shortLabel: "Back", action: func() State { return NewTitleState(engine) }})
+	s := &OptionsState{engine: e}
+	s.buildItems()
 	return s
 }
-
+func (s *OptionsState) buildItems() {
+	e, c := s.engine, s.engine.cfg
+	percent := func(v int) string { return fmt.Sprintf("%d%%", v) }
+	if s.team {
+		s.items = []*optionItem{
+			{label: "Single VS Simul Advantage", getValue: func() int { return c.Options.Team1Vs2Life }, setValue: func(v int) { c.Options.Team1Vs2Life = v }, min: 100, max: 300, increment: 10, format: percent},
+			{label: "If player KOed", getValue: func() int {
+				if c.Options.TeamLoseOnKO {
+					return 0
+				}
+				return 1
+			}, setValue: func(v int) { c.Options.TeamLoseOnKO = v == 0 }, min: 0, max: 1, choices: []string{"Team loses", "AI keeps fighting"}},
+			{label: "Default Values", action: func() State { s.confirmation = true; s.yes = false; return s }},
+			{label: "Return to Options", action: func() State { return s.back }},
+		}
+		return
+	}
+	s.volume = [3]int{c.Sound.MasterVolume, c.Sound.WavVolume, c.Sound.BGMVolume}
+	for i, v := range s.volume {
+		if v == 0 {
+			s.volume[i] = -1
+		} else if v == 100 {
+			s.volume[i] = 101
+		}
+	}
+	s.items = []*optionItem{
+		{label: "Difficulty", getValue: func() int { return c.Options.Difficulty }, setValue: func(v int) { c.Options.Difficulty = v }, min: 1, max: 8, format: func(v int) string {
+			level := "Medium"
+			if v < 3 {
+				level = "Easy"
+			} else if v > 5 {
+				level = "Hard"
+			}
+			return fmt.Sprintf("%s %d", level, v)
+		}},
+		{label: "Life", getValue: func() int { return c.Options.Life }, setValue: func(v int) { c.Options.Life = v }, min: 30, max: 300, increment: 10, format: percent},
+		{label: "Time Limit", getValue: func() int { return c.Options.Time }, format: func(v int) string {
+			if v == -1 {
+				return "None"
+			}
+			return fmt.Sprint(v)
+		}, adjust: func(d int) {
+			v := c.Options.Time
+			if d < 0 {
+				if v == -1 {
+					v = 99
+				} else if v == 99 {
+					v = 80
+				} else if v > 20 {
+					v -= 20
+				}
+			} else {
+				if v >= 80 && v < 99 {
+					v = 99
+				} else if v == 99 {
+					v = -1
+				} else if v < 80 && v != -1 {
+					v += 20
+				}
+			}
+			c.Options.Time = v
+		}},
+		{label: "Game Speed", getValue: func() int { return c.Options.GameSpeed }, setValue: func(v int) { c.Options.GameSpeed = v; e.applyScheduler() }, min: -9, max: 9, format: func(v int) string {
+			if v == 0 {
+				return "Normal"
+			}
+			if v < 0 {
+				return fmt.Sprintf("Slow %d", -v)
+			}
+			return fmt.Sprintf("Fast %d", v)
+		}},
+	}
+	for i, label := range []string{"Master Volume", "Wav/SFX Volume", "BGM Volume"} {
+		s.items = append(s.items, &optionItem{label: label, getValue: func() int { return s.volume[i] }, setValue: func(v int) {
+			s.volume[i] = v
+			actual := max(0, min(100, v))
+			switch i {
+			case 0:
+				c.Sound.MasterVolume = actual
+			case 1:
+				c.Sound.WavVolume = actual
+				c.Options.WavVolume = actual
+			case 2:
+				c.Sound.BGMVolume = actual
+			}
+		}, min: -1, max: 101, format: func(v int) string {
+			if v == -1 {
+				return "Off"
+			}
+			if v == 101 {
+				return "Max"
+			}
+			return fmt.Sprint(v)
+		}})
+	}
+	s.items = append(s.items,
+		&optionItem{label: "Input Configuration", action: func() State { return NewInputConfigState(e, s) }},
+		&optionItem{label: "Team Mode Config", action: func() State { child := &OptionsState{engine: e, team: true, back: s}; child.buildItems(); return child }},
+		&optionItem{label: "Session Load/Save", getValue: func() int { return s.loadSave }, setValue: func(v int) { s.loadSave = v }, min: 0, max: 1, choices: []string{"Load", "Save"}, action: func() State {
+			if s.loadSave == 0 {
+				e.restoreOptions(e.sessionOptions)
+				s.buildItems()
+				s.message = "Session options loaded"
+			} else {
+				e.sessionOptions = e.snapshotOptions()
+				s.message = "Session options saved"
+			}
+			s.messageTicks = 90
+			return s
+		}},
+		&optionItem{label: "Default Values", action: func() State { s.confirmation = true; s.yes = false; return s }},
+		&optionItem{label: "Return to Main Menu", action: func() State { return NewTitleState(e) }},
+	)
+}
+func (s *OptionsState) defaults() {
+	c := s.engine.cfg
+	if s.team {
+		c.Options.Team1Vs2Life, c.Options.TeamLoseOnKO = 200, true
+	} else {
+		c.Options.Difficulty, c.Options.Life, c.Options.Time, c.Options.GameSpeed = 4, 100, 99, 0
+		c.Sound.MasterVolume, c.Sound.WavVolume, c.Sound.BGMVolume = 100, 80, 75
+		c.Options.WavVolume = 80
+		s.engine.applyScheduler()
+	}
+	s.buildItems()
+}
 func (s *OptionsState) Update() (State, error) {
 	s.ticks++
-	if input.GlobalManager.KeyJustPressed(ebiten.KeyF1) {
-		return NewInputConfigState(s.engine, s), nil
+	if s.messageTicks > 0 {
+		s.messageTicks--
 	}
-
-	if s.engine.motif.OptionBG != nil {
-		s.engine.motif.OptionBG.Update()
+	e, im := s.engine, input.GlobalManager
+	if e.motif.OptionBG != nil {
+		e.motif.OptionBG.Update()
 	}
-
-	// Pulse cursor alpha
-	s.cursorAlpha += s.cursorAlphaMod
-	if s.cursorAlpha > 42.0/255.0 {
-		s.cursorAlpha = 42.0 / 255.0
-		s.cursorAlphaMod = -2.0 / 255.0
-	} else if s.cursorAlpha < 0 {
-		s.cursorAlpha = 0
-		s.cursorAlphaMod = 2.0 / 255.0
-	}
-
-	// Navigate
-	if input.GlobalManager.IsJustPressed(1, input.ActionUp) {
-		s.cursor--
-		if s.cursor < 0 {
-			s.cursor = len(s.items) - 1
+	if s.transition.leaving {
+		if s.transition.update(s.ticks, -1, e.themeNumber("Option Info", "fadeout.time", 0), false) {
+			return NewTitleState(e), nil
 		}
-		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
+		return s, nil
 	}
-	if input.GlobalManager.IsJustPressed(1, input.ActionDown) {
+	direction := s.repeat.directions(im, e.ticksPerSecond())
+	left, right := direction[2], direction[3]
+	accept := im.IsJustPressed(1, input.ActionEnter)
+	cancel := im.IsJustPressed(1, input.ActionEscape)
+	if s.confirmation {
+		if left || right {
+			s.yes = !s.yes
+		}
+		if accept {
+			if s.yes {
+				s.defaults()
+			}
+			s.confirmation = false
+		}
+		if cancel {
+			s.confirmation = false
+		}
+		return s, nil
+	}
+	if im.KeyJustPressed(ebiten.KeyF1) {
+		if !s.team {
+			s.cursor = 7
+		}
+		return NewInputConfigState(e, s), nil
+	}
+	if im.KeyJustPressed(ebiten.KeyF2) && !s.team {
+		s.cursor = 8
+		child := &OptionsState{engine: e, team: true, back: s}
+		child.buildItems()
+		return child, nil
+	}
+	if direction[0] {
+		s.cursor = (s.cursor + len(s.items) - 1) % len(s.items)
+		e.PlaySnd(e.motif.OptionInfo.CursorMoveSnd[0], e.motif.OptionInfo.CursorMoveSnd[1])
+	}
+	if direction[1] {
 		s.cursor = (s.cursor + 1) % len(s.items)
-		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
+		e.PlaySnd(e.motif.OptionInfo.CursorMoveSnd[0], e.motif.OptionInfo.CursorMoveSnd[1])
 	}
-
-	// Adjust value
-	if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
+	if left {
 		s.items[s.cursor].doDecrement()
-		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
-	if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
+	if right {
 		s.items[s.cursor].doIncrement()
-		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
-
-	// Accept / close
-	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
-		s.engine.PlaySnd(s.engine.motif.OptionInfo.CancelSnd[0], s.engine.motif.OptionInfo.CancelSnd[1])
-		return NewTitleState(s.engine), nil
+	if left || right {
+		e.PlaySnd(e.motif.OptionInfo.CursorMoveSnd[0], e.motif.OptionInfo.CursorMoveSnd[1])
 	}
-	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
-		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorDoneSnd[0], s.engine.motif.OptionInfo.CursorDoneSnd[1])
-		if action := s.items[s.cursor].action; action != nil {
+	exit := cancel
+	if accept {
+		e.PlaySnd(e.motif.OptionInfo.CursorDoneSnd[0], e.motif.OptionInfo.CursorDoneSnd[1])
+		if s.cursor == len(s.items)-1 {
+			exit = true
+		} else if action := s.items[s.cursor].action; action != nil {
 			return action(), nil
+		} else {
+			s.items[s.cursor].doIncrement()
 		}
-		s.items[s.cursor].doIncrement()
 	}
-
+	if exit {
+		e.PlaySnd(e.motif.OptionInfo.CancelSnd[0], e.motif.OptionInfo.CancelSnd[1])
+		if s.team {
+			return s.back, nil
+		}
+		if s.transition.update(s.ticks, -1, e.themeNumber("Option Info", "fadeout.time", 0), true) {
+			return NewTitleState(e), nil
+		}
+	}
 	return s, nil
 }
-
 func (s *OptionsState) Draw(screen *ebiten.Image) {
-	// Clear
-	if s.engine.motif.OptionBG != nil && s.engine.motif.OptionBG.BGClearColor != nil {
-		screen.Fill(s.engine.motif.OptionBG.BGClearColor)
+	e := s.engine
+	if s.background == nil {
+		s.background = ebiten.NewImage(e.logicalWidth, e.logicalHeight)
+	}
+	background := s.background
+	if e.motif.OptionBG != nil && e.motif.OptionBG.BGClearColor != nil {
+		background.Fill(e.motif.OptionBG.BGClearColor)
 	} else {
-		screen.Fill(color.Black)
+		background.Fill(color.Black)
 	}
-
-	// Draw Layer 0 BG
-	if s.engine.motif.OptionBG != nil {
-		s.engine.motif.OptionBG.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)
+	if e.motif.OptionBG != nil {
+		e.motif.OptionBG.DrawLayer(background, 0, 0, 0, 0, e.sprites)
+		e.motif.OptionBG.DrawLayer(background, 1, 0, 0, 0, e.sprites)
 	}
-
-	// Use the same font setup as the title menu
-	fi := s.engine.motif.TitleInfo.ItemFont
-	fiActive := s.engine.motif.TitleInfo.ItemActiveFont
-	spacing := s.engine.motif.TitleInfo.MenuSpacing[1]
-	width, height := s.engine.logicalWidth, s.engine.logicalHeight
-	sx, sy := float64(width)/320, float64(height)/240
-	if spacing == 0 {
-		spacing = 15 * sy
+	fi := e.motif.TitleInfo.ItemFont
+	title := e.themeValues("Option Info", "title.font", float64(fi.Index), float64(fi.Bank), 0)
+	pos := e.themeValues("Option Info", "title.offset", float64(e.logicalWidth)/2, 36*float64(e.logicalHeight)/240)
+	heading := e.themeText("Option Info", "title.text", "OPTIONS")
+	if s.team {
+		heading = "TEAM MODE CONFIG"
 	}
-	// Screenpacks may draw their title-menu labels as background art and
-	// deliberately omit text fonts. Their Options still needs readable rows.
-	fallbackRows := false
-	for _, info := range []struct{ Index, Bank, Align int }{fi, fiActive} {
-		if info.Index < 1 || info.Index >= len(s.engine.motif.Fonts) || s.engine.motif.Fonts[info.Index] == nil || float64(s.engine.motif.Fonts[info.Index].Height) > spacing {
-			fallbackRows = true
-		}
-	}
-
-	// Center the options list
-	startX := float64(width) / 2
-	startY := float64(height) / 4
-	title := s.engine.themeValues("Option Info", "title.font", float64(fi.Index), float64(fi.Bank), 0)
-	position := s.engine.themeValues("Option Info", "title.offset", startX, 36*sy)
-	if index := int(title[0]); index >= 1 && index < len(s.engine.motif.Fonts) && s.engine.motif.Fonts[index] != nil {
+	if index := int(title[0]); index >= 1 && index < len(e.motif.Fonts) && e.motif.Fonts[index] != nil {
 		align := font.AlignCenter
 		if title[2] > 0 {
 			align = font.AlignLeft
 		} else if title[2] < 0 {
 			align = font.AlignRight
 		}
-		s.engine.drawMotifFont(screen, s.engine.motif.Fonts[index], s.engine.themeText("Option Info", "title.text", "OPTIONS"), int(position[0]), int(position[1]), int(title[1]), align, "Option Info", "title.font")
+		e.drawMotifFont(background, e.motif.Fonts[index], heading, int(pos[0]), int(pos[1]), int(title[1]), align, "Option Info", "title.font")
 	}
-
-	if fallbackRows {
-		s.drawFallbackRows(screen)
-	}
-	for i, item := range s.items {
-		if fallbackRows {
-			break
-		}
-		fontInfo := fi
-		fontKey := "menu.item.font"
-		if i == s.cursor {
-			fontInfo = fiActive
-			fontKey = "menu.item.active.font"
-		}
-
-		yPos := startY + float64(i)*spacing
-
-		var f *font.Font
-		if fontInfo.Index >= 1 && fontInfo.Index < len(s.engine.motif.Fonts) {
-			f = s.engine.motif.Fonts[fontInfo.Index]
-		}
-
-		if f != nil {
-			// Title bitmap banks can contain uppercase glyphs only.
-			label := strings.ToUpper(item.label)
-			valueStr := strings.ToUpper(item.displayValue())
-
-			// Cursor highlight: draw a faint box behind the active row
-			if i == s.cursor && s.engine.motif.TitleInfo.BoxCursorVisible {
-				if s.cursorImage == nil {
-					s.cursorImage = ebiten.NewImage(1, 1)
-					s.cursorImage.Fill(color.RGBA{R: 128, G: 200, B: 255, A: 255})
-				}
-				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Scale(240*sx, spacing+2*sy)
-				op.GeoM.Translate(startX-120*sx, yPos-spacing)
-				op.Blend = ebiten.BlendSourceOver
-				op.ColorScale.ScaleAlpha(float32(s.cursorAlpha))
-				screen.DrawImage(s.cursorImage, op)
-			}
-
-			valDisplay := "< " + valueStr + " >"
-			if item.action != nil {
-				valDisplay = "ENTER"
-			}
-			if item.shortLabel != "" && float64(f.TextWidthForBank(label, fontInfo.Bank)+f.TextWidthForBank(valDisplay, fontInfo.Bank)) > 210*sx {
-				label = strings.ToUpper(item.shortLabel)
-			}
-			s.engine.drawMotifFont(screen, f, label, int(startX-110*sx), int(yPos), fontInfo.Bank, font.AlignLeft, "Title Info", fontKey)
-			s.engine.drawMotifFont(screen, f, valDisplay, int(startX+110*sx), int(yPos), fontInfo.Bank, font.AlignRight, "Title Info", fontKey)
-		}
-	}
-
-	// Hint text
-	if !fallbackRows && fi.Index >= 1 && fi.Index < len(s.engine.motif.Fonts) {
-		f := s.engine.motif.Fonts[fi.Index]
-		if f != nil {
-			hint := "LEFT/RIGHT CHANGE   F1 INPUT   ESC EXIT"
-			if float64(f.TextWidthForBank(hint, fi.Bank)) > float64(width)-16*sx {
-				hint = "F1 INPUT   ESC EXIT"
-			}
-			s.engine.drawMotifFont(screen, f, hint, int(startX), int(220*sy), fi.Bank, font.AlignCenter, "Title Info", "menu.item.font")
-		}
-	}
-
-	// Draw Layer 1 BG (foreground)
-	if s.engine.motif.OptionBG != nil {
-		s.engine.motif.OptionBG.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
-	}
-}
-
-// Use the same portable built-in lettering as Input Configuration when the
-// motif's title font cannot represent an Options list. The motif background
-// and authored heading remain outside this fitted, bounded settings panel.
-func (s *OptionsState) drawFallbackRows(screen *ebiten.Image) {
-	if s.fallbackCanvas == nil {
-		s.fallbackCanvas = ebiten.NewImage(400, 210)
-	}
-	panel := s.fallbackCanvas
-	panel.Fill(color.RGBA{R: 12, G: 18, B: 32, A: 240})
-	for index, item := range s.items {
-		marker := "  "
-		if index == s.cursor {
-			marker = "> "
-		}
-		y := 12 + index*18
-		ebitenutil.DebugPrintAt(panel, marker+strings.ToUpper(item.label), 12, y)
-		value := "< " + strings.ToUpper(item.displayValue()) + " >"
-		if item.action != nil {
-			value = "ENTER"
-		}
-		ebitenutil.DebugPrintAt(panel, value, 388-len(value)*6, y)
-	}
-	ebitenutil.DebugPrintAt(panel, "LEFT/RIGHT ADJUST   ENTER CHANGE/OPEN", 12, 170)
-	ebitenutil.DebugPrintAt(panel, "F1 INPUT   ESC BACK   SESSION SETTINGS", 12, 188)
-	w, h := float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy())
-	scale := min(w/400, h/280)
+	screen.Fill(color.Black)
+	scale, x, y, _ := coord.Fit(coord.Space{Width: e.logicalWidth, Height: e.logicalHeight}, coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()})
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(scale, scale)
-	op.GeoM.Translate((w-400*scale)/2, min(h/4, h-222*scale))
-	screen.DrawImage(panel, op)
+	op.GeoM.Translate(x+float64(screen.Bounds().Min.X), y+float64(screen.Bounds().Min.Y))
+	screen.DrawImage(background, op)
+	rows := make([]utilityRow, 0, len(s.items)+2)
+	for i, item := range s.items {
+		if !s.team && (i == 9 || i == 11) {
+			rows = append(rows, utilityRow{})
+		}
+		value := item.displayValue()
+		if item.action != nil && item.getValue == nil {
+			value = "Enter"
+		}
+		rows = append(rows, utilityRow{item.label, value})
+	}
+	cursor := s.cursor
+	if !s.team {
+		if cursor >= 9 {
+			cursor++
+		}
+		if s.cursor >= 11 {
+			cursor++
+		}
+	}
+	if s.messageTicks > 0 {
+		rows = append(rows, utilityRow{s.message, ""})
+	}
+	s.utility.draw(e, screen, rows, cursor, "", int(y+50*scale))
+	if s.confirmation {
+		rows = []utilityRow{{"Reset default values?", "No"}}
+		if s.yes {
+			rows[0].value = "Yes"
+		}
+		s.dialog.draw(e, screen, rows, 0, "", 100)
+	}
+	s.transition.draw(screen, s.ticks, e.themeNumber("Option Info", "fadein.time", 0), e.themeNumber("Option Info", "fadeout.time", 0))
 }

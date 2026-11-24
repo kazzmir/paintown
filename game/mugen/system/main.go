@@ -47,6 +47,8 @@ type Engine struct {
 	showCollisions   bool
 	capturePending   bool
 	screenshotDir    string
+	sessionOptions   *optionSnapshot
+	initialOptions   *optionSnapshot
 }
 
 // Close stops streaming readers before removing this engine's expanded packs.
@@ -82,7 +84,7 @@ func (e *Engine) ticksPerSecond() int {
 		}
 		speed = e.cfg.Options.GameSpeed
 	}
-	return max(1, base+5*speed)
+	return max(10, base+5*speed)
 }
 
 // Script tick rates stay in game units even when debug speed removes the
@@ -177,6 +179,9 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 		return max(1, outsideWidth), max(1, outsideHeight)
 	}
 	if _, storyboard := e.currentState.(*StoryboardState); storyboard {
+		return max(1, outsideWidth), max(1, outsideHeight)
+	}
+	if _, options := e.currentState.(*OptionsState); options {
 		return max(1, outsideWidth), max(1, outsideHeight)
 	}
 	return e.logicalWidth, e.logicalHeight

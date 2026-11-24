@@ -89,7 +89,8 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 	fmt.Printf("Match RNG seed: %d\n", game.World.RandomSeed())
 	s := &FightState{engine: engine, match: game, debugSelection: -1}
 	if game.Request.Mode == "Training" {
-		s.training = &trainingControls{}
+		s.training = &trainingControls{aiLevel: max(1, min(8, engine.cfg.Options.Difficulty)), frame: -1}
+		game.SetAILevel(2, 0)
 	}
 	if engine.cfg.Debug.Debug {
 		s.debugSelection = 0
@@ -140,6 +141,9 @@ func (s *FightState) Update() (State, error) {
 			return s, err
 		}
 		s.match.Effects.Clear()
+		if s.training != nil {
+			return NewSelectState(s.engine, "Training"), nil
+		}
 		return NewTitleState(s.engine), nil
 	}
 	if s.match.Phase == match.Finished && s.engine.modeRun != nil && s.match.Request.Campaign == s.engine.modeRun.id {

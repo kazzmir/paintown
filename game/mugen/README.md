@@ -132,16 +132,27 @@ rules. See [match notes](docs/MATCH.md) for details.
 
 Confirm both characters, select a stage with P1 left/right, and confirm to
 continue through versus into the fight. At the result, P1 Enter rematches.
-Escape returns to the title during a fight or result. These are stock bindings;
+Escape returns to the title during a fight or result; Training returns to its
+character selection. These are stock bindings;
 configuration overrides can change them. Ctrl-D cycles debug output through
 players/helpers and off when enabled in mugen.cfg. Authored clipboard text appears
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 In Options, up/down selects a row and left/right adjusts it using the configured
-menu directions. Enter changes a value or opens an action; Return to Main Menu
-and Escape leave the page. Artwork-only menu motifs receive a readable settings
-panel automatically. Changes apply to the session and subsequent matches;
-Game Speed updates the live scheduler immediately. Configuration files remain
-unchanged; use local YAML for persistent settings.
+menu directions, including held-key repeat. Enter changes a value or opens an
+action; Return to Main Menu and Escape leave the page. Settings use independent
+small utility lettering over the motif background, with a readable fallback.
+Difficulty, life, discrete time limits, speed and master/SFX/BGM volume reach
+their live consumers. Game Speed updates the scheduler immediately.
+
+F2 opens Team Mode Config: single-versus-simul life advantage and the human
+leader's KO policy. Native CFG `Team.LoseOnKO = 0` means Team loses; `1` lets the
+AI partner keep fighting. Team Default Values restores 200% advantage and Team
+loses; the main page's defaults reset only its numeric settings. Each reset
+requires confirmation.
+
+Session Load/Save uses left/right to choose an operation and Enter to save or
+restore settings and live input bindings in memory. All edits remain session-only;
+configuration files stay unchanged. Use local YAML for persistent settings.
 
 In Options, choose Input Configuration or press F1 to edit keyboard bindings.
 Tab selects the player; Enter replaces a binding, Insert adds an alternative,
@@ -149,8 +160,9 @@ and Delete disables it. The keyboard enable row can be changed with left/right.
 F2 switches to the gamepad pane, which shows the assigned device and offers
 enable/deadzone controls plus button/axis capture. Release controls between
 bindings; standard-layout names are preferred, with raw controls as fallback.
-Escape returns to Options. These edits last for the session; use the YAML
-examples below for persistent settings.
+F3 confirms restoring the selected player's startup keyboard/gamepad bindings.
+Escape returns to Options. These edits last for the session; use the YAML examples
+below for persistent settings.
 
 Direct matches accept `--mode versus` (default), `watch`, `training` or `coop`.
 For example, add `--mode training` to an existing `--quick-match` command to
@@ -191,12 +203,15 @@ Screenshot output is PNG, matching the 1.1 target. The supplied engine history
 records the switch to PNG in MUGEN 1.0 RC4.
 
 In Training, Pause opens the dummy menu: choose Cooperative, AI or Manual
-control, automatic guarding, stance/jumps, spacing and repeated buttons. Manual
-uses P2 input; Cooperative applies the selected dummy settings; AI uses authored
-CMD plans. Move with P1 directions, change values with left/right, and resume
-with an attack button or Pause. M minimizes/restores the paused menu. Scroll
-Lock still advances one tick. Exact native dummy movement/attack timing remains
-part of fidelity work.
+control. Cooperative exposes automatic guarding, stance/jumps, axis spacing and
+button jam; AI exposes its own level from 1 to 8; Manual uses P2 input. Cooperative
+jam alternates six held ticks with six released ticks through ordinary CMD input.
+W Jump supplies a fresh up edge while descending, respecting the character's
+air-jump rules. Move with P1 directions, change values with left/right, and resume
+with an attack button or Pause. P1 Start or M hides/restores the entire paused
+menu. Scroll Lock advances one tick. Escape returns to Training selection;
+selecting another match starts with fresh dummy settings. Native stochastic AI
+decisions and broader raster/audio precision remain separate ledger followups.
 
 Body collisions use CNS ground/air widths and temporary `Width` values when
 the fighters' hurtboxes overlap vertically, including air/ground and air/air
@@ -439,9 +454,9 @@ whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The current ledger has 32 implemented categories and three broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
-The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed scope: all four confirmed
-implementation targets are closed; six separate acceptance/evidence followups
-remain open.
+The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed scope: the original four
+implementation targets and two discovered during U3 are closed. U3 Options/Training
+acceptance has passed; five separate acceptance/evidence followups remain open.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,

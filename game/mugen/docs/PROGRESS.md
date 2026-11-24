@@ -8,8 +8,8 @@ an estimate of total effort or complete native compatibility.
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project categories: 32 implemented, 3 partial, 0 missing.
-- Remaining-scope implementation targets: 4 closed, 0 open.
-- Separate acceptance followups: 0 passed, 6 open.
+- Remaining-scope implementation targets: 6 closed, 0 open.
+- Separate acceptance followups: 1 passed, 5 open.
 
 ## Remaining implementation and acceptance
 
@@ -26,6 +26,8 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | **K2 — Fresh result scene and Survival pose policy** | implemented / passed | medium / high |
 | **K3 — AI.Cheat command admission policy** | implemented / passed | large / high |
 | **K4 — Legacy joystick configuration consumer** | implemented / passed | medium / high |
+| **K5 — Options behavior and utility presentation** | implemented / passed | medium / high |
+| **K6 — Training dummy policy and menu lifecycle** | implemented / passed | medium / high |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
   Basis: Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.
@@ -47,6 +49,16 @@ of native equivalence. Unknown behavior is not counted as a code defect.
   Prerequisite: Resolved for the current Linux software scope through target-handler review and evdev capability translation matched to SDK device identity/counts. Physical/native calibration remains H1; other-platform legacy capability adapters remain deferred.
   Completion: CFG enable/numeric bindings feed the production input consumer before YAML/session overrides. The existing configuration/menu/stock combat/rematch/reconnect lifecycle passes with race detection, including differing axis/hat counts, disabled input, keyboard alternatives, ownership and unchanged YAML. Hardware acceptance is separate H1.
 
+- [x] **K5**: Complete Options settings, team/input/default actions and bounded utility presentation, retaining session-only load/save.
+  Basis: Target Options inspection and handler review establish missing master volume/team/default actions, clamped value admission, discrete time limits, full speed range and independent utility rows. Team KO ordinal zero ignores surviving AI partners after a human leader is KOed; it is not an any-member-KO rule. Team factory reset uses 200% advantage, distinct from the shipped CFG value.
+  Prerequisite: Resolved by direct target Options/input/team observation and handler review; portable input editing and session-only persistence remain intentional port policies.
+  Completion: The existing Options/input/team/default/session lifecycle checks value bounds, held navigation, master/SFX/BGM gains, keyboard/gamepad snapshots and startup reset, native team factory values and CFG KO policy through gameplay. Affected connected segments pass with race detection; Linux Options/Training flow and resized utility presentation pass without writing user configuration.
+
+- [x] **K6**: Match observed Training mode-specific rows, AI-level ownership, guard/stance/spacing/jam input policy, pause/presentation and selection return.
+  Basis: Target Training lifecycle and handler review establish an AI-level row, mode-specific row counts, axis-distance bands, six-tick button toggles, descending-phase air-jump input and return to selection with fresh settings.
+  Prerequisite: Resolved by direct target Training menu/stock-fighter observation and cooperative input-handler review. Native stochastic AI decisions remain separate U4.
+  Completion: The existing mode lifecycle passes through Manual input, cooperative low guard/contact/recovery/refill, axis spacing, six-on/six-off jam, jump/air-jump/landing, independent AI level, frozen redraws, pause/step/minimize and selection/reentry reset. Affected connected segments pass with race detection; final Linux application flow and paused PNG pixels pass.
+
 
 ### Separate acceptance and evidence questions
 
@@ -57,7 +69,7 @@ acceptance. Open questions do not imply missing controller/trigger routes.
 | --- | --- | --- |
 | **U1** | Additional runtime interaction fidelity — unverified | Reuse existing pause/binding/facing/reset findings. For broader acceptance, compare one overlapping pause/hitpause, bound-anchor turn, release/recovery episode. Create a code target only for a demonstrated mismatch. Prerequisite: A precise target observation for the combined lifecycle; this review found no additional missing consumer. |
 | **U2** | Broader font/content acceptance — unverified | Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects. Prerequisite: Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity. |
-| **U3** | Native Options/training behavior and presentation — unverified | Compare one menu-to-training flow covering setting effects, dummy ownership/guard/stance/distance/jam, pause/resume and return. Preserve intentional session-only edits; quantify any mismatch before scheduling code. Prerequisite: Operate the relevant Options/training controls and compare their effects. Current native observations cover campaign/results, not native Options/training acceptance. |
+| **U3** | Native Options/training behavior and presentation — passed | Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; sample-exact raster/audio and stochastic AI decisions remain separate U5/U4. Prerequisite: Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers. |
 | **U4** | Native AI decisions beyond AI.Cheat — unverified | State observable target decision rules and permitted variability separately from K3 admission. Successful AI combat does not establish matching native probabilities. Prerequisite: Bounded reference evidence sufficient for a finite decision contract; exact stochastic equivalence has no reliable estimate. |
 | **U5** | Additional raster/device-audio precision — unverified | Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks. Prerequisite: A specific mismatch or explicitly scoped precision target. Whole-frame/sample-exact equivalence remains unverified. |
 | **H1** | Physical Linux controller acceptance — awaiting-prerequisite | Exercise menu/configuration, selection, combat and unplug/reconnect on hardware; preserve ownership, neutral/deadzone and held/edge behavior. Include native mapping after K4. Injected devices cannot close H1. Prerequisite: An available controller and someone able to exercise it; no connected device is assumed. |
@@ -72,7 +84,7 @@ Existing evidence was reused; no new native or gameplay runs are inferred.
 | **A1 — Runtime ordering** | Shared timeline, actor/helper ordering, pause allowances, binding, facing and reset have consumers and scoped connected/native evidence. No new missing consumer was established; broader interaction acceptance remains explicit. | U1 |
 | **A2 — Assets, fonts and media** | Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established. | U2 |
 | **A3 — Rendering and audio** | Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed. | K1, K2, U5 |
-| **A4 — Options, training and AI** | Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat reaches a separate declared-command consumer with connected ownership/contact/recovery acceptance. Native UI/dummy and stochastic AI parity remain unverified. | K3, U3, U4 |
+| **A4 — Options, training and AI** | AI.Cheat admission is closed by K3. Direct target Options/Training review established K5/K6: independent utility rows, complete settings/session actions, native team KO consumer, mode-specific dummy rows, axis spacing, jam/guard/jump policy and selection return are now implemented and accepted. U3 is passed; stochastic native AI decisions remain U4. | K3, K5, K6, U3, U4 |
 | **A5 — Input compatibility** | Legacy CFG enable/numeric bindings, named/raw overrides, keyboard alternatives, session editing and ownership/hotplug have connected injected-device acceptance. Target-handler review establishes native numbering; Linux evdev metadata supplies the SDK button/hat boundary. Physical/native calibration remains H1. | K4, H1 |
 
 ### Deferred capabilities
@@ -87,6 +99,8 @@ They do not silently enlarge this baseline or reopen unrelated completion.
 
 - K1 corrected by direct target observation: absent layerno reads did not prove a behavioral defect. Tested Win/Survival values 0/1/2 share front composition; K1 now covers that policy and the demonstrated viewport-projection gap.
 - K2 expanded within the results batch: target results initialize a separate human-only presentation, including restored life/context, zeroed variables and partner placement. Continuing completed-fight actors was incorrect. This supersedes the earlier result-clock implementation without reopening unrelated mechanics.
+- U3 target comparison established two additional implementation targets, K5 Options behavior/presentation and K6 Training dummy/menu lifecycle. This explicitly expands the original four-target baseline to six; both now pass their connected acceptance and close U3. Session-only persistence and portable input editing remain intentional port policies.
+- K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets.
 
 ## Known difference checkpoints
 
@@ -226,7 +240,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Reviewed format families have readers and scoped acceptance. Broader font/content acceptance is U2; missing licensed payloads and native-reproducing content defects are not missing consumers. Physical CD and unavailable licensed/CJK payloads remain deferred. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command admission and its connected acceptance are complete. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1/K2 result scenes, K3 AI.Cheat admission and K5/K6 Options/Training are closed for their named behavior and acceptance. U1/U4/U5 retain runtime interaction, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 

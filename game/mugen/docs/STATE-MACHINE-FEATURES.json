@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "K1 result composition/viewport and K2 fresh result/threshold scenes are closed for the checked scope. K3 AI.Cheat command admission and its connected acceptance are complete. U1/U3/U4/U5 retain runtime, UI/dummy, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
+      "gap": "K1/K2 result scenes, K3 AI.Cheat admission and K5/K6 Options/Training are closed for their named behavior and acceptance. U1/U4/U5 retain runtime interaction, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -482,7 +482,7 @@
         "system/fight_controls.go:trainingInput",
         "system/fight_controls.go:drawTrainingMenu"
       ],
-      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered. Idle title demo now spans optional selection/VS, AI combat, timed return, intro cycling and input interruption. Its music/bar/debug consumers run through existing production mode/media scenarios and the rebuilt Linux window. Supplied readme/CFG runtime controls now reach their consumers: Pause holds match/HUD/GameTime while input/audio continue; fresh Scroll Lock advances one pass; AnyKeyUnpauses applies outside training menus. Training exposes manual/AI/cooperative dummy control, guard/stance/jumps/spacing/button jam and minimize/resume. Existing connected mode/feedback/co-op flows pass with races and the rebuilt Linux menu was inspected. Exact native dummy spacing/jam/AI timing and menu parity remain unverified; the bounded native UI review stayed at the beta welcome overlay despite synthetic F1, so it is not acceptance evidence."
+      "validation": "Connected Survival lifecycle retains MatchNo1, rounds1/2/3, survivor RoundsExisted, health/power/partner revival, persistent-variable masks and CNS RNG; state5900 attributes observe restored values/game time before the first controller pass. Enemy actors start fresh; ordinary Arcade/rematch rules remain covered. Idle title demo now spans optional selection/VS, AI combat, timed return, intro cycling and input interruption. Its music/bar/debug consumers run through existing production mode/media scenarios and the rebuilt Linux window. Supplied runtime controls hold match/HUD/GameTime while input/audio continue; Scroll Lock advances one pass. U3 direct target review and K5/K6 acceptance cover native utility navigation, mode-specific dummy/AI rows, cooperative guard/stance/axis spacing/six-on-six-off jam, pause/step/minimize, Training selection return and fresh reentry. Connected mode/feedback/team flows pass with races; final Linux Options/Training and paused PNG inspection pass. Intentional session input policy and separate stochastic AI/precision followups remain explicit."
     },
     {
       "id": "teams",
@@ -641,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "1d00ba28495c44d378168afc1b75a54673b862f378e1ce7ac261ea2e28e97868"
+      "passed_source": "4b6dcb8f37b248158e690703adc1991c743fc024a910eca41b6c6d30b4b84585"
     },
     {
       "id": "entities",
@@ -674,7 +674,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "83fdf13e1af9c366e7d868c01479725629087370c7299b4e1143264818481493"
+      "passed_source": "7526df195499c1c884c6f5671768f0c8d42aba1b85f3f132b46dc6b0406c7875"
     },
     {
       "id": "effects-pause",
@@ -709,7 +709,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5449d5256de12903a2ffdd6ce4f70a8d49b558275a4343d7c3ab7957133ed9a1"
+      "passed_source": "d5afb8b68fb037364a446002908736078e678ae2478f1bee7dd5dcb81e708f0b"
     },
     {
       "id": "match-flow",
@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "a5b68829ba01b050b2cba488c1886993f7df5c1663213795679c3b89fe027c16"
+      "passed_source": "5fc7f03b1aa869c1d45fd86aaccdc8667506a4f8d05a8919a62f63a69f0cf426"
     }
   ],
   "presentation_followups": [
@@ -1117,7 +1117,7 @@
       "id": "runtime-pause-training",
       "name": "User pause, frame-step and training dummy controls",
       "completed": true,
-      "validation": "Documented runtime Pause/Scroll Lock/AnyKeyUnpauses now hold and advance the complete fight independently of CNS Pause/SuperPause. Training controls feed human/AI/cooperative inputs through existing CNS and expose guard/stance/jump/spacing/jam settings with minimize/resume. Existing feedback/mode lifecycle passes with races, all five segments are checked. Rebuilt Linux title-to-Training menu/minimize was inspected; exact native menu/dummy policy remains partial, and the native welcome-overlay probe was inconclusive."
+      "validation": "U3 supersedes the earlier inconclusive welcome-overlay observation. Direct target Training operation and handler review establish mode-specific Cooperative/AI/Manual rows, independent AI level, axis spacing, guard flags, six-on/six-off jam and descending-phase W Jump. The existing mode lifecycle checks actual input/contact/recovery/refill, jump/air-jump/landing, frozen redraws, pause/step/minimize and selection/reentry. Affected connected segments pass with race detection and final Linux paused PNGs retain the arena/fighters."
     },
     {
       "id": "documented-fight-runtime-controls",
@@ -1129,13 +1129,13 @@
       "id": "session-input-configuration",
       "name": "Options input configuration through gameplay",
       "completed": true,
-      "validation": "Options/F1 opens a session editor sharing YAML binding setters and runtime fallbacks. It supports per-player keyboard/gamepad enable, deadzones, replace/add/disable, raw navigation while disabled, device name/layout and standard/raw capture. Release admission and neutral-axis baselines prevent held activation or -1 trigger rests from becoming unintended bindings. Device/layout changes rearm capture. Existing title/options/selection/VS/two-round fight/rematch coverage edits keyboard/raw gamepad alternatives and uses both through stock CNS; raw-trigger capture is included. Connected acceptance passes with races; rebuilt Linux panes inspected. No user configuration is written; physical/native numeric acceptance remains partial."
+      "validation": "Options/F1 retains the portable keyboard/gamepad editor, alternatives, enable/deadzone controls, standard/raw capture, release/neutral admission and hotplug rearming. F3 confirms restoring the selected player\u2019s startup bindings. Session Load/Save snapshots settings and live input edits without rewriting files. The existing menu-to-stock-fight/rematch lifecycle passes with races; native physical mapping remains H1."
     },
     {
       "id": "options-motif-layout",
       "name": "Options layout and font consumers in HD motifs",
       "completed": true,
-      "validation": "Options uses motif dimensions and authored title offset/font/text, uppercase labels for restricted bitmap banks, measured short captions and a reusable cursor image. Existing full Options/input/gameplay flow checks centered rendered rows. Connected acceptance passes with races; rebuilt stock HD Options title, rows and footer inspected without overlap/clipping."
+      "validation": "U3 target review supersedes the earlier title-font/short-caption approximation. Utility rows use independent small lettering after viewport fitting, retaining the authored motif background/heading and a built-in fallback. The existing Options/input/gameplay lifecycle checks centered HD and fontless rendering; the final Linux window is readable at both HD and smaller dimensions."
     },
     {
       "id": "direct-mode-entry",
@@ -1165,7 +1165,7 @@
       "id": "options-artwork-motifs",
       "name": "Usable Options in artwork-only menu motifs",
       "completed": true,
-      "validation": "An artwork-driven motif supplies title labels as background art and omits title-menu text fonts. Options now supplies a bounded, fitted built-in settings panel when those fonts are absent or too tall for the row spacing, retaining the motif background and heading. Enter changes a value or opens an action; explicit Back and Escape return to title. Existing menu/input/VS/two-round combat/rematch flow edits values, checks fontless rendering, live speed/audio configuration and inherited match life/time, then exits through Back. Connected match-flow passes with races; Linux rebuilt and artwork-driven Options was inspected changing difficulty 1 to 3, life 100 to 110, time 99 to 98, speed Slow2 to Slow1 and both volumes 20 to 15, opening Input Configuration and returning to title. Settings remain session-only; source pack and ignored YAML unchanged. Owned review overlays/captures are removed."
+      "validation": "Options utility rows remain readable with artwork-driven title menus and absent menu fonts. Direct target review established native bounds, time steps, full speed range, master/SFX/BGM volume, team/default actions and navigation. The connected Options/session/input-to-combat lifecycle and final Linux application flow pass without rewriting user configuration; K5 records the acceptance boundary."
     },
     {
       "id": "hd-projectile-empty-effects",
@@ -1207,7 +1207,7 @@
       "id": "menu-font-rgb",
       "name": "Menu selection and versus font color consumers",
       "completed": true,
-      "validation": "Title active/inactive rows, Options heading/rows, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. Index/bank/alignment and existing clipping stay unchanged; the connected campaign episode also renders a colored title label. Connected batch acceptance: passed with race detection; review scope is recorded once in HANDOFF.md."
+      "validation": "Title active/inactive rows, Options heading, selection titles/names, team captions and versus names retain optional RGB channels from the first authored font tuple. U3 establishes independent utility lettering for Options settings rows, superseding their old title-font mapping. Existing connected campaign/menu acceptance passes with race detection."
     },
     {
       "id": "hud-font-rgb",
@@ -1315,6 +1315,49 @@
           "input/legacy_gamepad.go",
           "input/legacy_gamepad_linux.go"
         ]
+      },
+      {
+        "id": "K5",
+        "parent": "raster-audio",
+        "name": "Options behavior and utility presentation",
+        "implementation": "implemented",
+        "acceptance": "passed",
+        "size": "medium",
+        "confidence": "high",
+        "contract": "Complete Options settings, team/input/default actions and bounded utility presentation, retaining session-only load/save.",
+        "basis": "Target Options inspection and handler review establish missing master volume/team/default actions, clamped value admission, discrete time limits, full speed range and independent utility rows. Team KO ordinal zero ignores surviving AI partners after a human leader is KOed; it is not an any-member-KO rule. Team factory reset uses 200% advantage, distinct from the shipped CFG value.",
+        "prerequisite": "Resolved by direct target Options/input/team observation and handler review; portable input editing and session-only persistence remain intentional port policies.",
+        "completion": "The existing Options/input/team/default/session lifecycle checks value bounds, held navigation, master/SFX/BGM gains, keyboard/gamepad snapshots and startup reset, native team factory values and CFG KO policy through gameplay. Affected connected segments pass with race detection; Linux Options/Training flow and resized utility presentation pass without writing user configuration.",
+        "sources": [
+          "system/options.go",
+          "system/input_config.go",
+          "system/main.go",
+          "system/flow_test.go",
+          "config/config.go",
+          "match/teams.go",
+          "match/team_flow_test.go",
+          "system/options_session.go",
+          "system/utility_menu.go"
+        ]
+      },
+      {
+        "id": "K6",
+        "parent": "raster-audio",
+        "name": "Training dummy policy and menu lifecycle",
+        "implementation": "implemented",
+        "acceptance": "passed",
+        "size": "medium",
+        "confidence": "high",
+        "contract": "Match observed Training mode-specific rows, AI-level ownership, guard/stance/spacing/jam input policy, pause/presentation and selection return.",
+        "basis": "Target Training lifecycle and handler review establish an AI-level row, mode-specific row counts, axis-distance bands, six-tick button toggles, descending-phase air-jump input and return to selection with fresh settings.",
+        "prerequisite": "Resolved by direct target Training menu/stock-fighter observation and cooperative input-handler review. Native stochastic AI decisions remain separate U4.",
+        "completion": "The existing mode lifecycle passes through Manual input, cooperative low guard/contact/recovery/refill, axis spacing, six-on/six-off jam, jump/air-jump/landing, independent AI level, frozen redraws, pause/step/minimize and selection/reentry reset. Affected connected segments pass with race detection; final Linux application flow and paused PNG pixels pass.",
+        "sources": [
+          "system/fight_controls.go",
+          "system/fight_state.go",
+          "system/runtime_debug.go",
+          "system/mode_flow_test.go"
+        ]
       }
     ],
     "acceptance": [
@@ -1349,9 +1392,9 @@
       {
         "id": "U3",
         "name": "Native Options/training behavior and presentation",
-        "status": "unverified",
-        "completion": "Compare one menu-to-training flow covering setting effects, dummy ownership/guard/stance/distance/jam, pause/resume and return. Preserve intentional session-only edits; quantify any mismatch before scheduling code.",
-        "prerequisite": "Operate the relevant Options/training controls and compare their effects. Current native observations cover campaign/results, not native Options/training acceptance.",
+        "status": "passed",
+        "completion": "Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; sample-exact raster/audio and stochastic AI decisions remain separate U5/U4.",
+        "prerequisite": "Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers.",
         "sources": [
           "system/options.go",
           "system/input_config.go",
@@ -1465,9 +1508,11 @@
       {
         "id": "A4",
         "name": "Options, training and AI",
-        "finding": "Displayed difficulty/life/time/speed/SFX/BGM/input settings reach consumers. Training/readme and runtime debug controls have functional paths and connected evidence. AI.Cheat reaches a separate declared-command consumer with connected ownership/contact/recovery acceptance. Native UI/dummy and stochastic AI parity remain unverified.",
+        "finding": "AI.Cheat admission is closed by K3. Direct target Options/Training review established K5/K6: independent utility rows, complete settings/session actions, native team KO consumer, mode-specific dummy rows, axis spacing, jam/guard/jump policy and selection return are now implemented and accepted. U3 is passed; stochastic native AI decisions remain U4.",
         "targets": [
-          "K3"
+          "K3",
+          "K5",
+          "K6"
         ],
         "acceptance": [
           "U3",
@@ -1512,7 +1557,9 @@
     ],
     "scope_changes": [
       "K1 corrected by direct target observation: absent layerno reads did not prove a behavioral defect. Tested Win/Survival values 0/1/2 share front composition; K1 now covers that policy and the demonstrated viewport-projection gap.",
-      "K2 expanded within the results batch: target results initialize a separate human-only presentation, including restored life/context, zeroed variables and partner placement. Continuing completed-fight actors was incorrect. This supersedes the earlier result-clock implementation without reopening unrelated mechanics."
+      "K2 expanded within the results batch: target results initialize a separate human-only presentation, including restored life/context, zeroed variables and partner placement. Continuing completed-fight actors was incorrect. This supersedes the earlier result-clock implementation without reopening unrelated mechanics.",
+      "U3 target comparison established two additional implementation targets, K5 Options behavior/presentation and K6 Training dummy/menu lifecycle. This explicitly expands the original four-target baseline to six; both now pass their connected acceptance and close U3. Session-only persistence and portable input editing remain intentional port policies.",
+      "K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets."
     ]
   }
 }

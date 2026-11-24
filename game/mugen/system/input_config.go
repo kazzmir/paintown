@@ -24,9 +24,13 @@ type InputConfigState struct {
 	settle                        bool
 	baseline                      input.GamepadSnapshot
 	canvas                        *ebiten.Image
+	confirmDefaults, defaultsYes  bool
 }
 
 func NewInputConfigState(engine *Engine, back State) *InputConfigState {
+	if engine.initialOptions == nil {
+		engine.initialOptions = engine.snapshotOptions()
+	}
 	return &InputConfigState{engine: engine, back: back, player: 1}
 }
 func (s *InputConfigState) offset() int {
@@ -78,6 +82,32 @@ func (s *InputConfigState) Update() (State, error) {
 	if s.engine.motif.OptionBG != nil {
 		s.engine.motif.OptionBG.Update()
 	}
+	if s.confirmDefaults {
+		if im.KeyJustPressed(ebiten.KeyArrowLeft) || im.KeyJustPressed(ebiten.KeyArrowRight) {
+			s.defaultsYes = !s.defaultsYes
+		}
+		if im.KeyJustPressed(ebiten.KeyEscape) {
+			s.confirmDefaults = false
+		}
+		if im.KeyJustPressed(ebiten.KeyEnter) {
+			if s.defaultsYes {
+				initial, side := s.engine.initialOptions, s.player-1
+				if side == 0 {
+					im.P1Keyboard, im.P1Gamepad = initial.keys[side], initial.pads[side]
+					s.engine.cfg.Input.Player1Keyboard = initial.keys[side]
+				} else {
+					im.P2Keyboard, im.P2Gamepad = initial.keys[side], initial.pads[side]
+					s.engine.cfg.Input.Player2Keyboard = initial.keys[side]
+				}
+				im.KeyboardDisabled[side] = initial.keyboardDisabled[side]
+				s.engine.cfg.Input.KeyboardDisabled = im.KeyboardDisabled
+				s.engine.cfg.Input.Gamepads[side] = initial.pads[side]
+				s.cursor = 0
+			}
+			s.confirmDefaults, s.settle = false, true
+		}
+		return s, nil
+	}
 	if im.KeyJustPressed(ebiten.KeyEscape) {
 		if s.waiting {
 			s.waiting = false
@@ -123,6 +153,10 @@ func (s *InputConfigState) Update() (State, error) {
 				}
 			}
 		}
+		return s, nil
+	}
+	if im.KeyJustPressed(ebiten.KeyF3) {
+		s.confirmDefaults, s.defaultsYes = true, false
 		return s, nil
 	}
 	if im.KeyJustPressed(ebiten.KeyTab) {
@@ -281,7 +315,14 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 	if s.settle {
 		hint = "Release controls to continue"
 	}
-	ebitenutil.DebugPrintAt(s.canvas, hint+"\nSession changes only | Esc: back", 8, 244)
+	if s.confirmDefaults {
+		choice := "No"
+		if s.defaultsYes {
+			choice = "Yes"
+		}
+		hint = fmt.Sprintf("Restore P%d startup bindings? < %s >", s.player, choice)
+	}
+	ebitenutil.DebugPrintAt(s.canvas, hint+"\nF3 reset bindings | Session only | Esc back", 8, 244)
 	drawUtilityCanvas(screen, s.canvas)
 }
 

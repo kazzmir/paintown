@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"image"
 	"image/color"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -446,6 +447,9 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	// Native Survival Simul keeps667 maximum life and recovers a defeated
 	// partner without reviving it during the result. The next bout restores
 	// that recovered amount, including the partial partner and shared power.
+	// This episode explicitly uses the AI-keeps-fighting team policy; the
+	// native default ends the team as soon as its human fighter is KOed.
+	e.cfg.Options.TeamLoseOnKO = false
 	selectSimul := NewSelectState(e, "Survival")
 	// A tiny writable CNS/DEF overlay reuses KFM sprites/AIR/CMD/SND in place.
 	// Its state5900 attribute requires restored counters/variables/game time,
@@ -599,6 +603,17 @@ trigger1=1
 	}
 	trainingPauseAndDummyFlow(t, e, f, keyboard, step, canvas)
 	step(ebiten.KeyEscape)
+	if selection, ok := e.currentState.(*SelectState); !ok || selection.title != "Training" {
+		t.Fatalf("Training Escape did not return to selection: %T", e.currentState)
+	}
+	step()
+	fresh := selectMode("Training")
+	if fresh.training.control != 0 || fresh.training.guard != 0 || fresh.training.stance != 0 || fresh.training.distance != 0 || fresh.training.jam != 0 || fresh.match.Players[1].Character.AILevel != 0 {
+		t.Fatal("new Training selection retained dummy settings/AI ownership")
+	}
+	step(ebiten.KeyEscape)
+	step()
+	step(ebiten.KeyEscape)
 	step()
 	f = selectMode("Watch Mode")
 	for _, p := range f.match.Actors() {
@@ -615,18 +630,34 @@ trigger1=1
 func trainingPauseAndDummyFlow(t *testing.T, e *Engine, f *FightState, keyboard *flowKeyboard, step func(...ebiten.Key), canvas *ebiten.Image) {
 	t.Helper()
 	defer func() { keyboard.previous = nil }()
-	run := func(keys ...ebiten.Key) {
-		t.Helper()
-		keyboard.previous = keyboard.keys
-		step(keys...)
-	}
+	run := func(keys ...ebiten.Key) { t.Helper(); keyboard.previous = keyboard.keys; step(keys...) }
 	press := func(key ebiten.Key) { t.Helper(); run(key); run() }
+	edit := func(row, delta int) {
+		t.Helper()
+		for f.training.cursor != row {
+			press(ebiten.KeyArrowDown)
+		}
+		key := ebiten.KeyArrowRight
+		if delta < 0 {
+			key = ebiten.KeyArrowLeft
+			delta = -delta
+		}
+		for n := 0; n < delta; n++ {
+			press(key)
+		}
+	}
+	lastInput := func() []string {
+		history := f.match.Players[1].Character.Commands.History
+		if len(history) == 0 {
+			return nil
+		}
+		return history[len(history)-1]
+	}
 	tick, gameTime := f.match.Tick, e.gameTime
 	press(ebiten.KeyPause)
 	if !f.userPaused || f.training == nil || f.match.Tick != tick || e.gameTime != gameTime {
-		t.Fatal("training pause did not hold the complete match")
+		t.Fatal("Training pause did not hold match/CNS time")
 	}
-	// Inspect the actual composed menu, without retaining a capture bank.
 	e.Draw(canvas)
 	menu := make([]byte, canvas.Bounds().Dx()*canvas.Bounds().Dy()*4)
 	canvas.ReadPixels(menu)
@@ -636,71 +667,211 @@ func trainingPauseAndDummyFlow(t *testing.T, e *Engine, f *FightState, keyboard 
 	canvas.ReadPixels(plain)
 	f.userPaused = true
 	if bytes.Equal(menu, plain) {
-		t.Fatal("training menu was absent from the composed fight")
+		t.Fatal("Training menu was absent from the composed fight")
 	}
-	press(ebiten.KeyArrowRight)
-	press(ebiten.KeyArrowRight) // Cooperative -> AI -> Manual.
+	// A paused menu redraw must preserve the frozen arena and actor poses.
+	for n := 0; n < 12; n++ {
+		e.Draw(canvas)
+	}
+	frozen := make([]byte, len(menu))
+	canvas.ReadPixels(frozen)
+	if !bytes.Equal(menu, frozen) || f.match.Tick != tick || e.gameTime != gameTime {
+		t.Fatal("repeated Training draws changed the frozen fight")
+	}
+	edit(0, 2) // Manual has only the control row.
+	if len(f.training.rows()) != 1 {
+		t.Fatal("Manual exposed cooperative settings")
+	}
 	press(ebiten.KeyPause)
 	run(ebiten.KeyF)
-	if f.training.control != 2 || f.match.Players[1].Character.AILevel != 0 || !slices.Contains(f.match.Options.Input(2, -1), "ButtonA") {
-		t.Fatal("manual training dummy did not read the second human")
+	if f.training.control != 2 || f.match.Players[1].Character.AILevel != 0 || !slices.Contains(lastInput(), "ButtonA") {
+		t.Fatal("Manual did not reach the second human's CMD")
 	}
 	press(ebiten.KeyPause)
-	press(ebiten.KeyArrowRight) // Manual -> Cooperative.
-	press(ebiten.KeyArrowDown)
-	press(ebiten.KeyArrowRight) // Auto guard.
-	press(ebiten.KeyArrowDown)
-	press(ebiten.KeyArrowRight) // Crouch.
-	press(ebiten.KeyArrowDown)
-	press(ebiten.KeyArrowRight)
-	press(ebiten.KeyArrowRight) // Medium spacing.
-	press(ebiten.KeyArrowDown)
-	for n := 0; n < 4; n++ {
-		press(ebiten.KeyArrowRight)
-	} // Jam X.
-	press(ebiten.KeyM)
-	if !f.training.minimized {
-		t.Fatal("training minimize was ignored")
+	edit(0, 1) // Cooperative.
+	edit(1, 1)
+	edit(2, 1)
+	edit(3, 2)
+	edit(4, 4)             // Auto, crouch, medium, jam X.
+	press(ebiten.KeyEnter) // Target Start binding hides the whole panel.
+	if !f.training.minimized || !f.userPaused {
+		t.Fatal("Start did not minimize Training while paused")
+	}
+	e.Draw(canvas)
+	canvas.ReadPixels(menu)
+	f.userPaused = false
+	e.Draw(canvas)
+	canvas.ReadPixels(plain)
+	f.userPaused = true
+	if !bytes.Equal(menu, plain) {
+		t.Fatal("minimized Training still covered the fight")
 	}
 	press(ebiten.KeyM)
 	if f.training.minimized {
-		t.Fatal("training menu did not restore")
+		t.Fatal("M convenience shortcut did not restore Training")
 	}
 	e.cfg.Input.AnyKeyUnpauses = true
 	press(ebiten.KeyF9)
 	if !f.userPaused {
-		t.Fatal("AnyKeyUnpauses dismissed the active training menu")
+		t.Fatal("AnyKeyUnpauses dismissed Training")
 	}
 	tick, gameTime = f.match.Tick, e.gameTime
 	press(ebiten.KeyScrollLock)
 	if !f.userPaused || f.match.Tick != tick+1 || e.gameTime != gameTime+1 {
-		t.Fatal("training frame-step did not retain pause/menu ownership")
+		t.Fatal("Training step lost pause/time ownership")
 	}
-	press(ebiten.KeyComma) // Attack also closes the training menu.
+	press(ebiten.KeyComma) // Attack resumes.
 	seenCrouch, seenJam, seenSpacing := false, false, false
-	for n := 0; n < 120; n++ {
-		run()
+	for n := 0; n < 180; n++ {
+		if n < 45 {
+			run(ebiten.KeyArrowLeft)
+		} else {
+			run()
+		}
 		dummy := f.match.Players[1].Character
-		raw := f.match.Options.Input(2, dummy.Facing)
+		raw := lastInput()
 		seenCrouch = seenCrouch || dummy.StateType == "C"
 		seenJam = seenJam || slices.Contains(raw, "ButtonX")
 		seenSpacing = seenSpacing || slices.Contains(raw, "DirForward") || slices.Contains(raw, "DirBack")
 	}
-	if f.userPaused || !seenCrouch || !seenJam || !seenSpacing || f.training.guard != 1 || f.match.Phase != match.Active {
-		t.Fatal("cooperative dummy settings did not reach CNS", seenCrouch, seenJam, seenSpacing)
+	dummy := f.match.Players[1].Character
+	x, _ := dummy.PositionOf(f.match.Players[0].Character)
+	distance := math.Abs(dummy.X-x) * 320 / float64(dummy.LocalCoordinateWidth())
+	if f.userPaused || !seenCrouch || !seenJam || !seenSpacing || distance < 98 || distance > 152 {
+		t.Fatal("cooperative spacing/stance/jam lifecycle", seenCrouch, seenJam, seenSpacing, distance)
 	}
 	press(ebiten.KeyPause)
-	press(ebiten.KeyArrowDown)  // Wrap Button jam -> Dummy control.
-	press(ebiten.KeyArrowRight) // Cooperative -> AI.
+	edit(4, -4)
+	edit(3, -2)
+	edit(2, -1)
+	edit(1, -1)
+	edit(4, 4) // Any/stand/none, fresh jam.
 	press(ebiten.KeyPause)
-	if f.userPaused || f.match.Players[1].Character.AILevel < 1 {
-		t.Fatal("training AI ownership did not reach authored CNS")
+	// Observe the real command history through a full native jam period. Start
+	// at a fresh press so pause release does not determine the sample phase.
+	previous := slices.Contains(lastInput(), "ButtonX")
+	found := false
+	for n := 0; n < 24; n++ {
+		run()
+		now := slices.Contains(lastInput(), "ButtonX")
+		if now && !previous {
+			found = true
+			break
+		}
+		previous = now
+	}
+	if !found {
+		t.Fatal("jam produced no fresh CMD press")
+	}
+	for n := 0; n < 12; n++ {
+		if n > 0 {
+			run()
+		}
+		if held := slices.Contains(lastInput(), "ButtonX"); held != (n < 6) {
+			t.Fatal("native jam press/release span", n, held)
+		}
+	}
+	// A jammed stock attack must reach contact, hit recovery and Training refill.
+	hit, recovered := false, false
+	for n := 0; n < 240; n++ {
+		run(ebiten.KeyArrowRight)
+		root := f.match.Players[0].Character
+		hit = hit || root.MoveType == "H"
+		recovered = recovered || hit && root.MoveType != "H" && root.Life == root.MaxLife
+		if hit && recovered {
+			break
+		}
+	}
+	if !hit || !recovered {
+		t.Fatal("jam did not complete contact/recovery/refill", hit, recovered)
+	}
+	press(ebiten.KeyPause)
+	edit(4, -4)
+	edit(1, 1)
+	press(ebiten.KeyPause)
+	// Auto guard chooses the low posture from guard flags, then recovers without
+	// continuing to block once the attack is over. The ordinary stock CNS owns it.
+	for n := 0; n < 50; n++ {
+		run()
+	}
+	for n := 0; n < 160; n++ {
+		root := f.match.Players[0].Character
+		distance, _ := root.GetOpponentBodyDistance()
+		if distance <= 4*float64(root.LocalCoordinateWidth())/320 {
+			break
+		}
+		if root.Facing == 1 {
+			run(ebiten.KeyArrowRight)
+		} else {
+			run(ebiten.KeyArrowLeft)
+		}
+	}
+	lowGuard := false
+	for n := 0; n < 160; n++ {
+		if n%40 == 3 {
+			run(ebiten.KeyArrowDown, ebiten.KeyComma)
+		} else if n%40 < 8 {
+			run(ebiten.KeyArrowDown)
+		} else {
+			run()
+		}
+		lowGuard = lowGuard || dummy.GetHitGuarded && dummy.StateType == "C"
+		if lowGuard && dummy.StateNo == 11 {
+			break
+		}
+	}
+	if !lowGuard {
+		root := f.match.Players[0].Character
+		t.Fatal("auto guard did not choose crouch for a stock low", root.StateNo, dummy.StateNo, dummy.GetHitGuarded, root.X, dummy.X, root.GuardDistance, f.training.guard)
+	}
+	press(ebiten.KeyPause)
+	edit(1, -1)
+	edit(2, 2)
+	press(ebiten.KeyPause) // Ordinary jump.
+	jumped, landed := false, false
+	for n := 0; n < 180; n++ {
+		run()
+		jumped = jumped || dummy.Y < 0
+		landed = landed || jumped && dummy.Y >= 0
+		if landed {
+			break
+		}
+	}
+	if !jumped || !landed {
+		t.Fatal("Training Jump did not land/repeat")
+	}
+	press(ebiten.KeyPause)
+	edit(2, 1)
+	press(ebiten.KeyPause) // W Jump uses a descending up edge.
+	airJump := false
+	landed = false
+	for n := 0; n < 240; n++ {
+		run()
+		airJump = airJump || dummy.AirJumpCount > 0
+		landed = landed || airJump && dummy.Y >= 0
+		if landed {
+			break
+		}
+	}
+	if !airJump || !landed {
+		t.Fatal("Training W Jump did not air-jump and land", airJump, landed)
+	}
+	press(ebiten.KeyPause)
+	edit(0, 1)
+	if len(f.training.rows()) != 2 || f.training.rows()[1].label != "AI Level" {
+		t.Fatal("AI mode did not expose its own level row")
+	}
+	level := f.training.aiLevel
+	edit(1, 1)
+	press(ebiten.KeyPause)
+	if f.userPaused || dummy.AILevel != level%8+1 {
+		t.Fatal("Training AI-level edit did not reach CNS", dummy.AILevel)
 	}
 	for n := 0; n < 30; n++ {
 		run()
 	}
 	if f.match.Phase != match.Active || f.match.TimeLeft != -1 {
-		t.Fatal("training controls lost unlimited-time/KO protection")
+		t.Fatal("Training lost unlimited-time/KO protection")
 	}
 }
 

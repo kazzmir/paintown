@@ -13,8 +13,6 @@ AI input. Names, selected roster entries, palettes, storyboards, music and stage
 settings travel with the request. Archive expansions belong to the engine and
 are retired after audio readers stop using them.
 
-A direct production match from the repository root:
-
 `match.Match` owns teams, active/benched fighters, world, stage, fight definition,
 round phases, results, timer, camera and shared simulation timeline. Round phases
 cover pre-intro, authored Intro assertions, Round/Fight announcements, active
@@ -37,9 +35,23 @@ policies retain their separate cursor semantics.
 
 User Pause holds the complete match, HUD and CNS GameTime while input/audio
 continue. Scroll Lock advances one pass. Training exposes cooperative, AI and
-manual dummy controls through its pause menu, including guard, stance, jumps,
-spacing and button jam. M minimizes/restores the menu; attack or Pause resumes.
-Exact native dummy timing/menu parity remains unverified.
+manual dummy controls through its pause menu. Cooperative rows control guard,
+stance/jumps, axis spacing and button jam; AI has an independent level row;
+Manual uses P2 input. Spacing bands are Close 0–50, Medium 100–150 and Far at
+least 280 base units between fighter axes. Jam alternates six held/released
+ticks; W Jump releases up while rising and presses it while descending. Auto
+guard uses incoming guard flags, including helpers/projectiles. Start or M
+hides/restores the whole menu; attack or Pause resumes. Escape returns to
+Training selection, and a new selection resets dummy settings.
+
+Options uses small utility rows independently of title art/fonts. Its bounded
+settings, team page, confirmed defaults and session Load/Save reach gameplay and
+audio. CFG team KO ordinal 0 ignores a surviving AI partner when a human Simul
+leader is KOed; 1 permits that AI to continue. An AI partner's KO alone does not
+end the team; co-op human and CPU teams retain their ordinary survival rules.
+Team factory reset uses 200% advantage. Input F3 restores selected-player startup
+bindings after confirmation. Session snapshots preserve live input edits without
+writing files; portable input editing is intentional. See README for controls.
 
 Validation uses five connected segments with source fingerprints. Completed
 segments stay out of default runs until their covered source changes. Existing
@@ -49,7 +61,8 @@ success and failure. See [test segments](../tests/SEGMENTS.md).
 
 Remaining compatibility includes physical controller/native joystick acceptance,
 broader fonts/media/packs, native AI/rules and renderer/audio precision. The stock
-and SF2 flows establish their observed scope, not arbitrary content equivalence.
-Original SF2 later-round script stalls also reproduce in native; no further mod
-repairs are planned. Physical CD, unavailable licensed fonts and other platforms
+and supplied-content flows establish their observed scope, not arbitrary content
+equivalence. Later-round script stalls reproduced in the target are content
+defects; no further mod repairs are planned. Physical CD, unavailable licensed
+fonts and other platforms
 remain deferred. Detailed current limits belong in the single progress ledger.

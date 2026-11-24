@@ -199,16 +199,20 @@ func (m *Match) rotateNextMembers(initial bool) {
 func (m *Match) teamKO(side int) bool {
 	allDead := true
 	participating := false
-	for _, p := range m.SidePlayers(side) {
+	players := m.SidePlayers(side)
+	humanLead := len(players) > 0 && !players[0].Character.DebugDisabled && players[0].Character.AILevel == 0
+	for index, p := range players {
 		if p.Character.DebugDisabled {
 			continue
 		}
 		participating = true
-		dead := !p.Character.IsAlive()
-		if dead && m.Options.TeamLoseOnKO {
-			return true
+		// Native "Team loses" ignores the AI partner's survival when a human
+		// leads a Simul team. It is not an any-member-KO rule: losing the AI
+		// alone, a co-op human, or one member of a CPU team does not end it.
+		if m.Options.TeamLoseOnKO && m.Teams[side].Mode == Simul && index > 0 && humanLead && p.Character.AILevel > 0 {
+			continue
 		}
-		allDead = allDead && dead
+		allDead = allDead && !p.Character.IsAlive()
 	}
 	return participating && allDead
 }

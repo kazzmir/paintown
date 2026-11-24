@@ -190,8 +190,14 @@ unknown permutations into mandatory parameter matrices.
   Retain disabled slots through F4/reload; shared clocks/HUD keep running. PNG
   is the native screenshot format since 1.0 RC4; do not reopen a PCX gap for 1.1.
 - Options must remain readable when a motif draws its title labels as art and
-  omits menu fonts. Keep the fitted built-in fallback, authored BG/heading and
-  explicit Back action. Enter adjusts values/opens actions; edits reach gameplay.
+  omits menu fonts. Utility rows use independent small lettering after viewport
+  fitting, retaining the authored BG/heading and built-in fallback. Keep native
+  bounds, discrete time steps and full speed range; edits reach gameplay/audio.
+  Session Load/Save snapshots live input edits without writing files. Defaults
+  reset only the current page; input F3 confirms selected-player startup bindings.
+  Team factory reset uses 200% advantage. Native CFG KO ordinal 0 ignores an AI
+  partner's survival after a human Simul leader is KOed; 1 lets the AI continue.
+  Do not reinterpret this as an any-member-KO rule or apply it to CPU/co-op teams.
 - Keep native font tuples' optional RGB multipliers (neutral 256) separate from
   bank selection and immutable glyph caches across menus, HUD and result text.
   Victory portrait windows clip after full-canvas scaling; inset quote wrapping
@@ -209,7 +215,13 @@ unknown permutations into mandatory parameter matrices.
 - User Pause holds match/HUD/CNS GameTime while input/audio service continues.
   Fresh Scroll Lock advances one pass; AnyKeyUnpauses does not dismiss training
   menus. Keep manual/AI/cooperative dummy ownership through the shared input
-  consumer. Native dummy spacing/jam timing and menu parity remain partial.
+  consumer. Training rows follow control mode, with independent AI level. Cache
+  one cooperative raw snapshot per tick; preserve axis-distance bands, six-on/
+  six-off jam, incoming guard flags and descending W Jump edges through ordinary
+  CNS. Start/M hides the whole panel, Escape returns to Training selection and
+  new selection resets dummy settings. Frozen redraws must preserve fight pixels.
+  U3 is accepted for this scope; stochastic AI and raster/audio precision remain
+  separate U4/U5 followups.
 - Idle demos retain their own sequence/AI requests and consume interruption
   input before the returned title can act on it. Preserve demo bar/debug/music
   policy without changing user configuration. Title BG controllers advance.

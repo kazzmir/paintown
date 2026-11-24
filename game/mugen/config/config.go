@@ -149,6 +149,9 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	}
 
 	cfg := &MugenConfig{}
+	// The native ordinal is 0: team loses, 1: the AI partner continues.
+	// Keep the match-facing boolean in terms of the resulting KO behavior.
+	cfg.Options.TeamLoseOnKO = true
 	cfg.Sound = DefaultSoundConfig()
 	cfg.Input.Gamepads = [2]GamepadConfig{DefaultGamepadConfig(), DefaultGamepadConfig()}
 	var legacyJoystick, legacyJoystickPresent [2]bool
@@ -200,7 +203,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 				case "team.1vs2life":
 					cfg.Options.Team1Vs2Life = int(getFloat(attr.Value))
 				case "team.loseonko":
-					cfg.Options.TeamLoseOnKO = getBool(attr.Value)
+					cfg.Options.TeamLoseOnKO = !getBool(attr.Value)
 				case "motif":
 					cfg.Options.Motif = getString(attr.Value)
 				}

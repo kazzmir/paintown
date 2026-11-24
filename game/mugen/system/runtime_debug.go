@@ -57,7 +57,9 @@ func (s *FightState) updateDebugHotkeys() error {
 				s.training.control = 2
 				if level > 0 {
 					s.training.control = 1
+					s.training.aiLevel = level
 				}
+				s.training.cursor, s.training.frame = 0, -1
 			}
 		}
 	}
