@@ -215,8 +215,10 @@ func (s *SelectState) Update() (State, error) {
 			s.moveCursor(&s.p1CursorX, &s.p1CursorY, 0, 1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if palette, ok := s.confirm(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
-			s.p1Done = s.pickMember(0, s.chosen(s.p1CursorX, s.p1CursorY), palette)
+		if button, ok := s.confirm(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
+			ch := s.chosen(s.p1CursorX, s.p1CursorY)
+			palette := ch.PaletteKeymap.Palette(button)
+			s.p1Done = s.pickMember(0, ch, palette)
 			s.palettes[0] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
@@ -245,8 +247,10 @@ func (s *SelectState) Update() (State, error) {
 			s.moveCursor(&s.p2CursorX, &s.p2CursorY, 0, 1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if palette, ok := s.confirm(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
-			s.p2Done = s.pickMember(1, s.chosen(s.p2CursorX, s.p2CursorY), palette)
+		if button, ok := s.confirm(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
+			ch := s.chosen(s.p2CursorX, s.p2CursorY)
+			palette := ch.PaletteKeymap.Palette(button)
+			s.p2Done = s.pickMember(1, ch, palette)
 			s.palettes[1] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
@@ -287,14 +291,14 @@ func (s *SelectState) automaticStage() bool {
 func (s *SelectState) confirm(slot int) (int, bool) {
 	for index, action := range []input.Action{input.ActionA, input.ActionB, input.ActionC, input.ActionX, input.ActionY, input.ActionZ, input.ActionEnter} {
 		if input.GlobalManager.IsJustPressed(slot, action) {
-			palette := index + 1
+			button := index + 1
 			if index == 6 {
-				palette = 1
+				button = 0
 			}
 			if input.GlobalManager.IsPressed(slot, input.ActionStart) && index < 6 {
-				palette += 6
+				button += 6
 			}
-			return palette, true
+			return button, true
 		}
 	}
 	return 0, false

@@ -30,7 +30,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | **K6 — Training dummy policy and menu lifecycle** | implemented / passed | medium / high |
 | **K7 — Overlapping pause, contact entry and bound recovery** | implemented / passed | medium / high |
 | **K8 — Native AI input decision policy** | partial / unverified | large / medium |
-| **K9 — Authored character palette keymaps through selection** | missing / unverified | medium / high |
+| **K9 — Authored character palette keymaps through selection** | partial / unverified | medium / high |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
   Basis: Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.
@@ -74,7 +74,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 
 - [ ] **K9**: Carry the character DEF Palette Keymap through portrait loading, manual/random-cell selection, roster snapshots, fight PalNo and round/reload ownership. Keep direct numeric palette requests separate from selection-button ordinals. Preserve native absent-section defaults, partial-section defaults, first fields and 1–12 clamping.
   Basis: The same licensed-font/content journey loads and displays Unicode TTF/TTC text in both runtimes, but an identical stock selection button reaches different fighter outfits. The Go selection consumer ignores Palette Keymap; target loader review establishes explicit mapping, defaults and numeric clamping. This is a confirmed content consumer gap, separate from font raster precision.
-  Prerequisite: Implement the reviewed DEF mapping and compare one connected custom-map/Start-modifier selection-to-fight/reset path. Preserve existing palette loading, RemapPal and roster presentation snapshots; do not infer unrelated AI palette preference rules.
+  Prerequisite: The reviewed DEF mapping now reaches portrait snapshots and manual/random-cell picks. Native custom-map/Start-modifier observation and connected segment acceptance remain. Numeric palette requests bypass button mapping; Enter-only confirmation retains palette 1 as a port convenience.
   Completion: Existing selection/asset/team lifecycles preserve the mapped numeric palette into CNS, rematch and reload, including random-cell character ownership, missing keys and ignored duplicate definitions. Compare the native custom-map input path and run affected connected segments at batch end.
 
 
