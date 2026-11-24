@@ -53,6 +53,7 @@ func (b *aiBrain) defence(c, enemy *character.Character, distance, level int) bo
 			flags = threat.CurrentHitDef.GuardFlag
 		}
 		flags = strings.ToUpper(flags)
+		flags = strings.ReplaceAll(flags, "M", "MHL")
 		low, high := strings.Contains(flags, "L"), strings.Contains(flags, "H")
 		if low != high {
 			b.keys[2] = low

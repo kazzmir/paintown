@@ -112,6 +112,7 @@ type Match struct {
 	pendingRoundOver         bool
 	slowdown                 engine.RoundSlowdown
 	aiBrains                 map[int32]*aiBrain
+	aiRandom                 map[int]*engine.RandomStream // seat streams survive brain/round resets
 	elapsedFightTicks        int
 	startingLife             [2]float32 // mean fraction before this round's CNS
 	roundRestart, restarting *roundRestartSnapshot

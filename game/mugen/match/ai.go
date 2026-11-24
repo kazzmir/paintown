@@ -2,6 +2,7 @@ package match
 
 import (
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"math"
 	"sort"
@@ -20,16 +21,27 @@ type aiBrain struct {
 	frame        int
 	inputs       []string
 	keys         [11]bool // persistent physical virtual keys; directions precede buttons
+	source       *cmd.Data
+	level        int
+	cheat        bool
 }
 
 func (m *Match) brain(c *character.Character) *aiBrain {
 	if m.aiBrains == nil {
 		m.aiBrains = make(map[int32]*aiBrain)
 	}
-	if brain := m.aiBrains[c.EntityID]; brain != nil {
+	if brain := m.aiBrains[c.EntityID]; brain != nil && brain.source == c.CmdFile && brain.level == c.AILevel && brain.cheat == m.Options.AICheat {
 		return brain
 	}
-	b := &aiBrain{random: engine.NewRandomStream(m.World.RandomSeed() + int64(c.EntityID)*16807), frame: -1}
+	if m.aiRandom == nil {
+		m.aiRandom = make(map[int]*engine.RandomStream)
+	}
+	random := m.aiRandom[c.InputSlot]
+	if random == nil {
+		random = engine.NewRandomStream(m.World.RandomSeed() + int64(c.InputSlot)*16807)
+		m.aiRandom[c.InputSlot] = random
+	}
+	b := &aiBrain{random: random, frame: -1, source: c.CmdFile, level: c.AILevel, cheat: m.Options.AICheat}
 	if c.CmdFile != nil {
 		var names []string
 		for name := range c.CmdFile.Commands {
@@ -164,10 +176,14 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		return nil
 	}
 	p := m.ActivePlayers()[playerID-1]
-	if p == nil || !p.Character.IsAlive() {
+	if p == nil || p.Character == nil {
 		return nil
 	}
 	c := p.Character
+	if c.AILevel <= 0 || c.DebugDisabled || !c.IsAlive() {
+		delete(m.aiBrains, c.EntityID)
+		return nil
+	}
 	b := m.brain(c)
 	if b.frame == m.Tick {
 		return b.inputs
@@ -176,6 +192,8 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	b.admitted = nil
 	other, distance := m.aiOpponent(c)
 	if other == nil {
+		clear(b.keys[:])
+		b.queue, b.held, b.remaining, b.planActive = nil, nil, 0, false
 		return nil
 	}
 	level := max(1, min(8, c.AILevel))
@@ -207,6 +225,7 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		b.movement(distance)
 		b.attack(c, distance, level, first, second, m.Options.AICheat)
 	}
+	b.recovery(c, m.Options.GameSpace.Width)
 	b.inputs = b.snapshot()
 	return b.inputs
 }
@@ -219,7 +238,7 @@ func (m *Match) BasicAICommands(playerID int) []string {
 		return nil
 	}
 	p := m.ActivePlayers()[playerID-1]
-	if p == nil || !p.Character.IsAlive() || p.Character.AILevel <= 0 {
+	if p == nil || p.Character == nil || !p.Character.IsAlive() || p.Character.DebugDisabled || p.Character.AILevel <= 0 {
 		return nil
 	}
 	m.BasicAIInput(playerID)

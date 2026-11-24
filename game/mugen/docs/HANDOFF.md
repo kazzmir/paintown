@@ -59,7 +59,11 @@ cadence now uses per-pass difficulty/distance weights, a confirmed-hit cancel
 boost, reduced hit-state attempts, held physical button toggles and occasional
 chords/Start. AI.Cheat label admission shares that decision without bypassing
 CNS. Non-cheating timed CMD plans remain an explicit port policy. Recovery and
-ownership are the following checkpoints;
+ownership now reject human/disabled/KO roots, discard stale plans on CMD/level/
+policy changes and clear input with no live opponent. Falling-hit recovery sends
+native-weighted physical chords through ordinary CNS. Independent seat random
+streams continue across round/ownership resets while held state and plans reset.
+All intended fallback contexts are implemented; connected acceptance is next;
 connected acceptance runs at the end of that batch. The target also has branches
 using learned attack metadata; those are distinct from the weighted fallback and
 must not be claimed reproduced merely because random command admission works.

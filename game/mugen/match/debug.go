@@ -126,6 +126,7 @@ func (m *Match) SetPlayerEnabled(playerID int, enabled bool) bool {
 	}
 	m.Options.DisabledPlayers[playerID-1] = !enabled
 	p.Character.DebugDisabled = !enabled
+	delete(m.aiBrains, p.Character.EntityID)
 	return true
 }
 
