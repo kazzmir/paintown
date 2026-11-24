@@ -16,7 +16,7 @@ type aiBrain struct {
 	queue        []character.CommandInput
 	held         []string
 	remaining    int
-	nextDecision int
+	planActive   bool
 	frame        int
 	inputs       []string
 	keys         [11]bool // persistent physical virtual keys; directions precede buttons
@@ -73,6 +73,12 @@ func (b *aiBrain) nextInput() []string {
 		b.held, b.remaining = step.Keys, step.Time
 	}
 	b.remaining--
+	clear(b.keys[:])
+	for index, key := range aiKeys {
+		for _, held := range b.held {
+			b.keys[index] = b.keys[index] || key == held
+		}
+	}
 	return b.held
 }
 
@@ -149,9 +155,10 @@ func (m *Match) aiOpponent(c *character.Character) (*character.Character, int) {
 	return selected, int(nearest * float64(width) / float64(c.LocalCoordinateWidth()))
 }
 
-// BasicAIInput retains the adapter name but plans authored CMD sequences.
-// CNS owns eligibility, cancels, power and resulting states. Difficulty affects
-// reaction/defence; an independent stream leaves authored CNS Random untouched.
+// BasicAIInput retains the adapter name. One decision per input tick updates
+// persistent physical keys and separate declared-command admission. CNS owns
+// eligibility, cancels, power and resulting states. The independent stream keeps
+// AI sampling from consuming authored CNS Random draws.
 func (m *Match) BasicAIInput(playerID int) []string {
 	if playerID < 1 || playerID > 4 || m.Phase != Active {
 		return nil
@@ -172,6 +179,13 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		return nil
 	}
 	level := max(1, min(8, c.AILevel))
+	first, second := 4+int(b.random.Next()%6), 4+int(b.random.Next()%6)
+	if b.random.Next()%100 == 0 {
+		first = 10 // Start is an occasional native choice, not an attack button alias.
+	}
+	if first == second || b.random.Next()%8 != 0 {
+		second = -1
+	}
 	if b.defence(c, other, distance, level) {
 		b.inputs = b.snapshot()
 		return b.inputs
@@ -183,26 +197,17 @@ func (m *Match) BasicAIInput(playerID int) []string {
 		b.inputs = b.nextInput()
 		return b.inputs
 	}
-	if m.Tick < b.nextDecision {
+	if b.planActive {
+		b.planActive = false
+		clear(b.keys[:])
 		b.inputs = b.snapshot()
 		return b.inputs
 	}
-	b.nextDecision = m.Tick + max(4, 40-4*level)
 	if b.random.Next()%100 < 58 {
 		b.movement(distance)
+		b.attack(c, distance, level, first, second, m.Options.AICheat)
 	}
 	b.inputs = b.snapshot()
-	if m.Options.AICheat && len(b.commandNames) > 0 {
-		// Native AI can admit a declared label without simulating its motion
-		// or charge. Do not forge press/release history or bypass CNS gates.
-		index := int(b.random.Next() % int64(len(b.commandNames)))
-		b.admitted = b.commandNames[index : index+1]
-	} else if len(b.commands) > 0 {
-		b.queue = b.commands[int(b.random.Next()%int64(len(b.commands)))]
-		b.inputs = b.nextInput()
-	} else {
-		b.inputs, _ = c.CmdFile.PhysicalInputs([]string{"ButtonX"})
-	}
 	return b.inputs
 }
 

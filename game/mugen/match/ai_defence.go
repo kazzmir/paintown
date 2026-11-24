@@ -61,5 +61,6 @@ func (b *aiBrain) defence(c, enemy *character.Character, distance, level int) bo
 	// A guard reaction interrupts an unfinished physical motion; resuming its
 	// tail after a guard would invent a charge/strict-sequence history.
 	b.queue, b.held, b.remaining = nil, nil, 0
+	b.planActive = false
 	return true
 }

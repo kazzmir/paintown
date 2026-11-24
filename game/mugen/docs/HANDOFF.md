@@ -55,7 +55,11 @@ Defence now shares InGuardDist's live threat lookup (including helpers and
 projectiles), applies difficulty/time/distance reaction weights, retains an
 established guard and adjusts height from incoming flags. A guard reaction
 interrupts a physical command plan; CNS still controls eligibility. Attack
-cadence, recovery and ownership are the following checkpoints;
+cadence now uses per-pass difficulty/distance weights, a confirmed-hit cancel
+boost, reduced hit-state attempts, held physical button toggles and occasional
+chords/Start. AI.Cheat label admission shares that decision without bypassing
+CNS. Non-cheating timed CMD plans remain an explicit port policy. Recovery and
+ownership are the following checkpoints;
 connected acceptance runs at the end of that batch. The target also has branches
 using learned attack metadata; those are distinct from the weighted fallback and
 must not be claimed reproduced merely because random command admission works.
