@@ -29,13 +29,22 @@ Owned runtime prefixes, overlays, binaries, captures and scratch are removed;
 reuse the shared cache. This is supported-format functional acceptance, not
 arbitrary-pack or pixel/sample-exact equivalence.
 
-K8's weighted movement/defence/attack/recovery and ownership fallback remains
-accepted. Independent seat random streams and non-cheating timed CMD plans are
-explicit port policies. The target's live learned move metadata and separate
-movement/attack/guard planner remain missing. Resolve population, command-index
-association, pose/range/startup prediction and planner transitions as one bounded
-lifecycle before implementing that consumer. A hints-file load message does not
-establish an asset requirement; the public sample labels its hints unused.
+K8 now preserves native command-table indices in addition to its accepted
+weighted fallback. Direct loaded-table inspection confirms declaration order,
+ordinary alternative reuse, reserved recovery index zero and the unmapped slot
+at its declaration. AI samples the complete table and admits nothing for empty
+slots. Existing AI/command/combat, helper ownership and reset paths pass with
+races; map-only adapters retain deterministic additional-label ordering.
+Linux build and stock-match window inspection pass; owned runtime/helper/overlay
+and capture scratch are removed.
+
+K8/U4 remain open for actual move learning and prediction. The next dependency
+is successful command-check attribution to transitions, followed by ground/air
+trial collection, active-box/startup/recovery statistics and model retention,
+then the movement/attack/guard planner. Connect and accept one complete lifecycle
+before closure. Independent seat streams and non-cheating timed plans remain
+explicit port policies. A hints-file load message does not establish an asset
+requirement; the public sample labels its hints unused.
 
 U5 whole-text TrueType layout is corrected. The target text library's surfaces
 and a shared rendered scene establish negative-bearing padding, final overhangs,

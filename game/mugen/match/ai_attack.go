@@ -70,7 +70,9 @@ func (b *aiBrain) attack(c *character.Character, distance, level, first, second 
 		// Admission carries a label, never a forged physical charge or an
 		// unconditional state change. The authored -1 state decides its use.
 		index := int(b.random.Next() % int64(len(b.commandNames)))
-		b.admitted = b.commandNames[index : index+1]
+		if b.commandNames[index] != "" {
+			b.admitted = b.commandNames[index : index+1]
+		}
 	} else if !cheat && len(b.commands) > 0 && (c.Ctrl || c.MoveType == "A" && c.MoveContact > 0) {
 		// Port policy: retain the existing bounded timed-plan consumer when
 		// cheating is disabled, including remaps, releases and long charges.

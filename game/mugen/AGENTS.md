@@ -115,6 +115,9 @@ unknown permutations into mandatory parameter matrices.
   reset. Preserve reviewed fallback weights and explicitly distinguish timed
   non-cheating plans from target policy. Native learned move-table planning is
   still K8/U4 work; functional fighting and fallback acceptance do not close it.
+  AI command indices retain declaration order and ordinary alternative reuse.
+  Recovery uses reserved index zero and leaves an unmapped declaration slot;
+  preserve empty slots during sampling without admitting an undeclared label.
 - Gamepads honor legacy CFG enable/numeric controls before YAML/session overrides.
   Linux native codes use four 32-code device blocks and capability-dependent
   axis/hat/button offsets; preserve the first axis-pair swap and hat aliases.

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -25,8 +26,45 @@ type StateController struct {
 
 type Data struct {
 	Commands         map[string][]Command
+	CommandOrder     []string // accepted declarations, including alternatives
 	StateControllers []StateController
 	Remap            map[string]string // logical button -> physical button; blank disables it
+}
+
+// IndexedNames preserves the native command table used by AI admission and
+// learned moves. Index zero is reserved for recovery; every recovery definition
+// also leaves an unmapped slot at its declaration position. Ordinary alternatives
+// reuse their label's first index. Empty strings represent unmapped slots.
+// Map-only adapters retain a deterministic order for their additional labels.
+func (d *Data) IndexedNames() []string {
+	names := make([]string, 1, len(d.Commands)+1)
+	seen := make(map[string]bool, len(d.Commands))
+	add := func(name string) {
+		if _, exists := d.Commands[name]; !exists {
+			return
+		}
+		if name == "recovery" {
+			names[0] = name
+			names = append(names, "")
+		} else if !seen[name] {
+			names = append(names, name)
+		}
+		seen[name] = true
+	}
+	for _, name := range d.CommandOrder {
+		add(name)
+	}
+	var extra []string
+	for name := range d.Commands {
+		if !seen[name] {
+			extra = append(extra, name)
+		}
+	}
+	sort.Strings(extra)
+	for _, name := range extra {
+		add(name)
+	}
+	return names
 }
 
 // Parse extracts [Command] definitions and [State -1, x] controllers from a M.U.G.E.N .cmd file.
@@ -123,6 +161,7 @@ func Parse(r io.Reader, languages ...string) (*Data, error) {
 			cmd.Time = max(1, cmd.Time)
 			cmd.BufferTime = max(1, min(30, cmd.BufferTime))
 			if cmd.Name != "" && cmd.Sequence != "" {
+				data.CommandOrder = append(data.CommandOrder, cmd.Name)
 				data.Commands[cmd.Name] = append(data.Commands[cmd.Name], cmd)
 			}
 

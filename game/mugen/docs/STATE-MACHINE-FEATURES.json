@@ -641,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "aea56800373ac4fe4e4a65aa5e83a0801383e0a0d11d83da056b8884b12793ef"
+      "passed_source": "446f24e73876c05d7b3d6566354542030f150a3466f64a1b6349888985ded75f"
     },
     {
       "id": "entities",
@@ -674,7 +674,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7aed5e1f7a78831158644133887a7e51f5e4867ecb1a74e3b9fd63d4b06322df"
+      "passed_source": "89e5070845270d42cc92fe19460934c6237fc600bce1f3b493a0b100dd8ecb99"
     },
     {
       "id": "effects-pause",
@@ -709,7 +709,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7026fa850212d2688293f94556503c8ade02431f827439470f5cca4211dc8aed"
+      "passed_source": "54fac1ddb270eeebacb01f5772edd93209d6f0aab531f8b840dbad3b0f9111e2"
     },
     {
       "id": "match-flow",
@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "b1ac860d8a4815647fc9c35b232add8a79a34c87355f80f00d5173a14aad45dd"
+      "passed_source": "340772e935ac52cd21051ac65a5b8779b44da62b09adb3f19ed3c6e6e40696b9"
     }
   ],
   "presentation_followups": [
@@ -1388,10 +1388,11 @@
         "size": "large",
         "confidence": "medium",
         "contract": "Match the target AI input policy through weighted fallback movement, defence, attack/cancel, press/release cadence, command admission and recovery, plus its learned-move movement/attack/guard planner, while retaining CNS eligibility and human/helper/reset ownership.",
-        "basis": "The fixed cooldown has been replaced with reviewed native fallback weights, persistent keys, live guard threats, confirmed-hit cancel bias and physical recovery chords. The connected AI/command/combat and ownership/reset paths pass. Direct target handler review and a live combat observation establish a separate planner using move tables that populate during play; its metadata collection and consumers remain missing.",
-        "prerequisite": "Resolve learned move-table population, command-index association, pose/range/startup prediction and planner context transitions in one bounded lifecycle. The public sample marks AI hints unused; a load message alone does not establish an asset consumer. Independent AI random streams and non-cheating timed CMD plans are explicit port policies, not claims of exact native random sequences.",
-        "completion": "Fallback movement/defence/attack/cancel/recovery/difficulty and human/helper/round/reload ownership are implemented and pass affected connected segments with race detection plus Linux AI-versus-AI application smoke. Complete the remaining learned-move planner and its connected target comparison before closing K8/U4; no content or stochastic sample matrices.",
+        "basis": "The fixed cooldown has been replaced with reviewed native fallback weights, persistent keys, live guard threats, confirmed-hit cancel bias and physical recovery chords. Direct target table inspection now also establishes authored command indices: ordinary alternatives reuse their first index, recovery uses reserved index zero and its declaration leaves an unmapped slot. The parser and AI admission preserve that table instead of alphabetically sorting labels; unmapped samples admit no label. Direct target handler/live-combat observation establishes separate learned move tables and movement/attack/guard planning; their collection and prediction consumers remain missing.",
+        "prerequisite": "Command-table identity is resolved and connected. Next resolve successful command-check attribution to state transitions, ground/air move-trial population, active-box/startup/recovery statistics, model retention and movement/attack/guard planner transitions in one bounded lifecycle. The public sample marks AI hints unused; a load message alone does not establish an asset consumer. Independent AI random streams and non-cheating timed CMD plans are explicit port policies, not claims of exact native random sequences.",
+        "completion": "Fallback movement/defence/attack/cancel/recovery/difficulty, authored indexed command admission and human/helper/round/reload ownership are implemented and pass affected connected segments with race detection. The loaded target command table confirms order, alternatives, reserved recovery and unmapped slots. Linux build and stock-match application smoke pass. Complete the remaining learned-move planner and its connected target comparison before closing K8/U4; no content or stochastic sample matrices.",
         "sources": [
+          "cmd/cmd.go",
           "match/ai.go",
           "match/ai_attack.go",
           "match/ai_defence.go",
@@ -1482,9 +1483,10 @@
         "id": "U4",
         "name": "Native AI decisions beyond AI.Cheat",
         "status": "unverified",
-        "completion": "K8 weighted fallback contexts pass connected movement/defence/attack/recovery/ownership checks, actual CMD combat, affected race-checked segments and Linux application smoke. Native live move tables and the learned movement/attack/guard planner remain a confirmed implementation gap. Accept that connected planner lifecycle before closing U4; fallback fighting/specials do not establish full native AI equivalence.",
+        "completion": "K8 weighted fallback contexts pass connected movement/defence/attack/recovery/ownership checks, actual CMD combat, affected race-checked segments and Linux application smoke. Native live move tables and the learned movement/attack/guard planner remain a confirmed implementation gap. Accept that connected planner lifecycle before closing U4; fallback fighting/specials do not establish full native AI equivalence. Authored command-index identity is now resolved through target table inspection and connected parser/AI admission; this prerequisite does not close learned move collection or prediction.",
         "prerequisite": "Resolve and implement K8 learned move metadata/planner consumers, then compare one connected target episode with permitted random variability. Preserve the independent-stream and timed non-cheating-plan port policies; do not infer seed-for-seed stochastic equivalence.",
         "sources": [
+          "cmd/cmd.go",
           "match/ai.go",
           "match/ai_attack.go",
           "match/ai_defence.go",
@@ -1599,7 +1601,7 @@
       {
         "id": "A4",
         "name": "Options, training and AI",
-        "finding": "K3 AI.Cheat admission, K5/K6 Options/Training and U3 acceptance remain closed. K8 now implements and tests weighted fallback movement, defence, attack/cancel, button cadence, recovery and ownership/reset. Direct target handler/live-combat review also establishes learned move tables and a separate movement/attack/guard planner; that confirmed remaining consumer keeps K8 partial and U4 open. Independent random streams and non-cheating timed CMD plans are explicit port policies.",
+        "finding": "K3 AI.Cheat admission, K5/K6 Options/Training and U3 acceptance remain closed. K8 now implements and tests weighted fallback movement, defence, attack/cancel, button cadence, recovery and ownership/reset. Direct target handler/live-combat review also establishes learned move tables and a separate movement/attack/guard planner; that confirmed remaining consumer keeps K8 partial and U4 open. Independent random streams and non-cheating timed CMD plans are explicit port policies. Command admission now preserves the reviewed target index table, including recovery and unmapped slots; K8 remains partial for actual learned move planning.",
         "targets": [
           "K3",
           "K5",
@@ -1657,7 +1659,8 @@
       "K8 refinement: reviewed weighted fallback contexts are implemented and accepted. Direct handler/live-combat observation also confirms move tables populate during play and feed separate learned movement/attack/guard planning; those missing consumers remain inside K8, without adding a ninth target. U4 stays open; non-cheating timed CMD plans and independent random streams remain explicit port policies.",
       "U2 refinement explicitly adds K9: a shared native/Go font-content flow exposed ignored character Palette Keymap selection, independently confirmed in the target loader. This expands the implementation map from eight targets to nine. Unicode TTF/TTC availability is resolved; small font hinting/centering differences are recorded under the existing U5 precision followup, not another implementation target.",
       "K9 and U2 closure: authored palette mapping, held-Start selection and available-outfit reservation now match the reviewed target path through gameplay/reload. Licensed Unicode TTF/TTC content acceptance passes in the existing connected lifecycle and native/Linux application journey. This closes the supported asset/font functional category; font raster/centering precision remains U5 and the learned AI planner remains K8/U4. No additional target or binary fixture was added.",
-      "U5 precision refinement: direct target text-library surfaces establish complete text extents, negative-bearing padding, centered truncation and inclusive right anchors. Those layout rules are corrected within the existing followup, without adding an implementation target. Compatible TrueType hinting remains unresolved; modern system FreeType alone does not reproduce the target raster. Prior format/content acceptance and camera/sprite/audio calibrations remain closed."
+      "U5 precision refinement: direct target text-library surfaces establish complete text extents, negative-bearing padding, centered truncation and inclusive right anchors. Those layout rules are corrected within the existing followup, without adding an implementation target. Compatible TrueType hinting remains unresolved; modern system FreeType alone does not reproduce the target raster. Prior format/content acceptance and camera/sprite/audio calibrations remain closed.",
+      "K8 command-index prerequisite resolved: direct loaded-table inspection confirms first-declaration indices for ordinary labels, alternative reuse, reserved recovery index zero and an unmapped declaration slot. AI now samples that indexed namespace and ignores unmapped selections. This is a correction within K8, not another target or closure of learned move planning."
     ]
   }
 }

@@ -528,7 +528,10 @@ time=20
 		}
 	}
 	aiRoot.SetVar(59, 2)
-	for frame := 0; frame < 120 && !(aiRoot.GetVar(44) > 0 && aiVictim.Life < aiVictim.MaxLife && aiRoot.StateNo == 0 && aiRoot.Ctrl); frame++ {
+	// Native samples the whole indexed table, including its reserved/unmapped
+	// slots. Allow a bounded complete episode rather than assuming each command
+	// attempt selects this fixture's only declared move during CNS eligibility.
+	for frame := 0; frame < 600 && !(aiRoot.GetVar(44) > 0 && aiVictim.Life < aiVictim.MaxLife && aiRoot.StateNo == 0 && aiRoot.Ctrl); frame++ {
 		if err := e.Update(); err != nil {
 			t.Fatal(err)
 		}

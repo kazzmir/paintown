@@ -5,7 +5,6 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"math"
-	"sort"
 	"strings"
 )
 
@@ -44,11 +43,7 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 	}
 	b := &aiBrain{random: random, frame: -1, source: c.CmdFile, level: c.AILevel, cheat: m.Options.AICheat}
 	if c.CmdFile != nil {
-		var names []string
-		for name := range c.CmdFile.Commands {
-			names = append(names, name)
-		}
-		sort.Strings(names)
+		names := c.CmdFile.IndexedNames()
 		b.commandNames = names
 		for _, name := range names {
 			for _, command := range c.CmdFile.Commands[name] {

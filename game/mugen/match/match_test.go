@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/effect"
@@ -103,6 +105,34 @@ func aiDecisionContextFlow(t *testing.T) {
 		t.Fatal("human root acquired AI input")
 	}
 	m.SetAILevel(1, 8)
+	// Native assigns a stable index when a label first appears in the CMD,
+	// retaining that index for later alternatives rather than sorting names.
+	ordered, err := cmd.Parse(strings.NewReader(`[Command]
+name="z-first"
+command=x
+[Command]
+name="a-second"
+command=y
+[Command]
+name="z-first"
+command=z
+[Command]
+name="recovery"
+command=a+b
+[Command]
+name="b-third"
+command=c
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	original := c.CmdFile
+	c.CmdFile = ordered
+	brain := m.brain(c)
+	if !slices.Equal(brain.commandNames, []string{"recovery", "z-first", "a-second", "", "b-third"}) || len(brain.commands) != 5 {
+		t.Fatal("AI lost authored command indices or duplicate-label alternatives", brain.commandNames)
+	}
+	c.CmdFile = original // Continue through stock input, threats and reset.
 	c.ChangeState(0, 1, -1)
 	enemy.ChangeState(0, 1, -1)
 	randomBefore := m.World.RandomState()

@@ -30,7 +30,9 @@ Weighted fallback movement, defence, attacks/cancels, recovery and ownership are
 now implemented and accepted through the connected scenarios. Handler review
 and direct observation also establish live learned move tables; their separate
 movement/attack/guard planner remains missing within K8. This explicit eighth
-target therefore remains partial. U4 still needs that planner's bounded
+target therefore remains partial. Command-table identity is now corrected:
+authored indices retain alternative reuse, reserved recovery and unmapped slots
+through AI admission. U4 still needs the learned planner's bounded
 implementation and reference acceptance. Other unresolved evidence questions
 are not assumed code defects. This bounded review does not establish an exhaustive list
 of every semantic difference; unsupported-path scans alone cannot do that.
