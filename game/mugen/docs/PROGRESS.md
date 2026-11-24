@@ -8,7 +8,7 @@ an estimate of total effort or complete native compatibility.
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project categories: 32 implemented, 3 partial, 0 missing.
-- Remaining-scope implementation targets: 7 closed, 1 open.
+- Remaining-scope implementation targets: 7 closed, 2 open.
 - Separate acceptance followups: 2 passed, 4 open.
 
 ## Remaining implementation and acceptance
@@ -30,6 +30,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | **K6 — Training dummy policy and menu lifecycle** | implemented / passed | medium / high |
 | **K7 — Overlapping pause, contact entry and bound recovery** | implemented / passed | medium / high |
 | **K8 — Native AI input decision policy** | partial / unverified | large / medium |
+| **K9 — Authored character palette keymaps through selection** | missing / unverified | medium / high |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
   Basis: Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.
@@ -71,6 +72,11 @@ of native equivalence. Unknown behavior is not counted as a code defect.
   Prerequisite: Resolve learned move-table population, command-index association, pose/range/startup prediction and planner context transitions in one bounded lifecycle. The public sample marks AI hints unused; a load message alone does not establish an asset consumer. Independent AI random streams and non-cheating timed CMD plans are explicit port policies, not claims of exact native random sequences.
   Completion: Fallback movement/defence/attack/cancel/recovery/difficulty and human/helper/round/reload ownership are implemented and pass affected connected segments with race detection plus Linux AI-versus-AI application smoke. Complete the remaining learned-move planner and its connected target comparison before closing K8/U4; no content or stochastic sample matrices.
 
+- [ ] **K9**: Carry the character DEF Palette Keymap through portrait loading, manual/random-cell selection, roster snapshots, fight PalNo and round/reload ownership. Keep direct numeric palette requests separate from selection-button ordinals. Preserve native absent-section defaults, partial-section defaults, first fields and 1–12 clamping.
+  Basis: The same licensed-font/content journey loads and displays Unicode TTF/TTC text in both runtimes, but an identical stock selection button reaches different fighter outfits. The Go selection consumer ignores Palette Keymap; target loader review establishes explicit mapping, defaults and numeric clamping. This is a confirmed content consumer gap, separate from font raster precision.
+  Prerequisite: Implement the reviewed DEF mapping and compare one connected custom-map/Start-modifier selection-to-fight/reset path. Preserve existing palette loading, RemapPal and roster presentation snapshots; do not infer unrelated AI palette preference rules.
+  Completion: Existing selection/asset/team lifecycles preserve the mapped numeric palette into CNS, rematch and reload, including random-cell character ownership, missing keys and ignored duplicate definitions. Compare the native custom-map input path and run affected connected segments at batch end.
+
 
 ### Separate acceptance and evidence questions
 
@@ -80,10 +86,10 @@ acceptance. Open questions do not imply missing controller/trigger routes.
 | ID | Scope / status | Evidence needed to close it |
 | --- | --- | --- |
 | **U1** | Additional runtime interaction fidelity — passed | Direct target comparison of one overlapping throw/Pause/hitpause, bound-anchor turn, finite expiry and own-state recovery episode established K7. The corrected production consumers match its clock/entry/pose observations and pass the extended entity-to-round-reset scenario, affected connected segments with race detection and Linux build/application smoke. This closes the named lifecycle, not arbitrary runtime permutations. Prerequisite: Resolved for the named combined lifecycle through direct target observation and the existing connected entity path. Prior binding/facing/reset findings remain intact. |
-| **U2** | Broader font/content acceptance — unverified | Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects. Prerequisite: Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity. |
+| **U2** | Broader font/content acceptance — unverified | Single-font and first-face collection rendering accepts Latin, Greek and Cyrillic text in the target and Go. Complete the existing localized asset/storyboard/menu/fight/reload lifecycle with these generated font inputs, correct K9 palette selection, then record functional acceptance. Hinting/glyph-edge and odd-width centering precision remain U5. Prerequisite: Openly licensed Unicode TTF/TTC inputs are available and load in the target. The connected content comparison exposed K9 palette-keymap selection; close it and accept the shared menu/fight/reload flow. Broader licensed/CJK payloads remain deferred. |
 | **U3** | Native Options/training behavior and presentation — passed | Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; sample-exact raster/audio and stochastic AI decisions remain separate U5/U4. Prerequisite: Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers. |
 | **U4** | Native AI decisions beyond AI.Cheat — unverified | K8 weighted fallback contexts pass connected movement/defence/attack/recovery/ownership checks, actual CMD combat, affected race-checked segments and Linux application smoke. Native live move tables and the learned movement/attack/guard planner remain a confirmed implementation gap. Accept that connected planner lifecycle before closing U4; fallback fighting/specials do not establish full native AI equivalence. Prerequisite: Resolve and implement K8 learned move metadata/planner consumers, then compare one connected target episode with permitted random variability. Preserve the independent-stream and timed non-cheating-plan port policies; do not infer seed-for-seed stochastic equivalence. |
-| **U5** | Additional raster/device-audio precision — unverified | Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks. Prerequisite: A specific mismatch or explicitly scoped precision target. Whole-frame/sample-exact equivalence remains unverified. |
+| **U5** | Additional raster/device-audio precision — unverified | Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks. Prerequisite: A shared openly licensed proportional-font scene at 24-pixel height now isolates small hinted glyph-edge/baseline and odd-width center placement differences. Define font-layout/raster tolerance or a concrete correction before precision work. Earlier camera, indexed sprite, alpha and KO-echo calibrations remain closed. |
 | **H1** | Physical Linux controller acceptance — awaiting-prerequisite | Exercise menu/configuration, selection, combat and unplug/reconnect on hardware; preserve ownership, neutral/deadzone and held/edge behavior. Include native mapping after K4. Injected devices cannot close H1. Prerequisite: An available controller and someone able to exercise it; no connected device is assumed. |
 
 ### Bounded assessment findings
@@ -116,6 +122,7 @@ They do not silently enlarge this baseline or reopen unrelated completion.
 - U1 combined lifecycle comparison established K7: external contact entry, ordinary Pause owner allowance during hitpause and TargetBind expiry through global Pause differed in Go, changing throw motion and release. An unbounded reference constraint distinguishes expiry from frozen placement. This explicitly expands the six-target scope to seven; K7 implementation/connected acceptance and U1 now pass.
 - U4 handler/consumer review establishes K8: the port’s fixed-cooldown heuristic does not implement the target’s weighted difficulty/distance/state-dependent input decisions. This explicitly expands the seven-target scope to eight; K8 is partial and U4 remains unverified pending a bounded decision contract and connected acceptance.
 - K8 refinement: reviewed weighted fallback contexts are implemented and accepted. Direct handler/live-combat observation also confirms move tables populate during play and feed separate learned movement/attack/guard planning; those missing consumers remain inside K8, without adding a ninth target. U4 stays open; non-cheating timed CMD plans and independent random streams remain explicit port policies.
+- U2 refinement explicitly adds K9: a shared native/Go font-content flow exposed ignored character Palette Keymap selection, independently confirmed in the target loader. This expands the implementation map from eight targets to nine. Unicode TTF/TTC availability is resolved; small font hinting/centering differences are recorded under the existing U5 precision followup, not another implementation target.
 
 ## Known difference checkpoints
 
@@ -208,7 +215,7 @@ source changes reopen only the affected segments.
 - [x] **combat**: logical input → attack/contact → damage/stat scaling/life adjustments/runtime fallback/recovery/reset → held/projectile/helper guard/release → jump/air-jump budget/landing/reset → sweep/legacy bounce/recovery.
 - [x] **entities**: helper creation → self binding/Pause/body contact → retirement/orphan effects → hit-paused throw/recovery → borrowed-state effect/Pause/SelfState/expiry → round identity reset.
 - [x] **effects-pause**: Pause/SuperPause → actor/background/effect clocks → resources/power → reset.
-- [x] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
+- [ ] **match-flow**: title/selection → rendered VS → stock input-driven fight → KO/time-over → results → rematch/exit.
 
 ## Project breakdown
 

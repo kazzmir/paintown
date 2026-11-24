@@ -35,8 +35,15 @@ Do not create an AI-hints asset reader from a load message; the public sample
 labels its hints file unused. Fallback acceptance is not complete native AI
 acceptance. Exact random sequences are not promised by the port's separate streams.
 
-U2 needs broader licensed font/content inputs; U5 needs a named precision
-mismatch; H1 needs physical hardware exercise. All remain open alongside U4.
+U2 now has openly licensed Unicode TTF/TTC inputs. Matching native/Go text
+scenes load Latin, Greek and Cyrillic glyphs and the collection's first face.
+The shared menu/fight/reload comparison exposed K9: selection ignores authored
+Palette Keymap, producing the wrong outfit from the same button. Target loader
+review resolves absent/partial-section defaults and numeric clamping. Implement
+that bounded consumer before closing U2; extend the existing asset/selection
+lifecycle, without binary fixtures. Small font hinting/edge and odd-width center
+differences now give U5 a named precision question. H1 needs hardware. All remain
+open alongside U4; K9 is an explicit ninth implementation target.
 Unknown permutations are not new mandatory matrices. Preserve closed result,
 Options/Training, contact/Pause/binding, turning, camera, rendering and audio
 calibrations. Do not repair scripts that fail in the target; bundled runtimes

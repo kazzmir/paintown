@@ -1405,6 +1405,27 @@
           "match/match_test.go",
           "system/command_flow_test.go"
         ]
+      },
+      {
+        "id": "K9",
+        "parent": "fonts",
+        "name": "Authored character palette keymaps through selection",
+        "implementation": "missing",
+        "acceptance": "unverified",
+        "size": "medium",
+        "confidence": "high",
+        "contract": "Carry the character DEF Palette Keymap through portrait loading, manual/random-cell selection, roster snapshots, fight PalNo and round/reload ownership. Keep direct numeric palette requests separate from selection-button ordinals. Preserve native absent-section defaults, partial-section defaults, first fields and 1\u201312 clamping.",
+        "basis": "The same licensed-font/content journey loads and displays Unicode TTF/TTC text in both runtimes, but an identical stock selection button reaches different fighter outfits. The Go selection consumer ignores Palette Keymap; target loader review establishes explicit mapping, defaults and numeric clamping. This is a confirmed content consumer gap, separate from font raster precision.",
+        "prerequisite": "Implement the reviewed DEF mapping and compare one connected custom-map/Start-modifier selection-to-fight/reset path. Preserve existing palette loading, RemapPal and roster presentation snapshots; do not infer unrelated AI palette preference rules.",
+        "completion": "Existing selection/asset/team lifecycles preserve the mapped numeric palette into CNS, rematch and reload, including random-cell character ownership, missing keys and ignored duplicate definitions. Compare the native custom-map input path and run affected connected segments at batch end.",
+        "sources": [
+          "parsers/def.go",
+          "system/charloader.go",
+          "system/select.go",
+          "system/team_select.go",
+          "system/flow_test.go",
+          "system/asset_flow_test.go"
+        ]
       }
     ],
     "acceptance": [
@@ -1428,8 +1449,8 @@
         "id": "U2",
         "name": "Broader font/content acceptance",
         "status": "unverified",
-        "completion": "Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects.",
-        "prerequisite": "Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity.",
+        "completion": "Single-font and first-face collection rendering accepts Latin, Greek and Cyrillic text in the target and Go. Complete the existing localized asset/storyboard/menu/fight/reload lifecycle with these generated font inputs, correct K9 palette selection, then record functional acceptance. Hinting/glyph-edge and odd-width centering precision remain U5.",
+        "prerequisite": "Openly licensed Unicode TTF/TTC inputs are available and load in the target. The connected content comparison exposed K9 palette-keymap selection; close it and accept the shared menu/fight/reload flow. Broader licensed/CJK payloads remain deferred.",
         "sources": [
           "font/truetype.go",
           "font/v2.go",
@@ -1478,7 +1499,7 @@
         "name": "Additional raster/device-audio precision",
         "status": "unverified",
         "completion": "Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks.",
-        "prerequisite": "A specific mismatch or explicitly scoped precision target. Whole-frame/sample-exact equivalence remains unverified.",
+        "prerequisite": "A shared openly licensed proportional-font scene at 24-pixel height now isolates small hinted glyph-edge/baseline and odd-width center placement differences. Define font-layout/raster tolerance or a concrete correction before precision work. Earlier camera, indexed sprite, alpha and KO-echo calibrations remain closed.",
         "sources": [
           "render/linear.go",
           "render/nearest.go",
@@ -1623,7 +1644,8 @@
       "K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets.",
       "U1 combined lifecycle comparison established K7: external contact entry, ordinary Pause owner allowance during hitpause and TargetBind expiry through global Pause differed in Go, changing throw motion and release. An unbounded reference constraint distinguishes expiry from frozen placement. This explicitly expands the six-target scope to seven; K7 implementation/connected acceptance and U1 now pass.",
       "U4 handler/consumer review establishes K8: the port\u2019s fixed-cooldown heuristic does not implement the target\u2019s weighted difficulty/distance/state-dependent input decisions. This explicitly expands the seven-target scope to eight; K8 is partial and U4 remains unverified pending a bounded decision contract and connected acceptance.",
-      "K8 refinement: reviewed weighted fallback contexts are implemented and accepted. Direct handler/live-combat observation also confirms move tables populate during play and feed separate learned movement/attack/guard planning; those missing consumers remain inside K8, without adding a ninth target. U4 stays open; non-cheating timed CMD plans and independent random streams remain explicit port policies."
+      "K8 refinement: reviewed weighted fallback contexts are implemented and accepted. Direct handler/live-combat observation also confirms move tables populate during play and feed separate learned movement/attack/guard planning; those missing consumers remain inside K8, without adding a ninth target. U4 stays open; non-cheating timed CMD plans and independent random streams remain explicit port policies.",
+      "U2 refinement explicitly adds K9: a shared native/Go font-content flow exposed ignored character Palette Keymap selection, independently confirmed in the target loader. This expands the implementation map from eight targets to nine. Unicode TTF/TTC availability is resolved; small font hinting/centering differences are recorded under the existing U5 precision followup, not another implementation target."
     ]
   }
 }
