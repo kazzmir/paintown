@@ -24,6 +24,7 @@ type aiBrain struct {
 	source       *cmd.Data
 	level        int
 	cheat        bool
+	facing       int // heading of this tick's cached root-relative snapshot
 }
 
 func (m *Match) brain(c *character.Character) *aiBrain {
@@ -188,7 +189,7 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	if b.frame == m.Tick {
 		return b.inputs
 	}
-	b.frame, b.inputs = m.Tick, nil
+	b.frame, b.inputs, b.facing = m.Tick, nil, c.Facing
 	b.admitted = nil
 	other, distance := m.aiOpponent(c)
 	if other == nil {
@@ -228,6 +229,29 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	b.recovery(c, m.Options.GameSpace.Width)
 	b.inputs = b.snapshot()
 	return b.inputs
+}
+
+// BasicAIInputForFacing presents the root's one physical snapshot in a
+// key-controlled helper's heading without sampling again or changing the cache.
+func (m *Match) BasicAIInputForFacing(playerID, facing int) []string {
+	keys := m.BasicAIInput(playerID)
+	if len(keys) == 0 {
+		return keys
+	}
+	p := m.ActivePlayers()[playerID-1]
+	if facing == m.brain(p.Character).facing {
+		return keys
+	}
+	keys = append([]string(nil), keys...)
+	for index, key := range keys {
+		switch key {
+		case "DirForward":
+			keys[index] = "DirBack"
+		case "DirBack":
+			keys[index] = "DirForward"
+		}
+	}
+	return keys
 }
 
 // BasicAICommands shares one decision with this tick's physical snapshot. A

@@ -431,6 +431,7 @@ value=0
 	// remapped 300-tick charge. The authored CNS must receive it, hit and
 	// recover; the planner stores timed input steps rather than 300 frames.
 	request.Players[0].AILevel = 8
+	e.pendingMatchSeed = 16807
 	e.cfg.Arcade.AICheat = false
 	longAI, err := NewFightState(e, request)
 	if err != nil {
@@ -464,6 +465,7 @@ time=20
 	if err != nil {
 		t.Fatal(err)
 	}
+	e.pendingMatchSeed = 16807
 	compositeAI, err := NewFightState(e, request)
 	if err != nil {
 		t.Fatal(err)
@@ -488,6 +490,7 @@ time=20
 	// is disabled. It still obeys CNS eligibility and gives key-controlled
 	// helpers the same label without rewriting any actor's physical history.
 	e.cfg.Arcade.AICheat = true
+	e.pendingMatchSeed = 16807
 	cheatAI, err := NewFightState(e, request)
 	if err != nil {
 		t.Fatal(err)
@@ -506,7 +509,7 @@ time=20
 	keyHelper, offHelper := aiRoot.Helpers[0], aiRoot.Helpers[1]
 	aiVictim = cheatAI.match.Players[1].Character
 	aiVictim.X = 20
-	for frame := 0; frame < 16; frame++ {
+	for frame := 0; frame < 160 && (aiRoot.GetVar(41) == 0 || keyHelper.GetVar(41) == 0); frame++ {
 		if err := e.Update(); err != nil {
 			t.Fatal(err)
 		}

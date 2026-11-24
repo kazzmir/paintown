@@ -107,7 +107,7 @@ func (s *FightState) matchInputs(playerID, facing int) []string {
 	}
 	selected, _ := game.SelectionForPlayer(playerID)
 	if selected.AILevel > 0 {
-		return game.BasicAIInput(playerID)
+		return game.BasicAIInputForFacing(playerID, facing)
 	}
 	if playerID == 3 && (game.Request.Mode == "Team Co-op" || game.Request.Mode == "Survival Co-op") {
 		playerID = 2

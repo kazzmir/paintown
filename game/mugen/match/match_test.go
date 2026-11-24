@@ -90,6 +90,124 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 	}
 }
 
+// A single input lifecycle traverses spacing, incoming guard, falling recovery,
+// ownership transfer and round replacement. Actual CMD/CNS attack/contact paths
+// continue in the system command/combat scenario; no stochastic content matrix.
+func aiDecisionContextFlow(t *testing.T) {
+	t.Helper()
+	m := stockMatch(t, 99)
+	m.Phase, m.Options.AICheat = Active, true
+	c, enemy := m.Players[0].Character, m.Players[1].Character
+	c.X, enemy.X = 0, 800 // same game-space distance with mixed character profiles
+	if got := m.BasicAIInput(1); len(got) != 0 || len(m.aiBrains) != 0 {
+		t.Fatal("human root acquired AI input")
+	}
+	m.SetAILevel(1, 8)
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
+	randomBefore := m.World.RandomState()
+	sawForward, sawHeld, sawRelease, sawCommand := false, false, false, false
+	var previous []string
+	for pass := 0; pass < 240; pass++ {
+		m.Tick++
+		keys := m.BasicAIInput(1)
+		commands := append([]string(nil), m.BasicAICommands(1)...)
+		if fmt.Sprint(keys) != fmt.Sprint(m.BasicAIInput(1)) || fmt.Sprint(commands) != fmt.Sprint(m.BasicAICommands(1)) {
+			t.Fatal("helper/readback sampled another AI decision in one input tick")
+		}
+		opposite := m.BasicAIInputForFacing(1, -c.Facing)
+		for index, key := range keys {
+			want := key
+			if key == "DirForward" {
+				want = "DirBack"
+			} else if key == "DirBack" {
+				want = "DirForward"
+			}
+			if opposite[index] != want {
+				t.Fatal("helper heading changed the root's physical AI snapshot")
+			}
+		}
+		for _, key := range keys {
+			sawForward = sawForward || key == "DirForward"
+			for _, old := range previous {
+				sawHeld = sawHeld || key == old
+			}
+		}
+		for _, old := range previous {
+			found := false
+			for _, key := range keys {
+				found = found || key == old
+			}
+			sawRelease = sawRelease || !found
+		}
+		sawCommand = sawCommand || len(commands) > 0
+		previous = append(previous[:0], keys...)
+	}
+	if !sawForward || !sawHeld || !sawRelease || !sawCommand || m.World.RandomState() != randomBefore {
+		t.Fatal("AI spacing/cadence/admission consumed CNS randomness or missed a context", sawForward, sawHeld, sawRelease, sawCommand)
+	}
+	// An actual hostile helper supplies the incoming low/high flags. The root
+	// remains idle, so checking only the selected opponent would miss the threat.
+	c.X, enemy.X = 0, 80
+	enemy.Helper(map[string]string{"id": "888", "stateno": "0"})
+	if enemy.RuntimeError != nil || len(enemy.Helpers) != 1 {
+		t.Fatal("AI threat helper", enemy.RuntimeError)
+	}
+	threat := enemy.Helpers[0]
+	threat.X, threat.Facing, threat.MoveType, threat.HitDefActive = 80, -1, "A", true
+	threat.GuardDistance, threat.CurrentHitDef.GuardFlag = 400, "L"
+	if c.GuardThreat() != threat {
+		t.Fatal("AI and InGuardDist disagreed about the incoming helper")
+	}
+	c.StateNo, c.MoveType, c.Ctrl, c.Time = 130, "I", true, 0
+	b := m.brain(c)
+	b.keys = [11]bool{3: true}
+	for pass := 0; pass < 80 && !b.keys[2]; pass++ {
+		b.defence(c, enemy, 20, 8)
+	}
+	if !b.keys[3] || !b.keys[2] {
+		t.Fatal("established AI guard did not retain back and react to a low helper")
+	}
+	threat.CurrentHitDef.GuardFlag = "H"
+	for pass := 0; pass < 80 && b.keys[2]; pass++ {
+		b.defence(c, enemy, 20, 8)
+	}
+	if !b.keys[3] || b.keys[2] {
+		t.Fatal("AI high guard adjustment released back or kept crouching")
+	}
+	threat.DebugDisabled = true
+	if c.GuardThreat() != nil {
+		t.Fatal("disabled helper remained an incoming AI threat")
+	}
+	// Recovery must produce ordinary keys without changing the state or
+	// bypassing CanRecover. Test both sampling and ownership in this same path.
+	c.StateNo, c.MoveType, c.Y, c.VelY = 5050, "H", -40, 0
+	c.SetHitFall(true)
+	clear(b.keys[:])
+	for pass := 0; pass < 80 && !(b.keys[4] && b.keys[5] || b.keys[7] && b.keys[8]); pass++ {
+		b.recovery(c, m.Options.GameSpace.Width)
+	}
+	if c.StateNo != 5050 || !(b.keys[4] && b.keys[5] || b.keys[7] && b.keys[8]) {
+		t.Fatal("AI recovery failed to request a physical chord or changed state directly")
+	}
+	stream := b.random
+	m.SetAILevel(1, 0)
+	if len(m.BasicAIInput(1)) != 0 || len(m.BasicAICommands(1)) != 0 || len(m.aiBrains) != 0 {
+		t.Fatal("AI context survived the human ownership handoff")
+	}
+	m.SetAILevel(1, 1)
+	if fresh := m.brain(c); fresh == b || fresh.random != stream || len(fresh.snapshot()) != 0 {
+		t.Fatal("AI ownership reset retained held state or restarted randomness")
+	}
+	if err := m.resetRound(); err != nil {
+		t.Fatal(err)
+	}
+	c = m.Players[0].Character
+	if len(m.aiBrains) != 0 || c.AILevel != 1 || m.brain(c).random != stream {
+		t.Fatal("round reset retained AI state or lost level/random continuity")
+	}
+}
+
 func TestStockStageCropSurvivesCameraUpdatesAndRoundReset(t *testing.T) {
 	base := stockMatch(t, 99)
 	options := base.Options
@@ -192,6 +310,7 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			combatScalingFlow(t, m)
 			runtimeFallbackFlow(t, m)
 			animationCompatFlow(t, m)
+			aiDecisionContextFlow(t)
 			return
 		}
 	}

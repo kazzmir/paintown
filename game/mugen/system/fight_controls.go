@@ -135,7 +135,7 @@ func (s *FightState) trainingInput(facing int) []string {
 		return character.GetRawInputs(2, facing)
 	}
 	if c.control == 1 {
-		return game.BasicAIInput(2)
+		return game.BasicAIInputForFacing(2, facing)
 	}
 	if game.Phase != match.Active {
 		return nil

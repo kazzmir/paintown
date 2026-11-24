@@ -63,7 +63,11 @@ ownership now reject human/disabled/KO roots, discard stale plans on CMD/level/
 policy changes and clear input with no live opponent. Falling-hit recovery sends
 native-weighted physical chords through ordinary CNS. Independent seat random
 streams continue across round/ownership resets while held state and plans reset.
-All intended fallback contexts are implemented; connected acceptance is next;
+All intended fallback contexts pass the affected connected segments with race
+detection. Opposite-facing helpers read the root's cached physical snapshot in
+their own heading, including Training AI; label admission stays shared. The
+command scenario now awaits admission rather than assuming the old fixed timer.
+Final Linux build/application smoke and a bounded planner review remain;
 connected acceptance runs at the end of that batch. The target also has branches
 using learned attack metadata; those are distinct from the weighted fallback and
 must not be claimed reproduced merely because random command admission works.
