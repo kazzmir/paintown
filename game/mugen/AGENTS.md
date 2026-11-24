@@ -59,10 +59,13 @@ scratch; copying a leaf does not isolate it through a linked ancestor.
 Optional historical diagnostics may require separately supplied inputs; they
 are not routine completion gates.
 
-Physical controller acceptance is the remaining partial category. U1-U5 pass for
-their bounded contracts; the user accepted the demonstrated U5 cross-version
-font-edge differences. Arbitrary-pack equivalence is not inferred from those
-closures.
+The implementation phase is closed; continue in maintenance and content
+compatibility from demonstrated issues. The user verified controller setup,
+character selection and combat on Linux with an 8BitDo controller. Physical
+unplug/reconnect remains an unverified, non-blocking manual test note under H1,
+keeping that category partial. U1-U5 pass for their bounded contracts; the user
+accepted the demonstrated U5 cross-version font-edge differences. Arbitrary-pack
+equivalence is not inferred from those closures.
 Physical CD playback, unavailable licensed/CJK fonts, other-platform runtime
 acceptance and standalone music-file CLI playback are deferred. Do not turn
 unknown permutations into mandatory parameter matrices.

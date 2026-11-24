@@ -12,8 +12,11 @@ The source report finds 89/89 controller families and 127/127 trigger routes.
 The project ledger has 34 implemented categories and one partial category.
 These are availability/category counts, not an effort estimate or a percentage
 of native compatibility. A registered route can still have a behavioral defect.
-Physical Linux controller acceptance is the remaining partial category;
-deliberately deferred capabilities stay separate from that followup.
+Physical Linux controller unplug/reconnect acceptance is the remaining partial
+category; the user verified setup, character selection and combat with an 8BitDo
+controller. Keep reconnect as a non-blocking manual test note while moving into
+maintenance and content compatibility. Deliberately deferred capabilities stay
+separate from that followup.
 
 The baseline identified four implementation candidates. Direct target review
 corrected the first: tested result-text layerno values 0/1/2 all compose in front,
@@ -166,8 +169,9 @@ checks. Neither establishes universal compatibility with arbitrary content.
    platform/device mapping. Schedule physical acceptance H1 when hardware exists.
 4. U1 is closed by K7, U2 by the font/content lifecycle plus K9, and U3 by K5/K6.
    U4 closes the learned AI lifecycle under K8; U5 accepts K10 and the demonstrated
-   font-edge variation. Address H1 when hardware is available. Create new code targets
-   only for demonstrated missing/incorrect behavior and record the scope change.
+   font-edge variation. Implementation is closed; H1 unplug/reconnect remains a
+   non-blocking manual test note. Create new code targets only for demonstrated
+   missing/incorrect behavior and record the scope change.
    Prioritize crashes, stalls and wrong state outcomes over precision findings.
 
 K3 admission and K4 device-code prerequisites are resolved for the scoped

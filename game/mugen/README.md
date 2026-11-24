@@ -116,7 +116,8 @@ control background simulation and audio. BGM `Pause` preserves the track cursor;
 
 Keyboard and gamepad input share menus and gameplay. Gamepads honor legacy CFG
 enable/bindings on Linux, with named or raw YAML/session overrides; see below.
-Physical-controller acceptance remains open.
+Controller setup, character selection and combat are user-verified on Linux;
+physical unplug/reconnect remains a manual test followup.
 
 AI uses weighted movement, defence, attacks/cancels and falling-hit recovery
 through ordinary CMD/CNS. Held keys have press/release cadence; helpers share
@@ -415,8 +416,9 @@ also select the primary device for mixed YAML/session bindings. Linux discovers
 the button/hat boundary from matching evdev capability metadata. If unavailable,
 it warns; configure named/raw controls instead. Other-platform legacy capability
 adapters remain outside current Linux acceptance. Injected-device lifecycle
-checks pass; physical Linux controllers still need acceptance testing. Existing
-local YAML is never rewritten.
+checks pass; the user also verified setup, selection and combat with an 8BitDo
+controller on Linux. Physical unplug/reconnect remains unverified. Existing local
+YAML is never rewritten.
 
 Background music supports WAV, MP3 and Ogg Vorbis from motif, stage and storyboard
 settings, with looping, sample loop points and independent music volume. NoMusic
@@ -478,8 +480,10 @@ The [scope plan](docs/ITEM-3-PLAN.md) records ten bounded implementation targets
 closed. U5's reference comparison established K10, now connecting compatible
 TrueType automatic hinting, metrics and solid rendering. K8/U4 include live move learning, optional learned-data
 loading, session retention and the navigation/guard/counter planner alongside
-weighted fallback. U1 through U5 acceptance have passed. H1 physical controller
-acceptance remains open.
+weighted fallback. U1 through U5 acceptance have passed. The implementation phase
+is closed; work now focuses on maintenance and content compatibility. H1 retains
+physical unplug/reconnect as a non-blocking manual test note after user-verified
+controller setup, character selection and combat.
 TrueType text includes negative bearings and italic overhangs when measuring
 and aligning labels. The shared reference/Go font scene has matching widths,
 baselines and placement; the demonstrated small version-dependent edge

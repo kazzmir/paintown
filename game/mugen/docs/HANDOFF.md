@@ -8,7 +8,9 @@ no pushes, binaries, fixture banks, subagents or goals. Keep documentation porta
 K1-K10 are closed for the bounded implementation scope. U1 runtime, U2 supported
 font/content, U3 Options/Training, U4 AI and U5 precision acceptance pass. The
 ledger has 34 implemented categories and one partial category; those counts are
-not whole-engine equivalence percentages. H1 hardware is the remaining followup.
+not whole-engine equivalence percentages. The implementation phase is closed;
+continue with maintenance and content compatibility from demonstrated issues.
+H1 physical unplug/reconnect is a non-blocking manual test note.
 
 ## Input editor presentation
 
@@ -18,8 +20,8 @@ Bindings fit below the heading; input behavior and session-only persistence stay
 the same. The editor uses the window-sized Options layout so HD motifs retain
 readable lettering. The affected connected match-flow segment passes with race
 detection; Linux build and keyboard/gamepad/reset/return window inspection pass.
-Owned scratch is removed. The user confirmed controller configuration works;
-H1 still requires selection, combat and unplug/reconnect acceptance.
+Owned scratch is removed. The user verified controller configuration, character
+selection and combat on Linux with an 8BitDo controller.
 
 ## AI closure
 
@@ -52,7 +54,7 @@ advancing clocks. Owned runtime prefixes, overlays, captures and binaries are
 removed; shared cache and external content remain. No new binary fixtures or
 user configuration are committed.
 
-## Remaining work
+## Accepted rendering scope and followups
 
 K10 connects Linux FreeType automatic hinting and true monochrome masks through
 the existing font consumer. Bitmap bearings preserve trimmed-border placement;
@@ -73,10 +75,12 @@ Portable outline fallback and other-platform precision remain outside that
 acceptance. Keep earlier layout, camera/sprite/alpha/KO-echo, U2 format acceptance
 and K9 palette mapping/reservation closed. Review scratch is removed after acceptance.
 
-H1 requires physical Linux controller exercise through menus, selection, combat
-and reconnect. Physical CD, unavailable licensed/CJK payloads, other-platform
-runtime acceptance and standalone music CLI remain deferred. Unknown permutations
-are not matrices, and scripts that fail natively do not need engine workarounds.
+H1 now requires only physical unplug/reconnect testing, including retained player
+ownership and released input after disconnect. Leave this unverified note open
+while maintenance and compatibility work proceeds. Physical CD, unavailable
+licensed/CJK payloads, other-platform runtime acceptance and standalone music CLI
+remain deferred. Unknown permutations are not matrices, and scripts that fail
+natively do not need engine workarounds.
 
 Validate affected connected segments at coherent batch boundaries; completed
 segments remain checked until covered source changes. Keep native/application
