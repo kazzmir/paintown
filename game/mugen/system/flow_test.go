@@ -436,12 +436,54 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !ok {
 		t.Fatalf("Options F1 did not open input configuration: %T", e.currentState)
 	}
+	// Input editing is another page of the active motif, including during
+	// capture and confirmation. Keep its exposed background identical to
+	// Options and use the same lettering even without title-menu fonts.
+	checkInputMotif := func() {
+		t.Helper()
+		if width, height := e.Layout(640, 480); width != 640 || height != 480 {
+			t.Fatal("input utility lettering did not use the Options window layout", width, height)
+		}
+		panel, backdrop := ebiten.NewImage(640, 480), ebiten.NewImage(640, 480)
+		defer panel.Deallocate()
+		defer backdrop.Deallocate()
+		fonts := [2]int{e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index}
+		e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index = 0, 0
+		e.Draw(panel)
+		items := options.items
+		options.items = nil
+		options.Draw(backdrop)
+		options.items = items
+		e.motif.TitleInfo.ItemFont.Index, e.motif.TitleInfo.ItemActiveFont.Index = fonts[0], fonts[1]
+		visible, background := make([]byte, 640*480*4), make([]byte, 640*480*4)
+		panel.ReadPixels(visible)
+		backdrop.ReadPixels(background)
+		exposed, changed := 0, 0
+		for y := 80; y < 400; y++ {
+			for x := 0; x < 640; x++ {
+				at := (y*640 + x) * 4
+				if !bytes.Equal(visible[at:at+4], background[at:at+4]) {
+					changed++
+					if x < 4 || x >= 636 {
+						t.Fatal("input page replaced the motif background")
+					}
+				} else if background[at] != 0 || background[at+1] != 0 || background[at+2] != 0 {
+					exposed++
+				}
+			}
+		}
+		if exposed < 1000 || changed < 1000 || bindingsMenu.utility.canvas == nil {
+			t.Fatal("input page lost its motif or readable utility rows", exposed, changed)
+		}
+	}
+	checkInputMotif()
 	step()
 	for n := 0; n < 8; n++ {
 		step(ebiten.KeyArrowDown)
 		step()
 	}
 	step(ebiten.KeyInsert)
+	checkInputMotif()
 	step()
 	step(ebiten.KeyF10)
 	step()
@@ -522,9 +564,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		t.Fatal("raw-axis capture mistook its neutral baseline for a held control", controls)
 	}
 	pad2.release()
-	panel := ebiten.NewImage(640, 480)
-	e.Draw(panel)
-	panel.Deallocate()
+	checkInputMotif()
 	step(ebiten.KeyEscape)
 	step()
 	if e.currentState != options {
@@ -536,8 +576,10 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	step(ebiten.KeyEnter) // Save the live input edits too.
 	step()
 	step(ebiten.KeyF1)
+	bindingsMenu = e.currentState.(*InputConfigState)
 	step()
 	step(ebiten.KeyF3)
+	checkInputMotif()
 	step()
 	step(ebiten.KeyArrowRight)
 	step()

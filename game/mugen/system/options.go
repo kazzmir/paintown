@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -297,38 +298,11 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if s.background == nil {
 		s.background = ebiten.NewImage(e.logicalWidth, e.logicalHeight)
 	}
-	background := s.background
-	if e.motif.OptionBG != nil && e.motif.OptionBG.BGClearColor != nil {
-		background.Fill(e.motif.OptionBG.BGClearColor)
-	} else {
-		background.Fill(color.Black)
-	}
-	if e.motif.OptionBG != nil {
-		e.motif.OptionBG.DrawLayer(background, 0, 0, 0, 0, e.sprites)
-		e.motif.OptionBG.DrawLayer(background, 1, 0, 0, 0, e.sprites)
-	}
-	fi := e.motif.TitleInfo.ItemFont
-	title := e.themeValues("Option Info", "title.font", float64(fi.Index), float64(fi.Bank), 0)
-	pos := e.themeValues("Option Info", "title.offset", float64(e.logicalWidth)/2, 36*float64(e.logicalHeight)/240)
-	heading := e.themeText("Option Info", "title.text", "OPTIONS")
+	heading := ""
 	if s.team {
 		heading = "TEAM MODE CONFIG"
 	}
-	if index := int(title[0]); index >= 1 && index < len(e.motif.Fonts) && e.motif.Fonts[index] != nil {
-		align := font.AlignCenter
-		if title[2] > 0 {
-			align = font.AlignLeft
-		} else if title[2] < 0 {
-			align = font.AlignRight
-		}
-		e.drawMotifFont(background, e.motif.Fonts[index], heading, int(pos[0]), int(pos[1]), int(title[1]), align, "Option Info", "title.font")
-	}
-	screen.Fill(color.Black)
-	scale, x, y, _ := coord.Fit(coord.Space{Width: e.logicalWidth, Height: e.logicalHeight}, coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()})
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(scale, scale)
-	op.GeoM.Translate(x+float64(screen.Bounds().Min.X), y+float64(screen.Bounds().Min.Y))
-	screen.DrawImage(background, op)
+	content := e.drawOptionsBackground(screen, s.background, heading)
 	rows := make([]utilityRow, 0, len(s.items)+2)
 	for i, item := range s.items {
 		if !s.team && (i == 9 || i == 11) {
@@ -352,7 +326,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if s.messageTicks > 0 {
 		rows = append(rows, utilityRow{s.message, ""})
 	}
-	s.utility.draw(e, screen, rows, cursor, "", int(y+50*scale))
+	s.utility.draw(e, screen, rows, cursor, "", content.Min.Y-screen.Bounds().Min.Y)
 	if s.confirmation {
 		rows = []utilityRow{{"Reset default values?", "No"}}
 		if s.yes {
@@ -361,4 +335,40 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 		s.dialog.draw(e, screen, rows, 0, "", 100)
 	}
 	s.transition.draw(screen, s.ticks, e.themeNumber("Option Info", "fadein.time", 0), e.themeNumber("Option Info", "fadeout.time", 0))
+}
+
+// All Options pages retain the active motif's background, title styling and
+// fitted viewport. Utility lettering is composed afterward in window pixels.
+func (e *Engine) drawOptionsBackground(screen, background *ebiten.Image, heading string) image.Rectangle {
+	if e.motif.OptionBG != nil && e.motif.OptionBG.BGClearColor != nil {
+		background.Fill(e.motif.OptionBG.BGClearColor)
+	} else {
+		background.Fill(color.Black)
+	}
+	if e.motif.OptionBG != nil {
+		e.motif.OptionBG.DrawLayer(background, 0, 0, 0, 0, e.sprites)
+		e.motif.OptionBG.DrawLayer(background, 1, 0, 0, 0, e.sprites)
+	}
+	fi := e.motif.TitleInfo.ItemFont
+	title := e.themeValues("Option Info", "title.font", float64(fi.Index), float64(fi.Bank), 0)
+	pos := e.themeValues("Option Info", "title.offset", float64(e.logicalWidth)/2, 36*float64(e.logicalHeight)/240)
+	if heading == "" {
+		heading = e.themeText("Option Info", "title.text", "OPTIONS")
+	}
+	if index := int(title[0]); index >= 1 && index < len(e.motif.Fonts) && e.motif.Fonts[index] != nil {
+		align := font.AlignCenter
+		if title[2] > 0 {
+			align = font.AlignLeft
+		} else if title[2] < 0 {
+			align = font.AlignRight
+		}
+		e.drawMotifFont(background, e.motif.Fonts[index], heading, int(pos[0]), int(pos[1]), int(title[1]), align, "Option Info", "title.font")
+	}
+	screen.Fill(color.Black)
+	scale, x, y, _ := coord.Fit(coord.Space{Width: e.logicalWidth, Height: e.logicalHeight}, coord.Space{Width: screen.Bounds().Dx(), Height: screen.Bounds().Dy()})
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(scale, scale)
+	op.GeoM.Translate(x+float64(screen.Bounds().Min.X), y+float64(screen.Bounds().Min.Y))
+	screen.DrawImage(background, op)
+	return image.Rect(int(x), int(y+50*scale), int(x+float64(e.logicalWidth)*scale), int(y+float64(e.logicalHeight)*scale)).Add(screen.Bounds().Min)
 }

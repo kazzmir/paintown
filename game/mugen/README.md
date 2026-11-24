@@ -166,6 +166,8 @@ restore settings and live input bindings in memory. All edits remain session-onl
 configuration files stay unchanged. Use local YAML for persistent settings.
 
 In Options, choose Input Configuration or press F1 to edit keyboard bindings.
+Both input panes retain the active motif's Options background and title styling,
+with the same small utility lettering as the settings page.
 Tab selects the player; Enter replaces a binding, Insert adds an alternative,
 and Delete disables it. The keyboard enable row can be changed with left/right.
 F2 switches to the gamepad pane, which shows the assigned device and offers

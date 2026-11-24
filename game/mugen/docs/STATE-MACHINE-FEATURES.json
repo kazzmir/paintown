@@ -787,7 +787,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6c64bc4557de753ce49acd7c17e01617e406f0aa2eeefe85c80df1bf52240116"
+      "passed_source": "8c4c30c36ba332e88dcafab8fa6bc7f191532d2afded695f1ae3b34d16f677a3"
     }
   ],
   "presentation_followups": [
@@ -1326,7 +1326,7 @@
         "contract": "Complete Options settings, team/input/default actions and bounded utility presentation, retaining session-only load/save.",
         "basis": "Target Options inspection and handler review establish missing master volume/team/default actions, clamped value admission, discrete time limits, full speed range and independent utility rows. Team KO ordinal zero ignores surviving AI partners after a human leader is KOed; it is not an any-member-KO rule. Team factory reset uses 200% advantage, distinct from the shipped CFG value.",
         "prerequisite": "Resolved by direct target Options/input/team observation and handler review; portable input editing and session-only persistence remain intentional port policies.",
-        "completion": "The existing Options/input/team/default/session lifecycle checks value bounds, held navigation, master/SFX/BGM gains, keyboard/gamepad snapshots and startup reset, native team factory values and CFG KO policy through gameplay. Affected connected segments pass with race detection; Linux Options/Training flow and resized utility presentation pass without writing user configuration.",
+        "completion": "The existing Options/input/team/default/session lifecycle checks value bounds, held navigation, master/SFX/BGM gains, keyboard/gamepad snapshots and startup reset, native team factory values and CFG KO policy through gameplay. Affected connected segments pass with race detection; Linux Options/Training flow and resized utility presentation pass without writing user configuration. Keyboard/gamepad editing now retains the same Options motif background, heading style and utility lettering through capture/reset and return, with rows fitted below the heading. Window-sized input layout prevents HD motif text shrinkage. The extended connected match-flow segment passes with races; Linux build and keyboard/gamepad/reset/return visual inspection pass.",
         "sources": [
           "system/options.go",
           "system/input_config.go",
@@ -1559,7 +1559,7 @@
         "name": "Physical Linux controller acceptance",
         "status": "awaiting-prerequisite",
         "completion": "Exercise menu/configuration, selection, combat and unplug/reconnect on hardware; preserve ownership, neutral/deadzone and held/edge behavior. Include native mapping after K4. Injected devices cannot close H1.",
-        "prerequisite": "An available controller and someone able to exercise it; no connected device is assumed.",
+        "prerequisite": "The user confirms physical controller configuration works. Selection, combat and unplug/reconnect acceptance remain outstanding.",
         "sources": [
           "input/gamepad.go",
           "config/gamepad.go",

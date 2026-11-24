@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/kazzmir/paintown/game/mugen/config"
-	"github.com/kazzmir/paintown/game/mugen/input"
-	"image/color"
 	"math"
 	"strings"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 var inputConfigActions = []input.Action{input.ActionJump, input.ActionCrouch, input.ActionLeft, input.ActionRight, input.ActionA, input.ActionB, input.ActionC, input.ActionX, input.ActionY, input.ActionZ, input.ActionStart, input.ActionEscape}
@@ -23,7 +22,8 @@ type InputConfigState struct {
 	waiting, appendBinding, armed bool
 	settle                        bool
 	baseline                      input.GamepadSnapshot
-	canvas                        *ebiten.Image
+	background                    *ebiten.Image
+	utility, dialog               utilityMenu
 	confirmDefaults, defaultsYes  bool
 }
 
@@ -247,24 +247,23 @@ func (s *InputConfigState) controlsReleased() bool {
 	return len(state.Changes(s.baseline, s.pad().Deadzone)) == 0
 }
 func (s *InputConfigState) Draw(screen *ebiten.Image) {
-	if s.canvas == nil {
-		s.canvas = ebiten.NewImage(400, 280)
+	e := s.engine
+	if s.background == nil {
+		s.background = ebiten.NewImage(e.logicalWidth, e.logicalHeight)
 	}
-	s.canvas.Fill(color.RGBA{12, 18, 32, 255})
+	content := e.drawOptionsBackground(screen, s.background, "INPUT CONFIGURATION")
 	im := input.GlobalManager
-	kind := "KEYBOARD"
+	kind := "Keyboard"
 	if s.gamepad {
-		kind = "GAMEPAD"
+		kind = "Gamepad"
 	}
-	ebitenutil.DebugPrintAt(s.canvas, fmt.Sprintf("PLAYER %d %s | Tab: player | F2: device", s.player, kind), 8, 4)
-	var rows []string
+	rows := []utilityRow{{fmt.Sprintf("Player %d", s.player), kind}, {"Tab: player", "F2: device"}}
 	if s.gamepad {
 		pad := s.pad()
 		enabled := "Disabled"
 		if pad.Enabled {
 			enabled = "Enabled"
 		}
-		rows = []string{"Gamepad: " + enabled, fmt.Sprintf("Deadzone: %.2f", pad.Deadzone)}
 		_, name, standard, connected := im.GamepadInfo(s.player)
 		detail := "No controller assigned"
 		if connected {
@@ -274,14 +273,16 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 			}
 			detail = name + " (" + layout + ")"
 		}
-		ebitenutil.DebugPrintAt(s.canvas, detail, 8, 22)
+		rows = append(rows, utilityRow{detail, ""}, utilityRow{},
+			utilityRow{"Gamepad", enabled}, utilityRow{"Deadzone", fmt.Sprintf("%.2f", pad.Deadzone)})
 	} else {
 		enabled := "Enabled"
 		if im.KeyboardDisabled[s.player-1] {
 			enabled = "Disabled"
 		}
-		rows = []string{"Keyboard: " + enabled}
+		rows = append(rows, utilityRow{}, utilityRow{"Keyboard", enabled})
 	}
+	cursor := len(rows) - s.offset() + s.cursor
 	for _, action := range inputConfigActions {
 		var names []string
 		if s.gamepad {
@@ -298,39 +299,25 @@ func (s *InputConfigState) Draw(screen *ebiten.Image) {
 		if len(names) == 0 {
 			value = "disabled"
 		}
-		rows = append(rows, fmt.Sprintf("%-7s %s", action.String(), value))
+		rows = append(rows, utilityRow{action.String(), value})
 	}
-	top := max(0, s.cursor-10)
-	for index := top; index < min(top+11, len(rows)); index++ {
-		marker := "  "
-		if index == s.cursor {
-			marker = "> "
-		}
-		ebitenutil.DebugPrintAt(s.canvas, marker+rows[index], 8, 48+(index-top)*16)
-	}
-	hint := "Enter replace | Insert add | Delete disable"
+	hint := utilityRow{"Enter: replace", "Insert: add"}
 	if s.waiting {
-		hint = "Release controls, then press one. Esc cancels"
+		hint = utilityRow{"Release controls, then press one", "Esc: cancel"}
 	}
 	if s.settle {
-		hint = "Release controls to continue"
+		hint = utilityRow{"Release controls to continue", ""}
 	}
+	rows = append(rows, utilityRow{}, hint, utilityRow{"Delete: disable", "F3: reset"}, utilityRow{"Session only", "Esc: back"})
+	// Fit below the authored heading, using the same small utility lettering as
+	// Options. Every binding stays visible, including on a small game window.
+	panel := screen.SubImage(content).(*ebiten.Image)
+	s.utility.draw(e, panel, rows, cursor, "", 4)
 	if s.confirmDefaults {
 		choice := "No"
 		if s.defaultsYes {
 			choice = "Yes"
 		}
-		hint = fmt.Sprintf("Restore P%d startup bindings? < %s >", s.player, choice)
+		s.dialog.draw(e, panel, []utilityRow{{fmt.Sprintf("Restore P%d startup bindings?", s.player), choice}}, 0, "", panel.Bounds().Dy()/2)
 	}
-	ebitenutil.DebugPrintAt(s.canvas, hint+"\nF3 reset bindings | Session only | Esc back", 8, 244)
-	drawUtilityCanvas(screen, s.canvas)
-}
-
-func drawUtilityCanvas(screen, canvas *ebiten.Image) {
-	screen.Fill(color.RGBA{4, 8, 16, 255})
-	scale := min(float64(screen.Bounds().Dx())/float64(canvas.Bounds().Dx()), float64(screen.Bounds().Dy())/float64(canvas.Bounds().Dy()))
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(scale, scale)
-	op.GeoM.Translate(float64(screen.Bounds().Min.X)+(float64(screen.Bounds().Dx())-float64(canvas.Bounds().Dx())*scale)/2, float64(screen.Bounds().Min.Y)+(float64(screen.Bounds().Dy())-float64(canvas.Bounds().Dy())*scale)/2)
-	screen.DrawImage(canvas, op)
 }

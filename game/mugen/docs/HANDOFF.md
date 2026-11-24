@@ -10,6 +10,17 @@ font/content, U3 Options/Training, U4 AI and U5 precision acceptance pass. The
 ledger has 34 implemented categories and one partial category; those counts are
 not whole-engine equivalence percentages. H1 hardware is the remaining followup.
 
+## Input editor presentation
+
+Keyboard/gamepad editing now shares the Options motif background, heading style
+and small utility lettering, including capture hints and reset confirmation.
+Bindings fit below the heading; input behavior and session-only persistence stay
+the same. The editor uses the window-sized Options layout so HD motifs retain
+readable lettering. The affected connected match-flow segment passes with race
+detection; Linux build and keyboard/gamepad/reset/return window inspection pass.
+Owned scratch is removed. The user confirmed controller configuration works;
+H1 still requires selection, combat and unplug/reconnect acceptance.
+
 ## AI closure
 
 K8/U4 now connect the complete scoped AI path. Controller-scoped successful

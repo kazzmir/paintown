@@ -186,6 +186,9 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if _, options := e.currentState.(*OptionsState); options {
 		return max(1, outsideWidth), max(1, outsideHeight)
 	}
+	if _, inputConfig := e.currentState.(*InputConfigState); inputConfig {
+		return max(1, outsideWidth), max(1, outsideHeight)
+	}
 	return e.logicalWidth, e.logicalHeight
 }
 

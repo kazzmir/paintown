@@ -258,6 +258,8 @@ unknown permutations into mandatory parameter matrices.
   layerno 0/1/2 all compose in front; captions use the fitted game viewport.
 - Options input edits remain session-only. Preserve release admission, inherited
   keyboard fallbacks, raw-axis neutral baselines and device-change rearming.
+  Keyboard/gamepad editing and reset confirmation retain the active Options
+  motif background, heading style and utility lettering; fit below the heading.
   Requested F12 captures use exclusive PNG files; never commit generated output.
 - User Pause holds match/HUD/CNS GameTime while input/audio service continues.
   Fresh Scroll Lock advances one pass; AnyKeyUnpauses does not dismiss training
