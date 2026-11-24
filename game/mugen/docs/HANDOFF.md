@@ -48,6 +48,14 @@ keep random sequence variability explicit. No AI strength change is included in
 the completed U1 checkpoint. A learned-AI load message alone does not establish
 an additional asset requirement.
 
+K8 work in progress: movement now retains held directions, selects the nearest
+live enabled opponent and measures axis distance in game units across character
+profiles. Fallback movement uses the reviewed approach/jump/retreat/crouch weights.
+Defence, attack cadence, recovery and ownership are the following checkpoints;
+connected acceptance runs at the end of that batch. The target also has branches
+using learned attack metadata; those are distinct from the weighted fallback and
+must not be claimed reproduced merely because random command admission works.
+
 U2 needs broader licensed font/content inputs; U5 needs a named precision mismatch;
 H1 needs physical hardware exercise. Unknowns are not code defects. Record
 confirmed gaps as explicit scope changes, retain closed calibrations and do not
