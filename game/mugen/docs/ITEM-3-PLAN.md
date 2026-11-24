@@ -24,7 +24,10 @@ cover AI.Cheat command policy and legacy joystick configuration.
 The U3 Options/Training comparison established K5/K6, and the U1 overlapping
 runtime comparison established K7. These explicit scope expansions are now
 implemented and accepted. Of the six separate acceptance/evidence followups,
-U1/U3 are passed; U2, U4, U5 and H1 remain open. These are evidence questions, not assumed code defects. This bounded review does not establish an exhaustive list
+U1/U3 are passed; U2, U4, U5 and H1 remain open. U4 handler review now establishes
+K8: native weighted input decisions are not implemented by the fixed-cooldown
+heuristic. This explicit eighth target remains partial pending its bounded
+decision contract and connected acceptance. These are evidence questions, not assumed code defects. This bounded review does not establish an exhaustive list
 of every semantic difference; unsupported-path scans alone cannot do that.
 
 ## Assessment method and limits
@@ -59,7 +62,7 @@ questions forward instead of expanding the assessment indefinitely.
 
 ## Implementation contracts
 
-K1–K7 contracts, sources, prerequisites, estimates and completion conditions are
+K1–K8 contracts, sources, prerequisites, estimates and completion conditions are
 recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
 Confidence describes the effort estimate. Result and AI-admission contracts are
 resolved for their scoped implementations. Joystick translation uses target
@@ -73,7 +76,7 @@ expiry during global Pause through the connected turn/recovery/reset path.
 ## Bounded review areas
 
 These are reviewed boundaries, not five equal units of remaining effort. The
-ledger records their findings and allocations to K1–K7 and U1–U5/H1. The three
+ledger records their findings and allocations to K1–K8 and U1–U5/H1. The three
 parent categories stay partial until their scoped requirements and acceptance
 have been resolved.
 

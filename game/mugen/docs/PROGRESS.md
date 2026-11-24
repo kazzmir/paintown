@@ -8,7 +8,7 @@ an estimate of total effort or complete native compatibility.
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project categories: 32 implemented, 3 partial, 0 missing.
-- Remaining-scope implementation targets: 7 closed, 0 open.
+- Remaining-scope implementation targets: 7 closed, 1 open.
 - Separate acceptance followups: 2 passed, 4 open.
 
 ## Remaining implementation and acceptance
@@ -29,6 +29,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | **K5 — Options behavior and utility presentation** | implemented / passed | medium / high |
 | **K6 — Training dummy policy and menu lifecycle** | implemented / passed | medium / high |
 | **K7 — Overlapping pause, contact entry and bound recovery** | implemented / passed | medium / high |
+| **K8 — Native AI input decision policy** | partial / unverified | large / medium |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
   Basis: Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.
@@ -65,6 +66,11 @@ of native equivalence. Unknown behavior is not counted as a code defect.
   Prerequisite: Resolved by direct target observation of the connected throw/Pause/hitpause/turn/recovery lifecycle. A longer pause and an unbounded constraint distinguish allowance consumption and finite expiry; existing helper/SuperPause policies stay separate.
   Completion: The existing entity scenario checks native entry animation/velocity, owner/victim clocks, binding flags, facing and positions through overlapping pause, finite expiry, TargetDrop, SelfState, restored control and round reset. All affected connected segments pass with race detection; all five checkmarks are current. Linux build and owned stock-match application smoke pass without changing user configuration or root module metadata.
 
+- [ ] **K8**: Replace the portable AI heuristic with the target’s observable difficulty/distance/state-dependent input decision policy, including movement, defence, press/release cadence and declared-command selection, while retaining CNS eligibility and human/helper/reset ownership.
+  Basis: Direct target AI-handler review establishes weighted input decisions and declared-command admission during input updates. The Go consumer instead uses a fixed decision cooldown, broad distance cutoffs and simplified guarding/approach. Functional combat and specials do not close this policy difference.
+  Prerequisite: Resolve the relevant target actor fields and decision branches with a bounded connected comparison. Keep confirmed decision rules separate from random sequence variability; a learned-AI loading message alone does not establish a missing asset consumer.
+  Completion: Extend the existing command/AI combat lifecycle through approach, attack/cancel, threatened defence, recovery, difficulty and ownership/reset. Match the named native decision rules with explicit permitted variability, then validate affected connected segments at batch end. No exhaustive content or stochastic sample matrices.
+
 
 ### Separate acceptance and evidence questions
 
@@ -76,7 +82,7 @@ acceptance. Open questions do not imply missing controller/trigger routes.
 | **U1** | Additional runtime interaction fidelity — passed | Direct target comparison of one overlapping throw/Pause/hitpause, bound-anchor turn, finite expiry and own-state recovery episode established K7. The corrected production consumers match its clock/entry/pose observations and pass the extended entity-to-round-reset scenario, affected connected segments with race detection and Linux build/application smoke. This closes the named lifecycle, not arbitrary runtime permutations. Prerequisite: Resolved for the named combined lifecycle through direct target observation and the existing connected entity path. Prior binding/facing/reset findings remain intact. |
 | **U2** | Broader font/content acceptance — unverified | Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects. Prerequisite: Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity. |
 | **U3** | Native Options/training behavior and presentation — passed | Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; sample-exact raster/audio and stochastic AI decisions remain separate U5/U4. Prerequisite: Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers. |
-| **U4** | Native AI decisions beyond AI.Cheat — unverified | State observable target decision rules and permitted variability separately from K3 admission. Successful AI combat does not establish matching native probabilities. Prerequisite: Bounded reference evidence sufficient for a finite decision contract; exact stochastic equivalence has no reliable estimate. |
+| **U4** | Native AI decisions beyond AI.Cheat — unverified | K8 records the confirmed AI decision-policy difference. Resolve its observable rules and permitted random variability, implement the production consumer and validate one connected approach/attack/defence/recovery/ownership lifecycle. Functional combat and specials alone do not close U4. Prerequisite: Target AI-handler review establishes a finite decision routine; actor-field interpretation and connected reference acceptance remain. Exact seed-for-seed stochastic equivalence is not inferred from shared probability rules. |
 | **U5** | Additional raster/device-audio precision — unverified | Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks. Prerequisite: A specific mismatch or explicitly scoped precision target. Whole-frame/sample-exact equivalence remains unverified. |
 | **H1** | Physical Linux controller acceptance — awaiting-prerequisite | Exercise menu/configuration, selection, combat and unplug/reconnect on hardware; preserve ownership, neutral/deadzone and held/edge behavior. Include native mapping after K4. Injected devices cannot close H1. Prerequisite: An available controller and someone able to exercise it; no connected device is assumed. |
 
@@ -90,7 +96,7 @@ The baseline reused existing evidence; subsequent target comparisons and scope c
 | **A1 — Runtime ordering** | The bounded U1 comparison established K7: external contact entry waits through attacker hitpause, ordinary Pause owner allowance is retained during hitpause, and TargetBind duration advances through global Pause. Those consumers now match the connected target turn/release/recovery trace and pass entity/round-reset acceptance. Existing helper, facing, binding and SuperPause findings remain closed for their stated scope. | K7, U1 |
 | **A2 — Assets, fonts and media** | Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established. | U2 |
 | **A3 — Rendering and audio** | Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed. | K1, K2, U5 |
-| **A4 — Options, training and AI** | AI.Cheat admission is closed by K3. Direct target Options/Training review established K5/K6: independent utility rows, complete settings/session actions, native team KO consumer, mode-specific dummy rows, axis spacing, jam/guard/jump policy and selection return are now implemented and accepted. U3 is passed; stochastic native AI decisions remain U4. | K3, K5, K6, U3, U4 |
+| **A4 — Options, training and AI** | AI.Cheat admission is closed by K3. Direct target Options/Training review established K5/K6: independent utility rows, complete settings/session actions, native team KO consumer, mode-specific dummy rows, axis spacing, jam/guard/jump policy and selection return are now implemented and accepted. U3 is passed; stochastic native AI decisions remain U4. U4 handler review now establishes K8: the fixed-cooldown port heuristic differs from the target’s weighted difficulty/distance/state-dependent input policy. Its bounded decision contract and connected acceptance remain open. | K3, K5, K6, K8, U3, U4 |
 | **A5 — Input compatibility** | Legacy CFG enable/numeric bindings, named/raw overrides, keyboard alternatives, session editing and ownership/hotplug have connected injected-device acceptance. Target-handler review establishes native numbering; Linux evdev metadata supplies the SDK button/hat boundary. Physical/native calibration remains H1. | K4, H1 |
 
 ### Deferred capabilities
@@ -108,6 +114,7 @@ They do not silently enlarge this baseline or reopen unrelated completion.
 - U3 target comparison established two additional implementation targets, K5 Options behavior/presentation and K6 Training dummy/menu lifecycle. This explicitly expands the original four-target baseline to six; both now pass their connected acceptance and close U3. Session-only persistence and portable input editing remain intentional port policies.
 - K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets.
 - U1 combined lifecycle comparison established K7: external contact entry, ordinary Pause owner allowance during hitpause and TargetBind expiry through global Pause differed in Go, changing throw motion and release. An unbounded reference constraint distinguishes expiry from frozen placement. This explicitly expands the six-target scope to seven; K7 implementation/connected acceptance and U1 now pass.
+- U4 handler/consumer review establishes K8: the port’s fixed-cooldown heuristic does not implement the target’s weighted difficulty/distance/state-dependent input decisions. This explicitly expands the seven-target scope to eight; K8 is partial and U4 remains unverified pending a bounded decision contract and connected acceptance.
 
 ## Known difference checkpoints
 
@@ -247,7 +254,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Reviewed format families have readers and scoped acceptance. Broader font/content acceptance is U2; missing licensed payloads and native-reproducing content defects are not missing consumers. Physical CD and unavailable licensed/CJK payloads remain deferred. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1/K2 result scenes, K3 AI.Cheat admission, K5/K6 Options/Training and K7 overlapping runtime ordering are closed for their named behavior and acceptance. U4/U5 retain stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1/K2 result scenes, K3 AI.Cheat admission, K5/K6 Options/Training and K7 overlapping runtime ordering are closed for their named behavior and acceptance. K8 native AI decision policy remains partial under U4; U5 retains precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 

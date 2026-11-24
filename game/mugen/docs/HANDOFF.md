@@ -7,8 +7,9 @@ binaries, user configuration, subagents or goals. Keep documentation portable;
 
 U1 runtime interaction and U3 Options/Training acceptance are complete. Direct
 target comparisons established K5/K6 and K7 as explicit additions to the original
-four-target baseline. All seven scoped code targets now pass their connected
-acceptance. Four followups remain: U2, U4, U5 and H1. The three broad partial
+four-target baseline. K1–K7 now pass their connected acceptance. Subsequent U4 handler review adds
+K8 as an explicit eighth target; it remains partial/unverified. Four followups
+remain: U2, U4, U5 and H1. The three broad partial
 categories and controller/trigger counts do not measure remaining effort or
 whole-engine equivalence.
 
@@ -37,13 +38,21 @@ page defaults and session snapshots; native Training rows/input/pause/return.
 Options/input changes remain session-only, including selected-player startup
 binding reset. Physical controller acceptance remains H1.
 
-The user's AI feedback confirms functional combat/specials but weak decisions;
-U4 remains open. Next establish a finite native decision contract before changing
-AI behavior. U2 needs broader licensed font/content inputs; U5 needs a named
-precision mismatch; H1 needs physical hardware exercise. Unknowns are not code
-defects. Record demonstrated gaps as explicit scope changes, retain closed
-calibrations and do not repair scripts that also fail in the target. Bundled
-runtimes may differ despite familiar banners; Paintown C++ turning is not normative.
+AI fights and uses specials, but native decision fidelity remains open. U4
+handler review established K8: the fixed-cooldown/distance heuristic differs from
+the target's weighted difficulty/distance/state-dependent input choices. Next
+resolve actor-field meanings and the finite decision branches with one bounded
+connected comparison, then replace that consumer. Preserve press/release cadence,
+CNS eligibility, declaration semantics, helper/human ownership and round resets;
+keep random sequence variability explicit. No AI strength change is included in
+the completed U1 checkpoint. A learned-AI load message alone does not establish
+an additional asset requirement.
+
+U2 needs broader licensed font/content inputs; U5 needs a named precision mismatch;
+H1 needs physical hardware exercise. Unknowns are not code defects. Record
+confirmed gaps as explicit scope changes, retain closed calibrations and do not
+repair scripts that fail in the target. Bundled runtimes may differ despite
+familiar banners; Paintown C++ turning is not normative.
 
 Physical CD, unavailable licensed/CJK payloads, other-platform runtime acceptance
 and standalone music-file CLI playback remain deferred. Use the scoped module
