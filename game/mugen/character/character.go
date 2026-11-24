@@ -69,6 +69,7 @@ type Character struct {
 	pendingMissingEntry bool
 	commandState        bool
 	AIMoves             *AIMoveLibrary
+	AIStartHeld         bool
 	aiTrial             *aiMoveTrial
 	aiCommandReads      []int
 	aiCapturing         bool

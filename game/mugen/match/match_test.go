@@ -335,6 +335,125 @@ func aiLearningContextFlow(t *testing.T, m *Match) {
 	if err != nil || loaded.Ground[200] == nil || loaded.Ground[200].CommandIndex != move.CommandIndex || loaded.Ground[200].Startup.Time != move.Startup.Time || loaded.Ground[200].Attack != move.Attack || loaded.Ground[200].Attribute != "S,NA" {
 		t.Fatal("native learned cache did not restore the live move contract", err, loaded)
 	}
+	aiLearnedPlannerFlow(t, m)
+}
+
+func aiLearnedPlannerFlow(t *testing.T, m *Match) {
+	t.Helper()
+	c, enemy := m.Players[0].Character, m.Players[1].Character
+	oldFirst, oldSecond := c.InputSource, enemy.InputSource
+	defer func() { c.InputSource, enemy.InputSource = oldFirst, oldSecond }()
+	var second []string
+	c.InputSource = func(slot, facing int) []string {
+		if c.AILevel > 0 {
+			return m.BasicAIInputForFacing(slot, facing)
+		}
+		return nil
+	}
+	enemy.InputSource = func(int, int) []string { return second }
+	step := func(keys ...string) {
+		t.Helper()
+		second = keys
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
+	c.X, enemy.X = 0, 800
+	step()
+	step("ButtonX")
+	for pass := 0; pass < 40 && enemy.AIMoves.Ground[200] == nil; pass++ {
+		step()
+	}
+	if enemy.AIMoves.Ground[200] == nil {
+		t.Fatal("opponent command episode did not become learnable knowledge")
+	}
+	// An observed repeat is recognized before its first active frame. Keeping
+	// the observation explicit avoids testing stochastic recognition frequency.
+	c.X, enemy.X = 0, 160
+	step("ButtonX")
+	m.SetAILevel(1, 8)
+	b := m.brain(c)
+	state, kind, elapsed, _ := enemy.AIAction()
+	b.planner = aiPlanner{context: aiFallback, enemy: enemy, state: state, stateType: kind, elapsed: elapsed, known: enemy.AIMoves.Ground[200]}
+	sawPrediction := false
+	for pass := 0; pass < 80 && !enemy.AIMoves.Ground[200].End[1].Time.Valid; pass++ {
+		step()
+		_, _, elapsed, _ = enemy.AIAction()
+		sawPrediction = sawPrediction || b.planner.context == aiPredictiveGuard && elapsed < 3 && b.keys[3]
+	}
+	if !sawPrediction || !enemy.AIMoves.Ground[200].End[1].Time.Valid {
+		t.Fatal("learned prediction did not reach actual held guard/contact/recovery", sawPrediction, b.planner.context, c.StateNo)
+	}
+	m.SetAILevel(1, 0)
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
+	c.X, enemy.X = 0, 800
+	step()
+	step("ButtonY")
+	for pass := 0; pass < 40 && enemy.AIMoves.Ground[210] == nil; pass++ {
+		step()
+	}
+	if enemy.AIMoves.Ground[210] == nil {
+		t.Fatal("opponent strong punch did not complete its whiff episode")
+	}
+	step("ButtonY")
+	for pass := 0; pass < 16; pass++ {
+		_, _, elapsed, _ = enemy.AIAction()
+		if elapsed >= 12 {
+			break
+		}
+		step()
+	}
+	// Punish a learned whiff through a real non-cheating input plan. Pose
+	// preparation releases crouch; CNS chooses its standing attack itself.
+	c.X, enemy.X = 0, 240
+	c.ChangeState(11, 1, -1)
+	m.Options.AICheat = false
+	m.SetAILevel(1, 8)
+	b = m.brain(c)
+	b.random = engine.NewRandomStream(1)
+	b.planner.known = enemy.AIMoves.Ground[210]
+	selected := b.counterMove(c, enemy, 11, false, false)
+	if selected == nil || selected.StateNo != 200 {
+		t.Fatal("learned range/startup window did not produce the eligible counter", selected)
+	}
+	b.planner.enter(aiLearnedAttack)
+	b.planner.selected = selected
+	before := enemy.Life
+	sawAttack, sawPreparation := false, false
+	for pass := 0; pass < 100 && !(sawAttack && enemy.Life < before && c.StateNo == 0 && c.Ctrl); pass++ {
+		step()
+		sawPreparation = sawPreparation || c.StateNo == 12
+		sawAttack = sawAttack || c.StateNo == 200
+		if len(m.BasicAICommands(1)) != 0 {
+			t.Fatal("non-cheating learned plan fabricated admitted command labels")
+		}
+	}
+	if !sawPreparation || !sawAttack || enemy.Life >= before || c.StateNo != 0 || !c.Ctrl {
+		t.Fatal("learned counter failed preparation/CMD/attack/contact/recovery", sawPreparation, sawAttack, enemy.Life, c.StateNo)
+	}
+	m.SetAILevel(1, 0)
+	m.Options.AICheat = true
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
+	c.X, enemy.X = 0, 400
+	step("ButtonStart")
+	m.SetAILevel(1, 8)
+	b = m.brain(c)
+	sawNavigation := false
+	for pass := 0; pass < 12; pass++ {
+		step("ButtonStart")
+		sawNavigation = sawNavigation || b.planner.context == aiNavigate
+	}
+	if !sawNavigation || c.X <= 0 {
+		t.Fatal("opponent Start did not reach waypoint navigation through normal walking", sawNavigation, c.X)
+	}
+	m.SetAILevel(1, 0)
+	step()
+	c.ChangeState(0, 1, -1)
+	enemy.ChangeState(0, 1, -1)
 }
 
 func TestStockStageCropSurvivesCameraUpdatesAndRoundReset(t *testing.T) {

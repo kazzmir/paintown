@@ -1390,7 +1390,7 @@
         "contract": "Match the target AI input policy through weighted fallback movement, defence, attack/cancel, press/release cadence, command admission and recovery, plus its learned-move movement/attack/guard planner, while retaining CNS eligibility and human/helper/reset ownership.",
         "basis": "Reviewed fallback and authored command-table indexing remain implemented. A connected target human/CPU episode confirms successful command checks cause move trials, ground/air banks remain separate, hitpause stops collection time and completed records survive round restart. The port now collects those live episodes with bounded banks, context attribution, attack/body geometry, whiff/guard/hit timing and slowly updated statistics. The three timing groups are contact outcomes, correcting the earlier pose inference. Learned-data loading, prediction/selection and complete planner acceptance remain pending. Compatible optional beta learned-data loading and independent session banks are now connected; missing/incompatible caches fall back to live learning. Reversal active windows also enter the learner. Completed data survives round/rematch/reload while changed source revisions select new profiles.",
         "prerequisite": "Finish movement/attack/guard prediction and command-plan consumers, then validate the coherent AI batch. Model storage is session-only; no automatic generated binary writes are introduced. Keep individual actors independent and invalidate changed source profiles.",
-        "completion": "The new connected human whiff/air/hit episode matches native punch startup3, last-active6 and recovery12, excludes hitpause, retains outcome histories and five-percent repeat estimates, and keeps completed ground/air records through fresh round actors. Linux compile and the extended existing AI/combat scenario pass. Full segment acceptance is pending the coherent planner batch; K8/U4 stay open. The existing connected scenario also decodes a tiny in-memory native-format record and checks independent model retention through reload. No binary fixture or user configuration is committed. Planner acceptance remains pending.",
+        "completion": "The new connected human whiff/air/hit episode matches native punch startup3, last-active6 and recovery12, excludes hitpause, retains outcome histories and five-percent repeat estimates, and keeps completed ground/air records through fresh round actors. Linux compile and the extended existing AI/combat scenario pass. Full segment acceptance is pending the coherent planner batch; K8/U4 stay open. The existing connected scenario also decodes a tiny in-memory native-format record and checks independent model retention through reload. No binary fixture or user configuration is committed. Planner acceptance remains pending. Learned movement/attack/guard consumers now execute through opponent recognition, startup/range selection, pose preparation, normal CMD or admitted labels, predictive guard and Start-triggered waypoints. The connected planner scenario reaches guarded contact and physical counter preparation/contact/recovery; affected segment and final runtime acceptance remain pending.",
         "sources": [
           "character/ai_data.go",
           "character/ai_memory.go",
@@ -1410,7 +1410,8 @@
           "system/fight_state.go",
           "system/fight_controls.go",
           "match/match_test.go",
-          "system/command_flow_test.go"
+          "system/command_flow_test.go",
+          "match/ai_planner.go"
         ]
       },
       {

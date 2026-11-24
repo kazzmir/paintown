@@ -211,6 +211,29 @@ type aiMoveTrial struct {
 	projectile     *Character
 }
 
+// AIAction identifies an observed command episode across chained states. It
+// exposes elapsed simulation passes, not future CNS eligibility or outcomes.
+func (c *Character) AIAction() (state int, stateType string, elapsed, outcome int) {
+	if trial := c.aiTrial; trial != nil {
+		return trial.move.StateNo, trial.move.StateType, trial.ticks, trial.outcome
+	}
+	outcome = 0
+	if c.MoveGuarded > 0 {
+		outcome = 1
+	} else if c.MoveHit > 0 {
+		outcome = 2
+	}
+	return c.StateNo, c.StateType, c.Time, outcome
+}
+
+func (c *Character) AIBodyBounds() AIBounds {
+	var bounds AIBounds
+	if frame := c.CurrentElement(); frame != nil {
+		c.aiBoxes(frame.Clsn2, c.X*c.aiScale(), c.Y*c.aiScale(), c.Facing, &bounds)
+	}
+	return bounds
+}
+
 func (c *Character) BeginControllerEvaluation() {
 	if c.AIMoves != nil && c.AIMoves.Commands != c.CmdFile {
 		c.AIMoves = NewAIMoveLibrary(c.CmdFile, c.AIMoves.Width)

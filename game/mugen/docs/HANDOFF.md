@@ -52,7 +52,14 @@ and game width key the bounded session cache. Missing/incompatible files fall
 back to learning, and no generated binary cache is written. The existing journey
 checks native-format decoding and independent reload retention. Reversal windows
 also enter collection. Next connect movement/attack/guard prediction; storage and
-collection alone do not close K8/U4. Keep independent seat streams and timed
+collection alone do not close K8/U4. The learned planner is now connected in
+match/ai_planner.go: opponent recognition, range/startup counter selection,
+source-pose preparation, predictive held guard and Start-triggered waypoints.
+The existing connected journey passes through prediction, guarded contact,
+non-cheating counter preparation/CMD/contact/recovery and normal navigation.
+Learned physical plans own their input attempt until completion or an actual
+hit; generic fallback defence cannot cancel them. Full affected segments and
+final runtime acceptance remain pending before closure. Keep independent seat streams and timed
 non-cheating plans explicit. No generated records, binaries or private observations
 belong in Git. Keep the native/application runs serial and clean owned scratch at
 batch completion.

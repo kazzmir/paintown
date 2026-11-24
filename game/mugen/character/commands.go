@@ -449,6 +449,7 @@ func (c *Character) updateCommands(isPaused bool) {
 	c.ActiveCommands = nil
 	c.LastCommandMatched = ""
 	c.aiCommands = nil
+	c.AIStartHeld = false
 	if c.Parent != nil && !c.isProjectile && !c.HelperKeyControl {
 		return
 	}
@@ -459,6 +460,9 @@ func (c *Character) updateCommands(isPaused bool) {
 			physicalRaw = c.InputSource(c.InputSlot, c.Facing)
 		} else {
 			physicalRaw = GetRawInputs(c.InputSlot, c.Facing)
+		}
+		for _, key := range physicalRaw {
+			c.AIStartHeld = c.AIStartHeld || key == "ButtonStart"
 		}
 		raw := c.CmdFile.RemapInputs(physicalRaw)
 		if c.CommandSource != nil {

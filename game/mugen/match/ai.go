@@ -11,6 +11,7 @@ import (
 type aiBrain struct {
 	random       *engine.RandomStream
 	commands     [][]character.CommandInput
+	commandPlans map[int][][]character.CommandInput
 	commandNames []string
 	admitted     []string
 	queue        []character.CommandInput
@@ -24,6 +25,7 @@ type aiBrain struct {
 	level        int
 	cheat        bool
 	facing       int // heading of this tick's cached root-relative snapshot
+	planner      aiPlanner
 }
 
 func (m *Match) brain(c *character.Character) *aiBrain {
@@ -41,11 +43,11 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 		random = engine.NewRandomStream(m.World.RandomSeed() + int64(c.InputSlot)*16807)
 		m.aiRandom[c.InputSlot] = random
 	}
-	b := &aiBrain{random: random, frame: -1, source: c.CmdFile, level: c.AILevel, cheat: m.Options.AICheat}
+	b := &aiBrain{random: random, frame: -1, source: c.CmdFile, level: c.AILevel, cheat: m.Options.AICheat, commandPlans: make(map[int][][]character.CommandInput)}
 	if c.CmdFile != nil {
 		names := c.CmdFile.IndexedNames()
 		b.commandNames = names
-		for _, name := range names {
+		for index, name := range names {
 			for _, command := range c.CmdFile.Commands[name] {
 				steps := character.CommandInputs(command.Sequence)
 				button := false
@@ -65,6 +67,7 @@ func (m *Match) brain(c *character.Character) *aiBrain {
 					}
 					if len(steps) > 0 {
 						b.commands = append(b.commands, steps)
+						b.commandPlans[index] = append(b.commandPlans[index], steps)
 					}
 				}
 			}
@@ -190,9 +193,14 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	if other == nil {
 		clear(b.keys[:])
 		b.queue, b.held, b.remaining, b.planActive = nil, nil, 0, false
+		b.planner = aiPlanner{}
 		return nil
 	}
 	level := max(1, min(8, c.AILevel))
+	if b.planner.context == aiLearnedAttack && c.MoveType == "H" {
+		b.queue, b.held, b.remaining, b.planActive = nil, nil, 0, false
+		b.planner.enter(aiFallback)
+	}
 	first, second := 4+int(b.random.Next()%6), 4+int(b.random.Next()%6)
 	if b.random.Next()%100 == 0 {
 		first = 10 // Start is an occasional native choice, not an attack button alias.
@@ -200,7 +208,13 @@ func (m *Match) BasicAIInput(playerID int) []string {
 	if first == second || b.random.Next()%8 != 0 {
 		second = -1
 	}
-	if b.defence(c, other, distance, level) {
+	if b.remaining == 0 && len(b.queue) == 0 && !b.planActive && b.learnedInput(c, other, distance, level, m.Options.AICheat) {
+		b.recovery(c, m.Options.GameSpace.Width)
+		b.inputs = b.snapshot()
+		return b.inputs
+	}
+	if b.planner.context != aiLearnedAttack && b.defence(c, other, distance, level) {
+		b.planner.enter(aiFallback)
 		b.inputs = b.snapshot()
 		return b.inputs
 	}
