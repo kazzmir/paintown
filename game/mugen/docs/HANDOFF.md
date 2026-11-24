@@ -37,11 +37,21 @@ association, pose/range/startup prediction and planner transitions as one bounde
 lifecycle before implementing that consumer. A hints-file load message does not
 establish an asset requirement; the public sample labels its hints unused.
 
-U5 now has a named font question: shared-font captures show small hinted glyph
-edge/baseline and odd-width centering differences. Define the layout/raster
-contract and tolerance before changing it. Preserve earlier camera, indexed
-sprite, alpha and KO-echo calibrations. H1 requires physical controller exercise.
-Unknown permutations are not matrices; do not repair scripts that fail natively.
+U5 whole-text TrueType layout is corrected. The target text library's surfaces
+and a shared rendered scene establish negative-bearing padding, final overhangs,
+center-before-truncation and inclusive right anchors. The existing timed asset
+journey now checks italic/Unicode widths and aligned/clipped labels through scene
+exit. Affected match-flow passes with races; unchanged segments stay checked.
+Linux build, shared-font window inspection and stock-match smoke pass. Owned
+scratch is removed. No new font dependency or binary fixture was added.
+
+U5 remains open for glyph hinting: the Go renderer rounds advances without
+executing TrueType hint instructions, and system FreeType also differs from the
+target. Resolve a compatible hinting path or an explicit raster/metric tolerance;
+do not hide it with per-glyph or baseline offsets. Preserve earlier camera,
+indexed sprite, alpha and KO-echo calibrations. H1 requires physical controller
+exercise. Unknown permutations are not matrices; do not repair scripts that fail
+natively.
 
 Keep native/application/display runs serial and await owned clients before edits
 or another run. Validate affected segments at coherent batch boundaries and

@@ -180,6 +180,10 @@ unknown permutations into mandatory parameter matrices.
   commented FNT maps and explicit glyph coordinates. TrueType uses the resource
   resolver and reported fallback. Lazy sprite caches share pixels, while fighter
   and HUD effects stay separate; palettes use MappingRevision for outfit changes.
+- TrueType widths include negative bearings and final overhangs; pad the text
+  surface before drawing. Center before integer truncation and keep inclusive
+  right anchors. Preserve bitmap alignment. Native glyph hinting can also change
+  advances and baselines; layout acceptance does not close that U5 raster gap.
 - Retain linked/animated BG clocks and geometry, moving floors/reflections and
   camera return based on the unclipped participant midpoint. Storyboards retain
   clearcolor=-1 canvases and compose once per tick. Keep motif-aspect presentation,

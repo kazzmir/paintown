@@ -44,6 +44,13 @@ font's glyph coverage or metrics. Supply an appropriately licensed font for
 content requiring it; the fallback does not provide complete CJK coverage.
 No proprietary font payloads are included in the repository.
 
+TrueType text measures the whole surface, including negative bearings and
+italic overhangs. Centering truncates after alignment; right anchors include the
+last surface pixel. Bitmap fonts retain their own placement rules. The current
+Go rasterizer does not execute TrueType glyph hint instructions, so native
+glyph edges, baselines and hinted advances can still differ. U5 tracks that
+precision gap separately from supported font loading and text layout.
+
 ## Audio and acceptance
 
 WAV/MP3/Ogg playback uses Go decoders. Linux MIDI/tracker playback optionally

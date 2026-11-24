@@ -393,7 +393,12 @@ func (f *Font) DrawWithPalette(screen *ebiten.Image, text string, x, y int, bank
 // uses 256 as the neutral multiplier; this does not replace the selected bank
 // or mutate cached glyph pixels shared by differently colored labels.
 func (f *Font) DrawWithColor(screen *ebiten.Image, text string, x, y int, bank int, align Alignment, rgb [3]float32, transform palette.Transform) error {
-	width := f.TextWidthForBank(text, bank)
+	width, leftPadding := 0, 0
+	if f.ttf != nil {
+		width, leftPadding = f.ttf.layout(text)
+	} else {
+		width = f.TextWidthForBank(text, bank)
+	}
 	startX := x + f.OffsetX
 	// MUGEN treats Y as the baseline (bottom of the font cell), so we subtract
 	// the font height to get the top-left origin for glyph rendering.
@@ -408,10 +413,20 @@ func (f *Font) DrawWithColor(screen *ebiten.Image, text string, x, y int, bank i
 
 	switch align {
 	case AlignCenter:
-		startX -= width / 2
+		if f.ttf != nil {
+			// Native aligns the surface before converting to an integer, so
+			// odd widths also retain truncation towards zero off the left edge.
+			startX = int(float64(startX) - float64(width)/2)
+		} else {
+			startX -= width / 2
+		}
 	case AlignRight:
 		startX -= width
+		if f.ttf != nil {
+			startX++ // The right anchor is the final surface pixel.
+		}
 	}
+	startX += leftPadding
 
 	currentX := startX
 	var previous rune

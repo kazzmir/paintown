@@ -60,17 +60,29 @@ func loadTrueType(defPath, name string, f *Font, blend bool) (*Font, error) {
 
 func (f *trueTypeFont) kern(a, b rune) int { return f.face.Kern(a, b).Round() }
 func (f *trueTypeFont) width(text string) int {
-	w := 0
+	width, _ := f.layout(text)
+	return width
+}
+
+// layout measures the complete text surface, including ink outside the advance
+// cells. The target pads a negative left bearing before drawing that surface;
+// treating its width as only the sum of advances clips italic overhangs and
+// moves aligned labels. Return the padding separately from the measured width.
+func (f *trueTypeFont) layout(text string) (width, leftPadding int) {
+	pen, left, right := 0, 0, 0
 	var previous rune
 	for _, r := range text {
 		if previous != 0 {
-			w += f.kern(previous, r)
+			pen += f.kern(previous, r)
 		}
-		advance, _ := f.face.GlyphAdvance(r)
-		w += advance.Ceil()
+		bounds, advance, _ := f.face.GlyphBounds(r)
+		left = min(left, pen+bounds.Min.X.Floor())
+		right = max(right, pen+bounds.Max.X.Ceil())
+		pen += advance.Ceil()
+		right = max(right, pen)
 		previous = r
 	}
-	return w
+	return right - left, -left
 }
 
 func (f *trueTypeFont) glyph(r rune, height int) *Glyph {

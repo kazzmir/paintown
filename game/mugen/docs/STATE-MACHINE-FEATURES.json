@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "84f9a5b049041b9d36382960364460eba76d692891f2087f4222d9b679241f77"
+      "passed_source": "b1ac860d8a4815647fc9c35b232add8a79a34c87355f80f00d5173a14aad45dd"
     }
   ],
   "presentation_followups": [
@@ -1503,9 +1503,12 @@
         "id": "U5",
         "name": "Additional raster/device-audio precision",
         "status": "unverified",
-        "completion": "Keep calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings closed. Name a remaining discrepancy and tolerance before a targeted comparison; generic combinations are not code tasks.",
-        "prerequisite": "A shared openly licensed proportional-font scene at 24-pixel height now isolates small hinted glyph-edge/baseline and odd-width center placement differences. Define font-layout/raster tolerance or a concrete correction before precision work. Earlier camera, indexed sprite, alpha and KO-echo calibrations remain closed.",
+        "completion": "Whole-text TrueType layout is corrected: include negative bearings and final overhangs, pad the surface at its left edge, truncate after centering and include the final pixel at a right anchor. The shared target text surface/capture confirms these rules; the existing timed storyboard asset lifecycle checks italic/Unicode extents and aligned/clipped placement. Affected match-flow acceptance passes with race detection; unchanged segments remain checked. The Linux build, shared-font window inspection and stock-match application smoke pass; owned scratch is removed. Glyph hinting remains unresolved, so this does not close U5 or claim whole-font pixel equivalence. Keep earlier camera, sprite/shadow, alpha and ordinary KO-echo findings closed.",
+        "prerequisite": "The shared openly licensed 24-pixel font scene still isolates hinted glyph-edge/baseline and advance differences. The Go outline renderer rounds advance metrics but does not execute TrueType glyph hint instructions; the system FreeType comparison also differs from the target raster. Resolve a compatible hinting path or an explicitly accepted raster/metric tolerance before claiming closure; do not apply per-glyph or baseline offsets to hide the discrepancy.",
         "sources": [
+          "font/font.go",
+          "font/truetype.go",
+          "system/asset_flow_test.go",
           "render/linear.go",
           "render/nearest.go",
           "render/shadow.go",
@@ -1550,7 +1553,7 @@
       {
         "id": "A2",
         "name": "Assets, fonts and media",
-        "finding": "Supported format families have connected functional acceptance. U2 now passes a licensed Unicode TTF/TTC localized scene/menu/fight/reload lifecycle; its native comparison exposed K9 character palette mapping/reservation, now implemented and accepted. Missing licensed/CJK payloads and physical CD remain deferred; native-reproducing script defects are not engine gaps. Font hinting/edge and odd-width center differences stay in U5.",
+        "finding": "Supported format families have connected functional acceptance. U2 now passes a licensed Unicode TTF/TTC localized scene/menu/fight/reload lifecycle; its native comparison exposed K9 character palette mapping/reservation, now implemented and accepted. Missing licensed/CJK payloads and physical CD remain deferred; native-reproducing script defects are not engine gaps. U5 whole-text bearing/overhang/alignment rules are corrected and accepted in the existing asset lifecycle; native glyph hinting, including advance and baseline precision, remains open.",
         "targets": [
           "K9"
         ],
@@ -1653,7 +1656,8 @@
       "U4 handler/consumer review establishes K8: the port\u2019s fixed-cooldown heuristic does not implement the target\u2019s weighted difficulty/distance/state-dependent input decisions. This explicitly expands the seven-target scope to eight; K8 is partial and U4 remains unverified pending a bounded decision contract and connected acceptance.",
       "K8 refinement: reviewed weighted fallback contexts are implemented and accepted. Direct handler/live-combat observation also confirms move tables populate during play and feed separate learned movement/attack/guard planning; those missing consumers remain inside K8, without adding a ninth target. U4 stays open; non-cheating timed CMD plans and independent random streams remain explicit port policies.",
       "U2 refinement explicitly adds K9: a shared native/Go font-content flow exposed ignored character Palette Keymap selection, independently confirmed in the target loader. This expands the implementation map from eight targets to nine. Unicode TTF/TTC availability is resolved; small font hinting/centering differences are recorded under the existing U5 precision followup, not another implementation target.",
-      "K9 and U2 closure: authored palette mapping, held-Start selection and available-outfit reservation now match the reviewed target path through gameplay/reload. Licensed Unicode TTF/TTC content acceptance passes in the existing connected lifecycle and native/Linux application journey. This closes the supported asset/font functional category; font raster/centering precision remains U5 and the learned AI planner remains K8/U4. No additional target or binary fixture was added."
+      "K9 and U2 closure: authored palette mapping, held-Start selection and available-outfit reservation now match the reviewed target path through gameplay/reload. Licensed Unicode TTF/TTC content acceptance passes in the existing connected lifecycle and native/Linux application journey. This closes the supported asset/font functional category; font raster/centering precision remains U5 and the learned AI planner remains K8/U4. No additional target or binary fixture was added.",
+      "U5 precision refinement: direct target text-library surfaces establish complete text extents, negative-bearing padding, centered truncation and inclusive right anchors. Those layout rules are corrected within the existing followup, without adding an implementation target. Compatible TrueType hinting remains unresolved; modern system FreeType alone does not reproduce the target raster. Prior format/content acceptance and camera/sprite/audio calibrations remain closed."
     ]
   }
 }

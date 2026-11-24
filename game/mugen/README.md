@@ -468,6 +468,8 @@ out of nine. K9 palette mapping/reservation and U2 supported Unicode TTF/TTC
 content acceptance are closed. K8's weighted AI fallback is implemented and
 tested; its learned movement/attack/guard planner remains partial. U1, U2 and U3
 acceptance have passed; U4 AI, U5 precision and H1 physical controllers remain open.
+TrueType text now includes negative bearings and italic overhangs when measuring
+and aligning labels. Native glyph hinting remains part of U5.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,

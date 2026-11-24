@@ -33,6 +33,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
+	"golang.org/x/image/font/gofont/goitalic"
 	"golang.org/x/image/font/gofont/gomono"
 	"golang.org/x/image/font/gofont/goregular"
 )
@@ -105,6 +106,12 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	if err := os.WriteFile(filepath.Join(dir, "italic.ttf"), goitalic.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "italic.def"), []byte("[FNT v2]\nfntversion=2,00\n[Def]\nType=truetype\nSize=0,24\nOffset=2,3\nFile=italic.ttf\nBlend=1\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
 	// A small legacy bitmap font spans padded PCX rows, color banks and
 	// commented metadata. Generate it in scratch rather than copying a bank.
 	pcx := make([]byte, 128)
@@ -169,6 +176,9 @@ font2.height=14
 font2.height=999
 font0.height=99
 font3=legacy.fnt
+font4=italic.def
+font5=nested.def
+font5.height=24
 [Scene 0]
 end.time=12
 end.time=99
@@ -223,6 +233,24 @@ clearcolor=12,24,36
 window=-1000,-1000,1000,1000
 layer0.anim=701
 layer0.offset=-120,120
+[Scene Font layout]
+end.time=3
+clearcolor=0,0,0
+layer0.text="jA"
+layer0.font=4,0,1
+layer0.offset=24,45
+layer1.text="AVATAR WAgy"
+layer1.font=4,0,0
+layer1.offset=150,80
+layer2.text="jV"
+layer2.font=4,0,-1
+layer2.offset=290,115
+layer3.text="      gy"
+layer3.font=5,0,0
+layer3.offset=2,158
+layer4.text="A "
+layer4.font=5,0,0
+layer4.offset=152,198
 [Scene0bgDef]
 [Scene0bg origin]
 type=normal
@@ -252,7 +280,7 @@ Interpolate Blend
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(story.Scenes) != 3 || story.Scenes[2].Name != "Scene Ending" || story.Scenes[0].Background == nil || len(story.Scenes[0].Background.Elements) != 1 {
+	if len(story.Scenes) != 4 || story.Scenes[2].Name != "Scene Ending" || story.Scenes[0].Background == nil || len(story.Scenes[0].Background.Elements) != 1 {
 		t.Fatal("legacy scene-prefixed background was mistaken for a scene")
 	}
 	for _, f := range story.Fonts[1:3] {
@@ -262,6 +290,11 @@ Interpolate Blend
 	}
 	if story.Fonts[2].Height != 14 || story.Fonts[1].Height != 18 || story.Fonts[0].Height != 6 {
 		t.Fatal("story font height override changed another font or bitmap cells")
+	}
+	// The target's whole-text surface includes the first negative bearing and
+	// final italic overhang, instead of only accumulating character advances.
+	if f := story.Fonts[4]; f.TextWidth("jA") != 24 || f.TextWidth("jV") != 28 || f.TextWidth("AVATAR WAgy") != 172 || f.TextWidth("café Á Ω Ж") != 125 || f.TextWidth("") != 0 {
+		t.Fatal("TrueType surface lost bearings/overhangs or Unicode extents")
 	}
 	legacy := story.Fonts[3]
 	if legacy == nil || legacy.TextWidth("A\";") != 8 || legacy.Glyph('"', 0) == nil || legacy.Glyph(';', 0) == nil {
@@ -377,7 +410,7 @@ Interpolate Blend
 	if !bytes.Equal(retained, previous) {
 		t.Fatal("presentation refresh re-blended retained scene layers")
 	}
-	cleared, sawMargin := false, false
+	cleared, sawMargin, sawLayout := false, false, false
 	for n := 0; n < 20 && e.currentState == state; n++ {
 		step()
 		if state.player.CurrentScene() == story.Scenes[2] {
@@ -400,8 +433,37 @@ Interpolate Blend
 				t.Fatal("explicit scene color did not replace retained content", got)
 			}
 		}
+		if state.player.CurrentScene() == story.Scenes[3] && story.Scenes[3].Layers[0].Enabled && !sawLayout {
+			sawLayout = true
+			// Read in storyboard coordinates so viewport scaling does not mask
+			// one-pixel alignment. Keep this in the same timed asset journey.
+			layout := ebiten.NewImage(320, 240)
+			state.player.Draw(layout)
+			pixels := make([]byte, 320*240*4)
+			layout.ReadPixels(pixels)
+			layout.Deallocate()
+			for _, row := range []struct{ top, bottom, left, right int }{
+				{20, 55, 26, 50},     // negative italic bearing padded at the anchor
+				{55, 90, 66, 238},    // centered complete italic extent
+				{90, 130, 265, 293},  // inclusive right anchor and final overhang
+				{130, 170, 12, 36},   // odd width, negative origin and clipping
+				{175, 205, 140, 156}, // odd width at a positive center
+			} {
+				left, right := 320, 0
+				for y := row.top; y < row.bottom; y++ {
+					for x := 0; x < 320; x++ {
+						if pixels[(y*320+x)*4] > 0 {
+							left, right = min(left, x), max(right, x+1)
+						}
+					}
+				}
+				if left != row.left || right != row.right {
+					t.Fatalf("story text row %d..%d has x=%d..%d, want %d..%d", row.top, row.bottom, left, right, row.left, row.right)
+				}
+			}
+		}
 	}
-	if !cleared || !sawMargin || e.currentState != next {
+	if !cleared || !sawMargin || !sawLayout || e.currentState != next {
 		t.Fatal("storyboard did not exit")
 	}
 	e.cfg.Config.GameWidth, e.cfg.Config.GameHeight = oldWidth, oldHeight

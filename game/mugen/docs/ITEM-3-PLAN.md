@@ -38,9 +38,11 @@ of every semantic difference; unsupported-path scans alone cannot do that.
 The U2 licensed Unicode TTF/TTC content journey explicitly added K9 after the
 same input selected different outfits. K9 now closes authored keymaps, held
 Start, available-outfit reservation and palette ownership through fight/reload.
-The supported font/content functional category is accepted. Small font hinting,
-edge and odd-width centering differences give U5 a named precision question;
-they do not reopen format loading or earlier camera/sprite/audio calibrations.
+The supported font/content functional category is accepted. U5 now corrects
+whole-text bearings, overhangs and alignment through the existing asset journey.
+Native glyph hinting still changes edges, baselines and advances; it remains a
+named precision gap. This does not reopen format loading or earlier
+camera/sprite/audio calibrations.
 
 ## Assessment method and limits
 
