@@ -25,9 +25,14 @@ The U3 Options/Training comparison established K5/K6, and the U1 overlapping
 runtime comparison established K7. These explicit scope expansions are now
 implemented and accepted. Of the six separate acceptance/evidence followups,
 U1/U3 are passed; U2, U4, U5 and H1 remain open. U4 handler review now establishes
-K8: native weighted input decisions are not implemented by the fixed-cooldown
-heuristic. This explicit eighth target remains partial pending its bounded
-decision contract and connected acceptance. These are evidence questions, not assumed code defects. This bounded review does not establish an exhaustive list
+K8: the former fixed-cooldown heuristic differed from native input decisions.
+Weighted fallback movement, defence, attacks/cancels, recovery and ownership are
+now implemented and accepted through the connected scenarios. Handler review
+and direct observation also establish live learned move tables; their separate
+movement/attack/guard planner remains missing within K8. This explicit eighth
+target therefore remains partial. U4 still needs that planner's bounded
+implementation and reference acceptance. Other unresolved evidence questions
+are not assumed code defects. This bounded review does not establish an exhaustive list
 of every semantic difference; unsupported-path scans alone cannot do that.
 
 ## Assessment method and limits

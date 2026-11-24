@@ -206,6 +206,14 @@ func aiDecisionContextFlow(t *testing.T) {
 	if len(m.aiBrains) != 0 || c.AILevel != 1 || m.brain(c).random != stream {
 		t.Fatal("round reset retained AI state or lost level/random continuity")
 	}
+	fresh, err := m.Reload()
+	if err != nil {
+		t.Fatal(err)
+	}
+	freshBrain := fresh.brain(fresh.Players[0].Character)
+	if freshBrain.random == stream || freshBrain.random.Next() != stream.Next() || len(freshBrain.snapshot()) != 0 || len(freshBrain.admitted) != 0 {
+		t.Fatal("reload restarted AI randomness, shared the old stream or retained input")
+	}
 }
 
 func TestStockStageCropSurvivesCameraUpdatesAndRoundReset(t *testing.T) {

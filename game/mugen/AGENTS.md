@@ -99,6 +99,13 @@ unknown permutations into mandatory parameter matrices.
   CNS eligibility, key-controlled helper ownership and human/reset isolation.
   Charge chord components before simultaneous
   release/press completion; strict steps retain unrelated preceding inputs. Player/helper buffers remain independent.
+- Sample AI once per input tick; retain physical key state and present the cached
+  snapshot in each helper's heading. Use game-axis distance across profiles,
+  live guard threats and CNS-owned recovery/eligibility. Independent seat random
+  streams continue across rounds, control changes and reload; held input/plans
+  reset. Preserve reviewed fallback weights and explicitly distinguish timed
+  non-cheating plans from target policy. Native learned move-table planning is
+  still K8/U4 work; functional fighting and fallback acceptance do not close it.
 - Gamepads honor legacy CFG enable/numeric controls before YAML/session overrides.
   Linux native codes use four 32-code device blocks and capability-dependent
   axis/hat/button offsets; preserve the first axis-pair swap and hat aliases.

@@ -641,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "0890607cf670fdb317a3f2ad7ec2bf95d76b072582f40c2d8b0f5af5ffbca4e4"
+      "passed_source": "aea56800373ac4fe4e4a65aa5e83a0801383e0a0d11d83da056b8884b12793ef"
     },
     {
       "id": "entities",
@@ -674,7 +674,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f3be545a2507d1e817ef170bf64cd97ebb0f5119924513102914ef7ee6bb41e4"
+      "passed_source": "7aed5e1f7a78831158644133887a7e51f5e4867ecb1a74e3b9fd63d4b06322df"
     },
     {
       "id": "effects-pause",
@@ -709,7 +709,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "67e2be3b63afc9751c5d6ecf542dfd2a39bcd32e4a33bc7f1695f3915098c9b8"
+      "passed_source": "7026fa850212d2688293f94556503c8ade02431f827439470f5cca4211dc8aed"
     },
     {
       "id": "match-flow",
@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6e4ec20b4e5fe78e73cec27c1cf96cbbc797b7c6e5836026155ea4fcf0db86af"
+      "passed_source": "c2d458c9fb54e46b74ebdf237266e7c170ea4786d5cd7eeb7d08ce7de4898622"
     }
   ],
   "presentation_followups": [
@@ -1387,15 +1387,22 @@
         "acceptance": "unverified",
         "size": "large",
         "confidence": "medium",
-        "contract": "Replace the portable AI heuristic with the target\u2019s observable difficulty/distance/state-dependent input decision policy, including movement, defence, press/release cadence and declared-command selection, while retaining CNS eligibility and human/helper/reset ownership.",
-        "basis": "Direct target AI-handler review establishes weighted input decisions and declared-command admission during input updates. The Go consumer instead uses a fixed decision cooldown, broad distance cutoffs and simplified guarding/approach. Functional combat and specials do not close this policy difference.",
-        "prerequisite": "Resolve the relevant target actor fields and decision branches with a bounded connected comparison. Keep confirmed decision rules separate from random sequence variability; a learned-AI loading message alone does not establish a missing asset consumer.",
-        "completion": "Extend the existing command/AI combat lifecycle through approach, attack/cancel, threatened defence, recovery, difficulty and ownership/reset. Match the named native decision rules with explicit permitted variability, then validate affected connected segments at batch end. No exhaustive content or stochastic sample matrices.",
+        "contract": "Match the target AI input policy through weighted fallback movement, defence, attack/cancel, press/release cadence, command admission and recovery, plus its learned-move movement/attack/guard planner, while retaining CNS eligibility and human/helper/reset ownership.",
+        "basis": "The fixed cooldown has been replaced with reviewed native fallback weights, persistent keys, live guard threats, confirmed-hit cancel bias and physical recovery chords. The connected AI/command/combat and ownership/reset paths pass. Direct target handler review and a live combat observation establish a separate planner using move tables that populate during play; its metadata collection and consumers remain missing.",
+        "prerequisite": "Resolve learned move-table population, command-index association, pose/range/startup prediction and planner context transitions in one bounded lifecycle. The public sample marks AI hints unused; a load message alone does not establish an asset consumer. Independent AI random streams and non-cheating timed CMD plans are explicit port policies, not claims of exact native random sequences.",
+        "completion": "Fallback movement/defence/attack/cancel/recovery/difficulty and human/helper/round/reload ownership are implemented and pass affected connected segments with race detection plus Linux AI-versus-AI application smoke. Complete the remaining learned-move planner and its connected target comparison before closing K8/U4; no content or stochastic sample matrices.",
         "sources": [
           "match/ai.go",
-          "cmd/cmd.go",
+          "match/ai_attack.go",
+          "match/ai_defence.go",
+          "match/ai_recovery.go",
+          "match/debug.go",
+          "character/character.go",
           "character/commands.go",
           "character/command_inputs.go",
+          "system/fight_state.go",
+          "system/fight_controls.go",
+          "match/match_test.go",
           "system/command_flow_test.go"
         ]
       }
@@ -1449,12 +1456,21 @@
         "id": "U4",
         "name": "Native AI decisions beyond AI.Cheat",
         "status": "unverified",
-        "completion": "K8 records the confirmed AI decision-policy difference. Resolve its observable rules and permitted random variability, implement the production consumer and validate one connected approach/attack/defence/recovery/ownership lifecycle. Functional combat and specials alone do not close U4.",
-        "prerequisite": "Target AI-handler review establishes a finite decision routine; actor-field interpretation and connected reference acceptance remain. Exact seed-for-seed stochastic equivalence is not inferred from shared probability rules.",
+        "completion": "K8 weighted fallback contexts pass connected movement/defence/attack/recovery/ownership checks, actual CMD combat, affected race-checked segments and Linux application smoke. Native live move tables and the learned movement/attack/guard planner remain a confirmed implementation gap. Accept that connected planner lifecycle before closing U4; fallback fighting/specials do not establish full native AI equivalence.",
+        "prerequisite": "Resolve and implement K8 learned move metadata/planner consumers, then compare one connected target episode with permitted random variability. Preserve the independent-stream and timed non-cheating-plan port policies; do not infer seed-for-seed stochastic equivalence.",
         "sources": [
           "match/ai.go",
-          "system/modes.go",
-          "character/commands.go"
+          "match/ai_attack.go",
+          "match/ai_defence.go",
+          "match/ai_recovery.go",
+          "match/debug.go",
+          "character/character.go",
+          "character/commands.go",
+          "character/command_inputs.go",
+          "system/fight_state.go",
+          "system/fight_controls.go",
+          "match/match_test.go",
+          "system/command_flow_test.go"
         ]
       },
       {
@@ -1552,7 +1568,7 @@
       {
         "id": "A4",
         "name": "Options, training and AI",
-        "finding": "AI.Cheat admission is closed by K3. Direct target Options/Training review established K5/K6: independent utility rows, complete settings/session actions, native team KO consumer, mode-specific dummy rows, axis spacing, jam/guard/jump policy and selection return are now implemented and accepted. U3 is passed; stochastic native AI decisions remain U4. U4 handler review now establishes K8: the fixed-cooldown port heuristic differs from the target\u2019s weighted difficulty/distance/state-dependent input policy. Its bounded decision contract and connected acceptance remain open.",
+        "finding": "K3 AI.Cheat admission, K5/K6 Options/Training and U3 acceptance remain closed. K8 now implements and tests weighted fallback movement, defence, attack/cancel, button cadence, recovery and ownership/reset. Direct target handler/live-combat review also establishes learned move tables and a separate movement/attack/guard planner; that confirmed remaining consumer keeps K8 partial and U4 open. Independent random streams and non-cheating timed CMD plans are explicit port policies.",
         "targets": [
           "K3",
           "K5",
@@ -1606,7 +1622,8 @@
       "U3 target comparison established two additional implementation targets, K5 Options behavior/presentation and K6 Training dummy/menu lifecycle. This explicitly expands the original four-target baseline to six; both now pass their connected acceptance and close U3. Session-only persistence and portable input editing remain intentional port policies.",
       "K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets.",
       "U1 combined lifecycle comparison established K7: external contact entry, ordinary Pause owner allowance during hitpause and TargetBind expiry through global Pause differed in Go, changing throw motion and release. An unbounded reference constraint distinguishes expiry from frozen placement. This explicitly expands the six-target scope to seven; K7 implementation/connected acceptance and U1 now pass.",
-      "U4 handler/consumer review establishes K8: the port\u2019s fixed-cooldown heuristic does not implement the target\u2019s weighted difficulty/distance/state-dependent input decisions. This explicitly expands the seven-target scope to eight; K8 is partial and U4 remains unverified pending a bounded decision contract and connected acceptance."
+      "U4 handler/consumer review establishes K8: the port\u2019s fixed-cooldown heuristic does not implement the target\u2019s weighted difficulty/distance/state-dependent input decisions. This explicitly expands the seven-target scope to eight; K8 is partial and U4 remains unverified pending a bounded decision contract and connected acceptance.",
+      "K8 refinement: reviewed weighted fallback contexts are implemented and accepted. Direct handler/live-combat observation also confirms move tables populate during play and feed separate learned movement/attack/guard planning; those missing consumers remain inside K8, without adding a ninth target. U4 stays open; non-cheating timed CMD plans and independent random streams remain explicit port policies."
     ]
   }
 }

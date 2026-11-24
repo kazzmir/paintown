@@ -1,5 +1,7 @@
 package match
 
+import "github.com/kazzmir/paintown/game/mugen/engine"
+
 type roundRestartSnapshot struct {
 	round, draws int
 	wins         [2]int
@@ -78,6 +80,13 @@ func (m *Match) Reload() (*Match, error) {
 		return nil, err
 	}
 	fresh.Options.RosterInput = rosterInput
+	// Reload replaces brains and resources, but must not replay each seat's
+	// random sequence. Copy streams so the frozen old match stays independent.
+	fresh.aiRandom = make(map[int]*engine.RandomStream, len(m.aiRandom))
+	for slot, random := range m.aiRandom {
+		copy := *random
+		fresh.aiRandom[slot] = &copy
+	}
 	fresh.Wins, fresh.Draws = snapshot.wins, snapshot.draws
 	fresh.roundRestart.wins, fresh.roundRestart.draws = snapshot.wins, snapshot.draws
 	for side := range fresh.Teams {

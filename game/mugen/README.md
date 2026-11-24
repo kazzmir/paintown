@@ -114,12 +114,13 @@ Keyboard and gamepad input share menus and gameplay. Gamepads honor legacy CFG
 enable/bindings on Linux, with named or raw YAML/session overrides; see below.
 Physical-controller acceptance remains open.
 
-AI executes authored CMD motions/chords through the same state controllers as
-human input, with difficulty-dependent reaction and defence. Arcade/team-arcade/co-op progress through ordered opponents, victory, continue
+AI uses weighted movement, defence, attacks/cancels and falling-hit recovery
+through ordinary CMD/CNS. Held keys have press/release cadence; helpers share
+the root's decision in their own facing. Arcade/team-arcade/co-op progress through ordered opponents, victory, continue
 and ending screens. Survival carries/replenishes life and shows its streak;
 training provides unlimited time, KO protection and refills; watch uses AI on both
 sides. Mixed-team health/round budgets and Survival recovery now follow the
-supplied beta; exact native AI decisions remain precision work. Remaining
+supplied beta; native learned-move planning remains implementation work. Remaining
 media/asset compatibility is still in progress. Menu mode names do not imply complete mode
 rules. See [match notes](docs/MATCH.md) for details.
 
@@ -228,8 +229,11 @@ AI physical input uses these mappings. With `[Arcade] AI.Cheat = 1`, the AI can
 instead admit a declared command without pressing its keys or completing its
 charge; its CNS conditions still decide whether to act. Key-controlled helpers
 receive the root's admitted labels through their own command recognition. Set
-`AI.Cheat = 0` to require the AI's timed physical input plans. Native random
-decision probabilities remain unverified. Menu bindings use the keyboard
+`AI.Cheat = 0` to use physical buttons and timed CMD plans; retaining planned
+motions in this mode is a port policy. The fallback uses reviewed native weights
+for distance, difficulty, hit confirmation and recovery. Separate random streams
+preserve CNS Random and continue across rounds/reloads; exact native random
+sequences and the learned-move planner are not reproduced. Menu bindings use the keyboard
 configuration below.
 
 ### Adding characters
@@ -456,7 +460,9 @@ The current ledger has 32 implemented categories and three broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
 The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed scope: the original four
 implementation targets and three discovered during U1/U3 are closed. U4 review
-adds an eighth target for native AI decision policy; it remains partial. U1 runtime
+adds an eighth target for native AI decision policy. Its weighted fallback
+contexts are implemented and tested; learned movement/attack/guard planning
+keeps that target partial. U1 runtime
 interaction and U3 Options/Training acceptance have passed; four separate
 acceptance/evidence followups remain open.
 The progress ledger shows their contracts, estimates and prerequisites; these
