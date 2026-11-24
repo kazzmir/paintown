@@ -13,6 +13,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/match"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/render"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 )
@@ -49,6 +50,7 @@ type SelectState struct {
 	indexSampler           render.Nearest
 	linearSampler          render.Linear
 	startArmed, startUsed  [2]bool
+	paletteAvailable       map[*CharacterPortrait]uint16
 }
 
 func NewSelectState(engine *Engine, title string) *SelectState {
@@ -175,6 +177,7 @@ func (s *SelectState) Update() (State, error) {
 			s.rosters = [2][]match.Selection{}
 			s.rosterPortraits = [2][]CharacterPortrait{}
 			s.startArmed, s.startUsed = [2]bool{}, [2]bool{}
+			s.paletteAvailable = nil
 			if s.title == "Team Co-op" || s.title == "Survival Co-op" || s.title == "Team Arcade" || s.title == "Watch Mode" {
 				s.initTeams()
 			}
@@ -219,10 +222,12 @@ func (s *SelectState) Update() (State, error) {
 		}
 		if button, ok := s.confirmCharacter(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
 			ch := s.chosen(s.p1CursorX, s.p1CursorY)
-			palette := ch.PaletteKeymap.Palette(button)
-			s.p1Done = s.pickMember(0, ch, palette)
-			s.palettes[0] = palette
-			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
+			if ch != nil {
+				palette := s.reservePalette(ch, ch.PaletteKeymap.Palette(button))
+				s.p1Done = s.pickMember(0, ch, palette)
+				s.palettes[0] = palette
+				s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
+			}
 		}
 	}
 
@@ -251,10 +256,12 @@ func (s *SelectState) Update() (State, error) {
 		}
 		if button, ok := s.confirmCharacter(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
 			ch := s.chosen(s.p2CursorX, s.p2CursorY)
-			palette := ch.PaletteKeymap.Palette(button)
-			s.p2Done = s.pickMember(1, ch, palette)
-			s.palettes[1] = palette
-			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
+			if ch != nil {
+				palette := s.reservePalette(ch, ch.PaletteKeymap.Palette(button))
+				s.p2Done = s.pickMember(1, ch, palette)
+				s.palettes[1] = palette
+				s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
+			}
 		}
 	}
 
@@ -332,6 +339,57 @@ func (s *SelectState) confirmCharacter(slot int) (int, bool) {
 		return 0, confirm
 	}
 	return 0, false
+}
+
+// The target reserves an outfit per roster entry when a member is confirmed.
+// A used/unmapped upper outfit first tries its lower counterpart; fallback then
+// searches from the requested position through the two six-palette banks.
+// Availability comes from authored keymap values, not an eager fight-bank load.
+func (s *SelectState) reservePalette(ch *CharacterPortrait, requested int) int {
+	if s.paletteAvailable == nil {
+		s.paletteAvailable = make(map[*CharacterPortrait]uint16)
+	}
+	available, exists := s.paletteAvailable[ch]
+	if !exists {
+		available = ch.PaletteAvailability
+		if available == 0 && ch.PaletteKeymap == (parsers.PaletteKeymap{}) {
+			available = 0x0fff // synthetic/no-group portrait
+		}
+	}
+	index := max(0, min(11, requested-1))
+	if available&(1<<index) == 0 && index >= 6 {
+		index -= 6
+	}
+	if available&(1<<index) == 0 {
+		attempts := 0
+		for {
+			index++
+			if index >= 6 {
+				index = 0
+			}
+			attempts++
+			if available&(1<<index) != 0 || attempts >= 6 {
+				break
+			}
+		}
+		if attempts >= 6 {
+			for {
+				index++
+				if index >= 12 {
+					index = 6
+				}
+				attempts++
+				if available&(1<<index) != 0 || attempts >= 12 {
+					break
+				}
+			}
+		}
+		if attempts >= 12 {
+			index = 0
+		}
+	}
+	s.paletteAvailable[ch] = available &^ (1 << index)
+	return index + 1
 }
 
 func (s *SelectState) chosen(col, row int) *CharacterPortrait {

@@ -29,7 +29,7 @@ do not repair further third-party scripts or add engine workarounds for them.
 Use docs/PROGRESS.md as the SINGLE project completion ledger. Implement coherent
 mechanics batches from actual gaps using existing evidence and target beta
 documentation. Connect the production consumer before marking a route complete.
-The ledger currently has 89 controller families, 127 trigger routes and 32/35
+The ledger currently has 89 controller families, 127 trigger routes and 33/35
 implemented project categories; these counts measure neither remaining effort
 nor arbitrary native conformance. The bounded assessment is recorded under
 remaining_scope in the catalog/ledger; docs/ITEM-3-PLAN.md gives implementation
@@ -57,8 +57,9 @@ generated test data, captures, recordings, copied distributions or binaries.
 Optional historical diagnostics may require separately supplied inputs; they
 are not routine completion gates.
 
-Three broad areas remain partial: arbitrary content/font/media acceptance,
-native runtime/render/audio/AI/menu fidelity and physical controller acceptance.
+Two broad areas remain partial: native runtime/render/audio/AI/menu fidelity and
+physical controller acceptance. U2 supported font/content functional acceptance
+is complete; arbitrary-pack equivalence is not inferred from that lifecycle.
 Physical CD playback, unavailable licensed/CJK fonts, other-platform runtime
 acceptance and standalone music-file CLI playback are deferred. Do not turn
 unknown permutations into mandatory parameter matrices.
@@ -91,6 +92,14 @@ unknown permutations into mandatory parameter matrices.
   Keep time >=1, buffer 1–30, nonempty full-character command sets and original
   resource context. A disabled remap stays disabled; remaps read simultaneous
   physical snapshots. Declared command labels cannot fall back to held buttons.
+- Character Palette Keymap is selection metadata, separate from CMD Remap.
+  Preserve first fields, absent-group identity, present-group missing-key 1 and
+  native integer-prefix clamping to 1–12. Availability comes from mapped values,
+  with legacy Files palettes as fallback. Reserve outfits per selection entry
+  and retain native cycling when a requested outfit is used. Snapshot the mapped
+  numeric palette into rosters/CNS/reset/reload; direct numeric requests stay
+  literal. Start is a held modifier; Start-only character confirmation happens
+  on release and must not also choose a second member after a modified attack.
 - /x+y holds the entire chord; normal chords require button press edges. Held
   sequence endings complete on a fresh edge. Preserve release/charge windows.
   Histories size lazily from CMD durations; non-cheating AI uses timed input

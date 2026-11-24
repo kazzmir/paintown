@@ -2,16 +2,18 @@ package parsers
 
 import (
 	"io"
+	"strconv"
 	"strings"
 )
 
 // DefData represents the relevant fields from a M.U.G.E.N .def file.
 type DefData struct {
-	Files         map[string]string
-	FileLines     map[string]int
-	Info          map[string]string
-	InfoLines     map[string]int
-	PaletteKeymap PaletteKeymap
+	Files               map[string]string
+	FileLines           map[string]int
+	Info                map[string]string
+	InfoLines           map[string]int
+	PaletteKeymap       PaletteKeymap
+	PaletteAvailability uint16
 }
 
 // PaletteKeymap follows selection-button order a,b,c,x,y,z, then Start plus
@@ -46,6 +48,9 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 		Info:      make(map[string]string),
 		InfoLines: make(map[string]int),
 	}
+	for index := range data.PaletteKeymap {
+		data.PaletteKeymap[index] = index + 1
+	}
 	var keymapGroups []*Section
 	for _, section := range file.Sections {
 		if strings.EqualFold(strings.TrimSpace(section.Name), "palette keymap") {
@@ -53,6 +58,7 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 		}
 	}
 	if len(keymapGroups) > 0 {
+		data.PaletteAvailability = 0
 		// A present group initializes every key to 1; it does not inherit
 		// the absent group's identity mapping. Native then clamps atoi values.
 		for index := range data.PaletteKeymap {
@@ -63,6 +69,7 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 			for index, key := range keys {
 				if strings.EqualFold(attribute.ID.String(), key) {
 					data.PaletteKeymap[index] = selectionPaletteNumber(attribute.RawValue)
+					data.PaletteAvailability |= 1 << (data.PaletteKeymap[index] - 1)
 					break
 				}
 			}
@@ -103,6 +110,15 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 		}
 	}
 
+	if data.PaletteAvailability == 0 {
+		// Legacy definitions without usable keymap entries advertise their
+		// outfits with Files pal1..pal12. Preserve first-field presence.
+		for number := 1; number <= 12; number++ {
+			if _, exists := data.Files["pal"+strconv.Itoa(number)]; exists {
+				data.PaletteAvailability |= 1 << (number - 1)
+			}
+		}
+	}
 	return data, nil
 }
 

@@ -25,6 +25,7 @@ type CharacterPortrait struct {
 	SmallAxis, BigAxis                               [2]int16
 	Entry                                            parsers.CharacterEntry
 	PaletteKeymap                                    parsers.PaletteKeymap
+	PaletteAvailability                              uint16
 	SmallPortrait, BigPortrait                       *ebiten.Image
 }
 
@@ -121,6 +122,7 @@ func loadCharacterPortraitLanguage(defPath, language string, extra ...[2]int) (*
 		return nil, err
 	}
 	cp.PaletteKeymap = def.PaletteKeymap
+	cp.PaletteAvailability = def.PaletteAvailability
 	cp.Name = def.Info["displayname"]
 	if cp.Name == "" {
 		cp.Name = def.Info["name"]

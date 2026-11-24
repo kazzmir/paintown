@@ -914,7 +914,7 @@ cmd=locale.cmd
 [Palette Keymap]
 a=5
 [ja.Palette Keymap]
-a=1
+a=2
 a2=2
 x=-99
 y=99
@@ -1094,7 +1094,7 @@ columns=1
 		t.Fatal("localized motif/relative roster/portraits", selection.loadError)
 	}
 	keymap := selection.chars[0].PaletteKeymap
-	if keymap.Palette(1) != 1 || keymap.Palette(2) != 1 || keymap.Palette(3) != 1 || keymap.Palette(4) != 1 || keymap.Palette(5) != 12 || keymap.Palette(6) != 2 || keymap.Palette(7) != 2 {
+	if keymap.Palette(1) != 2 || keymap.Palette(2) != 1 || keymap.Palette(3) != 1 || keymap.Palette(4) != 1 || keymap.Palette(5) != 12 || keymap.Palette(6) != 2 || keymap.Palette(7) != 2 {
 		t.Fatal("localized/partial keymap lost first values or native numeric admission", keymap)
 	}
 	// Roster order and mode limits must use the same selected language. Both

@@ -120,8 +120,9 @@ the root's decision in their own facing. Arcade/team-arcade/co-op progress throu
 and ending screens. Survival carries/replenishes life and shows its streak;
 training provides unlimited time, KO protection and refills; watch uses AI on both
 sides. Mixed-team health/round budgets and Survival recovery now follow the
-supplied beta; native learned-move planning remains implementation work. Remaining
-media/asset compatibility is still in progress. Menu mode names do not imply complete mode
+supplied beta; native learned-move planning remains implementation work.
+Supported font/content loading has passed its connected functional acceptance.
+Menu mode names do not imply complete mode
 rules. See [match notes](docs/MATCH.md) for details.
 
 | Action | Player 1 | Player 2 |
@@ -133,6 +134,10 @@ rules. See [match notes](docs/MATCH.md) for details.
 
 Confirm both characters, select a stage with P1 left/right, and confirm to
 continue through versus into the fight. At the result, P1 Enter rematches.
+Character `[Palette Keymap]` entries choose the outfit for each attack button.
+Hold Start with an attack for the `a2` through `z2` mappings. Start alone confirms
+a character when released; team/stage menus still confirm on press. Repeated
+picks of a roster entry use another available outfit when possible.
 Escape returns to the title during a fight or result; Training returns to its
 character selection. These are stock bindings;
 configuration overrides can change them. Ctrl-D cycles debug output through
@@ -456,15 +461,13 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 [Project progress](docs/PROGRESS.md) is the single completion checklist for the
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
-The current ledger has 32 implemented categories and three broad partial ones.
+The current ledger has 33 implemented categories and two broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
-The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed scope: the original four
-implementation targets and three discovered during U1/U3 are closed. U4 review
-adds an eighth target for native AI decision policy. Its weighted fallback
-contexts are implemented and tested; learned movement/attack/guard planning
-keeps that target partial. U1 runtime
-interaction and U3 Options/Training acceptance have passed; four separate
-acceptance/evidence followups remain open.
+The [scope plan](docs/ITEM-3-PLAN.md) records eight closed implementation targets
+out of nine. K9 palette mapping/reservation and U2 supported Unicode TTF/TTC
+content acceptance are closed. K8's weighted AI fallback is implemented and
+tested; its learned movement/attack/guard planner remains partial. U1, U2 and U3
+acceptance have passed; U4 AI, U5 precision and H1 physical controllers remain open.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,

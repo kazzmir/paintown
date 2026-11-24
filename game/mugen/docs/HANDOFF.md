@@ -1,57 +1,50 @@
 # Current handoff
 
-Follow [AGENTS.md](../AGENTS.md). Author only game/mugen/ and preserve unrelated
-work. Local source/text checkpoints are authorized; no pushes, committed assets,
-binaries, user configuration, subagents or goals. Keep documentation portable;
+Follow [AGENTS.md](../AGENTS.md). Author only game/mugen/; preserve unrelated
+work, external assets and user YAML. Local source/text checkpoints are authorized;
+no pushes, binaries, fixture banks, subagents or goals. Keep documentation portable;
 [PROGRESS.md](PROGRESS.md) is the single completion ledger.
 
-K1–K7, U1 runtime interaction and U3 Options/Training acceptance remain closed.
-K8/U4 now has an implemented weighted fallback: persistent movement and physical
-button toggles, nearest live opponent in game-axis units, difficulty/time/range
-based defence, incoming guard-height adjustment, confirmed-hit attack/cancel
-weights, separate CMD-label admission and falling-hit recovery chords. Ordinary
-CNS owns move eligibility, resources, guarding and CanRecover. Non-cheating timed
-CMD plans and independent AI random streams remain explicit port policies.
+K1–K7 and K9 are closed; K8 remains partial. U1 runtime, U2 supported font/content
+and U3 Options/Training acceptance pass. The ledger has 33 implemented categories
+and two broad partial ones; category/target counts are not overall equivalence
+percentages. U4 AI, U5 precision and H1 hardware remain open.
 
-One input snapshot serves the root and opposite-facing key-controlled helpers.
-Human/disabled/KO ownership, absent opponents and changed CMD/level/policy discard
-stale held input/plans. Seat random streams continue across rounds, ownership
-changes and reload; reload copies them without sharing the frozen old match.
-Training AI uses the same facing-aware adapter; cooperative/manual dummy input
-remains separate. The existing connected command/combat and stock input paths
-cover the AI contexts, helper ownership, actual attacks/contact, reset and reload.
-Affected connected segments pass with race detection; the unchanged state-flow
-segment retains its acceptance. Linux build and AI-versus-AI window smoke pass.
-Owned runtime prefix, overlays, binaries, captures and scratch have been removed;
-external data, user YAML, root module metadata and shared build cache are preserved.
+K9 was found by a shared native/Go font-content journey: character selection
+ignored Palette Keymap. The parser/portrait/selection consumer now retains first
+fields, absent/partial-group defaults, clamping, authored/legacy availability,
+available-outfit reservation and per-entry snapshots. Start can be held before
+an attack; Start-only confirmation is a release convenience. Mapped numeric
+palettes survive CNS, rounds and reload without mapping direct requests again.
+The native and rebuilt Linux custom-map episode retain PalNo 6 through reload
+and distinct outfits for repeated picks. Existing connected asset/selection/team
+paths include random cells, duplicate reservation and actual combat.
 
-Direct target handler review and one live combat observation establish an
-additional planner layer inside K8: move tables populate during combat and feed
-neutral/movement, pose-aware attack selection and predicted guard/counter paths.
-Those learned metadata consumers are not reproduced. Next resolve table
-population, command-index association, pose/range/startup prediction and planner
-transitions as one bounded lifecycle, then implement and accept that consumer.
-Do not create an AI-hints asset reader from a load message; the public sample
-labels its hints file unused. Fallback acceptance is not complete native AI
-acceptance. Exact random sequences are not promised by the port's separate streams.
+U2 now passes openly licensed Unicode TTF and generated two-face TTC through
+localized storyboards, menus, VS, fight, rematch, error correction and reload,
+alongside bitmap/SFF/ACT/SND resources. No font payload or binary fixture is
+committed. The affected connected segment passes with race detection; other
+completed segments stay checked. Linux build/application inspection passes.
+Owned runtime prefixes, overlays, binaries, captures and scratch are removed;
+reuse the shared cache. This is supported-format functional acceptance, not
+arbitrary-pack or pixel/sample-exact equivalence.
 
-U2 now has openly licensed Unicode TTF/TTC inputs. Matching native/Go text
-scenes load Latin, Greek and Cyrillic glyphs and the collection's first face.
-The shared menu/fight/reload comparison exposed K9: selection ignores authored
-Palette Keymap, producing the wrong outfit from the same button. Target loader
-review resolves absent/partial-section defaults and numeric clamping. Implement
-that bounded consumer before closing U2; extend the existing asset/selection
-lifecycle, without binary fixtures. Small font hinting/edge and odd-width center
-differences now give U5 a named precision question. H1 needs hardware. All remain
-open alongside U4; K9 is an explicit ninth implementation target.
-Unknown permutations are not new mandatory matrices. Preserve closed result,
-Options/Training, contact/Pause/binding, turning, camera, rendering and audio
-calibrations. Do not repair scripts that fail in the target; bundled runtimes
-may differ despite familiar banners. Paintown C++ turning is not normative.
+K8's weighted movement/defence/attack/recovery and ownership fallback remains
+accepted. Independent seat random streams and non-cheating timed CMD plans are
+explicit port policies. The target's live learned move metadata and separate
+movement/attack/guard planner remain missing. Resolve population, command-index
+association, pose/range/startup prediction and planner transitions as one bounded
+lifecycle before implementing that consumer. A hints-file load message does not
+establish an asset requirement; the public sample labels its hints unused.
 
-Validate affected connected segments at coherent batch boundaries; completed
-unaffected segments stay skipped. Use the scoped module overlay/shared cache.
-Native/application/display runs stay serial; await owned clients before edits or
-another run. Clean only owned scratch and preserve external data/user files.
-Physical CD, unavailable licensed/CJK payloads, other-platform runtime acceptance
-and standalone music-file CLI playback remain deferred.
+U5 now has a named font question: shared-font captures show small hinted glyph
+edge/baseline and odd-width centering differences. Define the layout/raster
+contract and tolerance before changing it. Preserve earlier camera, indexed
+sprite, alpha and KO-echo calibrations. H1 requires physical controller exercise.
+Unknown permutations are not matrices; do not repair scripts that fail natively.
+
+Keep native/application/display runs serial and await owned clients before edits
+or another run. Validate affected segments at coherent batch boundaries and
+clean owned scratch on success/failure. Physical CD, unavailable licensed/CJK
+payloads, other-platform runtime acceptance and standalone music CLI playback
+remain deferred.

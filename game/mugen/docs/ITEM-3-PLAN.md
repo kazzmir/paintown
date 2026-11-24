@@ -9,10 +9,10 @@ top of the ledger. Use that ledger for current implementation/acceptance status.
 ## What the current numbers establish
 
 The source report finds 89/89 controller families and 127/127 trigger routes.
-The project ledger has 32 implemented categories and three broad partial ones.
+The project ledger has 33 implemented categories and two broad partial ones.
 These are availability/category counts, not an effort estimate or a percentage
 of native compatibility. A registered route can still have a behavioral defect.
-The three partial categories mix missing consumers, unverified behavior and
+The two partial categories mix missing consumers, unverified behavior and
 capabilities deliberately deferred from the current Linux work.
 
 The baseline identified four implementation candidates. Direct target review
@@ -24,7 +24,7 @@ cover AI.Cheat command policy and legacy joystick configuration.
 The U3 Options/Training comparison established K5/K6, and the U1 overlapping
 runtime comparison established K7. These explicit scope expansions are now
 implemented and accepted. Of the six separate acceptance/evidence followups,
-U1/U3 are passed; U2, U4, U5 and H1 remain open. U4 handler review now establishes
+U1/U2/U3 are passed; U4, U5 and H1 remain open. U4 handler review establishes
 K8: the former fixed-cooldown heuristic differed from native input decisions.
 Weighted fallback movement, defence, attacks/cancels, recovery and ownership are
 now implemented and accepted through the connected scenarios. Handler review
@@ -34,6 +34,13 @@ target therefore remains partial. U4 still needs that planner's bounded
 implementation and reference acceptance. Other unresolved evidence questions
 are not assumed code defects. This bounded review does not establish an exhaustive list
 of every semantic difference; unsupported-path scans alone cannot do that.
+
+The U2 licensed Unicode TTF/TTC content journey explicitly added K9 after the
+same input selected different outfits. K9 now closes authored keymaps, held
+Start, available-outfit reservation and palette ownership through fight/reload.
+The supported font/content functional category is accepted. Small font hinting,
+edge and odd-width centering differences give U5 a named precision question;
+they do not reopen format loading or earlier camera/sprite/audio calibrations.
 
 ## Assessment method and limits
 
@@ -67,7 +74,7 @@ questions forward instead of expanding the assessment indefinitely.
 
 ## Implementation contracts
 
-K1–K8 contracts, sources, prerequisites, estimates and completion conditions are
+K1–K9 contracts, sources, prerequisites, estimates and completion conditions are
 recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
 Confidence describes the effort estimate. Result and AI-admission contracts are
 resolved for their scoped implementations. Joystick translation uses target
@@ -81,7 +88,7 @@ expiry during global Pause through the connected turn/recovery/reset path.
 ## Bounded review areas
 
 These are reviewed boundaries, not five equal units of remaining effort. The
-ledger records their findings and allocations to K1–K8 and U1–U5/H1. The three
+ledger records their findings and allocations to K1–K9 and U1–U5/H1. The two
 parent categories stay partial until their scoped requirements and acceptance
 have been resolved.
 
@@ -102,7 +109,7 @@ an availability map, not a second acceptance checklist or a parameter matrix.
 | SFF v1, ACT and indexed PCX | `sff/sff.go`, `sff/pcx.go`, `character/palette_load.go`; palette and character/asset lifecycles. |
 | SFF v2 indexed/raw/PNG and links | `sff/v2.go`; encoded-format regressions and connected stage/asset lifecycle. |
 | FNT v1 and v2 bitmap | `font/font.go`, `font/v2.go`; legacy maps, glyph/bank/precedence asset flow. Bitmap v2 printable ASCII limits match the format documentation. |
-| TrueType and collections | `font/truetype.go` uses `ParseCollection` and face zero; UTF-8/blend/height asset flow. Broader glyph/metric acceptance stays U2. |
+| TrueType and collections | `font/truetype.go` uses `ParseCollection` and face zero; licensed UTF-8/blend/height/collection/menu/fight/reload acceptance passes under U2. Font raster/layout precision stays U5. |
 | SND and WAV | `snd/wav.go`, `sound/mixer.go`; shared PCM/float decoder, ownership and media lifecycles. |
 | WAV/MP3/Ogg/MIDI/MOD/S3M/XM/IT BGM | `sound/music.go`, `sound/legacy_linux.go`; consumed-cursor, NoMusic, loop and scene lifecycle. Optional codecs require their libraries. |
 | Resource paths and character ZIPs | `resource/path.go`, `resource/characters.go`; selective portraits, reload, error recovery and archive cleanup in the asset lifecycle. |
@@ -151,7 +158,8 @@ checks. Neither establishes universal compatibility with arbitrary content.
 3. Establish native joystick enable/code translation, then implement K4 with
    explicit override precedence. Its medium/low-confidence estimate depends on
    platform/device mapping. Schedule physical acceptance H1 when hardware exists.
-4. U1 is closed by K7 and U3 by K5/K6. Address U2/U4/U5 through their named evidence questions. Create new code targets
+4. U1 is closed by K7, U2 by the font/content lifecycle plus K9, and U3 by K5/K6.
+   Address U4/U5 through their named evidence questions. Create new code targets
    only for demonstrated missing/incorrect behavior and record the scope change.
    Prioritize crashes, stalls and wrong state outcomes over precision findings.
 
