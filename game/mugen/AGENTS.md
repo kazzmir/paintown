@@ -29,7 +29,7 @@ do not repair further third-party scripts or add engine workarounds for them.
 Use docs/PROGRESS.md as the SINGLE project completion ledger. Implement coherent
 mechanics batches from actual gaps using existing evidence and target beta
 documentation. Connect the production consumer before marking a route complete.
-The ledger currently has 89 controller families, 127 trigger routes and 33/35
+The ledger currently has 89 controller families, 127 trigger routes and 34/35
 implemented project categories; these counts measure neither remaining effort
 nor arbitrary native conformance. The bounded assessment is recorded under
 remaining_scope in the catalog/ledger; docs/ITEM-3-PLAN.md gives implementation
@@ -59,9 +59,10 @@ scratch; copying a leaf does not isolate it through a linked ancestor.
 Optional historical diagnostics may require separately supplied inputs; they
 are not routine completion gates.
 
-Two broad areas remain partial: native rendering/audio precision and
-physical controller acceptance. U2 supported font/content functional acceptance
-is complete; arbitrary-pack equivalence is not inferred from that lifecycle.
+Physical controller acceptance is the remaining partial category. U1-U5 pass for
+their bounded contracts; the user accepted the demonstrated U5 cross-version
+font-edge differences. Arbitrary-pack equivalence is not inferred from those
+closures.
 Physical CD playback, unavailable licensed/CJK fonts, other-platform runtime
 acceptance and standalone music-file CLI playback are deferred. Do not turn
 unknown permutations into mandatory parameter matrices.
@@ -200,9 +201,10 @@ unknown permutations into mandatory parameter matrices.
   for Blend=0. Bitmap bearings restore trimmed border placement. Keep native
   bytes pinned until face destruction, per-face locking and Go-owned cleanup;
   retain the reported portable outline fallback. Shared-scene metrics and
-  placement match. U5 remains open for explicit acceptance of small version-
-  dependent edge differences; do not assume a nonzero tolerance or hide it with
-  per-glyph offsets.
+  placement match. The user accepted the demonstrated small version-dependent
+  edge differences under U5. Preserve that bounded rendering policy and the
+  checked metrics/placement; reopen for a demonstrated regression. Keep the
+  portable outline fallback and other-platform precision outside that acceptance.
 - Retain linked/animated BG clocks and geometry, moving floors/reflections and
   camera return based on the unclipped participant midpoint. Storyboards retain
   clearcolor=-1 canvases and compose once per tick. Keep motif-aspect presentation,
@@ -265,8 +267,7 @@ unknown permutations into mandatory parameter matrices.
   six-off jam, incoming guard flags and descending W Jump edges through ordinary
   CNS. Start/M hides the whole panel, Escape returns to Training selection and
   new selection resets dummy settings. Frozen redraws must preserve fight pixels.
-  U3 is accepted for this scope; stochastic AI and raster/audio precision remain
-  separate U4/U5 followups.
+  U3 is accepted for this scope; U4 AI and U5 bounded precision are also accepted.
 - Idle demos retain their own sequence/AI requests and consume interruption
   input before the returned title can act on it. Preserve demo bar/debug/music
   policy without changing user configuration. Title BG controllers advance.

@@ -9,11 +9,11 @@ top of the ledger. Use that ledger for current implementation/acceptance status.
 ## What the current numbers establish
 
 The source report finds 89/89 controller families and 127/127 trigger routes.
-The project ledger has 33 implemented categories and two broad partial ones.
+The project ledger has 34 implemented categories and one partial category.
 These are availability/category counts, not an effort estimate or a percentage
 of native compatibility. A registered route can still have a behavioral defect.
-The two partial categories mix missing consumers, unverified behavior and
-capabilities deliberately deferred from the current Linux work.
+Physical Linux controller acceptance is the remaining partial category;
+deliberately deferred capabilities stay separate from that followup.
 
 The baseline identified four implementation candidates. Direct target review
 corrected the first: tested result-text layerno values 0/1/2 all compose in front,
@@ -24,7 +24,7 @@ cover AI.Cheat command policy and legacy joystick configuration.
 The U3 Options/Training comparison established K5/K6, and the U1 overlapping
 runtime comparison established K7. These explicit scope expansions are now
 implemented and accepted. Of the six separate acceptance/evidence followups,
-U1 through U4 are passed; U5 precision and H1 hardware remain open. K8 now
+U1 through U5 are passed; H1 hardware remains open. K8 now
 closes weighted fallback, authored command-table identity, live ground/air move
 learning, optional beta learned-data loading, independent session retention and
 the navigation/guard/counter planner. Target observation reaches every decision
@@ -45,8 +45,8 @@ Its reference comparison established K10: ordinary fonts use legacy automatic
 hinting, and Blend=0 uses real monochrome rendering. The optional Linux backend
 now connects those consumers with bounded native ownership and explicit portable
 fallback. K1-K10 are implemented and accepted for their named contracts. Shared
-font metrics and placement match; small rasterizer-version edge differences
-remain U5's explicit acceptance decision. This does not reopen format loading
+font metrics and placement match; the user accepted the demonstrated small
+rasterizer-version edge differences, closing U5. This does not reopen format loading
 or earlier camera/sprite/audio calibrations.
 
 ## Assessment method and limits
@@ -95,9 +95,8 @@ expiry during global Pause through the connected turn/recovery/reset path.
 ## Bounded review areas
 
 These are reviewed boundaries, not five equal units of remaining effort. The
-ledger records their findings and allocations to K1–K10 and U1–U5/H1. The two
-parent categories stay partial until their scoped requirements and acceptance
-have been resolved.
+ledger records their findings and allocations to K1–K10 and U1–U5/H1. The remaining
+partial parent category requires physical controller acceptance under H1.
 
 | ID | Review boundary and existing sources | Required assessment output / acceptance boundary |
 | --- | --- | --- |
@@ -166,8 +165,8 @@ checks. Neither establishes universal compatibility with arbitrary content.
    explicit override precedence. Its medium/low-confidence estimate depends on
    platform/device mapping. Schedule physical acceptance H1 when hardware exists.
 4. U1 is closed by K7, U2 by the font/content lifecycle plus K9, and U3 by K5/K6.
-   U4 closes the learned AI lifecycle under K8. Address U5 through its named
-   precision question and H1 when hardware is available. Create new code targets
+   U4 closes the learned AI lifecycle under K8; U5 accepts K10 and the demonstrated
+   font-edge variation. Address H1 when hardware is available. Create new code targets
    only for demonstrated missing/incorrect behavior and record the scope change.
    Prioritize crashes, stalls and wrong state outcomes over precision findings.
 

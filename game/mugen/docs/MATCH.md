@@ -72,7 +72,8 @@ full matches/modes/assets. They reuse supplied assets and delete scratch on both
 success and failure. See [test segments](../tests/SEGMENTS.md).
 
 Remaining compatibility includes physical controller/native joystick acceptance,
-arbitrary fonts/media/packs and renderer/audio precision. K8/U4 close the named
+arbitrary fonts/media/packs. U5 accepts the demonstrated Linux font-edge
+variation. K8/U4 close the named
 AI learning/decision lifecycle with explicit session-storage, random-stream and
 non-cheating-input port policies. The stock
 and supplied-content flows establish their observed scope, not arbitrary content

@@ -23,7 +23,8 @@ must be distinguished from parser/renderer failures. A bundled executable with
 a familiar version banner does not establish stock-runtime behavior.
 
 K8/U4 close the bounded AI collection, learned-data and decision/planner
-lifecycle. Arbitrary content compatibility, native raster/device-audio precision
-and physical controller acceptance remain open. Run connected scenarios after
+lifecycle. U5 accepts the demonstrated Linux font-edge variation. Physical
+controller acceptance remains H1; arbitrary content and pixel/sample equivalence
+are outside these bounded closures. Run connected scenarios after
 related implementation work; do not create a parameter matrix for every unknown
 permutation or claim whole-engine compatibility from a roster load or screenshot.

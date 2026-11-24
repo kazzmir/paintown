@@ -61,7 +61,9 @@ TrueType text still measures the complete surface, including negative bearings
 and italic overhangs. Centering truncates after alignment; right anchors include
 the last surface pixel. Bitmap font placement is unchanged. The shared native/Go
 scene now has identical text extents and placement. Small rasterizer-version
-edge differences remain under U5 pending explicit acceptance. See the
+edge differences were explicitly accepted by the user under U5. That acceptance
+applies to the demonstrated Linux backend behavior; the portable outline fallback
+and other-platform precision retain their separate limits. See the
 [FreeType load and rendering API](https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html)
 and [reference-era SDL_ttf implementation](https://github.com/libsdl-org/SDL_ttf/blob/release-2.0.9/SDL_ttf.c)
 for the backend contracts.

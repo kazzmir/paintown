@@ -222,7 +222,7 @@ air-jump rules. Move with P1 directions, change values with left/right, and resu
 with an attack button or Pause. P1 Start or M hides/restores the entire paused
 menu. Scroll Lock advances one tick. Escape returns to Training selection;
 selecting another match starts with fresh dummy settings. K8/U4 cover the scoped
-AI decision lifecycle; broader raster/audio precision remains U5.
+AI decision lifecycle; U5 accepts the demonstrated font-edge variation.
 
 Body collisions use CNS ground/air widths and temporary `Width` values when
 the fighters' hurtboxes overlap vertically, including air/ground and air/air
@@ -470,18 +470,18 @@ See [build/font notes](docs/BUILD.md) for dependency, font and display details.
 [Project progress](docs/PROGRESS.md) is the single completion checklist for the
 whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
-The current ledger has 33 implemented categories and two broad partial ones.
+The current ledger has 34 implemented categories and one partial category.
 Those category counts do not measure remaining effort or native compatibility.
 The [scope plan](docs/ITEM-3-PLAN.md) records ten bounded implementation targets
 closed. U5's reference comparison established K10, now connecting compatible
 TrueType automatic hinting, metrics and solid rendering. K8/U4 include live move learning, optional learned-data
 loading, session retention and the navigation/guard/counter planner alongside
-weighted fallback. U1 through U4 acceptance have passed. U5 precision and H1
-physical controllers remain open.
+weighted fallback. U1 through U5 acceptance have passed. H1 physical controller
+acceptance remains open.
 TrueType text includes negative bearings and italic overhangs when measuring
 and aligning labels. The shared reference/Go font scene has matching widths,
-baselines and placement; small version-dependent edge differences remain U5's
-acceptance question.
+baselines and placement; the demonstrated small version-dependent edge
+differences are accepted under U5.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,
