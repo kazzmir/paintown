@@ -147,6 +147,11 @@ func inputMapping(parent *yaml.Node, name string) (*yaml.Node, error) {
 	for at := 0; at < len(parent.Content); at += 2 {
 		if parent.Content[at].Value == name {
 			node := parent.Content[at+1]
+			// Blank override sections decode as nil maps on load. They are
+			// editable empty mappings, not malformed configuration.
+			if node.Kind == yaml.ScalarNode && node.Tag == "!!null" {
+				node.Kind, node.Tag, node.Value, node.Style = yaml.MappingNode, "!!map", "", 0
+			}
 			if node.Kind != yaml.MappingNode {
 				return nil, fmt.Errorf("input field %q must be an editable mapping (not an alias)", name)
 			}

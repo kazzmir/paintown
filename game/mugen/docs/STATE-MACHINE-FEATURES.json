@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "fb2d5846d355fbd88416736ca3fb2e82d3107fd36de99c5f6a954c170bfc7c0b"
+      "passed_source": "d1e71fc68cc48462a76e7c3474965f6e11417863d34808e6a888d7a3738d40d3"
     }
   ],
   "presentation_followups": [
@@ -1238,6 +1238,12 @@
       "name": "Timed input capture, live device testing and backed-up YAML input saves",
       "completed": true,
       "validation": "Four-second wall-clock capture timeout retains the old binding. The motif-based tester distinguishes raw signals from device-specific gameplay actions without keyboard masking or navigation; raw capture bypasses the standard map. Save and save-on-exit merge supported input fields into the existing YAML, preserve other settings/comments/anchors, back up complete original bytes and replace atomically. Session only retains live edits without writing. The extended connected lifecycle checks timeout, capture, test, all exit choices, safe validation/backup failures, reload and gameplay; affected segments pass with races and Linux build/window inspection pass. A detected-controller capture report remains unverified on hardware."
+    },
+    {
+      "id": "utility-motif-fonts-save-return",
+      "name": "Shared motif menu fonts and correct input save/return",
+      "completed": true,
+      "validation": "Options/input/Training pages use the title menu font tuples at fitted size, wrapping and scrolling instead of shrinking complete lists. Missing fonts/glyphs keep readable fallback; diagnostics support paging and pinned hints. Blank/null input maps no longer reject persistent saves. F5 and save-on-exit clear the semantic changes flag after a successful full-document merge/backup; session snapshots remain memory-only. Visible status, numpad Enter, raw Options navigation and child-return rearming cover rebound/disabled controls and held confirmation. The existing mode/input/save/reload/gameplay segment passes with race detection; Linux build and owned-copy save/menu/title inspection pass. No original user configuration was written; owned scratch is removed."
     }
   ],
   "remaining_scope": {
@@ -1332,8 +1338,8 @@
         "confidence": "high",
         "contract": "Complete Options settings, team/input/default actions and bounded utility presentation, retaining session-only load/save.",
         "basis": "Target Options inspection and handler review establish missing master volume/team/default actions, clamped value admission, discrete time limits, full speed range and independent utility rows. Team KO ordinal zero ignores surviving AI partners after a human leader is KOed; it is not an any-member-KO rule. Team factory reset uses 200% advantage, distinct from the shipped CFG value.",
-        "prerequisite": "Resolved by direct target Options/input/team observation and handler review; portable input editing and session-only persistence remain intentional port policies.",
-        "completion": "The existing Options/input/team/default/session lifecycle checks value bounds, held navigation, master/SFX/BGM gains, keyboard/gamepad snapshots and startup reset, native team factory values and CFG KO policy through gameplay. Affected connected segments pass with race detection; Linux Options/Training flow and resized utility presentation pass without writing user configuration. Keyboard/gamepad editing now retains the same Options motif background, heading style and utility lettering through capture/reset and return, with rows fitted below the heading. Window-sized input layout prevents HD motif text shrinkage. The extended connected match-flow segment passes with races; Linux build and keyboard/gamepad/reset/return visual inspection pass. The user-requested input maintenance extension adds timed capture, diagnostics, raw bypass and explicit persistent saves with a Save/Session only/Back exit prompt. The existing edit/test/save/reload/gameplay journey passes with races, retaining unrelated YAML settings/comments/anchors and complete original backups; malformed YAML or a backup failure leaves the original intact. Main Options memory snapshots stay separate.",
+        "prerequisite": "Target Options/input/team behavior is resolved. Portable input editing, main-page memory snapshots and explicitly requested backed-up YAML saving remain port policies. The user requested shared motif menu typography for the utility pages.",
+        "completion": "The connected Options/input/team/default/session lifecycle covers bounds, held navigation, master/SFX/BGM gains, startup reset, native team factory/KO policy and gameplay. Options/input/Training pages inherit title-menu fonts, banks, RGB and fitted size; long lists scroll with selection or Page Up/Down, retaining input hints and readable missing-font/glyph fallback. Four-second capture, raw/action diagnostics and raw bypass feed ordinary gameplay input. Explicit YAML saves merge only input fields, preserve unrelated settings/comments/anchors and back up complete originals before atomic replacement. Blank/null maps are editable; malformed YAML or backup failure leaves the original intact. F5 and save-on-exit update the semantic baseline, retain visible status and return without reopening; Session only/Escape leave temporary edits active. Main-page Save remains a memory snapshot. The extended match-flow segment passes with races, including numpad/held confirmation and disabled-key raw exit; final Linux build and an owned-copy application journey pass.",
         "sources": [
           "system/options.go",
           "system/input_config.go",
@@ -1344,7 +1350,8 @@
           "match/team_flow_test.go",
           "system/options_session.go",
           "system/utility_menu.go",
-          "config/save_input.go"
+          "config/save_input.go",
+          "system/utility_font.go"
         ]
       },
       {
@@ -1505,7 +1512,7 @@
         "id": "U3",
         "name": "Native Options/training behavior and presentation",
         "status": "passed",
-        "completion": "Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; bounded AI acceptance is recorded separately under U4, while raster/audio precision remains U5.",
+        "completion": "Direct target Options/Training observation established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked segments and Linux application inspection. Main Options memory snapshots, startup reset and portable input editing remain port policies. User-requested maintenance adds backed-up explicit input saves and title-menu font reuse with scrolling. Blank/null overrides save correctly; F5, save-on-exit and session snapshots retain their distinct behavior and exit cleanly. Bounded AI acceptance is U4; raster/audio precision remains U5.",
         "prerequisite": "Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers.",
         "sources": [
           "system/options.go",
@@ -1711,7 +1718,8 @@
       "K10 implementation closure: optional Linux automatic hinting and true monochrome rendering now match shared-scene metrics/placement and pass the existing asset/menu/fight/reload lifecycle with races, font vet and Linux application inspection. U5 remains open solely for explicit acceptance of measured version-dependent edge coverage. No binary payload or new Go module dependency is added.",
       "U5 acceptance closure (2026-11-24): the user accepts the demonstrated modern/legacy font-edge differences after reviewing the shared-scene comparison. Compatible metrics/placement and the K10 production backend remain validated. U1-U5 now pass; H1 physical Linux controller acceptance is the sole open bounded followup. Arbitrary-font/platform pixel identity and deferred capabilities remain outside the accepted scope.",
       "Maintenance transition: the user confirms physical Linux controller configuration, character selection and combat with an 8BitDo controller. H1 remains unverified only for physical unplug/reconnect, including player ownership and stuck-input checks. This is a non-blocking manual test note; the ten implementation targets remain closed while work moves to maintenance and content compatibility.",
-      "Input maintenance extension requested by the user: four-second binding capture timeout, raw/device-action tester, optional raw capture and explicit persistent input saves. Exit offers Save, Session only (retain live edits), or Back. Save merges supported input fields into the active YAML while retaining other settings/comments and backing up the complete original before atomic replacement. Main Options memory snapshots remain separate. A detected standard-layout controller with no captured presses remains a physical diagnostic report, not a proven hardware fix or a new baseline implementation target."
+      "Input maintenance extension requested by the user: four-second binding capture timeout, raw/device-action tester, optional raw capture and explicit persistent input saves. Exit offers Save, Session only (retain live edits), or Back. Save merges supported input fields into the active YAML while retaining other settings/comments and backing up the complete original before atomic replacement. Main Options memory snapshots remain separate. A detected standard-layout controller with no captured presses remains a physical diagnostic report, not a proven hardware fix or a new baseline implementation target.",
+      "Utility presentation/save maintenance: the user requested title-menu fonts and sizes across utility pages and reported repeated exit prompts after Save. Blank/null input override maps were loadable but rejected by the saver, leaving inputs unsaved; these now become editable mappings while preserving comments. Successful saves update a semantic baseline and retain status/destination feedback. Raw Options navigation, numpad confirmation and child-return rearming prevent traps after rebinding. Escape at the exit prompt leaves session-only; Back resumes editing. Utility pages reuse motif fonts/banks/RGB at fitted size with wrapping, scrolling and readable fallbacks. The connected lifecycle and an owned-copy application journey validate all three Save paths without modifying the original configuration."
     ]
   }
 }

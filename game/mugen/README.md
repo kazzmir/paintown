@@ -151,8 +151,10 @@ players/helpers and off when enabled in mugen.cfg. Authored clipboard text appea
 at the bottom of the window; multi-hit combo totals appear in the fight HUD.
 In Options, up/down selects a row and left/right adjusts it using the configured
 menu directions, including held-key repeat. Enter changes a value or opens an
-action; Return to Main Menu and Escape leave the page. Settings use independent
-small utility lettering over the motif background, with a readable fallback.
+action; Return to Main Menu and Escape leave the page. Settings use the motif's
+title-menu fonts, selected banks/colours and fitted font size.
+Long lists scroll as the selection moves; Page Up/Down also scrolls a page.
+Missing fonts or glyphs retain a readable fallback.
 Difficulty, life, discrete time limits, speed and master/SFX/BGM volume reach
 their live consumers. Game Speed updates the scheduler immediately.
 
@@ -167,8 +169,9 @@ restore settings and live input bindings in memory. These main-page actions do
 not write files. The input editor has a separate persistent Save Inputs action.
 
 In Options, choose Input Configuration or press F1 to edit keyboard bindings.
-Both input panes retain the active motif's Options background and title styling,
-with the same small utility lettering as the settings page.
+Both input panes retain the active motif's Options background, title styling and
+main-menu font size. Long lists scroll; input hints remain visible. Use Page
+Up/Down to inspect longer diagnostic pages without activating menu controls.
 Tab selects the player; Enter replaces a binding, Insert adds an alternative,
 and Delete disables it. The keyboard enable row can be changed with left/right.
 F2 switches to the gamepad pane, which shows the assigned device and offers
@@ -191,9 +194,14 @@ settings and comments. If no override was loaded, it creates the preferred
 `mugen.yaml.bak` before atomic replacement; each save keeps the previous version.
 Invalid YAML, multiple documents or aliases used as editable input mappings are
 reported without replacing the original. YAML and backups stay out of Git.
+Blank sections such as `joy:` are accepted and filled with the saved bindings.
+Save status remains visible; the console reports the destination or failure.
 
 Escape returns to Options. With changed inputs it offers **Save**, **Session
 only** (keep changes active without writing), or **Back** (continue editing).
+Escape at that prompt also leaves session-only. A successful save clears the
+changes flag, so leaving afterward does not ask again. Both Enter keys work;
+Options retains raw arrow/Enter/Escape navigation after player bindings change.
 Unsaved changes last until the game exits. The YAML examples below also support
 manual persistent configuration.
 

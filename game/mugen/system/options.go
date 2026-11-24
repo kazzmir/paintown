@@ -68,6 +68,7 @@ type OptionsState struct {
 	dialog        utilityMenu
 	background    *ebiten.Image
 	transition    screenTransition
+	resume        bool
 	volume        [3]int
 }
 
@@ -217,6 +218,12 @@ func (s *OptionsState) Update() (State, error) {
 	if e.motif.OptionBG != nil {
 		e.motif.OptionBG.Update()
 	}
+	if s.resume {
+		// Child confirmation input belongs to that child, including a newly
+		// rebound Start key. Do not let it reopen Input Configuration.
+		s.resume, s.repeat = false, menuRepeat{}
+		return s, nil
+	}
 	if s.transition.leaving {
 		if s.transition.update(s.ticks, -1, e.themeNumber("Option Info", "fadeout.time", 0), false) {
 			return NewTitleState(e), nil
@@ -224,9 +231,13 @@ func (s *OptionsState) Update() (State, error) {
 		return s, nil
 	}
 	direction := s.repeat.directions(im, e.ticksPerSecond())
+	for i, key := range []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowDown, ebiten.KeyArrowLeft, ebiten.KeyArrowRight} {
+		direction[i] = direction[i] || im.KeyJustPressed(key)
+	}
+	s.utility.updateScroll(im)
 	left, right := direction[2], direction[3]
-	accept := im.IsJustPressed(1, input.ActionEnter)
-	cancel := im.IsJustPressed(1, input.ActionEscape)
+	accept := im.KeyJustPressed(ebiten.KeyEnter) || im.KeyJustPressed(ebiten.KeyNumpadEnter) || im.IsJustPressed(1, input.ActionEnter)
+	cancel := im.KeyJustPressed(ebiten.KeyEscape) || im.IsJustPressed(1, input.ActionEscape)
 	if s.confirmation {
 		if left || right {
 			s.yes = !s.yes
@@ -303,6 +314,19 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 		heading = "TEAM MODE CONFIG"
 	}
 	content := e.drawOptionsBackground(screen, s.background, heading)
+	panel := screen.SubImage(content).(*ebiten.Image)
+	s.utility.scaleHint = float64(content.Dx()) / float64(e.logicalWidth)
+	s.dialog.scaleHint = s.utility.scaleHint
+	if s.confirmation {
+		value := "No"
+		if s.yes {
+			value = "Yes"
+		}
+		s.dialog.footer = []utilityRow{{"Left/right: choose", "Enter: confirm"}}
+		s.dialog.draw(e, panel, []utilityRow{{"Reset default values?", value}}, 0, "", 4)
+		s.transition.draw(screen, s.ticks, e.themeNumber("Option Info", "fadein.time", 0), e.themeNumber("Option Info", "fadeout.time", 0))
+		return
+	}
 	rows := make([]utilityRow, 0, len(s.items)+2)
 	for i, item := range s.items {
 		if !s.team && (i == 9 || i == 11) {
@@ -326,19 +350,12 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if s.messageTicks > 0 {
 		rows = append(rows, utilityRow{s.message, ""})
 	}
-	s.utility.draw(e, screen, rows, cursor, "", content.Min.Y-screen.Bounds().Min.Y)
-	if s.confirmation {
-		rows = []utilityRow{{"Reset default values?", "No"}}
-		if s.yes {
-			rows[0].value = "Yes"
-		}
-		s.dialog.draw(e, screen, rows, 0, "", 100)
-	}
+	s.utility.draw(e, panel, rows, cursor, "", 4)
 	s.transition.draw(screen, s.ticks, e.themeNumber("Option Info", "fadein.time", 0), e.themeNumber("Option Info", "fadeout.time", 0))
 }
 
 // All Options pages retain the active motif's background, title styling and
-// fitted viewport. Utility lettering is composed afterward in window pixels.
+// fitted viewport. Utility lettering uses the same fitted motif scale.
 func (e *Engine) drawOptionsBackground(screen, background *ebiten.Image, heading string) image.Rectangle {
 	if e.motif.OptionBG != nil && e.motif.OptionBG.BGClearColor != nil {
 		background.Fill(e.motif.OptionBG.BGClearColor)

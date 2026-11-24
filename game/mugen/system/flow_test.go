@@ -117,6 +117,7 @@ input:
       y: [KeyF9, not-a-key]
       z: none
   p2:
+    gamepad: # A blank override section is an editable empty mapping.
     joy:
       a: none
       right: "axis:0+"
@@ -519,6 +520,18 @@ extension_alias:
 	if !bindingsMenu.testing || !bindingsMenu.testSeen || !input.GlobalManager.KeyboardActionPressed(1, input.ActionX) {
 		t.Fatal("input tester did not read the live keyboard binding")
 	}
+	nativePanel := ebiten.NewImage(640, 480)
+	e.Draw(nativePanel)
+	first := bindingsMenu.utility.first
+	step(ebiten.KeyPageDown)
+	e.Draw(nativePanel)
+	if !bindingsMenu.utility.themed || bindingsMenu.utility.scale != .5 || bindingsMenu.utility.first <= first || bindingsMenu.utility.last <= bindingsMenu.utility.first {
+		t.Fatal("motif-sized input diagnostics did not scroll inside the viewport")
+	}
+	step()
+	step(ebiten.KeyPageUp)
+	step()
+	nativePanel.Deallocate()
 	checkInputMotif()
 	step(ebiten.KeyF4)
 	step()
@@ -745,6 +758,30 @@ extension_alias:
 	if !slices.Contains(persisted, ebiten.KeyF10) || !slices.Equal(persistedPad, expectedPad) || reloaded.Sound.MasterVolume != 100 || bindingsMenu.inputsChanged() {
 		t.Fatal("saved input did not round-trip or changed unrelated audio settings")
 	}
+	step(ebiten.KeyEscape) // F5 already saved: no second confirmation.
+	step()
+	if e.currentState != options || bindingsMenu.confirmExit {
+		t.Fatal("explicit Save Inputs did not clear the exit confirmation")
+	}
+	options.cursor = 9
+	step(ebiten.KeyArrowRight)
+	step()
+	step(ebiten.KeyEnter) // Main Options Save remains a memory snapshot.
+	step()
+	if actual, _ := os.ReadFile(override); !bytes.Equal(actual, savedYAML) {
+		t.Fatal("main Options session save rewrote persistent configuration")
+	}
+	step(ebiten.KeyF1)
+	bindingsMenu = e.currentState.(*InputConfigState)
+	step()
+	step(ebiten.KeyEscape)
+	step()
+	if e.currentState != options {
+		t.Fatal("reopening saved inputs invented unsaved changes")
+	}
+	step(ebiten.KeyF1)
+	bindingsMenu = e.currentState.(*InputConfigState)
+	step()
 	bindingsMenu.cursor = bindingsMenu.offset() + 7
 	step(ebiten.KeyInsert)
 	step()
@@ -752,15 +789,25 @@ extension_alias:
 	step()
 	step(ebiten.KeyEscape)
 	step()
-	step(ebiten.KeyEnter) // Save from the exit prompt.
+	step(ebiten.KeyNumpadEnter) // Save from the exit prompt, using the other Enter key.
+	for n := 0; n < 3; n++ {
+		step(ebiten.KeyNumpadEnter) // Held confirmation must not reopen the child.
+		if e.currentState != options {
+			t.Fatal("held save confirmation reopened input configuration")
+		}
+	}
 	step()
 	backup, _ = os.ReadFile(override + ".bak")
 	if e.currentState != options || !bytes.Equal(backup, savedYAML) {
 		t.Fatal("save-on-exit did not preserve the previous full document")
 	}
-	// Utility rows center in the motif independently of its title-menu bank.
+	// Native-size menu lettering scrolls to the selected row; fontless themes
+	// still retain the readable fallback below.
 	optionCanvas := ebiten.NewImage(e.logicalWidth, e.logicalHeight)
 	e.Draw(optionCanvas)
+	if !options.utility.themed || options.utility.scale != 1 {
+		t.Fatal("Options did not retain the title menu font's fitted size")
+	}
 	optionPixels := make([]byte, e.logicalWidth*e.logicalHeight*4)
 	optionCanvas.ReadPixels(optionPixels)
 	items := options.items
@@ -822,14 +869,22 @@ extension_alias:
 		t.Fatal("Game Speed option did not update the live scheduler", ebiten.TPS(), e.ticksPerSecond())
 	}
 	step()
-	options.cursor = len(options.items) - 1
-	step(ebiten.KeyEnter)
+	keyboardDisabled := input.GlobalManager.KeyboardDisabled[0]
+	input.GlobalManager.KeyboardDisabled[0] = true
+	options.cursor = len(options.items) - 2
+	step(ebiten.KeyArrowDown)
+	step()
+	if options.cursor != len(options.items)-1 {
+		t.Fatal("disabled/rebound player keys trapped Options navigation")
+	}
+	step(ebiten.KeyNumpadEnter)
 	for n := 0; n < 20 && e.currentState == options; n++ {
 		step()
 	}
 	if _, ok := e.currentState.(*TitleState); !ok {
 		t.Fatal("options did not return to title")
 	}
+	input.GlobalManager.KeyboardDisabled[0] = keyboardDisabled
 	for i := 0; i < 37; i++ {
 		step()
 	}

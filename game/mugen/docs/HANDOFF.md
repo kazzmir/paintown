@@ -14,32 +14,36 @@ H1 physical unplug/reconnect is a non-blocking manual test note.
 
 ## Input maintenance checkpoint
 
-Keyboard/gamepad editing now shares the Options motif background, heading style
-and small utility lettering, including capture hints and reset confirmation.
-Bindings fit below the heading using window-sized Options layout. Capture has a
-four-second wall-clock timeout. F4 tests raw signals and device-specific actions;
-F6 raw capture bypasses the standard mapping, including omitted raw axes.
-F5 saves both players' inputs into the active YAML without replacing other
-settings/comments; the complete prior file is backed up before atomic replacement.
-Leaving changed inputs offers Save, Session only (retain live edits), or Back.
-Main Options Load/Save still uses memory snapshots. YAML/backups are ignored.
-The user verified setup, selection and combat with an 8BitDo controller; another
-detected standard-layout controller supplies no captured presses in the reported
-session. Physical diagnosis remains open; the tester separates missing signals
-from legacy-binding mismatches. Do not infer a hardware fix from injected devices.
-The affected combat/match-flow segments pass with race detection; other segments
-stay checked. The connected edit/test/session/save/reload path verifies complete
-backups, preserved unrelated settings/comments/anchors and safe validation/backup
-failures. Linux build and themed countdown/test/save-dialog inspection pass.
-Owned overlay, captures and binaries are removed; shared assets/cache remain.
+Options/input/Training pages retain the motif background and title-menu font
+sizes, banks and RGB. Long lists wrap/scroll with selection or Page Up/Down;
+input hints remain pinned. Missing fonts/glyphs retain readable fallback.
+Capture times out after four seconds; F4 tests raw signals and device-specific
+actions, and F6 raw capture bypasses the standard map.
 
-Profile investigation confirms the pinned SDK already embeds platform-specific
-SDL controller mappings. Its [mapping API](https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#UpdateStandardGamepadLayoutMappings)
-accepts additional GUID/platform entries from the public
-[SDL database](https://github.com/mdqinc/SDL_GameControllerDB). The next profile
-step is an opt-in SDK-default binding preset and optional local mapping overrides;
-preserve legacy CFG precedence until explicitly changed. No extra database or
-automatic profile replacement is added in this checkpoint.
+F5/save-on-exit merges input settings into the active YAML, preserving other
+settings/comments/anchors and backing up the complete original. Blank/null maps
+are editable; their previous rejection reproduced failed saves and repeated
+prompts. Successful saves update a semantic baseline and retain status/path
+feedback. Exit offers Save, Session only, or Back; Escape leaves session-only.
+Numpad Enter, raw Options navigation and child-return rearming prevent traps
+following remaps or held confirmation. Main Options Load/Save is memory-only.
+
+The extended connected mode/input/save/reload/gameplay segment passes with races,
+including paging, fontless themes, all three Save paths and disabled-key exit.
+Final Linux build and an owned-copy application journey pass: F5 and save-on-exit
+create the backup, preserve unrelated settings and return through Options to
+title. The original configuration was read only; owned output is removed.
+
+The user verified setup/selection/combat with an 8BitDo controller. Another
+detected controller's uncaptured presses still need live raw/action diagnosis;
+do not infer a hardware fix from injected devices. H1 reconnect remains open.
+
+The pinned SDK already embeds platform-specific SDL mappings. Its
+[mapping API](https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#UpdateStandardGamepadLayoutMappings)
+accepts extra GUID/platform entries from the public
+[SDL database](https://github.com/mdqinc/SDL_GameControllerDB). Next profile work
+is an opt-in SDK-default preset and optional local mapping overrides; preserve
+legacy CFG precedence until explicitly changed. No extra database is added here.
 
 ## AI closure
 

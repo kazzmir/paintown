@@ -241,8 +241,11 @@ unknown permutations into mandatory parameter matrices.
   Retain disabled slots through F4/reload; shared clocks/HUD keep running. PNG
   is the native screenshot format since 1.0 RC4; do not reopen a PCX gap for 1.1.
 - Options must remain readable when a motif draws its title labels as art and
-  omits menu fonts. Utility rows use independent small lettering after viewport
-  fitting, retaining the authored BG/heading and built-in fallback. Keep native
+  omits menu fonts. Utility pages use the title menu's normal/active fonts,
+  banks, RGB and fitted font size; scroll long lists instead of shrinking them.
+  Retain readable fallback lettering for absent fonts/missing glyphs, authored
+  BG/heading, viewport clipping and pinned input hints. Page Up/Down scrolls
+  diagnostics without triggering menu actions. Keep native
   bounds, discrete time steps and full speed range; edits reach gameplay/audio.
   Session Load/Save snapshots live input edits without writing files. Defaults
   reset only the current page; input F3 confirms selected-player startup bindings.
@@ -269,6 +272,11 @@ unknown permutations into mandatory parameter matrices.
   into the active YAML, retaining other settings/comments and backing up the
   complete original bytes before atomic replacement. Failed saves keep editing
   and the original file intact; reject ambiguous/noneditable YAML safely.
+  Blank/null override sections are editable empty mappings. A successful save
+  updates the semantic input baseline; retain visible save status and report
+  the destination. Escape at the exit prompt leaves session-only; Back resumes
+  editing. Consume child confirmation on return and keep raw Options navigation
+  available after remapping/disabling player keys, including numpad Enter.
   Keyboard/gamepad editing and reset confirmation retain the active Options
   motif background, heading style and utility lettering; fit below the heading.
   Requested F12 captures use exclusive PNG files; never commit generated output.

@@ -71,6 +71,7 @@ func (c *trainingControls) rows() []utilityRow {
 }
 func (s *FightState) updateTrainingMenu() bool {
 	im, c := input.GlobalManager, s.training
+	c.utility.updateScroll(im)
 	direction := c.repeat.directions(im, s.engine.ticksPerSecond())
 	for action := input.ActionA; action <= input.ActionZ; action++ {
 		if im.IsJustPressed(1, action) {
