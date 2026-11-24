@@ -34,7 +34,10 @@ then runs ordered CNS, damage continuation, physics and clocks. Helpers join the
 same world; body push follows actor updates. Borrowed states retain their owner
 and geometry context. Keyboard and opt-in gamepad adapters feed logical inputs
 through CMD remaps, charge/motion/chord recognition and authored state controllers.
-AI uses the same command/CNS path with timed plans.
+AI uses the same command/CNS path with timed plans or declared-label admission
+under AI.Cheat. Command-driven ground/air observations feed predictive guard,
+startup/range/reversal counters and walk/jump navigation. Completed move models
+survive rounds/rematches/reload within the session; live actor banks remain separate.
 
 The renderer composes stage backgrounds, fighter/helper/effect layers, floor
 shadows/reflections, HUD, foreground and global palette effects. It uses actual
@@ -69,7 +72,9 @@ full matches/modes/assets. They reuse supplied assets and delete scratch on both
 success and failure. See [test segments](../tests/SEGMENTS.md).
 
 Remaining compatibility includes physical controller/native joystick acceptance,
-broader fonts/media/packs, native AI/rules and renderer/audio precision. The stock
+arbitrary fonts/media/packs and renderer/audio precision. K8/U4 close the named
+AI learning/decision lifecycle with explicit session-storage, random-stream and
+non-cheating-input port policies. The stock
 and supplied-content flows establish their observed scope, not arbitrary content
 equivalence. Later-round script stalls reproduced in the target are content
 defects; no further mod repairs are planned. Physical CD, unavailable licensed

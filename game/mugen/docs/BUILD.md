@@ -51,6 +51,21 @@ Go rasterizer does not execute TrueType glyph hint instructions, so native
 glyph edges, baselines and hinted advances can still differ. U5 tracks that
 precision gap separately from supported font loading and text layout.
 
+## AI move models
+
+Characters may seed live learning with compatible beta `[Files] ai` data.
+Missing or incompatible data reports a contextual warning and uses an empty
+model. The cache format stores game-pixel estimates without a resolution tag;
+use data authored for the selected logical game width.
+
+Both human and CPU command episodes teach bounded ground/air banks. Completed
+estimates survive rounds, rematches and reloads in the running application;
+definition/source revisions, selected language and logical game width isolate
+profiles. Live actors keep independent banks. Session storage is bounded to 64
+profiles, each with at most 80 ground and 40 air moves. No generated binary
+cache is written to the content directory. See the README for AI.Cheat and
+the independent-stream/timed-input port policies.
+
 ## Audio and acceptance
 
 WAV/MP3/Ogg playback uses Go decoders. Linux MIDI/tracker playback optionally

@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "K1/K2 result scenes, K3 AI.Cheat admission, K5/K6 Options/Training and K7 overlapping runtime ordering are closed for their named behavior and acceptance. K8 native AI decision policy remains partial under U4; U5 retains precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
+      "gap": "K1/K2 results, K3 command admission, K5/K6 Options/Training, K7 overlapping runtime ordering and K8/U4 learned AI are closed for their named behavior and acceptance. U5 retains native glyph-hinting/precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -641,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "f0aae5df38e6799d0c802aff8c23ff1e2556ed0d8aa844bf8ce753db047bbf8f"
+      "passed_source": "ed45ef7ec30c1dfd53bec013a6068c98352ef8d597669713d9bfd4ce4dbba853"
     },
     {
       "id": "entities",
@@ -674,7 +674,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "6dc5e12f9f0a273c953f86ed20ee5bbd1e626e2de2df328a4574895eb61d531c"
+      "passed_source": "52dfe0a1744bc375b165eee05bfca45c44069f04e9375aa4f857bb171ca65c5e"
     },
     {
       "id": "effects-pause",
@@ -709,7 +709,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d146670be77cede40d2b4e88c6a36851ef497bae69a10508777411a1a9a09fa4"
+      "passed_source": "ee0ad5f46e2054dac26cfd070be24b616c9df9ba3075af8ae35019fc4a13fdf9"
     },
     {
       "id": "match-flow",
@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "59b8907d92beb5713a2156738c2f66375efdb1b6ca2295113ea006cac50e54b5"
+      "passed_source": "eaa34da0e91f054b9351613eadccf5755c205b38b96290ec5eb41ebba57fe419"
     }
   ],
   "presentation_followups": [
@@ -1039,7 +1039,7 @@
       "id": "ai-composite-command-plans",
       "name": "AI plans for charged chords and strict command steps",
       "completed": true,
-      "validation": "Timed plans charge each release component, emit ordinary presses on the release/completion frame and retain unrelated inputs across strict steps. Command-key extraction recognizes modifiers on every chord component. The existing human/helper command lifecycle continues through a fresh AI-only composite command, actual CMD/CNS admission, attack/contact/damage and control recovery, followed by fresh stock AI combat. The affected connected segments pass with races. Long charges retain constant plan storage. Native AI decision probabilities remain partial."
+      "validation": "Timed plans charge each release component, emit ordinary presses on the release/completion frame and retain unrelated inputs across strict steps. Command-key extraction recognizes modifiers on every chord component. The existing human/helper command lifecycle continues through a fresh AI-only composite command, actual CMD/CNS admission, attack/contact/damage and control recovery, followed by fresh stock AI combat. The affected connected segments pass with races. Long charges retain constant plan storage. K8/U4 now accept the bounded native decision/planner lifecycle; independent random streams and physical timed plans remain explicit port policies."
     },
     {
       "id": "victory-background-clear-color",
@@ -1383,14 +1383,14 @@
         "id": "K8",
         "parent": "raster-audio",
         "name": "Native AI input decision policy",
-        "implementation": "partial",
-        "acceptance": "unverified",
+        "implementation": "implemented",
+        "acceptance": "passed",
         "size": "large",
-        "confidence": "medium",
+        "confidence": "high",
         "contract": "Match the target AI input policy through weighted fallback movement, defence, attack/cancel, press/release cadence, command admission and recovery, plus its learned-move movement/attack/guard planner, while retaining CNS eligibility and human/helper/reset ownership.",
-        "basis": "Reviewed fallback and authored command-table indexing remain implemented. A connected target human/CPU episode confirms successful command checks cause move trials, ground/air banks remain separate, hitpause stops collection time and completed records survive round restart. The port now collects those live episodes with bounded banks, context attribution, attack/body geometry, whiff/guard/hit timing and slowly updated statistics. The three timing groups are contact outcomes, correcting the earlier pose inference. Learned-data loading, prediction/selection and complete planner acceptance remain pending. Compatible optional beta learned-data loading and independent session banks are now connected; missing/incompatible caches fall back to live learning. Reversal active windows also enter the learner. Completed data survives round/rematch/reload while changed source revisions select new profiles.",
-        "prerequisite": "Finish movement/attack/guard prediction and command-plan consumers, then validate the coherent AI batch. Model storage is session-only; no automatic generated binary writes are introduced. Keep individual actors independent and invalidate changed source profiles.",
-        "completion": "The new connected human whiff/air/hit episode matches native punch startup3, last-active6 and recovery12, excludes hitpause, retains outcome histories and five-percent repeat estimates, and keeps completed ground/air records through fresh round actors. Linux compile and the extended existing AI/combat scenario pass. Full segment acceptance is pending the coherent planner batch; K8/U4 stay open. The existing connected scenario also decodes a tiny in-memory native-format record and checks independent model retention through reload. No binary fixture or user configuration is committed. Planner acceptance remains pending. Learned movement/attack/guard consumers now execute through opponent recognition, startup/range selection, pose preparation, normal CMD or admitted labels, predictive guard and Start-triggered waypoints. The connected planner scenario reaches guarded contact and physical counter preparation/contact/recovery; affected segment and final runtime acceptance remain pending.",
+        "basis": "Target handler/table review and connected human/CPU observation establish command-index attribution, separate ground/air banks, whiff/guard/hit timing, hitpause exclusion, five-percent repeat estimates and completed-record round retention. Compatible optional beta learned-data files are actually consumed. Native operation also reaches waypoint navigation, predictive guard and learned counter contexts with observed move data.",
+        "prerequisite": "Resolved for the bounded input/learning/planner lifecycle. Independent seat random streams, timed non-cheating physical plans and session-only learned-data retention are explicit port policies; no seed-for-seed stochastic equivalence or automatic binary-cache writing is claimed.",
+        "completion": "Production collection, bounded beta-cache reading, independent actor banks and revision/language/game-width session profiles feed opponent recognition, startup/range/reversal counter selection, source-pose preparation, predictive held guard and walk/jump waypoints. The existing connected journey covers human whiff/air/hit and guarded outcomes, startup3/active6/recovery12, hitpause, smoothing, physical and admitted counters through CNS/contact/recovery, waypoint completion, helper/human ownership and round/reload retention. All five connected segments pass with race detection for current source. Linux build and a live two-CPU match pass with visible normal/special attacks, damage and advancing clocks. Owned runtime/overlay/capture scratch is removed; no binary fixture or user configuration is committed.",
         "sources": [
           "character/ai_data.go",
           "character/ai_memory.go",
@@ -1476,7 +1476,7 @@
         "id": "U3",
         "name": "Native Options/training behavior and presentation",
         "status": "passed",
-        "completion": "Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; sample-exact raster/audio and stochastic AI decisions remain separate U5/U4.",
+        "completion": "Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; bounded AI acceptance is recorded separately under U4, while raster/audio precision remains U5.",
         "prerequisite": "Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers.",
         "sources": [
           "system/options.go",
@@ -1489,9 +1489,9 @@
       {
         "id": "U4",
         "name": "Native AI decisions beyond AI.Cheat",
-        "status": "unverified",
-        "completion": "K8 weighted fallback contexts pass connected movement/defence/attack/recovery/ownership checks, actual CMD combat, affected race-checked segments and Linux application smoke. Native live move tables and the learned movement/attack/guard planner remain a confirmed implementation gap. Accept that connected planner lifecycle before closing U4; fallback fighting/specials do not establish full native AI equivalence. Authored command-index identity is now resolved through target table inspection and connected parser/AI admission; this prerequisite does not close learned move collection or prediction.",
-        "prerequisite": "Resolve and implement K8 learned move metadata/planner consumers, then compare one connected target episode with permitted random variability. Preserve the independent-stream and timed non-cheating-plan port policies; do not infer seed-for-seed stochastic equivalence.",
+        "status": "passed",
+        "completion": "K8 closes the bounded native AI lifecycle: indexed weighted fallback, live ground/air move collection, optional learned-data loading, independent session retention and learned navigation/guard/counter consumers. Target observation reaches all five decision contexts; the connected Go journey reaches real guard, physical/admitted counter contact and recovery, walk/jump completion and ownership/reset. Affected connected segments pass with races and the rebuilt Linux application completes live two-CPU combat. This establishes the named decision lifecycle with permitted random variability, not identical random sequences or universal character strategy.",
+        "prerequisite": "Resolved through target handler/table review, connected native collection/planner observation and production Linux acceptance. Preserve independent seat streams, timed non-cheating plans and session-only retention as explicit port policies.",
         "sources": [
           "cmd/cmd.go",
           "match/ai.go",
@@ -1505,7 +1505,12 @@
           "system/fight_state.go",
           "system/fight_controls.go",
           "match/match_test.go",
-          "system/command_flow_test.go"
+          "system/command_flow_test.go",
+          "character/ai_learning.go",
+          "character/ai_data.go",
+          "character/ai_memory.go",
+          "character/loader.go",
+          "match/ai_planner.go"
         ]
       },
       {
@@ -1608,7 +1613,7 @@
       {
         "id": "A4",
         "name": "Options, training and AI",
-        "finding": "K3 AI.Cheat admission, K5/K6 Options/Training and U3 acceptance remain closed. K8 now implements and tests weighted fallback movement, defence, attack/cancel, button cadence, recovery and ownership/reset. Direct target handler/live-combat review also establishes learned move tables and a separate movement/attack/guard planner; that confirmed remaining consumer keeps K8 partial and U4 open. Independent random streams and non-cheating timed CMD plans are explicit port policies. Command admission now preserves the reviewed target index table, including recovery and unmapped slots; K8 remains partial for actual learned move planning.",
+        "finding": "K3 AI.Cheat admission, K5/K6 Options/Training and U3 acceptance are closed. K8/U4 now close indexed weighted fallback, command-attributed live ground/air learning, optional beta cache loading, independent session retention and the navigation/guard/counter planner. Target context observation, connected CMD/CNS/contact/recovery/reset acceptance, race-checked segments and live Linux CPU combat pass. Independent random streams, non-cheating timed plans and session-only model storage remain explicit port policies.",
         "targets": [
           "K3",
           "K5",
@@ -1668,7 +1673,8 @@
       "K9 and U2 closure: authored palette mapping, held-Start selection and available-outfit reservation now match the reviewed target path through gameplay/reload. Licensed Unicode TTF/TTC content acceptance passes in the existing connected lifecycle and native/Linux application journey. This closes the supported asset/font functional category; font raster/centering precision remains U5 and the learned AI planner remains K8/U4. No additional target or binary fixture was added.",
       "U5 precision refinement: direct target text-library surfaces establish complete text extents, negative-bearing padding, centered truncation and inclusive right anchors. Those layout rules are corrected within the existing followup, without adding an implementation target. Compatible TrueType hinting remains unresolved; modern system FreeType alone does not reproduce the target raster. Prior format/content acceptance and camera/sprite/audio calibrations remain closed.",
       "K8 command-index prerequisite resolved: direct loaded-table inspection confirms first-declaration indices for ordinary labels, alternative reuse, reserved recovery index zero and an unmapped declaration slot. AI now samples that indexed namespace and ignores unmapped selections. This is a correction within K8, not another target or closure of learned move planning.",
-      "K8 collection checkpoint: successful command queries are attributed within each controller to actual state transitions, then live actor episodes populate bounded ground/air move banks. Direct target observation corrects the timing-group interpretation from poses to whiff/guard/hit outcomes. Collection timing/geometry, hitpause exclusion, smoothing and round retention pass the existing connected AI/combat journey. Learned-data loading and planner consumers remain open within K8; full segment validation waits for that coherent batch."
+      "K8 collection checkpoint: successful command queries are attributed within each controller to actual state transitions, then live actor episodes populate bounded ground/air move banks. Direct target observation corrects the timing-group interpretation from poses to whiff/guard/hit outcomes. Collection timing/geometry, hitpause exclusion, smoothing and round retention pass the existing connected AI/combat journey. Learned-data loading and planner consumers remain open within K8; full segment validation waits for that coherent batch.",
+      "K8/U4 closure: live command-attributed ground/air learning, bounded beta cache loading, independent revision/language/game-width session banks and learned navigation/guard/counter consumers now pass the existing connected lifecycle. Direct target observation reaches all five contexts. Physical/admitted counters and walk/jump completion, affected race-checked segments and live Linux two-CPU combat pass. Independent random streams, timed non-cheating plans and session-only storage remain explicit port policies. K1-K9 are closed; U5 precision and H1 hardware remain open."
     ]
   }
 }

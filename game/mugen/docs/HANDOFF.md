@@ -2,97 +2,61 @@
 
 Follow [AGENTS.md](../AGENTS.md). Author only game/mugen/; preserve unrelated
 work, external assets and user YAML. Local source/text checkpoints are authorized;
-no pushes, binaries, fixture banks, subagents or goals. Keep documentation portable;
+no pushes, binaries, fixture banks, subagents or goals. Keep documentation portable.
 [PROGRESS.md](PROGRESS.md) is the single completion ledger.
 
-K1–K7 and K9 are closed; K8 remains partial. U1 runtime, U2 supported font/content
-and U3 Options/Training acceptance pass. The ledger has 33 implemented categories
-and two broad partial ones; category/target counts are not overall equivalence
-percentages. U4 AI, U5 precision and H1 hardware remain open.
+K1-K9 are closed for the bounded implementation scope. U1 runtime, U2 supported
+font/content, U3 Options/Training and U4 AI acceptance pass. The ledger retains
+33 implemented categories and two broad partial ones; those counts are not
+whole-engine equivalence percentages. U5 precision and H1 hardware remain open.
 
-K9 was found by a shared native/Go font-content journey: character selection
-ignored Palette Keymap. The parser/portrait/selection consumer now retains first
-fields, absent/partial-group defaults, clamping, authored/legacy availability,
-available-outfit reservation and per-entry snapshots. Start can be held before
-an attack; Start-only confirmation is a release convenience. Mapped numeric
-palettes survive CNS, rounds and reload without mapping direct requests again.
-The native and rebuilt Linux custom-map episode retain PalNo 6 through reload
-and distinct outfits for repeated picks. Existing connected asset/selection/team
-paths include random cells, duplicate reservation and actual combat.
+## AI closure
 
-U2 now passes openly licensed Unicode TTF and generated two-face TTC through
-localized storyboards, menus, VS, fight, rematch, error correction and reload,
-alongside bitmap/SFF/ACT/SND resources. No font payload or binary fixture is
-committed. The affected connected segment passes with race detection; other
-completed segments stay checked. Linux build/application inspection passes.
-Owned runtime prefixes, overlays, binaries, captures and scratch are removed;
-reuse the shared cache. This is supported-format functional acceptance, not
-arbitrary-pack or pixel/sample-exact equivalence.
+K8/U4 now connect the complete scoped AI path. Controller-scoped successful
+command reads attribute actual root transitions. Separate bounded ground/air
+banks collect geometry, entry contexts and startup/active/control/end statistics;
+timing groups are whiff/guard/hit outcomes. Actor hitpause and shared pause stop
+learning time. Compatible optional beta learned-data files seed the banks.
 
-K8 now preserves native command-table indices in addition to its accepted
-weighted fallback. Direct loaded-table inspection confirms declaration order,
-ordinary alternative reuse, reserved recovery index zero and the unmapped slot
-at its declaration. AI samples the complete table and admits nothing for empty
-slots. Existing AI/command/combat, helper ownership and reset paths pass with
-races; map-only adapters retain deterministic additional-label ordering.
-Linux build and stock-match window inspection pass; owned runtime/helper/overlay
-and capture scratch are removed.
+Opponent recognition feeds predictive held guard, startup/range/reversal counter
+selection, source-pose preparation and walk/jump waypoints through normal CMD/CNS.
+Prediction can interrupt navigation; counters are selected from predictive guard.
+Physical learned plans own their attempt until completion or an actual hit;
+fallback defence cannot cancel them. Waypoints retain their starting axes and
+moving jumps finish on horizontal passage, preventing repeated jump loops.
 
-K8/U4 collection is now implemented in character/ai_learning.go. Controller-scoped
-successful command reads attribute actual transitions; live root episodes collect
-ground/air records, geometry and startup/active/control/end statistics. Timing
-banks are whiff/guard/hit outcomes, correcting the earlier pose inference. Native
-punch startup3/active6/recovery12, air collection, hitpause exclusion, five-percent
-repeat smoothing and completed-record round retention pass the extended existing
-AI/combat journey. Linux compiles. Full segments await the coherent planner batch.
+Completed observations survive rounds/rematches/reload in bounded session memory.
+Live actors have independent banks; definition/source revisions, language and
+game width isolate profiles. Independent seat random streams, timed non-cheating
+plans and session-only retention are explicit port policies. No automatic binary
+cache writes or identical native random sequences are claimed.
 
-Optional beta learned-data loading and session retention are connected in
-character/ai_data.go and ai_memory.go. Live banks stay separate; source revisions
-and game width key the bounded session cache. Missing/incompatible files fall
-back to learning, and no generated binary cache is written. The existing journey
-checks native-format decoding and independent reload retention. Reversal windows
-also enter collection. Next connect movement/attack/guard prediction; storage and
-collection alone do not close K8/U4. The learned planner is now connected in
-match/ai_planner.go: opponent recognition, range/startup counter selection,
-source-pose preparation, predictive held guard and Start-triggered waypoints.
-The existing connected journey passes through prediction, guarded contact,
-non-cheating counter preparation/CMD/contact/recovery and normal navigation.
-Learned physical plans own their input attempt until completion or an actual
-hit; generic fallback defence cannot cancel them. Full affected segments and
-final runtime acceptance remain pending before closure. Keep independent seat streams and timed
-non-cheating plans explicit. No generated records, binaries or private observations
-belong in Git. Keep the native/application runs serial and clean owned scratch at
-batch completion.
+Target handler/table review and direct operation reach all five decision contexts.
+The existing connected AI/combat journey covers human whiff/air/hit, guarded
+contact, native timing/smoothing/hitpause, cache decoding, physical and admitted
+counters through contact/recovery, walking/jumping, helper/human ownership and
+round/reload retention. All five segments pass with race detection for current
+source. Linux rebuild and live two-CPU normal/special combat pass with damage and
+advancing clocks. Owned runtime prefixes, overlays, captures and binaries are
+removed; shared cache and external content remain. No new binary fixtures or
+user configuration are committed.
 
-The completed native comparison reaches navigation, predictive guard and learned
-attack contexts using observed move records. All five connected segments pass
-with races for the planner batch. The expanded journey also covers admitted
-counters and walk/jump waypoint completion. Navigation retains the waypoint's
-starting axis and accepts horizontal passage during a moving jump; requiring
-simultaneous horizontal/vertical crossings caused repeated jumps. Prediction can
-interrupt navigation, and counters are selected from predictive guard. Final
-profile hashing now includes selected language as well as source bytes; refresh
-affected segment fingerprints and perform the final Linux application run before
-closing K8/U4. Writable overlay paths must resolve inside owned scratch.
+## Remaining work
 
-U5 whole-text TrueType layout is corrected. The target text library's surfaces
-and a shared rendered scene establish negative-bearing padding, final overhangs,
-center-before-truncation and inclusive right anchors. The existing timed asset
-journey now checks italic/Unicode widths and aligned/clipped labels through scene
-exit. Affected match-flow passes with races; unchanged segments stay checked.
-Linux build, shared-font window inspection and stock-match smoke pass. Owned
-scratch is removed. No new font dependency or binary fixture was added.
+U5 whole-text TrueType layout is corrected: negative-bearing padding, final
+overhangs, center-before-truncation and inclusive right anchors. Native glyph
+hinting still changes edges, advances and baselines. Resolve a compatible hinting
+path or an explicitly accepted raster/metric tolerance; do not hide it with
+per-glyph offsets. Preserve prior camera/sprite/alpha/KO-echo calibrations. U2
+supported Unicode TTF/TTC loading and K9 palette mapping/reservation stay closed.
 
-U5 remains open for glyph hinting: the Go renderer rounds advances without
-executing TrueType hint instructions, and system FreeType also differs from the
-target. Resolve a compatible hinting path or an explicit raster/metric tolerance;
-do not hide it with per-glyph or baseline offsets. Preserve earlier camera,
-indexed sprite, alpha and KO-echo calibrations. H1 requires physical controller
-exercise. Unknown permutations are not matrices; do not repair scripts that fail
-natively.
+H1 requires physical Linux controller exercise through menus, selection, combat
+and reconnect. Physical CD, unavailable licensed/CJK payloads, other-platform
+runtime acceptance and standalone music CLI remain deferred. Unknown permutations
+are not matrices, and scripts that fail natively do not need engine workarounds.
 
-Keep native/application/display runs serial and await owned clients before edits
-or another run. Validate affected segments at coherent batch boundaries and
-clean owned scratch on success/failure. Physical CD, unavailable licensed/CJK
-payloads, other-platform runtime acceptance and standalone music CLI playback
-remain deferred.
+Validate affected connected segments at coherent batch boundaries; completed
+segments remain checked until covered source changes. Keep native/application
+runs serial and await owned clients before edits or another run. Verify writable
+overlay leaves resolve inside owned scratch, including their ancestor directories.
+Clean only owned output on success/failure and retain the shared build cache.

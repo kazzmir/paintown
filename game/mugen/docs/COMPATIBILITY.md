@@ -22,7 +22,8 @@ to add an engine timeout. Missing optional media and unavailable font payloads
 must be distinguished from parser/renderer failures. A bundled executable with
 a familiar version banner does not establish stock-runtime behavior.
 
-Broader font/media/content acceptance, native timing/render/audio/AI fidelity
-and physical controller acceptance remain partial. Run connected scenarios after
+K8/U4 close the bounded AI collection, learned-data and decision/planner
+lifecycle. Arbitrary content compatibility, native raster/device-audio precision
+and physical controller acceptance remain open. Run connected scenarios after
 related implementation work; do not create a parameter matrix for every unknown
 permutation or claim whole-engine compatibility from a roster load or screenshot.

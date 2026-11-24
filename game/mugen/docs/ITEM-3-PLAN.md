@@ -24,18 +24,17 @@ cover AI.Cheat command policy and legacy joystick configuration.
 The U3 Options/Training comparison established K5/K6, and the U1 overlapping
 runtime comparison established K7. These explicit scope expansions are now
 implemented and accepted. Of the six separate acceptance/evidence followups,
-U1/U2/U3 are passed; U4, U5 and H1 remain open. U4 handler review establishes
-K8: the former fixed-cooldown heuristic differed from native input decisions.
-Weighted fallback movement, defence, attacks/cancels, recovery and ownership are
-now implemented and accepted through the connected scenarios. Handler review
-and direct observation also establish live learned move tables; their separate
-movement/attack/guard planner remains missing within K8. This explicit eighth
-target therefore remains partial. Command-table identity is now corrected:
-authored indices retain alternative reuse, reserved recovery and unmapped slots
-through AI admission. U4 still needs the learned planner's bounded
-implementation and reference acceptance. Other unresolved evidence questions
-are not assumed code defects. This bounded review does not establish an exhaustive list
-of every semantic difference; unsupported-path scans alone cannot do that.
+U1 through U4 are passed; U5 precision and H1 hardware remain open. K8 now
+closes weighted fallback, authored command-table identity, live ground/air move
+learning, optional beta learned-data loading, independent session retention and
+the navigation/guard/counter planner. Target observation reaches every decision
+context; connected Go acceptance reaches physical/admitted counters, guarded
+contact, walk/jump completion and ownership/reset through CMD/CNS. Affected
+segments pass with races and live Linux CPU combat passes. Independent random
+streams, timed non-cheating plans and session-only model storage are explicit
+port policies. K1-K9 are closed for this bounded scope. Other unresolved evidence
+questions are not assumed code defects, and unsupported-path scans do not
+establish every possible semantic difference.
 
 The U2 licensed Unicode TTF/TTC content journey explicitly added K9 after the
 same input selected different outfits. K9 now closes authored keymaps, held
@@ -163,13 +162,14 @@ checks. Neither establishes universal compatibility with arbitrary content.
    explicit override precedence. Its medium/low-confidence estimate depends on
    platform/device mapping. Schedule physical acceptance H1 when hardware exists.
 4. U1 is closed by K7, U2 by the font/content lifecycle plus K9, and U3 by K5/K6.
-   Address U4/U5 through their named evidence questions. Create new code targets
+   U4 closes the learned AI lifecycle under K8. Address U5 through its named
+   precision question and H1 when hardware is available. Create new code targets
    only for demonstrated missing/incorrect behavior and record the scope change.
    Prioritize crashes, stalls and wrong state outcomes over precision findings.
 
 K3 admission and K4 device-code prerequisites are resolved for the scoped
 implementations. Preserve the distinction between software acceptance and
-native probability/hardware followups. Larger findings receive their own
+random-sequence policies and hardware followups. Larger findings receive their own
 checkpoint. Validate affected connected segments at batch end, record
 completion once and commit source/text locally. No per-field test matrices,
 copied assets or per-run documentation are required.

@@ -59,7 +59,7 @@ scratch; copying a leaf does not isolate it through a linked ancestor.
 Optional historical diagnostics may require separately supplied inputs; they
 are not routine completion gates.
 
-Two broad areas remain partial: native runtime/render/audio/AI/menu fidelity and
+Two broad areas remain partial: native rendering/audio precision and
 physical controller acceptance. U2 supported font/content functional acceptance
 is complete; arbitrary-pack equivalence is not inferred from that lifecycle.
 Physical CD playback, unavailable licensed/CJK fonts, other-platform runtime
@@ -115,8 +115,16 @@ unknown permutations into mandatory parameter matrices.
   live guard threats and CNS-owned recovery/eligibility. Independent seat random
   streams continue across rounds, control changes and reload; held input/plans
   reset. Preserve reviewed fallback weights and explicitly distinguish timed
-  non-cheating plans from target policy. Native learned move-table planning is
-  still K8/U4 work; functional fighting and fallback acceptance do not close it.
+  non-cheating plans from target policy. K8/U4 learned planning is accepted:
+  controller-scoped command reads attribute real root move trials; bounded
+  ground/air banks use whiff/guard/hit timing and freeze through hitpause. Keep
+  predictive guard, startup/range/reversal counters, source-pose preparation and
+  walk/jump waypoint consumers connected to ordinary CMD/CNS. Physical learned
+  plans own an attempt until completion or an actual hit; fallback defence must
+  not cancel them. Waypoints retain their starting axes through passage. Live
+  banks remain independent; completed estimates survive rounds/rematches/reload
+  in a bounded session cache keyed by definition, source/language and game width.
+  Read compatible optional beta caches without writing generated content files.
   AI command indices retain declaration order and ordinary alternative reuse.
   Recovery uses reserved index zero and leaves an unmapped declaration slot;
   preserve empty slots during sampling without admitting an undeclared label.

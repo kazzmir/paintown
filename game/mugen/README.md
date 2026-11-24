@@ -120,7 +120,8 @@ the root's decision in their own facing. Arcade/team-arcade/co-op progress throu
 and ending screens. Survival carries/replenishes life and shows its streak;
 training provides unlimited time, KO protection and refills; watch uses AI on both
 sides. Mixed-team health/round budgets and Survival recovery now follow the
-supplied beta; native learned-move planning remains implementation work.
+supplied beta. AI observes command-driven moves during play and uses learned
+ranges and timing for predictive guard, counters and navigation.
 Supported font/content loading has passed its connected functional acceptance.
 Menu mode names do not imply complete mode
 rules. See [match notes](docs/MATCH.md) for details.
@@ -216,8 +217,8 @@ W Jump supplies a fresh up edge while descending, respecting the character's
 air-jump rules. Move with P1 directions, change values with left/right, and resume
 with an attack button or Pause. P1 Start or M hides/restores the entire paused
 menu. Scroll Lock advances one tick. Escape returns to Training selection;
-selecting another match starts with fresh dummy settings. Native stochastic AI
-decisions and broader raster/audio precision remain separate ledger followups.
+selecting another match starts with fresh dummy settings. K8/U4 cover the scoped
+AI decision lifecycle; broader raster/audio precision remains U5.
 
 Body collisions use CNS ground/air widths and temporary `Width` values when
 the fighters' hurtboxes overlap vertically, including air/ground and air/air
@@ -237,9 +238,13 @@ receive the root's admitted labels through their own command recognition. Set
 `AI.Cheat = 0` to use physical buttons and timed CMD plans; retaining planned
 motions in this mode is a port policy. The fallback uses reviewed native weights
 for distance, difficulty, hit confirmation and recovery. Separate random streams
-preserve CNS Random and continue across rounds/reloads; exact native random
-sequences and the learned-move planner are not reproduced. Menu bindings use the keyboard
-configuration below.
+preserve CNS Random and continue across rounds/reloads. Learned ground/air move
+models survive rounds, rematches and reloads within the application session;
+live fighters keep separate banks. Compatible optional `[Files] ai` data can
+seed learning; missing/incompatible data starts an empty model. The engine
+leaves content files untouched. Independent random streams, timed non-cheating
+plans and session-only retention are port policies; exact native random sequences
+are not reproduced. Menu bindings use the keyboard configuration below.
 
 ### Adding characters
 
@@ -463,11 +468,11 @@ whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The current ledger has 33 implemented categories and two broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
-The [scope plan](docs/ITEM-3-PLAN.md) records eight closed implementation targets
-out of nine. K9 palette mapping/reservation and U2 supported Unicode TTF/TTC
-content acceptance are closed. K8's weighted AI fallback is implemented and
-tested; its learned movement/attack/guard planner remains partial. U1, U2 and U3
-acceptance have passed; U4 AI, U5 precision and H1 physical controllers remain open.
+The [scope plan](docs/ITEM-3-PLAN.md) records all nine bounded implementation
+targets closed. K8/U4 now include live move learning, optional learned-data
+loading, session retention and the navigation/guard/counter planner alongside
+weighted fallback. U1 through U4 acceptance have passed. U5 precision and H1
+physical controllers remain open.
 TrueType text now includes negative bearings and italic overhangs when measuring
 and aligning labels. Native glyph hinting remains part of U5.
 The progress ledger shows their contracts, estimates and prerequisites; these
@@ -480,7 +485,8 @@ survival progression, training/watch, authored CMD and AI input, and storyboard
 text/sound/windows plus AIR1.1 interpolation. Full native1.1 equivalence remains
 in progress. The documented camera, sprite/shadow, alpha-composition and KO-echo
 differences are closed for the checked scenes; the progress ledger records each
-checkpoint. Broader content/rules/AI compatibility and physical CD audio remain.
+checkpoint. Arbitrary content compatibility and physical CD audio remain outside
+those bounded closures.
 
 ```bash
 game/mugen/mugen.sh --coverage --gaps   # lightweight source/feature report
