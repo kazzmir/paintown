@@ -79,6 +79,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 		RosterInput: character.GetRawInputs,
 		Language:    engine.cfg.Config.Language,
 		AICheat:     engine.cfg.Arcade.AICheat,
+		AIMemory:    &engine.aiMemory,
 		GameTime:    engine.gameTime, TicksPerSecond: int32(engine.ticksPerSecond()),
 		TeamLoseOnKO: engine.cfg.Options.TeamLoseOnKO, Team1Vs2Life: engine.cfg.Options.Team1Vs2Life,
 		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, ExplodMax: max(8, engine.cfg.Config.ExplodMax), SuperTargetDefenceMul: engine.cfg.Rules.SuperTargetDefenceMul, StageCrop: !engine.cfg.Video.StageFit, HelperMax: max(4, min(56, engine.cfg.Config.HelperMax)),

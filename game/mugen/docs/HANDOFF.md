@@ -46,8 +46,13 @@ punch startup3/active6/recovery12, air collection, hitpause exclusion, five-perc
 repeat smoothing and completed-record round retention pass the extended existing
 AI/combat journey. Linux compiles. Full segments await the coherent planner batch.
 
-Next connect learned-data loading/retention and movement/attack/guard prediction;
-collection alone does not close K8/U4. Keep independent seat streams and timed
+Optional beta learned-data loading and session retention are connected in
+character/ai_data.go and ai_memory.go. Live banks stay separate; source revisions
+and game width key the bounded session cache. Missing/incompatible files fall
+back to learning, and no generated binary cache is written. The existing journey
+checks native-format decoding and independent reload retention. Reversal windows
+also enter collection. Next connect movement/attack/guard prediction; storage and
+collection alone do not close K8/U4. Keep independent seat streams and timed
 non-cheating plans explicit. No generated records, binaries or private observations
 belong in Git. Keep the native/application runs serial and clean owned scratch at
 batch completion.

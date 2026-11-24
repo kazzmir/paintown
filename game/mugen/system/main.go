@@ -15,6 +15,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
@@ -41,6 +42,7 @@ type Engine struct {
 	demoCycles       int
 	nextCampaign     uint64
 	characterPacks   resource.CharacterPacks
+	aiMemory         character.AIMemory
 	stop             <-chan struct{}
 	focus            func() bool
 	hideFightBars    bool

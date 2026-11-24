@@ -1996,9 +1996,7 @@ func (c *Character) changeStateWithEntry(stateNo int, overrides engine.EntryOver
 	} else {
 		c.EvaluationWarning(fmt.Sprintf("state transition: state %d is missing from the state owner", stateNo))
 	}
-	if external {
-		c.aiTrial = nil
-	} else if found && c.aiCapturing && len(c.aiCommandReads) > 0 {
+	if !external && found && c.aiCapturing && len(c.aiCommandReads) > 0 {
 		context := AIEntryContext{c.StateNo, c.StateType, c.MoveType, c.Ctrl}
 		command := c.aiCommandReads[0]
 		defer func() {

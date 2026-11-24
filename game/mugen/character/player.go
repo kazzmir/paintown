@@ -23,6 +23,7 @@ type Player struct {
 	AIR        *air.Data
 	CMD        *cmd.Data
 	AIMoves    *AIMoveLibrary
+	AIRevision [32]byte
 	SND        *snd.SoundBank
 	DefPath    string
 	Definition *parsers.DefData

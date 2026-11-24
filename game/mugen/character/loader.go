@@ -2,7 +2,9 @@ package character
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -21,9 +23,10 @@ import (
 // LoadOptions supplies explicit roots for shared common-state resources.
 // An empty RootDir uses the conventional root/chars/character directory layout.
 type LoadOptions struct {
-	RootDir  string
-	MotifDir string
-	Language string
+	RootDir     string
+	MotifDir    string
+	Language    string
+	AIMoveWidth int
 }
 
 func LoadPlayer(baseDir, defFile string) (*Player, error) {
@@ -73,6 +76,8 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	// A per-load cache shares the primary CNS parse with st when both name the
 	// same file. No process-global mutable common-state cache is involved.
 	parsedCNS := make(map[string]*cns.CNS)
+	aiRevision := sha256.New()
+	aiRevision.Write(definition)
 	loadCNS := func(key string, directories ...string) (*cns.CNS, error) {
 		path, err := resolve(key, directories...)
 		if err != nil {
@@ -85,6 +90,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		if err != nil {
 			return nil, context(key, err)
 		}
+		aiRevision.Write(data)
 		parsed, err := cns.ParseNamed(bytes.NewReader(data), path, options.Language)
 		if err != nil {
 			return nil, context(key, err)
@@ -136,6 +142,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, context("cmd", err)
 	}
+	aiRevision.Write(commands)
 	commandData, err := cmd.Parse(bytes.NewReader(commands), options.Language)
 	if err != nil {
 		return nil, context("cmd", fmt.Errorf("%s: %w", cmdPath, err))
@@ -207,6 +214,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	if err != nil {
 		return nil, context("anim", err)
 	}
+	aiRevision.Write(animations)
 	p.AIR, err = air.Parse(bytes.NewReader(animations))
 	if err != nil {
 		return nil, context("anim", fmt.Errorf("%s: %w", animPath, err))
@@ -233,5 +241,32 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	p.Character.LocalCoord = local
 	p.BindPalette(p.Character, 1)
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR
+	width := options.AIMoveWidth
+	if width <= 0 {
+		width = local.Width
+	}
+	p.AIMoves = NewAIMoveLibrary(p.CMD, width)
+	if name := strings.TrimSpace(def.Files["ai"]); name != "" {
+		path, err := resource.Resolve(name, baseDir)
+		if err == nil {
+			var cache *os.File
+			cache, err = os.Open(path)
+			if err == nil {
+				var learned *AIMoveLibrary
+				learned, err = ReadAIMoves(io.TeeReader(cache, aiRevision), p.CMD, width)
+				cache.Close()
+				if err == nil {
+					p.AIMoves = learned
+				}
+			}
+		}
+		if err != nil {
+			// Native treats absent/incompatible learning as an empty model,
+			// not a failed character or a reason to bypass ordinary CNS.
+			p.Character.EvaluationWarning(context("ai", err).Error())
+		}
+	}
+	p.Character.AIMoves = p.AIMoves
+	copy(p.AIRevision[:], aiRevision.Sum(nil))
 	return p, nil
 }

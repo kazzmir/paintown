@@ -62,6 +62,7 @@ type Options struct {
 	ExplodMax                    int     // zero uses MaxEffects, then the default global pool of 256
 	DisabledPlayers              [4]bool // live debug slots; preserved by round restart/reload
 	AICheat                      bool    // admit CMD labels without simulated keys
+	AIMemory                     *character.AIMemory
 }
 
 type Phase int
@@ -124,6 +125,9 @@ func New(request Request, options Options) (*Match, error) {
 }
 
 func newMatch(request Request, options Options, cached [2][]*character.Player, resultScene bool) (*Match, error) {
+	if options.AIMemory == nil {
+		options.AIMemory = &character.AIMemory{}
+	}
 	var err error
 	request, err = normalizeTeams(request)
 	if err != nil {
@@ -229,10 +233,13 @@ func newMatch(request Request, options Options, cached [2][]*character.Player, r
 				player = &character.Player{Character: character.NewCharacter(p.Character.StateFile, p.AIR, p.CMD), SFF: p.SFF, AIR: p.AIR, CMD: p.CMD, SND: p.SND,
 					DefPath: p.DefPath, Definition: p.Definition, LocalCoord: p.LocalCoord, Dir: p.Dir}
 			} else {
-				player, err = character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir, Language: options.Language})
+				player, err = character.LoadPlayerWithOptions(filepath.Dir(selected.DefPath), filepath.Base(selected.DefPath), character.LoadOptions{RootDir: options.RootDir, MotifDir: options.MotifDir, Language: options.Language, AIMoveWidth: options.GameSpace.Width})
 			}
 			if err != nil {
 				return nil, fmt.Errorf("team %d member %d: %w", side+1, index+1, err)
+			}
+			if !resultScene {
+				player.AIMoves = options.AIMemory.Bind(player.DefPath, player.AIRevision, player.AIMoves)
 			}
 			player.BindPalette(player.Character, selected.Palette)
 			team.Members = append(team.Members, player)

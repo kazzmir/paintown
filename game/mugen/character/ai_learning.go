@@ -96,6 +96,7 @@ type AIMove struct {
 	Damage                AIStatistic
 	HitFlag, GuardFlag    string
 	Attribute             string
+	ReversalAttribute     string
 }
 
 // AIMoveLibrary belongs to one roster entry, surviving fresh round actors.
@@ -108,6 +109,7 @@ type AIMoveLibrary struct {
 	Poses                 [4]AIBounds // common stand, walk, crouch and air hurtboxes
 	indices               map[string]int
 	groundOrder, airOrder []*AIMove
+	onComplete            func(AIMove)
 }
 
 func NewAIMoveLibrary(commands *cmd.Data, width int) *AIMoveLibrary {
@@ -143,6 +145,9 @@ func (l *AIMoveLibrary) Moves(stateType string) []*AIMove {
 }
 
 func (l *AIMoveLibrary) complete(next AIMove) {
+	if l.onComplete != nil {
+		l.onComplete(next)
+	}
 	bank := l.Ground
 	if next.StateType == "A" {
 		bank = l.Air
@@ -171,6 +176,9 @@ func (l *AIMoveLibrary) complete(next AIMove) {
 		}
 		if previous.GuardFlag != next.GuardFlag {
 			previous.GuardFlag = ""
+		}
+		if previous.ReversalAttribute != next.ReversalAttribute {
+			previous.ReversalAttribute = ""
 		}
 		return
 	}
@@ -271,10 +279,12 @@ func (c *Character) observeAIMove() {
 	}
 	x := int((c.X*c.aiScale() - float64(t.x)) * float64(t.facing))
 	y := int(c.Y*c.aiScale() - float64(t.y))
-	if c.MoveGuarded > 0 {
-		t.outcome = 1
-	} else if c.MoveHit > 0 {
-		t.outcome = 2
+	if t.outcome == 0 {
+		if c.MoveGuarded > 0 {
+			t.outcome = 1
+		} else if c.MoveHit > 0 {
+			t.outcome = 2
+		}
 	}
 	if t.active && c.Ctrl && !t.move.Control[t.outcome].Time.Valid {
 		t.move.Control[t.outcome].set(t.ticks, x, y)
@@ -295,26 +305,29 @@ func (c *Character) observeAIMove() {
 		c.aiBoxes(frame.Clsn1, float64(t.x), float64(t.y), t.facing, &t.move.Attack)
 		c.aiBoxes(frame.Clsn2, float64(t.x), float64(t.y), t.facing, &t.move.Body)
 	}
-	active := c.HitDefActive && frame != nil && len(frame.Clsn1) > 0
+	active := (c.HitDefActive || c.reversal != nil && !c.reversal.mask.Empty()) && frame != nil && len(frame.Clsn1) > 0
 	projectile := t.projectile != nil && !t.projectile.destroyed && !t.projectile.projectile.removing
 	if active || projectile {
+		wasActive := t.active
 		if !t.active {
 			t.move.Startup.set(t.ticks, x, y)
 			t.active = true
 		}
 		t.move.Active[t.outcome].set(t.ticks, x, y)
-		if c.HitDefActive && c.aiHitDefinition != t.lastDefinition {
+		if wasActive && c.HitDefActive && c.aiHitDefinition != t.lastDefinition {
 			t.lastDefinition = c.aiHitDefinition
 			if len(c.CurrentHitDef.Damage) > 0 {
 				t.damage += c.CurrentHitDef.Damage[0]
 			}
 		}
-		if active {
-			t.move.HitFlag, t.move.GuardFlag, t.move.Attribute = c.CurrentHitDef.HitFlag, c.CurrentHitDef.GuardFlag, c.CurrentHitDef.Attr
+		if active && !wasActive {
+			hit := c.CurrentHitDef
+			if c.reversal != nil && !c.reversal.mask.Empty() {
+				hit = c.reversal.hit
+				t.move.ReversalAttribute = c.reversal.mask.String()
+			}
+			t.move.HitFlag, t.move.GuardFlag, t.move.Attribute = hit.HitFlag, hit.GuardFlag, hit.Attr
 		}
-	}
-	if t.active && c.Ctrl && !t.move.Control[t.outcome].Time.Valid {
-		t.move.Control[t.outcome].set(t.ticks, x, y)
 	}
 	t.ticks++
 }

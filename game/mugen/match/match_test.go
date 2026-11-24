@@ -2,7 +2,9 @@ package match
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
+	"math"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -249,6 +251,9 @@ command=c
 	if freshBrain.random == stream || freshBrain.random.Next() != stream.Next() || len(freshBrain.snapshot()) != 0 || len(freshBrain.admitted) != 0 {
 		t.Fatal("reload restarted AI randomness, shared the old stream or retained input")
 	}
+	if fresh.Players[0].Character.AIMoves == c.AIMoves || fresh.Players[0].Character.AIMoves.Ground[200] == nil || fresh.Players[0].Character.AIMoves.Air[600] == nil {
+		t.Fatal("reload lost learned data or shared live actor banks")
+	}
 }
 
 // The same human CMD/CNS episode feeds later CPU decisions. Match the target's
@@ -302,6 +307,33 @@ func aiLearningContextFlow(t *testing.T, m *Match) {
 	}
 	if move.End[2].Time.Mean != 12 || move.Startup.Time.Mean != 3 || move.Damage.Mean != float32(1.15) || move.Damage.Max != 23 || !move.End[0].Time.Valid {
 		t.Fatal("hitpause or repeat sampling corrupted outcome timing/statistics", move)
+	}
+	// A small cache uses the observed beta record layout and the same punch
+	// metadata. Keep it in memory rather than checking in a binary fixture.
+	cache := make([]byte, 64+4+1204+4+256)
+	copy(cache, "ElecbyteAIB")
+	put := func(offset int, value uint32) { binary.LittleEndian.PutUint32(cache[offset:], value) }
+	put(12, 0x100)
+	put(16, 2013|8<<16|11<<24)
+	put(64, 1)
+	record := 68
+	for offset, value := range map[int]uint32{4: 1, 12: 1, 512: 1, 516: 200, 520: 1, 524: 27, 528: math.MaxUint32, 884: 62, 888: 30, 892: 9} {
+		put(record+offset, value)
+	}
+	for offset, value := range map[int]int{564: 3, 612: 6, 916: 12, 1060: 12} {
+		put(record+offset, math.Float32bits(float32(value)))
+		put(record+offset+4, uint32(value))
+		put(record+offset+8, uint32(value))
+	}
+	for index, value := range []float32{64, -320, 244, -284, -40, -376, 244, 0} {
+		put(record+756+index*16, math.Float32bits(value))
+	}
+	for pose := 0; pose < 4; pose++ {
+		put(record+1204+4+pose*64, math.Float32bits(-math.MaxFloat32))
+	}
+	loaded, err := character.ReadAIMoves(bytes.NewReader(cache), c.CmdFile, c.AIMoves.Width)
+	if err != nil || loaded.Ground[200] == nil || loaded.Ground[200].CommandIndex != move.CommandIndex || loaded.Ground[200].Startup.Time != move.Startup.Time || loaded.Ground[200].Attack != move.Attack || loaded.Ground[200].Attribute != "S,NA" {
+		t.Fatal("native learned cache did not restore the live move contract", err, loaded)
 	}
 }
 
