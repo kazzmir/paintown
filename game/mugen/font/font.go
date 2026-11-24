@@ -55,6 +55,9 @@ type Font struct {
 	ttf        *trueTypeFont
 	// Fallback records an explicit substitution when a Windows font is absent.
 	Fallback string
+	// Rasterizer identifies the TrueType backend; a portable outline fallback
+	// remains usable when compatible native hinting is unavailable.
+	Rasterizer, RasterizerFallback string
 }
 
 type Glyph struct {

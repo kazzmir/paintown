@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "K1/K2 results, K3 command admission, K5/K6 Options/Training, K7 overlapping runtime ordering and K8/U4 learned AI are closed for their named behavior and acceptance. U5 retains native glyph-hinting/precision uncertainty. Calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
+      "gap": "K1/K2 results, K3 command admission, K5/K6 Options/Training, K7 runtime ordering, K8/U4 learned AI and K10 compatible TrueType metrics/raster consumers are closed for their named contracts. U5 now awaits explicit acceptance of small version-dependent glyph-edge differences; exact shared-scene metrics and placement pass. Earlier camera, sprite/shadow, alpha and KO-echo calibrations remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -788,7 +788,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "eaa34da0e91f054b9351613eadccf5755c205b38b96290ec5eb41ebba57fe419"
+      "passed_source": "6c64bc4557de753ce49acd7c17e01617e406f0aa2eeefe85c80df1bf52240116"
     }
   ],
   "presentation_followups": [
@@ -1436,6 +1436,28 @@
           "system/team_flow_test.go",
           "system/asset_flow_test.go"
         ]
+      },
+      {
+        "id": "K10",
+        "parent": "raster-audio",
+        "name": "Compatible TrueType automatic hinting and solid glyphs",
+        "implementation": "implemented",
+        "acceptance": "passed",
+        "size": "medium",
+        "confidence": "high",
+        "contract": "Connect compatible automatic-hinted glyph metrics and grayscale/monochrome rasterization to the existing TrueType text/layout consumer on Linux, with explicit portable fallback and bounded native resource ownership. Preserve bitmap fonts, font substitution, Unicode/TTC loading and authored height overrides.",
+        "basis": "Direct reference font-library operation identifies its legacy unpatented engine and ordinary-font automatic-hinting path. Forcing automatic hinting in modern FreeType matches every measured glyph metric and complete text width in the existing shared regular/italic Unicode scene. Default bytecode hinting and unhinted outlines do not. The reference uses a real monochrome rasterizer for Blend=0 rather than thresholding its grayscale image. Antialiasing coverage still has version-dependent differences.",
+        "prerequisite": "Resolved for the Linux automatic-hinting/metric and grayscale/monochrome consumer with explicit portable fallback. Native-resource ownership, the existing connected asset lifecycle and final application comparison pass. Residual cross-version edge coverage remains the separate U5 acceptance question; no nonzero tolerance is assumed.",
+        "completion": "The optional Linux FreeType backend uses automatic hinting for ordinary TrueType faces, real monochrome masks for Blend=0 and bitmap bearings for trimmed borders. Memory faces borrow pinned Go bytes, use per-face synchronization and release native resources with their owner. Other platforms or unavailable libraries retain the reported Go outline fallback. The shared native/Go scene has matching glyph metrics, widths, baselines and all ten text-block bounds. The affected match-flow asset/menu/fight/reload segment passes with race detection; four unchanged segments remain checked. Font go vet, final Linux build, normal-match smoke and final shared-scene capture pass. No new Go dependency, FreeType build headers, binary fixture or user configuration is introduced. U5 stays open for the measured remaining rasterizer-version edge differences.",
+        "sources": [
+          "font/truetype.go",
+          "font/font.go",
+          "font/v2.go",
+          "system/asset_flow_test.go",
+          "docs/BUILD.md",
+          "font/truetype_freetype_linux.go",
+          "font/truetype_freetype_stub.go"
+        ]
       }
     ],
     "acceptance": [
@@ -1517,8 +1539,8 @@
         "id": "U5",
         "name": "Additional raster/device-audio precision",
         "status": "unverified",
-        "completion": "Whole-text TrueType layout is corrected: include negative bearings and final overhangs, pad the surface at its left edge, truncate after centering and include the final pixel at a right anchor. The shared target text surface/capture confirms these rules; the existing timed storyboard asset lifecycle checks italic/Unicode extents and aligned/clipped placement. Affected match-flow acceptance passes with race detection; unchanged segments remain checked. The Linux build, shared-font window inspection and stock-match application smoke pass; owned scratch is removed. Glyph hinting remains unresolved, so this does not close U5 or claim whole-font pixel equivalence. Keep earlier camera, sprite/shadow, alpha and ordinary KO-echo findings closed.",
-        "prerequisite": "The shared openly licensed 24-pixel font scene still isolates hinted glyph-edge/baseline and advance differences. The Go outline renderer rounds advance metrics but does not execute TrueType glyph hint instructions; the system FreeType comparison also differs from the target raster. Resolve a compatible hinting path or an explicitly accepted raster/metric tolerance before claiming closure; do not apply per-glyph or baseline offsets to hide the discrepancy.",
+        "completion": "K10 now closes compatible automatic-hinted metrics and real solid-glyph rendering on Linux. The shared regular/italic Unicode scene matches all ten text-block bounds and placement, alongside negative bearings, overhangs and baseline/advance checks in the existing asset lifecycle. Affected connected acceptance passes with races; font go vet, Linux build, normal-match smoke and shared native/Go application captures pass. Remaining differences are rasterizer-version edge coverage: blended mean absolute error 0.687/255 over ink pixels, with an isolated maximum 127; solid masks differ at 23 of 3106 ink pixels. All differences lie within two pixels of the reference silhouette. These measurements describe one bounded scene, not an accepted universal tolerance. U5 remains unverified until the user accepts the demonstrated rendering or requests strict legacy-raster reproduction. Earlier camera/sprite/alpha/KO-echo findings stay closed.",
+        "prerequisite": "User review chooses whether to accept the demonstrated modern/legacy edge differences. Exact glyph metrics, text placement and the compatible production backend are implemented and validated; no nonzero pixel tolerance is silently assumed. The portable outline fallback and unavailable licensed/CJK payloads do not inherit this Linux precision acceptance.",
         "sources": [
           "font/font.go",
           "font/truetype.go",
@@ -1528,7 +1550,9 @@
           "render/shadow.go",
           "system/fight_state.go",
           "sound/mixer.go",
-          "character/ko_sound.go"
+          "character/ko_sound.go",
+          "font/truetype_freetype_linux.go",
+          "font/truetype_freetype_stub.go"
         ]
       },
       {
@@ -1567,7 +1591,7 @@
       {
         "id": "A2",
         "name": "Assets, fonts and media",
-        "finding": "Supported format families have connected functional acceptance. U2 now passes a licensed Unicode TTF/TTC localized scene/menu/fight/reload lifecycle; its native comparison exposed K9 character palette mapping/reservation, now implemented and accepted. Missing licensed/CJK payloads and physical CD remain deferred; native-reproducing script defects are not engine gaps. U5 whole-text bearing/overhang/alignment rules are corrected and accepted in the existing asset lifecycle; native glyph hinting, including advance and baseline precision, remains open.",
+        "finding": "Supported format families have connected functional acceptance under U2, including Unicode TTF/TTC through localized scenes, menus, gameplay and reload. K9 closes palette mapping/reservation. U5 establishes K10, now connecting automatic-hinted metrics and real solid rendering with explicit portable fallback. Shared-scene metrics and placement match; residual rasterizer-version edge differences require explicit U5 review. Missing licensed/CJK payloads and physical CD remain deferred.",
         "targets": [
           "K9"
         ],
@@ -1594,10 +1618,11 @@
       {
         "id": "A3",
         "name": "Rendering and audio",
-        "finding": "Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed.",
+        "finding": "Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed. K10 closes the compatible TrueType backend; U5 now awaits acceptance of measured cross-version glyph-edge differences.",
         "targets": [
           "K1",
-          "K2"
+          "K2",
+          "K10"
         ],
         "acceptance": [
           "U5"
@@ -1674,7 +1699,9 @@
       "U5 precision refinement: direct target text-library surfaces establish complete text extents, negative-bearing padding, centered truncation and inclusive right anchors. Those layout rules are corrected within the existing followup, without adding an implementation target. Compatible TrueType hinting remains unresolved; modern system FreeType alone does not reproduce the target raster. Prior format/content acceptance and camera/sprite/audio calibrations remain closed.",
       "K8 command-index prerequisite resolved: direct loaded-table inspection confirms first-declaration indices for ordinary labels, alternative reuse, reserved recovery index zero and an unmapped declaration slot. AI now samples that indexed namespace and ignores unmapped selections. This is a correction within K8, not another target or closure of learned move planning.",
       "K8 collection checkpoint: successful command queries are attributed within each controller to actual state transitions, then live actor episodes populate bounded ground/air move banks. Direct target observation corrects the timing-group interpretation from poses to whiff/guard/hit outcomes. Collection timing/geometry, hitpause exclusion, smoothing and round retention pass the existing connected AI/combat journey. Learned-data loading and planner consumers remain open within K8; full segment validation waits for that coherent batch.",
-      "K8/U4 closure: live command-attributed ground/air learning, bounded beta cache loading, independent revision/language/game-width session banks and learned navigation/guard/counter consumers now pass the existing connected lifecycle. Direct target observation reaches all five contexts. Physical/admitted counters and walk/jump completion, affected race-checked segments and live Linux two-CPU combat pass. Independent random streams, timed non-cheating plans and session-only storage remain explicit port policies. K1-K9 are closed; U5 precision and H1 hardware remain open."
+      "K8/U4 closure: live command-attributed ground/air learning, bounded beta cache loading, independent revision/language/game-width session banks and learned navigation/guard/counter consumers now pass the existing connected lifecycle. Direct target observation reaches all five contexts. Physical/admitted counters and walk/jump completion, affected race-checked segments and live Linux two-CPU combat pass. Independent random streams, timed non-cheating plans and session-only storage remain explicit port policies. K1-K9 are closed; U5 precision and H1 hardware remain open.",
+      "U5 reference refinement establishes K10: direct font-library operation identifies legacy automatic hinting for ordinary fonts. Modern forced automatic hinting matches all measured shared-scene glyph metrics and widths; the previous bytecode-hinting assumption was incorrect. Blend=0 also needs actual monochrome rasterization. This adds one confirmed implementation target within U5; residual version-dependent antialiasing remains an acceptance question, with no tolerance assumed.",
+      "K10 implementation closure: optional Linux automatic hinting and true monochrome rendering now match shared-scene metrics/placement and pass the existing asset/menu/fight/reload lifecycle with races, font vet and Linux application inspection. U5 remains open solely for explicit acceptance of measured version-dependent edge coverage. No binary payload or new Go module dependency is added."
     ]
   }
 }

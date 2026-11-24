@@ -44,12 +44,27 @@ font's glyph coverage or metrics. Supply an appropriately licensed font for
 content requiring it; the fallback does not provide complete CJK coverage.
 No proprietary font payloads are included in the repository.
 
-TrueType text measures the whole surface, including negative bearings and
-italic overhangs. Centering truncates after alignment; right anchors include the
-last surface pixel. Bitmap fonts retain their own placement rules. The current
-Go rasterizer does not execute TrueType glyph hint instructions, so native
-glyph edges, baselines and hinted advances can still differ. U5 tracks that
-precision gap separately from supported font loading and text layout.
+On Linux amd64/arm64, the engine dynamically loads `libfreetype.so.6` for
+compatible TrueType metrics and rasterization. FreeType development headers and
+additional Go modules are unnecessary. Ordinary TrueType faces use automatic
+hinting, matching the reference's legacy path; solid fonts use real monochrome
+rendering. Bitmap bearings preserve placement when modern rasterizers trim
+empty borders. Font bytes stay pinned while borrowed by native faces, whose
+resources are released with the owning Go face.
+
+If the library/backend is unavailable, the existing portable Go outline renderer
+remains usable. A contextual diagnostic reports that fallback; `Font.Rasterizer`
+and `RasterizerFallback` expose it to callers separately from font substitution.
+That path does not establish native metric/raster precision.
+
+TrueType text still measures the complete surface, including negative bearings
+and italic overhangs. Centering truncates after alignment; right anchors include
+the last surface pixel. Bitmap font placement is unchanged. The shared native/Go
+scene now has identical text extents and placement. Small rasterizer-version
+edge differences remain under U5 pending explicit acceptance. See the
+[FreeType load and rendering API](https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html)
+and [reference-era SDL_ttf implementation](https://github.com/libsdl-org/SDL_ttf/blob/release-2.0.9/SDL_ttf.c)
+for the backend contracts.
 
 ## AI move models
 

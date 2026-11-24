@@ -41,9 +41,13 @@ same input selected different outfits. K9 now closes authored keymaps, held
 Start, available-outfit reservation and palette ownership through fight/reload.
 The supported font/content functional category is accepted. U5 now corrects
 whole-text bearings, overhangs and alignment through the existing asset journey.
-Native glyph hinting still changes edges, baselines and advances; it remains a
-named precision gap. This does not reopen format loading or earlier
-camera/sprite/audio calibrations.
+Its reference comparison established K10: ordinary fonts use legacy automatic
+hinting, and Blend=0 uses real monochrome rendering. The optional Linux backend
+now connects those consumers with bounded native ownership and explicit portable
+fallback. K1-K10 are implemented and accepted for their named contracts. Shared
+font metrics and placement match; small rasterizer-version edge differences
+remain U5's explicit acceptance decision. This does not reopen format loading
+or earlier camera/sprite/audio calibrations.
 
 ## Assessment method and limits
 
@@ -77,7 +81,7 @@ questions forward instead of expanding the assessment indefinitely.
 
 ## Implementation contracts
 
-K1–K9 contracts, sources, prerequisites, estimates and completion conditions are
+K1–K10 contracts, sources, prerequisites, estimates and completion conditions are
 recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
 Confidence describes the effort estimate. Result and AI-admission contracts are
 resolved for their scoped implementations. Joystick translation uses target
@@ -91,7 +95,7 @@ expiry during global Pause through the connected turn/recovery/reset path.
 ## Bounded review areas
 
 These are reviewed boundaries, not five equal units of remaining effort. The
-ledger records their findings and allocations to K1–K9 and U1–U5/H1. The two
+ledger records their findings and allocations to K1–K10 and U1–U5/H1. The two
 parent categories stay partial until their scoped requirements and acceptance
 have been resolved.
 

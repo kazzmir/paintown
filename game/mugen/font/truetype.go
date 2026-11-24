@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
@@ -50,9 +51,15 @@ func loadTrueType(defPath, name string, f *Font, blend bool) (*Font, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: TrueType face: %w", defPath, err)
 	}
-	face, err := opentype.NewFace(parsed, &opentype.FaceOptions{Size: float64(f.Height), DPI: 72, Hinting: font.HintingFull})
+	face, err := newHintedFace(data, f.Height, blend)
+	f.Rasterizer = "freetype-autohint"
 	if err != nil {
-		return nil, fmt.Errorf("%s: TrueType rasterizer: %w", defPath, err)
+		f.Rasterizer, f.RasterizerFallback = "opentype-outline", err.Error()
+		logger.LogUnresolved(fmt.Sprintf("font %s: %s; using portable outline rasterizer", defPath, err))
+		face, err = opentype.NewFace(parsed, &opentype.FaceOptions{Size: float64(f.Height), DPI: 72, Hinting: font.HintingFull})
+		if err != nil {
+			return nil, fmt.Errorf("%s: TrueType rasterizer: %w", defPath, err)
+		}
 	}
 	f.ttf = &trueTypeFont{face: face, blend: blend, glyphs: make(map[rune]*Glyph)}
 	return f, nil

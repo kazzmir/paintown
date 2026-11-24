@@ -5,7 +5,7 @@ work, external assets and user YAML. Local source/text checkpoints are authorize
 no pushes, binaries, fixture banks, subagents or goals. Keep documentation portable.
 [PROGRESS.md](PROGRESS.md) is the single completion ledger.
 
-K1-K9 are closed for the bounded implementation scope. U1 runtime, U2 supported
+K1-K10 are closed for the bounded implementation scope. U1 runtime, U2 supported
 font/content, U3 Options/Training and U4 AI acceptance pass. The ledger retains
 33 implemented categories and two broad partial ones; those counts are not
 whole-engine equivalence percentages. U5 precision and H1 hardware remain open.
@@ -43,12 +43,22 @@ user configuration are committed.
 
 ## Remaining work
 
-U5 whole-text TrueType layout is corrected: negative-bearing padding, final
-overhangs, center-before-truncation and inclusive right anchors. Native glyph
-hinting still changes edges, advances and baselines. Resolve a compatible hinting
-path or an explicitly accepted raster/metric tolerance; do not hide it with
-per-glyph offsets. Preserve prior camera/sprite/alpha/KO-echo calibrations. U2
-supported Unicode TTF/TTC loading and K9 palette mapping/reservation stay closed.
+K10 connects Linux FreeType automatic hinting and true monochrome masks through
+the existing font consumer. Bitmap bearings preserve trimmed-border placement;
+native faces borrow pinned bytes and have per-face synchronization/cleanup. An
+unavailable backend reports the portable outline fallback. No new Go dependency
+or FreeType development headers are needed. See BUILD.md for runtime details.
+
+U5 now needs only a precision decision. Shared native/Go regular/italic Unicode
+captures have identical metrics and all ten text-block bounds/positions. Blended
+coverage has mean absolute ink error 0.687/255 (isolated maximum 127); solid masks
+differ at 23 of 3106 ink pixels. Differences lie within two pixels of the reference
+silhouette. The existing asset/menu/fight/reload segment passes with races, font
+vet is clean, and the final Linux build reproduces the shared capture exactly.
+Normal-match smoke passes. The comparison is provided for user review; no
+nonzero tolerance or U5 closure is assumed. Strict legacy-raster reproduction
+would be additional work if requested. Keep earlier layout, camera/sprite/alpha/
+KO-echo, U2 format acceptance and K9 palette mapping/reservation closed.
 
 H1 requires physical Linux controller exercise through menus, selection, combat
 and reconnect. Physical CD, unavailable licensed/CJK payloads, other-platform

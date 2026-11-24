@@ -24,6 +24,10 @@ their owner, using each attack’s current position and guard range.
 - A graphical desktop with working OpenGL and audio. Linux builds need a C
   toolchain, `pkg-config`, ALSA development files and X11 development libraries
   (X11, Xrandr, Xxf86vm, Xi, Xcursor and Xinerama).
+- Linux amd64/arm64 can use the optional FreeType runtime (`libfreetype.so.6`)
+  for compatible TrueType automatic hinting and monochrome rendering. No
+  FreeType development headers are needed. An unavailable backend reports
+  a portable outline fallback; see [font notes](docs/BUILD.md#fonts).
 - Separately obtained compatible game data containing `data/mugen.cfg`, `chars/`,
   `stages/`, `font/` and its other referenced resources. Content is not included
   with the engine. Stock integration scenarios also require external reference
@@ -468,13 +472,16 @@ whole port: state machine, controllers, combat, match flow, modes, assets, audio
 and platforms. It shows completed scenarios and concrete partial/missing work.
 The current ledger has 33 implemented categories and two broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
-The [scope plan](docs/ITEM-3-PLAN.md) records all nine bounded implementation
-targets closed. K8/U4 now include live move learning, optional learned-data
+The [scope plan](docs/ITEM-3-PLAN.md) records ten bounded implementation targets
+closed. U5's reference comparison established K10, now connecting compatible
+TrueType automatic hinting, metrics and solid rendering. K8/U4 include live move learning, optional learned-data
 loading, session retention and the navigation/guard/counter planner alongside
 weighted fallback. U1 through U4 acceptance have passed. U5 precision and H1
 physical controllers remain open.
-TrueType text now includes negative bearings and italic overhangs when measuring
-and aligning labels. Native glyph hinting remains part of U5.
+TrueType text includes negative bearings and italic overhangs when measuring
+and aligning labels. The shared reference/Go font scene has matching widths,
+baselines and placement; small version-dependent edge differences remain U5's
+acceptance question.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,

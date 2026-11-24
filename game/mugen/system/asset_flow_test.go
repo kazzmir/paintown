@@ -296,6 +296,11 @@ Interpolate Blend
 	if f := story.Fonts[4]; f.TextWidth("jA") != 24 || f.TextWidth("jV") != 28 || f.TextWidth("AVATAR WAgy") != 172 || f.TextWidth("café Á Ω Ж") != 125 || f.TextWidth("") != 0 {
 		t.Fatal("TrueType surface lost bearings/overhangs or Unicode extents")
 	}
+	if f := story.Fonts[5]; f.Rasterizer == "freetype-autohint" {
+		if f.TextWidth("AVATAR WAgy") != 168 || f.TextWidth("café Á Ω Ж") != 122 || f.Glyph('A', 0).OffsetY != 7 || f.Glyph('j', 0).Width != 6 {
+			t.Fatal("reference automatic hinting did not reach metrics and baseline")
+		}
+	}
 	legacy := story.Fonts[3]
 	if legacy == nil || legacy.TextWidth("A\";") != 8 || legacy.Glyph('"', 0) == nil || legacy.Glyph(';', 0) == nil {
 		t.Fatal("legacy commented metadata, variable widths or map characters were lost")
@@ -442,23 +447,31 @@ Interpolate Blend
 			pixels := make([]byte, 320*240*4)
 			layout.ReadPixels(pixels)
 			layout.Deallocate()
-			for _, row := range []struct{ top, bottom, left, right int }{
+			rows := []struct{ top, bottom, left, right int }{
 				{20, 55, 26, 50},     // negative italic bearing padded at the anchor
 				{55, 90, 66, 238},    // centered complete italic extent
 				{90, 130, 265, 293},  // inclusive right anchor and final overhang
 				{130, 170, 12, 36},   // odd width, negative origin and clipping
 				{175, 205, 140, 156}, // odd width at a positive center
-			} {
-				left, right := 320, 0
+			}
+			for index, row := range rows {
+				left, right, top, bottom := 320, 0, 240, 0
 				for y := row.top; y < row.bottom; y++ {
 					for x := 0; x < 320; x++ {
 						if pixels[(y*320+x)*4] > 0 {
 							left, right = min(left, x), max(right, x+1)
+							top, bottom = min(top, y), max(bottom, y+1)
 						}
 					}
 				}
 				if left != row.left || right != row.right {
 					t.Fatalf("story text row %d..%d has x=%d..%d, want %d..%d", row.top, row.bottom, left, right, row.left, row.right)
+				}
+				if story.Fonts[5].Rasterizer == "freetype-autohint" {
+					bounds := [][2]int{{31, 53}, {66, 88}, {101, 123}, {145, 163}, {181, 198}}
+					if top != bounds[index][0] || bottom != bounds[index][1] {
+						t.Fatalf("story text row %d has y=%d..%d, want %v", index, top, bottom, bounds[index])
+					}
 				}
 			}
 		}
