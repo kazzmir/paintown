@@ -385,6 +385,7 @@ ctrl=1
 		}
 		program += "[State helper retirement]\ntype=DestroySelf\ntrigger1=Time=25\n"
 	}
+	program += pauseContactBindingProgram()
 	for _, p := range m.Players {
 		file, err := cns.ParseNamed(strings.NewReader(program), "connected-helper-pause-bind.cns")
 		if err != nil {
@@ -546,6 +547,7 @@ ctrl=1
 	if root.StateNo != 740 || !root.Ctrl || root.HasTargets(-1) || target.StateNo != 0 {
 		t.Fatal("target state release did not complete", root.StateNo, target.StateNo)
 	}
+	pauseContactBindingFlow(t, m)
 	m.Round++
 	if err := m.resetRound(); err != nil {
 		t.Fatal(err)
@@ -884,4 +886,186 @@ func borrowedEffectRecoveryFlow(t *testing.T, m *Match) {
 	if explod == nil || paused < 2 || !recovered || !helperRecovered || explod.Visual.Active || len(receiver.Explods) != 0 || receiver.IntVars[56] != 0 {
 		t.Fatal("borrowed effect/pause/recovery/retirement incomplete", explod != nil, paused, recovered, len(receiver.Explods), receiver.IntVars[56])
 	}
+}
+
+// Continue the entity path through a contact destination entered during hitpause,
+// a longer global Pause, anchor turn, finite binding, TargetDrop and SelfState.
+// The compact observations come from one target episode, not parameter cases.
+func pauseContactBindingFlow(t *testing.T, m *Match) {
+	t.Helper()
+	owner, victim := m.Players[0].Character, m.Players[1].Character
+	owner.IntVars, victim.IntVars = [60]int{}, [60]int{}
+	owner.X, owner.Y, owner.Facing = 0, 0, 1
+	victim.X, victim.Y, victim.Facing = 20*float64(victim.LocalCoordinateWidth())/320, 0, -1
+	victim.SelfState(901, 0, -1)
+	owner.ChangeState(900, 0, -1)
+	overlapped, turned := false, false
+	for tick := 0; tick < 100; tick++ {
+		if err := m.Update(); err != nil {
+			t.Fatal(err)
+		}
+		if m.Timeline.Paused() && owner.HitPauseTime > 0 {
+			overlapped = true
+			turned = turned || owner.Facing == -1
+		}
+		if owner.StateNo == 904 && victim.StateNo == 904 {
+			break
+		}
+	}
+	// Each row is owner Time/hitpause, victim Time/velocity, world separation,
+	// owner facing and victim GetHitVar(isbound), sampled in that CNS order.
+	rows := [][7]int{
+		{0, 8, 0, 0, 20, 1, 0}, {0, 5, 2, 0, 30, -1, 1}, {0, 2, 2, 0, -30, -1, 1},
+		{1, 0, 2, 0, -28, -1, 1}, {4, 0, 2, 0, -22, -1, 1}, {10, 0, 3, 0, -10, -1, 0},
+	}
+	for phase, row := range rows {
+		for field, want := range row {
+			if got := owner.GetVar(1 + phase*7 + field); got != want {
+				t.Fatalf("native overlapping pause phase %d field %d: got %d want %d", phase, field, got, want)
+			}
+		}
+	}
+	// The first group observes release/recovery and elapsed world time. The
+	// second keeps entry velocity/animation pending, then separates a moving
+	// anchor from the frozen victim's pose in base-coordinate units.
+	for index, want := range []int{902, 904, 1, 0, -1, 22, 0, 9991, 0, 0, -2, 2, -30, -8, 2, -30} {
+		if got := owner.GetVar(43 + index); got != want {
+			t.Fatalf("native contact entry/recovery slot %d: got %d want %d", index, got, want)
+		}
+	}
+	state, _ := victim.ResolveState(904)
+	if !overlapped || !turned || owner.StateNo != 904 || victim.StateNo != 904 || !owner.Ctrl || !victim.Ctrl || owner.HasTargets(-1) || state != victim.StateFile.States[904] || m.Timeline.Paused() {
+		t.Fatal("overlapping pause/binding lifecycle did not release into own controlled states")
+	}
+}
+
+func pauseContactBindingProgram() string {
+	program := `[Statedef 900]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+velset=0,0
+[State 900, grab]
+type=HitDef
+trigger1=Time=0
+attr=S,NT
+hitflag=MAF
+damage=0,0
+pausetime=8,2
+getpower=0,0
+givepower=0,0
+ground.type=High
+ground.hittime=1000
+ground.velocity=0,0
+sparkno=-1
+guard.sparkno=-1
+hitsound=-1
+guardsound=-1
+p1stateno=902
+p2stateno=903
+id=1234
+[Statedef 901]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+velset=0,0
+[State 901, wait]
+type=Null
+trigger1=1
+[Statedef 902]
+type=S
+movetype=A
+physics=N
+anim=9990
+ctrl=0
+velset=Const240p(2),0
+[State 902, initial clock]
+type=VarSet
+trigger1=Var(0)=0
+ignorehitpause=1
+v=59
+value=GameTime
+[State 902, bind]
+type=TargetBind
+trigger1=Var(0)=0
+ignorehitpause=1
+time=6
+pos=Const240p(30),0
+[State 902, overlapping pause]
+type=Pause
+trigger1=Var(0)=1
+ignorehitpause=1
+time=12
+movetime=4
+pausebg=1
+[State 902, turn bound anchor]
+type=Turn
+trigger1=Var(0)=3
+ignorehitpause=1
+[State 902, release targets]
+type=TargetDrop
+trigger1=Var(0)=13
+ignorehitpause=1
+`
+	fields := []string{"Time", "HitPauseTime", "EnemyNear,Time", "(EnemyNear,Vel X)/(EnemyNear,Const240p(1))", "P2Dist X*Facing/Const240p(1)", "Facing", "EnemyNear,GetHitVar(isbound)"}
+	record := func(frame, slot int, expression string) {
+		program += fmt.Sprintf("[State 902, observation]\ntype=VarSet\ntrigger1=Var(0)=%d\nignorehitpause=1\nv=%d\nvalue=%s\n", frame, slot, expression)
+	}
+	for phase, frame := range []int{0, 3, 6, 9, 12, 18} {
+		for index, expression := range fields {
+			record(frame, 1+phase*7+index, expression)
+		}
+	}
+	for index, expression := range []string{"StateNo", "EnemyNear,StateNo", "EnemyNear,Ctrl", "NumTarget", "EnemyNear,Facing", "GameTime-Var(59)"} {
+		record(20, 43+index, expression)
+	}
+	for index, sample := range []struct {
+		frame      int
+		expression string
+	}{
+		{0, "Vel X/Const240p(1)"}, {0, "Anim"}, {3, "Vel X/Const240p(1)"}, {6, "Vel X/Const240p(1)"},
+		{9, "Pos X/Const240p(1)"}, {9, "Vel X/Const240p(1)"}, {9, "(EnemyNear,Pos X)/(EnemyNear,Const240p(1))"},
+		{12, "Pos X/Const240p(1)"}, {12, "Vel X/Const240p(1)"}, {12, "(EnemyNear,Pos X)/(EnemyNear,Const240p(1))"},
+	} {
+		record(sample.frame, 49+index, sample.expression)
+	}
+	return program + `[State 902, elapsed]
+type=VarAdd
+trigger1=1
+ignorehitpause=1
+v=0
+value=1
+[State 902, recovered]
+type=ChangeState
+trigger1=Var(0)>20
+value=904
+ctrl=1
+[Statedef 903]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+velset=Const240p(3),0
+[State 903, own recovery]
+type=SelfState
+trigger1=(EnemyNear,Var(0))>=16
+value=904
+ctrl=1
+[Statedef 904]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=1
+velset=0,0
+[State 904, recovered]
+type=Null
+trigger1=1
+
+`
 }

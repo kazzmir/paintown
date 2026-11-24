@@ -20,6 +20,15 @@ control, pre-over, win/lose poses, reset and match completion. Reset retires
 helpers/effects/command history while carrying the configured persistent data.
 Each character retains its own script/animation/resource coordinate space.
 
+External contact destinations publish their state number immediately, while entry
+attributes wait through attacker hitpause. Ignorehitpause controllers can run
+before that entry commits. Ordinary Pause movetime is preserved during owner
+hitpause while the shared pause clock advances. Finite TargetBind duration
+continues through global Pause; a live binding still follows an allowed anchor,
+and the receiver refreshes its cached bound flag when its CNS resumes. Self
+bindings retain their actor clock. These rules preserve native throw turning,
+release and own-state recovery.
+
 The shared actor pass resolves contacts from the previous active definitions,
 then runs ordered CNS, damage continuation, physics and clocks. Helpers join the
 same world; body push follows actor updates. Borrowed states retain their owner

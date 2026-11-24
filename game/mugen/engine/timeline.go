@@ -17,6 +17,7 @@ type pauseClock struct {
 	PauseParameters
 	owner              *PauseActor
 	darken, unhittable bool
+	holdMoveTime       bool
 }
 
 // Timeline is simulation-owned. Requests take effect after the issuing tick;
@@ -46,6 +47,7 @@ func (t *Timeline) ResetRoundEffectClock() { t.roundEffectOrigin = t.GameTime }
 
 func (t *Timeline) BeginFrame() {
 	if t.depth == 0 {
+		t.pause.holdMoveTime = false
 		t.GlobalNoShadow = false
 		t.NoBackground, t.NoForeground, t.NoBarDisplay = false, false, false
 		t.NoKO = false
@@ -89,7 +91,7 @@ func (t *Timeline) EndFrame() {
 	}
 	if clock.Time > 0 {
 		clock.Time--
-		if clock.MoveTime > 0 {
+		if clock.MoveTime > 0 && !clock.holdMoveTime {
 			clock.MoveTime--
 		}
 	}
@@ -151,6 +153,15 @@ func (t *Timeline) activePause() *pauseClock {
 }
 
 func (t *Timeline) Paused() bool { return t.activePause().Time > 0 }
+
+// HoldPauseMoveTime keeps an allowed owner's ordinary Pause budget while its
+// hitpause prevents movement. The shared pause clock still advances. SuperPause
+// retains its separately calibrated policy.
+func (t *Timeline) HoldPauseMoveTime(actor *PauseActor) {
+	if !t.SuperPaused() && t.pause.Time > 0 && t.pause.owner == actor {
+		t.pause.holdMoveTime = true
+	}
+}
 
 func (t *Timeline) Frozen(actor *PauseActor) bool {
 	clock := t.activePause()

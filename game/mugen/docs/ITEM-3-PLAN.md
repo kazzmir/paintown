@@ -21,10 +21,10 @@ so the absent field read was not a behavioral gap. K1 now covers the demonstrate
 caption viewport difference and preserving that composition policy. K2 includes
 fresh result-scene initialization as well as Survival pose thresholds. K3/K4
 cover AI.Cheat command policy and legacy joystick configuration.
-The U3 Options/Training comparison established two additional code targets, K5
-and K6, recorded as an explicit scope expansion. Both are now implemented and
-accepted. Of the six separate acceptance/evidence followups, U3 is passed; U1,
-U2, U4, U5 and H1 remain open. These are evidence questions, not assumed code defects. This bounded review does not establish an exhaustive list
+The U3 Options/Training comparison established K5/K6, and the U1 overlapping
+runtime comparison established K7. These explicit scope expansions are now
+implemented and accepted. Of the six separate acceptance/evidence followups,
+U1/U3 are passed; U2, U4, U5 and H1 remain open. These are evidence questions, not assumed code defects. This bounded review does not establish an exhaustive list
 of every semantic difference; unsupported-path scans alone cannot do that.
 
 ## Assessment method and limits
@@ -59,19 +59,21 @@ questions forward instead of expanding the assessment indefinitely.
 
 ## Implementation contracts
 
-K1–K6 contracts, sources, prerequisites, estimates and completion conditions are
+K1–K7 contracts, sources, prerequisites, estimates and completion conditions are
 recorded once in the catalog and displayed in [the ledger](PROGRESS.md#remaining-implementation-and-acceptance).
 Confidence describes the effort estimate. Result and AI-admission contracts are
 resolved for their scoped implementations. Joystick translation uses target
 device-code review; physical acceptance remains separate. K5/K6 close the named
 Options/Training contract through direct target operation/handler review and
 connected Linux acceptance. Session-only persistence, startup-binding reset and
-portable input editing remain explicit port policies.
+portable input editing remain explicit port policies. K7 closes deferred contact
+entry, ordinary Pause owner allowance through hitpause and finite TargetBind
+expiry during global Pause through the connected turn/recovery/reset path.
 
 ## Bounded review areas
 
 These are reviewed boundaries, not five equal units of remaining effort. The
-ledger records their findings and allocations to K1–K6 and U1–U5/H1. The three
+ledger records their findings and allocations to K1–K7 and U1–U5/H1. The three
 parent categories stay partial until their scoped requirements and acceptance
 have been resolved.
 
@@ -141,7 +143,7 @@ checks. Neither establishes universal compatibility with arbitrary content.
 3. Establish native joystick enable/code translation, then implement K4 with
    explicit override precedence. Its medium/low-confidence estimate depends on
    platform/device mapping. Schedule physical acceptance H1 when hardware exists.
-4. U3 is closed by K5/K6. Address U1/U2/U4/U5 through their named evidence questions. Create new code targets
+4. U1 is closed by K7 and U3 by K5/K6. Address U2/U4/U5 through their named evidence questions. Create new code targets
    only for demonstrated missing/incorrect behavior and record the scope change.
    Prioritize crashes, stalls and wrong state outcomes over precision findings.
 

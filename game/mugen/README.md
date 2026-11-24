@@ -455,8 +455,9 @@ and platforms. It shows completed scenarios and concrete partial/missing work.
 The current ledger has 32 implemented categories and three broad partial ones.
 Those category counts do not measure remaining effort or native compatibility.
 The [scope plan](docs/ITEM-3-PLAN.md) maps the reviewed scope: the original four
-implementation targets and two discovered during U3 are closed. U3 Options/Training
-acceptance has passed; five separate acceptance/evidence followups remain open.
+implementation targets and three discovered during U1/U3 are closed. U1 runtime
+interaction and U3 Options/Training acceptance have passed; four separate
+acceptance/evidence followups remain open.
 The progress ledger shows their contracts, estimates and prerequisites; these
 counts describe remaining scoped work, not whole-engine completion percentages.
 Win/Survival results now present restored human actors in a separate scene,

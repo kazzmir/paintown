@@ -245,7 +245,12 @@ func (c *Character) publishBindings() {
 }
 
 func (c *Character) ageBinding() {
-	if !c.boundThisTick || c.binding == nil || c.binding.remaining < 0 {
+	if c.binding == nil || c.binding.remaining < 0 {
+		return
+	}
+	// TargetBind duration continues through global Pause while the receiver's
+	// CNS clock and cached isbound flag hold. Self bindings keep actor time.
+	if !c.boundThisTick && (c.binding.self || !c.worldFrozen) {
 		return
 	}
 	c.binding.remaining--

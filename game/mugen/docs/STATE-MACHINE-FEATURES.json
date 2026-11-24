@@ -408,7 +408,7 @@
       "name": "Remaining native runtime, rendering, audio and AI fidelity",
       "group": "Assets and sound",
       "status": "partial",
-      "gap": "K1/K2 result scenes, K3 AI.Cheat admission and K5/K6 Options/Training are closed for their named behavior and acceptance. U1/U4/U5 retain runtime interaction, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
+      "gap": "K1/K2 result scenes, K3 AI.Cheat admission, K5/K6 Options/Training and K7 overlapping runtime ordering are closed for their named behavior and acceptance. U4/U5 retain stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed.",
       "allocation": "compatibility next; known-difference batch complete (user 2026-11-08)",
       "sources": [
         "render/linear.go",
@@ -597,7 +597,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "c587dfbbd14dae8dbece1f075511959d45ef36797d25b55ca6a520b4a5de4c17"
+      "passed_source": "040610f9d02ecd94b70cfc3fb2b047b100ff2082b0ba0bb21867a14cf7b33ac5"
     },
     {
       "id": "combat",
@@ -641,7 +641,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "4b6dcb8f37b248158e690703adc1991c743fc024a910eca41b6c6d30b4b84585"
+      "passed_source": "4ab13c4021d89efcf065b9680bf0ee18d61241d604c1b35ad144fa1cb5b2dcc6"
     },
     {
       "id": "entities",
@@ -674,7 +674,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "7526df195499c1c884c6f5671768f0c8d42aba1b85f3f132b46dc6b0406c7875"
+      "passed_source": "967efc2f25892d86b8bee13108ab5819884fd05840fb138373cbc139babdaf25"
     },
     {
       "id": "effects-pause",
@@ -709,7 +709,7 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "d5afb8b68fb037364a446002908736078e678ae2478f1bee7dd5dcb81e708f0b"
+      "passed_source": "64f1250c20bc109041c047913ede4af851c16bd1a92e2fe456cae94aad177e67"
     },
     {
       "id": "match-flow",
@@ -788,17 +788,17 @@
       ],
       "completed": true,
       "validation": "consolidated segment run",
-      "passed_source": "5fc7f03b1aa869c1d45fd86aaccdc8667506a4f8d05a8919a62f63a69f0cf426"
+      "passed_source": "a7a56ded7574bd2b833e924c3d880f05ab79280c3b20099f062c8eae30358734"
     }
   ],
   "presentation_followups": [
     "Known indexed sprite/shadow alignment and finite/overlap RGB differences are corrected. Native fixed 3/8 calibration replaces the old half-pixel plus source-grid approximation; byte interpolation rounds the weighted delta before adding the first texel. One bounded scene and the connected stage lifecycle retain exact native RGB expectations. OnTop effects blend over HUD before final AllPalFX.",
     "Ordinary KO-echo gap is closed for the existing acceptance: both current native and Go device captures yield all seven segments and three native cue levels, including the quiet interval. The historical mismatch no longer reproduces on the current mixer/decoder; preserve the scheduler and original tolerances. Sample-exact device synchronization remains unverified.",
     "Turns, mixed-team and Survival recovery are calibrated against bounded beta flows. AI command selection is functional; native decision probabilities remain unverified.",
-    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. Other pause/hitpause, binding and crop/raster precision remain unverified. Projectile contacts intentionally do not recoil the owner.",
+    "Bounded camera/body-push/binding lifecycles are covered. Moving zoom now matches eleven sampled beta points through the return; the former0.15-pixel error is fixed by preserving the unclipped midpoint. U1/K7 closes the named overlapping pause/hitpause, bound-anchor turn, expiry and recovery episode. Crop/raster precision remains U5. Projectile contacts intentionally do not recoil the owner.",
     "RGBA mask views, byte-truncated uploads and linear true-color background filtering match 40 fixed samples in one beta/Linux scene. This does not establish whole-frame or arbitrary alpha/palette/filtering parity.",
     "Authored low-resolution grids and offscreen cells are content layout choices. Mixed-coordinate portraits, versus presentation and optional recovery constants are implemented. Later-round stalls reproduced by the target runtime are content defects; no further third-party script repairs are planned.",
-    "The reported crossover-facing gap is corrected for command-to-state handoff and ordinary walking turns, using native beta observations and CNS. Arbitrary air cancels, turning during bindings/hitpause and charge-history permutations remain unverified; do not treat Paintown C++ turning as the reference."
+    "The reported crossover-facing gap is corrected for command-to-state handoff and ordinary walking turns, using native beta observations and CNS. U1/K7 adds explicit bound-anchor turning through pause/hitpause and recovery. Arbitrary air cancels and charge-history permutations remain outside that acceptance; do not treat Paintown C++ turning as the reference."
   ],
   "known_differences": [
     {
@@ -1358,21 +1358,43 @@
           "system/runtime_debug.go",
           "system/mode_flow_test.go"
         ]
+      },
+      {
+        "id": "K7",
+        "parent": "raster-audio",
+        "name": "Overlapping pause, contact entry and bound recovery",
+        "implementation": "implemented",
+        "acceptance": "passed",
+        "size": "medium",
+        "confidence": "high",
+        "contract": "Match deferred contact-state entry, ordinary Pause allowance across hitpause and TargetBind expiry during global Pause through anchor turning, release and own-state recovery.",
+        "basis": "One target throw/Pause/hitpause/turn episode establishes deferred external entry, ordinary Pause movetime retained during owner hitpause, and finite TargetBind aging through the victim\u2019s global pause. An unbounded binding in the same lifecycle continues following the allowed anchor, distinguishing expiry from frozen placement. Captured clocks, animation, velocity, facing and positions resolve the consumers.",
+        "prerequisite": "Resolved by direct target observation of the connected throw/Pause/hitpause/turn/recovery lifecycle. A longer pause and an unbounded constraint distinguish allowance consumption and finite expiry; existing helper/SuperPause policies stay separate.",
+        "completion": "The existing entity scenario checks native entry animation/velocity, owner/victim clocks, binding flags, facing and positions through overlapping pause, finite expiry, TargetDrop, SelfState, restored control and round reset. All affected connected segments pass with race detection; all five checkmarks are current. Linux build and owned stock-match application smoke pass without changing user configuration or root module metadata.",
+        "sources": [
+          "engine/timeline.go",
+          "character/character.go",
+          "match/world_test.go",
+          "character/ownership.go",
+          "character/binding.go"
+        ]
       }
     ],
     "acceptance": [
       {
         "id": "U1",
         "name": "Additional runtime interaction fidelity",
-        "status": "unverified",
-        "completion": "Reuse existing pause/binding/facing/reset findings. For broader acceptance, compare one overlapping pause/hitpause, bound-anchor turn, release/recovery episode. Create a code target only for a demonstrated mismatch.",
-        "prerequisite": "A precise target observation for the combined lifecycle; this review found no additional missing consumer.",
+        "status": "passed",
+        "completion": "Direct target comparison of one overlapping throw/Pause/hitpause, bound-anchor turn, finite expiry and own-state recovery episode established K7. The corrected production consumers match its clock/entry/pose observations and pass the extended entity-to-round-reset scenario, affected connected segments with race detection and Linux build/application smoke. This closes the named lifecycle, not arbitrary runtime permutations.",
+        "prerequisite": "Resolved for the named combined lifecycle through direct target observation and the existing connected entity path. Prior binding/facing/reset findings remain intact.",
         "sources": [
           "engine/timeline.go",
           "character/tick.go",
           "character/binding.go",
           "character/ownership.go",
-          "match/round_carry.go"
+          "match/round_carry.go",
+          "character/character.go",
+          "match/world_test.go"
         ]
       },
       {
@@ -1447,8 +1469,10 @@
       {
         "id": "A1",
         "name": "Runtime ordering",
-        "finding": "Shared timeline, actor/helper ordering, pause allowances, binding, facing and reset have consumers and scoped connected/native evidence. No new missing consumer was established; broader interaction acceptance remains explicit.",
-        "targets": [],
+        "finding": "The bounded U1 comparison established K7: external contact entry waits through attacker hitpause, ordinary Pause owner allowance is retained during hitpause, and TargetBind duration advances through global Pause. Those consumers now match the connected target turn/release/recovery trace and pass entity/round-reset acceptance. Existing helper, facing, binding and SuperPause findings remain closed for their stated scope.",
+        "targets": [
+          "K7"
+        ],
         "acceptance": [
           "U1"
         ],
@@ -1559,7 +1583,8 @@
       "K1 corrected by direct target observation: absent layerno reads did not prove a behavioral defect. Tested Win/Survival values 0/1/2 share front composition; K1 now covers that policy and the demonstrated viewport-projection gap.",
       "K2 expanded within the results batch: target results initialize a separate human-only presentation, including restored life/context, zeroed variables and partner placement. Continuing completed-fight actors was incorrect. This supersedes the earlier result-clock implementation without reopening unrelated mechanics.",
       "U3 target comparison established two additional implementation targets, K5 Options behavior/presentation and K6 Training dummy/menu lifecycle. This explicitly expands the original four-target baseline to six; both now pass their connected acceptance and close U3. Session-only persistence and portable input editing remain intentional port policies.",
-      "K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets."
+      "K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets.",
+      "U1 combined lifecycle comparison established K7: external contact entry, ordinary Pause owner allowance during hitpause and TargetBind expiry through global Pause differed in Go, changing throw motion and release. An unbounded reference constraint distinguishes expiry from frozen placement. This explicitly expands the six-target scope to seven; K7 implementation/connected acceptance and U1 now pass."
     ]
   }
 }

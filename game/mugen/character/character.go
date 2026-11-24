@@ -545,6 +545,9 @@ func (c *Character) finishTick() {
 		return
 	}
 	isPaused := c.pausedThisTick
+	if isPaused && !c.worldFrozen && c.Timeline != nil {
+		c.Timeline.HoldPauseMoveTime(c.pauseActor)
+	}
 
 	// 5. Physics and Time update
 	if !isPaused && !c.worldFrozen {
@@ -620,6 +623,9 @@ func (c *Character) finishTick() {
 		// ignorehitpause controllers can still change an action while its
 		// clock is frozen, so publish their resulting pose too.
 		c.contactFrame, c.contactFrameReady = c.CurrentElement(), true
+		if c.worldFrozen {
+			c.ageBinding()
+		}
 	}
 
 	// Diagnostic: detect infinite fall

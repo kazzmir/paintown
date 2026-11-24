@@ -144,6 +144,12 @@ unknown permutations into mandatory parameter matrices.
   minimum; explicit zero stays zero. Native TargetLifeAdd ignores issuer attack.
 - Hit-paused binding anchors place victims but transfer zero velocity. Preserve
   self-binding/Pause allowances, expiry, recovery and fresh round identities.
+  External contact entry attributes wait through attacker hitpause while its
+  destination number and ignorehitpause controllers remain available. Ordinary
+  Pause movetime is not spent by allowed hitpaused owner passes; the shared pause
+  clock continues. TargetBind duration ages through global Pause; live constraints
+  still follow allowed anchors and cached isbound refreshes on receiver CNS.
+  Self bindings retain actor time. Preserve separate SuperPause calibration.
   PosFreeze suppresses velocity movement, not late body push. Keep pre-CNS
   clipping and vertical Clsn2 gating; projectile-owner corner push is excluded.
 - Borrowed Explods retain creating-state geometry/private-pixel units and issuer

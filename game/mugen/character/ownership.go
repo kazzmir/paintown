@@ -14,6 +14,12 @@ func (c *Character) currentStateOwner() *Character {
 }
 
 func (c *Character) PreparePositiveState() error {
+	// Contact publishes the destination number immediately, but native keeps
+	// its entry attributes pending through attacker hitpause. Ignorehitpause
+	// controllers can still run against that destination before entry commits.
+	if c.IsPaused() {
+		return c.RuntimeError
+	}
 	if c.pendingMissingEntry {
 		c.pendingMissingEntry = false
 		// Undefined external states still reset entry persistence/counters,

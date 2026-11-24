@@ -220,7 +220,7 @@ def scope_markdown(scope):
         lines.append(f"| **{row['id']}** | {row['name']} — {row['status']} | {row['completion']} Prerequisite: {row['prerequisite']} |")
     lines.extend(['', '### Bounded assessment findings', '',
                   'The documentation/source review is complete for these boundaries.',
-                  'Existing evidence was reused; no new native or gameplay runs are inferred.', '',
+                  'The baseline reused existing evidence; subsequent target comparisons and scope changes are recorded above.', '',
                   '| Review | Finding | Allocation |', '| --- | --- | --- |'])
     for row in scope['reviews']:
         allocation = ', '.join(row['targets'] + row['acceptance']) or 'No new target'

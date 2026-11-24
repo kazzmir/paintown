@@ -8,8 +8,8 @@ an estimate of total effort or complete native compatibility.
 - Controllers: 89/89 routes; 0 known partial, 0 missing.
 - Triggers: 127/127 runtime routes; 0 missing.
 - Project categories: 32 implemented, 3 partial, 0 missing.
-- Remaining-scope implementation targets: 6 closed, 0 open.
-- Separate acceptance followups: 1 passed, 5 open.
+- Remaining-scope implementation targets: 7 closed, 0 open.
+- Separate acceptance followups: 2 passed, 4 open.
 
 ## Remaining implementation and acceptance
 
@@ -28,6 +28,7 @@ of native equivalence. Unknown behavior is not counted as a code defect.
 | **K4 — Legacy joystick configuration consumer** | implemented / passed | medium / high |
 | **K5 — Options behavior and utility presentation** | implemented / passed | medium / high |
 | **K6 — Training dummy policy and menu lifecycle** | implemented / passed | medium / high |
+| **K7 — Overlapping pause, contact entry and bound recovery** | implemented / passed | medium / high |
 
 - [x] **K1**: Preserve the beta's observed front-composed result captions and project them through the game viewport.
   Basis: Native Win/Survival overlap regions are identical for authored layerno 0/1/2: all draw in front. The missing layer consumer was an incorrect source-only inference. Native text uses game-viewport fitting; the old port drew directly in the motif canvas.
@@ -59,6 +60,11 @@ of native equivalence. Unknown behavior is not counted as a code defect.
   Prerequisite: Resolved by direct target Training menu/stock-fighter observation and cooperative input-handler review. Native stochastic AI decisions remain separate U4.
   Completion: The existing mode lifecycle passes through Manual input, cooperative low guard/contact/recovery/refill, axis spacing, six-on/six-off jam, jump/air-jump/landing, independent AI level, frozen redraws, pause/step/minimize and selection/reentry reset. Affected connected segments pass with race detection; final Linux application flow and paused PNG pixels pass.
 
+- [x] **K7**: Match deferred contact-state entry, ordinary Pause allowance across hitpause and TargetBind expiry during global Pause through anchor turning, release and own-state recovery.
+  Basis: One target throw/Pause/hitpause/turn episode establishes deferred external entry, ordinary Pause movetime retained during owner hitpause, and finite TargetBind aging through the victim’s global pause. An unbounded binding in the same lifecycle continues following the allowed anchor, distinguishing expiry from frozen placement. Captured clocks, animation, velocity, facing and positions resolve the consumers.
+  Prerequisite: Resolved by direct target observation of the connected throw/Pause/hitpause/turn/recovery lifecycle. A longer pause and an unbounded constraint distinguish allowance consumption and finite expiry; existing helper/SuperPause policies stay separate.
+  Completion: The existing entity scenario checks native entry animation/velocity, owner/victim clocks, binding flags, facing and positions through overlapping pause, finite expiry, TargetDrop, SelfState, restored control and round reset. All affected connected segments pass with race detection; all five checkmarks are current. Linux build and owned stock-match application smoke pass without changing user configuration or root module metadata.
+
 
 ### Separate acceptance and evidence questions
 
@@ -67,7 +73,7 @@ acceptance. Open questions do not imply missing controller/trigger routes.
 
 | ID | Scope / status | Evidence needed to close it |
 | --- | --- | --- |
-| **U1** | Additional runtime interaction fidelity — unverified | Reuse existing pause/binding/facing/reset findings. For broader acceptance, compare one overlapping pause/hitpause, bound-anchor turn, release/recovery episode. Create a code target only for a demonstrated mismatch. Prerequisite: A precise target observation for the combined lifecycle; this review found no additional missing consumer. |
+| **U1** | Additional runtime interaction fidelity — passed | Direct target comparison of one overlapping throw/Pause/hitpause, bound-anchor turn, finite expiry and own-state recovery episode established K7. The corrected production consumers match its clock/entry/pose observations and pass the extended entity-to-round-reset scenario, affected connected segments with race detection and Linux build/application smoke. This closes the named lifecycle, not arbitrary runtime permutations. Prerequisite: Resolved for the named combined lifecycle through direct target observation and the existing connected entity path. Prior binding/facing/reset findings remain intact. |
 | **U2** | Broader font/content acceptance — unverified | Compare one localized asset/storyboard/menu/fight/reload flow with licensed Unicode/collection fonts and mixed asset families. Record real parser/render defects, separating missing payloads and native-reproducing content defects. Prerequisite: Suitable licensed font/content input and target output. TTF/TTC readers exist; fallback glyph coverage and metrics do not prove parity. |
 | **U3** | Native Options/training behavior and presentation — passed | Direct target menu/Training observation and handler review established K5/K6. Both are implemented and accepted through the existing Options-to-gameplay and Training lifecycles, race-checked connected segments and final Linux window/PNG inspection. Session-only persistence, startup-binding reset and portable input editing are explicit port policies; sample-exact raster/audio and stochastic AI decisions remain separate U5/U4. Prerequisite: Resolved for the named Linux Options/Training behavior and usable utility presentation. Target input/team/default navigation, value admission, dummy modes/policy, pause/step/minimize and return/reentry were exercised or traced to their handlers. |
 | **U4** | Native AI decisions beyond AI.Cheat — unverified | State observable target decision rules and permitted variability separately from K3 admission. Successful AI combat does not establish matching native probabilities. Prerequisite: Bounded reference evidence sufficient for a finite decision contract; exact stochastic equivalence has no reliable estimate. |
@@ -77,11 +83,11 @@ acceptance. Open questions do not imply missing controller/trigger routes.
 ### Bounded assessment findings
 
 The documentation/source review is complete for these boundaries.
-Existing evidence was reused; no new native or gameplay runs are inferred.
+The baseline reused existing evidence; subsequent target comparisons and scope changes are recorded above.
 
 | Review | Finding | Allocation |
 | --- | --- | --- |
-| **A1 — Runtime ordering** | Shared timeline, actor/helper ordering, pause allowances, binding, facing and reset have consumers and scoped connected/native evidence. No new missing consumer was established; broader interaction acceptance remains explicit. | U1 |
+| **A1 — Runtime ordering** | The bounded U1 comparison established K7: external contact entry waits through attacker hitpause, ordinary Pause owner allowance is retained during hitpause, and TargetBind duration advances through global Pause. Those consumers now match the connected target turn/release/recovery trace and pass entity/round-reset acceptance. Existing helper, facing, binding and SuperPause findings remain closed for their stated scope. | K7, U1 |
 | **A2 — Assets, fonts and media** | Text/AIR, SFF v1/ACT/PCX, SFF v2 raw/indexed/PNG, FNT v1/v2 bitmap, TTF/TTC, SND/WAV, BGM and archive/resource flows have readers and scoped evidence. Bitmap v2 ASCII limits are documented target behavior. No new missing format family was established. | U2 |
 | **A3 — Rendering and audio** | Reference observation corrected the layerno inference: tested result values 0/1/2 all draw in front. Actual gaps were caption viewport projection and fresh result-scene/pose policy. Other calibrated raster/audio findings stay closed. | K1, K2, U5 |
 | **A4 — Options, training and AI** | AI.Cheat admission is closed by K3. Direct target Options/Training review established K5/K6: independent utility rows, complete settings/session actions, native team KO consumer, mode-specific dummy rows, axis spacing, jam/guard/jump policy and selection return are now implemented and accepted. U3 is passed; stochastic native AI decisions remain U4. | K3, K5, K6, U3, U4 |
@@ -101,6 +107,7 @@ They do not silently enlarge this baseline or reopen unrelated completion.
 - K2 expanded within the results batch: target results initialize a separate human-only presentation, including restored life/context, zeroed variables and partner placement. Continuing completed-fight actors was incorrect. This supersedes the earlier result-clock implementation without reopening unrelated mechanics.
 - U3 target comparison established two additional implementation targets, K5 Options behavior/presentation and K6 Training dummy/menu lifecycle. This explicitly expands the original four-target baseline to six; both now pass their connected acceptance and close U3. Session-only persistence and portable input editing remain intentional port policies.
 - K5 includes the target team-setting consumer: CFG ordinal 0 means Team loses, 1 means AI keeps fighting. The default policy excludes an AI partner from human-led Simul survival, rather than ending on any member KO. Team factory reset restores 200% advantage. These findings are part of the Options lifecycle, not separate targets.
+- U1 combined lifecycle comparison established K7: external contact entry, ordinary Pause owner allowance during hitpause and TargetBind expiry through global Pause differed in Go, changing throw motion and release. An unbounded reference constraint distinguishes expiry from frozen placement. This explicitly expands the six-target scope to seven; K7 implementation/connected acceptance and U1 now pass.
 
 ## Known difference checkpoints
 
@@ -240,7 +247,7 @@ source changes reopen only the affected segments.
 - [x] Sound effects, channels and production mixing.
 - [x] Background music and NoMusic integration. (item4)
 - [ ] Complete font, media and asset compatibility. **partial** — Reviewed format families have readers and scoped acceptance. Broader font/content acceptance is U2; missing licensed payloads and native-reproducing content defects are not missing consumers. Physical CD and unavailable licensed/CJK payloads remain deferred. (item4)
-- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1/K2 result scenes, K3 AI.Cheat admission and K5/K6 Options/Training are closed for their named behavior and acceptance. U1/U4/U5 retain runtime interaction, stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
+- [ ] Remaining native runtime, rendering, audio and AI fidelity. **partial** — K1/K2 result scenes, K3 AI.Cheat admission, K5/K6 Options/Training and K7 overlapping runtime ordering are closed for their named behavior and acceptance. U4/U5 retain stochastic AI and precision uncertainty; calibrated camera, sprite/shadow, alpha and ordinary KO-echo findings remain closed. (compatibility next; known-difference batch complete (user 2026-11-08))
 
 ### Modes and platforms
 
