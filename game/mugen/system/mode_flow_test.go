@@ -63,12 +63,20 @@ func TestModeProgressionContinueSurvivalAndTrainingFlow(t *testing.T) {
 	input.GlobalManager.Keyboard = keyboard
 	step := func(keys ...ebiten.Key) {
 		t.Helper()
+		selection, selecting := e.currentState.(*SelectState)
+		tapSelection := selecting && !selection.teamMenu && !selection.choosingStage && len(keys) == 1 && keys[0] == ebiten.KeyEnter
 		keyboard.keys = map[ebiten.Key]bool{}
 		for _, key := range keys {
 			keyboard.keys[key] = true
 		}
 		if err := e.Update(); err != nil {
 			t.Fatal(err)
+		}
+		if tapSelection {
+			keyboard.keys = nil
+			if err := e.Update(); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 	canvas := ebiten.NewImage(1280, 720)

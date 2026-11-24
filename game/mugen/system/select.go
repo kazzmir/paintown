@@ -48,6 +48,7 @@ type SelectState struct {
 	spriteCache            background.SpriteCache
 	indexSampler           render.Nearest
 	linearSampler          render.Linear
+	startArmed, startUsed  [2]bool
 }
 
 func NewSelectState(engine *Engine, title string) *SelectState {
@@ -173,6 +174,7 @@ func (s *SelectState) Update() (State, error) {
 			s.p2Done = false
 			s.rosters = [2][]match.Selection{}
 			s.rosterPortraits = [2][]CharacterPortrait{}
+			s.startArmed, s.startUsed = [2]bool{}, [2]bool{}
 			if s.title == "Team Co-op" || s.title == "Survival Co-op" || s.title == "Team Arcade" || s.title == "Watch Mode" {
 				s.initTeams()
 			}
@@ -215,7 +217,7 @@ func (s *SelectState) Update() (State, error) {
 			s.moveCursor(&s.p1CursorX, &s.p1CursorY, 0, 1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if button, ok := s.confirm(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
+		if button, ok := s.confirmCharacter(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
 			ch := s.chosen(s.p1CursorX, s.p1CursorY)
 			palette := ch.PaletteKeymap.Palette(button)
 			s.p1Done = s.pickMember(0, ch, palette)
@@ -247,7 +249,7 @@ func (s *SelectState) Update() (State, error) {
 			s.moveCursor(&s.p2CursorX, &s.p2CursorY, 0, 1)
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if button, ok := s.confirm(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
+		if button, ok := s.confirmCharacter(inputSlot); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
 			ch := s.chosen(s.p2CursorX, s.p2CursorY)
 			palette := ch.PaletteKeymap.Palette(button)
 			s.p2Done = s.pickMember(1, ch, palette)
@@ -300,6 +302,34 @@ func (s *SelectState) confirm(slot int) (int, bool) {
 			}
 			return button, true
 		}
+	}
+	return 0, false
+}
+
+// Start is a held palette modifier in character selection. Keep the port's
+// Start-only confirmation as a release action, so holding it before an attack
+// can select a2..z2 without prematurely choosing the default outfit. Other
+// menus/stage confirmation retain their ordinary press action.
+func (s *SelectState) confirmCharacter(slot int) (int, bool) {
+	im := input.GlobalManager
+	held := im.IsPressed(slot, input.ActionStart)
+	index := slot - 1
+	if held && im.IsJustPressed(slot, input.ActionStart) && !s.startUsed[index] {
+		s.startArmed[index] = true
+	}
+	for button, action := range []input.Action{input.ActionA, input.ActionB, input.ActionC, input.ActionX, input.ActionY, input.ActionZ} {
+		if im.IsJustPressed(slot, action) {
+			s.startArmed[index], s.startUsed[index] = false, held
+			if held {
+				button += 6
+			}
+			return button + 1, true
+		}
+	}
+	if !held {
+		confirm := s.startArmed[index] && !s.startUsed[index]
+		s.startArmed[index], s.startUsed[index] = false, false
+		return 0, confirm
 	}
 	return 0, false
 }

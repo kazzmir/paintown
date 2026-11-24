@@ -56,12 +56,20 @@ func TestTeamSelectionFightHUDAndExitFlow(t *testing.T) {
 	e.currentState = s
 	step := func(keys ...ebiten.Key) {
 		t.Helper()
+		selection, selecting := e.currentState.(*SelectState)
+		tapSelection := selecting && !selection.teamMenu && !selection.choosingStage && len(keys) == 1 && (keys[0] == ebiten.KeyEnter || keys[0] == ebiten.KeyU)
 		keyboard.keys = map[ebiten.Key]bool{}
 		for _, key := range keys {
 			keyboard.keys[key] = true
 		}
 		if err := e.Update(); err != nil {
 			t.Fatal(err)
+		}
+		if tapSelection {
+			keyboard.keys = nil
+			if err := e.Update(); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 	step(ebiten.KeyArrowDown) // P1 simul.

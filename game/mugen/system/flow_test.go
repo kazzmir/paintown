@@ -692,7 +692,7 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if !ok {
 		t.Fatalf("stage selection did not open versus: %T", e.currentState)
 	}
-	if !strings.HasSuffix(v.request.Players[0].DefPath, "kfm/kfm.def") || !strings.HasSuffix(v.request.Players[1].DefPath, "kfm720/kfm720.def") || v.request.Players[1].Palette != 2 || v.request.StagePath != "stages/stage0-720.def" {
+	if !strings.HasSuffix(v.request.Players[0].DefPath, "kfm/kfm.def") || !strings.HasSuffix(v.request.Players[1].DefPath, "kfm720/kfm720.def") || v.request.Players[0].Palette != 4 || v.request.Players[1].Palette != 5 || v.request.StagePath != "stages/stage0-720.def" {
 		t.Fatal("selection handoff lost metadata", v.request)
 	}
 	// Exercise the actual VS renderer before handing off. The former flow

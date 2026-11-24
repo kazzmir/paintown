@@ -33,6 +33,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
+	"golang.org/x/image/font/gofont/gomono"
 	"golang.org/x/image/font/gofont/goregular"
 )
 
@@ -93,7 +94,12 @@ func TestStoryboardAssetsTextSoundAndAnimationFlow(t *testing.T) {
 	if err := os.WriteFile(facePath, goregular.TTF, 0600); err != nil {
 		t.Fatal(err)
 	}
-	for name, file := range map[string]string{"nested.def": `fonts\nested\face.ttf`, "absolute.def": facePath} {
+	collectionPath := filepath.Join(filepath.Dir(facePath), "Faces.TTC")
+	collection := assetFontCollection(t, goregular.TTF, gomono.TTF)
+	if err := os.WriteFile(collectionPath, collection, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for name, file := range map[string]string{"nested.def": `fonts\nested\face.ttf`, "absolute.def": collectionPath} {
 		definition := "[FNT v2]\nfntversion=2,00\nfntversion=0,00\n[Def]\nType=truetype\nSize=0,18\nSpacing=100,1\nOffset=0,0\nFile=" + file + "\nBlend=1\nType=invalid\nSize=invalid\nSpacing=invalid\nOffset=invalid\nFile=missing.ttf\nBlend=0\n"
 		if err := os.WriteFile(filepath.Join(dir, name), []byte(definition), 0600); err != nil {
 			t.Fatal(err)
@@ -182,7 +188,7 @@ layer1.offset=40,40
 layer1.textdelay=2
 layer1.starttime=1
 layer1.endtime=8
-layer2.text="AVé"
+layer2.text="AVé Ω Ж"
 layer2.font=1,314,1
 layer2.offset=40,85
 layer3.text="A;A"
@@ -203,7 +209,7 @@ layer1.text="Done"
 layer1.font=0,0,1
 layer1.offset=40,40
 layer1.starttime=2
-layer2.text="AVé"
+layer2.text="AVé Ω Ж"
 layer2.font=2,-99,1
 layer2.offset=40,85
 layer2.starttime=2
@@ -250,7 +256,7 @@ Interpolate Blend
 		t.Fatal("legacy scene-prefixed background was mistaken for a scene")
 	}
 	for _, f := range story.Fonts[1:3] {
-		if f == nil || f.Fallback != "" || f.TextWidth("AVé") <= 0 || f.TextWidth("AVé") > 80 || f.Glyph('é', 314) == nil {
+		if f == nil || f.Fallback != "" || f.TextWidth("AVé Ω Ж") <= 0 || f.TextWidth("AVé Ω Ж") > 110 || f.Glyph('é', 314) == nil || f.Glyph('Ω', 0).Image.Bounds().Empty() || f.Glyph('Ж', 0).Image.Bounds().Empty() {
 			t.Fatal("authored TrueType path/UTF-8 metrics did not reach storyboard", f)
 		}
 	}
@@ -454,6 +460,54 @@ Interpolate Blend
 	if _, err := sb.Load(path, root); err == nil || !strings.Contains(err.Error(), "font1") || !strings.Contains(err.Error(), "TrueType") {
 		t.Fatal("corrupt authored font was silently replaced or lost context", err)
 	}
+	if err := os.WriteFile(facePath, goregular.TTF, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(collectionPath, collection[:20], 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := sb.Load(path, root); err == nil || !strings.Contains(err.Error(), "font2") || !strings.Contains(err.Error(), "TrueType") {
+		t.Fatal("truncated font collection lost its resource context", err)
+	}
+	if err := os.WriteFile(collectionPath, collection, 0600); err != nil {
+		t.Fatal(err)
+	}
+	reloaded, err = sb.Load(path, root)
+	if err != nil || reloaded.Fonts[2] == story.Fonts[2] || reloaded.Fonts[2].Fallback != "" || reloaded.Fonts[2].Glyph('Ж', 0).Image.Bounds().Empty() {
+		t.Fatal("corrected font collection did not reload independently", err)
+	}
+}
+
+// Build a collection from existing openly licensed module fonts in disposable
+// storage. TTC table offsets are file-relative; copying standalone offsets into
+// a collection would exercise malformed inputs instead of collection support.
+func assetFontCollection(t *testing.T, fonts ...[]byte) []byte {
+	t.Helper()
+	data := make([]byte, 12+4*len(fonts))
+	copy(data, "ttcf")
+	binary.BigEndian.PutUint32(data[4:], 0x00010000)
+	binary.BigEndian.PutUint32(data[8:], uint32(len(fonts)))
+	for index, face := range fonts {
+		for len(data)%4 != 0 {
+			data = append(data, 0)
+		}
+		start := len(data)
+		binary.BigEndian.PutUint32(data[12+index*4:], uint32(start))
+		if len(face) < 12 {
+			t.Fatal("short source font")
+		}
+		count := int(binary.BigEndian.Uint16(face[4:]))
+		if 12+count*16 > len(face) {
+			t.Fatal("short source font directory")
+		}
+		data = append(data, face...)
+		for table := 0; table < count; table++ {
+			entry := start + 12 + table*16 + 8
+			offset := binary.BigEndian.Uint32(data[entry:])
+			binary.BigEndian.PutUint32(data[entry:], offset+uint32(start))
+		}
+	}
+	return data
 }
 
 // Continue the asset scenario through a tiny authored V1 character, external
@@ -849,7 +903,7 @@ func localizedAssetFlow(t *testing.T, e *Engine, canvas *ebiten.Image, dir, defi
 	defer func() { e.motif, e.cfg.Config.Language = previousMotif, previousLanguage }()
 	e.cfg.Config.Language = "ja"
 	path := write("locale.def", definition+`[ja.Info]
-name="Localized"
+name="Localized café Ω Ж"
 mugenversion=1.1
 [ja.Files]
 sprite=outfits.sff
@@ -857,6 +911,16 @@ anim=locale.air
 cns=locale.cns
 st=locale.cns
 cmd=locale.cmd
+[Palette Keymap]
+a=5
+[ja.Palette Keymap]
+a=1
+a2=2
+x=-99
+y=99
+z=2.9
+c=
+a=12
 `)
 	write("locale.air", read(filepath.Join(dir, "outfits.air"))+"\n[ja.Begin Action 0]\n0,0,0,0,1\n")
 	write("locale.cns", read(filepath.Join(dir, "outfits.cns"))+`
@@ -895,8 +959,8 @@ v=40
 value=-100
 `)
 	// Each definition font receives the same selected language as its owner.
-	face := filepath.Join(dir, "locale.ttf")
-	if err := os.WriteFile(face, goregular.TTF, 0600); err != nil {
+	face := filepath.Join(dir, "locale.ttc")
+	if err := os.WriteFile(face, assetFontCollection(t, goregular.TTF, gomono.TTF), 0600); err != nil {
 		t.Fatal(err)
 	}
 	write("locale font.def", `[FNT v2]
@@ -904,11 +968,11 @@ fntversion=2,00
 [Def]
 type=truetype
 size=0,18
-file=locale.ttf
+file=locale.ttc
 [ja.Def]
 type=truetype
 size=0,12
-file=locale.ttf
+file=locale.ttc
 `)
 	storyPath := write("locale story.def", `[SceneDef]
 spr=outfits.sff
@@ -922,7 +986,7 @@ layer1.anim=700
 end.time=2
 [ja.Scene 0 hello]
 end.time=3
-layer0.text="Localized"
+layer0.text="Localized café Ω Ж"
 layer0.font=0,0,1
 [Begin Action 700]
 0,0,0,0,-1
@@ -933,7 +997,7 @@ layer0.font=0,0,1
 		t.Fatal("localized storyboard load", story.loadError)
 	}
 	scene := story.player.CurrentScene()
-	if scene.Name != "Scene 0 hello" || len(scene.Layers) != 1 || scene.Layers[0].Text != "Localized" || scene.Layers[0].Font.Height != 12 {
+	if scene.Name != "Scene 0 hello" || len(scene.Layers) != 1 || scene.Layers[0].Text != "Localized café Ω Ж" || scene.Layers[0].Font.Height != 12 {
 		t.Fatal("localized scene replaced order/font or inherited an English layer", scene)
 	}
 	for n := 0; n < 10; n++ {
@@ -1026,8 +1090,12 @@ columns=1
 		t.Fatal(err)
 	}
 	selection := NewSelectState(e, "Versus Mode")
-	if selection.loadError != nil || len(selection.chars) != 2 || selection.chars[0].Name != "Localized" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 15 {
+	if selection.loadError != nil || len(selection.chars) != 2 || selection.chars[0].Name != "Localized café Ω Ж" || e.motif.Info.Name != "Localized motif" || e.motif.Fonts[1].Height != 15 {
 		t.Fatal("localized motif/relative roster/portraits", selection.loadError)
+	}
+	keymap := selection.chars[0].PaletteKeymap
+	if keymap.Palette(1) != 1 || keymap.Palette(2) != 1 || keymap.Palette(3) != 1 || keymap.Palette(4) != 1 || keymap.Palette(5) != 12 || keymap.Palette(6) != 2 || keymap.Palette(7) != 2 {
+		t.Fatal("localized/partial keymap lost first values or native numeric admission", keymap)
 	}
 	// Roster order and mode limits must use the same selected language. Both
 	// rows name one DEF, but only the order-two row belongs to this campaign.
@@ -1045,9 +1113,43 @@ columns=1
 		t.Fatal("localized first mode limits did not reach the opponent schedule")
 	}
 	e.modeRun = savedRun
-	request := match.Request{Mode: "Versus Mode", StagePath: stagePath, Players: [2]match.Selection{{DefPath: path, Palette: 1}, {DefPath: path, Palette: 1}}}
-	vs := NewVersusState(e, request)
-	if vs.loadError != nil || vs.portraits[0].Name != "Localized" {
+	// Resolve a random cell once, then use that chosen character's map. Holding
+	// Start must wait for the attack, and releasing it must not pick a second
+	// member. The numeric palette survives the selection/VS/fight handoff.
+	selection.chars[0] = &CharacterPortrait{Name: "Random"}
+	e.currentState = selection
+	selectionKeys := input.GlobalManager.Keyboard.(*flowKeyboard)
+	selectTick := func(keys ...ebiten.Key) {
+		t.Helper()
+		selectionKeys.previous, selectionKeys.keys = selectionKeys.keys, map[ebiten.Key]bool{}
+		for _, key := range keys {
+			selectionKeys.keys[key] = true
+		}
+		if err := e.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	selectTick(ebiten.KeyEnter)
+	selectTick(ebiten.KeyEnter)
+	if selection.p1Done {
+		t.Fatal("holding Start prematurely confirmed a palette")
+	}
+	selectTick(ebiten.KeyEnter, e.cfg.Input.Player1Keyboard.A)
+	selectTick()
+	selectTick(e.cfg.Input.Player2Keyboard.A)
+	selectTick()
+	if !selection.choosingStage || selection.rosters[0][0].Palette != 2 || selection.rosters[1][0].Palette != 1 || selection.rosterPortraits[0][0].PaletteKeymap != keymap {
+		t.Fatal("random-cell mapping or Start release lost roster palette ownership")
+	}
+	selectTick(ebiten.KeyEnter)
+	selectTick()
+	selectionKeys.previous = nil
+	vs, ok := e.currentState.(*VersusState)
+	if !ok {
+		t.Fatalf("mapped selection did not reach VS: %T", e.currentState)
+	}
+	request := vs.request
+	if vs.loadError != nil || vs.portraits[0].Name != "Localized café Ω Ж" {
 		t.Fatal("localized VS", vs.loadError)
 	}
 	vs.Draw(canvas)
@@ -1069,6 +1171,9 @@ columns=1
 	}
 	reach(match.Active)
 	p := f.match.Players[0]
+	if p.Character.PaletteNo != 2 || f.match.Players[1].Character.PaletteNo != 1 {
+		t.Fatal("selection palette did not reach CNS or was mapped twice")
+	}
 	if f.match.Fight.Fonts[7] == nil || f.match.Fight.Fonts[7].Height != 14 {
 		t.Fatal("HUD font height did not reach fight presentation")
 	}
@@ -1104,6 +1209,19 @@ columns=1
 	if f.match.Players[0].Character.Life != 500 || f.match.Players[0].Character.GetVar(40) != 0 {
 		t.Fatal("localized rematch retained prior combat")
 	}
+	previousMatch, previousFont := f.match, f.match.Fight.Fonts[7]
+	keyboard.keys = map[ebiten.Key]bool{ebiten.KeyShiftLeft: true, ebiten.KeyF4: true}
+	if err := e.Update(); err != nil {
+		t.Fatal(err)
+	}
+	keyboard.keys = nil
+	if err := e.Update(); err != nil {
+		t.Fatal(err)
+	}
+	if f.match == previousMatch || f.match.Players[0].Character.PaletteNo != 2 || f.match.Fight.Fonts[7] == previousFont || f.match.Fight.Fonts[7].Fallback != "" || f.match.Fight.Fonts[7].Glyph('Ж', 0).Image.Bounds().Empty() {
+		t.Fatal("localized collection/HUD bank did not reload through the debug consumer")
+	}
+	e.Draw(canvas)
 	// The selected AST retains quote banks for runtime fallback and its source
 	// positions; consumers do not mutate the original parsed definition.
 	ast, err := parsers.Parse(strings.NewReader(read(filepath.Join(dir, "locale.cns"))))
